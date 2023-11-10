@@ -103,9 +103,8 @@ const AddPayment = () => {
     },
   });
 
-  let navigate = useNavigate();
   const handleCloseButtonClick = () => {
-    navigate("../Payment");
+    navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
   };
 
   useEffect(() => {
