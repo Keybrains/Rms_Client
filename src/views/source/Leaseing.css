@@ -1,0 +1,17 @@
+.grid-container{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  grid-auto-rows: minmax(100px, auto);
+  /* padding-left: 5%; */
+}
+
+@media only screen and (max-width: 1150px) {
+  .resp-header {
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center;
+    align-items: center;
+    text-align: center; */
+} 
+}
