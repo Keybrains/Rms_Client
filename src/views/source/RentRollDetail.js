@@ -70,7 +70,7 @@ const RentRollDetail = () => {
       try {
         // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
         const response = await fetch(
-          `https://propertymanager.cloudpress.host/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
+          `http://localhost:4000/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -100,7 +100,7 @@ const RentRollDetail = () => {
     navigate(`../AddPayment/${tenantId}/${entryIndex}`);
   };
 
-  const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
   const id = tenantId;
   const entry = entryIndex;
@@ -123,7 +123,7 @@ const RentRollDetail = () => {
 
   const navigateToSummary = async (tenantId, entryIndex) => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${id}/entry/${entry}`;
 
     try {
       // Fetch tenant data
@@ -147,7 +147,7 @@ const RentRollDetail = () => {
   };
 
   const navigateToTenant = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${id}/entry/${entry}`;
 
     try {
       // Fetch tenant data
@@ -172,7 +172,7 @@ const RentRollDetail = () => {
 
   const navigateToFinancial = async () => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${id}/entry/${entry}`;
 
     try {
       // Fetch tenant data
@@ -196,7 +196,7 @@ const RentRollDetail = () => {
 
   const tenantsData = async () => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
 
     try {
       // Fetch tenant data
@@ -249,7 +249,7 @@ const RentRollDetail = () => {
       try {
         // Authentication post method
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/register/auth",
+          "http://localhost:4000/api/register/auth",
           { purpose: "validate access" },
           authConfig
         );
@@ -297,7 +297,7 @@ const RentRollDetail = () => {
   const [loader, setLoader] = React.useState(true);
 
   const getGeneralLedgerData = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/payment/payment/${rental}`;
+    const apiUrl = `http://localhost:4000/api/payment/payment/${rental}`;
 
     try {
       const response = await axios.get(apiUrl);
@@ -979,10 +979,10 @@ const RentRollDetail = () => {
                       <Row>
                         <Col xs="12" sm="6">
                           <FormGroup>
-                            <h1 style={{ color: "white" }}>Lease Ledger</h1>
+                            <h3 style={{ color: "blue" }}>Lease Ledger</h3>
                           </FormGroup>
                         </Col>
-                        <Col className="text-right" xs="12" sm="6">
+                        <Col className="text-right" xs="12" sm="3">
                           <Button
                             color="primary"
                             href="#rms"
@@ -995,6 +995,21 @@ const RentRollDetail = () => {
                             style={{ background: "white", color: "blue" }}
                           >
                             Recieve Payment
+                          </Button>
+                        </Col>
+                        <Col className="text-right" xs="12" sm="3">
+                          <Button
+                            color="primary"
+                            href="#rms"
+                            onClick={() =>
+                              navigate(
+                                `/admin/AddCharge/${tenantId}/${entryIndex}`
+                              )
+                            }
+                            size="sm"
+                            style={{ background: "white", color: "blue" }}
+                          >
+                            Enter Charge
                           </Button>
                         </Col>
                       </Row>

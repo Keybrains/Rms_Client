@@ -58,6 +58,7 @@ import ApplicantSummary from "views/source/ApplicantSummary";
 import TenantPropertyDetail from "views/source/TenantPropertyDetail";
 import Payment from "views/source/Payment";
 import AddPayment from "views/source/AddPayment";
+import AddCharge from "views/source/AddCharge";
 
 var routes = [
   {
@@ -572,6 +573,11 @@ var routes = [
       {
         path: "/AddPayment/:tenantId/:entryIndex",
         component: <AddPayment/>,
+        layout: "/admin",    
+      },
+      {
+        path: "/AddCharge/:tenantId/:entryIndex",
+        component: <AddCharge/>,
         layout: "/admin",    
       },
 ];

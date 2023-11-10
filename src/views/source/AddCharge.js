@@ -25,7 +25,7 @@ import {
   DropdownItem,
   Label,
 } from "reactstrap";
-import PaymentHeader from "components/Headers/PaymentHeader";
+import ChargeHeader from "components/Headers/ChargeHeader";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CloseIcon from "@mui/icons-material/Close";
@@ -37,7 +37,7 @@ import { values } from "pdf-lib";
 import Img from "assets/img/theme/team-4-800x800.jpg";
 import "jspdf-autotable";
 
-const AddPayment = () => {
+const AddCharge = () => {
   const { tenantId, entryIndex } = useParams();
   const [file, setFile] = useState([]);
   const [accountData, setAccountData] = useState([]);
@@ -64,36 +64,31 @@ const AddPayment = () => {
     setTenantid(property._id); // Set the selected tenant's ID
     setTenantentryindex(property.entryIndex); // Set the selected tenant's entry index
   };
-  const navigate = useNavigate();
+
   const generalledgerFormik = useFormik({
     initialValues: {
-      date: "",
+      charges_date: "",
       rental_adress: "",
       tenant_id: "",
       entryIndex: "",
-      amount: "",
-      payment_method: "",
-      debitcard_number: "",
+      charges_amount: "",
       tenant_firstName: "",
-      memo: "",
+      charges_memo: "",
       entries: [
         {
-          account: "",
-          description: "",
-          debit: "",
-          credit: "",
-          dropdownOpen: false,
+          charges_account: "",
+          charges_amount: "",
+          charges_total_amount: "",
         },
       ],
-      attachment: "",
-      total_amount: "",
+      charges_attachment: "",
     },
     validationSchema: yup.object({
       entries: yup.array().of(
         yup.object().shape({
-          account: yup.string().required("Required"),
-          balance: yup.number().required("Required"),
-          amount: yup.number().required("Required"),
+        //   account: yup.string().required("Required"),
+        //   balance: yup.number().required("Required"),
+        //   amount: yup.number().required("Required"),
         })
       ),
     }),
@@ -103,20 +98,15 @@ const AddPayment = () => {
     },
   });
 
+  let navigate = useNavigate();
   const handleCloseButtonClick = () => {
     navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
   };
 
-  // const handleSavePaymentButtonClick = () => {
-  //   navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
-  // };
-
   useEffect(() => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
-    )
+    fetch(`http://localhost:4000/api/tenant/tenant-name/tenant/${rentAddress}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -139,7 +129,7 @@ const AddPayment = () => {
     console.log("Current entries:", updatedEntries);
 
     if (updatedEntries[index]) {
-      updatedEntries[index].account = value;
+      updatedEntries[index].charges_account = value;
       generalledgerFormik.setValues({
         ...generalledgerFormik.values,
         entries: updatedEntries,
@@ -183,7 +173,7 @@ const AddPayment = () => {
 
   const fetchTenantData = async () => {
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+      `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -200,9 +190,7 @@ const AddPayment = () => {
   };
 
   useEffect(() => {
-    fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
-    )
+    fetch("http://localhost:4000/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -227,155 +215,42 @@ const AddPayment = () => {
   //     totalCredit += parseFloat(entries.amount);
   //   }
   // });
-  let total_amount = 0;
+  let charges_total_amount = 0;
   generalledgerFormik.values.entries.forEach((entries) => {
-    if (entries.amount) {
-      total_amount += parseFloat(entries.amount);
+    if (entries.charges_amount) {
+        charges_total_amount += parseFloat(entries.charges_amount);
     }
   });
   const handleSubmit = async (values) => {
     const arrayOfNames = file.map((item) => item.name);
     const rentalAddress = generalledgerFormik.values.rental_adress;
-    values["total_amount"] = total_amount;
+    values["charges_total_amount"] = charges_total_amount;
 
     try {
       const updatedValues = {
-        date: values.date,
-        amount: values.amount,
-        payment_method: selectedProp,
-        debitcard_number: values.debitcard_number,
+        charges_date: values.charges_date,
+        charges_amount: values.charges_amount,
         tenant_firstName: selectedRec,
-        attachment: arrayOfNames,
+        charges_attachment: arrayOfNames,
         rental_adress: rentalAddress,
         tenant_id: tenantid,
         entryIndex: tenantentryIndex,
 
         entries: generalledgerFormik.values.entries.map((entry) => ({
-          account: entry.account,
-          balance: parseFloat(entry.balance),
-          amount: parseFloat(entry.amount),
-          total_amount: total_amount,
+          charges_account: entry.charges_account,
+          charges_amount: parseFloat(entry.charges_amount),
+          charges_total_amount: charges_total_amount,
         })),
       };
       console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_payment",
+        "https://propertymanager.cloudpress.host/api/payment/add_charges",
         updatedValues
       );
 
       if (response.data.statusCode === 200) {
-        const id = response.data.data._id;
-        if (id) {
-          const pdfResponse = await axios.get(
-            `https://propertymanager.cloudpress.host/api/Payment/Payment_summary/${id}`,
-            { responseType: "blob" }
-          );
-          if (pdfResponse.status === 200 && printReceipt) {
-            const pdfBlob = pdfResponse.data;
-            const pdfData = URL.createObjectURL(pdfBlob);
-            const doc = new jsPDF();
-
-            // Set custom styling
-            doc.setFont("helvetica");
-            doc.setFontSize(12);
-
-            // Add the image
-            doc.addImage(Img, "JPEG", 15, 20, 30, 15); // left margin topmargin width hetght
-
-            // Add the payment receipt text
-            doc.setFont("helvetica", "bold"); // Set font name and style to bold
-            doc.setFontSize(16); // Increase the font size to 16
-            doc.text("Payment Receipt", 90, 30);
-            doc.setFont("helvetica", "normal"); // Reset font style to normal (optional)
-            doc.setFontSize(12); // Reset the font size to its original size (optional)
-
-            doc.setFont("helvetica", "bold"); // Set font name and style to bold for titles
-            doc.text("Date:", 15, 60); // Title in bold
-            doc.setFont("helvetica", "normal"); // Reset font style to normal for data
-            doc.text(updatedValues.date, 28, 60); // Value in normal font
-
-            doc.setFont("helvetica", "bold"); // Set font name and style to bold for titles
-            doc.text("Tenant Name:", 15, 70); // Title in bold
-            doc.setFont("helvetica", "normal"); // Reset font style to normal for data
-            doc.text(selectedRec, 45, 70);
-
-            doc.setFont("helvetica", "bold"); // Set font name and style to bold for titles
-            doc.text("Payment Method:", 15, 80); // Title in bold
-            doc.setFont("helvetica", "normal"); // Reset font style to normal for data
-            doc.text(selectedProp, 52, 80);
-
-            // doc.text("Tenant Name: " + selectedRec, 15, 70); // Title and data in normal font
-            // doc.text("Payment Method: " + selectedProp, 15, 80);
-
-            const headers = [
-              {
-                content: "Account",
-                styles: {
-                  fillColor: [211, 211, 211],
-                  textColor: [255, 255, 255],
-                },
-              },
-              {
-                content: "Amount",
-                styles: {
-                  fillColor: [211, 211, 211],
-                  textColor: [255, 255, 255],
-                },
-              },
-            ];
-
-            // Create data array with rows for "Account" and "Amount" values
-            const data = updatedValues.entries.map((entry) => [
-              entry.account,
-              entry.amount,
-            ]);
-
-            // Add a separate row for "Total Amount"
-            const totalAmount = parseFloat(
-              updatedValues.entries[0].total_amount
-            );
-            data.push([
-              { content: "Total Amount", styles: { fontStyle: "bold" } },
-              { content: totalAmount, styles: { fontStyle: "bold" } },
-            ]);
-
-            const headStyles = {
-              lineWidth: 0.01,
-              lineColor: [0, 0, 0],
-              fillColor: [19, 89, 160],
-              textColor: [255, 255, 255],
-              fontStyle: "bold",
-            };
-
-            doc.autoTable({
-              head: [headers],
-              body: data,
-              startY: 90,
-              theme: "striped",
-              styles: { fontSize: 12 },
-              headers: headStyles,
-              margin: { top: 10, left: 10 },
-            });
-
-            // Add the table to the PDF
-
-            // Add the PDF content
-            doc.addImage(pdfData, "JPEG", 15, 110, 180, 100);
-
-            // Save the PDF with a custom filename
-            doc.save(`PaymentReceipt_${id}.pdf`);
-          } else {
-            if (!printReceipt) {
-              swal("Success!", "Payment added successfully", "success");
-            } else {
-              swal("Error", "Failed to retrieve PDF summary", "error");
-            }
-          }
-        } else {
-          swal("Error", "Failed to get 'id' from the response", "error");
-        }
-
-        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`); // Navigate to the desired page
+        swal("Success", "Charges Added Successfully", "success");
+        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -444,7 +319,7 @@ const AddPayment = () => {
 
   return (
     <>
-      <PaymentHeader />
+      <ChargeHeader />
       <style>
         {`
             .custom-date-picker {
@@ -463,7 +338,7 @@ const AddPayment = () => {
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">New Payment</h3>
+                    <h3 className="mb-0">New Charge</h3>
                   </Col>
                 </Row>
               </CardHeader>
@@ -483,15 +358,15 @@ const AddPayment = () => {
                           id="input-unitadd"
                           placeholder="3000"
                           type="date"
-                          name="date"
+                          name="charges_date"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
                           value={generalledgerFormik.values.date}
                         />
-                        {generalledgerFormik.touched.date &&
-                        generalledgerFormik.errors.date ? (
+                        {generalledgerFormik.touched.charges_date &&
+                        generalledgerFormik.errors.charges_date ? (
                           <div style={{ color: "red" }}>
-                            {generalledgerFormik.errors.date}
+                            {generalledgerFormik.errors.charges_date}
                           </div>
                         ) : null}
                       </FormGroup>
@@ -511,85 +386,18 @@ const AddPayment = () => {
                           id="input-unitadd"
                           placeholder="$0.00"
                           type="text"
-                          name="amount"
+                          name="charges_amount"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
-                          value={generalledgerFormik.values.amount}
+                          value={generalledgerFormik.values.charges_amount}
                         />
-                        {generalledgerFormik.touched.amount &&
-                        generalledgerFormik.errors.amount ? (
+                        {generalledgerFormik.touched.charges_amount &&
+                        generalledgerFormik.errors.charges_amount ? (
                           <div style={{ color: "red" }}>
-                            {generalledgerFormik.errors.amount}
+                            {generalledgerFormik.errors.charges_amount}
                           </div>
                         ) : null}
                       </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg="2">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Payment Method
-                        </label>
-                        <br />
-                        <Dropdown isOpen={prodropdownOpen} toggle={toggle1}>
-                          <DropdownToggle caret style={{ width: "100%" }}>
-                            {selectedProp
-                              ? selectedProp
-                              : "Select Payment Method"}
-                          </DropdownToggle>
-                          <DropdownMenu
-                            style={{
-                              width: "100%",
-                              maxHeight: "200px",
-                              overflowY: "auto",
-                              overflowX: "hidden",
-                            }}
-                          >
-                            <DropdownItem
-                              onClick={() => handlePropSelection("Debit Card")}
-                            >
-                              Debit Card
-                            </DropdownItem>
-                            <DropdownItem
-                              onClick={() => handlePropSelection("Cash")}
-                            >
-                              Cash
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </Dropdown>
-                      </FormGroup>
-                    </Col>
-                    <Col sm="4">
-                      {selectedProp === "Debit Card" && (
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
-                          >
-                            Debit Card Number
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-unitadd"
-                            placeholder="Enter Number"
-                            type="text"
-                            name="debitcard_number"
-                            onBlur={generalledgerFormik.handleBlur}
-                            onChange={generalledgerFormik.handleChange}
-                            value={generalledgerFormik.values.debitcard_number}
-                          />
-                          {generalledgerFormik.touched.debitcard_number &&
-                          generalledgerFormik.errors.debitcard_number ? (
-                            <div style={{ color: "red" }}>
-                              {generalledgerFormik.errors.debitcard_number}
-                            </div>
-                          ) : null}
-                        </FormGroup>
-                      )}
                     </Col>
                   </Row>
                   <Row>
@@ -643,15 +451,15 @@ const AddPayment = () => {
                           id="input-unitadd"
                           placeholder="if left blank, will show 'Payment'"
                           type="text"
-                          name="memo"
+                          name="charges_memo"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
-                          value={generalledgerFormik.values.memo}
+                          value={generalledgerFormik.values.charges_memo}
                         />
-                        {generalledgerFormik.touched.memo &&
-                        generalledgerFormik.errors.memo ? (
+                        {generalledgerFormik.touched.charges_memo &&
+                        generalledgerFormik.errors.charges_memo ? (
                           <div style={{ color: "red" }}>
-                            {generalledgerFormik.errors.memo}
+                            {generalledgerFormik.errors.charges_memo}
                           </div>
                         ) : null}
                       </FormGroup>
@@ -679,7 +487,6 @@ const AddPayment = () => {
                             <thead>
                               <tr>
                                 <th>Account</th>
-                                <th>Balance</th>
                                 <th>Amount</th>
                               </tr>
                             </thead>
@@ -694,8 +501,8 @@ const AddPayment = () => {
                                           toggle={() => toggleDropdown(index)}
                                         >
                                           <DropdownToggle caret>
-                                            {entries.account
-                                              ? entries.account
+                                            {entries.charges_account
+                                              ? entries.charges_account
                                               : "Select"}
                                           </DropdownToggle>
                                           <DropdownMenu
@@ -764,7 +571,7 @@ const AddPayment = () => {
                                           </DropdownMenu>
                                         </Dropdown>
                                       </td>
-                                      <td>
+                                      {/* <td>
                                         <Input
                                           className="form-control-alternative"
                                           id="input-unitadd"
@@ -797,21 +604,22 @@ const AddPayment = () => {
                                             }
                                           </div>
                                         ) : null}
-                                      </td>
+                                      </td> */}
                                       <td>
                                         <Input
                                           className="form-control-alternative"
                                           id="input-unitadd"
                                           placeholder="$0.00"
+                                          style={{width:'80%'}}
                                           type="number"
-                                          name={`entries[${index}].amount`}
+                                          name={`entries[${index}].charges_amount`}
                                           onBlur={
                                             generalledgerFormik.handleBlur
                                           }
                                           onChange={
                                             generalledgerFormik.handleChange
                                           }
-                                          value={entries.amount}
+                                          value={entries.charges_amount}
                                         />
                                         {generalledgerFormik.touched.entries &&
                                         generalledgerFormik.touched.entries[
@@ -823,11 +631,11 @@ const AddPayment = () => {
                                         ] &&
                                         generalledgerFormik.errors.entries[
                                           index
-                                        ].amount ? (
+                                        ].charges_amount ? (
                                           <div style={{ color: "red" }}>
                                             {
                                               generalledgerFormik.errors
-                                                .entries[index].amount
+                                                .entries[index].charges_amount
                                             }
                                           </div>
                                         ) : null}
@@ -850,8 +658,8 @@ const AddPayment = () => {
                                 <tr>
                                   <th>Total</th>
                                   {/* <th>{totalDebit.toFixed(2)}</th> */}
-                                  <th></th>
-                                  <th>{total_amount.toFixed(2)}</th>
+                                 
+                                  <th>{charges_total_amount.toFixed(2)}</th>
                                 </tr>
                               </>
                             </tbody>
@@ -939,7 +747,7 @@ const AddPayment = () => {
                       </FormGroup>
                     </Col>
                   </Row>
-                  <Row>
+                  {/* <Row>
                     <Col lg="3">
                       <FormGroup>
                         <Checkbox
@@ -954,7 +762,7 @@ const AddPayment = () => {
                         </label>
                       </FormGroup>
                     </Col>
-                  </Row>
+                  </Row> */}
                   <Row>
                     <Col lg="5">
                       <FormGroup>
@@ -964,15 +772,11 @@ const AddPayment = () => {
                           style={{ background: "green", color: "white" }}
                           onClick={(e) => {
                             e.preventDefault();
-                            generalledgerFormik.handleSubmit(
-                              (values, actions) => {
-                                console.log(values);
-                                handleSavePaymentButtonClick();
-                              }
-                            );
+                            generalledgerFormik.handleSubmit();
+                            console.log(generalledgerFormik.values);
                           }}
                         >
-                          Save Payment
+                          Add Charge
                         </button>
 
                         <Button
@@ -998,4 +802,4 @@ const AddPayment = () => {
   );
 };
 
-export default AddPayment;
+export default AddCharge;
