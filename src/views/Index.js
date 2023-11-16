@@ -79,7 +79,7 @@ const Index = (props) => {
       };
       // auth post method
       let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
+        "http://localhost:4000/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );

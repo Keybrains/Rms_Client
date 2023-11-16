@@ -119,7 +119,7 @@ const ApplicantSummary = () => {
   });
   const navigateToLease = (tenantID, entryIndex) => {
     axios
-      .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
+      .get(`http://localhost:4000/api/applicant/applicant_summary/${id}`)
       .then((response) => {
         const data = response.data.data;
 
@@ -128,7 +128,7 @@ const ApplicantSummary = () => {
 
         console.log(rentalAddress, "Rental Addressss");
         axios
-          .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+          .get("http://localhost:4000/api/rentals/allproperty")
           .then((response) => {
             const property = response.data.data;
             console.log(property, "properties");
@@ -145,7 +145,7 @@ const ApplicantSummary = () => {
               navigate(`/admin/RentRollLeaseing/${tenantID}/${entryIndex}`);
               console.log(matchedApplicant, "matchedApplicant");
               // axios
-              // .get("https://propertymanager.cloudpress.host/api/tenant/tenant")
+              // .get("http://localhost:4000/api/tenant/tenant")
               // .then((response) => {
               //   console.log(response.data.data,'response.data.data');
               //   const tenant = response.data.data;
@@ -173,10 +173,10 @@ const ApplicantSummary = () => {
   };
   // const navigateToLease = () => {
   //   axios
-  //     .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
+  //     .get("http://localhost:4000/api/applicant/applicant")
   //     .then((applicants) => {
   //       axios
-  //         .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+  //         .get("http://localhost:4000/api/rentals/allproperty")
   //         .then((properties) => {
   //           console.log(applicants.data.data, "applicants");
   //           console.log(properties.data.data, "properties");
@@ -208,10 +208,10 @@ const ApplicantSummary = () => {
 
   // useEffect(() => {
   //   axios
-  //     .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
+  //     .get(`http://localhost:4000/api/applicant/applicant_summary/${id}`)
   //     .then((applicants) => {
   //       axios
-  //         .get("https://propertymanager.cloudpress.host/api/rentals/property")
+  //         .get("http://localhost:4000/api/rentals/property")
   //         .then((properties) => {
   //           console.log(applicants.data.data, "applicants");
   //           console.log(properties.data.data, "properties");
@@ -242,10 +242,10 @@ const ApplicantSummary = () => {
   // }, [id]);
   useEffect(() => {
     axios
-      .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
+      .get(`http://localhost:4000/api/applicant/applicant_summary/${id}`)
       .then((applicants) => {
         axios
-          .get("https://propertymanager.cloudpress.host/api/rentals/property")
+          .get("http://localhost:4000/api/rentals/property")
           .then((properties) => {
             console.log(applicants.data.data, "applicants");
             console.log(properties.data.data, "properties");
@@ -290,7 +290,7 @@ const ApplicantSummary = () => {
       console.log(updatedApplicant, "updatedApplicant");
       axios
         .put(
-          `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/checklist`,
+          `http://localhost:4000/api/applicant/applicant/${id}/checklist`,
           updatedApplicant
         )
         .then((response) => {
@@ -308,7 +308,7 @@ const ApplicantSummary = () => {
     try {
       // Step 1: Fetch data from the API
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
+        `http://localhost:4000/api/applicant/applicant_summary/${id}`
       );
 
       // Check if the response contains the data you expect
@@ -330,7 +330,7 @@ const ApplicantSummary = () => {
 
         // Step 3: Make a POST request to send the data to the server
         const postResponse = await axios.post(
-          "https://propertymanager.cloudpress.host/api/tenant/tenant",
+          "http://localhost:4000/api/tenant/tenant",
           dataToSend
         );
 
@@ -364,7 +364,7 @@ const ApplicantSummary = () => {
   const [matchedApplicant, setMatchedApplicant] = useState([]);
   const getApplicantData = async () => {
     await axios
-      .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
+      .get("http://localhost:4000/api/applicant/applicant")
       .then((response) => {
         console.log(response.data.data);
         if (response.data.data) {
@@ -414,7 +414,7 @@ const ApplicantSummary = () => {
 
     axios
       .put(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}`,
+        `http://localhost:4000/api/applicant/applicant/${id}`,
         updatedApplicant
       )
       .catch((err) => {

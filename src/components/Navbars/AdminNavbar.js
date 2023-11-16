@@ -74,7 +74,7 @@ const AdminNavbar = (props) => {
   }, []);
 
   const fetchNotification = async () => {
-    fetch(`https://propertymanager.cloudpress.host/api/notification/notification`)
+    fetch(`http://localhost:4000/api/notification/notification`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -94,7 +94,7 @@ const AdminNavbar = (props) => {
 
   const navigateToDetails = (workorder_id) => {
     // Make a DELETE request to delete the notification
-    axios.get(`https://propertymanager.cloudpress.host/api/notification/notification/${workorder_id}?role=admin `)
+    axios.get(`http://localhost:4000/api/notification/notification/${workorder_id}?role=admin `)
     .then((response) => {
       if (response.status === 200) {
         const updatedNotificationData = notificationData.map(notification => {

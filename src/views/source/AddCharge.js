@@ -46,8 +46,8 @@ const AddCharge = () => {
   const [prodropdownOpen, setproDropdownOpen] = useState(false);
   const [recdropdownOpen, setrecDropdownOpen] = useState(false);
   const [rentAddress, setRentAddress] = useState([]);
-  const [tenantid, setTenantid] = useState(""); // Add this line
-  const [tenantentryIndex, setTenantentryindex] = useState(""); // Add this line
+  const [tenantid, setTenantid] = useState(""); 
+  const [tenantentryIndex, setTenantentryindex] = useState(""); 
   const [printReceipt, setPrintReceipt] = useState(false);
 
   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
@@ -61,8 +61,8 @@ const AddCharge = () => {
   const [selectedRec, setSelectedRec] = useState("Select Resident");
   const handleRecieverSelection = (property) => {
     setSelectedRec(`${property.tenant_firstName} ${property.tenant_lastName}`);
-    setTenantid(property._id); // Set the selected tenant's ID
-    setTenantentryindex(property.entryIndex); // Set the selected tenant's entry index
+    setTenantid(property._id); 
+    setTenantentryindex(property.entryIndex); 
   };
 
   const generalledgerFormik = useFormik({
@@ -244,7 +244,7 @@ const AddCharge = () => {
       };
       console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_charges",
+        "http://localhost:4000/api/payment/add_charges",
         updatedValues
       );
 

@@ -38,7 +38,7 @@ const TenantsTable = ({ tenantDetails }) => {
 
   let navigate = useNavigate();
   let getTenantsDate = async () => {
-    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenant");
+    let responce = await axios.get("http://localhost:4000/api/tenant/tenant");
     setLoader(false);
     setTenantsDate(responce.data.data);
   };
@@ -58,7 +58,7 @@ const TenantsTable = ({ tenantDetails }) => {
       };
       // auth post method
       let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
+        "http://localhost:4000/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -87,7 +87,7 @@ const TenantsTable = ({ tenantDetails }) => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
+            `http://localhost:4000/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -143,7 +143,7 @@ const TenantsTable = ({ tenantDetails }) => {
       let tenantData = tenantDetails;
       if (!tenantData || !tenantData._id) {
         const response = await axios.get(
-          `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+          `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
         );
         tenantData = response.data.data;
         console.log(tenantData, "tenantData");

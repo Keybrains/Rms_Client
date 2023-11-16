@@ -60,7 +60,7 @@ const RentRoll = () => {
       };
       // auth post method
       let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
+        "http://localhost:4000/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -80,7 +80,7 @@ const RentRoll = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/tenant/tenant"
+        "http://localhost:4000/api/tenant/tenant"
       );
       setLoader(false);
       setTenantsData(response.data.data);
@@ -132,7 +132,7 @@ const RentRoll = () => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
+            `http://localhost:4000/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {

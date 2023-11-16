@@ -49,7 +49,7 @@ const Agent = () => {
       };
       // auth post method
       let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
+        "http://localhost:4000/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -78,7 +78,7 @@ const Agent = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/addagent/delete_agent", {
+          .delete("http://localhost:4000/api/addagent/delete_agent", {
             data: { _id: id },
           })
           .then((response) => {
@@ -106,7 +106,7 @@ const Agent = () => {
   const getAgentData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/addagent/addagent"
+        "http://localhost:4000/api/addagent/addagent"
       );
       setLoader(false);
       setAgentData(response.data.data);

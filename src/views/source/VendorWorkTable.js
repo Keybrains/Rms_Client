@@ -25,7 +25,7 @@ const VendorWorkTable = () => {
   const getWorkData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/workorder/workorder"
+        "http://localhost:4000/api/workorder/workorder"
       );
       setLoader(false);
       setWorkData(response.data.data);
@@ -50,7 +50,7 @@ const VendorWorkTable = () => {
     };
     // auth post method
     let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
+      "http://localhost:4000/api/register/auth",
       { purpose: "validate access" },
       authConfig
     );
