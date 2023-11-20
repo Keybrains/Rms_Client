@@ -94,7 +94,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/rentals/rentals")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/rentals")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -197,7 +197,7 @@ const Rentals = () => {
   const handlePropSelection = (propertyType) => {
     // const propTypes=[];
     axios
-      .get("http://localhost:4000/api/newproparty/propropartytype")
+      .get("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
       .then((data) => {
         console.log(data.data, "Data from adding the account");
         // setPropertyData(data.data.data);
@@ -308,7 +308,7 @@ const Rentals = () => {
       };
       // auth post method
       let res = await axios.post(
-        "http://localhost:4000/api/register/auth",
+        "https://propertymanager.cloudpress.host/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -385,7 +385,7 @@ const Rentals = () => {
   //     dataArray.append('file', file[i]);
 
   //     // Update the URL to point to your Express API
-  //     let url = 'http://localhost:4000/api/uploadfile';
+  //     let url = 'https://propertymanager.cloudpress.host/api/uploadfile';
 
   //     axiosRequests.push(
   //       axios
@@ -437,7 +437,7 @@ const Rentals = () => {
   //     values['staffMember'] =  selectedUser;
 
   //     const res = await axios.post(
-  //       "http://localhost:4000/api/rentals/rentals",
+  //       "https://propertymanager.cloudpress.host/api/rentals/rentals",
   //       values
   //     );
 
@@ -545,7 +545,7 @@ const Rentals = () => {
       "selectedPhotoresPreview"
     );
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/newproparty/propropartytype")
+    fetch("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -563,7 +563,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/addstaffmember/find_staffmember")
+    fetch("https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -585,7 +585,7 @@ const Rentals = () => {
     console.log(id, entryIndex, "id && entry Id");
     if (id && entryIndex) {
       axios
-        .get(`http://localhost:4000/api/rentals/rentals_summary/${id}`)
+        .get(`https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`)
         .then((response) => {
           const propertysData = response.data.data;
           // setRentalsData(rentalsData); // Update state with the fetched data
@@ -703,7 +703,7 @@ const Rentals = () => {
       entries: entriesArray,
     };
     try {
-      const res = await axios.get("http://localhost:4000/api/rentals/rentals");
+      const res = await axios.get("https://propertymanager.cloudpress.host/api/rentals/rentals");
       if (res.data.statusCode === 200) {
         console.log(res.data.data, "allRentalOwner");
 
@@ -728,7 +728,7 @@ const Rentals = () => {
           console.log(putObject, "putObject");
           axios
             .put(
-              `http://localhost:4000/api/rentals/rental/${rentalOwnerId}`,
+              `https://propertymanager.cloudpress.host/api/rentals/rental/${rentalOwnerId}`,
               putObject
             )
             .then((res) => {
@@ -743,7 +743,7 @@ const Rentals = () => {
           if (id === undefined) {
             console.log(leaseObject, "leaseObject");
             const res = await axios.post(
-              "http://localhost:4000/api/rentals/rentals",
+              "https://propertymanager.cloudpress.host/api/rentals/rentals",
               leaseObject
             );
             if (res.data.statusCode === 200) {
@@ -776,12 +776,12 @@ const Rentals = () => {
     //   if (id === undefined) {
     //     console.log(values, "values after submit");
     //     const res = await axios.post(
-    //       "http://localhost:4000/api/rentals/rentals",
+    //       "https://propertymanager.cloudpress.host/api/rentals/rentals",
     //       values
     //     );
     //     handleResponse(res);
     //   } else {
-    //     const editUrl = `http://localhost:4000/api/rentals/rentals/${id}`;
+    //     const editUrl = `https://propertymanager.cloudpress.host/api/rentals/rentals/${id}`;
     //     const res = await axios.put(editUrl, values);
     //     handleResponse(res);
     //   }
@@ -794,7 +794,7 @@ const Rentals = () => {
     // }
   };
   const editProperty = async (id) => {
-    const editUrl = `http://localhost:4000/api/rentals/rental/${id}/entry/${entryIndex}`;
+    const editUrl = `https://propertymanager.cloudpress.host/api/rentals/rental/${id}/entry/${entryIndex}`;
     const entriesArray = [];
 
     const entriesObject = {

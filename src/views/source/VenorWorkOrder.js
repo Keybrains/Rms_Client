@@ -35,7 +35,7 @@ const VenorWorkOrder = () => {
       }
 
       const response = await axios.get(
-        `http://localhost:4000/api/workorder/workorder_summary/${id}`
+        `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`
       );
 
       console.log("API Response:", response.data.data);
@@ -64,7 +64,7 @@ const VenorWorkOrder = () => {
     };
     // auth post method
     let res = await axios.post(
-      "http://localhost:4000/api/register/auth",
+      "https://propertymanager.cloudpress.host/api/register/auth",
       { purpose: "validate access" },
       authConfig
     );

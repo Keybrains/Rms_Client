@@ -31,7 +31,7 @@ const Workorder = () => {
   const getWorkData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/workorder/workorder"
+        "https://propertymanager.cloudpress.host/api/workorder/workorder"
       );
       setWorkData(response.data.data);
       setLoader(false);
@@ -53,7 +53,7 @@ const Workorder = () => {
     };
     // auth post method
     let res = await axios.post(
-      "http://localhost:4000/api/register/auth",
+      "https://propertymanager.cloudpress.host/api/register/auth",
       { purpose: "validate access" },
       authConfig
     );
@@ -81,7 +81,7 @@ React.useEffect(() => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("http://localhost:4000/api/workorder/delete_workorder", {
+          .delete("https://propertymanager.cloudpress.host/api/workorder/delete_workorder", {
             data: { _id: id },
           })
           .then((response) => {

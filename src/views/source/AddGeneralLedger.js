@@ -124,7 +124,7 @@ const AddGeneralLedger = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/rentals/property_onrent")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -140,7 +140,7 @@ const AddGeneralLedger = () => {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/addaccount/find_accountname")
+    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -184,7 +184,7 @@ const AddGeneralLedger = () => {
       };
 
       const response = await axios.post(
-        "http://localhost:4000/api/ledger/ledger",
+        "https://propertymanager.cloudpress.host/api/ledger/ledger",
         updatedValues
       );
 

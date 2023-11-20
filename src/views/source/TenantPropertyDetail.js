@@ -21,7 +21,7 @@ const TenantPropertyDetail = () => {
     const getRentalData = async () => {
       try {
         //const encodedAddress = encodeURIComponent(rental_adress);
-        const url = `http://localhost:4000/api/rentals/Rentals_summary/tenant/${rental_adress}`;
+        const url = `https://propertymanager.cloudpress.host/api/rentals/Rentals_summary/tenant/${rental_adress}`;
 
         const response = await axios.get(url);
         setPropertyDetails(response.data.data);

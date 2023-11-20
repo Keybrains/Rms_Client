@@ -106,7 +106,7 @@ const AddCharge = () => {
   useEffect(() => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
-    fetch(`http://localhost:4000/api/tenant/tenant-name/tenant/${rentAddress}`)
+    fetch(`https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -173,7 +173,7 @@ const AddCharge = () => {
 
   const fetchTenantData = async () => {
     fetch(
-      `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -190,7 +190,7 @@ const AddCharge = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/addaccount/find_accountname")
+    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -244,7 +244,7 @@ const AddCharge = () => {
       };
       console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "http://localhost:4000/api/payment/add_charges",
+        "https://propertymanager.cloudpress.host/api/payment/add_charges",
         updatedValues
       );
 

@@ -55,7 +55,7 @@ const GeneralLedger = () => {
   };
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/rentals/property_onrent")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -73,7 +73,7 @@ const GeneralLedger = () => {
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/addaccount/find_accountname")
+    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -102,7 +102,7 @@ const GeneralLedger = () => {
       };
       // auth post method
       let res = await axios.post(
-        "http://localhost:4000/api/register/auth",
+        "https://propertymanager.cloudpress.host/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -120,7 +120,7 @@ const GeneralLedger = () => {
   }, [cookies.get("token")]);
   const getGeneralLedgerData = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/api/ledger/ledger");
+      const response = await axios.get("https://propertymanager.cloudpress.host/api/ledger/ledger");
       setLoader(false);
       setGeneralLedgerData(response.data.data);
       console.log(response.data.data);

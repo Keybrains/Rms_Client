@@ -40,7 +40,7 @@ const AddAgent = () => {
   //   console.log(values, "values");
   //   try {
   //     const res = await axios.post(
-  //       "http://localhost:4000/api/addagent/addagent",
+  //       "https://propertymanager.cloudpress.host/api/addagent/addagent",
   //       values
   //     );
 
@@ -67,7 +67,7 @@ const AddAgent = () => {
       };
       // auth post method
       let res = await axios.post(
-        "http://localhost:4000/api/register/auth",
+        "https://propertymanager.cloudpress.host/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -117,7 +117,7 @@ const AddAgent = () => {
   React.useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:4000/api/addagent/agent_summary/${id}`)
+        .get(`https://propertymanager.cloudpress.host/api/addagent/agent_summary/${id}`)
         .then((response) => {
           const agentdata = response.data.data;
           setagentData(agentData);
@@ -139,12 +139,12 @@ const AddAgent = () => {
     try {
       if (id === undefined) {
         const res = await axios.post(
-          "http://localhost:4000/api/addagent/addagent",
+          "https://propertymanager.cloudpress.host/api/addagent/addagent",
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `http://localhost:4000/api/addagent/agent/${id}`;
+        const editUrl = `https://propertymanager.cloudpress.host/api/addagent/agent/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }

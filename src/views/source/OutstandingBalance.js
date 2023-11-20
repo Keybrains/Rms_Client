@@ -70,7 +70,7 @@ const OutstandingBalance = () => {
   }
 
   let getTenantsDate = async () => {
-    let responce = await axios.get("http://localhost:4000/api/tenant/tenant");
+    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenant");
     setLoader(false);
     setTenantsDate(responce.data.data);
   };
@@ -80,7 +80,7 @@ const OutstandingBalance = () => {
 
   const editPropertyData = async (id, updatedData) => {
     try {
-      const editUrl = `http://localhost:4000/api/tenant/tenant/${id}`;
+      const editUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant/${id}`;
       console.log("Edit URL:", editUrl);
       console.log("Property ID:", id);
       console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -110,7 +110,7 @@ const OutstandingBalance = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("http://localhost:4000/api/tenant/tenant", {
+          .delete("https://propertymanager.cloudpress.host/api/tenant/tenant", {
             data: { _id: id },
           })
           .then((response) => {
@@ -162,7 +162,7 @@ const OutstandingBalance = () => {
     };
     // auth post method
     let res = await axios.post(
-      "http://localhost:4000/api/register/auth",
+      "https://propertymanager.cloudpress.host/api/register/auth",
       { purpose: "validate access" },
       authConfig
     );

@@ -70,7 +70,7 @@ const RentRollDetail = () => {
       try {
         // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
         const response = await fetch(
-          `http://localhost:4000/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
+          `https://propertymanager.cloudpress.host/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -100,7 +100,7 @@ const RentRollDetail = () => {
     navigate(`../AddPayment/${tenantId}/${entryIndex}`);
   };
 
-  const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
   const id = tenantId;
   const entry = entryIndex;
@@ -123,7 +123,7 @@ const RentRollDetail = () => {
 
   const navigateToSummary = async (tenantId, entryIndex) => {
     // Construct the API URL
-    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
 
     try {
       // Fetch tenant data
@@ -147,7 +147,7 @@ const RentRollDetail = () => {
   };
 
   const navigateToTenant = async () => {
-    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
 
     try {
       // Fetch tenant data
@@ -172,7 +172,7 @@ const RentRollDetail = () => {
 
   const navigateToFinancial = async () => {
     // Construct the API URL
-    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
 
     try {
       // Fetch tenant data
@@ -196,7 +196,7 @@ const RentRollDetail = () => {
 
   const tenantsData = async () => {
     // Construct the API URL
-    const apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
 
     try {
       // Fetch tenant data
@@ -249,7 +249,7 @@ const RentRollDetail = () => {
       try {
         // Authentication post method
         const res = await axios.post(
-          "http://localhost:4000/api/register/auth",
+          "https://propertymanager.cloudpress.host/api/register/auth",
           { purpose: "validate access" },
           authConfig
         );
@@ -297,7 +297,7 @@ const RentRollDetail = () => {
   const [loader, setLoader] = React.useState(true);
   
   const getGeneralLedgerData = async () => {
-    const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
   
     try {
       const response = await axios.get(apiUrl);

@@ -84,7 +84,7 @@ function AccountDialog(props) {
     if (props.accountTypeName === "rentAccountName") {
       try {
         const res = await axios.post(
-          "http://localhost:4000/api/addaccount/addaccount",
+          "https://propertymanager.cloudpress.host/api/addaccount/addaccount",
           values
         );
         if (res.status === 200) {
@@ -125,7 +125,7 @@ function AccountDialog(props) {
       try {
         // values["property_type"] = localStorage.getItem("propertyType");
         const res = await axios.post(
-          "http://localhost:4000/api/recurringAcc/addRecuringAcc",
+          "https://propertymanager.cloudpress.host/api/recurringAcc/addRecuringAcc",
           values
         );
         if (res.data.statusCode === 200) {
@@ -153,7 +153,7 @@ function AccountDialog(props) {
       try {
         // values["property_type"] = localStorage.getItem("propertyType");
         const res = await axios.post(
-          "http://localhost:4000/api/onetimecharge/addOneTimeAcc",
+          "https://propertymanager.cloudpress.host/api/onetimecharge/addOneTimeAcc",
           values
         );
         if (res.data.statusCode === 200) {
@@ -180,7 +180,7 @@ function AccountDialog(props) {
     // try {
     //   // values["property_type"] = localStorage.getItem("propertyType");
     //   const res = await axios.post(
-    //     "http://localhost:4000/api/addaccount/addaccount",
+    //     "https://propertymanager.cloudpress.host/api/addaccount/addaccount",
     //     values
     //   );
     //   if (res.data.statusCode === 200) {

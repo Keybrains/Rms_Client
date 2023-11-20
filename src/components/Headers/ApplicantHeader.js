@@ -71,7 +71,7 @@ const Header = () => {
         console.log('Form Data:', formData); // Log the formData
     
         axios
-            .post('http://localhost:4000/api/applicant/applicant', formData)
+            .post('https://propertymanager.cloudpress.host/api/applicant/applicant', formData)
             .then((response) => {
                 console.log('Applicant created successfully:', response.data); // Log the response
                 closeModal();
