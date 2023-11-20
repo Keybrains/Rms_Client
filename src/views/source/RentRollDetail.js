@@ -293,24 +293,62 @@ const RentRollDetail = () => {
   };
 
   //Financial functions
-  const [GeneralLedgerData, setGeneralLedgerData] = useState();
+  const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
   const [loader, setLoader] = React.useState(true);
-
+  
   const getGeneralLedgerData = async () => {
-    const apiUrl = `http://localhost:4000/api/payment/payment/${rental}`;
-
+    const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
+  
     try {
       const response = await axios.get(apiUrl);
       setLoader(false);
-      setGeneralLedgerData(response.data.data);
-      console.log(response.data.data, "kkkkkk");
+  
+      // Check if the response contains the expected properties
+      if (response.data && response.data.data) {
+        const mergedData = response.data.data;
+  
+        // Check if the payments and charges properties exist
+        if (mergedData.payments && mergedData.charges) {
+          // Assuming you want to merge payments and charges into a single array
+          const combinedData = [...mergedData.payments, ...mergedData.charges];
+          
+          setGeneralLedgerData(combinedData);
+        } else {
+          console.error("Payments or charges data is missing from the response.");
+        }
+      } else {
+        console.error("Unexpected response format:", response.data);
+      }
+  
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+  
   useEffect(() => {
     getGeneralLedgerData();
-  }, [rental]);
+  }, [tenantId]);
+
+  function calculateBalance(type, entry, index) {
+    let balance = 0;
+  
+    for (let i = 0; i <= index; i++) {
+      const currentEntry = GeneralLedgerData[i]?.entries[index];
+  
+      if (currentEntry) {
+        if (type === "Charge" && typeof currentEntry.charges_amount === "number") {
+          balance += currentEntry.charges_amount;
+        } else if (type === "Payment" && typeof currentEntry.amount === "number") {
+          balance -= currentEntry.amount;
+        }
+      }
+    }
+  
+    return balance;
+  }
+  
+  
+  
 
   return (
     <div>
@@ -336,7 +374,7 @@ const RentRollDetail = () => {
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                {/* <h3 className="mb-0">Summary</h3> */}
+                
               </CardHeader>
               <Col>
                 <TabContext value={value}>
@@ -982,7 +1020,11 @@ const RentRollDetail = () => {
                             <h3 style={{ color: "blue" }}>Lease Ledger</h3>
                           </FormGroup>
                         </Col>
-                        <Col className="text-right" xs="12" sm="3">
+                        <Col
+                          className="d-flex justify-content-end"
+                          xs="12"
+                          sm="6"
+                        >
                           <Button
                             color="primary"
                             href="#rms"
@@ -991,13 +1033,15 @@ const RentRollDetail = () => {
                                 `/admin/AddPayment/${tenantId}/${entryIndex}`
                               )
                             }
-                            size="sm"
-                            style={{ background: "white", color: "blue" }}
+                            
+                            style={{
+                              background: "white",
+                              color: "blue",
+                              marginRight: "10px",
+                            }}
                           >
-                            Recieve Payment
+                            Receive Payment
                           </Button>
-                        </Col>
-                        <Col className="text-right" xs="12" sm="3">
                           <Button
                             color="primary"
                             href="#rms"
@@ -1006,7 +1050,7 @@ const RentRollDetail = () => {
                                 `/admin/AddCharge/${tenantId}/${entryIndex}`
                               )
                             }
-                            size="sm"
+                            
                             style={{ background: "white", color: "blue" }}
                           >
                             Enter Charge
@@ -1046,29 +1090,47 @@ const RentRollDetail = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {GeneralLedgerData?.map((generalledger) => (
+                                {Array.isArray(GeneralLedgerData) ? (
+                                  GeneralLedgerData.map((generalledger) => (
                                     <>
-                                      {generalledger.entries.map(
-                                        (entry) => (
-                                          <tr key={generalledger._id}>
-                                            <td>
-                                              {formatDateWithoutTime(
-                                                generalledger.date
-                                              ) || "N/A"}
-                                            </td>
-                                            <td>
-                                              {generalledger.payment_method}
-                                            </td>
-                                            <td>{entry.account}</td>
-                                            <td>{generalledger.memo}</td>
-                                            <td>{generalledger.amount}</td>
-                                            <td>{entry.amount}</td>
-                                            <td>{entry.total_amount}</td>
-                                          </tr>
-                                        )
-                                      )}
+                                      {generalledger.entries.map((entry, index) => (
+                                        <tr key={`${generalledger._id}_${index}`}>
+
+                                          <td>
+                                            {formatDateWithoutTime(
+                                              generalledger.type === "Charge"
+                                                ? generalledger.charges_date
+                                                : generalledger.date
+                                            ) || "N/A"}
+                                          </td>
+                                          <td>
+                                            {generalledger.type}
+                                          </td>
+                                          <td>
+                                            {generalledger.type === "Charge"
+                                              ? entry.charges_account
+                                              : entry.account}
+                                          </td>
+                                          <td>
+                                            {generalledger.type === "Charge"
+                                              ? generalledger.charges_memo
+                                              : generalledger.memo}
+                                          </td>
+                                          <td>
+                                            {generalledger.type === "Charge" ? entry.charges_amount : "-"}
+                                          </td>
+                                          <td>
+                                            {generalledger.type === "Payment" ? entry.amount : "-"}
+                                          </td>
+                                          <td>{calculateBalance(generalledger.type, entry, index)}</td>
+
+                                        </tr>
+                                      ))}
                                     </>
-                                  ))}
+                                   ))
+                                   ) : (
+                                     <p>GeneralLedgerData is not an array</p>
+                                   )}
                                 </tbody>
                               </Table>
                             </Card>
@@ -1081,6 +1143,13 @@ const RentRollDetail = () => {
                   </TabPanel>
 
                   <TabPanel value="Tenant">
+                  <CardHeader className="border-0">
+                    <span>
+                    <span>Property :</span>
+                    <h2 style={{color:'blue'}}> {rental}</h2>
+                    </span>
+                    
+                  </CardHeader>
                     <Row>
                       <Col>
                         {Array.isArray(rentaldata) ? (

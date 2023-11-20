@@ -116,7 +116,7 @@ const Leaseing = () => {
   const [accountTypeName, setAccountTypeName] = useState([]);
   // const [selectedProp, setSelectedProp] = useState("");
   const [propertyData, setPropertyData] = useState([]);
-  console.log(propertyData, "dsgjhsdkgjh"); // Add this line before rendering the dropdown
+  console.log(propertyData, "propertydata"); // Add this line before rendering the dropdown
 
   const [userdropdownOpen, setuserDropdownOpen] = React.useState(false);
   const [showPassword, setShowPassword] = useState(false);

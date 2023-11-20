@@ -563,8 +563,8 @@ const ApplicantSummary = () => {
                     aria-label="lab API tabs example"
                   >
                     <Tab label="Summary" value="Summary" />
-                    <Tab label="Application" value="Application" />
-                    <Tab label="Screening" value="Screening" />
+                    {/* <Tab label="Application" value="Application" /> */}
+                    {/* <Tab label="Screening" value="Screening" /> */}
                   </TabList>
                 </Box>
                 <TabPanel value="Summary">
@@ -572,59 +572,7 @@ const ApplicantSummary = () => {
                     <Col>
                       <Grid container spacing={3}>
                         <Grid item xs={9}>
-                          {isAttachFile ? (
-                            <Card>
-                              <CardBody>
-                                <CardTitle tag="h4">Notes</CardTitle>
-                                {/* <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
-                                <textarea style={{ width: "100%" }}></textarea>
-
-                                <input
-                                  id="file"
-                                  name="file"
-                                  type="file"
-                                  style={{ display: "none" }}
-                                />
-                                <label htmlFor="file">+ Attach file</label>
-
-                                <div>
-                                  <Button
-                                    color="success"
-                                    onClick={() => {
-                                      setIsAttachFile(false);
-                                    }}
-                                  >
-                                    Save
-                                  </Button>
-                                  <Button
-                                    onClick={() => {
-                                      setIsAttachFile(false);
-                                    }}
-                                  >
-                                    Cancel
-                                  </Button>
-                                </div>
-                              </CardBody>
-                              <ClearIcon
-                                style={{
-                                  position: "absolute",
-                                  right: "10px",
-                                  top: "10px",
-                                }}
-                                onClick={() => {
-                                  setIsAttachFile(false);
-                                }}
-                              />
-                            </Card>
-                          ) : (
-                            <Button
-                              onClick={() => {
-                                handleAttachFile();
-                              }}
-                            >
-                              Attach note or file
-                            </Button>
-                          )}
+                        
                           <div>
                             <Box display="flex" flexDirection="column">
                               {matchedApplicant?.applicant_checklist?.map(
