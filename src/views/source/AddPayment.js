@@ -67,6 +67,7 @@ const AddPayment = () => {
   const navigate = useNavigate();
   const generalledgerFormik = useFormik({
     initialValues: {
+      
       date: "",
       rental_adress: "",
       tenant_id: "",
@@ -78,6 +79,7 @@ const AddPayment = () => {
       memo: "",
       entries: [
         {
+          paymentIndex:"",
           account: "",
           description: "",
           debit: "",
@@ -769,7 +771,7 @@ const AddPayment = () => {
                                           className="form-control-alternative"
                                           id="input-unitadd"
                                           placeholder="$0.00"
-                                          type="number"
+                                          type="text"
                                           name={`entries[${index}].balance`}
                                           onBlur={
                                             generalledgerFormik.handleBlur
@@ -778,6 +780,12 @@ const AddPayment = () => {
                                             generalledgerFormik.handleChange
                                           }
                                           value={entries.balance}
+                                          onInput={(e) => {
+                                            const inputValue = e.target.value;
+                                            const numericValue =
+                                              inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                            e.target.value = numericValue;
+                                          }}
                                         />
                                         {generalledgerFormik.touched.entries &&
                                         generalledgerFormik.touched.entries[
@@ -803,7 +811,7 @@ const AddPayment = () => {
                                           className="form-control-alternative"
                                           id="input-unitadd"
                                           placeholder="$0.00"
-                                          type="number"
+                                          type="text"
                                           name={`entries[${index}].amount`}
                                           onBlur={
                                             generalledgerFormik.handleBlur
@@ -812,6 +820,12 @@ const AddPayment = () => {
                                             generalledgerFormik.handleChange
                                           }
                                           value={entries.amount}
+                                          onInput={(e) => {
+                                            const inputValue = e.target.value;
+                                            const numericValue =
+                                              inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                            e.target.value = numericValue;
+                                          }}
                                         />
                                         {generalledgerFormik.touched.entries &&
                                         generalledgerFormik.touched.entries[
@@ -967,7 +981,7 @@ const AddPayment = () => {
                             generalledgerFormik.handleSubmit(
                               (values, actions) => {
                                 console.log(values);
-                                handleSavePaymentButtonClick();
+                                // handleSavePaymentButtonClick();
                               }
                             );
                           }}

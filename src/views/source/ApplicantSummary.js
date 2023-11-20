@@ -33,6 +33,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import EmailIcon from "@mui/icons-material/Email";
 import ClearIcon from "@mui/icons-material/Clear";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   CardActions,
   CardContent,
@@ -268,7 +269,7 @@ const ApplicantSummary = () => {
         // Handle the error, e.g., display an error message to the user.
       });
   }, [id]);
-  
+
   const [isChecklistVisible, setChecklistVisible] = useState(false);
   const [checklistItems, setChecklistItems] = useState([]);
   const [newItem, setNewItem] = useState("");
@@ -572,7 +573,6 @@ const ApplicantSummary = () => {
                     <Col>
                       <Grid container spacing={3}>
                         <Grid item xs={9}>
-                        
                           <div>
                             <Box display="flex" flexDirection="column">
                               {matchedApplicant?.applicant_checklist?.map(
@@ -815,10 +815,15 @@ const ApplicantSummary = () => {
                                   style={{
                                     display: "flex",
                                     flexDirection: "row",
+                                    alignItems: "center",
                                   }}
                                 >
                                   <Typography
-                                    sx={{ fontSize: 20 }}
+                                    style={{
+                                      fontSize: "20px",
+                                      color: "black",
+                                      marginRight: "10px",
+                                    }}
                                     color="text.secondary"
                                     gutterBottom
                                   >
@@ -827,21 +832,16 @@ const ApplicantSummary = () => {
                                       matchedApplicant?.tenant_lastName}
                                   </Typography>
                                   <Typography
-                                    // variant="h5"
-                                    sx={{
-                                      fontSize: 14,
+                                    style={{
                                       cursor: "pointer",
                                       textDecoration: "underline",
-                                      color: "blue",
-                                      marginLeft: "10px",
+                                      marginBottom: "5px",
+                                      // border: "2px solid black", // Example: 5px solid black border
+                                      // borderRadius: "10px", // Example: 10px border-radius
                                     }}
-                                    onClick={() => {
-                                      onClickEditButton();
-                                      // setIsEdit(true);
-                                    }}
-                                    // component="div"
+                                    onClick={onClickEditButton}
                                   >
-                                    Edit
+                                    <EditIcon style={{ fontSize: "large" }} />
                                   </Typography>
                                 </div>
                                 <Typography variant="caption">

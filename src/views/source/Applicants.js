@@ -122,7 +122,7 @@ const Applicants = () => {
       // applicant_homeNumber: yup.string().required("Required"),
       // applicant_businessNumber: yup.string().required("Required"),
       // applicant_telephoneNumber: yup.string().required("Required"),
-      // applicant_property: yup.string().required("Required"),
+      // applicant_property: yup.string().required("Required"),applicant
     }),
     onSubmit: (values, action) => {
       handleFormSubmit(values, action);

@@ -207,7 +207,7 @@ const AddWorkorder = () => {
             work_performed: vendorData.work_performed || "",
             vendor_note: vendorData.vendor_note || "",
             due_date: formattedDueDate,
-            final_total_amount:vendorData.final_total_amount || "",
+            final_total_amount: vendorData.final_total_amount || "",
             entries: entriesData.map((entry) => ({
               part_qty: entry.part_qty || "",
               account_type: entry.account_type || "Select",
@@ -236,7 +236,7 @@ const AddWorkorder = () => {
       values["status"] = selectedStatus;
       values["priority"] = selectedPriority;
       values["account_type"] = selectedAccount;
-      values["final_total_amount"]= final_total_amount;
+      values["final_total_amount"] = final_total_amount;
       const entries = WorkFormik.values.entries.map((entry) => ({
         part_qty: entry.part_qty,
         account_type: entry.account_type,
@@ -324,7 +324,7 @@ const AddWorkorder = () => {
       status: "",
       due_date: "",
       priority: "",
-      final_total_amount:"",
+      final_total_amount: "",
 
       entries: [
         {
@@ -1144,12 +1144,18 @@ const AddWorkorder = () => {
                                         className="form-control-alternative"
                                         id="input-unitadd"
                                         placeholder="Price"
-                                        type="number"
+                                        type="text"
                                         name={`entries[${index}].part_price`}
                                         onChange={(e) =>
                                           handlePriceChange(e, index)
                                         }
                                         value={entry.part_price}
+                                        onInput={(e) => {
+                                          const inputValue = e.target.value;
+                                          const numericValue =
+                                            inputValue.replace(/\D/g, "");
+                                          e.target.value = numericValue;
+                                        }}
                                       />
                                       {WorkFormik.touched.entries &&
                                       WorkFormik.touched.entries[index] &&

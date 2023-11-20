@@ -112,17 +112,26 @@ const TenantsTable = ({ tenantDetails }) => {
     getTenantsDate();
   }, []);
 
- const filterTenantsBySearch = () => {
-  if (searchQuery === undefined) {
-    return tentalsData;
-  }
-
-  return tentalsData.filter((tenant) => {
-    return tenant.entries.some((entry) =>
-      entry.rental_adress.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
-};
+  const filterTenantsBySearch = () => {
+    if (searchQuery === undefined) {
+      return tentalsData;
+    }
+  
+    return tentalsData.filter((tenant) => {
+      const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
+      const rentalAddress = tenant.entries && tenant.entries.rental_adress;
+      const leaseType = tenant.entries && tenant.entries.lease_type;
+  
+      return (
+        (rentalAddress && rentalAddress.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (tenant.tenant_firstName && tenant.tenant_firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (leaseType && leaseType.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (tenant.tenant_lastName && tenant.tenant_lastName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (name.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    });
+  };
+  
 
   
 

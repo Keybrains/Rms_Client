@@ -109,7 +109,7 @@ const Rentals = () => {
         // Handle network error
         console.error("Network error:", error);
       });
-  },[]);
+  }, []);
 
   const handleCheckboxChange = (event, rentalOwnerInfo, phoneNumber) => {
     if (checkedCheckbox === phoneNumber) {
@@ -197,7 +197,9 @@ const Rentals = () => {
   const handlePropSelection = (propertyType) => {
     // const propTypes=[];
     axios
-      .get("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
+      .get(
+        "https://propertymanager.cloudpress.host/api/newproparty/propropartytype"
+      )
       .then((data) => {
         console.log(data.data, "Data from adding the account");
         // setPropertyData(data.data.data);
@@ -545,7 +547,9 @@ const Rentals = () => {
       "selectedPhotoresPreview"
     );
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/newproparty/propropartytype"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -563,7 +567,9 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -585,7 +591,9 @@ const Rentals = () => {
     console.log(id, entryIndex, "id && entry Id");
     if (id && entryIndex) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`)
+        .get(
+          `https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`
+        )
         .then((response) => {
           const propertysData = response.data.data;
           // setRentalsData(rentalsData); // Update state with the fetched data
@@ -703,7 +711,9 @@ const Rentals = () => {
       entries: entriesArray,
     };
     try {
-      const res = await axios.get("https://propertymanager.cloudpress.host/api/rentals/rentals");
+      const res = await axios.get(
+        "https://propertymanager.cloudpress.host/api/rentals/rentals"
+      );
       if (res.data.statusCode === 200) {
         console.log(res.data.data, "allRentalOwner");
 
@@ -2045,11 +2055,19 @@ const Rentals = () => {
                                 className="form-control-alternative"
                                 id="input-unit"
                                 placeholder="102"
-                                type="number"
+                                type="text"
                                 name="rental_units"
                                 onBlur={rentalsFormik.handleBlur}
                                 onChange={rentalsFormik.handleChange}
                                 value={rentalsFormik.values.rental_units}
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  ); // Remove non-numeric characters
+                                  e.target.value = numericValue;
+                                }}
                               />
                               {rentalsFormik.touched.rental_units &&
                               rentalsFormik.errors.rental_units ? (
@@ -2216,11 +2234,19 @@ const Rentals = () => {
                                 className="form-control-alternative"
                                 id="input-unitadd"
                                 placeholder="3000"
-                                type="number"
+                                type="text"
                                 name="rental_soft"
                                 onBlur={rentalsFormik.handleBlur}
                                 onChange={rentalsFormik.handleChange}
                                 value={rentalsFormik.values.rental_soft}
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  ); // Remove non-numeric characters
+                                  e.target.value = numericValue;
+                                }}
                               />
                               {rentalsFormik.touched.rental_soft &&
                               rentalsFormik.errors.rental_soft ? (

@@ -76,6 +76,7 @@ const AddCharge = () => {
       charges_memo: "",
       entries: [
         {
+          chargeIndex:"",
           charges_account: "",
           charges_amount: "",
           charges_total_amount: "",

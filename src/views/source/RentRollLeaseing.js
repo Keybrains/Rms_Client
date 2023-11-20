@@ -57,7 +57,7 @@ import Cookies from "universal-cookie";
 import AccountDialog from "components/AccountDialog";
 import moment from "moment";
 const RentRollLeaseing = () => {
-  const { id, entryIndex, } = useParams();
+  const { id, entryIndex } = useParams();
   // console.log(id, propertyId, "propertyId");
   const [tenantData, setTenantData] = useState([]);
   const [selectedTenantData, setSelectedTenantData] = useState([]);
@@ -142,8 +142,10 @@ const RentRollLeaseing = () => {
     setrentincDropdownOpen1((current) => !current);
   };
 
-  const handleChange = () => {
+  const handleChange = (e) => {
+    console.log(e.target.value,'alignment')
     setShowTenantTable(!showTenantTable);
+    setAlignment(e.target.value)
   };
 
   const handleClick1 = (event) => {
@@ -212,8 +214,34 @@ const RentRollLeaseing = () => {
 
   const [selectedRentCycle, setselectedRentCycle] = useState("");
   const handleselectedRentCycle = (rentcycle) => {
+    const startDate = leaseFormik.values.start_date;
+    let nextDue_date;
+  
+    switch (rentcycle) {
+      case "Daily":
+        nextDue_date = moment(startDate).add(1, 'days').format('YYYY-MM-DD');
+        break;
+      case "Weekly":
+        nextDue_date = moment(startDate).add(1, 'weeks').format('YYYY-MM-DD');
+        break;
+      case "Every two weeks":
+        nextDue_date = moment(startDate).add(2, 'weeks').format('YYYY-MM-DD');
+        break;
+      case "Monthly":
+        nextDue_date = moment(startDate).add(1, 'months').format('YYYY-MM-DD');
+        break;
+      case "Every two months":
+        nextDue_date = moment(startDate).add(2, 'months').format('YYYY-MM-DD');
+        break;
+      case "Quarterly":
+        nextDue_date = moment(startDate).add(3, 'months').format('YYYY-MM-DD');
+        break;
+      default:
+        nextDue_date = moment(startDate).add(1, 'years').format('YYYY-MM-DD');
+    }
+  
+    leaseFormik.setFieldValue("tenant_nextDue_date", nextDue_date);
     setselectedRentCycle(rentcycle);
-    // localStorage.setItem("leasetype", leasetype);
   };
 
   const [selectedAccount, setselectedAccount] = useState("");
@@ -610,6 +638,7 @@ const RentRollLeaseing = () => {
     fetchingAccountNames();
     fetchingRecAccountNames();
     fetchingOneTimeCharges();
+    // handleDateChange(leaseFormik.values.start_date);
   }, []);
 
   // useEffect(() => {
@@ -974,14 +1003,16 @@ const RentRollLeaseing = () => {
 
   const handleSubmit = async (values) => {
     console.log(file, "values");
-    const arrayOfNames = Array.isArray(file) ? file.map((item) => item.name) : [];
+    const arrayOfNames = Array.isArray(file)
+      ? file.map((item) => item.name)
+      : [];
 
     const entriesArray = [];
 
     const entriesObject = {
       rental_adress: selectedPropertyType,
       lease_type: selectedLeaseType,
-      start_date: moment(new Date()).format("YYYY-MM-DD"),
+      start_date: leaseFormik.values.start_date,
       end_date: values.end_date,
       leasing_agent: selectedAgent,
       rent_cycle: selectedRentCycle,
@@ -1145,7 +1176,9 @@ const RentRollLeaseing = () => {
   };
 
   const editLease = async (id) => {
-    const arrayOfNames = Array.isArray(file) ? file.map((item) => item.name) : [];
+    const arrayOfNames = Array.isArray(file)
+      ? file.map((item) => item.name)
+      : [];
 
     const editUrl = `https://propertymanager.cloudpress.host/api/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
@@ -1153,7 +1186,7 @@ const RentRollLeaseing = () => {
     const entriesObject = {
       rental_adress: selectedPropertyType,
       lease_type: selectedLeaseType,
-      start_date: moment(new Date()).format("YYYY-MM-DD"),
+      start_date: leaseFormik.values.start_date,
       end_date: leaseFormik.values.end_date,
       leasing_agent: selectedAgent,
       rent_cycle: selectedRentCycle,
@@ -1203,7 +1236,7 @@ const RentRollLeaseing = () => {
 
       //upload File
       upload_file: arrayOfNames,
-      
+
       parent_account: leaseFormik.values.parent_account,
       account_number: leaseFormik.values.account_number,
       fund_type: leaseFormik.values.fund_type,
@@ -1242,7 +1275,7 @@ const RentRollLeaseing = () => {
       .then((response) => {
         console.log(response, "response1111");
         handleResponse(response);
-        if(id && entryIndex){
+        if (id && entryIndex) {
           navigate(`/admin/rentrolldetail/${id}/${entryIndex}`);
         }
       })
@@ -1263,6 +1296,11 @@ const RentRollLeaseing = () => {
       alert(response.data.message);
     }
   }
+  const handleDateChange = (date) => {
+    const nextDate = moment
+      (date).add(1, 'months').format('YYYY-MM-DD');
+      leaseFormik.setFieldValue("end_date", nextDate);
+  };
   // const getNextMonthFirstDay = () => {
   //   const now = new Date();
   //   let current;
@@ -1373,8 +1411,8 @@ const RentRollLeaseing = () => {
               </CardHeader>
               <CardBody>
                 <Form>
-                  {/* <h6 className="heading-small text-muted mb-4">Signature</h6>
-                  <div className="pl-lg-4">
+                  <h6 className="heading-small text-muted mb-4">Signature</h6>
+                  {/* <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
                         <FormGroup>
@@ -1527,10 +1565,17 @@ const RentRollLeaseing = () => {
                             type="date"
                             name="start_date"
                             onBlur={leaseFormik.handleBlur}
-                            onChange={leaseFormik.handleChange}
-                            value={moment(leaseFormik.values.start_date).format(
-                              "YYYY-MM-DD"
-                            )}
+                            // onChange={leaseFormik.handleChange}
+                            onChange={(e) => {
+                              console.log(e.target.value, "e.target.value");
+                              leaseFormik.setFieldValue(
+                                "start_date",
+                                e.target.value
+                              );
+                              handleDateChange(e.target.value);
+                              // leaseFormik.handleChange(e);
+                            }}
+                            value={leaseFormik.values.start_date}
                           />
                           {leaseFormik.touched.start_date &&
                           leaseFormik.errors.start_date ? (

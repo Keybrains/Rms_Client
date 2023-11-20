@@ -164,8 +164,8 @@ const Sidebar = (props) => {
         prop.name === "Rentals" ||
         prop.name === "Dashboard" ||
         prop.name === "Add Property Type" ||
-        prop.name === "Add Staff Member" ||
-        prop.name === "Add Agent"
+        prop.name === "Add Staff Member" 
+        // prop.name === "Add Agent"
     );
     return filteredRoutes.map((prop, key) => {
       return (
