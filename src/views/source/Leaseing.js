@@ -803,7 +803,6 @@ const Leaseing = () => {
   let leaseFormik = useFormik({
     initialValues: {
       // add Tenants
-
       tenant_firstName: "",
       tenant_lastName: "",
       tenant_mobileNumber: "",
@@ -840,8 +839,8 @@ const Leaseing = () => {
           propertyOnRent: false,
           Due_date: "",
           Security_amount: "",
-          // add cosigner
 
+          // add cosigner
           cosigner_firstName: "",
           cosigner_lastName: "",
           cosigner_mobileNumber: "",
@@ -858,7 +857,6 @@ const Leaseing = () => {
           cosigner_postalcode: "",
 
           // add recuring charge
-
           recuring_amount: "",
           recuring_account: "",
           recuringnextDue_date: "",
@@ -866,7 +864,6 @@ const Leaseing = () => {
           recuringfrequency: "",
 
           //add one time charge
-
           onetime_amount: "",
           onetime_account: "",
           onetime_Due_date: "",
@@ -1046,8 +1043,8 @@ const Leaseing = () => {
       propertyOnRent: values.propertyOnRent,
       Due_date: values.Due_date,
       Security_amount: values.Security_amount,
-      // add cosigner
 
+      // add cosigner
       cosigner_firstName: values.cosigner_firstName,
       cosigner_lastName: values.cosigner_lastName,
       cosigner_mobileNumber: values.cosigner_mobileNumber,
@@ -1064,7 +1061,6 @@ const Leaseing = () => {
       cosigner_postalcode: values.cosigner_postalcode,
 
       // add recuring charge
-
       recuring_amount: values.recuring_amount,
       recuring_account: selectedRecuringAccount,
       recuringnextDue_date: values.recuringnextDue_date,
@@ -1072,7 +1068,6 @@ const Leaseing = () => {
       recuringfrequency: selectedFrequency,
 
       //add one time charge
-
       onetime_amount: values.onetime_amount,
       onetime_account: selectedOneTimeAccount,
       onetime_Due_date: values.onetime_Due_date,

@@ -44,6 +44,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Cookies from "universal-cookie";
 import { OpenImageDialog } from "components/OpenImageDialog";
+import { Puff, RotatingLines } from "react-loader-spinner";
 
 const Rentals = () => {
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
@@ -77,6 +78,9 @@ const Rentals = () => {
   const toggle4 = () => setbadDropdownOpen((prevState) => !prevState);
   const toggle5 = () => setBathDropdownOpen((prevState) => !prevState);
 
+  	
+  // let [loader, setLoader] = React.useState(true);
+  const [imgLoader, setImgLoader] = useState(false); 
   const [openImage, setOpenImage] = React.useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const isSmallScreen = useMediaQuery("(max-width:600px)");
@@ -336,7 +340,7 @@ const Rentals = () => {
   const [commercialImage, setCommercialImage] = useState([]);
 
   const fileData = async (file, name) => {
-    //setImgLoader(true);
+    setImgLoader(true);
     const allData = [];
     const axiosRequests = [];
 
@@ -369,8 +373,10 @@ const Rentals = () => {
     // Wait for all Axios requests to complete before logging the data
     await Promise.all(axiosRequests);
     if (name === "propertyres_image") {
+      setImgLoader(false);
       setResidentialImage([...residentialImage, ...allData]);
     } else {
+      setImgLoader(false);
       setCommercialImage([...commercialImage, ...allData]);
     }
     // console.log(allData, "allData");
@@ -684,7 +690,7 @@ const Rentals = () => {
       //RESIDENTIAL
       rental_bed: selectedBad,
       rental_bath: selectedBad,
-      propertyres_image: commercialImage,
+      propertyres_image: residentialImage,
 
       rental_soft: values.rental_soft,
       rental_units: values.rental_units,
@@ -694,7 +700,7 @@ const Rentals = () => {
       rentalcom_soft: values.rentalcom_soft,
       rentalcom_units: values.rentalcom_units,
       rentalcom_unitsAdress: values.rentalcom_unitsAdress,
-      property_image: residentialImage,
+      property_image: commercialImage,
     };
 
     entriesArray.push(entriesObject);
@@ -823,7 +829,7 @@ const Rentals = () => {
       //RESIDENTIAL
       rental_bed: selectedBad,
       rental_bath: selectedBad,
-      propertyres_image: commercialImage,
+      propertyres_image: residentialImage,
 
       rental_soft: rentalsFormik.values.rental_soft,
       rental_units: rentalsFormik.values.rental_units,
@@ -833,7 +839,7 @@ const Rentals = () => {
       rentalcom_soft: rentalsFormik.values.rentalcom_soft,
       rentalcom_units: rentalsFormik.values.rentalcom_units,
       rentalcom_unitsAdress: rentalsFormik.values.rentalcom_unitsAdress,
-      property_image: residentialImage,
+      property_image: commercialImage,
     };
     entriesArray.push(entriesObject);
 
@@ -2414,11 +2420,11 @@ const Rentals = () => {
                               flexWrap: "wrap", // Allow images to wrap to the next row
                             }}
                           >
-                            {residentialImage &&
+                           {residentialImage &&
                               residentialImage.length > 0 &&
-                              residentialImage.map((residentialImage) => (
+                              residentialImage.map((image, index) => (
                                 <div
-                                  key={residentialImage}
+                                  key={image}
                                   style={{
                                     position: "relative",
                                     width: "100px",
@@ -2428,37 +2434,99 @@ const Rentals = () => {
                                     flexDirection: "column",
                                   }}
                                 >
-                                  <img
-                                    src={residentialImage}
-                                    alt=""
-                                    style={{
-                                      width: "100px",
-                                      height: "100px",
-                                      maxHeight: "100%",
-                                      maxWidth: "100%",
-                                      borderRadius: "10px",
-                                      // objectFit: "cover",
-                                    }}
-                                    onClick={() => {
-                                      setSelectedImage(residentialImage);
-                                      setOpen(true);
-                                    }}
-                                  />
-                                  <ClearIcon
-                                    style={{
-                                      cursor: "pointer",
-                                      alignSelf: "flex-start",
-                                      position: "absolute",
-                                      top: "-12px",
-                                      right: "-12px",
-                                    }}
-                                    onClick={() =>
-                                      clearSelectedPhoto(
-                                        residentialImage,
-                                        "propertyres_image"
-                                      )
-                                    }
-                                  />
+                                  {index !== residentialImage.length - 1 ? (
+                                    <>
+                                      <img
+                                        src={image}
+                                        alt=""
+                                        style={{
+                                          width: "100px",
+                                          height: "100px",
+                                          maxHeight: "100%",
+                                          maxWidth: "100%",
+                                          borderRadius: "10px",
+                                          // objectFit: "cover",
+                                        }}
+                                        onClick={() => {
+                                          setSelectedImage(image);
+                                          setOpen(true);
+                                        }}
+                                      />
+                                      <ClearIcon
+                                        style={{
+                                          cursor: "pointer",
+                                          alignSelf: "flex-start",
+                                          position: "absolute",
+                                          top: "-12px",
+                                          right: "-12px",
+                                        }}
+                                        onClick={() =>
+                                          clearSelectedPhoto(
+                                            image,
+                                            "propertyres_image"
+                                          )
+                                        }
+                                      />
+                                    </>
+                                  ) : (
+                                    <></>
+                                  )}
+                                  {imgLoader &&
+                                  index === residentialImage.length - 1 ? (
+                                    <div
+                                      style={{
+                                        position: "absolute",
+                                        top: "50%",
+                                        left: "50%",
+                                        transform: "translate(-50%, -50%)",
+                                      }}
+                                    >
+                                      {/* Use RotatingLines or any other spinner you prefer */}
+                                      <RotatingLines color="#00BFFF" />
+                                    </div>
+                                  ) : (
+                                    <>
+                                      {index === residentialImage.length - 1 &&
+                                      residentialImage[index] ? (
+                                        <>
+                                        {/* {image ? <>hii</> : <>b</>} */}
+                                          <img
+                                            src={image}
+                                            alt=""
+                                            style={{
+                                              width: "100px",
+                                              height: "100px",
+                                              maxHeight: "100%",
+                                              maxWidth: "100%",
+                                              borderRadius: "10px",
+                                              // objectFit: "cover",
+                                            }}
+                                            onClick={() => {
+                                              setSelectedImage(image);
+                                              setOpen(true);
+                                            }}
+                                          />
+                                          <ClearIcon
+                                            style={{
+                                              cursor: "pointer",
+                                              alignSelf: "flex-start",
+                                              position: "absolute",
+                                              top: "-12px",
+                                              right: "-12px",
+                                            }}
+                                            onClick={() =>
+                                              clearSelectedPhoto(
+                                                image,
+                                                "propertyres_image"
+                                              )
+                                            }
+                                          />
+                                        </>
+                                      ) : (
+                                        <></>
+                                      )}
+                                    </>
+                                  )}
                                 </div>
                               ))}
                             <OpenImageDialog
@@ -2628,9 +2696,9 @@ const Rentals = () => {
                           >
                             {commercialImage &&
                               commercialImage.length > 0 &&
-                              commercialImage.map((commercialImage) => (
+                              commercialImage.map((image, index) => (
                                 <div
-                                  key={commercialImage}
+                                  key={image}
                                   style={{
                                     position: "relative",
                                     width: "100px",
@@ -2640,8 +2708,10 @@ const Rentals = () => {
                                     flexDirection: "column",
                                   }}
                                 >
+                                  {index !== commercialImage.length - 1 ? (
+                                    <>
                                   <img
-                                    src={commercialImage}
+                                    src={image}
                                     alt=""
                                     style={{
                                       width: "100px",
@@ -2667,11 +2737,71 @@ const Rentals = () => {
                                     }}
                                     onClick={() =>
                                       clearSelectedPhoto(
-                                        commercialImage,
+                                        image,
                                         "property_image"
-                                      )
-                                    }
-                                  />
+                                        )
+                                        }
+                                      />
+                                    </>
+                                  ) : (
+                                    <></>
+                                  )}
+                                  {imgLoader &&
+                                  index === commercialImage.length - 1 ? (
+                                    <div
+                                      style={{
+                                        position: "absolute",
+                                        top: "50%",
+                                        left: "50%",
+                                        transform: "translate(-50%, -50%)",
+                                      }}
+                                    >
+                                      {/* Use RotatingLines or any other spinner you prefer */}
+                                      <RotatingLines color="#00BFFF" />
+                                    </div>
+                                  ) : (
+                                    <>
+                                    {index === commercialImage.length - 1 &&
+                                    commercialImage[index] ? (
+                                      <>
+                                      {/* {image ? <>hii</> : <>b</>} */}
+                                        <img
+                                          src={image}
+                                          alt=""
+                                          style={{
+                                            width: "100px",
+                                            height: "100px",
+                                            maxHeight: "100%",
+                                            maxWidth: "100%",
+                                            borderRadius: "10px",
+                                            // objectFit: "cover",
+                                          }}
+                                          onClick={() => {
+                                            setSelectedImage(image);
+                                            setOpen(true);
+                                          }}
+                                        />
+                                        <ClearIcon
+                                          style={{
+                                            cursor: "pointer",
+                                            alignSelf: "flex-start",
+                                            position: "absolute",
+                                            top: "-12px",
+                                            right: "-12px",
+                                          }}
+                                          onClick={() =>
+                                            clearSelectedPhoto(
+                                              image,
+                                              "property_image"
+                                            )
+                                          }
+                                        />
+                                      </>
+                                    ) : (
+                                      <></>
+                                    )}
+                                  </>
+                                )}
                                 </div>
                               ))}
                             <OpenImageDialog
