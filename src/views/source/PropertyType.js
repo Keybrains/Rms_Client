@@ -54,7 +54,7 @@ const PropertyType = () => {
   const [selectedProperty, setSelectedProperty] = React.useState("");
   
   // let getPropertyData = async () => {
-  //   let responce = await axios.get("https://propertymanager.cloudpress.host/api/newproparty/newproparty");
+  //   let responce = await axios.get("http://localhost:4000/api/newproparty/newproparty");
   //   setPropertyData(responce.data.data);
   // };
 
@@ -87,7 +87,7 @@ const PropertyType = () => {
     };
     // auth post method
     let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
+      "http://localhost:4000/api/register/auth",
       { purpose: "validate access" },
       authConfig
     );
@@ -107,7 +107,7 @@ React.useEffect(() => {
   const getPropertyData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/newproparty/newproparty"
+        "http://localhost:4000/api/newproparty/newproparty"
       );
       setLoader(false);
       setPropertyData(response.data.data);
@@ -120,7 +120,7 @@ React.useEffect(() => {
   //   var handleSubmit = async (values) => {
   //    // values["createAt"] = moment(new Date()).format("YYYY-MM-DD, HH:mm:ss");
   //     let response = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty",
+  //       "http://localhost:4000/api/newproparty/newproparty",
   //       values
   //     );
   //     if (response.data.statusCode === 200) {
@@ -135,7 +135,7 @@ React.useEffect(() => {
   //   handleSubmit = async (values) => {
   //     //values["upadateAt"] = moment(new Date()).format("YYYY-MM-DD, HH:mm:ss");
   //     let response = await axios.put(
-  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty" + id,
+  //       "http://localhost:4000/api/newproparty/newproparty" + id,
   //       values
   //     );
   //     if (response.data.statusCode === 200) {
@@ -147,7 +147,7 @@ React.useEffect(() => {
   // }
   const editPropertyData = async (id, updatedData) => {
     try {
-      const editUrl = `https://propertymanager.cloudpress.host/api/newproparty/proparty-type/${id}`;
+      const editUrl = `http://localhost:4000/api/newproparty/proparty-type/${id}`;
       console.log("Edit URL:", editUrl);
       console.log("Property ID:", id);
       console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -181,7 +181,7 @@ React.useEffect(() => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/newproparty/newproparty/", {
+          .delete("http://localhost:4000/api/newproparty/newproparty/", {
             data: { _id: id },
           })
 

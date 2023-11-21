@@ -117,7 +117,7 @@ const AddPayment = () => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
+      `http://localhost:4000/api/tenant/tenant-name/tenant/${rentAddress}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -185,7 +185,7 @@ const AddPayment = () => {
 
   const fetchTenantData = async () => {
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+      `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -203,7 +203,7 @@ const AddPayment = () => {
 
   useEffect(() => {
     fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+      "http://localhost:4000/api/addaccount/find_accountname"
     )
       .then((response) => response.json())
       .then((data) => {
@@ -261,7 +261,7 @@ const AddPayment = () => {
       };
       console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_payment",
+        "http://localhost:4000/api/payment/add_payment",
         updatedValues
       );
 
@@ -269,7 +269,7 @@ const AddPayment = () => {
         const id = response.data.data._id;
         if (id) {
           const pdfResponse = await axios.get(
-            `https://propertymanager.cloudpress.host/api/Payment/Payment_summary/${id}`,
+            `http://localhost:4000/api/Payment/Payment_summary/${id}`,
             { responseType: "blob" }
           );
           if (pdfResponse.status === 200 && printReceipt) {

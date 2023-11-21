@@ -57,7 +57,7 @@ const AddStaffMember = () => {
   //   try {
   //     // values["property_type"] = selectedProperty;
   //     const res = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember",
+  //       "http://localhost:4000/api/addstaffmember/addstaffmember",
   //       values
   //     );
 
@@ -85,7 +85,7 @@ const AddStaffMember = () => {
       };
       // auth post method
       let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
+        "http://localhost:4000/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -141,7 +141,7 @@ const AddStaffMember = () => {
   React.useEffect(() => {
     if (id) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${id}`)
+        .get(`http://localhost:4000/api/addstaffmember/staffmember_summary/${id}`)
         .then((response) => {
           const staffMamberdata = response.data.data;
           setstaffMamberData(staffMamberData);
@@ -167,12 +167,12 @@ const AddStaffMember = () => {
     try {
       if (id === undefined) {
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember",
+          "http://localhost:4000/api/addstaffmember/addstaffmember",
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember/${id}`;
+        const editUrl = `http://localhost:4000/api/addstaffmember/staffmember/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }

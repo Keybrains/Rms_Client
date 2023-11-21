@@ -34,7 +34,7 @@ const VendorProfile = () => {
   const getVendorData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${cookie_id}`
+        `http://localhost:4000/api/vendor/vendor_summary/${cookie_id}`
       );
       console.log(response.data.data);
       setVendorDetails(response.data.data);
@@ -63,7 +63,7 @@ const VendorProfile = () => {
       };
       // auth post method
       let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
+        "http://localhost:4000/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );

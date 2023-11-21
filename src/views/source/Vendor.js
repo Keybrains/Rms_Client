@@ -39,7 +39,7 @@ const Vendor = () => {
     };
     // auth post method
     let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
+      "http://localhost:4000/api/register/auth",
       { purpose: "validate access" },
       authConfig
     );
@@ -59,7 +59,7 @@ React.useEffect(() => {
   const getVendorData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/vendor/vendor"
+        "http://localhost:4000/api/vendor/vendor"
       );
       setLoader(false);
       setVendorData(response.data.data);
@@ -81,7 +81,7 @@ React.useEffect(() => {
       if (willDelete) {
         try {
           const response = await axios.delete(
-            "https://propertymanager.cloudpress.host/api/vendor/delete_vendor",
+            "http://localhost:4000/api/vendor/delete_vendor",
             {
               data: { _id: id },
             }

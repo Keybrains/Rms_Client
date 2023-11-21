@@ -62,7 +62,7 @@ const RentalownerTable = () => {
     };
     // auth post method
     let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
+      "http://localhost:4000/api/register/auth",
       { purpose: "validate access" },
       authConfig
     );
@@ -82,7 +82,7 @@ React.useEffect(() => {
   const fetchRentalsData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/rentalowner/rentalowner"
+        "http://localhost:4000/api/rentalowner/rentalowner"
       );
       if (response.data && Array.isArray(response.data.data)) {
         setLoader(false);
@@ -106,7 +106,7 @@ React.useEffect(() => {
 
   const editTenantData = async (id, updatedData) => {
     try {
-      const editUrl = `https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`;
+      const editUrl = `http://localhost:4000/api/rentalowner/rentalowner/${id}`;
       console.log("Edit URL:", editUrl);
       console.log("Property ID:", id);
       console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -149,7 +149,7 @@ React.useEffect(() => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/rentalowner/delete_rentalowner", {
+          .delete("http://localhost:4000/api/rentalowner/delete_rentalowner", {
             data: { _id: id },
           })
           .then((response) => {
