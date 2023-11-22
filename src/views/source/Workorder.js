@@ -7,7 +7,7 @@ import {
   Row,
   Button,
   Col,
-  Input
+  Input,
 } from "reactstrap";
 
 // core components
@@ -19,7 +19,7 @@ import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
-import Cookies from 'universal-cookie';
+import Cookies from "universal-cookie";
 import { RotatingLines } from "react-loader-spinner";
 
 const Workorder = () => {
@@ -45,30 +45,30 @@ const Workorder = () => {
   // Check Authe(token)
   let chackAuth = async () => {
     if (cookies.get("token")) {
-      let  authConfig = {
+      let authConfig = {
         headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post method
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
+          Authorization: `Bearer ${cookies.get("token")}`,
+          token: cookies.get("token"),
+        },
+      };
+      // auth post method
+      let res = await axios.post(
+        "https://propertymanager.cloudpress.host/api/register/auth",
+        { purpose: "validate access" },
+        authConfig
+      );
+      if (res.data.statusCode !== 200) {
+        // cookies.remove("token");
+        navigate("/auth/login");
+      }
+    } else {
       navigate("/auth/login");
     }
-  } else {
-    navigate("/auth/login");
-  }
-};
+  };
 
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
+  React.useEffect(() => {
+    chackAuth();
+  }, [cookies.get("token")]);
 
   const deleteRentals = (id) => {
     // Show a confirmation dialog to the user
@@ -121,8 +121,8 @@ React.useEffect(() => {
         rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
         rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
         rental.status.toLowerCase().includes(lowerCaseQuery) ||
-        rental.rental_adress.toLowerCase().includes(lowerCaseQuery)||
-        rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)||
+        rental.rental_adress.toLowerCase().includes(lowerCaseQuery) ||
+        rental.staffmember_name.toLowerCase().includes(lowerCaseQuery) ||
         rental.priority.toLowerCase().includes(lowerCaseQuery)
         // rental.due_date.formattedDate.includes(lowerCaseQuery)
       );
@@ -164,7 +164,7 @@ React.useEffect(() => {
 
         <Row>
           <div className="col">
-          {loader ? (
+            {loader ? (
               <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                 <RotatingLines
                   strokeColor="grey"
@@ -175,9 +175,9 @@ React.useEffect(() => {
                 />
               </div>
             ) : (
-            <Card className="shadow">
-              <CardHeader className="border-0">
-              <Row>
+              <Card className="shadow">
+                <CardHeader className="border-0">
+                  <Row>
                     <Col xs="12" sm="6">
                       <FormGroup>
                         <Input
@@ -195,59 +195,59 @@ React.useEffect(() => {
                       </FormGroup>
                     </Col>
                   </Row>
-              </CardHeader>
-              <Table className="align-items-center table-flush" responsive>
-                <thead className="thead-light">
-                  <tr>
-                    <th scope="col">Work Order</th>
-                    <th scope="col">Property</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Assigned</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">ACTION</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {filterRentalsBySearch().map((rental) => (
-                     <tr
-                     key={rental._id}
-                     onClick={
-                       () => navigateToDetails(rental.workorder_id)}
-                     style={{ cursor: 'pointer' }}
-                     > 
-                      <td>{rental.work_subject}</td>
-                      <td>{`${rental.unit_no} ${rental.rental_adress}`}</td>
-                      <td>{rental.work_category}</td>
-                      <td>{rental.staffmember_name}</td>
-                      <td>{rental.status}</td>
-
-                      <td>
-                        <div style={{ display: "flex", gap: "0px" }}>
-                          <div
-                            style={{ cursor: "pointer" }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteRentals(rental._id);
-                            }}
-                          >
-                            <DeleteIcon />
-                          </div>
-                          &nbsp; &nbsp; &nbsp;
-                          <div
-                            style={{ cursor: "pointer" }}
-                            onClick={(e) =>{ 
-                              e.stopPropagation();
-                              editWorkOrder(rental.workorder_id)}}
-                          >
-                            <EditIcon />
-                          </div>
-                        </div>
-                      </td>
+                </CardHeader>
+                <Table className="align-items-center table-flush" responsive>
+                  <thead className="thead-light">
+                    <tr>
+                      <th scope="col">Work Order</th>
+                      <th scope="col">Property</th>
+                      <th scope="col">Category</th>
+                      <th scope="col">Assigned</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">ACTION</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Card>
+                  </thead>
+                  <tbody>
+                    {filterRentalsBySearch().map((rental) => (
+                      <tr
+                        key={rental._id}
+                        onClick={() => navigateToDetails(rental.workorder_id)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <td>{rental.work_subject}</td>
+                        <td>{`${rental.unit_no} ${rental.rental_adress}`}</td>
+                        <td>{rental.work_category}</td>
+                        <td>{rental.staffmember_name}</td>
+                        <td>{rental.status}</td>
+
+                        <td>
+                          <div style={{ display: "flex", gap: "0px" }}>
+                            <div
+                              style={{ cursor: "pointer" }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteRentals(rental._id);
+                              }}
+                            >
+                              <DeleteIcon />
+                            </div>
+                            &nbsp; &nbsp; &nbsp;
+                            <div
+                              style={{ cursor: "pointer" }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                editWorkOrder(rental.workorder_id);
+                              }}
+                            >
+                              <EditIcon />
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </Card>
             )}
           </div>
         </Row>
