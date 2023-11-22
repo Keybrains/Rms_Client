@@ -110,7 +110,7 @@ const StaffSidebar = (props) => {
   const getVendorDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/addstaffmember/staffmember_summary/${cookie_id}`
+        `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
       );
       console.log(response.data.data)
       setVendorDetails(response.data.data);
@@ -128,7 +128,7 @@ const StaffSidebar = (props) => {
   }, [staffmember_name]);
 
   const fetchNotification = async () => {
-    fetch(`http://localhost:4000/api/notification/staffnotification/${staffmember_name}`)
+    fetch(`https://propertymanager.cloudpress.host/api/notification/staffnotification/${staffmember_name}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -154,7 +154,7 @@ const StaffSidebar = (props) => {
 
   
   const navigateToDetails = (workorder_id) => {
-    axios.get(`http://localhost:4000/api/notification/notification/${workorder_id}?role=staff`)
+    axios.get(`https://propertymanager.cloudpress.host/api/notification/notification/${workorder_id}?role=staff`)
       .then((response) => {
           if (response.status === 200) {
             const updatedNotificationData = notificationData.map(notification => {

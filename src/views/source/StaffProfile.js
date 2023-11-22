@@ -36,7 +36,7 @@ const StaffProfile = () => {
     };
     // auth post method
     let res = await axios.post(
-      "http://localhost:4000/api/register/auth",
+      "https://propertymanager.cloudpress.host/api/register/auth",
       { purpose: "validate access" },
       authConfig
     );
@@ -61,7 +61,7 @@ React.useEffect(() => {
         }
 
         const response = await axios.get(
-          `http://localhost:4000/api/addstaffmember/staffmember_summary/${cookie_id}`
+          `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
         );
         console.log(response.data.data);
         setStaffDetails(response.data.data);

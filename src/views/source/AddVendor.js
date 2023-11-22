@@ -70,7 +70,7 @@ const AddVendor = () => {
     };
     // auth post method
     let res = await axios.post(
-      "http://localhost:4000/api/register/auth",
+      "https://propertymanager.cloudpress.host/api/register/auth",
       { purpose: "validate access" },
       authConfig
     );
@@ -92,7 +92,7 @@ React.useEffect(() => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:4000/api/vendor/vendor_summary/${id}`)
+        .get(`https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${id}`)
         .then((response) => {
           const vendorData = response.data.data;
           setVendorData(vendorData);
@@ -121,12 +121,12 @@ React.useEffect(() => {
     try {
       if (id === undefined) {
         const res = await axios.post(
-          "http://localhost:4000/api/vendor/vendor",
+          "https://propertymanager.cloudpress.host/api/vendor/vendor",
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `http://localhost:4000/api/vendor/vendor/${id}`;
+        const editUrl = `https://propertymanager.cloudpress.host/api/vendor/vendor/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }

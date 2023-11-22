@@ -104,7 +104,7 @@ const Rentals = () => {
       };
       // auth post method
       let res = await axios.post(
-        "http://localhost:4000/api/register/auth",
+        "https://propertymanager.cloudpress.host/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -152,7 +152,7 @@ const Rentals = () => {
   //   try {
   //     // values["property_type"] = localStorage.getItem("propertyType");
   //     const res = await axios.post(
-  //       "http://localhost:4000/api/rentalowner/rentalowner",
+  //       "https://propertymanager.cloudpress.host/api/rentalowner/rentalowner",
   //       values
   //     );
   //     if (res.data.statusCode === 200) {
@@ -179,12 +179,12 @@ const Rentals = () => {
 
       if (id === undefined) {
         const res = await axios.post(
-          "http://localhost:4000/api/rentalowner/rentalowner",
+          "https://propertymanager.cloudpress.host/api/rentalowner/rentalowner",
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `http://localhost:4000/api/rentalowner/rentalowner/${id}`;
+        const editUrl = `https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }
@@ -290,7 +290,7 @@ const Rentals = () => {
 
   React.useEffect(() => {
     // Fetch data from your API
-    fetch("http://localhost:4000/api/rentals/property_onrent")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
       .then((response) => response.json())
       .then((data) => {
         console.log("Data from API:", data); // Log the response data
@@ -314,7 +314,7 @@ const Rentals = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:4000/api/rentalowner/rentalowner/${id}`)
+        .get(`https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`)
         .then((response) => {
           const rentalOwnerdata = response.data.data;
           setRentalOwnerData(rentalOwnerData);

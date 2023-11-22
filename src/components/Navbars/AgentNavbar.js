@@ -28,7 +28,7 @@ const AgentNavbar = (props) => {
   const getVendorDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/addagent/agent_summary/${cookie_id}`
+        `https://propertymanager.cloudpress.host/api/addagent/agent_summary/${cookie_id}`
       );
       setVendorDetails(response.data.data);
       setLoading(false);

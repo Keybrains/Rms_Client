@@ -65,7 +65,7 @@ import {
       };
       // auth post method
       let res = await axios.post(
-        "http://localhost:4000/api/register/auth",
+        "https://propertymanager.cloudpress.host/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -85,7 +85,7 @@ import {
     const getStaffMemberData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/addstaffmember/addstaffmember"
+          "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember"
         );
         setLoader(false);
         setStaffMemberData(response.data.data);
@@ -96,7 +96,7 @@ import {
 
     const editStaffMemberData = async (id, updatedData) => {
       try {
-        const editUrl = `http://localhost:4000/api/addstaffmember/staffmember/${id}`;
+        const editUrl = `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember/${id}`;
         console.log("Edit URL:", editUrl);
         console.log("ID:", id);
         console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -128,7 +128,7 @@ import {
           }).then((willDelete) => {
             if (willDelete) {
               axios
-                .delete("http://localhost:4000/api/addstaffmember/delete_staffmember", {
+                .delete("https://propertymanager.cloudpress.host/api/addstaffmember/delete_staffmember", {
                   data: { _id: id },
                 })
                 .then((response) => {

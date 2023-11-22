@@ -31,7 +31,6 @@ import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
 
 const RentRoll = () => {
-
   const [tenantsData, setTenantsData] = useState([]);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,7 +59,7 @@ const RentRoll = () => {
       };
       // auth post method
       let res = await axios.post(
-        "http://localhost:4000/api/register/auth",
+        "https://propertymanager.cloudpress.host/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -80,7 +79,7 @@ const RentRoll = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/tenant/tenant"
+        "https://propertymanager.cloudpress.host/api/tenant/tenant"
       );
       setLoader(false);
       setTenantsData(response.data.data);
@@ -110,13 +109,20 @@ const RentRoll = () => {
     if (searchQuery === undefined) {
       return tenantsData;
     }
-  
+
     return tenantsData.filter((tenant) => {
-      return tenant.entries.some((entry) =>
-        entry.rental_adress.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      return tenant.entries.some((entry) => {
+        const rentalAddress = entry.rental_adress;
+        if (rentalAddress && typeof rentalAddress === "string") {
+          return rentalAddress
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase());
+        }
+        return false;
+      });
     });
   };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -127,12 +133,12 @@ const RentRoll = () => {
       text: "Once deleted, you will not be able to recover this tenant!",
       icon: "warning",
       buttons: ["Cancel", "Delete"],
-      dangerMode: true,     
+      dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
         axios
           .delete(
-            `http://localhost:4000/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
+            `https://propertymanager.cloudpress.host/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -153,7 +159,7 @@ const RentRoll = () => {
     });
   };
 
-  const editLeasing = (id, entryIndex ) => {
+  const editLeasing = (id, entryIndex) => {
     navigate(`/admin/Leaseing/${id}/${entryIndex}`);
     console.log(id);
   };
@@ -242,7 +248,9 @@ const RentRoll = () => {
                             }
                             style={{ cursor: "pointer" }}
                           >
-                            <td>{tenant.tenant_firstName} {tenant.tenant_lastName}</td>
+                            <td>
+                              {tenant.tenant_firstName} {tenant.tenant_lastName}
+                            </td>
                             <td>{entry.rental_adress}</td>
                             <td>{entry.lease_type}</td>
                             <td>{entry.start_date}</td>

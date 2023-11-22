@@ -72,7 +72,7 @@ const RentRollDetail = () => {
       try {
         // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
         const response = await fetch(
-          `http://localhost:4000/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
+          `https://propertymanager.cloudpress.host/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -101,8 +101,14 @@ const RentRollDetail = () => {
   const handleClick = () => {
     navigate(`../AddPayment/${tenantId}/${entryIndex}`);
   };
-
-  const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  const handleClick1 = () => {
+    if (type === "charge") {
+      navigate(`../AddPayment/${mainId}/charge/${chargeIndex}`);
+    } else if (type === "payment") {
+      navigate("/payment-page");
+    }
+  };
+  const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
   const id = tenantId;
   const entry = entryIndex;
@@ -125,7 +131,7 @@ const RentRollDetail = () => {
 
   const navigateToSummary = async (tenantId, entryIndex) => {
     // Construct the API URL
-    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
 
     try {
       // Fetch tenant data
@@ -149,7 +155,7 @@ const RentRollDetail = () => {
   };
 
   const navigateToTenant = async () => {
-    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
 
     try {
       // Fetch tenant data
@@ -174,7 +180,7 @@ const RentRollDetail = () => {
 
   const navigateToFinancial = async () => {
     // Construct the API URL
-    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
 
     try {
       // Fetch tenant data
@@ -198,7 +204,7 @@ const RentRollDetail = () => {
 
   const tenantsData = async () => {
     // Construct the API URL
-    const apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
 
     try {
       // Fetch tenant data
@@ -251,7 +257,7 @@ const RentRollDetail = () => {
       try {
         // Authentication post method
         const res = await axios.post(
-          "http://localhost:4000/api/register/auth",
+          "https://propertymanager.cloudpress.host/api/register/auth",
           { purpose: "validate access" },
           authConfig
         );
@@ -299,7 +305,7 @@ const RentRollDetail = () => {
   const [loader, setLoader] = React.useState(true);
 
   const getGeneralLedgerData = async () => {
-    const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
 
     try {
       const response = await axios.get(apiUrl);
@@ -366,7 +372,7 @@ const RentRollDetail = () => {
       if (willDelete) {
         axios
           .delete(
-            `http://localhost:4000/api/payment/delete_charge/${chargeId}/${chargeIndex}`
+            `https://propertymanager.cloudpress.host/api/payment/delete_charge/${chargeId}/${chargeIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -386,7 +392,14 @@ const RentRollDetail = () => {
       }
     });
   };
-  
+  const editcharge = (id, chargeIndex) => {
+    navigate(`/admin/AddCharge/${id}/charge/${chargeIndex}`);
+    console.log(id);
+  };
+  const editpayment = (id, paymentIndex) => {
+    navigate(`/admin/AddPayment/${id}/payment/${paymentIndex}`);
+    console.log(id);
+  };
   return (
     <div>
       <Header />
@@ -1176,33 +1189,73 @@ const RentRollDetail = () => {
                                                     gap: "5px",
                                                   }}
                                                 >
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      console.log(
-                                                        "Entry Object:",
-                                                        entry
-                                                      );
-                                                      deleteCharge(
-                                                        generalledger._id,
-                                                        entry.chargeIndex
-                                                      );
-                                                      console.log(generalledger._id,"dsgdg")
-                                                      console.log(entry.chargeIndex,"dsgdg")
-                                                    }}
-                                                  >
-                                                    <DeleteIcon />
-                                                  </div>
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                  >
-                                                    <EditIcon />
-                                                  </div>
+                                                  {generalledger.type ===
+                                                    "Charge" && (
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        console.log(
+                                                          "Entry Object:",
+                                                          entry
+                                                        );
+                                                        deleteCharge(
+                                                          generalledger._id,
+                                                          entry.chargeIndex
+                                                        );
+                                                        console.log(
+                                                          generalledger._id,
+                                                          "dsgdg"
+                                                        );
+                                                        console.log(
+                                                          entry.chargeIndex,
+                                                          "dsgdg"
+                                                        );
+                                                      }}
+                                                    >
+                                                      <DeleteIcon />
+                                                    </div>
+                                                  )}
+                                                  
+                                                  {generalledger.type ===
+                                                    "Charge" && (
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        editcharge(
+                                                          generalledger._id,
+                                                          entry.chargeIndex,
+                                                         
+                                                        );
+                                                        
+                                                      }}
+                                                    >
+                                                      <EditIcon />
+                                                    </div>
+                                                  )}
+
+                                                  {generalledger.type ===
+                                                    "Payment" && (
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        editpayment(
+                                                          generalledger._id,
+                                                          entry.paymentIndex
+                                                        );
+                                                      }}
+                                                    >
+                                                      <EditIcon />
+                                                    </div>
+                                                  )}
                                                 </div>
                                               </td>
                                             </tr>
