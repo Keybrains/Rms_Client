@@ -326,7 +326,7 @@ const RentRollDetail = () => {
   };
 
   const getGeneralLedgerData = async () => {
-    const apiUrl = `://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
 
     try {
       const response = await axios.get(apiUrl);
