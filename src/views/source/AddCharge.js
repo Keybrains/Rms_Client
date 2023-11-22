@@ -70,7 +70,7 @@ const AddCharge = () => {
 
   const generalledgerFormik = useFormik({
     initialValues: {
-      charges_date: "",
+      date: "",
       rental_adress: "",
       tenant_id: "",
       entryIndex: "",
@@ -237,7 +237,7 @@ const AddCharge = () => {
 
     try {
       const updatedValues = {
-        charges_date: values.charges_date,
+        date: values.date,
         charges_amount: values.charges_amount,
         tenant_firstName: selectedRec,
         charges_attachment: arrayOfNames,
@@ -253,7 +253,7 @@ const AddCharge = () => {
       };
       console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_charges",
+        "https://propertymanager.cloudpress.host/api/payment/add_charges",          //https://propertymanager.cloudpress.host
         updatedValues
       );
 
@@ -485,15 +485,15 @@ const AddCharge = () => {
                           id="input-unitadd"
                           placeholder="3000"
                           type="date"
-                          name="charges_date"
+                          name="date"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
                           value={generalledgerFormik.values.charges_date}
                         />
-                        {generalledgerFormik.touched.charges_date &&
-                        generalledgerFormik.errors.charges_date ? (
+                        {generalledgerFormik.touched.date &&
+                        generalledgerFormik.errors.date ? (
                           <div style={{ color: "red" }}>
-                            {generalledgerFormik.errors.charges_date}
+                            {generalledgerFormik.errors.date}
                           </div>
                         ) : null}
                       </FormGroup>
