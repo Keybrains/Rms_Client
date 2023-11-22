@@ -39,6 +39,9 @@ import "jspdf-autotable";
 
 const AddPayment = () => {
   const { tenantId, entryIndex } = useParams();
+  const { mainId, paymentIndex } = useParams();
+  const [id, setId] = useState("");
+  const [index, setIndex] = useState("");
   const [file, setFile] = useState([]);
   const [accountData, setAccountData] = useState([]);
   const [propertyData, setPropertyData] = useState([]);
@@ -67,7 +70,6 @@ const AddPayment = () => {
   const navigate = useNavigate();
   const generalledgerFormik = useFormik({
     initialValues: {
-      
       date: "",
       rental_adress: "",
       tenant_id: "",
@@ -79,7 +81,7 @@ const AddPayment = () => {
       memo: "",
       entries: [
         {
-          paymentIndex:"",
+          paymentIndex: "",
           account: "",
           description: "",
           debit: "",
@@ -116,9 +118,7 @@ const AddPayment = () => {
   useEffect(() => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
-    )
+    fetch(`https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -202,9 +202,7 @@ const AddPayment = () => {
   };
 
   useEffect(() => {
-    fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
-    )
+    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -442,6 +440,123 @@ const AddPayment = () => {
     console.log(item, "item");
     const url = URL.createObjectURL(item);
     window.open(url, "_blank");
+  };
+  const [paymentData, setpaymentData] = useState(null);
+
+  useEffect(() => {
+    console.log(mainId, paymentIndex, "mainid && payment Id");
+    if (mainId && paymentIndex) {
+      axios
+        .get(
+          `https://propertymanager.cloudpress.host/api/payment/payment_summary/${mainId}/payment/${paymentIndex}`
+        )
+        .then((response) => {
+          const paymentData = response.data.data;
+          setpaymentData(paymentData);
+          console.log(paymentData, "paymentData");
+          console.log(paymentData.entries, "entries data");
+          const id = paymentData.tenant_id;
+          setId(id);
+          console.log(id,'abcd')
+          const index = paymentData.entryIndex;          ;
+          setIndex(index);
+          console.log(index,'xyz')
+
+          const formattedDate =
+            paymentData && paymentData.date
+              ? new Date(paymentData.date).toISOString().split("T")[0]
+              : "";
+          console.log(formattedDate, "formattedDate");
+
+          setSelectedRec(paymentData.tenant_firstName || "Select");
+          setSelectedProp(paymentData.payment_method || "Select");
+
+          const entriesData = paymentData.entries || [];
+
+          if (Array.isArray(entriesData)) {
+            // Handling when entriesData is an array
+            generalledgerFormik.setValues({
+              date: formattedDate,
+              amount: paymentData.amount || "",
+              memo: paymentData.memo || "",
+              entries: entriesData.map((entry) => ({
+                account: entry.account || "",
+                balance: entry.balance || "",
+                amount: entry.amount || "",
+                total_amount: entry.total_amount || "",
+              })),
+            });
+          } else if (typeof entriesData === "object") {
+            // Handling when entriesData is an object
+            console.error("entriesData is not an array:", entriesData);
+            // Here, handle the single object scenario, you can convert it to an array or handle it accordingly.
+            generalledgerFormik.setValues({
+              date: formattedDate,
+              amount: paymentData.amount || "",
+              memo: paymentData.memo || "",
+              entries: [
+                {
+                  account: entriesData.account || "",
+                  balance: entriesData.balance || "",
+                  amount: entriesData.amount || "",
+                  total_amount: entriesData.total_amount || "",
+                },
+              ],
+            });
+          } else {
+            console.error("Invalid entriesData format:", entriesData);
+            // Handle other unexpected formats here if needed
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching vendor data:", error);
+        });
+    }
+  }, [mainId, paymentIndex]);
+
+  const editpayment = async (mainId, paymentIndex, values) => {
+    const arrayOfNames = file.map((item) => item.name);
+    const rentalAddress = generalledgerFormik.values.rental_adress;
+    values["total_amount"] = total_amount;
+
+    try {
+      const updatedValues = {
+        date: values.date,
+        amount: values.amount,
+        payment_method: selectedProp,
+        debitcard_number: values.debitcard_number,
+        tenant_firstName: selectedRec,
+        attachment: arrayOfNames,
+        rental_adress: rentalAddress,
+        tenant_id: tenantid,
+        entryIndex: tenantentryIndex,
+
+        entries: generalledgerFormik.values.entries.map((entry) => ({
+          account: entry.account,
+          balance: parseFloat(entry.balance),
+          amount: parseFloat(entry.amount),
+          total_amount: total_amount,
+        })),
+      };
+
+      console.log(updatedValues, "updatedValues");
+
+      const putUrl = `https://propertymanager.cloudpress.host/api/payment/payments/${mainId}/payment/${paymentIndex}`;
+      const response = await axios.put(putUrl, updatedValues);
+
+      if (response.data.statusCode === 200) {
+        swal("Success", "Payments Update Successfully", "success");
+        navigate(`/admin/rentrolldetail/${id}/${index}`);
+      } else {
+        swal("Error", response.data.message, "error");
+        console.error("Server Error:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+      }
+    }
   };
 
   return (
@@ -972,23 +1087,46 @@ const AddPayment = () => {
                   <Row>
                     <Col lg="5">
                       <FormGroup>
-                        <button
+                        {/* <button
                           type="submit"
                           className="btn btn-primary"
                           style={{ background: "green", color: "white" }}
                           onClick={(e) => {
                             e.preventDefault();
-                            generalledgerFormik.handleSubmit(
-                              (values, actions) => {
-                                console.log(values);
-                                // handleSavePaymentButtonClick();
-                              }
-                            );
+                            generalledgerFormik.handleSubmit();
                           }}
                         >
                           Save Payment
-                        </button>
-
+                        </button> */}
+                        {mainId && paymentIndex ? (
+                          <button
+                            type="submit"
+                            className="btn btn-primary"
+                            style={{ background: "green", cursor: "pointer" }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              editpayment(
+                                mainId,
+                                paymentIndex,
+                                generalledgerFormik.values
+                              );
+                            }}
+                          >
+                            Edit Payment
+                          </button>
+                        ) : (
+                          <button
+                            type="submit"
+                            className="btn btn-primary"
+                            style={{ background: "green", cursor: "pointer" }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              generalledgerFormik.handleSubmit();
+                            }}
+                          >
+                            New Payment
+                          </button>
+                        )}
                         <Button
                           color="primary"
                           href="#rms"

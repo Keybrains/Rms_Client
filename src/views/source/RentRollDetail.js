@@ -102,7 +102,13 @@ const RentRollDetail = () => {
   const handleClick = () => {
     navigate(`../AddPayment/${tenantId}/${entryIndex}`);
   };
-
+  // const handleClick1 = () => {
+  //   if (type === "charge") {
+  //     navigate(`../AddPayment/${mainId}/charge/${chargeIndex}`);
+  //   } else if (type === "payment") {
+  //     navigate("/payment-page");
+  //   }
+  // };
   const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
   const id = tenantId;
@@ -377,7 +383,14 @@ const RentRollDetail = () => {
       }
     });
   };
-
+  const editcharge = (id, chargeIndex) => {
+    navigate(`/admin/AddCharge/${id}/charge/${chargeIndex}`);
+    console.log(id);
+  };
+  const editpayment = (id, paymentIndex) => {
+    navigate(`/admin/AddPayment/${id}/payment/${paymentIndex}`);
+    console.log(id);
+  };
   return (
     <div>
       <Header />
@@ -1173,39 +1186,73 @@ const RentRollDetail = () => {
                                                     gap: "5px",
                                                   }}
                                                 >
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      console.log(
-                                                        "Entry Object:",
-                                                        entry
-                                                      );
-                                                      deleteCharge(
-                                                        generalledger._id,
-                                                        entry.chargeIndex
-                                                      );
-                                                      console.log(
-                                                        generalledger._id,
-                                                        "dsgdg"
-                                                      );
-                                                      console.log(
-                                                        entry.chargeIndex,
-                                                        "dsgdg"
-                                                      );
-                                                    }}
-                                                  >
-                                                    <DeleteIcon />
-                                                  </div>
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                  >
-                                                    <EditIcon />
-                                                  </div>
+                                                  {generalledger.type ===
+                                                    "Charge" && (
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        console.log(
+                                                          "Entry Object:",
+                                                          entry
+                                                        );
+                                                        deleteCharge(
+                                                          generalledger._id,
+                                                          entry.chargeIndex
+                                                        );
+                                                        console.log(
+                                                          generalledger._id,
+                                                          "dsgdg"
+                                                        );
+                                                        console.log(
+                                                          entry.chargeIndex,
+                                                          "dsgdg"
+                                                        );
+                                                      }}
+                                                    >
+                                                      <DeleteIcon />
+                                                    </div>
+                                                  )}
+                                                  
+                                                  {generalledger.type ===
+                                                    "Charge" && (
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        editcharge(
+                                                          generalledger._id,
+                                                          entry.chargeIndex,
+                                                         
+                                                        );
+                                                        
+                                                      }}
+                                                    >
+                                                      <EditIcon />
+                                                    </div>
+                                                  )}
+
+                                                  {generalledger.type ===
+                                                    "Payment" && (
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        editpayment(
+                                                          generalledger._id,
+                                                          entry.paymentIndex
+                                                        );
+                                                      }}
+                                                    >
+                                                      <EditIcon />
+                                                    </div>
+                                                  )}
                                                 </div>
                                               </td>
                                             </tr>
