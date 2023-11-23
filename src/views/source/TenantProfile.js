@@ -162,7 +162,9 @@ const TenantProfile = () => {
                       </tbody>
                     ))
                   ) : (
-                    <p>No tenant details available.</p>
+                    <tr>
+                      <td>Loading vendor details...</td>
+                    </tr>
                   )}
 
                   {Array.isArray(tenantDetails) ? (
@@ -228,7 +230,7 @@ const TenantProfile = () => {
                               Next Due Date:
                             </td>
                             <td>{formatDateWithoutTime(tenantDetails.entries.nextDue_date) ||
-                                "N/A"}</td>
+                              "N/A"}</td>
                           </tr>
                           <tr>
                             <td class="font-weight-bold text-md">Uploaded Files:</td>
@@ -238,7 +240,9 @@ const TenantProfile = () => {
                       </>
                     ))
                   ) : (
-                    <p>No property details available</p>
+                    <tr>
+                      <td>Loading vendor details...</td>
+                    </tr>
                   )}
                 </Table>
               </div>

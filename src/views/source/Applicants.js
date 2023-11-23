@@ -40,6 +40,12 @@ import Edit from "@mui/icons-material/Edit";
 const Applicants = () => {
   const [rentalsData, setRentalsData] = useState([]);
   const [loader, setLoader] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [pageItem, setPageItem] = React.useState(6);
+  const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
+  const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
   // Step 1: Create state to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,6 +65,7 @@ const Applicants = () => {
       const response = await axios.get(
         "https://propertymanager.cloudpress.host/api/applicant/applicant"
       );
+      setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setRentalsData(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -67,7 +74,17 @@ const Applicants = () => {
 
   useEffect(() => {
     getRentalsData();
-  }, []);
+  }, [pageItem]);
+
+  const startIndex = (currentPage - 1) * pageItem;
+  const endIndex = currentPage * pageItem;
+  var paginatedData;
+  if (rentalsData) {
+    paginatedData = rentalsData.slice(startIndex, endIndex);
+  }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
@@ -262,6 +279,29 @@ const Applicants = () => {
     applicantFormik.setFieldValue("rental_adress", propertyType);
   };
 
+  const filterApplicantsBySearch = () => {
+    if (searchQuery === undefined) {
+      return paginatedData;
+    }
+
+    return paginatedData.filter((tenant) => {
+      const isRentalAddressMatch = tenant.rental_adress
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+      const isFirstNameMatch = (tenant.tenant_firstName + " " + tenant.tenant_lastName)
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+      const isEmailMatch = tenant.tenant_email
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+
+      return isRentalAddressMatch || isFirstNameMatch || isEmailMatch;
+    });
+  };
+
   return (
     <>
       <Header />
@@ -301,7 +341,24 @@ const Applicants = () => {
             ) : (
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  {/* <h3 className="mb-0">Applicants</h3> */}
+                  <Row>
+                    <Col xs="12" sm="6">
+                      <FormGroup className="">
+                        <Input
+                          fullWidth
+                          type="text"
+                          placeholder="Search"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          style={{
+                            width: "100%",
+                            maxWidth: "200px",
+                            minWidth: "200px",
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
@@ -322,7 +379,7 @@ const Applicants = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {rentalsData.map((applicant, index) => (
+                    {filterApplicantsBySearch().map((applicant, index) => (
                       <tr
                         key={index}
                         onClick={() =>
@@ -351,6 +408,58 @@ const Applicants = () => {
                     ))}
                   </tbody>
                 </Table>
+                {paginatedData.length > 0 ? <Row>
+                  <Col className="text-right m-3">
+                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                      <DropdownToggle caret >
+                        {pageItem}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => setPageItem(6)}
+                        >
+                          6
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() =>
+                            setPageItem(12)
+                          }
+                        >
+                          12
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => setPageItem(18)}
+                        >
+                          18
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: '#d0d0d0' }}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                      </svg>
+                    </Button>
+                    <span>
+                      Page {currentPage} of {totalPages}
+                    </span>{" "}
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: '#d0d0d0' }}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
+                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                      </svg>
+                    </Button>{" "}
+
+                  </Col>
+                </Row> : <></>}
               </Card>
             )}
           </div>
@@ -379,8 +488,8 @@ const Applicants = () => {
                       onBlur={applicantFormik.handleBlur}
                       onChange={applicantFormik.handleChange}
                       value={applicantFormik.values.tenant_firstName}
-                      // value={FirstName}
-                      // onChange={(e) => setFirstName(e.target.value)}
+                    // value={FirstName}
+                    // onChange={(e) => setFirstName(e.target.value)}
                     />
                   </FormGroup>
                 </Col>
@@ -394,8 +503,8 @@ const Applicants = () => {
                       onBlur={applicantFormik.handleBlur}
                       onChange={applicantFormik.handleChange}
                       value={applicantFormik.values.tenant_lastName}
-                      // value={lastName}
-                      // onChange={(e) => setLastName(e.target.value)}
+                    // value={lastName}
+                    // onChange={(e) => setLastName(e.target.value)}
                     />
                   </FormGroup>
                 </Col>
@@ -419,19 +528,19 @@ const Applicants = () => {
                 </InputGroup>
               </FormGroup>
               <div className="mb-3 form-check">
-                            <Input
-                                type="checkbox"
-                                className="form-check-input"
-                                id="exampleCheck1"
-                                checked={applicantFormik.values.exampleCheck1}
-                                onChange={applicantFormik.handleChange}
-                                name="exampleCheck1"
-                                value={applicantFormik.values.exampleCheck1}
-                            />
-                            <Label className="form-check-label" for="exampleCheck1">
-                                email link to online rental application
-                            </Label>
-                        </div>
+                <Input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="exampleCheck1"
+                  checked={applicantFormik.values.exampleCheck1}
+                  onChange={applicantFormik.handleChange}
+                  name="exampleCheck1"
+                  value={applicantFormik.values.exampleCheck1}
+                />
+                <Label className="form-check-label" for="exampleCheck1">
+                  email link to online rental application
+                </Label>
+              </div>
               <FormGroup>
                 <Label for="MobileNumber">Mobile Number</Label>
                 <InputGroup>
@@ -447,8 +556,8 @@ const Applicants = () => {
                     value={applicantFormik.values.tenant_mobileNumber}
                     onBlur={applicantFormik.handleBlur}
                     onChange={applicantFormik.handleChange}
-                    // value={mobileNumber}
-                    // onChange={(e) => setMobileNumber(e.target.value)}
+                  // value={mobileNumber}
+                  // onChange={(e) => setMobileNumber(e.target.value)}
                   />
                 </InputGroup>
               </FormGroup>
@@ -466,9 +575,9 @@ const Applicants = () => {
                     value={applicantFormik.values.tenant_homeNumber}
                     onBlur={applicantFormik.handleBlur}
                     onChange={applicantFormik.handleChange}
-                    // value={homeAddress}
-                    // onChange={(e) => setHomeAddress(e.target.value)}
-                    // placeholder="Home Address"
+                  // value={homeAddress}
+                  // onChange={(e) => setHomeAddress(e.target.value)}
+                  // placeholder="Home Address"
                   />
                 </InputGroup>
               </FormGroup>
@@ -487,9 +596,9 @@ const Applicants = () => {
                     onBlur={applicantFormik.handleBlur}
                     onChange={applicantFormik.handleChange}
 
-                    // value={businessCenter}
-                    // onChange={(e) => setBusinessCenter(e.target.value)}
-                    // placeholder="Home Address"
+                  // value={businessCenter}
+                  // onChange={(e) => setBusinessCenter(e.target.value)}
+                  // placeholder="Home Address"
                   />
                 </InputGroup>
               </FormGroup>
@@ -507,10 +616,10 @@ const Applicants = () => {
                     value={applicantFormik.values.tenant_faxPhoneNumber}
                     onBlur={applicantFormik.handleBlur}
                     onChange={applicantFormik.handleChange}
-                    // value={fax}
-                    // onChange={(e) => setFax(e.target.value)}
+                  // value={fax}
+                  // onChange={(e) => setFax(e.target.value)}
 
-                    // placeholder=""
+                  // placeholder=""
                   />
                 </InputGroup>
               </FormGroup>
