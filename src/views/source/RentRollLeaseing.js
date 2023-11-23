@@ -389,10 +389,26 @@ const RentRollLeaseing = () => {
 
   const handleTenantDelete = () => {
     setSelectedTenantData({});
+    setCheckedCheckbox(null);
     tenantsFormik.setValues({
       tenant_firstName: "",
       tenant_lastName: "",
       tenant_mobileNumber: "",
+      tenant_email: "",
+      tenant_password: "",
+      tenant_workNumber: "",
+      tenant_unitNumber: "",
+      tenant_homeNumber: "",
+      tenant_faxPhoneNumber: "",
+      alternate_email: "",
+      tenant_residentStatus: "",
+      birth_date: "",
+      textpayer_id: "",
+      comments: "",
+      contact_name: "",
+      relationship_tenants: "",
+      email: "",
+      emergency_PhoneNumber: "",
     });
   };
 
@@ -450,9 +466,7 @@ const RentRollLeaseing = () => {
   };
 
   const handleDateChange = (date) => {
-    leaseFormik.values.entries[0].start_date = moment(date).format('YYYY-MM-DD');
     const nextDate = moment(date).add(1, 'months').format('YYYY-MM-DD');
-    // console.log(date)
     leaseFormik.values.entries[0].end_date = nextDate;
   };
 
@@ -567,11 +581,12 @@ const RentRollLeaseing = () => {
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
     fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
           setPropertyData(data.data);
-          // console.log(data.data, "gdasga");
+          console.log(data.data, "gdasga");
         } else {
           // Handle error
           console.error("Error:", data.message);
@@ -706,11 +721,53 @@ const RentRollLeaseing = () => {
 
     // Toggle the selected tenants in the state when their checkboxes are clicked
     if (event.target.checked) {
+      // console.log(selectedTenants)
       setSelectedTenants([tenantInfo, ...selectedTenants]);
+      tenantsFormik.setValues({
+        tenant_firstName: tenantInfo.tenant_firstName,
+        tenant_lastName: tenantInfo.tenant_lastName,
+        tenant_mobileNumber: tenantInfo.tenant_mobileNumber,
+        tenant_email: tenantInfo.tenant_email,
+        tenant_password: tenantInfo.tenant_password,
+        tenant_workNumber: tenantInfo.tenant_workNumber,
+        tenant_unitNumber: tenantInfo.tenant_unitNumber,
+        tenant_homeNumber: tenantInfo.tenant_homeNumbere,
+        tenant_faxPhoneNumber: tenantInfo.tenant_faxPhoneNumber,
+        alternate_email: tenantInfo.alternate_email,
+        tenant_residentStatus: tenantInfo.tenant_residentStatus,
+        birth_date: tenantInfo.birth_date,
+        textpayer_id: tenantInfo.textpayer_id,
+        comments: tenantInfo.comments,
+        contact_name: tenantInfo.contact_name,
+        relationship_tenants: tenantInfo.relationship_tenants,
+        email: tenantInfo.email,
+        emergency_PhoneNumber: tenantInfo.emergency_PhoneNumber,
+      });
     } else {
+      // console.log(selectedTenants)
       setSelectedTenants(
         selectedTenants.filter((tenant) => tenant !== tenantInfo)
       );
+      tenantsFormik.setValues({
+        tenant_firstName: "",
+        tenant_lastName: "",
+        tenant_mobileNumber: "",
+        tenant_email: "",
+        tenant_password: "",
+        tenant_workNumber: "",
+        tenant_unitNumber: "",
+        tenant_homeNumber: "",
+        tenant_faxPhoneNumber: "",
+        alternate_email: "",
+        tenant_residentStatus: "",
+        birth_date: "",
+        textpayer_id: "",
+        comments: "",
+        contact_name: "",
+        relationship_tenants: "",
+        email: "",
+        emergency_PhoneNumber: "",
+      });
     }
   };
 
@@ -938,7 +995,7 @@ const RentRollLeaseing = () => {
     },
     validationSchema: leaseValidationSchema,
     onSubmit: (values) => {
-      if (selectedTenantData.length !== 0 || cosignerData.length !== 0) {
+      if (selectedTenantData.length !== 0 || !tenantsFormik.errors) {
         handleSubmit(values);
       } else {
         setDisplay(true);
@@ -1054,8 +1111,8 @@ const RentRollLeaseing = () => {
     validationSchema: tenantsValidationSchema,
     onSubmit: () => {
       // handleSubmit(values);
-      handleDialogClose();
       handleAddTenant();
+      handleDialogClose();
       // console.log(values, "values");
     },
   });
@@ -1182,33 +1239,33 @@ const RentRollLeaseing = () => {
             // Security_amount: matchedLease.Security_amount || "",
             entries: [
               {
-                rental_adress: "",
-                lease_type: "",
-                start_date: "",
-                end_date: "",
-                amount: "",
-                recuring_amount: "",
-                recuring_account: "",
-                recuringmemo: "",
+                rental_adress: matchedLease.rental_adress || "",
+                lease_type: matchedLease.lease_type || "",
+                start_date: matchedLease.start_date || "",
+                end_date: matchedLease.end_date || "",
+                amount: matchedLease.amount || "",
+                recuring_amount: matchedLease.recuring_amount || "",
+                recuring_account: matchedLease.recuring_account || "",
+                recuringmemo: matchedLease.recuringmemo || "",
 
                 //add one time charge
-                onetime_amount: "",
-                onetime_account: "",
-                onetime_memo: "",
+                onetime_amount: matchedLease.onetime_amount || "",
+                onetime_account: matchedLease.onetime_account || "",
+                onetime_memo: matchedLease.onetime_memo || "",
 
                 // add account
-                account_name: "",
-                account_type: "",
-                account_number: "",
+                account_name: matchedLease.account_name || "",
+                account_type: matchedLease.account_type || "",
+                account_number: matchedLease.account_number || "",
 
                 //upload File
-                upload_file: "",
+                upload_file: matchedLease.upload_file || "",
 
                 // parent account
-                parent_account: "",
-                fund_type: "",
-                cash_flow: "",
-                notes: "",
+                parent_account: matchedLease.parent_account || "",
+                fund_type: matchedLease.fund_type || "",
+                cash_flow: matchedLease.cash_flow || "",
+                notes: matchedLease.notes || "",
               },
             ],
           });
@@ -1220,7 +1277,7 @@ const RentRollLeaseing = () => {
             // amount: matchedLease.amount || "",
             // nextDue_date: formattedNextDueDate,
             // memo: matchedLease.memo || "",
-            birth_date: formattedBirthDate,
+            birth_date: formattedBirthDate || "",
             textpayer_id: laesingdata.textpayer_id || "",
             comments: laesingdata.comments || "",
             contact_name: laesingdata.contact_name || "",
@@ -1279,19 +1336,21 @@ const RentRollLeaseing = () => {
             // tenant_password: laesingdata.tenant_password || "",
             // tenant_workNumber: laesingdata.tenant_workNumber || "",
             // alternate_email: laesingdata.alternate_email || "",
-            cosigner_firstName: matchedLease.cosigner_firstName || "",
-            cosigner_lastName: matchedLease.cosigner_lastName || "",
-            cosigner_mobileNumber: matchedLease.cosigner_mobileNumber || "",
-            cosigner_workNumber: matchedLease.cosigner_workNumber || "",
-            cosigner_homeNumber: matchedLease.cosigner_homeNumber || "",
-            cosigner_faxPhoneNumber: matchedLease.cosigner_faxPhoneNumber || "",
-            cosigner_email: matchedLease.cosigner_email || "",
-            cosigner_alternateemail: matchedLease.cosigner_alternateemail || "",
-            cosigner_streetAdress: matchedLease.cosigner_streetAdress || "",
-            cosigner_city: matchedLease.cosigner_city || "",
-            cosigner_state: matchedLease.cosigner_state || "",
-            cosigner_country: matchedLease.cosigner_country || "",
-            cosigner_postalcode: matchedLease.cosigner_postalcode || "",
+            entries: [{
+              cosigner_firstName: matchedLease.cosigner_firstName || "",
+              cosigner_lastName: matchedLease.cosigner_lastName || "",
+              cosigner_mobileNumber: matchedLease.cosigner_mobileNumber || "",
+              cosigner_workNumber: matchedLease.cosigner_workNumber || "",
+              cosigner_homeNumber: matchedLease.cosigner_homeNumber || "",
+              cosigner_faxPhoneNumber: matchedLease.cosigner_faxPhoneNumber || "",
+              cosigner_email: matchedLease.cosigner_email || "",
+              cosigner_alternateemail: matchedLease.cosigner_alternateemail || "",
+              cosigner_streetAdress: matchedLease.cosigner_streetAdress || "",
+              cosigner_city: matchedLease.cosigner_city || "",
+              cosigner_state: matchedLease.cosigner_state || "",
+              cosigner_country: matchedLease.cosigner_country || "",
+              cosigner_postalcode: matchedLease.cosigner_postalcode || "",
+            }]
             // recuring_amount: matchedLease.recuring_amount || "",
             // recuringnextDue_date: formattedRecuringNextDueDate,
             // recuringmemo: matchedLease.recuringmemo || "",
@@ -1300,6 +1359,7 @@ const RentRollLeaseing = () => {
             // onetime_memo: matchedLease.onetime_memo || "",
             // Security_amount: matchedLease.Security_amount || "",
           });
+          console.log(matchedLease)
         })
         .catch((error) => {
           console.error("Error fetching vendor data:", error);
@@ -1307,7 +1367,6 @@ const RentRollLeaseing = () => {
       handleAddTenant();
     }
   }, [id, entryIndex]);
-
   const handleSubmit = async (values) => {
     // console.log(file, "values");
     const arrayOfNames = Array.isArray(file) ? file.map((item) => item.name) : [];
@@ -1587,6 +1646,9 @@ const RentRollLeaseing = () => {
         console.error("Error:", error);
       });
   };
+  console.log(consignerFormik, "1");
+  console.log(leaseFormik, "2");
+  console.log(tenantsFormik, "3");
 
   function handleResponse(response) {
     if (response.status === 200) {
@@ -1782,158 +1844,170 @@ const RentRollLeaseing = () => {
                                 overflowY: "auto",
                               }}
                             >
-                                 {propertyData.map((property) => (
+                              {propertyData.map((property) => (
                                 <DropdownItem
                                   key={property._id}
                                   onClick={() =>
-                                    handlePropertyTypeSelect(
-                                      property.rental_adress
-                                    )
+                                    {
+
+                                      handlePropertyTypeSelect(
+                                        property.rental_adress
+                                      )
+                                      handlePropertyTypeSelect(
+                                        property.rental_adress
+                                      )
+                                    }
                                   }
                                 >
-                                  {property.rental_adress}
-                                </DropdownItem>
+                              {property.rental_adress}
+                              {property.rental_adress}
+                            </DropdownItem>
                               ))}
-                            </DropdownMenu>
-                            {leaseFormik.errors.entries &&
-                              leaseFormik.errors?.entries[0].rental_adress &&
-                              leaseFormik.touched.entries &&
-                              leaseFormik.touched?.entries[0].rental_adress && leaseFormik.values.entries[0].rental_adress === "" ? (
-                              <div style={{ color: "red" }}>
-                                {leaseFormik.errors.entries[0].rental_adress}
-                              </div>
-                            ) : null}
-                            {/* {console.log(leaseFormik.values.entries[0])} */}
-                          </Dropdown>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
+                          </DropdownMenu>
+                          {leaseFormik.errors.entries &&
+                            leaseFormik.errors?.entries[0].rental_adress &&
+                            leaseFormik.touched.entries &&
+                            leaseFormik.touched?.entries[0].rental_adress && leaseFormik.values.entries[0].rental_adress === "" ? (
+                            <div style={{ color: "red" }}>
+                              {leaseFormik.errors.entries[0].rental_adress}
+                            </div>
+                          ) : null}
+                          {/* {console.log(leaseFormik.values.entries[0])} */}
+                        </Dropdown>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col lg="3">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Lease Type
+                        </label>
+                        <br />
+                        <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                          <DropdownToggle caret style={{ width: "100%" }}>
+                            {selectedLeaseType
+                              ? selectedLeaseType
+                              : "Select Lease"}{" "}
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                          </DropdownToggle>
+                          <DropdownMenu
+                            style={{ width: "100%" }}
+                          // name="lease_type"
+                          // onBlur={leaseFormik.handleBlur}
+                          // onChange={leaseFormik.handleChange}
+                          // value={leaseFormik.values.lease_type}
                           >
-                            Lease Type
-                          </label>
-                          <br />
-                          <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectedLeaseType
-                                ? selectedLeaseType
-                                : "Select Lease"}{" "}
-                              &nbsp;&nbsp;&nbsp;&nbsp;
-                            </DropdownToggle>
-                            <DropdownMenu
-                              style={{ width: "100%" }}
-                            // name="lease_type"
-                            // onBlur={leaseFormik.handleBlur}
-                            // onChange={leaseFormik.handleChange}
-                            // value={leaseFormik.values.lease_type}
-                            >
-                              {/* {leaseFormik.touched.lease_type &&
+                            {/* {leaseFormik.touched.lease_type &&
                                 leaseFormik.errors.lease_type ? (
                                 <div style={{ color: "red" }}>
                                   {leaseFormik.errors.lease_type}
                                 </div>
                               ) : null} */}
-                              <DropdownItem
-                                onClick={() => handleLeaseTypeSelect("Fixed")}
-                              >
-                                Fixed
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleLeaseTypeSelect("Fixed wirollover")
-                                }
-                              >
-                                Fixed wirollover
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => handleLeaseTypeSelect("At-will")}
-                              >
-                                At-will
-                              </DropdownItem>
-                            </DropdownMenu>
-                            {leaseFormik.errors.entries &&
-                              leaseFormik.errors?.entries[0].lease_type &&
-                              leaseFormik.touched.entries &&
-                              leaseFormik.touched?.entries[0].lease_type && leaseFormik.values.entries[0].lease_type === "" ? (
-                              <div style={{ color: "red" }}>
-                                {leaseFormik.errors.entries[0].lease_type}
-                              </div>
-                            ) : null}
-                          </Dropdown>
-                        </FormGroup>
-                      </Col>
-                      &nbsp; &nbsp; &nbsp; &nbsp;
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-unitadd1"
-                          >
-                            Start Date *
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-unitadd1"
-                            placeholder="3000"
-                            type="date"
-                            name="start_date"
-                            onBlur={leaseFormik.handleBlur}
-                            onChange={(e) => handleDateChange(e.target.value)}
-                            value={moment(leaseFormik.values.entries[0].start_date).format(
-                              "YYYY-MM-DD"
-                            )}
-                          />
-                          {leaseFormik.touched.entries &&
-                            leaseFormik.touched.entries[0].start_date &&
-                            leaseFormik.errors.entries &&
-                            leaseFormik.errors.entries[0].start_date ? (
+                            <DropdownItem
+                              onClick={() => handleLeaseTypeSelect("Fixed")}
+                            >
+                              Fixed
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() =>
+                                handleLeaseTypeSelect("Fixed wirollover")
+                              }
+                            >
+                              Fixed wirollover
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() => handleLeaseTypeSelect("At-will")}
+                            >
+                              At-will
+                            </DropdownItem>
+                          </DropdownMenu>
+                          {leaseFormik.errors.entries &&
+                            leaseFormik.errors?.entries[0].lease_type &&
+                            leaseFormik.touched.entries &&
+                            leaseFormik.touched?.entries[0].lease_type && leaseFormik.values.entries[0].lease_type === "" ? (
                             <div style={{ color: "red" }}>
-                              {leaseFormik.errors.entries[0].start_date}
-
+                              {leaseFormik.errors.entries[0].lease_type}
                             </div>
-                          ) : <></>}
-                        </FormGroup>
-                      </Col>
-                      &nbsp; &nbsp; &nbsp;
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-unitadd2"
-                          >
-                            End Date *
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-unitadd2"
-                            placeholder="3000"
-                            type="date"
-                            name="end_date"
-                            onBlur={leaseFormik.handleBlur}
-                            onChange={(e) => {
-                              leaseFormik.handleChange(e);
-                            }}
-                            value={leaseFormik.values.entries[0].end_date}
-                            min={moment(leaseFormik.values.entries[0].start_date).format(
-                              "YYYY-MM-DD"
-                            )}
-                          />
-                          {/* {leaseFormik.touched.end_date &&
+                          ) : null}
+                        </Dropdown>
+                      </FormGroup>
+                    </Col>
+                    &nbsp; &nbsp; &nbsp; &nbsp;
+                    <Col lg="3">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-unitadd1"
+                        >
+                          Start Date *
+                        </label>
+                        <Input
+                          className="form-control-alternative"
+                          id="input-unitadd1"
+                          placeholder="3000"
+                          type="date"
+                          name="start_date"
+                          onBlur={leaseFormik.handleBlur}
+                          onChange={(e) => {
+                            leaseFormik.handleChange(e);
+                            leaseFormik.values.entries[0].start_date = moment(e.target.value).format('YYYY-MM-DD');
+                            handleDateChange(e.target.value);
+                          }}
+                          value={moment(leaseFormik.values.entries[0].start_date).format(
+                            "YYYY-MM-DD"
+                          )}
+                        />
+                        {leaseFormik.touched.entries &&
+                          leaseFormik.touched.entries[0].start_date &&
+                          leaseFormik.errors.entries &&
+                          leaseFormik.errors.entries[0].start_date ? (
+                          <div style={{ color: "red" }}>
+                            {leaseFormik.errors.entries[0].start_date}
+
+                          </div>
+                        ) : <></>}
+                      </FormGroup>
+                    </Col>
+                    &nbsp; &nbsp; &nbsp;
+                    <Col lg="3">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-unitadd2"
+                        >
+                          End Date *
+                        </label>
+                        <Input
+                          className="form-control-alternative"
+                          id="input-unitadd2"
+                          placeholder="3000"
+                          type="date"
+                          name="end_date"
+                          onBlur={leaseFormik.handleBlur}
+                          onChange={(e) => {
+                            leaseFormik.handleChange(e);
+                            leaseFormik.values.entries[0].end_date = moment(e.target.value).format('YYYY-MM-DD');
+                          }}
+                          value={leaseFormik.values.entries[0].end_date}
+                          min={moment(leaseFormik.values.entries[0].start_date).format(
+                            "YYYY-MM-DD"
+                          )}
+                        />
+                        {/* {leaseFormik.touched.end_date &&
                             leaseFormik.errors.end_date ? (
                             <div style={{ color: "red" }}>
                               {leaseFormik.errors.end_date}
                             </div>
                           ) : null} */}
-                        </FormGroup>
-                      </Col>
-                    </Row>
+                      </FormGroup>
+                    </Col>
+                  </Row>
 
-                    {/* <Row>
+                  {/* <Row>
                       <Col lg="6">
                         <label
                           className="form-control-label"
@@ -1962,1157 +2036,235 @@ const RentRollLeaseing = () => {
                         </FormGroup>
                       </Col>
                     </Row> */}
-                  </div>
+                </div>
 
-                  <hr className="my-4" />
+                <hr className="my-4" />
 
-                  <h6 className="heading-small text-muted mb-4">
-                    Tenants and Cosigner
-                  </h6>
-                  <div className="pl-lg-4"></div>
+                <h6 className="heading-small text-muted mb-4">
+                  Tenants and Cosigner
+                </h6>
+                <div className="pl-lg-4"></div>
 
-                  <Row>
-                    <Col lg="12">
-                      <FormGroup>
-                        <span
-                          onClick={() => {
-                            setShowTenantTable(false);
-                            setOpenTenantsDialog(true);
-                          }}
-                          style={{
-                            cursor: "pointer",
-                            fontSize: "14px",
-                            fontFamily: "monospace",
-                            color: "blue",
-                          }}
+                <Row>
+                  <Col lg="12">
+                    <FormGroup>
+                      <span
+                        onClick={() => {
+                          setShowTenantTable(false);
+                          setOpenTenantsDialog(true);
+                        }}
+                        style={{
+                          cursor: "pointer",
+                          fontSize: "14px",
+                          fontFamily: "monospace",
+                          color: "blue",
+                        }}
+                      >
+                        <b style={{ fontSize: "20px" }}>+</b> Add Tenant or
+                        Consigner
+                        {display === false ? <></> :
+                          <div style={{ color: "red" }}>required</div>}
+                      </span>
+
+                      <Dialog open={openTenantsDialog} onClose={handleClose}>
+                        <DialogTitle style={{ background: "#F0F8FF" }}>
+                          Add tenant or cosigner
+                        </DialogTitle>
+                        <DialogContent
+                          style={{ width: "100%", maxWidth: "500px" }}
                         >
-                          <b style={{ fontSize: "20px" }}>+</b> Add Tenant or
-                          Consigner
-                          {display === false ? <></> :
-                            <div style={{ color: "red" }}>required</div>}
-                        </span>
-
-                        <Dialog open={openTenantsDialog} onClose={handleClose}>
-                          <DialogTitle style={{ background: "#F0F8FF" }}>
-                            Add tenant or cosigner
-                          </DialogTitle>
-                          <DialogContent
-                            style={{ width: "100%", maxWidth: "500px" }}
+                          <div
+                            style={{
+                              // display: "flex",
+                              alignItems: "center",
+                              margin: "30px 0",
+                            }}
                           >
                             <div
                               style={{
-                                // display: "flex",
+                                display: "flex",
                                 alignItems: "center",
-                                margin: "30px 0",
                               }}
                             >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
+                              <ToggleButtonGroup
+                                color="primary"
+                                value={alignment}
+                                exclusive
+                                onChange={(e) => { handleChange(e.target.value) }}
+                                aria-label="Platform"
+                                style={{ width: "100%" }}
                               >
-                                <ToggleButtonGroup
-                                  color="primary"
-                                  value={alignment}
-                                  exclusive
-                                  onChange={(e) => { handleChange(e.target.value) }}
-                                  aria-label="Platform"
-                                  style={{ width: "100%" }}
+                                <ToggleButton
+                                  value="Tenant"
+                                  onClick={() => {
+                                    setSelectedOption("Tenant");
+                                    setShowForm(true);
+                                  }}
+                                  style={{
+                                    width: "15rem",
+                                    textTransform: "capitalize",
+                                  }}
                                 >
-                                  <ToggleButton
-                                    value="Tenant"
-                                    onClick={() => {
-                                      setSelectedOption("Tenant");
-                                      setShowForm(true);
-                                    }}
-                                    style={{
-                                      width: "15rem",
-                                      textTransform: "capitalize",
-                                    }}
-                                  >
-                                    Tenant
-                                  </ToggleButton>
-                                  <ToggleButton
-                                    value="Cosigner"
-                                    onClick={() => {
-                                      setSelectedOption("Cosigner");
-                                      setShowForm(true);
-                                    }}
-                                    style={{
-                                      width: "15rem",
-                                      textTransform: "capitalize",
-                                    }}
-                                  >
-                                    Cosigner
-                                  </ToggleButton>
-                                </ToggleButtonGroup>
-                              </div>
-                              <br />
+                                  Tenant
+                                </ToggleButton>
+                                <ToggleButton
+                                  value="Cosigner"
+                                  onClick={() => {
+                                    setSelectedOption("Cosigner");
+                                    setShowForm(true);
+                                  }}
+                                  style={{
+                                    width: "15rem",
+                                    textTransform: "capitalize",
+                                  }}
+                                >
+                                  Cosigner
+                                </ToggleButton>
+                              </ToggleButtonGroup>
+                            </div>
+                            <br />
 
-                              {showForm && (
-                                <div>
-                                  {selectedOption === "Tenant" && (
-                                    <div className="tenant">
-                                      <div>
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                          }}
-                                        >
-                                          <Checkbox
-                                            onChange={handleChange}
-                                            style={{ marginRight: "10px" }}
-                                            checked={showTenantTable === true}
-                                          />
-                                          <label className="form-control-label">
-                                            Choose an existing tenant
-                                          </label>
-                                        </div>
-                                        <br />
+                            {showForm && (
+                              <div>
+                                {selectedOption === "Tenant" && (
+                                  <div className="tenant">
+                                    <div>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <Checkbox
+                                          onChange={handleChange}
+                                          style={{ marginRight: "10px" }}
+                                          checked={showTenantTable === true}
+                                        />
+                                        <label className="form-control-label">
+                                          Choose an existing tenant
+                                        </label>
                                       </div>
+                                      <br />
+                                    </div>
 
-                                      {showTenantTable &&
-                                        tenantData.length > 0 && (
-                                          <div className="TenantTable">
-                                            <table
-                                              style={{
-                                                width: "100%",
-                                                borderCollapse: "collapse",
-                                                border: "1px solid #ddd",
-                                              }}
-                                            >
-                                              <thead>
-                                                <tr>
-                                                  <th>Tenant Name</th>
-                                                  <th>Select</th>
-                                                </tr>
-                                              </thead>
-                                              <tbody>
-                                                {Array.isArray(tenantData) &&
-                                                  tenantData?.map(
-                                                    (tenant, index) => (
-                                                      <tr
-                                                        key={index}
-                                                        style={{
-                                                          border:
-                                                            "1px solid #ddd",
-                                                        }}
-                                                      >
-                                                        <td>
+                                    {showTenantTable &&
+                                      tenantData.length > 0 && (
+                                        <div className="TenantTable">
+                                          <table
+                                            style={{
+                                              width: "100%",
+                                              borderCollapse: "collapse",
+                                              border: "1px solid #ddd",
+                                            }}
+                                          >
+                                            <thead>
+                                              <tr>
+                                                <th>Tenant Name</th>
+                                                <th>Select</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {Array.isArray(tenantData) &&
+                                                tenantData?.map(
+                                                  (tenant, index) => (
+                                                    <tr
+                                                      key={index}
+                                                      style={{
+                                                        border:
+                                                          "1px solid #ddd",
+                                                      }}
+                                                    >
+                                                      <td>
+                                                        <pre>
                                                           {
                                                             tenant.tenant_firstName
-                                                          }
-                                                          {
+                                                          } {
                                                             tenant.tenant_lastName
                                                           }
-                                                        </td>
-                                                        <td>
-                                                          {/* <FormControlLabel
+                                                        </pre>
+
+                                                      </td>
+                                                      <td>
+                                                        {/* <FormControlLabel
                                                           control={  */}
-                                                          <Checkbox
-                                                            type="checkbox"
-                                                            name="tenant"
-                                                            id={
+                                                        <Checkbox
+                                                          type="checkbox"
+                                                          name="tenant"
+                                                          id={
+                                                            tenant.tenant_mobileNumber
+                                                          }
+                                                          checked={
+                                                            tenant.tenant_mobileNumber ===
+                                                            checkedCheckbox
+                                                          }
+                                                          onChange={(event) => {
+                                                            setCheckedCheckbox(tenant.tenant_mobileNumber);
+                                                            // const tenantInfo = `${tenant.tenant_firstName || ""} 
+                                                            // ${tenant.tenant_lastName ||
+                                                            //   ""
+                                                            //   } ${tenant.tenant_mobileNumber ||
+                                                            //   ""
+                                                            //   } ${tenant.tenant_email ||
+                                                            //   ""
+                                                            //   } ${tenant.textpayer_id ||
+                                                            //   ""
+                                                            //   } ${tenant.birth_date ||
+                                                            //   ""
+                                                            //   } ${tenant.comments ||
+                                                            //   ""
+                                                            //   } ${tenant.contact_name ||
+                                                            //   ""
+                                                            //   } ${tenant.relationship_tenants ||
+                                                            //   ""
+                                                            //   } ${tenant.email ||
+                                                            //   ""
+                                                            //   } ${tenant.emergency_PhoneNumber ||
+                                                            //   ""
+                                                            //   } ${tenant.tenant_password ||
+                                                            //   ""
+                                                            //   } ${tenant.tenant_workNumber ||
+                                                            //   ""
+                                                            //   } ${tenant.alternate_email ||
+                                                            //   ""
+                                                            //   }`;
+                                                            const tenantInfo1 = {
+                                                              tenant_firstName: tenant.tenant_firstName,
+                                                              tenant_lastName: tenant.tenant_lastName,
+                                                              tenant_mobileNumber: tenant.tenant_mobileNumber,
+                                                              tenant_email: tenant.tenant_email,
+                                                              textpayer_id: tenant.textpayer_id,
+                                                              birth_date: tenant.birth_date,
+                                                              comments: tenant.comments,
+                                                              contact_name: tenant.contact_name,
+                                                              relationship_tenants: tenant.relationship_tenants,
+                                                              email: tenant.email,
+                                                              emergency_PhoneNumber: tenant.emergency_PhoneNumber,
+                                                              tenant_password: tenant.tenant_password,
+                                                              tenant_workNumber: tenant.tenant_workNumber,
+                                                              alternate_email: tenant.alternate_email,
+                                                            };
+                                                            handleCheckboxChange(
+                                                              event,
+                                                              tenantInfo1,
                                                               tenant.tenant_mobileNumber
-                                                            }
-                                                            checked={
-                                                              tenant.tenant_mobileNumber ===
-                                                              checkedCheckbox
-                                                            }
-                                                            onChange={(
-                                                              event
-                                                            ) => {
-                                                              setCheckedCheckbox(
-                                                                tenant.tenant_mobileNumber
-                                                              );
-                                                              const tenantInfo = `${tenant.tenant_firstName ||
-                                                                ""
-                                                                } ${tenant.tenant_lastName ||
-                                                                ""
-                                                                } ${tenant.tenant_mobileNumber ||
-                                                                ""
-                                                                } ${tenant.tenant_email ||
-                                                                ""
-                                                                } ${tenant.textpayer_id ||
-                                                                ""
-                                                                } ${tenant.birth_date ||
-                                                                ""
-                                                                } ${tenant.comments ||
-                                                                ""
-                                                                } ${tenant.contact_name ||
-                                                                ""
-                                                                } ${tenant.relationship_tenants ||
-                                                                ""
-                                                                } ${tenant.email ||
-                                                                ""
-                                                                } ${tenant.emergency_PhoneNumber ||
-                                                                ""
-                                                                } ${tenant.tenant_password ||
-                                                                ""
-                                                                } ${tenant.tenant_workNumber ||
-                                                                ""
-                                                                } ${tenant.alternate_email ||
-                                                                ""
-                                                                }`;
-                                                              handleCheckboxChange(
-                                                                event,
-                                                                tenantInfo,
-                                                                tenant.tenant_mobileNumber
-                                                              );
-                                                            }}
-                                                          />
-                                                        </td>
-                                                      </tr>
-                                                    )
-                                                  )}
-                                              </tbody>
-                                            </table>
-                                            <br />
-                                          </div>
-                                        )}
-                                      {!showTenantTable && (
-                                        <div
-                                          className="TenantDetail"
-                                          style={{ margin: "10px 10px" }}
-                                        >
-                                          <span
-                                            style={{
-                                              marginBottom: "1rem",
-                                              display: "flex",
-                                              background: "grey",
-                                              cursor: "pointer",
-                                            }}
-                                          >
-                                            &nbsp;Contact information
-                                          </span>
-                                          <div
-                                            style={{
-                                              display: "flex",
-                                              flexDirection: "row",
-                                            }}
-                                          >
-                                            <div
-                                              style={{
-                                                flex: 1,
-                                                marginRight: "10px",
-                                              }}
-                                            >
-                                              <label
-                                                className="form-control-label"
-                                                htmlFor="tenant_firstName"
-                                              // style={{
-                                              //   fontFamily: "monospace",
-                                              //   fontSize: "14px",
-                                              // }}
-                                              >
-                                                First Name *
-                                              </label>
-                                              <br />
-                                              <Input
-                                                id="tenant_firstName"
-                                                className="form-control-alternative"
-                                                variant="standard"
-                                                type="text"
-                                                placeholder="First Name"
-                                                style={{
-                                                  marginRight: "10px",
-                                                  flex: 1,
-                                                }} // Adjust flex property
-                                                name="tenant_firstName"
-                                                onBlur={tenantsFormik.handleBlur}
-                                                onChange={
-                                                  tenantsFormik.handleChange
-                                                }
-                                                value={
-                                                  tenantsFormik.values
-                                                    .tenant_firstName
-                                                }
-                                              />
-                                              {tenantsFormik.touched
-                                                .tenant_firstName &&
-                                                tenantsFormik.errors
-                                                  .tenant_firstName ? (
-                                                <div style={{ color: "red" }}>
-                                                  {
-                                                    tenantsFormik.errors
-                                                      .tenant_firstName
-                                                  }
-                                                </div>
-                                              ) : null}
-                                            </div>
-
-                                            <div
-                                              style={{
-                                                flex: 1,
-                                                marginRight: "10px",
-                                              }}
-                                            >
-                                              <label
-                                                className="form-control-label"
-                                                htmlFor="tenant_lastName"
-                                              // style={{
-                                              //   fontFamily: "monospace",
-                                              //   fontSize: "14px",
-                                              // }}
-                                              >
-                                                Last Name *
-                                              </label>
-                                              <br />
-                                              <Input
-                                                id="tenant_lastName"
-                                                className="form-control-alternative"
-                                                variant="standard"
-                                                type="text"
-                                                placeholder="Last Name"
-                                                style={{
-                                                  marginRight: "10px",
-                                                  flex: 1,
-                                                }} // Adjust flex property
-                                                name="tenant_lastName"
-                                                onBlur={tenantsFormik.handleBlur}
-                                                onChange={
-                                                  tenantsFormik.handleChange
-                                                }
-                                                value={
-                                                  tenantsFormik.values
-                                                    .tenant_lastName
-                                                }
-                                              />
-                                              {tenantsFormik.touched
-                                                .tenant_lastName &&
-                                                tenantsFormik.errors
-                                                  .tenant_lastName ? (
-                                                <div style={{ color: "red" }}>
-                                                  {
-                                                    tenantsFormik.errors
-                                                      .tenant_lastName
-                                                  }
-                                                </div>
-                                              ) : null}
-                                            </div>
-                                          </div>
-                                          <br />
-
-                                          <div
-                                            style={{
-                                              // display: "flex",
-                                              flexDirection: "row",
-                                              alignItems: "center",
-                                            }}
-                                          >
-                                            <div
-                                              style={{
-                                                flex: 1,
-                                                marginRight: "10px",
-                                              }}
-                                            >
-                                              <label
-                                                className="form-control-label"
-                                                htmlFor="tenant_mobileNumber"
-                                              // style={{
-                                              //   fontFamily: "monospace",
-                                              //   fontSize: "14px",
-                                              // }}
-                                              >
-                                                Phone Number*
-                                              </label>
-                                              <br />
-                                              <Input
-                                                id="tenant_mobileNumber"
-                                                className="form-control-alternative"
-                                                variant="standard"
-                                                type="text"
-                                                placeholder="phoneNumber"
-                                                style={{
-                                                  marginRight: "10px",
-                                                  flex: 1,
-                                                }} // Adjust flex property
-                                                name="tenant_mobileNumber"
-                                                onBlur={tenantsFormik.handleBlur}
-                                                onChange={
-                                                  tenantsFormik.handleChange
-                                                }
-                                                value={
-                                                  tenantsFormik.values
-                                                    .tenant_mobileNumber
-                                                }
-                                                onInput={(e) => {
-                                                  const tenantsFormik =
-                                                    e.target.value;
-                                                  const numericValue =
-                                                    tenantsFormik.replace(
-                                                      /\D/g,
-                                                      ""
-                                                    ); // Remove non-numeric characters
-                                                  e.target.value = numericValue;
-                                                }}
-                                              />
-                                              {tenantsFormik.touched
-                                                .tenant_mobileNumber &&
-                                                tenantsFormik.errors
-                                                  .tenant_mobileNumber ? (
-                                                <div style={{ color: "red" }}>
-                                                  {
-                                                    tenantsFormik.errors
-                                                      .tenant_mobileNumber
-                                                  }
-                                                </div>
-                                              ) : null}
-                                            </div>
-                                            {/* <span
-                                              onClick={setOpenTenantsDialog}
-                                              style={{
-                                                cursor: "pointer",
-                                                fontSize: "14px",
-                                                fontFamily: "monospace",
-                                                color: "blue",
-                                              }}
-                                            >
-                                              <b style={{ fontSize: "20px" }}>
-                                                +
-                                              </b>{" "}
-                                              Add alternative Phone
-                                            </span> */}
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                              }}
-                                            >
-                                              <span
-                                                onClick={handleClick}
-                                                style={{
-                                                  cursor: "pointer",
-                                                  fontSize: "14px",
-                                                  fontFamily: "monospace",
-                                                  color: "blue",
-                                                  paddingTop: "3%",
-                                                }}
-                                              >
-                                                <b style={{ fontSize: "20px" }}>
-                                                  +
-                                                </b>
-                                                Add alternative Phone
-                                              </span>
-                                              {rentincdropdownOpen1 && (
-                                                <div
-                                                  style={{
-                                                    flex: 1,
-                                                    marginRight: "10px",
-                                                  }}
-                                                >
-                                                  <label
-                                                    className="form-control-label"
-                                                    htmlFor="tenant_workNumber"
-                                                    style={{
-                                                      paddingTop: "3%",
-                                                    }}
-                                                  >
-                                                    Work Number*
-                                                  </label>
-                                                  <br />
-                                                  <Input
-                                                    id="tenant_workNumber"
-                                                    className="form-control-alternative"
-                                                    variant="standard"
-                                                    type="text"
-                                                    placeholder="Alternative Number"
-                                                    style={{
-                                                      marginRight: "10px",
-                                                      flex: 1,
-                                                    }} // Adjust flex property
-                                                    name="tenant_workNumber"
-                                                    onBlur={
-                                                      tenantsFormik.handleBlur
-                                                    }
-                                                    onChange={
-                                                      tenantsFormik.handleChange
-                                                    }
-                                                    value={
-                                                      tenantsFormik.values
-                                                        .tenant_workNumber
-                                                    }
-                                                    onInput={(e) => {
-                                                      const inputValue =
-                                                        e.target.value;
-                                                      const numericValue =
-                                                        inputValue.replace(
-                                                          /\D/g,
-                                                          ""
-                                                        ); // Remove non-numeric characters
-                                                      e.target.value =
-                                                        numericValue;
-                                                    }}
-                                                  />
-                                                  {tenantsFormik.touched
-                                                    .tenant_workNumber &&
-                                                    tenantsFormik.errors
-                                                      .tenant_workNumber ? (
-                                                    <div
-                                                      style={{ color: "red" }}
-                                                    >
-                                                      {
-                                                        tenantsFormik.errors
-                                                          .tenant_workNumber
-                                                      }
-                                                    </div>
-                                                  ) : null}
-                                                </div>
-                                              )}
-                                            </div>
-                                          </div>
-                                          <br />
-                                          <div
-                                            style={{
-                                              // display: "flex",
-                                              flexDirection: "row",
-                                              alignItems: "center",
-                                            }}
-                                          >
-                                            <div
-                                              style={{
-                                                flex: 1,
-                                                marginRight: "10px",
-                                              }}
-                                            >
-                                              <label
-                                                className="form-control-label"
-                                                htmlFor="tenant_email"
-                                              // style={{
-                                              //   fontFamily: "monospace",
-                                              //   fontSize: "14px",
-                                              // }}
-                                              >
-                                                Email*
-                                              </label>
-                                              <br />
-                                              <Input
-                                                id="tenant_email"
-                                                className="form-control-alternative"
-                                                variant="standard"
-                                                type="text"
-                                                placeholder="Email"
-                                                style={{
-                                                  marginRight: "10px",
-                                                  flex: 1,
-                                                }} // Adjust flex property
-                                                name="tenant_email"
-                                                onBlur={tenantsFormik.handleBlur}
-                                                onChange={
-                                                  tenantsFormik.handleChange
-                                                }
-                                                value={
-                                                  tenantsFormik.values
-                                                    .tenant_email
-                                                }
-                                              />
-                                              {tenantsFormik.touched
-                                                .tenant_email &&
-                                                tenantsFormik.errors
-                                                  .tenant_email ? (
-                                                <div style={{ color: "red" }}>
-                                                  {
-                                                    tenantsFormik.errors
-                                                      .tenant_email
-                                                  }
-                                                </div>
-                                              ) : null}
-                                            </div>
-                                            {/* <span
-                                                onClick={setOpenTenantsDialog}
-                                                style={{
-                                                  cursor: "pointer",
-                                                  fontSize: "14px",
-                                                  fontFamily: "monospace",
-                                                  color: "blue",
-                                                  marginLeft: "10px", // Add this to create space between the input and the link
-                                                }}
-                                              >
-                                                <b style={{ fontSize: "20px" }}>
-                                                  +
-                                                </b>{" "}
-                                                Add alternative Email
-                                              </span> */}
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                              }}
-                                            >
-                                              <span
-                                                onClick={handleClick1}
-                                                style={{
-                                                  cursor: "pointer",
-                                                  fontSize: "14px",
-                                                  fontFamily: "monospace",
-                                                  color: "blue",
-                                                  paddingTop: "3%", // Add this to create space between the input and the link
-                                                }}
-                                              >
-                                                <b style={{ fontSize: "20px" }}>
-                                                  +
-                                                </b>
-                                                Add alternative Email
-                                              </span>
-                                              {rentincdropdownOpen2 && (
-                                                <div
-                                                  style={{
-                                                    flex: 1,
-                                                    marginRight: "10px",
-                                                  }}
-                                                >
-                                                  <label
-                                                    className="form-control-label"
-                                                    htmlFor="alternate_email"
-                                                    style={{
-                                                      paddingTop: "3%",
-                                                    }}
-                                                  >
-                                                    Alternative Email*
-                                                  </label>
-                                                  <br />
-                                                  <Input
-                                                    id="tenant_email"
-                                                    className="form-control-alternative"
-                                                    variant="standard"
-                                                    type="text"
-                                                    placeholder="Alternative Email"
-                                                    style={{
-                                                      marginRight: "10px",
-                                                      flex: 1,
-                                                    }} // Adjust flex property
-                                                    name="alternate_email"
-                                                    onBlur={
-                                                      tenantsFormik.handleBlur
-                                                    }
-                                                    onChange={
-                                                      tenantsFormik.handleChange
-                                                    }
-                                                    value={
-                                                      tenantsFormik.values
-                                                        .alternate_email
-                                                    }
-                                                  />
-                                                  {tenantsFormik.touched
-                                                    .alternate_email &&
-                                                    tenantsFormik.errors
-                                                      .alternate_email ? (
-                                                    <div
-                                                      style={{ color: "red" }}
-                                                    >
-                                                      {
-                                                        tenantsFormik.errors
-                                                          .alternate_email
-                                                      }
-                                                    </div>
-                                                  ) : null}
-                                                </div>
-                                              )}
-                                            </div>
-                                            <div
-                                              style={{
-                                                flex: 1,
-                                                marginRight: "10px",
-                                                marginTop: "20px",
-                                              }}
-                                            >
-                                              <label
-                                                className="form-control-label"
-                                                htmlFor="tenant_password"
-                                              // style={{
-                                              //   fontFamily: "monospace",
-                                              //   fontSize: "14px",
-                                              // }}
-                                              >
-                                                Password*
-                                              </label>
-                                              <br />
-                                              <div style={{ display: "flex" }}>
-                                                <Input
-                                                  id="tenant_password"
-                                                  className="form-control-alternative"
-                                                  variant="standard"
-                                                  type={
-                                                    showPassword
-                                                      ? "text"
-                                                      : "password"
-                                                  }
-                                                  placeholder="Password"
-                                                  style={{
-                                                    marginRight: "10px",
-                                                    flex: 1,
-                                                  }} // Adjust flex property
-                                                  name="tenant_password"
-                                                  onBlur={
-                                                    tenantsFormik.handleBlur
-                                                  }
-                                                  onChange={
-                                                    tenantsFormik.handleChange
-                                                  }
-                                                  value={
-                                                    tenantsFormik.values
-                                                      .tenant_password
-                                                  }
-                                                />
-                                                <Button
-                                                  type="button"
-                                                  onClick={() =>
-                                                    setShowPassword(
-                                                      !showPassword
-                                                    )
-                                                  }
-                                                >
-                                                  {<VisibilityIcon />}
-                                                </Button>
-                                              </div>
-                                              {/* {tenantsFormik.touched
-                                                .tenant_password &&
-                                                tenantsFormik.errors
-                                                  .tenant_password ? (
-                                                <div style={{ color: "red" }}>
-                                                  {
-                                                    tenantsFormik.errors
-                                                      .tenant_password
-                                                  }
-                                                </div>
-                                              ) : null} */}
-                                              {tenantsFormik.errors &&
-                                                tenantsFormik.errors?.tenant_password &&
-                                                tenantsFormik.touched &&
-                                                tenantsFormik.touched?.tenant_password && tenantsFormik.values.tenant_password === "" ? (
-                                                <div style={{ color: "red" }}>
-                                                  {tenantsFormik.errors.tenant_password}
-                                                  {/* {console.log(tenantsFormik.errors.tenant_password)} */}
-                                                </div>
-                                              ) : null}
-                                            </div>
-                                          </div>
-                                          {/* <hr /> */}
-                                          {/* <div>
-                                            <label
-                                              className="form-control-label"
-                                              htmlFor="input-email"
-                                            >
-                                              Address*
-                                            </label>
-                                          </div> */}
-
-                                          {/* <div
-                                            style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                            }}
-                                          >
-                                            <Checkbox
-                                              //onClick={handleChange}
-                                              style={{ marginRight: "10px" }}
-                                            />
-                                            <label
-                                              className="form-control-label"
-                                              htmlFor="input-unitadd"
-                                            >
-                                              {" "}
-                                              Same as Unit Address
-                                            </label>
-                                          </div> */}
-                                          {/* <div>
-                                              <span
-                                                onClick={setOpenTenantsDialog}
-                                                style={{
-                                                  cursor: "pointer",
-                                                  fontSize: "14px",
-                                                  fontFamily: "monospace",
-                                                  color: "blue",
-                                                  marginLeft: "10px", // Add this to create space between the input and the link
-                                                }}
-                                              >
-                                                <b style={{ fontSize: "20px" }}>
-                                                  +
-                                                </b>{" "}
-                                                Add alternative Address
-                                              </span>
-                                            </div> */}
-                                          <br />
-                                          <div>
-                                            <span
-                                              onClick={toggleper}
-                                              style={{
-                                                marginBottom: "1rem",
-                                                display: "flex",
-                                                background: "grey",
-                                                cursor: "pointer",
-                                              }}
-                                            >
-                                              <b>+ </b>&nbsp; Personal
-                                              information
-                                            </span>
-                                            <Collapse isOpen={collapseper}>
-                                              <Card>
-                                                <CardBody>
-                                                  <Row>
-                                                    <Col lg="5">
-                                                      <FormGroup>
-                                                        <label
-                                                          className="form-control-label"
-                                                          htmlFor="input-unitadd3"
-                                                        >
-                                                          Date of Birth
-                                                        </label>
-                                                        <Input
-                                                          className="form-control-alternative"
-                                                          id="input-unitadd3"
-                                                          placeholder="3000"
-                                                          type="date"
-                                                          name="birth_date"
-                                                          onBlur={
-                                                            tenantsFormik.handleBlur
-                                                          }
-                                                          onChange={
-                                                            tenantsFormik.handleChange
-                                                          }
-                                                          value={
-                                                            tenantsFormik.values
-                                                              .birth_date
-                                                          }
-                                                        />
-                                                        {tenantsFormik.touched
-                                                          .birth_date &&
-                                                          tenantsFormik.errors
-                                                            .birth_date ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsFormik.errors
-                                                                .birth_date
-                                                            }
-                                                          </div>
-                                                        ) : null}
-                                                      </FormGroup>
-                                                    </Col>
-                                                    <Col lg="7">
-                                                      <FormGroup>
-                                                        <label
-                                                          className="form-control-label"
-                                                          htmlFor="input-unitadd4"
-                                                        >
-                                                          TextPayer ID
-                                                        </label>
-                                                        <Input
-                                                          className="form-control-alternative"
-                                                          id="input-unitadd4"
-                                                          type="text"
-                                                          name="textpayer_id"
-                                                          onBlur={
-                                                            tenantsFormik.handleBlur
-                                                          }
-                                                          onChange={
-                                                            tenantsFormik.handleChange
-                                                          }
-                                                          value={
-                                                            tenantsFormik.values
-                                                              .textpayer_id
-                                                          }
-                                                        />
-                                                        {tenantsFormik.touched
-                                                          .textpayer_id &&
-                                                          tenantsFormik.errors
-                                                            .textpayer_id ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsFormik.errors
-                                                                .textpayer_id
-                                                            }
-                                                          </div>
-                                                        ) : null}
-                                                      </FormGroup>
-                                                    </Col>
-                                                  </Row>
-                                                  <Row>
-                                                    <Col lg="7">
-                                                      <FormGroup>
-                                                        <label
-                                                          className="form-control-label"
-                                                          htmlFor="input-address"
-                                                        >
-                                                          Comments
-                                                        </label>
-                                                        <Input
-                                                          className="form-control-alternative"
-                                                          id="input-address"
-                                                          type="textarea"
-                                                          style={{
-                                                            height: "90px",
-                                                            width: "100%",
-                                                            maxWidth: "25rem",
-                                                          }}
-                                                          name="comments"
-                                                          onBlur={
-                                                            tenantsFormik.handleBlur
-                                                          }
-                                                          onChange={
-                                                            tenantsFormik.handleChange
-                                                          }
-                                                          value={
-                                                            tenantsFormik.values
-                                                              .comments
-                                                          }
-                                                        />
-                                                        {tenantsFormik.touched
-                                                          .comments &&
-                                                          tenantsFormik.errors
-                                                            .comments ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsFormik.errors
-                                                                .comments
-                                                            }
-                                                          </div>
-                                                        ) : null}
-                                                      </FormGroup>
-                                                    </Col>
-                                                  </Row>
-                                                </CardBody>
-                                              </Card>
-                                            </Collapse>
-                                          </div>
-                                          <div>
-                                            <span
-                                              onClick={togglecont}
-                                              style={{
-                                                marginBottom: "1rem",
-                                                display: "flex",
-                                                background: "grey",
-                                                cursor: "pointer",
-                                              }}
-                                            >
-                                              <b>+ </b>&nbsp; Emergency Contact
-                                            </span>
-                                            <Collapse isOpen={collapsecont}>
-                                              <Card>
-                                                <CardBody>
-                                                  <Row>
-                                                    <Col lg="6">
-                                                      <FormGroup>
-                                                        <label
-                                                          className="form-control-label"
-                                                          htmlFor="input-unitadd5"
-                                                        >
-                                                          Contact Name
-                                                        </label>
-                                                        <Input
-                                                          className="form-control-alternative"
-                                                          id="input-unitadd5"
-                                                          type="text"
-                                                          name="contact_name"
-                                                          onBlur={
-                                                            tenantsFormik.handleBlur
-                                                          }
-                                                          onChange={
-                                                            tenantsFormik.handleChange
-                                                          }
-                                                          value={
-                                                            tenantsFormik.values
-                                                              .contact_name
-                                                          }
-                                                        />
-                                                        {tenantsFormik.touched
-                                                          .contact_name &&
-                                                          tenantsFormik.errors
-                                                            .contact_name ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsFormik.errors
-                                                                .contact_name
-                                                            }
-                                                          </div>
-                                                        ) : null}
-                                                      </FormGroup>
-                                                    </Col>
-                                                    <Col lg="6">
-                                                      <FormGroup>
-                                                        <label
-                                                          className="form-control-label"
-                                                          htmlFor="input-unitadd6"
-                                                        >
-                                                          Relationship to Tenant
-                                                        </label>
-                                                        <Input
-                                                          className="form-control-alternative"
-                                                          id="input-unitadd6"
-                                                          type="text"
-                                                          name="relationship_tenants"
-                                                          onBlur={
-                                                            tenantsFormik.handleBlur
-                                                          }
-                                                          onChange={
-                                                            tenantsFormik.handleChange
-                                                          }
-                                                          value={
-                                                            tenantsFormik.values
-                                                              .relationship_tenants
-                                                          }
-                                                        />
-                                                        {tenantsFormik.touched
-                                                          .relationship_tenants &&
-                                                          tenantsFormik.errors
-                                                            .relationship_tenants ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsFormik.errors
-                                                                .relationship_tenants
-                                                            }
-                                                          </div>
-                                                        ) : null}
-                                                      </FormGroup>
-                                                    </Col>
-                                                  </Row>
-                                                  <Row>
-                                                    <Col lg="6">
-                                                      <FormGroup>
-                                                        <label
-                                                          className="form-control-label"
-                                                          htmlFor="input-unitadd7"
-                                                        >
-                                                          E-Mail
-                                                        </label>
-                                                        <Input
-                                                          className="form-control-alternative"
-                                                          id="input-unitadd7"
-                                                          type="text"
-                                                          name="email"
-                                                          onBlur={
-                                                            tenantsFormik.handleBlur
-                                                          }
-                                                          onChange={
-                                                            tenantsFormik.handleChange
-                                                          }
-                                                          value={
-                                                            tenantsFormik.values
-                                                              .email
-                                                          }
-                                                        />
-                                                        {tenantsFormik.touched
-                                                          .email &&
-                                                          tenantsFormik.errors
-                                                            .email ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsFormik.errors
-                                                                .email
-                                                            }
-                                                          </div>
-                                                        ) : null}
-                                                      </FormGroup>
-                                                    </Col>
-                                                    <Col lg="6">
-                                                      <FormGroup>
-                                                        <label
-                                                          className="form-control-label"
-                                                          htmlFor="input-unitadd8"
-                                                        >
-                                                          Phone Number
-                                                        </label>
-                                                        <Input
-                                                          className="form-control-alternative"
-                                                          id="input-unitadd8"
-                                                          type="text"
-                                                          name="emergency_PhoneNumber"
-                                                          onBlur={
-                                                            tenantsFormik.handleBlur
-                                                          }
-                                                          onChange={
-                                                            tenantsFormik.handleChange
-                                                          }
-                                                          value={
-                                                            tenantsFormik.values
-                                                              .emergency_PhoneNumber
-                                                          }
-                                                          onInput={(e) => {
-                                                            const inputValue =
-                                                              e.target.value;
-                                                            const numericValue =
-                                                              inputValue.replace(
-                                                                /\D/g,
-                                                                ""
-                                                              ); // Remove non-numeric characters
-                                                            e.target.value =
-                                                              numericValue;
+                                                            );
+                                                            // console.log(tenantInfo1)
                                                           }}
                                                         />
-                                                        {tenantsFormik.touched
-                                                          .emergency_PhoneNumber &&
-                                                          tenantsFormik.errors
-                                                            .emergency_PhoneNumber ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsFormik.errors
-                                                                .emergency_PhoneNumber
-                                                            }
-                                                          </div>
-                                                        ) : null}
-                                                      </FormGroup>
-                                                    </Col>
-                                                  </Row>
-                                                </CardBody>
-                                              </Card>
-                                            </Collapse>
-                                          </div>
+                                                      </td>
+                                                    </tr>
+                                                  )
+                                                )}
+                                            </tbody>
+                                          </table>
+                                          <br />
                                         </div>
                                       )}
-
-                                      <button
-                                        type="submit"
-                                        className="btn btn-primary"
-                                        onClick={() => {
-                                          setShowTenantTable(false);
-                                          tenantsFormik.handleSubmit() // Call this function to close the dialog
-                                        }}
-                                      // style={{ background: "green" }}
+                                    {!showTenantTable && (
+                                      <div
+                                        className="TenantDetail"
+                                        style={{ margin: "10px 10px" }}
                                       >
-                                        Add Tenant
-                                      </button>
-                                      <Button
-                                        // className="btn btn-primary"
-                                        // style={{ background: "blue" }}
-
-                                        onClick={handleClose}
-                                      >
-                                        Cancel
-                                      </Button>
-                                    </div>
-                                  )}
-                                  {selectedOption === "Cosigner" && (
-                                    <div className="cosigner">
-                                      <div>
                                         <span
                                           style={{
                                             marginBottom: "1rem",
@@ -3123,12 +2275,6 @@ const RentRollLeaseing = () => {
                                         >
                                           &nbsp;Contact information
                                         </span>
-                                      </div>
-
-                                      <div
-                                        className="formInput"
-                                        style={{ margin: "10px 10px" }}
-                                      >
                                         <div
                                           style={{
                                             display: "flex",
@@ -3143,66 +2289,100 @@ const RentRollLeaseing = () => {
                                           >
                                             <label
                                               className="form-control-label"
-                                              htmlFor="input-firstname"
+                                              htmlFor="tenant_firstName"
+                                            // style={{
+                                            //   fontFamily: "monospace",
+                                            //   fontSize: "14px",
+                                            // }}
                                             >
-                                              First Name
+                                              First Name *
                                             </label>
+                                            <br />
                                             <Input
+                                              id="tenant_firstName"
                                               className="form-control-alternative"
-                                              id="cosigner_firstName"
-                                              placeholder="First Name"
+                                              variant="standard"
                                               type="text"
-                                              name="entries[0].cosigner_firstName"
-                                              onBlur={consignerFormik.handleBlur}
+                                              placeholder="First Name"
+                                              style={{
+                                                marginRight: "10px",
+                                                flex: 1,
+                                              }} // Adjust flex property
+                                              name="tenant_firstName"
+                                              onBlur={tenantsFormik.handleBlur}
                                               onChange={
-                                                consignerFormik.handleChange
+                                                tenantsFormik.handleChange
                                               }
                                               value={
-                                                consignerFormik.values.entries[0].cosigner_firstName
+                                                tenantsFormik.values
+                                                  .tenant_firstName
                                               }
                                             />
-                                            {consignerFormik.errors.entries &&
-                                              consignerFormik.errors?.entries[0].cosigner_firstName &&
-                                           
-                                              consignerFormik.touched.entries &&
-                                              consignerFormik.touched?.entries[0].cosigner_firstName && consignerFormik.values.entries[0].cosigner_firstName === "" ? (
+                                            {tenantsFormik.touched
+                                              .tenant_firstName &&
+                                              tenantsFormik.errors
+                                                .tenant_firstName ? (
                                               <div style={{ color: "red" }}>
-                                                {consignerFormik.errors.entries[0].cosigner_firstName}
+                                                {
+                                                  tenantsFormik.errors
+                                                    .tenant_firstName
+                                                }
                                               </div>
                                             ) : null}
                                           </div>
-                                          <div style={{ flex: 1 }}>
+
+                                          <div
+                                            style={{
+                                              flex: 1,
+                                              marginRight: "10px",
+                                            }}
+                                          >
                                             <label
                                               className="form-control-label"
-                                              htmlFor="input-lastname"
+                                              htmlFor="tenant_lastName"
+                                            // style={{
+                                            //   fontFamily: "monospace",
+                                            //   fontSize: "14px",
+                                            // }}
                                             >
-                                              Last Name
+                                              Last Name *
                                             </label>
+                                            <br />
                                             <Input
+                                              id="tenant_lastName"
                                               className="form-control-alternative"
-                                              id="cosigner_lastName"
-                                              placeholder="Last Name"
+                                              variant="standard"
                                               type="text"
-                                              name="entries[0].cosigner_lastName"
-                                              onBlur={consignerFormik.handleBlur}
+                                              placeholder="Last Name"
+                                              style={{
+                                                marginRight: "10px",
+                                                flex: 1,
+                                              }} // Adjust flex property
+                                              name="tenant_lastName"
+                                              onBlur={tenantsFormik.handleBlur}
                                               onChange={
-                                                consignerFormik.handleChange
+                                                tenantsFormik.handleChange
                                               }
                                               value={
-                                                consignerFormik.values.entries[0].cosigner_lastName
+                                                tenantsFormik.values
+                                                  .tenant_lastName
                                               }
                                             />
-                                            {consignerFormik.errors.entries &&
-                                              consignerFormik.errors?.entries[0].cosigner_lastName &&
-                                              consignerFormik.touched.entries &&
-                                              consignerFormik.touched?.entries[0].cosigner_lastName && consignerFormik.values.entries[0].cosigner_lastName === "" ? (
+                                            {tenantsFormik.touched
+                                              .tenant_lastName &&
+                                              tenantsFormik.errors
+                                                .tenant_lastName ? (
                                               <div style={{ color: "red" }}>
-                                                {consignerFormik.errors.entries[0].cosigner_lastName}
+                                                {
+                                                  tenantsFormik.errors
+                                                    .tenant_lastName
+                                                }
                                               </div>
                                             ) : null}
                                           </div>
                                         </div>
                                         <br />
+
                                         <div
                                           style={{
                                             // display: "flex",
@@ -3218,62 +2398,71 @@ const RentRollLeaseing = () => {
                                           >
                                             <label
                                               className="form-control-label"
-                                              htmlFor="input-lastname"
+                                              htmlFor="tenant_mobileNumber"
+                                            // style={{
+                                            //   fontFamily: "monospace",
+                                            //   fontSize: "14px",
+                                            // }}
                                             >
-                                              Phone Number
+                                              Phone Number*
                                             </label>
                                             <br />
                                             <Input
+                                              id="tenant_mobileNumber"
                                               className="form-control-alternative"
-                                              id="cosigner_mobileNumber"
-                                              placeholder="Phone Number"
+                                              variant="standard"
                                               type="text"
-                                              name="entries[0].cosigner_mobileNumber"
-                                              onBlur={consignerFormik.handleBlur}
+                                              placeholder="phoneNumber"
+                                              style={{
+                                                marginRight: "10px",
+                                                flex: 1,
+                                              }} // Adjust flex property
+                                              name="tenant_mobileNumber"
+                                              onBlur={tenantsFormik.handleBlur}
                                               onChange={
-                                                consignerFormik.handleChange
+                                                tenantsFormik.handleChange
                                               }
                                               value={
-                                                consignerFormik.values.entries[0].cosigner_mobileNumber
+                                                tenantsFormik.values
+                                                  .tenant_mobileNumber
                                               }
-                                              InputProps={{
-                                                startAdornment: (
-                                                  <InputAdornment position="start">
-                                                    <PhoneIcon />
-                                                  </InputAdornment>
-                                                ),
-                                              }}
                                               onInput={(e) => {
-                                                const inputValue =
+                                                const tenantsFormik =
                                                   e.target.value;
                                                 const numericValue =
-                                                  inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                                  tenantsFormik.replace(
+                                                    /\D/g,
+                                                    ""
+                                                  ); // Remove non-numeric characters
                                                 e.target.value = numericValue;
                                               }}
                                             />
-                                            {consignerFormik.errors.entries &&
-                                              consignerFormik.errors?.entries[0].cosigner_mobileNumber &&
-                                              consignerFormik.touched.entries &&
-                                              consignerFormik.touched?.entries[0].cosigner_mobileNumber && consignerFormik.values.entries[0].cosigner_mobileNumber === "" ? (
+                                            {tenantsFormik.touched
+                                              .tenant_mobileNumber &&
+                                              tenantsFormik.errors
+                                                .tenant_mobileNumber ? (
                                               <div style={{ color: "red" }}>
-                                                {consignerFormik.errors.entries[0].cosigner_mobileNumber}
+                                                {
+                                                  tenantsFormik.errors
+                                                    .tenant_mobileNumber
+                                                }
                                               </div>
                                             ) : null}
                                           </div>
                                           {/* <span
-                                            onClick={setOpenTenantsDialog}
-                                            style={{
-                                              cursor: "pointer",
-                                              fontSize: "14px",
-                                              fontFamily: "monospace",
-                                              color: "blue",
-                                            }}
-                                          >
-                                            <b style={{ fontSize: "20px" }}>
-                                              +
-                                            </b>{" "}
-                                            Add alternative Phone
-                                          </span> */}
+                                              onClick={setOpenTenantsDialog}
+                                              style={{
+                                                cursor: "pointer",
+                                                fontSize: "14px",
+                                                fontFamily: "monospace",
+                                                color: "blue",
+                                              }}
+                                            >
+                                              <b style={{ fontSize: "20px" }}>
+                                                +
+                                              </b>{" "}
+                                              Add alternative Phone
+                                            </span> */}
                                           <div
                                             style={{
                                               display: "flex",
@@ -3281,7 +2470,7 @@ const RentRollLeaseing = () => {
                                             }}
                                           >
                                             <span
-                                              onClick={handleClick2}
+                                              onClick={handleClick}
                                               style={{
                                                 cursor: "pointer",
                                                 fontSize: "14px",
@@ -3295,7 +2484,7 @@ const RentRollLeaseing = () => {
                                               </b>
                                               Add alternative Phone
                                             </span>
-                                            {rentincdropdownOpen3 && (
+                                            {rentincdropdownOpen1 && (
                                               <div
                                                 style={{
                                                   flex: 1,
@@ -3313,7 +2502,7 @@ const RentRollLeaseing = () => {
                                                 </label>
                                                 <br />
                                                 <Input
-                                                  id="cosigner_workNumber"
+                                                  id="tenant_workNumber"
                                                   className="form-control-alternative"
                                                   variant="standard"
                                                   type="text"
@@ -3322,16 +2511,16 @@ const RentRollLeaseing = () => {
                                                     marginRight: "10px",
                                                     flex: 1,
                                                   }} // Adjust flex property
-                                                  name="cosigner_workNumber"
+                                                  name="tenant_workNumber"
                                                   onBlur={
-                                                    consignerFormik.handleBlur
+                                                    tenantsFormik.handleBlur
                                                   }
                                                   onChange={
-                                                    consignerFormik.handleChange
+                                                    tenantsFormik.handleChange
                                                   }
                                                   value={
-                                                    consignerFormik.values.entries[0]
-                                                      .cosigner_workNumber
+                                                    tenantsFormik.values
+                                                      .tenant_workNumber
                                                   }
                                                   onInput={(e) => {
                                                     const inputValue =
@@ -3343,11 +2532,21 @@ const RentRollLeaseing = () => {
                                                       ); // Remove non-numeric characters
                                                     e.target.value =
                                                       numericValue;
-                                                    consignerFormik.values.entries[0]
-                                                      .cosigner_workNumber = numericValue;
                                                   }}
                                                 />
-
+                                                {tenantsFormik.touched
+                                                  .tenant_workNumber &&
+                                                  tenantsFormik.errors
+                                                    .tenant_workNumber ? (
+                                                  <div
+                                                    style={{ color: "red" }}
+                                                  >
+                                                    {
+                                                      tenantsFormik.errors
+                                                        .tenant_workNumber
+                                                    }
+                                                  </div>
+                                                ) : null}
                                               </div>
                                             )}
                                           </div>
@@ -3368,43 +2567,933 @@ const RentRollLeaseing = () => {
                                           >
                                             <label
                                               className="form-control-label"
-                                              htmlFor="input-email"
+                                              htmlFor="tenant_email"
+                                            // style={{
+                                            //   fontFamily: "monospace",
+                                            //   fontSize: "14px",
+                                            // }}
                                             >
-                                              Email
+                                              Email*
                                             </label>
                                             <br />
                                             <Input
+                                              id="tenant_email"
                                               className="form-control-alternative"
-                                              id="cosigner_email"
-                                              placeholder="Email"
+                                              variant="standard"
                                               type="text"
-                                              name="entries[0].cosigner_email"
-                                              onBlur={consignerFormik.handleBlur}
+                                              placeholder="Email"
+                                              style={{
+                                                marginRight: "10px",
+                                                flex: 1,
+                                              }} // Adjust flex property
+                                              name="tenant_email"
+                                              onBlur={tenantsFormik.handleBlur}
                                               onChange={
-                                                consignerFormik.handleChange
+                                                tenantsFormik.handleChange
                                               }
                                               value={
-                                                consignerFormik.values
-                                                  .entries[0].cosigner_email
+                                                tenantsFormik.values
+                                                  .tenant_email
                                               }
-                                              InputProps={{
-                                                startAdornment: (
-                                                  <InputAdornment position="start">
-                                                    <EmailIcon />
-                                                  </InputAdornment>
-                                                ),
-                                              }}
                                             />
-                                            {consignerFormik.errors.entries &&
-                                              consignerFormik.errors?.entries[0].cosigner_email &&
-                                              consignerFormik.touched.entries &&
-                                              consignerFormik.touched?.entries[0].cosigner_email && consignerFormik.values.entries[0].cosigner_email === "" ? (
+                                            {tenantsFormik.touched
+                                              .tenant_email &&
+                                              tenantsFormik.errors
+                                                .tenant_email ? (
                                               <div style={{ color: "red" }}>
-                                                {consignerFormik.errors.entries[0].cosigner_email}
+                                                {
+                                                  tenantsFormik.errors
+                                                    .tenant_email
+                                                }
                                               </div>
                                             ) : null}
                                           </div>
                                           {/* <span
+                                                onClick={setOpenTenantsDialog}
+                                                style={{
+                                                  cursor: "pointer",
+                                                  fontSize: "14px",
+                                                  fontFamily: "monospace",
+                                                  color: "blue",
+                                                  marginLeft: "10px", // Add this to create space between the input and the link
+                                                }}
+                                              >
+                                                <b style={{ fontSize: "20px" }}>
+                                                  +
+                                                </b>{" "}
+                                                Add alternative Email
+                                              </span> */}
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "column",
+                                            }}
+                                          >
+                                            <span
+                                              onClick={handleClick1}
+                                              style={{
+                                                cursor: "pointer",
+                                                fontSize: "14px",
+                                                fontFamily: "monospace",
+                                                color: "blue",
+                                                paddingTop: "3%", // Add this to create space between the input and the link
+                                              }}
+                                            >
+                                              <b style={{ fontSize: "20px" }}>
+                                                +
+                                              </b>
+                                              Add alternative Email
+                                            </span>
+                                            {rentincdropdownOpen2 && (
+                                              <div
+                                                style={{
+                                                  flex: 1,
+                                                  marginRight: "10px",
+                                                }}
+                                              >
+                                                <label
+                                                  className="form-control-label"
+                                                  htmlFor="alternate_email"
+                                                  style={{
+                                                    paddingTop: "3%",
+                                                  }}
+                                                >
+                                                  Alternative Email*
+                                                </label>
+                                                <br />
+                                                <Input
+                                                  id="tenant_email"
+                                                  className="form-control-alternative"
+                                                  variant="standard"
+                                                  type="text"
+                                                  placeholder="Alternative Email"
+                                                  style={{
+                                                    marginRight: "10px",
+                                                    flex: 1,
+                                                  }} // Adjust flex property
+                                                  name="alternate_email"
+                                                  onBlur={
+                                                    tenantsFormik.handleBlur
+                                                  }
+                                                  onChange={
+                                                    tenantsFormik.handleChange
+                                                  }
+                                                  value={
+                                                    tenantsFormik.values
+                                                      .alternate_email
+                                                  }
+                                                />
+                                                {tenantsFormik.touched
+                                                  .alternate_email &&
+                                                  tenantsFormik.errors
+                                                    .alternate_email && tenantsFormik.values
+                                                      .tenant_email === "" ? (
+                                                  <div
+                                                    style={{ color: "red" }}
+                                                  >
+                                                    {
+                                                      tenantsFormik.errors
+                                                        .alternate_email
+                                                    }
+                                                  </div>
+                                                ) : null}
+                                              </div>
+                                            )}
+                                          </div>
+                                          <div
+                                            style={{
+                                              flex: 1,
+                                              marginRight: "10px",
+                                              marginTop: "20px",
+                                            }}
+                                          >
+                                            <label
+                                              className="form-control-label"
+                                              htmlFor="tenant_password"
+                                            // style={{
+                                            //   fontFamily: "monospace",
+                                            //   fontSize: "14px",
+                                            // }}
+                                            >
+                                              Password*
+                                            </label>
+                                            <br />
+                                            <div style={{ display: "flex" }}>
+                                              <Input
+                                                id="tenant_password"
+                                                className="form-control-alternative"
+                                                variant="standard"
+                                                type={
+                                                  showPassword
+                                                    ? "text"
+                                                    : "password"
+                                                }
+                                                placeholder="Password"
+                                                style={{
+                                                  marginRight: "10px",
+                                                  flex: 1,
+                                                }} // Adjust flex property
+                                                name="tenant_password"
+                                                onBlur={
+                                                  tenantsFormik.handleBlur
+                                                }
+                                                onChange={
+                                                  tenantsFormik.handleChange
+                                                }
+                                                value={
+                                                  tenantsFormik.values
+                                                    .tenant_password
+                                                }
+                                              />
+                                              <Button
+                                                type="button"
+                                                onClick={() =>
+                                                  setShowPassword(
+                                                    !showPassword
+                                                  )
+                                                }
+                                              >
+                                                {<VisibilityIcon />}
+                                              </Button>
+                                            </div>
+                                            {/* {tenantsFormik.touched
+                                                .tenant_password &&
+                                                tenantsFormik.errors
+                                                  .tenant_password ? (
+                                                <div style={{ color: "red" }}>
+                                                  {
+                                                    tenantsFormik.errors
+                                                      .tenant_password
+                                                  }
+                                                </div>
+                                              ) : null} */}
+                                            {tenantsFormik.errors &&
+                                              tenantsFormik.errors?.tenant_password &&
+                                              tenantsFormik.touched &&
+                                              tenantsFormik.touched?.tenant_password ? (
+                                              <div style={{ color: "red" }}>
+                                                {tenantsFormik.errors.tenant_password}
+                                                {/* {console.log(tenantsFormik.errors.tenant_password)} */}
+                                              </div>
+                                            ) : null}
+                                          </div>
+                                        </div>
+                                        {/* <hr /> */}
+                                        {/* <div>
+                                            <label
+                                              className="form-control-label"
+                                              htmlFor="input-email"
+                                            >
+                                              Address*
+                                            </label>
+                                          </div> */}
+
+                                        {/* <div
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                            }}
+                                          >
+                                            <Checkbox
+                                              //onClick={handleChange}
+                                              style={{ marginRight: "10px" }}
+                                            />
+                                            <label
+                                              className="form-control-label"
+                                              htmlFor="input-unitadd"
+                                            >
+                                              {" "}
+                                              Same as Unit Address
+                                            </label>
+                                          </div> */}
+                                        {/* <div>
+                                              <span
+                                                onClick={setOpenTenantsDialog}
+                                                style={{
+                                                  cursor: "pointer",
+                                                  fontSize: "14px",
+                                                  fontFamily: "monospace",
+                                                  color: "blue",
+                                                  marginLeft: "10px", // Add this to create space between the input and the link
+                                                }}
+                                              >
+                                                <b style={{ fontSize: "20px" }}>
+                                                  +
+                                                </b>{" "}
+                                                Add alternative Address
+                                              </span>
+                                            </div> */}
+                                        <br />
+                                        <div>
+                                          <span
+                                            onClick={toggleper}
+                                            style={{
+                                              marginBottom: "1rem",
+                                              display: "flex",
+                                              background: "grey",
+                                              cursor: "pointer",
+                                            }}
+                                          >
+                                            <b>+ </b>&nbsp; Personal
+                                            information
+                                          </span>
+                                          <Collapse isOpen={collapseper}>
+                                            <Card>
+                                              <CardBody>
+                                                <Row>
+                                                  <Col lg="5">
+                                                    <FormGroup>
+                                                      <label
+                                                        className="form-control-label"
+                                                        htmlFor="input-unitadd3"
+                                                      >
+                                                        Date of Birth
+                                                      </label>
+                                                      <Input
+                                                        className="form-control-alternative"
+                                                        id="input-unitadd3"
+                                                        placeholder="3000"
+                                                        type="date"
+                                                        name="birth_date"
+                                                        onBlur={
+                                                          tenantsFormik.handleBlur
+                                                        }
+                                                        onChange={
+                                                          tenantsFormik.handleChange
+                                                        }
+                                                        value={
+                                                          tenantsFormik.values
+                                                            .birth_date
+                                                        }
+                                                      />
+                                                      {tenantsFormik.touched
+                                                        .birth_date &&
+                                                        tenantsFormik.errors
+                                                          .birth_date ? (
+                                                        <div
+                                                          style={{
+                                                            color: "red",
+                                                          }}
+                                                        >
+                                                          {
+                                                            tenantsFormik.errors
+                                                              .birth_date
+                                                          }
+                                                        </div>
+                                                      ) : null}
+                                                    </FormGroup>
+                                                  </Col>
+                                                  <Col lg="7">
+                                                    <FormGroup>
+                                                      <label
+                                                        className="form-control-label"
+                                                        htmlFor="input-unitadd4"
+                                                      >
+                                                        TextPayer ID
+                                                      </label>
+                                                      <Input
+                                                        className="form-control-alternative"
+                                                        id="input-unitadd4"
+                                                        type="text"
+                                                        name="textpayer_id"
+                                                        onBlur={
+                                                          tenantsFormik.handleBlur
+                                                        }
+                                                        onChange={
+                                                          tenantsFormik.handleChange
+                                                        }
+                                                        value={
+                                                          tenantsFormik.values
+                                                            .textpayer_id
+                                                        }
+                                                      />
+                                                      {tenantsFormik.touched
+                                                        .textpayer_id &&
+                                                        tenantsFormik.errors
+                                                          .textpayer_id ? (
+                                                        <div
+                                                          style={{
+                                                            color: "red",
+                                                          }}
+                                                        >
+                                                          {
+                                                            tenantsFormik.errors
+                                                              .textpayer_id
+                                                          }
+                                                        </div>
+                                                      ) : null}
+                                                    </FormGroup>
+                                                  </Col>
+                                                </Row>
+                                                <Row>
+                                                  <Col lg="7">
+                                                    <FormGroup>
+                                                      <label
+                                                        className="form-control-label"
+                                                        htmlFor="input-address"
+                                                      >
+                                                        Comments
+                                                      </label>
+                                                      <Input
+                                                        className="form-control-alternative"
+                                                        id="input-address"
+                                                        type="textarea"
+                                                        style={{
+                                                          height: "90px",
+                                                          width: "100%",
+                                                          maxWidth: "25rem",
+                                                        }}
+                                                        name="comments"
+                                                        onBlur={
+                                                          tenantsFormik.handleBlur
+                                                        }
+                                                        onChange={
+                                                          tenantsFormik.handleChange
+                                                        }
+                                                        value={
+                                                          tenantsFormik.values
+                                                            .comments
+                                                        }
+                                                      />
+                                                      {tenantsFormik.touched
+                                                        .comments &&
+                                                        tenantsFormik.errors
+                                                          .comments ? (
+                                                        <div
+                                                          style={{
+                                                            color: "red",
+                                                          }}
+                                                        >
+                                                          {
+                                                            tenantsFormik.errors
+                                                              .comments
+                                                          }
+                                                        </div>
+                                                      ) : null}
+                                                    </FormGroup>
+                                                  </Col>
+                                                </Row>
+                                              </CardBody>
+                                            </Card>
+                                          </Collapse>
+                                        </div>
+                                        <div>
+                                          <span
+                                            onClick={togglecont}
+                                            style={{
+                                              marginBottom: "1rem",
+                                              display: "flex",
+                                              background: "grey",
+                                              cursor: "pointer",
+                                            }}
+                                          >
+                                            <b>+ </b>&nbsp; Emergency Contact
+                                          </span>
+                                          <Collapse isOpen={collapsecont}>
+                                            <Card>
+                                              <CardBody>
+                                                <Row>
+                                                  <Col lg="6">
+                                                    <FormGroup>
+                                                      <label
+                                                        className="form-control-label"
+                                                        htmlFor="input-unitadd5"
+                                                      >
+                                                        Contact Name
+                                                      </label>
+                                                      <Input
+                                                        className="form-control-alternative"
+                                                        id="input-unitadd5"
+                                                        type="text"
+                                                        name="contact_name"
+                                                        onBlur={
+                                                          tenantsFormik.handleBlur
+                                                        }
+                                                        onChange={
+                                                          tenantsFormik.handleChange
+                                                        }
+                                                        value={
+                                                          tenantsFormik.values
+                                                            .contact_name
+                                                        }
+                                                      />
+                                                      {tenantsFormik.touched
+                                                        .contact_name &&
+                                                        tenantsFormik.errors
+                                                          .contact_name ? (
+                                                        <div
+                                                          style={{
+                                                            color: "red",
+                                                          }}
+                                                        >
+                                                          {
+                                                            tenantsFormik.errors
+                                                              .contact_name
+                                                          }
+                                                        </div>
+                                                      ) : null}
+                                                    </FormGroup>
+                                                  </Col>
+                                                  <Col lg="6">
+                                                    <FormGroup>
+                                                      <label
+                                                        className="form-control-label"
+                                                        htmlFor="input-unitadd6"
+                                                      >
+                                                        Relationship to Tenant
+                                                      </label>
+                                                      <Input
+                                                        className="form-control-alternative"
+                                                        id="input-unitadd6"
+                                                        type="text"
+                                                        name="relationship_tenants"
+                                                        onBlur={
+                                                          tenantsFormik.handleBlur
+                                                        }
+                                                        onChange={
+                                                          tenantsFormik.handleChange
+                                                        }
+                                                        value={
+                                                          tenantsFormik.values
+                                                            .relationship_tenants
+                                                        }
+                                                      />
+                                                      {tenantsFormik.touched
+                                                        .relationship_tenants &&
+                                                        tenantsFormik.errors
+                                                          .relationship_tenants ? (
+                                                        <div
+                                                          style={{
+                                                            color: "red",
+                                                          }}
+                                                        >
+                                                          {
+                                                            tenantsFormik.errors
+                                                              .relationship_tenants
+                                                          }
+                                                        </div>
+                                                      ) : null}
+                                                    </FormGroup>
+                                                  </Col>
+                                                </Row>
+                                                <Row>
+                                                  <Col lg="6">
+                                                    <FormGroup>
+                                                      <label
+                                                        className="form-control-label"
+                                                        htmlFor="input-unitadd7"
+                                                      >
+                                                        E-Mail
+                                                      </label>
+                                                      <Input
+                                                        className="form-control-alternative"
+                                                        id="input-unitadd7"
+                                                        type="text"
+                                                        name="email"
+                                                        onBlur={
+                                                          tenantsFormik.handleBlur
+                                                        }
+                                                        onChange={
+                                                          tenantsFormik.handleChange
+                                                        }
+                                                        value={
+                                                          tenantsFormik.values
+                                                            .email
+                                                        }
+                                                      />
+                                                      {tenantsFormik.touched
+                                                        .email &&
+                                                        tenantsFormik.errors
+                                                          .email ? (
+                                                        <div
+                                                          style={{
+                                                            color: "red",
+                                                          }}
+                                                        >
+                                                          {
+                                                            tenantsFormik.errors
+                                                              .email
+                                                          }
+                                                        </div>
+                                                      ) : null}
+                                                    </FormGroup>
+                                                  </Col>
+                                                  <Col lg="6">
+                                                    <FormGroup>
+                                                      <label
+                                                        className="form-control-label"
+                                                        htmlFor="input-unitadd8"
+                                                      >
+                                                        Phone Number
+                                                      </label>
+                                                      <Input
+                                                        className="form-control-alternative"
+                                                        id="input-unitadd8"
+                                                        type="text"
+                                                        name="emergency_PhoneNumber"
+                                                        onBlur={
+                                                          tenantsFormik.handleBlur
+                                                        }
+                                                        onChange={
+                                                          tenantsFormik.handleChange
+                                                        }
+                                                        value={
+                                                          tenantsFormik.values
+                                                            .emergency_PhoneNumber
+                                                        }
+                                                        onInput={(e) => {
+                                                          const inputValue =
+                                                            e.target.value;
+                                                          const numericValue =
+                                                            inputValue.replace(
+                                                              /\D/g,
+                                                              ""
+                                                            ); // Remove non-numeric characters
+                                                          e.target.value =
+                                                            numericValue;
+                                                        }}
+                                                      />
+                                                      {tenantsFormik.touched
+                                                        .emergency_PhoneNumber &&
+                                                        tenantsFormik.errors
+                                                          .emergency_PhoneNumber ? (
+                                                        <div
+                                                          style={{
+                                                            color: "red",
+                                                          }}
+                                                        >
+                                                          {
+                                                            tenantsFormik.errors
+                                                              .emergency_PhoneNumber
+                                                          }
+                                                        </div>
+                                                      ) : null}
+                                                    </FormGroup>
+                                                  </Col>
+                                                </Row>
+                                              </CardBody>
+                                            </Card>
+                                          </Collapse>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    <button
+                                      type="submit"
+                                      className="btn btn-primary"
+                                      onClick={() => {
+                                        setShowTenantTable(false);
+                                        tenantsFormik.handleSubmit() // Call this function to close the dialog
+                                      }}
+                                    // style={{ background: "green" }}
+                                    >
+                                      Add Tenant
+                                    </button>
+                                    <Button
+                                      // className="btn btn-primary"
+                                      // style={{ background: "blue" }}
+
+                                      onClick={handleClose}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                )}
+                                {selectedOption === "Cosigner" && (
+                                  <div className="cosigner">
+                                    <div>
+                                      <span
+                                        style={{
+                                          marginBottom: "1rem",
+                                          display: "flex",
+                                          background: "grey",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        &nbsp;Contact information
+                                      </span>
+                                    </div>
+
+                                    <div
+                                      className="formInput"
+                                      style={{ margin: "10px 10px" }}
+                                    >
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "row",
+                                        }}
+                                      >
+                                        <div
+                                          style={{
+                                            flex: 1,
+                                            marginRight: "10px",
+                                          }}
+                                        >
+                                          <label
+                                            className="form-control-label"
+                                            htmlFor="input-firstname"
+                                          >
+                                            First Name
+                                          </label>
+                                          <Input
+                                            className="form-control-alternative"
+                                            id="cosigner_firstName"
+                                            placeholder="First Name"
+                                            type="text"
+                                            name="entries[0].cosigner_firstName"
+                                            onBlur={consignerFormik.handleBlur}
+                                            onChange={
+                                              consignerFormik.handleChange
+                                            }
+                                            value={
+                                              consignerFormik.values.entries[0].cosigner_firstName
+                                            }
+                                          />
+                                          {consignerFormik.errors.entries &&
+                                            consignerFormik.errors?.entries[0].cosigner_firstName &&
+
+                                            consignerFormik.touched.entries &&
+                                            consignerFormik.touched?.entries[0].cosigner_firstName && consignerFormik.values.entries[0].cosigner_firstName === "" ? (
+                                            <div style={{ color: "red" }}>
+                                              {consignerFormik.errors.entries[0].cosigner_firstName}
+                                            </div>
+                                          ) : null}
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                          <label
+                                            className="form-control-label"
+                                            htmlFor="input-lastname"
+                                          >
+                                            Last Name
+                                          </label>
+                                          <Input
+                                            className="form-control-alternative"
+                                            id="cosigner_lastName"
+                                            placeholder="Last Name"
+                                            type="text"
+                                            name="entries[0].cosigner_lastName"
+                                            onBlur={consignerFormik.handleBlur}
+                                            onChange={
+                                              consignerFormik.handleChange
+                                            }
+                                            value={
+                                              consignerFormik.values.entries[0].cosigner_lastName
+                                            }
+                                          />
+                                          {consignerFormik.errors.entries &&
+                                            consignerFormik.errors?.entries[0].cosigner_lastName &&
+                                            consignerFormik.touched.entries &&
+                                            consignerFormik.touched?.entries[0].cosigner_lastName && consignerFormik.values.entries[0].cosigner_lastName === "" ? (
+                                            <div style={{ color: "red" }}>
+                                              {consignerFormik.errors.entries[0].cosigner_lastName}
+                                            </div>
+                                          ) : null}
+                                        </div>
+                                      </div>
+                                      <br />
+                                      <div
+                                        style={{
+                                          // display: "flex",
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <div
+                                          style={{
+                                            flex: 1,
+                                            marginRight: "10px",
+                                          }}
+                                        >
+                                          <label
+                                            className="form-control-label"
+                                            htmlFor="input-lastname"
+                                          >
+                                            Phone Number
+                                          </label>
+                                          <br />
+                                          <Input
+                                            className="form-control-alternative"
+                                            id="cosigner_mobileNumber"
+                                            placeholder="Phone Number"
+                                            type="text"
+                                            name="entries[0].cosigner_mobileNumber"
+                                            onBlur={consignerFormik.handleBlur}
+                                            onChange={
+                                              consignerFormik.handleChange
+                                            }
+                                            value={
+                                              consignerFormik.values.entries[0].cosigner_mobileNumber
+                                            }
+                                            InputProps={{
+                                              startAdornment: (
+                                                <InputAdornment position="start">
+                                                  <PhoneIcon />
+                                                </InputAdornment>
+                                              ),
+                                            }}
+                                            onInput={(e) => {
+                                              const inputValue =
+                                                e.target.value;
+                                              const numericValue =
+                                                inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                              e.target.value = numericValue;
+                                            }}
+                                          />
+                                          {consignerFormik.errors.entries &&
+                                            consignerFormik.errors?.entries[0].cosigner_mobileNumber &&
+                                            consignerFormik.touched.entries &&
+                                            consignerFormik.touched?.entries[0].cosigner_mobileNumber && consignerFormik.values.entries[0].cosigner_mobileNumber === "" ? (
+                                            <div style={{ color: "red" }}>
+                                              {consignerFormik.errors.entries[0].cosigner_mobileNumber}
+                                            </div>
+                                          ) : null}
+                                        </div>
+                                        {/* <span
+                                            onClick={setOpenTenantsDialog}
+                                            style={{
+                                              cursor: "pointer",
+                                              fontSize: "14px",
+                                              fontFamily: "monospace",
+                                              color: "blue",
+                                            }}
+                                          >
+                                            <b style={{ fontSize: "20px" }}>
+                                              +
+                                            </b>{" "}
+                                            Add alternative Phone
+                                          </span> */}
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                          }}
+                                        >
+                                          <span
+                                            onClick={handleClick2}
+                                            style={{
+                                              cursor: "pointer",
+                                              fontSize: "14px",
+                                              fontFamily: "monospace",
+                                              color: "blue",
+                                              paddingTop: "3%",
+                                            }}
+                                          >
+                                            <b style={{ fontSize: "20px" }}>
+                                              +
+                                            </b>
+                                            Add alternative Phone
+                                          </span>
+                                          {rentincdropdownOpen3 && (
+                                            <div
+                                              style={{
+                                                flex: 1,
+                                                marginRight: "10px",
+                                              }}
+                                            >
+                                              <label
+                                                className="form-control-label"
+                                                htmlFor="tenant_workNumber"
+                                                style={{
+                                                  paddingTop: "3%",
+                                                }}
+                                              >
+                                                Work Number*
+                                              </label>
+                                              <br />
+                                              <Input
+                                                id="cosigner_workNumber"
+                                                className="form-control-alternative"
+                                                variant="standard"
+                                                type="text"
+                                                placeholder="Alternative Number"
+                                                style={{
+                                                  marginRight: "10px",
+                                                  flex: 1,
+                                                }} // Adjust flex property
+                                                name="cosigner_workNumber"
+                                                onBlur={
+                                                  consignerFormik.handleBlur
+                                                }
+                                                onChange={
+                                                  consignerFormik.handleChange
+                                                }
+                                                value={
+                                                  consignerFormik.values.entries[0]
+                                                    .cosigner_workNumber
+                                                }
+                                                onInput={(e) => {
+                                                  const inputValue =
+                                                    e.target.value;
+                                                  const numericValue =
+                                                    inputValue.replace(
+                                                      /\D/g,
+                                                      ""
+                                                    ); // Remove non-numeric characters
+                                                  e.target.value =
+                                                    numericValue;
+                                                  consignerFormik.values.entries[0]
+                                                    .cosigner_workNumber = numericValue;
+                                                }}
+                                              />
+
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <br />
+                                      <div
+                                        style={{
+                                          // display: "flex",
+                                          flexDirection: "row",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <div
+                                          style={{
+                                            flex: 1,
+                                            marginRight: "10px",
+                                          }}
+                                        >
+                                          <label
+                                            className="form-control-label"
+                                            htmlFor="input-email"
+                                          >
+                                            Email
+                                          </label>
+                                          <br />
+                                          <Input
+                                            className="form-control-alternative"
+                                            id="cosigner_email"
+                                            placeholder="Email"
+                                            type="text"
+                                            name="entries[0].cosigner_email"
+                                            onBlur={consignerFormik.handleBlur}
+                                            onChange={
+                                              consignerFormik.handleChange
+                                            }
+                                            value={
+                                              consignerFormik.values
+                                                .entries[0].cosigner_email
+                                            }
+                                            InputProps={{
+                                              startAdornment: (
+                                                <InputAdornment position="start">
+                                                  <EmailIcon />
+                                                </InputAdornment>
+                                              ),
+                                            }}
+                                          />
+                                          {consignerFormik.errors.entries &&
+                                            consignerFormik.errors?.entries[0].cosigner_email &&
+                                            consignerFormik.touched.entries &&
+                                            consignerFormik.touched?.entries[0].cosigner_email && consignerFormik.values.entries[0].cosigner_email === "" ? (
+                                            <div style={{ color: "red" }}>
+                                              {consignerFormik.errors.entries[0].cosigner_email}
+                                            </div>
+                                          ) : null}
+                                        </div>
+                                        {/* <span
                                             onClick={setOpenTenantsDialog}
                                             style={{
                                               cursor: "pointer",
@@ -3419,75 +3508,75 @@ const RentRollLeaseing = () => {
                                             </b>{" "}
                                             Add alternative Email
                                           </span> */}
-                                          <div
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                          }}
+                                        >
+                                          <span
+                                            onClick={handleClick3}
                                             style={{
-                                              display: "flex",
-                                              flexDirection: "column",
+                                              cursor: "pointer",
+                                              fontSize: "14px",
+                                              fontFamily: "monospace",
+                                              color: "blue",
+                                              paddingTop: "3%", // Add this to create space between the input and the link
                                             }}
                                           >
-                                            <span
-                                              onClick={handleClick3}
+                                            <b style={{ fontSize: "20px" }}>
+                                              +
+                                            </b>
+                                            Add alternative Email
+                                          </span>
+                                          {rentincdropdownOpen4 && (
+                                            <div
                                               style={{
-                                                cursor: "pointer",
-                                                fontSize: "14px",
-                                                fontFamily: "monospace",
-                                                color: "blue",
-                                                paddingTop: "3%", // Add this to create space between the input and the link
+                                                flex: 1,
+                                                marginRight: "10px",
                                               }}
                                             >
-                                              <b style={{ fontSize: "20px" }}>
-                                                +
-                                              </b>
-                                              Add alternative Email
-                                            </span>
-                                            {rentincdropdownOpen4 && (
-                                              <div
+                                              <label
+                                                className="form-control-label"
+                                                htmlFor="input-firstname"
                                                 style={{
-                                                  flex: 1,
-                                                  marginRight: "10px",
+                                                  paddingTop: "3%",
                                                 }}
                                               >
-                                                <label
-                                                  className="form-control-label"
-                                                  htmlFor="input-firstname"
-                                                  style={{
-                                                    paddingTop: "3%",
-                                                  }}
-                                                >
-                                                  Alternative Email*
-                                                </label>
-                                                <br />
-                                                <Input
-                                                  id="cosigner_alternateemail"
-                                                  className="form-control-alternative"
-                                                  variant="standard"
-                                                  type="text"
-                                                  placeholder="Alternative Email"
-                                                  style={{
-                                                    marginRight: "10px",
-                                                    flex: 1,
-                                                  }} // Adjust flex property
-                                                  name="cosigner_alternateemail"
-                                                  onBlur={
-                                                    consignerFormik.handleBlur
-                                                  }
-                                                  onChange={
-                                                    consignerFormik.handleChange
-                                                  }
-                                                  value={
-                                                    consignerFormik.values
-                                                      .entries[0].cosigner_alternateemail
-                                                  }
-                                                  onInput={(e) => {
-                                                    consignerFormik.values
-                                                      .entries[0].cosigner_alternateemail = e.target.value
-                                                  }}
-                                                // value={
-                                                //   consignerFormik.values.entries[0]
-                                                //     .cosigner_alternateemail
-                                                // }
-                                                />
-                                                {/* {consignerFormik.touched
+                                                Alternative Email*
+                                              </label>
+                                              <br />
+                                              <Input
+                                                id="cosigner_alternateemail"
+                                                className="form-control-alternative"
+                                                variant="standard"
+                                                type="text"
+                                                placeholder="Alternative Email"
+                                                style={{
+                                                  marginRight: "10px",
+                                                  flex: 1,
+                                                }} // Adjust flex property
+                                                name="cosigner_alternateemail"
+                                                onBlur={
+                                                  consignerFormik.handleBlur
+                                                }
+                                                onChange={
+                                                  consignerFormik.handleChange
+                                                }
+                                                value={
+                                                  consignerFormik.values
+                                                    .entries[0].cosigner_alternateemail
+                                                }
+                                                onInput={(e) => {
+                                                  consignerFormik.values
+                                                    .entries[0].cosigner_alternateemail = e.target.value
+                                                }}
+                                              // value={
+                                              //   consignerFormik.values.entries[0]
+                                              //     .cosigner_alternateemail
+                                              // }
+                                              />
+                                              {/* {consignerFormik.touched
                                                   .cosigner_alternateemail &&
                                                   consignerFormik.errors
                                                     .cosigner_alternateemail ? (
@@ -3498,56 +3587,56 @@ const RentRollLeaseing = () => {
                                                     }
                                                   </div>
                                                 ) : null} */}
-                                              </div>
-                                            )}
-                                          </div>
+                                            </div>
+                                          )}
                                         </div>
-                                        <hr />
-                                        <div>
+                                      </div>
+                                      <hr />
+                                      <div>
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-email"
+                                        >
+                                          Address
+                                        </label>
+                                      </div>
+
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                        }}
+                                      >
+                                        <FormGroup>
                                           <label
                                             className="form-control-label"
-                                            htmlFor="input-email"
+                                            htmlFor="cosigner_streetAdress"
                                           >
-                                            Address
+                                            Street Address
                                           </label>
-                                        </div>
-
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                          }}
-                                        >
-                                          <FormGroup>
-                                            <label
-                                              className="form-control-label"
-                                              htmlFor="cosigner_streetAdress"
-                                            >
-                                              Street Address
-                                            </label>
-                                            <Input
-                                              className="form-control-alternative"
-                                              id="cosigner_streetAdress"
-                                              placeholder="Address"
-                                              type="textarea"
-                                              style={{
-                                                width: "100%",
-                                                maxWidth: "25rem",
-                                              }}
-                                              onBlur={consignerFormik.handleBlur}
-                                              onChange={
-                                                consignerFormik.handleChange
-                                              }
-                                              value={
-                                                consignerFormik.values.entries[0]
-                                                  .cosigner_streetAdress
-                                              }
-                                              onInput={(e) => {
-                                                consignerFormik.values
-                                                  .entries[0].cosigner_streetAdress = e.target.value
-                                              }}
-                                            />
-                                            {/* {consignerFormik.touched
+                                          <Input
+                                            className="form-control-alternative"
+                                            id="cosigner_streetAdress"
+                                            placeholder="Address"
+                                            type="textarea"
+                                            style={{
+                                              width: "100%",
+                                              maxWidth: "25rem",
+                                            }}
+                                            onBlur={consignerFormik.handleBlur}
+                                            onChange={
+                                              consignerFormik.handleChange
+                                            }
+                                            value={
+                                              consignerFormik.values.entries[0]
+                                                .cosigner_streetAdress
+                                            }
+                                            onInput={(e) => {
+                                              consignerFormik.values
+                                                .entries[0].cosigner_streetAdress = e.target.value
+                                            }}
+                                          />
+                                          {/* {consignerFormik.touched
                                               .cosigner_streetAdress &&
                                               consignerFormik.errors
                                                 .cosigner_streetAdress ? (
@@ -3558,40 +3647,40 @@ const RentRollLeaseing = () => {
                                                 }
                                               </div>
                                             ) : null} */}
-                                          </FormGroup>
-                                        </div>
-                                        <div>
-                                          <Row>
-                                            <Col lg="4">
-                                              <FormGroup>
-                                                <label
-                                                  className="form-control-label"
-                                                  htmlFor="input-city"
-                                                >
-                                                  City
-                                                </label>
-                                                <Input
-                                                  className="form-control-alternative"
-                                                  id="cosigner_city"
-                                                  placeholder="New York"
-                                                  type="text"
-                                                  name="cosigner_city"
-                                                  onBlur={
-                                                    consignerFormik.handleBlur
-                                                  }
-                                                  onChange={
-                                                    consignerFormik.handleChange
-                                                  }
-                                                  value={
-                                                    consignerFormik.values.entries[0]
-                                                      .cosigner_city
-                                                  }
-                                                  onInput={(e) => {
-                                                    consignerFormik.values
-                                                      .entries[0].cosigner_city = e.target.value
-                                                  }}
-                                                />
-                                                {/* {consignerFormik.touched
+                                        </FormGroup>
+                                      </div>
+                                      <div>
+                                        <Row>
+                                          <Col lg="4">
+                                            <FormGroup>
+                                              <label
+                                                className="form-control-label"
+                                                htmlFor="input-city"
+                                              >
+                                                City
+                                              </label>
+                                              <Input
+                                                className="form-control-alternative"
+                                                id="cosigner_city"
+                                                placeholder="New York"
+                                                type="text"
+                                                name="cosigner_city"
+                                                onBlur={
+                                                  consignerFormik.handleBlur
+                                                }
+                                                onChange={
+                                                  consignerFormik.handleChange
+                                                }
+                                                value={
+                                                  consignerFormik.values.entries[0]
+                                                    .cosigner_city
+                                                }
+                                                onInput={(e) => {
+                                                  consignerFormik.values
+                                                    .entries[0].cosigner_city = e.target.value
+                                                }}
+                                              />
+                                              {/* {consignerFormik.touched
                                                   .cosigner_city &&
                                                   consignerFormik.errors
                                                     .cosigner_city ? (
@@ -3602,38 +3691,38 @@ const RentRollLeaseing = () => {
                                                     }
                                                   </div>
                                                 ) : null} */}
-                                              </FormGroup>
-                                            </Col>
-                                            <Col lg="4">
-                                              <FormGroup>
-                                                <label
-                                                  className="form-control-label"
-                                                  htmlFor="input-country"
-                                                >
-                                                  Country
-                                                </label>
-                                                <Input
-                                                  className="form-control-alternative"
-                                                  id="cosigner_country"
-                                                  placeholder="United States"
-                                                  type="text"
-                                                  name="cosigner_country"
-                                                  onBlur={
-                                                    consignerFormik.handleBlur
-                                                  }
-                                                  onChange={
-                                                    consignerFormik.handleChange
-                                                  }
-                                                  value={
-                                                    consignerFormik.values.entries[0]
-                                                      .cosigner_country
-                                                  }
-                                                  onInput={(e) => {
-                                                    consignerFormik.values
-                                                      .entries[0].cosigner_country = e.target.value
-                                                  }}
-                                                />
-                                                {/* {consignerFormik.touched
+                                            </FormGroup>
+                                          </Col>
+                                          <Col lg="4">
+                                            <FormGroup>
+                                              <label
+                                                className="form-control-label"
+                                                htmlFor="input-country"
+                                              >
+                                                Country
+                                              </label>
+                                              <Input
+                                                className="form-control-alternative"
+                                                id="cosigner_country"
+                                                placeholder="United States"
+                                                type="text"
+                                                name="cosigner_country"
+                                                onBlur={
+                                                  consignerFormik.handleBlur
+                                                }
+                                                onChange={
+                                                  consignerFormik.handleChange
+                                                }
+                                                value={
+                                                  consignerFormik.values.entries[0]
+                                                    .cosigner_country
+                                                }
+                                                onInput={(e) => {
+                                                  consignerFormik.values
+                                                    .entries[0].cosigner_country = e.target.value
+                                                }}
+                                              />
+                                              {/* {consignerFormik.touched
                                                   .cosigner_country &&
                                                   consignerFormik.errors
                                                     .cosigner_country ? (
@@ -3644,47 +3733,47 @@ const RentRollLeaseing = () => {
                                                     }
                                                   </div>
                                                 ) : null} */}
-                                              </FormGroup>
-                                            </Col>
-                                            <Col lg="4">
-                                              <FormGroup>
-                                                <label
-                                                  className="form-control-label"
-                                                  htmlFor="input-country"
-                                                >
-                                                  Postal code
-                                                </label>
-                                                <Input
-                                                  className="form-control-alternative"
-                                                  id="cosigner_postalcode"
-                                                  placeholder="Postal code"
-                                                  type="text"
-                                                  name="cosigner_postalcode"
-                                                  onBlur={
-                                                    consignerFormik.handleBlur
-                                                  }
-                                                  onChange={
-                                                    consignerFormik.handleChange
-                                                  }
-                                                  value={
-                                                    consignerFormik.values.entries[0]
-                                                      .cosigner_postalcode
-                                                  }
-                                                  onInput={(e) => {
-                                                    const inputValue =
-                                                      e.target.value;
-                                                    const numericValue =
-                                                      inputValue.replace(
-                                                        /\D/g,
-                                                        ""
-                                                      ); // Remove non-numeric characters
-                                                    e.target.value =
-                                                      numericValue;
-                                                    consignerFormik.values.entries[0]
-                                                      .cosigner_postalcode = numericValue;
-                                                  }}
-                                                />
-                                                {/* {consignerFormik.touched
+                                            </FormGroup>
+                                          </Col>
+                                          <Col lg="4">
+                                            <FormGroup>
+                                              <label
+                                                className="form-control-label"
+                                                htmlFor="input-country"
+                                              >
+                                                Postal code
+                                              </label>
+                                              <Input
+                                                className="form-control-alternative"
+                                                id="cosigner_postalcode"
+                                                placeholder="Postal code"
+                                                type="text"
+                                                name="cosigner_postalcode"
+                                                onBlur={
+                                                  consignerFormik.handleBlur
+                                                }
+                                                onChange={
+                                                  consignerFormik.handleChange
+                                                }
+                                                value={
+                                                  consignerFormik.values.entries[0]
+                                                    .cosigner_postalcode
+                                                }
+                                                onInput={(e) => {
+                                                  const inputValue =
+                                                    e.target.value;
+                                                  const numericValue =
+                                                    inputValue.replace(
+                                                      /\D/g,
+                                                      ""
+                                                    ); // Remove non-numeric characters
+                                                  e.target.value =
+                                                    numericValue;
+                                                  consignerFormik.values.entries[0]
+                                                    .cosigner_postalcode = numericValue;
+                                                }}
+                                              />
+                                              {/* {consignerFormik.touched
                                                   .cosigner_postalcode &&
                                                   consignerFormik.errors
                                                     .cosigner_postalcode ? (
@@ -3695,12 +3784,12 @@ const RentRollLeaseing = () => {
                                                     }
                                                   </div>
                                                 ) : null} */}
-                                              </FormGroup>
-                                            </Col>
-                                          </Row>
-                                        </div>
+                                            </FormGroup>
+                                          </Col>
+                                        </Row>
+                                      </div>
 
-                                        {/* <div>
+                                      {/* <div>
                                           <span
                                             onClick={setOpenTenantsDialog}
                                             style={{
@@ -3717,39 +3806,141 @@ const RentRollLeaseing = () => {
                                             Add alternative Address
                                           </span>
                                         </div> */}
-                                        <br />
-                                      </div>
-                                      <button
-                                        type="submit"
-                                        className="btn btn-primary"
-                                        // onClick={handleDialogClose}
-                                        // setOpenRecurringDialog={handleAddCosigner}
-                                        onClick={() => {
-                                          // handleAddCosigner();
-                                          consignerFormik.handleSubmit()
-                                          // consignerFormik.errors
-                                          // handleDialogClose(); // Call this function to close the dialog
-                                        }}
-                                      // style={{ background: "green" }}
-                                      >
-                                        Add Cosigner
-                                      </button>
-                                      <Button
-                                        // className="btn btn-primary"
-                                        // style={{ background: "blue" }}
-                                        onClick={handleClose}
-                                      >
-                                        Cancel
-                                      </Button>
+                                      <br />
                                     </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                        {selectedTenantData && Object.keys(selectedTenantData).length > 0 ? (
+                                    <button
+                                      type="submit"
+                                      className="btn btn-primary"
+                                      // onClick={handleDialogClose}
+                                      // setOpenRecurringDialog={handleAddCosigner}
+                                      onClick={() => {
+                                        // handleAddCosigner();
+                                        consignerFormik.handleSubmit()
+                                        // consignerFormik.errors
+                                        // handleDialogClose(); // Call this function to close the dialog
+                                      }}
+                                    // style={{ background: "green" }}
+                                    >
+                                      Add Cosigner
+                                    </button>
+                                    <Button
+                                      // className="btn btn-primary"
+                                      // style={{ background: "blue" }}
+                                      onClick={handleClose}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      {selectedTenantData && Object.keys(selectedTenantData).length > 0 ? (
+                        <div>
+                          <table
+                            style={{
+                              borderCollapse: "collapse",
+                              width: "100%",
+                              marginTop: "2%",
+                            }}
+                          >
+                            <thead>
+                              <tr style={{ background: "#f2f2f2" }}>
+                                <th
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  First Name
+                                </th>
+                                <th
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  Last Name
+                                </th>
+                                <th
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  Phone Number
+                                </th>
+                                <th
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  Action
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  {selectedTenantData.firstName}
+                                  {/* {console.log(selectedTenantData.firstName)} */}
+                                </td>
+                                <td
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  {selectedTenantData.lastName}
+                                </td>
+                                <td
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  {selectedTenantData.mobileNumber}
+                                </td>
+                                <td
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  <EditIcon
+                                    onClick={() => {
+                                      setShowTenantTable(false);
+                                      setOpenTenantsDialog(true);
+                                    }}
+                                  />
+
+                                  <DeleteIcon
+                                    onClick={() => {
+                                      setShowTenantTable(false);
+                                      handleTenantDelete();
+                                    }}
+                                  />
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : null
+                      }
+                      {cosignerData &&
+                        Object.keys(cosignerData).length > 0 && (
                           <div>
+                            <h3 style={{ marginTop: "2%" }}>
+                              Cosigner Information
+                            </h3>
                             <table
                               style={{
                                 borderCollapse: "collapse",
@@ -3758,40 +3949,38 @@ const RentRollLeaseing = () => {
                               }}
                             >
                               <thead>
-                                <tr style={{ background: "#f2f2f2" }}>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    First Name
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Last Name
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Phone Number
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </tr>
+                                <th
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  FirstName
+                                </th>
+                                <th
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  LastName
+                                </th>
+                                <th
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  Mobile Number
+                                </th>
+                                <th
+                                  style={{
+                                    padding: "8px",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  Action
+                                </th>
                               </thead>
                               <tbody>
                                 <tr>
@@ -3801,8 +3990,7 @@ const RentRollLeaseing = () => {
                                       textAlign: "left",
                                     }}
                                   >
-                                    {selectedTenantData.firstName}
-                                    {/* {console.log(selectedTenantData.firstName)} */}
+                                    {cosignerData.firstName}
                                   </td>
                                   <td
                                     style={{
@@ -3810,7 +3998,7 @@ const RentRollLeaseing = () => {
                                       textAlign: "left",
                                     }}
                                   >
-                                    {selectedTenantData.lastName}
+                                    {cosignerData.lastName}
                                   </td>
                                   <td
                                     style={{
@@ -3818,7 +4006,7 @@ const RentRollLeaseing = () => {
                                       textAlign: "left",
                                     }}
                                   >
-                                    {selectedTenantData.mobileNumber}
+                                    {cosignerData.mobileNumber}
                                   </td>
                                   <td
                                     style={{
@@ -3827,274 +4015,175 @@ const RentRollLeaseing = () => {
                                     }}
                                   >
                                     <EditIcon
-                                      onClick={() => {
-                                        setShowTenantTable(false);
-                                        setOpenTenantsDialog(true);
-                                      }}
+                                      onClick={setOpenTenantsDialog}
                                     />
-
                                     <DeleteIcon
-                                      onClick={() => {
-                                        setShowTenantTable(false);
-                                        handleTenantDelete();
-                                      }}
+                                      onClick={handleCosignerDelete}
                                     />
                                   </td>
                                 </tr>
                               </tbody>
                             </table>
                           </div>
-                        ) : null
-                        }
-                        {cosignerData &&
-                          Object.keys(cosignerData).length > 0 && (
-                            <div>
-                              <h3 style={{ marginTop: "2%" }}>
-                                Cosigner Information
-                              </h3>
-                              <table
-                                style={{
-                                  borderCollapse: "collapse",
-                                  width: "100%",
-                                  marginTop: "2%",
-                                }}
+                        )}
+                    </FormGroup>
+                  </Col>
+                </Row>
+
+                {/* /================================================================================================================================================= */}
+
+                <hr className="my-4" />
+                {/* Address */}
+                <h6 className="heading-small text-muted mb-4">
+                  Rent (Optional)
+                </h6>
+                <div className="pl-lg-4">
+                  <Row>
+                    <Col md="12">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Rent cycle
+                        </label>
+                        <FormGroup>
+                          <Dropdown
+                            isOpen={rentdropdownOpen}
+                            toggle={toggle3}
+                          >
+                            <DropdownToggle caret style={{ width: "100%" }}>
+                              {selectedRentCycle
+                                ? selectedRentCycle
+                                : "Select"}
+                            </DropdownToggle>
+                            <DropdownMenu
+                              style={{ width: "100%" }}
+                              name="rent_cycle"
+                              onBlur={leaseFormik.handleBlur}
+                              onChange={leaseFormik.handleChange}
+                              value={leaseFormik.values.rent_cycle}
+                            >
+                              {leaseFormik.touched.rent_cycle &&
+                                leaseFormik.errors.rent_cycle ? (
+                                <div style={{ color: "red" }}>
+                                  {leaseFormik.errors.rent_cycle}
+                                </div>
+                              ) : null}
+                              <DropdownItem
+                                onClick={() =>
+                                  handleselectedRentCycle("Daily")
+                                }
                               >
-                                <thead>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    FirstName
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    LastName
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Mobile Number
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      {cosignerData.firstName}
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      {cosignerData.lastName}
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      {cosignerData.mobileNumber}
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      <EditIcon
-                                        onClick={setOpenTenantsDialog}
-                                      />
-                                      <DeleteIcon
-                                        onClick={handleCosignerDelete}
-                                      />
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          )}
+                                Daily
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() =>
+                                  handleselectedRentCycle("Weekly")
+                                }
+                              >
+                                Weekly
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() =>
+                                  handleselectedRentCycle("Every two weeks")
+                                }
+                              >
+                                Every two weeks
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() =>
+                                  handleselectedRentCycle("Monthly")
+                                }
+                              >
+                                Monthly
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() =>
+                                  handleselectedRentCycle("Every two months")
+                                }
+                              >
+                                Every two months
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() =>
+                                  handleselectedRentCycle("Quarterly")
+                                }
+                              >
+                                Quarterly
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() =>
+                                  handleselectedRentCycle("Yearly")
+                                }
+                              >
+                                Yearly
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </FormGroup>
                       </FormGroup>
                     </Col>
                   </Row>
+                </div>
+                {/* <hr className="my-4" /> */}
+                {/* Address */}
 
-                  {/* /================================================================================================================================================= */}
-
-                  <hr className="my-4" />
-                  {/* Address */}
-                  <h6 className="heading-small text-muted mb-4">
-                    Rent (Optional)
-                  </h6>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col md="12">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
-                          >
-                            Rent cycle
-                          </label>
-                          <FormGroup>
-                            <Dropdown
-                              isOpen={rentdropdownOpen}
-                              toggle={toggle3}
-                            >
-                              <DropdownToggle caret style={{ width: "100%" }}>
-                                {selectedRentCycle
-                                  ? selectedRentCycle
-                                  : "Select"}
-                              </DropdownToggle>
-                              <DropdownMenu
-                                style={{ width: "100%" }}
-                                name="rent_cycle"
-                                onBlur={leaseFormik.handleBlur}
-                                onChange={leaseFormik.handleChange}
-                                value={leaseFormik.values.rent_cycle}
+                <div className="pl-lg-4">
+                  <Row>
+                    <Col lg="7">
+                      <FormGroup>
+                        <Row>
+                          <Col lg="4">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-address"
                               >
-                                {leaseFormik.touched.rent_cycle &&
-                                  leaseFormik.errors.rent_cycle ? (
+                                Amount
+                              </label>
+                              <br />
+                              <FormGroup>
+                                <Input
+                                  className="form-control-alternative"
+                                  id="input-reserve"
+                                  placeholder="$0.00"
+                                  type="text"
+                                  name="amount"
+                                  onBlur={leaseFormik.handleBlur}
+                                  //onChange={leaseFormik.handleChange}
+                                  value={leaseFormik.values.entries[0].amount}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    const numericValue = inputValue.replace(/\D/g, '');
+                                    leaseFormik.values.entries[0].amount = numericValue;
+                                    leaseFormik.handleChange({
+                                      target: {
+                                        name: 'amount',
+                                        value: numericValue,
+                                      },
+                                    });
+                                  }}
+                                />
+                                {leaseFormik.errors.entries &&
+                                  leaseFormik.errors?.entries[0].amount &&
+                                  leaseFormik.touched.entries &&
+                                  leaseFormik.touched?.entries[0].amount && leaseFormik.values.entries[0].amount === "" ? (
                                   <div style={{ color: "red" }}>
-                                    {leaseFormik.errors.rent_cycle}
+                                    {leaseFormik.errors.entries[0].amount}
                                   </div>
                                 ) : null}
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Daily")
-                                  }
-                                >
-                                  Daily
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Weekly")
-                                  }
-                                >
-                                  Weekly
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Every two weeks")
-                                  }
-                                >
-                                  Every two weeks
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Monthly")
-                                  }
-                                >
-                                  Monthly
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Every two months")
-                                  }
-                                >
-                                  Every two months
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Quarterly")
-                                  }
-                                >
-                                  Quarterly
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Yearly")
-                                  }
-                                >
-                                  Yearly
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </Dropdown>
-                          </FormGroup>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </div>
-                  {/* <hr className="my-4" /> */}
-                  {/* Address */}
-
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="7">
-                        <FormGroup>
-                          <Row>
-                            <Col lg="4">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-address"
-                                >
-                                  Amount
-                                </label>
-                                <br />
-                                <FormGroup>
-                                  <Input
-                                    className="form-control-alternative"
-                                    id="input-reserve"
-                                    placeholder="$0.00"
-                                    type="text"
-                                    name="amount"
-                                    onBlur={leaseFormik.handleBlur}
-                                    //onChange={leaseFormik.handleChange}
-                                    value={leaseFormik.values.entries[0].amount}
-                                    onChange={(e) => {
-                                      const inputValue = e.target.value;
-                                      const numericValue = inputValue.replace(/\D/g, '');
-                                      leaseFormik.values.entries[0].amount = numericValue;
-                                      leaseFormik.handleChange({
-                                        target: {
-                                          name: 'amount',
-                                          value: numericValue,
-                                        },
-                                      });
-                                    }}
-                                  />
-                                  {leaseFormik.errors.entries &&
-                                    leaseFormik.errors?.entries[0].amount &&
-                                    leaseFormik.touched.entries &&
-                                    leaseFormik.touched?.entries[0].amount && leaseFormik.values.entries[0].amount === "" ? (
-                                    <div style={{ color: "red" }}>
-                                      {leaseFormik.errors.entries[0].amount}
-                                    </div>
-                                  ) : null}
-                                  {/* {leaseFormik.touched.entries &&
+                                {/* {leaseFormik.touched.entries &&
                                     leaseFormik.errors.entries[0].amount ? (
                                     <div style={{ color: "red" }}>
                                       {leaseFormik.errors.entries[0].amount}
                                     </div>
                                   ) : null} */}
-                                  {/* {console.log(leaseFormik.values.entries[0])} */}
-                                </FormGroup>
+                                {/* {console.log(leaseFormik.values.entries[0])} */}
                               </FormGroup>
-                            </Col>
-                            {/* <Col lg="5">
+                            </FormGroup>
+                          </Col>
+                          {/* <Col lg="5">
                               <FormGroup>
                                 <label
                                   className="form-control-label"
@@ -4221,26 +4310,26 @@ const RentRollLeaseing = () => {
                               </FormGroup>
                             </Col> */}
 
-                            <Col lg="4">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-unitadd9"
-                                >
-                                  Next Due Date
-                                </label>
-                                <Input
-                                  className="form-control-alternative"
-                                  id="input-unitadd9"
-                                  placeholder="3000"
-                                  type="date"
-                                  name="nextDue_date"
-                                  onBlur={leaseFormik.handleBlur}
-                                  onChange={leaseFormik.handleChange}
-                                  value={leaseFormik.values.tenant_nextDue_date}
-                                />
+                          <Col lg="4">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-unitadd9"
+                              >
+                                Next Due Date
+                              </label>
+                              <Input
+                                className="form-control-alternative"
+                                id="input-unitadd9"
+                                placeholder="3000"
+                                type="date"
+                                name="nextDue_date"
+                                onBlur={leaseFormik.handleBlur}
+                                onChange={leaseFormik.handleChange}
+                                value={leaseFormik.values.tenant_nextDue_date}
+                              />
 
-                                {/* <LocalizationProvider
+                              {/* <LocalizationProvider
                                   dateAdapter={AdapterDayjs}
                                 >
                                   <DatePicker
@@ -4262,63 +4351,63 @@ const RentRollLeaseing = () => {
                                     }}
                                   />
                                 </LocalizationProvider> */}
-                                {leaseFormik.touched.nextDue_date &&
-                                  leaseFormik.errors.nextDue_date ? (
-                                  <div style={{ color: "red" }}>
-                                    {leaseFormik.errors.nextDue_date}
-                                  </div>
-                                ) : null}
-                              </FormGroup>
-                            </Col>
+                              {leaseFormik.touched.nextDue_date &&
+                                leaseFormik.errors.nextDue_date ? (
+                                <div style={{ color: "red" }}>
+                                  {leaseFormik.errors.nextDue_date}
+                                </div>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
 
-                            <Col lg="5">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-unitadd10"
-                                >
-                                  Memo
-                                </label>
-                                <Input
-                                  className="form-control-alternative"
-                                  id="input-unitadd10"
-                                  placeholder=""
-                                  type="text"
-                                  name="memo"
-                                  onBlur={leaseFormik.handleBlur}
-                                  onChange={leaseFormik.handleChange}
-                                  value={leaseFormik.values.memo}
-                                />
-                                {leaseFormik.touched.memo &&
-                                  leaseFormik.errors.memo ? (
-                                  <div style={{ color: "red" }}>
-                                    {leaseFormik.errors.memo}
-                                  </div>
-                                ) : null}
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </div>
+                          <Col lg="5">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-unitadd10"
+                              >
+                                Memo
+                              </label>
+                              <Input
+                                className="form-control-alternative"
+                                id="input-unitadd10"
+                                placeholder=""
+                                type="text"
+                                name="memo"
+                                onBlur={leaseFormik.handleBlur}
+                                onChange={leaseFormik.handleChange}
+                                value={leaseFormik.values.memo}
+                              />
+                              {leaseFormik.touched.memo &&
+                                leaseFormik.errors.memo ? (
+                                <div style={{ color: "red" }}>
+                                  {leaseFormik.errors.memo}
+                                </div>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </div>
 
-                  <hr className="my-4" />
-                  {/* Description */}
-                  <h6 className="heading-small text-muted mb-4">
-                    Security Deposite (Optional)
-                  </h6>
-                  <div className="pl-lg-2">
-                    <FormGroup>
-                      {/* <label
+                <hr className="my-4" />
+                {/* Description */}
+                <h6 className="heading-small text-muted mb-4">
+                  Security Deposite (Optional)
+                </h6>
+                <div className="pl-lg-2">
+                  <FormGroup>
+                    {/* <label
                         className="form-control-label"
                         htmlFor="input-address"
                       >
                         Security Deposite (Optional)
                       </label> */}
-                      <br />
-                      <Row>
-                        {/* <Col lg="2">
+                    <br />
+                    <Row>
+                      {/* <Col lg="2">
                           <FormGroup>
                             <label
                               className="form-control-label"
@@ -4345,137 +4434,137 @@ const RentRollLeaseing = () => {
                             ) : null}
                           </FormGroup>
                         </Col> */}
-                        <Col lg="2">
+                      <Col lg="2">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-address"
+                          >
+                            Amount
+                          </label>
+                          <br />
                           <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-address"
-                            >
-                              Amount
-                            </label>
-                            <br />
-                            <FormGroup>
-                              <Input
-                                className="form-control-alternative"
-                                id="input-reserve"
-                                placeholder="$0.00"
-                                type="text"
-                                name="Security_amount"
-                                onBlur={leaseFormik.handleBlur}
-                                onChange={leaseFormik.handleChange}
-                                value={leaseFormik.values.Security_amount}
-                                onInput={(e) => {
-                                  const inputValue = e.target.value;
-                                  const numericValue = inputValue.replace(
-                                    /\D/g,
-                                    ""
-                                  ); // Remove non-numeric characters
-                                  e.target.value = numericValue;
-                                }}
-                              />
-                              {leaseFormik.touched.Security_amount &&
-                                leaseFormik.errors.Security_amount ? (
-                                <div style={{ color: "red" }}>
-                                  {leaseFormik.errors.Security_amount}
-                                </div>
-                              ) : null}
-                            </FormGroup>
+                            <Input
+                              className="form-control-alternative"
+                              id="input-reserve"
+                              placeholder="$0.00"
+                              type="text"
+                              name="Security_amount"
+                              onBlur={leaseFormik.handleBlur}
+                              onChange={leaseFormik.handleChange}
+                              value={leaseFormik.values.Security_amount}
+                              onInput={(e) => {
+                                const inputValue = e.target.value;
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  ""
+                                ); // Remove non-numeric characters
+                                e.target.value = numericValue;
+                              }}
+                            />
+                            {leaseFormik.touched.Security_amount &&
+                              leaseFormik.errors.Security_amount ? (
+                              <div style={{ color: "red" }}>
+                                {leaseFormik.errors.Security_amount}
+                              </div>
+                            ) : null}
                           </FormGroup>
-                        </Col>
+                        </FormGroup>
+                      </Col>
 
-                        <Col lg="7">
-                          <FormGroup>
-                            <br />
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-unitadd"
-                            >
-                              Don't forget to record the payment once you have
-                              connected the deposite
-                            </label>
-                          </FormGroup>
-                        </Col>
-                      </Row>
+                      <Col lg="7">
+                        <FormGroup>
+                          <br />
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-unitadd"
+                          >
+                            Don't forget to record the payment once you have
+                            connected the deposite
+                          </label>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  </FormGroup>
+                </div>
+
+                <hr />
+                <h6 className="heading-small text-muted mb-4">
+                  Charges (Optional)
+                </h6>
+                <Row>
+                  <Col lg="4">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-address"
+                      >
+                        Add Charges
+                      </label>
                     </FormGroup>
-                  </div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col lg="2">
+                    <FormGroup>
+                      <span
+                        onClick={handleClickOpenRecurring}
+                        style={{
+                          cursor: "pointer",
+                          fontSize: "14px",
+                          fontFamily: "monospace",
+                          color: "blue",
+                        }}
+                      >
+                        <b style={{ fontSize: "20px" }}>+</b> Add Recurring
+                      </span>
+                      <Dialog
+                        open={openRecurringDialog}
+                        onClose={handleClose}
+                      >
+                        <DialogTitle style={{ background: "#F0F8FF" }}>
+                          Add Recurring content
+                        </DialogTitle>
 
-                  <hr />
-                  <h6 className="heading-small text-muted mb-4">
-                    Charges (Optional)
-                  </h6>
-                  <Row>
-                    <Col lg="4">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-address"
-                        >
-                          Add Charges
-                        </label>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col lg="2">
-                      <FormGroup>
-                        <span
-                          onClick={handleClickOpenRecurring}
-                          style={{
-                            cursor: "pointer",
-                            fontSize: "14px",
-                            fontFamily: "monospace",
-                            color: "blue",
-                          }}
-                        >
-                          <b style={{ fontSize: "20px" }}>+</b> Add Recurring
-                        </span>
-                        <Dialog
-                          open={openRecurringDialog}
-                          onClose={handleClose}
-                        >
-                          <DialogTitle style={{ background: "#F0F8FF" }}>
-                            Add Recurring content
-                          </DialogTitle>
-
-                          <div>
-                            <div
-                              style={{ marginLeft: "4%", marginRight: "4%" }}
-                            >
-                              <br />
-                              <div className="grid-container resp-header">
-                                <div>
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-unitadd11"
+                        <div>
+                          <div
+                            style={{ marginLeft: "4%", marginRight: "4%" }}
+                          >
+                            <br />
+                            <div className="grid-container resp-header">
+                              <div>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-unitadd11"
+                                >
+                                  Account*
+                                </label>
+                                <FormGroup>
+                                  <Dropdown
+                                    isOpen={rentdropdownOpen1}
+                                    toggle={toggle5}
                                   >
-                                    Account*
-                                  </label>
-                                  <FormGroup>
-                                    <Dropdown
-                                      isOpen={rentdropdownOpen1}
-                                      toggle={toggle5}
+                                    <DropdownToggle caret>
+                                      {selectedRecuringAccount
+                                        ? selectedRecuringAccount
+                                        : "Select"}
+                                    </DropdownToggle>
+                                    <DropdownMenu
+                                      style={{
+                                        zIndex: 999,
+                                        maxHeight: "280px",
+                                        // overflowX: "hidden",
+                                        overflowY: "auto",
+                                        width: "100%",
+                                      }}
+                                      name="account"
+                                      onBlur={leaseFormik.handleBlur}
+                                      onChange={leaseFormik.handleChange}
+                                      value={
+                                        leaseFormik.values.entries[0].recuring_account
+                                      }
                                     >
-                                      <DropdownToggle caret>
-                                        {selectedRecuringAccount
-                                          ? selectedRecuringAccount
-                                          : "Select"}
-                                      </DropdownToggle>
-                                      <DropdownMenu
-                                        style={{
-                                          zIndex: 999,
-                                          maxHeight: "280px",
-                                          // overflowX: "hidden",
-                                          overflowY: "auto",
-                                          width: "100%",
-                                        }}
-                                        name="account"
-                                        onBlur={leaseFormik.handleBlur}
-                                        onChange={leaseFormik.handleChange}
-                                        value={
-                                          leaseFormik.values.entries[0].recuring_account
-                                        }
-                                      >
-                                        {/* {leaseFormik.touched.entries[0].recuring_account &&
+                                      {/* {leaseFormik.touched.entries[0].recuring_account &&
                                           leaseFormik.errors.entries[0].recuring_account ? (
                                           <div style={{ color: "red" }}>
                                             {
@@ -4485,36 +4574,36 @@ const RentRollLeaseing = () => {
                                           </div>
                                         ) : null} */}
 
-                                        {RecAccountNames.map((item) => {
-                                          const accountName =
-                                            item.account_name || ""; // Use an empty string if account_name is missing
-                                          return (
-                                            <DropdownItem
-                                              key={item._id}
-                                              onClick={() =>
-                                                hadleselectedRecuringAccount(
-                                                  accountName
-                                                )
-                                              }
-                                            >
-                                              {accountName}
-                                            </DropdownItem>
-                                          );
-                                        })}
-                                        <DropdownItem
-                                          onClick={() =>
-                                            AddNewAccountName("recAccountName")
-                                          }
-                                        >
-                                          Add new account..
-                                        </DropdownItem>
-                                      </DropdownMenu>
-                                    </Dropdown>
+                                      {RecAccountNames.map((item) => {
+                                        const accountName =
+                                          item.account_name || ""; // Use an empty string if account_name is missing
+                                        return (
+                                          <DropdownItem
+                                            key={item._id}
+                                            onClick={() =>
+                                              hadleselectedRecuringAccount(
+                                                accountName
+                                              )
+                                            }
+                                          >
+                                            {accountName}
+                                          </DropdownItem>
+                                        );
+                                      })}
+                                      <DropdownItem
+                                        onClick={() =>
+                                          AddNewAccountName("recAccountName")
+                                        }
+                                      >
+                                        Add new account..
+                                      </DropdownItem>
+                                    </DropdownMenu>
+                                  </Dropdown>
 
-                                  </FormGroup>
-                                  {/* {console.log(selectedAccount)} */}
-                                </div>
-                                {/* <div>
+                                </FormGroup>
+                                {/* {console.log(selectedAccount)} */}
+                              </div>
+                              {/* <div>
                                   <FormGroup>
                                     <label
                                       className="form-control-label"
@@ -4546,69 +4635,69 @@ const RentRollLeaseing = () => {
                                     ) : null}
                                   </FormGroup>
                                 </div> */}
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-address"
+                                >
+                                  Amount*
+                                </label>
+                                <br />
                                 <FormGroup>
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-address"
-                                  >
-                                    Amount*
-                                  </label>
-                                  <br />
-                                  <FormGroup>
-                                    <Input
-                                      className="form-control-alternative"
-                                      id="recuring_amount"
-                                      placeholder="$0.00"
-                                      type="text"
-                                      name="recuring_amount"
-                                      onBlur={leaseFormik.handleBlur}
-                                      onChange={leaseFormik.handleChange}
-                                      value={leaseFormik.values.entries[0].recuring_amount}
-                                      onInput={(e) => {
-                                        const inputValue = e.target.value;
-                                        const numericValue = inputValue.replace(
-                                          /\D/g,
-                                          ""
-                                        ); // Remove non-numeric characters
-                                        e.target.value = numericValue;
-                                        leaseFormik.values.entries[0].recuring_amount = numericValue;
-                                      }}
-                                    />
-                                    {/* {leaseFormik.touched.recuring_amount &&
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="recuring_amount"
+                                    placeholder="$0.00"
+                                    type="text"
+                                    name="recuring_amount"
+                                    onBlur={leaseFormik.handleBlur}
+                                    onChange={leaseFormik.handleChange}
+                                    value={leaseFormik.values.entries[0].recuring_amount}
+                                    onInput={(e) => {
+                                      const inputValue = e.target.value;
+                                      const numericValue = inputValue.replace(
+                                        /\D/g,
+                                        ""
+                                      ); // Remove non-numeric characters
+                                      e.target.value = numericValue;
+                                      leaseFormik.values.entries[0].recuring_amount = numericValue;
+                                    }}
+                                  />
+                                  {/* {leaseFormik.touched.recuring_amount &&
                                       leaseFormik.errors.recuring_amount ? (
                                       <div style={{ color: "red" }}>
                                         {leaseFormik.errors.recuring_amount}
                                       </div>
                                     ) : null} */}
-                                  </FormGroup>
                                 </FormGroup>
-                                <FormGroup>
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="recuringmemo"
-                                  >
-                                    Memo*
-                                  </label>
-                                  <Input
-                                    className="form-control-alternative"
-                                    id="recuringmemo"
-                                    type="text"
-                                    name="recuringmemo"
-                                    onBlur={leaseFormik.handleBlur}
-                                    onChange={leaseFormik.handleChange}
-                                    value={leaseFormik.values.entries[0].recuringmemo}
-                                    onInput={(e) => { leaseFormik.values.entries[0].recuringmemo = e.target.value }
-                                    }
-                                  />
+                              </FormGroup>
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="recuringmemo"
+                                >
+                                  Memo*
+                                </label>
+                                <Input
+                                  className="form-control-alternative"
+                                  id="recuringmemo"
+                                  type="text"
+                                  name="recuringmemo"
+                                  onBlur={leaseFormik.handleBlur}
+                                  onChange={leaseFormik.handleChange}
+                                  value={leaseFormik.values.entries[0].recuringmemo}
+                                  onInput={(e) => { leaseFormik.values.entries[0].recuringmemo = e.target.value }
+                                  }
+                                />
 
-                                  {/* {leaseFormik.touched.entries[0].recuringmemo &&
+                                {/* {leaseFormik.touched.entries[0].recuringmemo &&
                                     leaseFormik.errors.recuringmemo ? (
                                     <div style={{ color: "red" }}>
                                       {leaseFormik.errors.recuringmemo}
                                     </div>
                                   ) : null} */}
-                                </FormGroup>
-                                {/* <FormGroup>
+                              </FormGroup>
+                              {/* <FormGroup>
                                   <label
                                     className="form-control-label"
                                     htmlFor="input-unitadd"
@@ -4704,120 +4793,120 @@ const RentRollLeaseing = () => {
                                     </Dropdown>
                                   </FormGroup>
                                 </FormGroup> */}
-                              </div>
                             </div>
-                            <DialogActions>
-                              <Button
-                                type="submit"
-                                style={{
-                                  backgroundColor: "#007bff",
-                                  color: "white",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleAddRecurring();
-                                  handleDialogClose();
-                                }}
-                              >
-                                Add
-                              </Button>
-                              <Button onClick={handleClose}>Cancel</Button>
-                            </DialogActions>
                           </div>
-                        </Dialog>
-                      </FormGroup>
-                    </Col>
-                    <Col lg="4">
-                      <FormGroup>
-                        <span
-                          onClick={handleClickOpenOneTimeCharge}
-                          style={{
-                            cursor: "pointer",
-                            fontSize: "14px",
-                            fontFamily: "monospace",
-                            color: "blue",
-                          }}
-                        >
-                          <b style={{ fontSize: "20px" }}>+</b> Add one Time
-                          charge
-                        </span>
-                        <Dialog
-                          open={openOneTimeChargeDialog}
-                          onClose={handleClose}
-                        >
-                          <DialogTitle style={{ background: "#F0F8FF" }}>
-                            Add one Time charge content
-                          </DialogTitle>
-                          <div>
-                            <div style={{ padding: "5%" }}>
-                              <div className="grid-container resp-header">
-                                <div>
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-unitadd12"
+                          <DialogActions>
+                            <Button
+                              type="submit"
+                              style={{
+                                backgroundColor: "#007bff",
+                                color: "white",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleAddRecurring();
+                                handleDialogClose();
+                              }}
+                            >
+                              Add
+                            </Button>
+                            <Button onClick={handleClose}>Cancel</Button>
+                          </DialogActions>
+                        </div>
+                      </Dialog>
+                    </FormGroup>
+                  </Col>
+                  <Col lg="4">
+                    <FormGroup>
+                      <span
+                        onClick={handleClickOpenOneTimeCharge}
+                        style={{
+                          cursor: "pointer",
+                          fontSize: "14px",
+                          fontFamily: "monospace",
+                          color: "blue",
+                        }}
+                      >
+                        <b style={{ fontSize: "20px" }}>+</b> Add one Time
+                        charge
+                      </span>
+                      <Dialog
+                        open={openOneTimeChargeDialog}
+                        onClose={handleClose}
+                      >
+                        <DialogTitle style={{ background: "#F0F8FF" }}>
+                          Add one Time charge content
+                        </DialogTitle>
+                        <div>
+                          <div style={{ padding: "5%" }}>
+                            <div className="grid-container resp-header">
+                              <div>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-unitadd12"
+                                >
+                                  Account*
+                                </label>
+                                <FormGroup>
+                                  <Dropdown
+                                    isOpen={rentdropdownOpen3}
+                                    toggle={toggle7}
                                   >
-                                    Account*
-                                  </label>
-                                  <FormGroup>
-                                    <Dropdown
-                                      isOpen={rentdropdownOpen3}
-                                      toggle={toggle7}
+                                    <DropdownToggle caret>
+                                      {selectedOneTimeAccount
+                                        ? selectedOneTimeAccount
+                                        : "Select"}
+                                    </DropdownToggle>
+                                    <DropdownMenu
+                                      style={{
+                                        zIndex: 999,
+                                        maxHeight: "280px",
+                                        // overflowX: "hidden",
+                                        overflowY: "auto",
+                                        width: "100%",
+                                      }}
+                                      name="onetime_account"
+                                      onBlur={leaseFormik.handleBlur}
+                                      onChange={leaseFormik.handleChange}
+                                      value={
+                                        leaseFormik.values.entries[0].onetime_account
+                                      }
                                     >
-                                      <DropdownToggle caret>
-                                        {selectedOneTimeAccount
-                                          ? selectedOneTimeAccount
-                                          : "Select"}
-                                      </DropdownToggle>
-                                      <DropdownMenu
-                                        style={{
-                                          zIndex: 999,
-                                          maxHeight: "280px",
-                                          // overflowX: "hidden",
-                                          overflowY: "auto",
-                                          width: "100%",
-                                        }}
-                                        name="onetime_account"
-                                        onBlur={leaseFormik.handleBlur}
-                                        onChange={leaseFormik.handleChange}
-                                        value={
-                                          leaseFormik.values.entries[0].onetime_account
-                                        }
-                                      >
-                                        {/* {leaseFormik.touched.entries[0].onetime_account &&
+                                      {/* {leaseFormik.touched.entries[0].onetime_account &&
                                           leaseFormik.errors.onetime_account ? (
                                           <div style={{ color: "red" }}>
                                             {leaseFormik.errors.onetime_account}
                                           </div>
                                         ) : null} */}
 
-                                        {oneTimeCharges.map((item) => {
-                                          const accountName =
-                                            item.account_name || ""; // Use an empty string if account_name is missing
-                                          return (
-                                            <DropdownItem
-                                              key={item._id}
-                                              onClick={() =>
-                                                hadleselectedOneTimeAccount(
-                                                  accountName
-                                                )
-                                              }
-                                            >
-                                              {accountName}
-                                            </DropdownItem>
-                                          );
-                                        })}
-                                        <DropdownItem
-                                          onClick={() =>
-                                            AddNewAccountName("oneTimeName")
-                                          }
-                                        >
-                                          Add new account..
-                                        </DropdownItem>
-                                      </DropdownMenu>
-                                    </Dropdown>
-                                  </FormGroup>
-                                </div>
-                                {/* <div>
+                                      {oneTimeCharges.map((item) => {
+                                        const accountName =
+                                          item.account_name || ""; // Use an empty string if account_name is missing
+                                        return (
+                                          <DropdownItem
+                                            key={item._id}
+                                            onClick={() =>
+                                              hadleselectedOneTimeAccount(
+                                                accountName
+                                              )
+                                            }
+                                          >
+                                            {accountName}
+                                          </DropdownItem>
+                                        );
+                                      })}
+                                      <DropdownItem
+                                        onClick={() =>
+                                          AddNewAccountName("oneTimeName")
+                                        }
+                                      >
+                                        Add new account..
+                                      </DropdownItem>
+                                    </DropdownMenu>
+                                  </Dropdown>
+                                </FormGroup>
+                              </div>
+                              {/* <div>
                                   <FormGroup>
                                     <label
                                       className="form-control-label"
@@ -4845,158 +4934,158 @@ const RentRollLeaseing = () => {
                                     ) : null}
                                   </FormGroup>
                                 </div> */}
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-address"
+                                >
+                                  Amount*
+                                </label>
+                                <br />
                                 <FormGroup>
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-address"
-                                  >
-                                    Amount*
-                                  </label>
-                                  <br />
-                                  <FormGroup>
-                                    <Input
-                                      className="form-control-alternative"
-                                      id="input-reserve"
-                                      placeholder="$0.00"
-                                      type="text"
-                                      name="onetime_amount"
-                                      onBlur={leaseFormik.handleBlur}
-                                      onChange={leaseFormik.handleChange}
-                                      value={leaseFormik.values.entries[0].onetime_amount}
-                                      onInput={(e) => {
-                                        const inputValue = e.target.value;
-                                        const numericValue = inputValue.replace(
-                                          /\D/g,
-                                          ""
-                                        ); // Remove non-numeric characters
-                                        e.target.value = numericValue;
-                                        leaseFormik.values.entries[0].onetime_amount = numericValue;
-                                      }}
-                                    />
-                                    {/* {leaseFormik.touched.entries[0].onetime_amount &&
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-reserve"
+                                    placeholder="$0.00"
+                                    type="text"
+                                    name="onetime_amount"
+                                    onBlur={leaseFormik.handleBlur}
+                                    onChange={leaseFormik.handleChange}
+                                    value={leaseFormik.values.entries[0].onetime_amount}
+                                    onInput={(e) => {
+                                      const inputValue = e.target.value;
+                                      const numericValue = inputValue.replace(
+                                        /\D/g,
+                                        ""
+                                      ); // Remove non-numeric characters
+                                      e.target.value = numericValue;
+                                      leaseFormik.values.entries[0].onetime_amount = numericValue;
+                                    }}
+                                  />
+                                  {/* {leaseFormik.touched.entries[0].onetime_amount &&
                                       leaseFormik.errors.entries[0].onetime_amount ? (
                                       <div style={{ color: "red" }}>
                                         {leaseFormik.errors.entries[0].onetime_amount}
                                       </div>
                                     ) : null} */}
-                                  </FormGroup>
                                 </FormGroup>
-                                <FormGroup>
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-unitadd13"
-                                  >
-                                    Memo*
-                                  </label>
-                                  <Input
-                                    className="form-control-alternative"
-                                    id="input-unitadd13"
-                                    type="text"
-                                    name="onetime_memo"
-                                    onBlur={leaseFormik.handleBlur}
-                                    onChange={leaseFormik.handleChange}
-                                    value={leaseFormik.values.entries[0].onetime_memo}
-                                    onInput={(e) => { leaseFormik.values.entries[0].onetime_memo = e.target.value }}
-                                  />
-                                  {/* {leaseFormik.touched.onetime_memo &&
+                              </FormGroup>
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-unitadd13"
+                                >
+                                  Memo*
+                                </label>
+                                <Input
+                                  className="form-control-alternative"
+                                  id="input-unitadd13"
+                                  type="text"
+                                  name="onetime_memo"
+                                  onBlur={leaseFormik.handleBlur}
+                                  onChange={leaseFormik.handleChange}
+                                  value={leaseFormik.values.entries[0].onetime_memo}
+                                  onInput={(e) => { leaseFormik.values.entries[0].onetime_memo = e.target.value }}
+                                />
+                                {/* {leaseFormik.touched.onetime_memo &&
                                     leaseFormik.errors.onetime_memo ? (
                                     <div style={{ color: "red" }}>
                                       {leaseFormik.errors.onetime_memo}
                                     </div>
                                   ) : null} */}
-                                </FormGroup>
-                              </div>
+                              </FormGroup>
                             </div>
-                            <DialogActions>
-                              <Button
-                                type="submit"
-                                style={{
-                                  backgroundColor: "#007bff",
-                                  color: "white",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleAddOneTime();
-                                  handleDialogClose(); // Call this function to close the dialog
-                                }}
-                              >
-                                Add
-                              </Button>
-                              <Button onClick={handleClose}>Cancel</Button>
-                            </DialogActions>
                           </div>
-                        </Dialog>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <AccountDialog
-                    AddBankAccountDialogOpen={
-                      AddBankAccountDialogOpen
-                    }
-                    handleCloseDialog={handleCloseDialog}
-                    selectAccountDropDown={
-                      selectAccountDropDown
-                    }
-                    toggle8={toggle8}
-                    setAddBankAccountDialogOpen={
-                      setAddBankAccountDialogOpen
-                    }
-                    toggle1={toggle1}
-                    selectAccountLevelDropDown={
-                      selectAccountLevelDropDown
-                    }
-                    selectFundTypeDropDown={
-                      selectFundTypeDropDown
-                    }
-                    toggle10={toggle10}
-                    selectedAccount={selectedAccount}
-                    accountTypeName={accountTypeName}
-                    setToggleApiCall={setToggleApiCall}
-                    toggleApiCall={toggleApiCall}
-                    hadleselectedAccount={hadleselectedAccount}
-                    hadleselectedOneTimeAccount={
-                      hadleselectedOneTimeAccount
-                    }
-                    hadleselectedRecuringAccount={
-                      hadleselectedRecuringAccount
-                    }
-                  />
-                  {recurringData && Object.keys(recurringData).length > 0 && (
-                    <div>
-                      <h3
-                        style={{
-                          marginTop: "2%",
-                        }}
-                      >
-                        Recurring Information
-                      </h3>
-                      <table
-                        style={{
-                          borderCollapse: "collapse",
-                          width: "100%",
-                          marginTop: "2%",
-                        }}
-                      >
-                        <thead>
-                          <tr style={{ background: "#f2f2f2" }}>
-                            <th
+                          <DialogActions>
+                            <Button
+                              type="submit"
                               style={{
-                                padding: "8px",
-                                textAlign: "left",
+                                backgroundColor: "#007bff",
+                                color: "white",
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleAddOneTime();
+                                handleDialogClose(); // Call this function to close the dialog
                               }}
                             >
-                              Account
-                            </th>
+                              Add
+                            </Button>
+                            <Button onClick={handleClose}>Cancel</Button>
+                          </DialogActions>
+                        </div>
+                      </Dialog>
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <AccountDialog
+                  AddBankAccountDialogOpen={
+                    AddBankAccountDialogOpen
+                  }
+                  handleCloseDialog={handleCloseDialog}
+                  selectAccountDropDown={
+                    selectAccountDropDown
+                  }
+                  toggle8={toggle8}
+                  setAddBankAccountDialogOpen={
+                    setAddBankAccountDialogOpen
+                  }
+                  toggle1={toggle1}
+                  selectAccountLevelDropDown={
+                    selectAccountLevelDropDown
+                  }
+                  selectFundTypeDropDown={
+                    selectFundTypeDropDown
+                  }
+                  toggle10={toggle10}
+                  selectedAccount={selectedAccount}
+                  accountTypeName={accountTypeName}
+                  setToggleApiCall={setToggleApiCall}
+                  toggleApiCall={toggleApiCall}
+                  hadleselectedAccount={hadleselectedAccount}
+                  hadleselectedOneTimeAccount={
+                    hadleselectedOneTimeAccount
+                  }
+                  hadleselectedRecuringAccount={
+                    hadleselectedRecuringAccount
+                  }
+                />
+                {recurringData && Object.keys(recurringData).length > 0 && (
+                  <div>
+                    <h3
+                      style={{
+                        marginTop: "2%",
+                      }}
+                    >
+                      Recurring Information
+                    </h3>
+                    <table
+                      style={{
+                        borderCollapse: "collapse",
+                        width: "100%",
+                        marginTop: "2%",
+                      }}
+                    >
+                      <thead>
+                        <tr style={{ background: "#f2f2f2" }}>
+                          <th
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            Account
+                          </th>
 
-                            <th
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              Amount
-                            </th>
-                            {/* <th
+                          <th
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            Amount
+                          </th>
+                          {/* <th
                               style={{
                                 padding: "8px",
                                 textAlign: "left",
@@ -5004,36 +5093,36 @@ const RentRollLeaseing = () => {
                             >
                               Next Due Date
                             </th> */}
-                            <th
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              Action
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              {recurringData.recuring_account}
-                            </td>
+                          <th
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            {recurringData.recuring_account}
+                          </td>
 
-                            <td
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              {recurringData.recuring_amount}
-                            </td>
-                            {/* <td
+                          <td
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            {recurringData.recuring_amount}
+                          </td>
+                          {/* <td
                               style={{
                                 padding: "8px",
                                 textAlign: "left",
@@ -5042,56 +5131,56 @@ const RentRollLeaseing = () => {
                               {recurringData.recuringnextDue_date}
                             </td> */}
 
-                            <td
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              <EditIcon onClick={setOpenRecurringDialog} />
-                              <DeleteIcon onClick={handleRecurringDelete} />
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                  {oneTimeData && Object.keys(oneTimeData).length > 0 && (
-                    <div>
-                      <h3
-                        style={{
-                          marginTop: "2%",
-                        }}
-                      >
-                        One Time Information
-                      </h3>
-                      <table
-                        style={{
-                          borderCollapse: "collapse",
-                          width: "100%",
-                          marginTop: "2%",
-                        }}
-                      >
-                        <thead>
-                          <tr style={{ background: "#f2f2f2" }}>
-                            <th
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              Account
-                            </th>
+                          <td
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            <EditIcon onClick={setOpenRecurringDialog} />
+                            <DeleteIcon onClick={handleRecurringDelete} />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                {oneTimeData && Object.keys(oneTimeData).length > 0 && (
+                  <div>
+                    <h3
+                      style={{
+                        marginTop: "2%",
+                      }}
+                    >
+                      One Time Information
+                    </h3>
+                    <table
+                      style={{
+                        borderCollapse: "collapse",
+                        width: "100%",
+                        marginTop: "2%",
+                      }}
+                    >
+                      <thead>
+                        <tr style={{ background: "#f2f2f2" }}>
+                          <th
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            Account
+                          </th>
 
-                            <th
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              Amount
-                            </th>
-                            {/* <th
+                          <th
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            Amount
+                          </th>
+                          {/* <th
                               style={{
                                 padding: "8px",
                                 textAlign: "left",
@@ -5099,36 +5188,36 @@ const RentRollLeaseing = () => {
                             >
                               Next Due Date
                             </th> */}
-                            <th
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              Action
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              {oneTimeData.onetime_account}
-                            </td>
+                          <th
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            {oneTimeData.onetime_account}
+                          </td>
 
-                            <td
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              {oneTimeData.onetime_amount}
-                            </td>
-                            {/* <td
+                          <td
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            {oneTimeData.onetime_amount}
+                          </td>
+                          {/* <td
                               style={{
                                 padding: "8px",
                                 textAlign: "left",
@@ -5137,35 +5226,35 @@ const RentRollLeaseing = () => {
                               {oneTimeData.onetime_Due_date}
                             </td> */}
 
-                            <td
-                              style={{
-                                padding: "8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              <EditIcon onClick={setOpenOneTimeChargeDialog} />
-                              <DeleteIcon onClick={handleOnetimeDelete} />
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                  <hr />
-                  <Row>
-                    <Col lg="4">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-address"
-                        >
-                          Upload Files (Maximum of 10)
-                        </label>
-                      </FormGroup>
-                    </Col>
-                  </Row>
+                          <td
+                            style={{
+                              padding: "8px",
+                              textAlign: "left",
+                            }}
+                          >
+                            <EditIcon onClick={setOpenOneTimeChargeDialog} />
+                            <DeleteIcon onClick={handleOnetimeDelete} />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                <hr />
+                <Row>
+                  <Col lg="4">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-address"
+                      >
+                        Upload Files (Maximum of 10)
+                      </label>
+                    </FormGroup>
+                  </Col>
+                </Row>
 
-                  {/* <div class="file-upload-wrapper">
+                {/* <div class="file-upload-wrapper">
                     <input
                       type="file"
                       className="form-control-file d-block"
@@ -5182,32 +5271,32 @@ const RentRollLeaseing = () => {
                       </div>
                     ) : null}
                   </div> */}
-                  <div class="d-flex">
-                    <div class="file-upload-wrapper">
-                      <input
-                        type="file"
-                        className="form-control-file d-none"
-                        accept="file/*"
-                        name="upload_file"
-                        id="upload_file"
-                        multiple
-                        onChange={(e) => fileData(e.target.files)}
-                        // onChange={rentalsFormik.handleChange}
-                        value={leaseFormik.values.entries[0].upload_file}
-                      />
-                      <label for="upload_file" class="btn">
-                        Upload
-                      </label>
+                <div class="d-flex">
+                  <div class="file-upload-wrapper">
+                    <input
+                      type="file"
+                      className="form-control-file d-none"
+                      accept="file/*"
+                      name="upload_file"
+                      id="upload_file"
+                      multiple
+                      onChange={(e) => fileData(e.target.files)}
+                      // onChange={rentalsFormik.handleChange}
+                      value={leaseFormik.values.entries[0].upload_file}
+                    />
+                    <label for="upload_file" class="btn">
+                      Upload
+                    </label>
 
-                      {/* {leaseFormik.touched.upload_file &&
+                    {/* {leaseFormik.touched.upload_file &&
                         leaseFormik.errors.upload_file ? (
                         <div style={{ color: "red" }}>
                           {leaseFormik.errors.upload_file}
                         </div>
                       ) : null} */}
-                    </div>
-                    <div className="d-flex ">
-                      {/* {id
+                  </div>
+                  <div className="d-flex ">
+                    {/* {id
                         ? file.length > 0 &&
                           file
                             .map((item) => {
@@ -5267,69 +5356,69 @@ const RentRollLeaseing = () => {
                             </div>
                           ))} */}
 
-                      {file.length > 0 &&
-                        file?.map((file, index) => (
-                          <div
-                            key={index}
-                            style={{ position: "relative", marginLeft: "50px" }}
-                          >
-                            {!id ? (
-                              <p
-                                onClick={() => handleOpenFile(file)}
-                                style={{ cursor: "pointer" }}
-                              >
-                                {file?.name?.substr(0, 5)}
-                                {file?.name?.length > 5 ? "..." : null}
-                              </p>
-                            ) : (
-                              <p style={{ cursor: "pointer" }}>
-                                {file?.name?.substr(0, 5)}
-                                {file?.name?.length > 5 ? "..." : null}
-                              </p>
-                            )}
-                            <CloseIcon
-                              style={{
-                                cursor: "pointer",
-                                position: "absolute",
-                                left: "64px",
-                                top: "-2px",
-                              }}
-                              onClick={() => deleteFile(index)}
-                            />
-                          </div>
-                        ))}
-                    </div>
+                    {file.length > 0 &&
+                      file?.map((file, index) => (
+                        <div
+                          key={index}
+                          style={{ position: "relative", marginLeft: "50px" }}
+                        >
+                          {!id ? (
+                            <p
+                              onClick={() => handleOpenFile(file)}
+                              style={{ cursor: "pointer" }}
+                            >
+                              {file?.name?.substr(0, 5)}
+                              {file?.name?.length > 5 ? "..." : null}
+                            </p>
+                          ) : (
+                            <p style={{ cursor: "pointer" }}>
+                              {file?.name?.substr(0, 5)}
+                              {file?.name?.length > 5 ? "..." : null}
+                            </p>
+                          )}
+                          <CloseIcon
+                            style={{
+                              cursor: "pointer",
+                              position: "absolute",
+                              left: "64px",
+                              top: "-2px",
+                            }}
+                            onClick={() => deleteFile(index)}
+                          />
+                        </div>
+                      ))}
                   </div>
-                  <hr />
-                  <Row>
-                    <Col lg="3">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-address"
-                        >
-                          Residents center Welcome Email
-                        </label>
-
-                        <label
-                          className="heading-small text-muted mb-4"
-                          htmlFor="input-address"
-                        >
-                          we send a welcome Email to anyone without Resident
-                          Center access
-                        </label>
-                      </FormGroup>
-                    </Col>
-
+                </div>
+                <hr />
+                <Row>
+                  <Col lg="3">
                     <FormGroup>
-                      <FormControlLabel
-                        control={<Switch color="primary" />}
-                        // label="End"
-                        labelPlacement="end"
-                      />
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-address"
+                      >
+                        Residents center Welcome Email
+                      </label>
+
+                      <label
+                        className="heading-small text-muted mb-4"
+                        htmlFor="input-address"
+                      >
+                        we send a welcome Email to anyone without Resident
+                        Center access
+                      </label>
                     </FormGroup>
-                  </Row>
-                  {/* <Button
+                  </Col>
+
+                  <FormGroup>
+                    <FormControlLabel
+                      control={<Switch color="primary" />}
+                      // label="End"
+                      labelPlacement="end"
+                    />
+                  </FormGroup>
+                </Row>
+                {/* <Button
                   color="primary"
                   href="#rms"
                   onClick={(e) => e.preventDefault()}
@@ -5339,7 +5428,7 @@ const RentRollLeaseing = () => {
                   Save
 
                 </Button> */}
-                  {/* <Button
+                {/* <Button
                     type="submit"
                     className="btn btn-primary"
                     style={{
@@ -5354,56 +5443,56 @@ const RentRollLeaseing = () => {
                   >
                     {id ? "Update Lease" : "Add Lease"}
                   </Button> */}
-                  {id ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        editLease(id);
-                      }}
-                    >
-                      Update Lease
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        console.log("object")
-                        // console.log(leaseFormik.errors)
-                        // console.log(tenantsFormik.values)
-                        // console.log(leaseFormik.values)
-
-                        leaseFormik.handleSubmit();
-                      }}
-                    >
-                      Create Lease
-                    </button>
-                  )}
-                  <Button
-                    color="primary"
-                    href="#rms"
-                    onClick={handleCloseButtonClick}
-                    // size="sm"
+                {id ? (
+                  <button
+                    type="submit"
                     className="btn btn-primary"
-                    style={{
-                      background: "white",
-                      color: "black",
-                      cursor: "pointer",
+                    style={{ background: "green", cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      editLease(id);
                     }}
                   >
-                    Cancel
-                  </Button>
-                </Form>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+                    Update Lease
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    style={{ background: "green", cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      console.log("object")
+                      // console.log(leaseFormik.errors)
+                      // console.log(tenantsFormik.values)
+                      // console.log(leaseFormik.values)
+
+                      leaseFormik.handleSubmit();
+                    }}
+                  >
+                    Create Lease
+                  </button>
+                )}
+                <Button
+                  color="primary"
+                  href="#rms"
+                  onClick={handleCloseButtonClick}
+                  // size="sm"
+                  className="btn btn-primary"
+                  style={{
+                    background: "white",
+                    color: "black",
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Form>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+    </Container >
     </>
   );
 };

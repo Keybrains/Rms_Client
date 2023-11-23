@@ -8,6 +8,11 @@ import {
   Row,
   Button,
   Col,
+  Input,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 import Header from "components/Headers/Header";
 import axios from "axios";
@@ -22,39 +27,55 @@ const Vendor = () => {
   const navigate = useNavigate();
   const [vendorData, setVendorData] = useState([]);
   const [loader, setLoader] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [pageItem, setPageItem] = React.useState(6);
+  const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
+  const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
   useEffect(() => {
     getVendorData();
-  }, []);
+  }, [pageItem]);
+
+  const startIndex = (currentPage - 1) * pageItem;
+  const endIndex = currentPage * pageItem;
+  var paginatedData;
+  if (vendorData) {
+    paginatedData = vendorData.slice(startIndex, endIndex);
+  }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   let cookies = new Cookies();
   // Check Authe(token)
   let chackAuth = async () => {
     if (cookies.get("token")) {
-      let  authConfig = {
+      let authConfig = {
         headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post method
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
+          Authorization: `Bearer ${cookies.get("token")}`,
+          token: cookies.get("token"),
+        },
+      };
+      // auth post method
+      let res = await axios.post(
+        "https://propertymanager.cloudpress.host/api/register/auth",
+        { purpose: "validate access" },
+        authConfig
+      );
+      if (res.data.statusCode !== 200) {
+        // cookies.remove("token");
+        navigate("/auth/login");
+      }
+    } else {
       navigate("/auth/login");
     }
-  } else {
-    navigate("/auth/login");
-  }
-};
+  };
 
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
+  React.useEffect(() => {
+    chackAuth();
+  }, [cookies.get("token")]);
 
   const getVendorData = async () => {
     try {
@@ -63,7 +84,8 @@ React.useEffect(() => {
       );
       setLoader(false);
       setVendorData(response.data.data);
-      console.log(response.data.data);
+      setTotalPages(Math.ceil(response.data.data.length / pageItem));
+      // console.log(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -86,15 +108,15 @@ React.useEffect(() => {
               data: { _id: id },
             }
           );
-  
+
           if (response.data.statusCode === 200) {
             swal("Success!", "Vendor deleted successfully", "success");
             getVendorData();
-          } 
+          }
           else if (response.data.statusCode === 201) {
             swal("Warning!", "Vendor already assigned to workorder!", "warning");
             getVendorData();
-          } 
+          }
           else {
             swal("", response.data.message, "error");
           }
@@ -106,11 +128,24 @@ React.useEffect(() => {
       }
     });
   };
-  
+
 
   const editVendor = (id) => {
     navigate(`/admin/addvendor/${id}`);
     console.log(id);
+  };
+
+  const filterTenantsBySearch = () => {
+    if (searchQuery === undefined) {
+      return paginatedData;
+    }
+
+    return paginatedData.filter((vendor) => {
+      const isVendorMatch = vendor.vendor_name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      return isVendorMatch;
+    });
   };
 
   return (
@@ -153,7 +188,24 @@ React.useEffect(() => {
             ) : (
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <Row></Row>
+                  <Row>
+                    <Col xs="12" sm="6">
+                      <FormGroup className="">
+                        <Input
+                          fullWidth
+                          type="text"
+                          placeholder="Search"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          style={{
+                            width: "100%",
+                            maxWidth: "200px",
+                            minWidth: "200px",
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
@@ -165,7 +217,7 @@ React.useEffect(() => {
                     </tr>
                   </thead>
                   <tbody>
-                    {vendorData.map((vendor) => (
+                    {filterTenantsBySearch().map((vendor) => (
                       <tr key={vendor._id}>
                         <td>{vendor.vendor_name}</td>
                         <td>{vendor.vendor_phoneNumber}</td>
@@ -191,6 +243,58 @@ React.useEffect(() => {
                     ))}
                   </tbody>
                 </Table>
+                {paginatedData.length > 0 ? <Row>
+                  <Col className="text-right m-3">
+                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                      <DropdownToggle caret >
+                        {pageItem}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => setPageItem(6)}
+                        >
+                          6
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() =>
+                            setPageItem(12)
+                          }
+                        >
+                          12
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => setPageItem(18)}
+                        >
+                          18
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: '#d0d0d0' }}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                      </svg>
+                    </Button>
+                    <span>
+                      Page {currentPage} of {totalPages}
+                    </span>{" "}
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: '#d0d0d0' }}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
+                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                      </svg>
+                    </Button>{" "}
+
+                  </Col>
+                </Row> : <></>}
               </Card>
             )}
           </div>

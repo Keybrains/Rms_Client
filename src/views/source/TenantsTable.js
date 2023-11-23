@@ -10,6 +10,10 @@ import {
   Row,
   Col,
   Table,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 
 import Header from "components/Headers/Header";
@@ -26,9 +30,14 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 const TenantsTable = ({ tenantDetails }) => {
   // const {tenantId} = useParams();
-  let [tentalsData, setTenantsDate] = React.useState();
+  let [tentalsData, setTenantsDate] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   let [loader, setLoader] = React.useState(true);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [pageItem, setPageItem] = React.useState(6);
+  const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
+  const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
   const navigateToTenantsDetails = (tenantId, entryIndex) => {
     navigate(`/admin/tenantdetail/${tenantId}/${entryIndex}`);
@@ -38,13 +47,22 @@ const TenantsTable = ({ tenantDetails }) => {
 
   let navigate = useNavigate();
   let getTenantsDate = async () => {
-    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenant");
+    let responce = await axios.get("http://localhost:4000/api/tenant/tenants");
     setLoader(false);
     setTenantsDate(responce.data.data);
+    setTotalPages(Math.ceil(responce.data.data.length / pageItem));
   };
+
   React.useEffect(() => {
     getTenantsDate();
-  }, []);
+  }, [pageItem]);
+  
+  const startIndex = (currentPage - 1) * pageItem;
+  const endIndex = currentPage * pageItem;
+  const paginatedData = tentalsData.slice(startIndex, endIndex);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   let cookies = new Cookies();
   // Check Authe(token)
@@ -112,32 +130,46 @@ const TenantsTable = ({ tenantDetails }) => {
     getTenantsDate();
   }, []);
 
+
   const filterTenantsBySearch = () => {
     if (searchQuery === undefined) {
-      return tentalsData;
+      return paginatedData;
     }
-  
-    return tentalsData.filter((tenant) => {
+    console.log(paginatedData)
+    return paginatedData.filter((tenant) => {
       const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
-      const rentalAddress = tenant.entries && tenant.entries.rental_adress;
-      const leaseType = tenant.entries && tenant.entries.lease_type;
-  
-      return (
-        (rentalAddress && rentalAddress.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_firstName && tenant.tenant_firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (leaseType && leaseType.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_lastName && tenant.tenant_lastName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (name.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    });
+      console.log(tenant)
+      return tenant.entries.rental_adress.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.tenant_firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.entries.lease_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.tenant_lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        name.toLowerCase().includes(searchQuery.toLowerCase())
+    }
+    )
   };
-  
+  // const filterTenantsBySearch = () => {
+  //   if (searchQuery === undefined) {
+  //     return tentalsData;
+  //   }
 
-  
+  //   return tentalsData.filter((tenant) => {
+  //     const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
+  //     const rentalAddress = tenant.entries && tenant.entries.rental_adress;
+  //     const leaseType = tenant.entries && tenant.entries.lease_type;
 
-  const editLeasing = (id,entryIndex) => {
+  //     return (
+  //       (rentalAddress && rentalAddress.toLowerCase().includes(searchQuery.toLowerCase())) ||
+  //       (tenant.tenant_firstName && tenant.tenant_firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+  //       (leaseType && leaseType.toLowerCase().includes(searchQuery.toLowerCase())) ||
+  //       (tenant.tenant_lastName && tenant.tenant_lastName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+  //       (name.toLowerCase().includes(searchQuery.toLowerCase()))
+  //     );
+  //   });
+  // };
+
+  const editLeasing = (id, entryIndex) => {
     navigate(`/admin/Leaseing/${id}/${entryIndex}`);
-    console.log(id,entryIndex,"fsdfsdfhdiuysdifusdyiuf");
+    console.log(id, entryIndex, "fsdfsdfhdiuysdifusdyiuf");
   };
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
@@ -216,7 +248,7 @@ const TenantsTable = ({ tenantDetails }) => {
         tenantData.upload_file.forEach((item, index) => {
           data.push([`Uploaded File ${index + 1}`, item]);
         });
-      }      
+      }
 
       const filteredData = data.filter(
         (row) => row[1] !== undefined && row[1] !== null && row[1] !== ""
@@ -301,7 +333,7 @@ const TenantsTable = ({ tenantDetails }) => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                    <th scope="col">Tenant name</th>
+                      <th scope="col">Tenant name</th>
                       <th scope="col">Property Type</th>
                       <th scope="col">Lease Type</th>
                       <th scope="col">Start Date</th>
@@ -310,67 +342,114 @@ const TenantsTable = ({ tenantDetails }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filterTenantsBySearch()?.map((tenant) => (
+                    {filterTenantsBySearch().map((tenant) => (
                       <>
-                        {tenant.entries.map((entry) => (
-                          // <td key={entry.key}>{entry.value}</td>
-
-                          <tr
-                            key={tenant._id}
-                            onClick={() =>
-                              navigateToTenantsDetails(
-                                tenant._id,
-                                entry.entryIndex
-                              )
-                            }
-                            style={{ cursor: "pointer" }}
-                          >
-                            <td>{tenant.tenant_firstName } {tenant.tenant_lastName }</td>
-                            <td>{entry.rental_adress}</td>
-                            <td>{entry.lease_type}</td>
-                            <td>{entry.start_date}</td>
-                            <td>{entry.end_date}</td>
-                            {/* <td>{entry.entryIndex}</td> */}
-                            {/* <td>{entry.rental_adress}</td> */}
-                            <td style={{}}>
-                              <div style={{ display: "flex", gap: "5px" }}>
-                                <div
-                                  style={{ cursor: "pointer" }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    console.log("Entry Object:", entry);
-                                    deleteTenants(tenant._id, entry.entryIndex);
-                                    // console.log(entry.entryIndex,"dsgdg")
-                                  }}
-                                >
-                                  <DeleteIcon />
-                                </div>
-                                <div
-                                  style={{ cursor: "pointer" }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    editLeasing(tenant._id ,entry.entryIndex);
-                                  }}
-                                >
-                                  <EditIcon />
-                                </div>
-                                <div
-                                  style={{ cursor: "pointer" }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    generatePDF(tenant._id, tenantDetails,entry.entryIndex);
-                                  }}
-                                >
-                                  <PictureAsPdfIcon />
-                                </div>
+                        <tr
+                          key={tenant._id}
+                          onClick={() =>
+                            navigateToTenantsDetails(
+                              tenant._id,
+                              tenant.entries.entryIndex
+                            )
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          <td>{tenant.tenant_firstName} {tenant.tenant_lastName}</td>
+                          <td>{tenant.entries.rental_adress}</td>
+                          <td>{tenant.entries.lease_type}</td>
+                          <td>{tenant.entries.start_date}</td>
+                          <td>{tenant.entries.end_date}</td>
+                          {/* <td>{tenant.entries.entryIndex}</td>
+                          <td>{tenant.entries.rental_adress}</td> */}
+                          <td style={{}}>
+                            <div style={{ display: "flex", gap: "5px" }}>
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteTenants(tenant._id, tenant.entries.entryIndex);
+                                  // console.log(entry.entryIndex,"dsgdg")
+                                }}
+                              >
+                                <DeleteIcon />
                               </div>
-                            </td>
-                          </tr>
-                        ))}
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  editLeasing(tenant._id, tenant.entries.entryIndex);
+                                }}
+                              >
+                                <EditIcon />
+                              </div>
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  generatePDF(tenant._id, tenant.entries.entryIndex);
+                                }}
+                              >
+                                <PictureAsPdfIcon />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
                       </>
                     ))}
                   </tbody>
                 </Table>
+                {paginatedData.length > 0 ? <Row>
+                  <Col className="text-right m-3">
+                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                      <DropdownToggle caret >
+                        {pageItem}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => setPageItem(6)}
+                        >
+                          6
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() =>
+                            setPageItem(12)
+                          }
+                        >
+                          12
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => setPageItem(18)}
+                        >
+                          18
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: '#d0d0d0' }}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                      </svg>
+                    </Button>
+                    <span>
+                      Page {currentPage} of {totalPages}
+                    </span>{" "}
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: '#d0d0d0' }}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
+                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                      </svg>
+                    </Button>{" "}
+
+                  </Col>
+                </Row> : <></>}
               </Card>
             )}
           </div>

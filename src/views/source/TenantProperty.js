@@ -16,9 +16,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
+import { RotatingLines } from "react-loader-spinner";
 
 const TenantProperty = () => {
   const [rental_adress, setRentalAddress] = useState([]);
+  let [loader, setLoader] = React.useState(true);
   const [propertyDetails, setPropertyDetails] = useState([]);
   const [propertyLoading, setPropertyLoading] = useState(true);
   const [propertyError, setPropertyError] = useState(null);
@@ -50,7 +52,7 @@ const TenantProperty = () => {
         navigate("/auth/login");
       }
     } else {
-      if(!cookies.get("token")){
+      if (!cookies.get("token")) {
         navigate("/auth/login");
       }
     }
@@ -80,10 +82,12 @@ const TenantProperty = () => {
         console.error("Data structure is not as expected:", response.data);
         setRentalAddress([]); // Set rental_adress to an empty array
       }
+      setLoader(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setRentalAddress([]); // Set rental_adress to an empty array
       setPropertyError(error);
+      setLoader(false);
     } finally {
       setPropertyLoading(false);
     }
@@ -134,19 +138,19 @@ const TenantProperty = () => {
               <CardHeader className="border-0">
                 <h1 className="mb-0">Ledger</h1>
               </CardHeader>
-              <div className="table-responsive">
-                <Table
-                  className="align-items-center table-flush"
-                  responsive
-                  // style={{
-                  //   width: "100%",
-                  //   border: "1px solid #e5e5e5",
-                  //   borderRadius: "8px",
-                  //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                  // }}
-                >
-                  {rental_adress.length > 0 ? (
-                    <>
+              {!loader || rental_adress.length > 0 ? (
+                <div className="table-responsive">
+                  <>
+                    <Table
+                      className="align-items-center table-flush"
+                      responsive
+                    // style={{
+                    //   width: "100%",
+                    //   border: "1px solid #e5e5e5",
+                    //   borderRadius: "8px",
+                    //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    // }}
+                    >
                       <thead className="thead-light">
                         <tr>
                           <th>Rental Address</th>
@@ -183,24 +187,22 @@ const TenantProperty = () => {
                           </>
                         ))}
                       </tbody>
-                    </>
-                  ) : (
-                    <tbody>
-                      <tr>
-                        <td
-                          style={{
-                            padding: "12px",
-                            backgroundColor: "#f5f5f5",
-                            borderRadius: "0 0 8px 8px",
-                          }}
-                        >
-                          No rental addresses found for the tenant.
-                        </td>
-                      </tr>
-                    </tbody>
-                  )}
-                </Table>
-              </div>
+                    </Table>
+
+                  </>
+                </div>
+
+              ) : (
+                <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="50"
+                    visible={loader}
+                  />
+                </div>
+              )}
             </Card>
           </div>
         </Row>
