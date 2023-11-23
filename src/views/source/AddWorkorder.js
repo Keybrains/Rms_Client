@@ -175,7 +175,9 @@ const AddWorkorder = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`)
+        .get(
+          `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`
+        )
         .then((response) => {
           const vendorData = response.data.data;
           setWorkOrderData(vendorData); // Use vendorData here
@@ -187,7 +189,7 @@ const AddWorkorder = () => {
 
           setSelectedProp(vendorData.rental_adress || "Select");
           setSelectedCategory(vendorData.work_category || "Select");
-          setSelectedVendor(vendorData.vendor || "Select");
+          setSelectedVendor(vendorData.vendor_name || "Select");
           setSelectedEntry(vendorData.entry_allowed || "Select");
           setSelecteduser(vendorData.staffmember_name || "Select");
           setSelectedStatus(vendorData.status);
@@ -310,7 +312,7 @@ const AddWorkorder = () => {
       rental_adress: "",
       unit_no: "",
       work_category: "",
-      vendor: "",
+      vendor_name: "",
       invoice_number: "",
       work_charge: "",
       entry_allowed: "",
@@ -344,7 +346,7 @@ const AddWorkorder = () => {
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -364,7 +366,9 @@ const AddWorkorder = () => {
     setVendorsName();
 
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -506,17 +510,19 @@ const AddWorkorder = () => {
                                   overflowX: "hidden",
                                 }}
                               >
-                                {propertyData.map((property) => (
-                                  <DropdownItem
-                                    key={property}
-                                    onClick={() =>
-                                      handlePropertySelect(property)
-                                    }
-                                  >
-                                    {property}
-                                  </DropdownItem>
-                                ))}
-                              </DropdownMenu>
+                                 {propertyData.map((property) => (
+                                <DropdownItem
+                                  key={property._id}
+                                  onClick={() =>
+                                    handlePropertyTypeSelect(
+                                      property.rental_adress
+                                    )
+                                  }
+                                >
+                                  {property.rental_adress}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
                             </Dropdown>
                           </FormGroup>
                         </FormGroup>
