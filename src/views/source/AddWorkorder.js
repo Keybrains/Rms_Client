@@ -31,7 +31,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const AddWorkorder = () => {
   const { id } = useParams();
-
   const [propdropdownOpen, setpropdropdownOpen] = React.useState(false);
   const [categorydropdownOpen, setcategorydropdownOpen] = React.useState(false);
   const [vendordropdownOpen, setvendordropdownOpen] = React.useState(false);
@@ -182,9 +181,7 @@ const AddWorkorder = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(
-          `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`
-        )
+        .get(`https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`)
         .then((response) => {
           const vendorData = response.data.data;
           setWorkOrderData(vendorData); // Use vendorData here
@@ -193,6 +190,7 @@ const AddWorkorder = () => {
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
             : "";
+
           setSelectedProp(vendorData.rental_adress || "Select");
           setSelectedCategory(vendorData.work_category || "Select");
           setSelectedVendor(vendorData.vendor || "Select");
@@ -380,9 +378,7 @@ const AddWorkorder = () => {
     setVendorsName();
 
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      "https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember"
-    )
+    fetch("https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {

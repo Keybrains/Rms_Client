@@ -122,7 +122,7 @@ const AddGeneralLedger = () => {
       entries: updatedEntries,
     });
   };
-
+  
   useEffect(() => {
     fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
       .then((response) => response.json())

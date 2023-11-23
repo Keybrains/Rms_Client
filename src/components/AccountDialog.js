@@ -31,6 +31,7 @@ function AccountDialog(props) {
 
   const hadleselectedAccountType = (frequency) => {
     setselectedAccountType(frequency);
+    accountFormik.values.account_type = frequency;
     // localStorage.setItem("leasetype", leasetype);
   };
 
@@ -45,6 +46,7 @@ function AccountDialog(props) {
 
   const hadleselectedFundType = (level) => {
     setselectedFundType(level);
+    accountFormik.values.fund_type = level;
   };
 
   const handleCloseDialog = () => {
@@ -53,16 +55,11 @@ function AccountDialog(props) {
 
   let accountFormik = useFormik({
     initialValues: {
-      // add account
       account_name: "",
       account_type: "",
-      parent_account: "",
-      account_number: "",
+      // account_number: "",
       fund_type: "",
-      cash_flow: "",
       notes: "",
-
-      //account level (sub account)
     },
     validationSchema: yup.object({
       account_name: yup.string().required("Required"),
@@ -79,7 +76,6 @@ function AccountDialog(props) {
   const handleAdd = async (values) => {
     values["account_name "] = props.selectedAccount;
     values["account_type"] = selectedAccountType;
-    values["parent_account"] = selectedAccountLevel;
     values["fund_type"] = selectedFundType;
     if (props.accountTypeName === "rentAccountName") {
       try {
@@ -91,17 +87,16 @@ function AccountDialog(props) {
           swal("", res.data.message, "success");
           props.setToggleApiCall(!props.toggleApiCall);
           props.hadleselectedAccount(values.account_name)
-          
+
           navigate("/admin/Leaseing");
         } else {
           swal("", res.data.message, "error");
-        }accountFormik.setValues({
+        }
+        accountFormik.setValues({
           account_name: "",
           account_type: "",
-          parent_account: "",
-          account_number: "",
+          // account_number: "",
           fund_type: "",
-          cash_flow: "",
           notes: "",
         });
       } catch (error) {
@@ -111,10 +106,8 @@ function AccountDialog(props) {
         accountFormik.setValues({
           account_name: "",
           account_type: "",
-          parent_account: "",
-          account_number: "",
+          // account_number: "",
           fund_type: "",
-          cash_flow: "",
           notes: "",
         });
         console.log(error, "error");
@@ -136,10 +129,8 @@ function AccountDialog(props) {
           accountFormik.setValues({
             account_name: "",
             account_type: "",
-            parent_account: "",
-            account_number: "",
+            // account_number: "",
             fund_type: "",
-            cash_flow: "",
             notes: "",
           });
         } else {
@@ -164,10 +155,8 @@ function AccountDialog(props) {
           accountFormik.setValues({
             account_name: "",
             account_type: "",
-            parent_account: "",
-            account_number: "",
+            // account_number: "",
             fund_type: "",
-            cash_flow: "",
             notes: "",
           });
         } else {
@@ -223,7 +212,7 @@ function AccountDialog(props) {
             value={accountFormik.values.account_name}
           />
           {accountFormik.touched.account_name &&
-          accountFormik.errors.account_name ? (
+            accountFormik.errors.account_name ? (
             <div style={{ color: "red" }}>
               {accountFormik.errors.account_name}
             </div>
@@ -251,12 +240,12 @@ function AccountDialog(props) {
               onChange={accountFormik.handleChange}
               value={accountFormik.values.account_type}
             >
-              {accountFormik.touched.account_type &&
+              {/* {accountFormik.touched.account_type &&
               accountFormik.errors.account_type ? (
                 <div style={{ color: "red" }}>
                   {accountFormik.errors.account_type}
                 </div>
-              ) : null}
+              ) : null} */}
               <DropdownItem onClick={() => hadleselectedAccountType("Income")}>
                 Income
               </DropdownItem>
@@ -266,9 +255,10 @@ function AccountDialog(props) {
                 Non Operating Income
               </DropdownItem>
             </DropdownMenu>
+            {/* {console.log(accountFormik.values, selectedAccountType)} */}
           </Dropdown>
         </div>
-        <div className="formInput" style={{ margin: "30px 10px" }}>
+        {/* <div className="formInput" style={{ margin: "30px 10px" }}>
           <label className="form-control-label" htmlFor="input-address">
             Account Level
           </label>
@@ -341,8 +331,8 @@ function AccountDialog(props) {
               </Dropdown>
             </div>
           )}
-        </div>
-        <div className="formInput" style={{ margin: "30px 10px" }}>
+        </div> */}
+        {/* <div className="formInput" style={{ margin: "30px 10px" }}>
           <label className="form-control-label" htmlFor="input-address">
             Account Number
           </label>
@@ -352,18 +342,18 @@ function AccountDialog(props) {
             id="input-no"
             placeholder=""
             type="number"
-            name="account_number"
+            // name="account_number"
             onBlur={accountFormik.handleBlur}
             onChange={accountFormik.handleChange}
-            value={accountFormik.values.account_number}
+            // value={accountFormik.values.account_number}
           />
           {accountFormik.touched.account_number &&
-          accountFormik.errors.account_number ? (
+            accountFormik.errors.account_number ? (
             <div style={{ color: "red" }}>
               {accountFormik.errors.account_number}
             </div>
           ) : null}
-        </div>
+        </div> */}
         <div className="formInput" style={{ margin: "30px 10px" }}>
           <label className="form-control-label" htmlFor="input-address">
             Fund Type
@@ -385,12 +375,12 @@ function AccountDialog(props) {
               onChange={accountFormik.handleChange}
               value={accountFormik.values.fund_type}
             >
-              {accountFormik.touched.fund_type &&
+              {/* {accountFormik.touched.fund_type &&
               accountFormik.errors.fund_type ? (
                 <div style={{ color: "red" }}>
                   {accountFormik.errors.fund_type}
                 </div>
-              ) : null}
+              ) : null} */}
               <DropdownItem onClick={() => hadleselectedFundType("Reserve")}>
                 Reserve
               </DropdownItem>
