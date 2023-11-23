@@ -17,7 +17,7 @@ import {
   Label,
   Table,
 } from "reactstrap";
-
+import * as yup from "yup";
 import { useState } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
@@ -81,17 +81,21 @@ const AddWorkorder = () => {
   const [selectedSub, setSelectedSub] = useState("");
   const [allVendors, setAllVendors] = useState([]);
 
-  const handlePropertySelect = (property) => {
+  const handlePropertyTypeSelect = (property) => {
     setSelectedProp(property);
+    WorkFormik.values.rental_adress = property;
+    // WorkFormik.errors.rental_adress = property
   };
 
   const handleCategorySelection = (value) => {
     setSelectedCategory(value);
     setcategorydropdownOpen(true);
+    WorkFormik.values.work_category = value;
   };
 
   const handleVendorSelect = (value) => {
     setSelectedVendor(value);
+    WorkFormik.values.vendor = value;
   };
 
   const handleEntrySelect = (value) => {
@@ -100,10 +104,12 @@ const AddWorkorder = () => {
 
   const handleStaffSelect = (staff) => {
     setSelecteduser(staff);
+    WorkFormik.values.staffmember_name = staff;
   };
 
   const handleStatusSelect = (status) => {
     setSelectedStatus(status);
+    WorkFormik.values.status = status;
   };
 
   const handlePriorityChange = (event) => {
@@ -175,7 +181,9 @@ const AddWorkorder = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`)
+        .get(
+          `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`
+        )
         .then((response) => {
           const vendorData = response.data.data;
           setWorkOrderData(vendorData); // Use vendorData here
@@ -187,7 +195,7 @@ const AddWorkorder = () => {
 
           setSelectedProp(vendorData.rental_adress || "Select");
           setSelectedCategory(vendorData.work_category || "Select");
-          setSelectedVendor(vendorData.vendor || "Select");
+          setSelectedVendor(vendorData.vendor_name || "Select");
           setSelectedEntry(vendorData.entry_allowed || "Select");
           setSelecteduser(vendorData.staffmember_name || "Select");
           setSelectedStatus(vendorData.status);
@@ -310,7 +318,7 @@ const AddWorkorder = () => {
       rental_adress: "",
       unit_no: "",
       work_category: "",
-      vendor: "",
+      vendor_name: "",
       invoice_number: "",
       work_charge: "",
       entry_allowed: "",
@@ -336,6 +344,14 @@ const AddWorkorder = () => {
       ],
     },
 
+    validationSchema: yup.object({
+      rental_adress: yup.string().required("Required"),
+      vendor: yup.string().required("Required"),
+      staffmember_name: yup.string().required("Required"),
+      work_category: yup.string().required("Required"),
+      status: yup.string().required("Required"),
+    }),
+
     onSubmit: (values) => {
       handleSubmit(values);
       console.log(values, "values");
@@ -344,7 +360,7 @@ const AddWorkorder = () => {
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -364,7 +380,9 @@ const AddWorkorder = () => {
     setVendorsName();
 
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -413,7 +431,7 @@ const AddWorkorder = () => {
       final_total_amount += parseFloat(entries.total_amount);
     }
   });
-
+console.log(WorkFormik.values,'workForjnik')
   return (
     <>
       <AddWorkorderHeader />
@@ -462,13 +480,14 @@ const AddWorkorder = () => {
                               WorkFormik.handleChange(e);
                             }}
                             value={WorkFormik.values.work_subject}
+                            required
                           />
-                          {WorkFormik.touched.work_subject &&
+                          {/* {WorkFormik.touched.work_subject &&
                           WorkFormik.errors.work_subject ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_subject}
                             </div>
-                          ) : null}
+                          ) : null} */}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -483,7 +502,7 @@ const AddWorkorder = () => {
                             className="form-control-label"
                             htmlFor="input-desg"
                           >
-                            Property
+                            Property *
                           </label>
                           <br />
                           <br />
@@ -491,6 +510,7 @@ const AddWorkorder = () => {
                             <Dropdown
                               isOpen={propdropdownOpen}
                               toggle={toggle1}
+                              onBlur={WorkFormik.handleBlur}
                             >
                               <DropdownToggle caret style={{ width: "100%" }}>
                                 {selectedProp
@@ -506,17 +526,29 @@ const AddWorkorder = () => {
                                   overflowX: "hidden",
                                 }}
                               >
-                                {propertyData.map((property) => (
-                                  <DropdownItem
-                                    key={property}
-                                    onClick={() =>
-                                      handlePropertySelect(property)
-                                    }
-                                  >
-                                    {property}
-                                  </DropdownItem>
-                                ))}
-                              </DropdownMenu>
+                                 {propertyData.map((property) => (
+                                <DropdownItem
+                                  key={property._id}
+                                  onClick={() =>
+                                    handlePropertyTypeSelect(
+                                      property.rental_adress
+                                    )
+                                  }
+                                >
+                                  {property.rental_adress}
+
+                                    {console.log(selectedProp, "abcd")}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
+                              {WorkFormik.errors &&
+                              WorkFormik.errors?.rental_adress &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.rental_adress && WorkFormik.values.rental_adress==="" ? (
+                                <div style={{ color: "red" }}>
+                                  {WorkFormik.errors.rental_adress}
+                                </div>
+                              ) : null}
                             </Dropdown>
                           </FormGroup>
                         </FormGroup>
@@ -544,13 +576,14 @@ const AddWorkorder = () => {
                               WorkFormik.handleChange(e);
                             }}
                             value={WorkFormik.values.unit_no}
+                            required
                           />
-                          {WorkFormik.touched.unit_no &&
+                          {/* {WorkFormik.touched.unit_no &&
                           WorkFormik.errors.unit_no ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.unit_no}
                             </div>
-                          ) : null}
+                          ) : null} */}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -565,7 +598,7 @@ const AddWorkorder = () => {
                             className="form-control-label"
                             htmlFor="input-desg"
                           >
-                            Category
+                            Category *
                           </label>
                           <br />
                           <br />
@@ -620,6 +653,14 @@ const AddWorkorder = () => {
                                 Other
                               </DropdownItem>
                             </DropdownMenu>
+                            {WorkFormik.errors &&
+                              WorkFormik.errors?.work_category &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.work_category && WorkFormik.values.work_category==="" ? (
+                                <div style={{ color: "red" }}>
+                                  {WorkFormik.errors.work_category}
+                                </div>
+                              ) : null}
                           </Dropdown>
                         </FormGroup>
                       </Col>
@@ -668,6 +709,14 @@ const AddWorkorder = () => {
                                 </DropdownItem>
                               ))}
                             </DropdownMenu>
+                            {WorkFormik.errors &&
+                              WorkFormik.errors?.vendor &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.vendor && WorkFormik.values.vendor==="" ? (
+                                <div style={{ color: "red" }}>
+                                  {WorkFormik.errors.vendor}
+                                </div>
+                              ) : null}
                           </Dropdown>
                         </FormGroup>
                       </Col>
@@ -816,6 +865,14 @@ const AddWorkorder = () => {
                                   </DropdownItem>
                                 ))}
                               </DropdownMenu>
+                              {WorkFormik.errors &&
+                              WorkFormik.errors?.staffmember_name &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.staffmember_name && WorkFormik.values.staffmember_name==="" ? (
+                                <div style={{ color: "red" }}>
+                                  {WorkFormik.errors.staffmember_name}
+                                </div>
+                              ) : null}
                             </Dropdown>
                           </FormGroup>
                         </FormGroup>
@@ -1381,7 +1438,7 @@ const AddWorkorder = () => {
                             className="form-control-label"
                             htmlFor="input-desg"
                           >
-                            Status
+                            Status *
                           </label>
                           <br />
                           <br />
@@ -1424,6 +1481,14 @@ const AddWorkorder = () => {
                                   Complete
                                 </DropdownItem>
                               </DropdownMenu>
+                              {WorkFormik.errors &&
+                              WorkFormik.errors?.status &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.status && WorkFormik.values.status ==="" ? (
+                                <div style={{ color: "red" }}>
+                                  {WorkFormik.errors.status}
+                                </div>
+                              ) : null}
                             </Dropdown>
                           </FormGroup>
                         </FormGroup>

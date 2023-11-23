@@ -1,64 +1,70 @@
 import {
-    Button,
-    Card,
-    CardHeader,
-    CardBody,
-    FormGroup,
-    Form,
-    Input,  
-    Container,
-    Row,
-    Col,
-    Table,
-    Badge,
-    Dropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem,
-  } from "reactstrap";  
-  import Header from "components/Headers/Header";
-  import React from 'react';
-  import { useNavigate, useParams } from "react-router-dom";
-  import DeleteIcon from "@mui/icons-material/Delete";
-  import EditIcon from "@mui/icons-material/Edit";
-  import swal from "sweetalert";
-  import { useState, useEffect } from "react";
-  import axios from "axios";
-  import Dialog from "@mui/material/Dialog";
-  import DialogActions from "@mui/material/DialogActions";
-  import DialogContent from "@mui/material/DialogContent";
-  import DialogTitle from "@mui/material/DialogTitle";
-  import { RotatingLines } from "react-loader-spinner";
-  import Cookies from 'universal-cookie';
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  FormGroup,
+  Form,
+  Input,
+  Container,
+  Row,
+  Col,
+  Table,
+  Badge,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
+import Header from "components/Headers/Header";
+import React from 'react';
+import { useNavigate, useParams } from "react-router-dom";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import swal from "sweetalert";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { RotatingLines } from "react-loader-spinner";
+import Cookies from 'universal-cookie';
 
-  const StaffMember = () => {
-    const {id} = useParams();
-    let [StaffMemberData, setStaffMemberData] = useState();
-    const [open, setOpen] = React.useState(false);
-    const [isEditDialogOpen, setEditDialogOpen] = React.useState(false);
-    const [editingStaffMember, setEditingStaffMember] = React.useState(null);
-    let [modalShowForPopupForm, setModalShowForPopupForm] = React.useState(false);
-    // let [id, setId] = React.useState();
-    let [loader, setLoader] = React.useState(true);
-    let [editData, setEditData] = React.useState({});
-    let navigate = useNavigate();
+const StaffMember = () => {
+  const { id } = useParams();
+  let [StaffMemberData, setStaffMemberData] = useState();
+  const [open, setOpen] = React.useState(false);
+  const [isEditDialogOpen, setEditDialogOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [editingStaffMember, setEditingStaffMember] = React.useState(null);
+  // let [modalShowForPopupForm, setModalShowForPopupForm] = React.useState(false);
+  // let [id, setId] = React.useState();
+  let [loader, setLoader] = React.useState(true);
+  // let [editData, setEditData] = React.useState({});
+  let navigate = useNavigate();
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [pageItem, setPageItem] = React.useState(6);
+  const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
+  const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
-    const openEditDialog = (staff) => {
-      setEditingStaffMember(staff);
-      setEditDialogOpen(true);
-    };
-  
-    const closeEditDialog = () => {
-      setEditDialogOpen(false);
-      setEditingStaffMember(null);
-    };
+  const openEditDialog = (staff) => {
+    setEditingStaffMember(staff);
+    setEditDialogOpen(true);
+  };
 
-    let cookies = new Cookies();
-    // Check Authe(token)
-    let chackAuth = async () => {
-      if (cookies.get("token")) {
-        let  authConfig = {
-          headers: {
+  const closeEditDialog = () => {
+    setEditDialogOpen(false);
+    setEditingStaffMember(null);
+  };
+
+  let cookies = new Cookies();
+  // Check Authe(token)
+  let chackAuth = async () => {
+    if (cookies.get("token")) {
+      let authConfig = {
+        headers: {
           Authorization: `Bearer ${cookies.get("token")}`,
           token: cookies.get("token"),
         },
@@ -77,134 +83,165 @@ import {
       navigate("/auth/login");
     }
   };
-  
+
   React.useEffect(() => {
     chackAuth();
   }, [cookies.get("token")]);
 
-    const getStaffMemberData = async () => {
-      try {
-        const response = await axios.get(
-          "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember"
-        );
-        setLoader(false);
-        setStaffMemberData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  const getStaffMemberData = async () => {
+    try {
+      const response = await axios.get(
+        "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember"
+      );
+      setLoader(false);
+      setStaffMemberData(response.data.data);
+      setTotalPages(Math.ceil(response.data.data.length / pageItem));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-    const editStaffMemberData = async (id, updatedData) => {
-      try {
-        const editUrl = `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember/${id}`;
-        console.log("Edit URL:", editUrl);
-        console.log("ID:", id);
-        console.log("Updated Data:", updatedData); // Log the updated data for debugging
-  
-        const response = await axios.put(editUrl, updatedData); // Send the updated data in the request body
-        console.log("Edit Response:", response);
-  
-        if (response.status === 200) {
-          swal("Success!", "Staff Member updated successfully!", "success");
-          getStaffMemberData(); // Refresh the data after successful edit
-        } else {
-          swal("",response.data.message, "error");
-          console.error("Edit request failed with status:", response.status);
-        }
-      } catch (error) {
-        console.error("Error editing:", error);
-      }
-    };
+  const editStaffMemberData = async (id, updatedData) => {
+    try {
+      const editUrl = `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember/${id}`;
+      console.log("Edit URL:", editUrl);
+      console.log("ID:", id);
+      console.log("Updated Data:", updatedData); // Log the updated data for debugging
 
-   
-        // Delete selected
-        const deleteStaffMember = (id) => {
-          swal({
-            title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this staff member!",
-            icon: "warning",
-            buttons: ["Cancel", "Delete"],
-            dangerMode: true,
-          }).then((willDelete) => {
-            if (willDelete) {
-              axios
-                .delete("https://propertymanager.cloudpress.host/api/addstaffmember/delete_staffmember", {
-                  data: { _id: id },
-                })
-                .then((response) => {
-                  if (response.data.statusCode === 200) {
-                    swal("Success!", "Staff Member deleted successfully!", "success");
-                    getStaffMemberData();
-                  } 
-                  else if (response.data.statusCode === 201) {
-                    swal("Warning!", "Staff Member already assigned to workorder!", "warning");
-                    getStaffMemberData();
-                  } 
-                  else if (response.data.statusCode === 202) {
-                    swal("Warning!", "Staff Member already assigned to property!", "warning");
-                    getStaffMemberData();
-                  } 
-                  else {
-                    swal("Error", response.data.message, "error");
-                  }
-                })
-                .catch((error) => {
-                  console.error("Error deleting:", error);
-                });
-            } else {
-              swal("Cancelled", "Staff Member is safe :)", "info");
+      const response = await axios.put(editUrl, updatedData); // Send the updated data in the request body
+      console.log("Edit Response:", response);
+
+      if (response.status === 200) {
+        swal("Success!", "Staff Member updated successfully!", "success");
+        getStaffMemberData(); // Refresh the data after successful edit
+      } else {
+        swal("", response.data.message, "error");
+        console.error("Edit request failed with status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error editing:", error);
+    }
+  };
+
+  console.log(StaffMemberData, "hii")
+  console.log("object")
+
+  // Delete selected
+  const deleteStaffMember = (id) => {
+    swal({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this staff member!",
+      icon: "warning",
+      buttons: ["Cancel", "Delete"],
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        axios
+          .delete("https://propertymanager.cloudpress.host/api/addstaffmember/delete_staffmember", {
+            data: { _id: id },
+          })
+          .then((response) => {
+            if (response.data.statusCode === 200) {
+              swal("Success!", "Staff Member deleted successfully!", "success");
+              getStaffMemberData();
             }
+            else if (response.data.statusCode === 201) {
+              swal("Warning!", "Staff Member already assigned to workorder!", "warning");
+              getStaffMemberData();
+            }
+            else if (response.data.statusCode === 202) {
+              swal("Warning!", "Staff Member already assigned to property!", "warning");
+              getStaffMemberData();
+            }
+            else {
+              swal("Error", response.data.message, "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error deleting:", error);
           });
-        };
-        
-     //   auto form fill up in edit
-      // let seletedEditData = async (datas) => {
-      //   setModalShowForPopupForm(true);
-      //   setId(datas._id);
-      //   setEditData(datas);
-      // };
+      } else {
+        swal("Cancelled", "Staff Member is safe :)", "info");
+      }
+    });
+  };
 
-      const handleClose = () => {
-        setOpen(false);
-      };
+  //   auto form fill up in edit
+  // let seletedEditData = async (datas) => {
+  //   setModalShowForPopupForm(true);
+  //   setId(datas._id);
+  //   setEditData(datas);
+  // };
 
-      useEffect(() => {
-        getStaffMemberData();
-      }, []);
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-      const editStaffMember = (id) => {
-        navigate(`/admin/AddStaffMember/${id}`);
-        console.log(id);
-      };
-    return (
-      <>
-        <Header />
-        {/* Page content */}
-        <Container className="mt--8" fluid>
+  useEffect(() => {
+    getStaffMemberData();
+  }, [pageItem]);
+
+  const startIndex = (currentPage - 1) * pageItem;
+  const endIndex = currentPage * pageItem;
+  var paginatedData;
+  if (StaffMemberData) {
+    paginatedData = StaffMemberData.slice(startIndex, endIndex);
+  }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const editStaffMember = (id) => {
+    navigate(`/admin/AddStaffMember/${id}`);
+    console.log(id);
+  };
+
+  const filterTenantsBySearch = () => {
+    if (searchQuery === undefined) {
+      return paginatedData;
+    }
+
+    return paginatedData.filter((staff) => {
+      const isNameMatch = staff.staffmember_name.toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+      const isDesignationMatch = staff.staffmember_designation
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      return isNameMatch || isDesignationMatch;
+    });
+  };
+
+  return (
+    <>
+      <Header />
+
+      {/* Page content */}
+      <Container className="mt--8" fluid>
         <Row>
-            <Col xs="12" sm="6">
-              <FormGroup className="">
-                <h1 style={{color:'white'}}>
-                  Staff Member
-                </h1>
-                </FormGroup>
-            </Col>
-          
-            <Col className="text-right" xs="12" sm="6">
+          <Col xs="12" sm="6">
+            <FormGroup className="">
+              <h1 style={{ color: 'white' }}>
+                Staff Member
+              </h1>
+            </FormGroup>
+          </Col>
+
+          <Col className="text-right" xs="12" sm="6">
             <Button
-                color="primary"
-                href="#rms"
-                onClick={() => navigate("/admin/AddStaffMember")}
-                size="sm"
-                style={{ background: "white", color: "blue" }}
-              >
-                Add New Staff Member
-              </Button>  
-              </Col>
-          </Row><br/>
-          {/* Table */}
-          <Row>
-            <div className="col">
+              color="primary"
+              href="#rms"
+              onClick={() => navigate("/admin/AddStaffMember")}
+              size="sm"
+              style={{ background: "white", color: "blue" }}
+            >
+              Add New Staff Member
+            </Button>
+          </Col>
+        </Row><br />
+        {/* Table */}
+        <Row>
+          <div className="col">
             {loader ? (
               <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                 <RotatingLines
@@ -215,13 +252,30 @@ import {
                   visible={loader}
                 />
               </div>
-              ) : (
+            ) : (
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  {/* <h3 className="mb-0">Staff Members</h3>    */}
+                  <Row>
+                    <Col xs="12" sm="6">
+                      <FormGroup className="">
+                        <Input
+                          fullWidth
+                          type="text"
+                          placeholder="Search"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          style={{
+                            width: "100%",
+                            maxWidth: "200px",
+                            minWidth: "200px",
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
                 </CardHeader>
-  
-  
+
+
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
@@ -233,49 +287,101 @@ import {
                     </tr>
                   </thead>
                   <tbody>
-                  {StaffMemberData?.map((staff) => (
-                    <tr key={staff._id}>
-                      <td>{staff.staffmember_name}</td>
-                      <td>{staff.staffmember_designation}</td>
-                      <td>{staff.staffmember_phoneNumber}</td>
-                      <td>{staff.staffmember_email}</td>
-                      <td>
-                        <div style={{ display: "flex" }}>
-                          
-                          <div
-                            style={{ cursor: "pointer" }}
-                            onClick={() => deleteStaffMember(staff._id)}
-                          >
-                            <DeleteIcon />
-                          </div>&nbsp; &nbsp; &nbsp;
-                          <div
-                            style={{ cursor: "pointer" }}
-                            onClick={() => editStaffMember(staff._id)}
-                          >
-                            <EditIcon />
+                    {filterTenantsBySearch().map((staff) => (
+                      <tr key={staff._id}>
+                        <td>{staff.staffmember_name}</td>
+                        <td>{staff.staffmember_designation}</td>
+                        <td>{staff.staffmember_phoneNumber}</td>
+                        <td>{staff.staffmember_email}</td>
+                        <td>
+                          <div style={{ display: "flex" }}>
+
+                            <div
+                              style={{ cursor: "pointer" }}
+                              onClick={() => deleteStaffMember(staff._id)}
+                            >
+                              <DeleteIcon />
+                            </div>&nbsp; &nbsp; &nbsp;
+                            <div
+                              style={{ cursor: "pointer" }}
+                              onClick={() => editStaffMember(staff._id)}
+                            >
+                              <EditIcon />
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
-                 </Table>   
+                </Table>
+                {paginatedData.length > 0 ? <Row>
+                  <Col className="text-right m-3">
+                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                      <DropdownToggle caret >
+                        {pageItem}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => setPageItem(6)}
+                        >
+                          6
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() =>
+                            setPageItem(12)
+                          }
+                        >
+                          12
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => setPageItem(18)}
+                        >
+                          18
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: '#d0d0d0' }}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                      </svg>
+                    </Button>
+                    <span>
+                      Page {currentPage} of {totalPages}
+                    </span>{" "}
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: '#d0d0d0' }}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
+                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                      </svg>
+                    </Button>{" "}
+
+                  </Col>
+                </Row> : <></>}
               </Card>)}
-              </div>
-           </Row>
-        </Container>
-        <Dialog
+          </div>
+        </Row>
+      </Container>
+      <Dialog
         open={isEditDialogOpen}
         onClose={closeEditDialog}
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle style={{ background: "#F0F8FF" }}>Update</DialogTitle><br/>
+        <DialogTitle style={{ background: "#F0F8FF" }}>Update</DialogTitle><br />
         <DialogContent style={{ width: "100%", maxWidth: "500px" }}>
-          
-        <FormGroup>
+
+          <FormGroup>
             <label className="form-control-label" htmlFor="input-property">
-            What is the name of new staff member?
+              What is the name of new staff member?
             </label>
             <br />
             {/* <InputLabel htmlFor="input-protype">Property Type</InputLabel> */}
@@ -286,23 +392,23 @@ import {
               name="staffmember_name"
               value={editingStaffMember?.staffmember_name || ""}
               onChange={(e) => {
-              const newValue = e.target.value;
-              setEditingStaffMember((prev) => ({
-                ...prev,
-                staffmember_name: newValue,
-              }));
-            }}
+                const newValue = e.target.value;
+                setEditingStaffMember((prev) => ({
+                  ...prev,
+                  staffmember_name: newValue,
+                }));
+              }}
             />
 
-         
-          </FormGroup><br/><br/>
-            
+
+          </FormGroup><br /><br />
+
           <FormGroup>
             <label className="form-control-label" htmlFor="input-property">
-            What is the designation?
+              What is the designation?
             </label>
             <br />
-            
+
             <Input
               className="form-control-alternative"
               id="input-staffmember"
@@ -310,12 +416,12 @@ import {
               name="staffmember_designation"
               value={editingStaffMember?.staffmember_designation || ""}
               onChange={(e) => {
-              const newValue = e.target.value;
-              setEditingStaffMember((prev) => ({
-                ...prev,
-                staffmember_designation: newValue,
-              }));
-            }}
+                const newValue = e.target.value;
+                setEditingStaffMember((prev) => ({
+                  ...prev,
+                  staffmember_designation: newValue,
+                }));
+              }}
             />
           </FormGroup>
         </DialogContent>
@@ -333,8 +439,8 @@ import {
           </Button>
         </DialogActions>
       </Dialog>
-      </>
-    );
-  };
-  
-  export default StaffMember;
+    </>
+  );
+};
+
+export default StaffMember;

@@ -5,7 +5,6 @@ import Header from "components/Headers/Header";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { RotatingLines } from "react-loader-spinner";
-import swal from "sweetalert"; // Example import statement for SweetAlert
 import {
   Button,
   Card,
@@ -39,6 +38,7 @@ import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { set } from "date-fns";
+import swal from "sweetalert";
 import {
   CardActions,
   CardContent,

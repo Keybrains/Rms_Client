@@ -119,6 +119,7 @@ useEffect(() => {
   fetchNotification();
 }, [rental_adress]);
 
+
 const fetchNotification = async () => {
   // Fetch notification data when rental_adress changes
   if (rental_adress) {
@@ -244,7 +245,7 @@ const getRentalData = async (addresses) => {
   // creates the links that appear in the left menu / Sidebar
   const createLinks = (routes) => {
     const filteredRoutes = routes.filter(
-      (prop) => prop.path === "/profile" || prop.path === "/tenantdashboard" || prop.name === "Property" || prop.path === "/tenantwork"
+      (prop) => prop.path === "/profile" || prop.path === "/tenantdashboard" || prop.name === "Property" || prop.path === "/tenantwork" || prop.path === "/tenantFinancial"
     );
     return filteredRoutes.map((prop, key) => {
       return (

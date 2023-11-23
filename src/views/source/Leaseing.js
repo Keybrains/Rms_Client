@@ -391,10 +391,26 @@ const Leaseing = () => {
 
   const handleTenantDelete = () => {
     setSelectedTenantData({});
+    setCheckedCheckbox(null);
     tenantsFormik.setValues({
       tenant_firstName: "",
       tenant_lastName: "",
       tenant_mobileNumber: "",
+      tenant_email: "",
+      tenant_password: "",
+      tenant_workNumber: "",
+      tenant_unitNumber: "",
+      tenant_homeNumber: "",
+      tenant_faxPhoneNumber: "",
+      alternate_email: "",
+      tenant_residentStatus: "",
+      birth_date: "",
+      textpayer_id: "",
+      comments: "",
+      contact_name: "",
+      relationship_tenants: "",
+      email: "",
+      emergency_PhoneNumber: "",
     });
   };
 
@@ -453,9 +469,7 @@ const Leaseing = () => {
   };
 
   const handleDateChange = (date) => {
-    leaseFormik.values.entries[0].start_date = moment(date).format('YYYY-MM-DD');
     const nextDate = moment(date).add(1, 'months').format('YYYY-MM-DD');
-    console.log(date)
     leaseFormik.values.entries[0].end_date = nextDate;
   };
 
@@ -710,11 +724,53 @@ const Leaseing = () => {
 
     // Toggle the selected tenants in the state when their checkboxes are clicked
     if (event.target.checked) {
+      // console.log(selectedTenants)
       setSelectedTenants([tenantInfo, ...selectedTenants]);
+      tenantsFormik.setValues({
+        tenant_firstName: tenantInfo.tenant_firstName,
+        tenant_lastName: tenantInfo.tenant_lastName,
+        tenant_mobileNumber: tenantInfo.tenant_mobileNumber,
+        tenant_email: tenantInfo.tenant_email,
+        tenant_password: tenantInfo.tenant_password,
+        tenant_workNumber: tenantInfo.tenant_workNumber,
+        tenant_unitNumber: tenantInfo.tenant_unitNumber,
+        tenant_homeNumber: tenantInfo.tenant_homeNumbere,
+        tenant_faxPhoneNumber: tenantInfo.tenant_faxPhoneNumber,
+        alternate_email: tenantInfo.alternate_email,
+        tenant_residentStatus: tenantInfo.tenant_residentStatus,
+        birth_date: tenantInfo.birth_date,
+        textpayer_id: tenantInfo.textpayer_id,
+        comments: tenantInfo.comments,
+        contact_name: tenantInfo.contact_name,
+        relationship_tenants: tenantInfo.relationship_tenants,
+        email: tenantInfo.email,
+        emergency_PhoneNumber: tenantInfo.emergency_PhoneNumber,
+      });
     } else {
+      // console.log(selectedTenants)
       setSelectedTenants(
         selectedTenants.filter((tenant) => tenant !== tenantInfo)
       );
+      tenantsFormik.setValues({
+        tenant_firstName: "",
+        tenant_lastName: "",
+        tenant_mobileNumber: "",
+        tenant_email: "",
+        tenant_password: "",
+        tenant_workNumber: "",
+        tenant_unitNumber: "",
+        tenant_homeNumber: "",
+        tenant_faxPhoneNumber: "",
+        alternate_email: "",
+        tenant_residentStatus: "",
+        birth_date: "",
+        textpayer_id: "",
+        comments: "",
+        contact_name: "",
+        relationship_tenants: "",
+        email: "",
+        emergency_PhoneNumber: "",
+      });
     }
   };
 
@@ -891,7 +947,7 @@ const Leaseing = () => {
     },
     validationSchema: leaseValidationSchema,
     onSubmit: (values) => {
-      if (selectedTenantData.length !== 0 || cosignerData.length !== 0) {
+      if (selectedTenantData.length !== 0 || !tenantsFormik.errors) {
         handleSubmit(values);
       } else {
         setDisplay(true);
@@ -941,6 +997,7 @@ const Leaseing = () => {
           // Security_amount: "",
           // add cosigner
 
+          // add cosigner
           cosigner_firstName: "",
           cosigner_lastName: "",
           cosigner_mobileNumber: "",
@@ -1024,8 +1081,8 @@ const Leaseing = () => {
 
     onSubmit: () => {
       // handleSubmit(values);
-      handleDialogClose();
       handleAddTenant();
+      handleDialogClose();
       // console.log(values, "values");
     },
   });
@@ -1524,7 +1581,7 @@ const Leaseing = () => {
         console.error("Error:", error);
       });
   };
-  { console.log(leaseFormik.values) }
+  // { console.log(leaseFormik.values) }
 
   function handleResponse(response) {
     if (response.status === 200) {
@@ -1727,11 +1784,18 @@ const Leaseing = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-unitadd1"
+                            placeholder="3000"
                             type="date"
                             name="start_date"
                             onBlur={leaseFormik.handleBlur}
-                            onChange={(e) => handleDateChange(e.target.value)}
-                            value={leaseFormik.values.entries[0].start_date}
+                            onChange={(e) => {
+                              leaseFormik.handleChange(e);
+                              leaseFormik.values.entries[0].start_date = moment(e.target.value).format('YYYY-MM-DD');
+                              handleDateChange(e.target.value);
+                            }}
+                            value={moment(leaseFormik.values.entries[0].start_date).format(
+                              "YYYY-MM-DD"
+                            )}
                           />
                           {leaseFormik.touched.entries &&
                             leaseFormik.touched.entries[0].start_date &&
@@ -1758,23 +1822,21 @@ const Leaseing = () => {
                             id="input-unitadd2"
                             placeholder="3000"
                             type="date"
-                            name="end_date" // Ensure the correct path to the end_date field
+                            name="end_date"
                             onBlur={leaseFormik.handleBlur}
                             onChange={(e) => {
                               leaseFormik.handleChange(e);
+                              leaseFormik.values.entries[0].end_date = moment(e.target.value).format('YYYY-MM-DD');
                             }}
                             value={leaseFormik.values.entries[0].end_date}
                             min={moment(leaseFormik.values.entries[0].start_date).format(
                               "YYYY-MM-DD"
                             )}
                           />
-                          {/* {console.log(leaseFormik.values.end_date)} */}
-                          {/* {leaseFormik.touched.entries &&
-                            leaseFormik.touched.entries[0].end_date &&
-                            leaseFormik.errors.entries &&
-                            leaseFormik.errors.entries[0].end_date ? (
+                          {/* {leaseFormik.touched.end_date &&
+                            leaseFormik.errors.end_date ? (
                             <div style={{ color: "red" }}>
-                              {leaseFormik.errors.entries[0].end_date}
+                              {leaseFormik.errors.end_date}
                             </div>
                           ) : null} */}
                         </FormGroup>
@@ -1949,12 +2011,14 @@ const Leaseing = () => {
                                                         }}
                                                       >
                                                         <td>
-                                                          {
-                                                            tenant.tenant_firstName
-                                                          }
-                                                          {
-                                                            tenant.tenant_lastName
-                                                          }
+                                                          <pre>
+                                                            {
+                                                              tenant.tenant_firstName
+                                                            } {
+                                                              tenant.tenant_lastName
+                                                            }
+                                                          </pre>
+
                                                         </td>
                                                         <td>
                                                           {/* <FormControlLabel
@@ -1969,46 +2033,58 @@ const Leaseing = () => {
                                                               tenant.tenant_mobileNumber ===
                                                               checkedCheckbox
                                                             }
-                                                            onChange={(
-                                                              event
-                                                            ) => {
-                                                              setCheckedCheckbox(
-                                                                tenant.tenant_mobileNumber
-                                                              );
-                                                              const tenantInfo = `${tenant.tenant_firstName ||
-                                                                ""
-                                                                } ${tenant.tenant_lastName ||
-                                                                ""
-                                                                } ${tenant.tenant_mobileNumber ||
-                                                                ""
-                                                                } ${tenant.tenant_email ||
-                                                                ""
-                                                                } ${tenant.textpayer_id ||
-                                                                ""
-                                                                } ${tenant.birth_date ||
-                                                                ""
-                                                                } ${tenant.comments ||
-                                                                ""
-                                                                } ${tenant.contact_name ||
-                                                                ""
-                                                                } ${tenant.relationship_tenants ||
-                                                                ""
-                                                                } ${tenant.email ||
-                                                                ""
-                                                                } ${tenant.emergency_PhoneNumber ||
-                                                                ""
-                                                                } ${tenant.tenant_password ||
-                                                                ""
-                                                                } ${tenant.tenant_workNumber ||
-                                                                ""
-                                                                } ${tenant.alternate_email ||
-                                                                ""
-                                                                }`;
+                                                            onChange={(event) => {
+                                                              setCheckedCheckbox(tenant.tenant_mobileNumber);
+                                                              // const tenantInfo = `${tenant.tenant_firstName || ""} 
+                                                              // ${tenant.tenant_lastName ||
+                                                              //   ""
+                                                              //   } ${tenant.tenant_mobileNumber ||
+                                                              //   ""
+                                                              //   } ${tenant.tenant_email ||
+                                                              //   ""
+                                                              //   } ${tenant.textpayer_id ||
+                                                              //   ""
+                                                              //   } ${tenant.birth_date ||
+                                                              //   ""
+                                                              //   } ${tenant.comments ||
+                                                              //   ""
+                                                              //   } ${tenant.contact_name ||
+                                                              //   ""
+                                                              //   } ${tenant.relationship_tenants ||
+                                                              //   ""
+                                                              //   } ${tenant.email ||
+                                                              //   ""
+                                                              //   } ${tenant.emergency_PhoneNumber ||
+                                                              //   ""
+                                                              //   } ${tenant.tenant_password ||
+                                                              //   ""
+                                                              //   } ${tenant.tenant_workNumber ||
+                                                              //   ""
+                                                              //   } ${tenant.alternate_email ||
+                                                              //   ""
+                                                              //   }`;
+                                                              const tenantInfo1 = {
+                                                                tenant_firstName: tenant.tenant_firstName,
+                                                                tenant_lastName: tenant.tenant_lastName,
+                                                                tenant_mobileNumber: tenant.tenant_mobileNumber,
+                                                                tenant_email: tenant.tenant_email,
+                                                                textpayer_id: tenant.textpayer_id,
+                                                                birth_date: tenant.birth_date,
+                                                                comments: tenant.comments,
+                                                                contact_name: tenant.contact_name,
+                                                                relationship_tenants: tenant.relationship_tenants,
+                                                                email: tenant.email,
+                                                                emergency_PhoneNumber: tenant.emergency_PhoneNumber,
+                                                                tenant_password: tenant.tenant_password,
+                                                                tenant_workNumber: tenant.tenant_workNumber,
+                                                                alternate_email: tenant.alternate_email,
+                                                              };
                                                               handleCheckboxChange(
                                                                 event,
-                                                                tenantInfo,
+                                                                tenantInfo1,
                                                                 tenant.tenant_mobileNumber
                                                               );
+                                                              // console.log(tenantInfo1)
                                                             }}
                                                           />
                                                         </td>
@@ -2447,7 +2523,8 @@ const Leaseing = () => {
                                                   {tenantsFormik.touched
                                                     .alternate_email &&
                                                     tenantsFormik.errors
-                                                      .alternate_email ? (
+                                                      .alternate_email && tenantsFormik.values
+                                                        .tenant_email === "" ? (
                                                     <div
                                                       style={{ color: "red" }}
                                                     >
@@ -2531,7 +2608,7 @@ const Leaseing = () => {
                                               {tenantsFormik.errors &&
                                                 tenantsFormik.errors?.tenant_password &&
                                                 tenantsFormik.touched &&
-                                                tenantsFormik.touched?.tenant_password && tenantsFormik.values.tenant_password === "" ? (
+                                                tenantsFormik.touched?.tenant_password ? (
                                                 <div style={{ color: "red" }}>
                                                   {tenantsFormik.errors.tenant_password}
                                                   {/* {console.log(tenantsFormik.errors.tenant_password)} */}

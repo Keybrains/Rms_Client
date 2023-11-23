@@ -29,9 +29,6 @@ const AddVendor = () => {
  
   // Define validation schema for form fields
   const validationSchema = yup.object({
-    vendor_name: yup.string().required("Vendor Name is required"),
-    vendor_phoneNumber: yup.string(),
-    vendor_email: yup.string().email("Invalid email format").required("Email is required"),
     vendor_password: yup
       .string()
       .min(8, "Password is too short")
@@ -40,6 +37,11 @@ const AddVendor = () => {
         "Password must contain at least one uppercase, one lowercase, one number, and one special character"
       )
       .required("Password is required"),
+
+      vendor_email: yup
+      .string()
+      .email("Invalid email address")
+      .required("Email is required"),
   });
 
   // Initialize formik form
@@ -196,13 +198,14 @@ React.useEffect(() => {
                             onBlur={VendorFormik.handleBlur}
                             onChange={VendorFormik.handleChange}
                             value={VendorFormik.values.vendor_name}
+                            required
                           />
-                          {VendorFormik.touched.vendor_name &&
+                          {/* {VendorFormik.touched.vendor_name &&
                           VendorFormik.errors.vendor_name ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_name}
                             </div>
-                          ) : null}
+                          ) : null} */}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -216,7 +219,7 @@ React.useEffect(() => {
                             className="form-control-label"
                             htmlFor="staffmember_phoneNumber"
                           >
-                            Phone Number
+                            Phone Number *
                           </label>
                           <Input
                             className="form-control-alternative"
@@ -235,13 +238,14 @@ React.useEffect(() => {
                               ); // Remove non-numeric characters
                               e.target.value = numericValue;
                             }}
+                            required
                           />
-                          {VendorFormik.touched.vendor_phoneNumber &&
+                          {/* {VendorFormik.touched.vendor_phoneNumber &&
                           VendorFormik.errors.vendor_phoneNumber ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_phoneNumber}
                             </div>
-                          ) : null}
+                          ) : null} */}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -266,13 +270,14 @@ React.useEffect(() => {
                             onBlur={VendorFormik.handleBlur}
                             onChange={VendorFormik.handleChange}
                             value={VendorFormik.values.vendor_email}
+                            required
                           />
-                          {VendorFormik.touched.vendor_email &&
-                          VendorFormik.errors.vendor_email ? (
-                            <div style={{ color: "red" }}>
-                              {VendorFormik.errors.vendor_email}
-                            </div>
-                          ) : null}
+                            {VendorFormik.touched.vendor_email &&
+                              VendorFormik.errors.vendor_email ? (
+                                <div style={{ color: "red" }}>
+                                  {VendorFormik.errors.vendor_email}
+                                </div>
+                              ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -298,6 +303,7 @@ React.useEffect(() => {
                               onBlur={VendorFormik.handleBlur}
                               onChange={VendorFormik.handleChange}
                               value={VendorFormik.values.vendor_password}
+                              required
                             />
                             <Button
                               type="button"

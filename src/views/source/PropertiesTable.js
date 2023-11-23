@@ -16,6 +16,10 @@ import {
   Button,
   Input,
   Col,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Dropdown,
 } from "reactstrap";
 import Header from "components/Headers/Header";
 import Cookies from "universal-cookie";
@@ -25,6 +29,11 @@ const PropertiesTables = () => {
   const [rentalsData, setRentalsData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loader, setLoader] = useState(true);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [pageItem, setPageItem] = React.useState(6);
+  const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
+  const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
   const navigateToPropDetails = (rentalId, entryIndex) => {
     const propDetailsURL = `/admin/PropDetails/${rentalId}/${entryIndex}`;
@@ -63,7 +72,7 @@ const PropertiesTables = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/rentals/rentals"
+        "http://localhost:4000/api/rentals/rental"
       );
       console.log(response.data.data);
 
@@ -95,6 +104,7 @@ const PropertiesTables = () => {
                 "Rental property deleted successfully!",
                 "success"
               );
+              setTotalPages(Math.ceil(response.data.data.length / pageItem));
               getRentalsData(); // Refresh your rentals data or perform other actions
             } else if (response.data.statusCode === 201) {
               swal(
@@ -102,6 +112,7 @@ const PropertiesTables = () => {
                 "Property already assigned to Tenant!",
                 "warning"
               );
+              setTotalPages(Math.ceil(response.data.data.length / pageItem));
               getRentalsData();
             } else {
               swal("", response.data.message, "error");
@@ -119,7 +130,18 @@ const PropertiesTables = () => {
   useEffect(() => {
     // Fetch initial data
     getRentalsData();
-  }, []);
+  }, [pageItem]);
+
+  const startIndex = (currentPage - 1) * pageItem;
+  const endIndex = currentPage * pageItem;
+  var paginatedData;
+  if (rentalsData) {
+    paginatedData = rentalsData.slice(startIndex, endIndex);
+  }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
 
   const editProperty = (id, propertyIndex) => {
     navigate(`/admin/rentals/${id}/${propertyIndex}`);
@@ -151,59 +173,74 @@ const PropertiesTables = () => {
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
       console.log(rentalsData, "rental from table of properties");
-      return rentalsData;
+      return paginatedData;
     }
 
-    const lowerCaseQuery = searchQuery.toLowerCase();
+    // const lowerCaseQuery = searchQuery.toLowerCase();
 
-    return rentalsData.filter((rental) => {
-      const matchesRentalAddress = rental.entries.some(
-        (entry) =>
-          entry.rental_adress &&
-          entry.rental_adress.toLowerCase().includes(lowerCaseQuery)
-      );
+    // return paginatedData.filter((rental) => {
+    //   const matchesRentalAddress = rental.entries.some(
+    //     (entry) =>
+    //       entry.rental_adress &&
+    //       entry.rental_adress.toLowerCase().includes(lowerCaseQuery)
+    //   );
 
-      const matchesPropertyType = rental.entries.some(
-        (entry) =>
-          entry.property_type &&
-          entry.property_type.toLowerCase().includes(lowerCaseQuery)
-      );
+    //   const matchesPropertyType = rental.entries.some(
+    //     (entry) =>
+    //       entry.property_type &&
+    //       entry.property_type.toLowerCase().includes(lowerCaseQuery)
+    //   );
 
-      const ownerFullName = `${rental.rentalOwner_firstName || ""} ${
-        rental.rentalOwner_lastName || ""
-      }`.toLowerCase();
+    //   const ownerFullName = `${rental.rentalOwner_firstName || ""} ${rental.rentalOwner_lastName || ""
+    //     }`.toLowerCase();
 
-      const matchesOwnerInfo =
-        ownerFullName.includes(lowerCaseQuery) ||
-        (rental.rentalOwner_companyName &&
-          rental.rentalOwner_companyName
-            .toLowerCase()
-            .includes(lowerCaseQuery)) ||
-        (rental.rentalOwner_primaryEmail &&
-          rental.rentalOwner_primaryEmail
-            .toLowerCase()
-            .includes(lowerCaseQuery));
+    //   const matchesOwnerInfo =
+    //     ownerFullName.includes(lowerCaseQuery) ||
+    //     (rental.rentalOwner_companyName &&
+    //       rental.rentalOwner_companyName
+    //         .toLowerCase()
+    //         .includes(lowerCaseQuery)) ||
+    //     (rental.rentalOwner_primaryEmail &&
+    //       rental.rentalOwner_primaryEmail
+    //         .toLowerCase()
+    //         .includes(lowerCaseQuery));
 
-      const matchesCity = rental.entries.some(
-        (entry) =>
-          entry.rental_city &&
-          entry.rental_city.toLowerCase().includes(lowerCaseQuery)
-      );
+    //   const matchesCity = rental.entries.some(
+    //     (entry) =>
+    //       entry.rental_city &&
+    //       entry.rental_city.toLowerCase().includes(lowerCaseQuery)
+    //   );
 
-      const matchesCountry = rental.entries.some(
-        (entry) =>
-          entry.rental_country &&
-          entry.rental_country.toLowerCase().includes(lowerCaseQuery)
-      );
+    //   const matchesCountry = rental.entries.some(
+    //     (entry) =>
+    //       entry.rental_country &&
+    //       entry.rental_country.toLowerCase().includes(lowerCaseQuery)
+    //   );
 
-      return (
-        matchesRentalAddress ||
-        matchesPropertyType ||
-        matchesOwnerInfo ||
-        matchesCity ||
-        matchesCountry
-      );
-    });
+    //   return (
+    //     matchesRentalAddress ||
+    //     matchesPropertyType ||
+    //     matchesOwnerInfo ||
+    //     matchesCity ||
+    //     matchesCountry
+    //   );
+    // });
+    return paginatedData.filter((tenant) => {
+      const name = tenant.rentalOwner_firstName + " " + tenant.rentalOwner_lastName;
+      const add = tenant.entries.rental_city + " " + tenant.entries.rental_country;
+      console.log(tenant)
+      return tenant.entries.rental_adress.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.entries.property_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.entries.rental_city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.entries.rental_country.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.rentalOwner_firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.rentalOwner_lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.rentalOwner_companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.rentalOwner_primaryEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        add.toLowerCase().includes(searchQuery.toLowerCase())
+    }
+    )
   };
   console.log(filterRentalsBySearch(), "filterasdadasdasdasdasda");
 
@@ -278,8 +315,8 @@ const PropertiesTables = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {console.log(filterRentalsBySearch(), "filter")}
-                    {filterRentalsBySearch().map((rental) =>
+                    {/* {console.log(filterRentalsBySearch(), "filter")} */}
+                    {/* {filterRentalsBySearch().map((rental) =>
                       rental.entries.map((property) => (
                         <tr
                           key={rental._id}
@@ -326,9 +363,152 @@ const PropertiesTables = () => {
                           </td>
                         </tr>
                       ))
-                    )}
+                    )} */}
+                    {filterRentalsBySearch()?.map((tenant) => (
+                      <>
+                        <tr
+                          key={tenant._id}
+                          onClick={() =>
+                            navigateToPropDetails(
+                              tenant._id,
+                              tenant.entries.entry_id
+                            )
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          <td>{tenant.entries.rental_adress}</td>
+                          <td>{tenant.entries.property_type}</td>
+                          <td>{tenant.rentalOwner_firstName} {tenant.rentalOwner_lastName}</td>
+                          <td>{tenant.rentalOwner_companyName}</td>
+                          <td>{`${tenant.entries.rental_city}, ${tenant.entries.rental_country}`}</td>
+                          <td>{tenant.rentalOwner_primaryEmail}</td>
+                          <td>{tenant.rentalOwner_phoneNumber}</td>
+                          {/* <td>{tenant.entries.entryIndex}</td>
+                        <td>{tenant.entries.rental_adress}</td> */}
+                          <td style={{}}>
+                            <div style={{ display: "flex", gap: "5px" }}>
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteRentals(tenant._id, tenant.entries.entryIndex);
+                                  // console.log(entry.entryIndex,"dsgdg")
+                                }}
+                              >
+                                <DeleteIcon />
+                              </div>
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  editProperty(tenant._id, tenant.entries.entryIndex);
+                                }}
+                              >
+                                <EditIcon />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        {/* <tr
+                          key={rental._id}
+                          onClick={() =>
+                            navigateToPropDetails(
+                              rental._id,
+                              property.entryIndex
+                            )
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          <td>{property.rental_adress}</td>
+                          <td>{property.property_type}</td>
+                          <td>{`${rental.rentalOwner_firstName} ${rental.rentalOwner_lastName}`}</td>
+                          <td>{rental.rentalOwner_companyName}</td>
+                          <td>{`${property.rental_city}, ${property.rental_country}`}</td>
+                          <td>{rental.rentalOwner_primaryEmail}</td>
+                          <td>{rental.rentalOwner_phoneNumber}</td>
+                          <td>
+                            <div style={{ display: "flex", gap: "5px" }}>
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteRentals(
+                                    rental._id,
+                                    property.entryIndex
+                                  );
+                                }}
+                              >
+                                <DeleteIcon />
+                              </div>
+                              &nbsp; &nbsp; &nbsp;
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  editProperty(rental._id, property.entryIndex);
+                                }}
+                              >
+                                <EditIcon />
+                              </div>
+                            </div>
+                          </td>
+                        </tr> */}
+                      </>
+                    ))}
                   </tbody>
                 </Table>
+                {paginatedData.length > 0 ? <Row>
+                  <Col className="text-right m-3">
+                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                      <DropdownToggle caret >
+                        {pageItem}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => setPageItem(6)}
+                        >
+                          6
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() =>
+                            setPageItem(12)
+                          }
+                        >
+                          12
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => setPageItem(18)}
+                        >
+                          18
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: '#d0d0d0' }}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
+                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                      </svg>
+                    </Button>
+                    <span>
+                      Page {currentPage} of {totalPages}
+                    </span>{" "}
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: '#d0d0d0' }}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
+                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                      </svg>
+                    </Button>{" "}
+
+                  </Col>
+                </Row> : <></>}
               </Card>
             )}
           </div>

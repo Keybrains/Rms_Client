@@ -230,7 +230,7 @@ const AddStaffMember = () => {
                             className="form-control-label"
                             htmlFor="input-member"
                           >
-                            What is the name of new staff member?
+                           Staff Member Name *
                           </label>
                           <br />
                           <br />
@@ -247,13 +247,8 @@ const AddStaffMember = () => {
                               StaffMemberFormik.handleChange(e);
                             }}
                             value={StaffMemberFormik.values.staffmember_name}
+                            required
                           />
-                          {StaffMemberFormik.touched.staffmember_name &&
-                          StaffMemberFormik.errors.staffmember_name ? (
-                            <div style={{ color: "red" }}>
-                              {StaffMemberFormik.errors.staffmember_name}
-                            </div>
-                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -268,7 +263,7 @@ const AddStaffMember = () => {
                             className="form-control-label"
                             htmlFor="input-desg"
                           >
-                            What is the designation?
+                            Designation
                           </label>
                           <br />
                           <br />
@@ -284,12 +279,6 @@ const AddStaffMember = () => {
                               StaffMemberFormik.values.staffmember_designation
                             }
                           />
-                          {StaffMemberFormik.touched.staffmember_designation &&
-                          StaffMemberFormik.errors.staffmember_designation ? (
-                            <div style={{ color: "red" }}>
-                              {StaffMemberFormik.errors.staffmember_designation}
-                            </div>
-                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -304,7 +293,7 @@ const AddStaffMember = () => {
                             className="form-control-label"
                             htmlFor="input-desg"
                           >
-                            Phone Number
+                            Phone Number *
                           </label>
                           <br />
                           <br />
@@ -319,6 +308,7 @@ const AddStaffMember = () => {
                             value={
                               StaffMemberFormik.values.staffmember_phoneNumber
                             }
+                            required
                             onInput={(e) => {
                               const inputValue = e.target.value;
                               const numericValue = inputValue.replace(
@@ -328,12 +318,6 @@ const AddStaffMember = () => {
                               e.target.value = numericValue;
                             }}
                           />
-                          {StaffMemberFormik.touched.staffmember_phoneNumber &&
-                          StaffMemberFormik.errors.staffmember_phoneNumber ? (
-                            <div style={{ color: "red" }}>
-                              {StaffMemberFormik.errors.staffmember_phoneNumber}
-                            </div>
-                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -348,7 +332,7 @@ const AddStaffMember = () => {
                             className="form-control-label"
                             htmlFor="input-desg"
                           >
-                            Email
+                            Email *
                           </label>
                           <br />
                           <br />
@@ -361,13 +345,8 @@ const AddStaffMember = () => {
                             onBlur={StaffMemberFormik.handleBlur}
                             onChange={StaffMemberFormik.handleChange}
                             value={StaffMemberFormik.values.staffmember_email}
+                            required
                           />
-                          {StaffMemberFormik.touched.staffmember_email &&
-                          StaffMemberFormik.errors.staffmember_email ? (
-                            <div style={{ color: "red" }}>
-                              {StaffMemberFormik.errors.staffmember_email}
-                            </div>
-                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -398,13 +377,8 @@ const AddStaffMember = () => {
                               value={
                                 StaffMemberFormik.values.staffmember_password
                               }
+                              required
                             />
-                            {StaffMemberFormik.touched.staffmember_password &&
-                            StaffMemberFormik.errors.staffmember_password ? (
-                              <div style={{ color: "red" }}>
-                                {StaffMemberFormik.errors.staffmember_password}
-                              </div>
-                            ) : null}
                             <Button
                               type="button"
                               style={{ padding: "7px" }}
@@ -412,7 +386,14 @@ const AddStaffMember = () => {
                             >
                               {<VisibilityIcon />}
                             </Button>
+                         
                           </div>
+                          {StaffMemberFormik.touched.staffmember_password &&
+                            StaffMemberFormik.errors.staffmember_password ? (
+                              <div style={{ color: "red" }}>
+                                {StaffMemberFormik.errors.staffmember_password}
+                              </div>
+                            ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -423,7 +404,7 @@ const AddStaffMember = () => {
                     className="btn btn-primary ml-4"
                     style={{ background: "green" }}
                   >
-                    {id ? "Update Staff Member" : "Add Staf Member"}
+                    {id ? "Update Staff Member" : "Add Staff Member"}
                   </button>
                   <button
                     color="primary"
