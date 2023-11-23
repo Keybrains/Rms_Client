@@ -132,7 +132,7 @@ const TenantProperty = () => {
           <div className="col">
             <Card className="shadow" >
               <CardHeader className="border-0">
-                <h1 className="mb-0">Properties</h1>
+                <h1 className="mb-0">Ledger</h1>
               </CardHeader>
               <div className="table-responsive">
                 <Table

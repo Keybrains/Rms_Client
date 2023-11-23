@@ -81,11 +81,7 @@ const ApplicantSummary = () => {
   };
 
   const dropdownList = [
-    "Draft",
-    "Undecided",
     "Approved",
-    "Deferred",
-    "Canceled",
     "Rejected",
   ];
 
@@ -118,6 +114,7 @@ const ApplicantSummary = () => {
       console.log(values, "values");
     },
   });
+
   const navigateToLease = (tenantID, entryIndex) => {
     axios
       .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)

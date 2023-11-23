@@ -48,7 +48,6 @@ import AddVendor from "views/source/AddVendor";
 import GeneralLedger from "views/source/GeneralLedger";
 import TWorkOrderDetails from "views/source/Tworkorderdetail";
 import AddGeneralLedger from "views/source/AddGeneralLedger";
-
 import WorkOrderDetails from "views/source/WorkOrderDetails";
 import VendorWorkDetail from "views/source/VendorWorkDetail";
 import StaffWorkDetails from "views/source/StaffWorkDetails";
@@ -58,6 +57,7 @@ import TenantPropertyDetail from "views/source/TenantPropertyDetail";
 import Payment from "views/source/Payment";
 import AddPayment from "views/source/AddPayment";
 import AddCharge from "views/source/AddCharge";
+import TenantFinancial from "views/source/TenantFinancial";
 
 var routes = [
   {
@@ -265,6 +265,13 @@ var routes = [
     name: "Property",
     icon: "ni ni-pin-3 text-orange",
     component: <TenantProperty />,
+    layout: "/tenant",
+  },
+  {
+    path: "/tenantFinancial",
+    name: "Financial",
+    icon: "ni ni-money-coins text-purple",
+    component: <TenantFinancial/>,
     layout: "/tenant",
   },
 

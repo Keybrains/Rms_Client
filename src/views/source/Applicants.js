@@ -105,24 +105,21 @@ const Applicants = () => {
 
   const applicantFormik = useFormik({
     initialValues: {
-      applicant_firstName: "",
-      applicant_lastName: "",
-      applicant_email: "",
-      applicant_phoneNumber: "",
-      applicant_homeNumber: "",
-      applicant_businessNumber: "",
-      applicant_telephoneNumber: "",
+      tenant_firstName: "",
+      tenant_lastName: "",
+      tenant_email: "",
+      tenant_mobileNumber: "",
+      tenant_homeNumber: "",
+      tenant_workNumber: "",
+      tenant_faxPhoneNumber: "",
       rental_adress: "",
     },
     validationSchema: yup.object({
-      // applicant_firstName: yup.string().required("Required"),
-      // applicant_lastName: yup.string().required("Required"),
-      // applicant_email: yup.string().required("Required"),
-      // applicant_phoneNumber: yup.string().required("Required"),
-      // applicant_homeNumber: yup.string().required("Required"),
-      // applicant_businessNumber: yup.string().required("Required"),
-      // applicant_telephoneNumber: yup.string().required("Required"),
-      // applicant_property: yup.string().required("Required"),applicant
+      tenant_firstName: yup.string().required("Required"),
+      tenant_lastName: yup.string().required("Required"),
+      tenant_email: yup.string().required("Required"),
+      tenant_mobileNumber: yup.string().required("Required"),
+      rental_adress: yup.string().required("Required"),
     }),
     onSubmit: (values, action) => {
       handleFormSubmit(values, action);
@@ -131,50 +128,20 @@ const Applicants = () => {
     },
   });
   const handleFormSubmit = (values, action) => {
-    // const formData = {
-    //     applicant_firstName: FirstName,
-    //     applicant_lastName: lastName,
-    //     applicant_email: email,
-    //     applicant_phoneNumber: mobileNumber,
-    //     applicant_homeNumber: homeAddress,
-    //     applicant_businessNumber: businessCenter,
-    //     applicant_telephoneNumber: fax,
-    //     applicant_property: property,
-    // };
-
-    // console.log('Form Data:', formData); // Log the formData
-    console.log(applicantFormik.values, "values");
     axios
       .post("https://propertymanager.cloudpress.host/api/applicant/applicant", values)
       .then((response) => {
-        console.log("Applicant created successfully:", response.data.data._id); // Log the response
+        console.log("Applicant created successfully:", response.data.data._id); 
         closeModal();
 
         action.resetForm();
         navigate(`/admin/Applicants/${response.data.data._id}`);
-
-        // Reset the form fields by setting state variables to empty strings
-        //  setFirstName("");
-        //  setLastName("");
-        //  setEmail("");
-        //  setMobileNumber("");
-        //  setHomeAddress("");
-        //  setBusinessCenter("");
-        //  setFax("");
-        //  setProperty("");
-        // applicantFormik.setFieldValue("applicant_firstName", "");
-        // applicantFormik.setFieldValue("applicant_lastName", "");
-        // applicantFormik.setFieldValue("applicant_email", "");
-        // applicantFormik.setFieldValue("applicant_phoneNumber", "");
-        // applicantFormik.setFieldValue("applicant_homeNumber", "");
-        // applicantFormik.setFieldValue("applicant_businessNumber", "");
-        // applicantFormik.setFieldValue("applicant_telephoneNumber", "");
         setSelectedPropertyType("");
         applicantFormik.setFieldValue("rental_adress", "");
       })
 
       .catch((error) => {
-        console.error("Error creating applicant:", error); // Log any errors
+        console.error("Error creating applicant:", error);
       });
   };
   const [propertyData, setPropertyData] = useState([]);
@@ -262,6 +229,21 @@ const Applicants = () => {
     applicantFormik.setFieldValue("rental_adress", propertyType);
   };
 
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const filterTenantsBySearch = () => {
+    if (searchQuery === undefined) {
+      return rentalsData;
+    }
+
+    return rentalsData.filter((tenant) => {
+      return tenant.tenant_firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.tenant_lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        // tenant.tenant_mobileNumber.includes(Number(searchQuery)) ||
+        tenant.tenant_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.rental_adress.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+  };
+
   return (
     <>
       <Header />
@@ -302,6 +284,24 @@ const Applicants = () => {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   {/* <h3 className="mb-0">Applicants</h3> */}
+                  <Row>
+                    <Col xs="12" sm="6">
+                      <FormGroup className="">
+                        <Input
+                          fullWidth
+                          type="text"
+                          placeholder="Search"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          style={{
+                            width: "100%",
+                            maxWidth: "200px",
+                            minWidth: "200px",
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
@@ -322,7 +322,7 @@ const Applicants = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {rentalsData.map((applicant, index) => (
+                    {filterTenantsBySearch().map((applicant, index) => (
                       <tr
                         key={index}
                         onClick={() =>
@@ -363,45 +363,59 @@ const Applicants = () => {
               toggle={closeModal}
               className="bg-secondary text-white"
             >
-              <strong> Add Applicant</strong>
+              <strong style={{fontSize:18}}>Add Applicant</strong>
             </ModalHeader>
 
             <ModalBody>
               <Row>
                 <Col>
                   <FormGroup>
-                    <Label for="applicantName">Name</Label>
-
+                  <label
+                    className="form-control-label"
+                    htmlFor="input-property"
+                  >
+                    First Name *
+                  </label>
                     <Input
                       type="text"
                       id="tenant_firstName"
                       placeholder="First Name"
+                      name="tenant_firstName"
                       onBlur={applicantFormik.handleBlur}
                       onChange={applicantFormik.handleChange}
                       value={applicantFormik.values.tenant_firstName}
-                      // value={FirstName}
-                      // onChange={(e) => setFirstName(e.target.value)}
+                      required 
                     />
                   </FormGroup>
                 </Col>
                 <Col>
                   <FormGroup>
-                    <Label for="lastName">Last Name</Label>
+                  <label
+                    className="form-control-label"
+                    htmlFor="input-property"
+                  >
+                    Last Name *
+                  </label>
                     <Input
                       type="text"
                       id="tenant_lastName"
                       placeholder="Enter last name"
+                      name="tenant_lastName"
                       onBlur={applicantFormik.handleBlur}
                       onChange={applicantFormik.handleChange}
                       value={applicantFormik.values.tenant_lastName}
-                      // value={lastName}
-                      // onChange={(e) => setLastName(e.target.value)}
+                      required
                     />
                   </FormGroup>
                 </Col>
               </Row>
               <FormGroup>
-                <Label for="Email">Email</Label>
+                  <label
+                    className="form-control-label"
+                    htmlFor="input-property"
+                  >
+                    Email *
+                  </label>
                 <InputGroup>
                   <InputGroupAddon addonType="prepend">
                     <span className="input-group-text">
@@ -412,28 +426,37 @@ const Applicants = () => {
                     type="text"
                     id="tenant_email"
                     placeholder="Enter Email"
+                    name="tenant_email"
                     value={applicantFormik.values.tenant_email}
                     onBlur={applicantFormik.handleBlur}
                     onChange={applicantFormik.handleChange}
+                    required
                   />
+                  
                 </InputGroup>
               </FormGroup>
-              <div className="mb-3 form-check">
-                            <Input
-                                type="checkbox"
-                                className="form-check-input"
-                                id="exampleCheck1"
-                                checked={applicantFormik.values.exampleCheck1}
-                                onChange={applicantFormik.handleChange}
-                                name="exampleCheck1"
-                                value={applicantFormik.values.exampleCheck1}
-                            />
-                            <Label className="form-check-label" for="exampleCheck1">
-                                email link to online rental application
-                            </Label>
-                        </div>
+              {/* <div className="mb-3 form-check">
+                <Input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="exampleCheck1"
+                  checked={applicantFormik.values.exampleCheck1}
+                  onChange={applicantFormik.handleChange}
+                  name="exampleCheck1"
+                  value={applicantFormik.values.exampleCheck1}
+                />
+
+                <Label className="form-check-label" for="exampleCheck1">
+                  email link to online rental application
+                </Label>
+              </div> */}
               <FormGroup>
-                <Label for="MobileNumber">Mobile Number</Label>
+                  <label
+                    className="form-control-label"
+                    htmlFor="input-property"
+                  >
+                    Mobile Number *
+                  </label>
                 <InputGroup>
                   <InputGroupAddon addonType="prepend">
                     <span className="input-group-text">
@@ -444,11 +467,19 @@ const Applicants = () => {
                     type="tel" // Use type "tel" for mobile numbers
                     id="tenant_mobileNumber"
                     placeholder="Enter Mobile Number"
-                    value={applicantFormik.values.tenant_mobileNumber}
+                    name="tenant_mobileNumber"
                     onBlur={applicantFormik.handleBlur}
                     onChange={applicantFormik.handleChange}
-                    // value={mobileNumber}
-                    // onChange={(e) => setMobileNumber(e.target.value)}
+                    value={applicantFormik.values.tenant_mobileNumber}
+                    onInput={(e) => {
+                      const inputValue = e.target.value;
+                      const numericValue = inputValue.replace(
+                        /\D/g,
+                        ""
+                      ); // Remove non-numeric characters
+                      e.target.value = numericValue;
+                    }}
+                    required
                   />
                 </InputGroup>
               </FormGroup>
@@ -466,9 +497,14 @@ const Applicants = () => {
                     value={applicantFormik.values.tenant_homeNumber}
                     onBlur={applicantFormik.handleBlur}
                     onChange={applicantFormik.handleChange}
-                    // value={homeAddress}
-                    // onChange={(e) => setHomeAddress(e.target.value)}
-                    // placeholder="Home Address"
+                    onInput={(e) => {
+                      const inputValue = e.target.value;
+                      const numericValue = inputValue.replace(
+                        /\D/g,
+                        ""
+                      ); // Remove non-numeric characters
+                      e.target.value = numericValue;
+                    }}
                   />
                 </InputGroup>
               </FormGroup>
@@ -486,10 +522,14 @@ const Applicants = () => {
                     value={applicantFormik.values.tenant_workNumber}
                     onBlur={applicantFormik.handleBlur}
                     onChange={applicantFormik.handleChange}
-
-                    // value={businessCenter}
-                    // onChange={(e) => setBusinessCenter(e.target.value)}
-                    // placeholder="Home Address"
+                    onInput={(e) => {
+                      const inputValue = e.target.value;
+                      const numericValue = inputValue.replace(
+                        /\D/g,
+                        ""
+                      ); // Remove non-numeric characters
+                      e.target.value = numericValue;
+                    }}
                   />
                 </InputGroup>
               </FormGroup>
@@ -507,21 +547,24 @@ const Applicants = () => {
                     value={applicantFormik.values.tenant_faxPhoneNumber}
                     onBlur={applicantFormik.handleBlur}
                     onChange={applicantFormik.handleChange}
-                    // value={fax}
-                    // onChange={(e) => setFax(e.target.value)}
-
-                    // placeholder=""
+                    onInput={(e) => {
+                      const inputValue = e.target.value;
+                      const numericValue = inputValue.replace(
+                        /\D/g,
+                        ""
+                      ); // Remove non-numeric characters
+                      e.target.value = numericValue;
+                    }}
                   />
                 </InputGroup>
               </FormGroup>
-              <hr></hr>
               <FormGroup>
-                <Col lg="6">
+              
                   <label
                     className="form-control-label"
                     htmlFor="input-property"
                   >
-                    Property*
+                    Property *
                   </label>
                   {/* {console.log(propertyData, "propertyData")} */}
                   <FormGroup>
@@ -548,19 +591,20 @@ const Applicants = () => {
                           </DropdownItem>
                         ))}
                       </DropdownMenu>
+                      {applicantFormik.errors &&
+                              applicantFormik.errors?.rental_adress &&
+                              applicantFormik.touched &&
+                              applicantFormik.touched?.rental_adress && applicantFormik.values.rental_adress==="" ? (
+                                <div style={{ color: "red" }}>
+                                  {applicantFormik.errors.rental_adress}
+                                </div>
+                              ) : null}
                     </Dropdown>
                   </FormGroup>
-                </Col>
+              
               </FormGroup>
-              <hr></hr>
-
-              {/* Add more form fields here */}
             </ModalBody>
-
             <ModalFooter>
-              {/* <Button color="secondary" onClick={closeModal}>
-                        Close
-                    </Button> */}
               <Button color="success" type="submit">
                 Create Applicant
               </Button>
