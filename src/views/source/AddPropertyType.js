@@ -117,7 +117,6 @@ const AddPropertyType = () => {
     },
     validationSchema: yup.object({
       property_type: yup.string().required("Required"),
-      propertysub_type: yup.string().required("Required"),
     }),
     onSubmit: (values) => {
       handleSubmit(values);
@@ -239,76 +238,60 @@ React.useEffect(() => {
               <CardBody>
                 <Form>
                   <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
-                          >
-                            What is the property type?
-                          </label>
-                          <br />
-                          <br />
+                  <Row>
+                    <Col lg="6">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Property Type *
+                        </label>
+                        <br />
+                        <br />
 
-                          {/* <FormGroup>
-                            <Label for="property_type">Property Type</Label>
-                            <Input
-                              type="select"
-                              name="property_type"
-                              id="property_type"
-                              onBlur={propertyFormik.handleBlur}
-                              onChange={propertyFormik.handleChange}
-                              value={propertyFormik.values.property_type}
+                        <Dropdown isOpen={prodropdownOpen} toggle={toggle}>
+                          <DropdownToggle caret>
+                            {propertyFormik.values.property_type || "Property Type"}
+                          </DropdownToggle>
+                          <DropdownMenu>
+                          
+                            <DropdownItem
+                              onClick={() =>
+                                propertyFormik.handleChange({
+                                  target: {
+                                    name: "property_type",
+                                    value: "Residential",
+                                  },
+                                })
+                              }
                             >
-                              <option value="Residential">Residential</option>
-                              <option value="Commercial">Commercial</option>
-                            </Input>
-                            {propertyFormik.touched.property_type && propertyFormik.errors.property_type ? (
-                              <div style={{ color: "red" }}>{propertyFormik.errors.property_type}</div>
+                              Residential
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() =>
+                                propertyFormik.handleChange({
+                                  target: {
+                                    name: "property_type",
+                                    value: "Commercial",
+                                  },
+                                })
+                              }
+                            >
+                              Commercial
+                            </DropdownItem>
+                          </DropdownMenu>
+                          {propertyFormik.touched.property_type &&
+                            propertyFormik.errors.property_type ? (
+                              <div style={{ color: "red", marginBottom: "10px" }}>
+                                {propertyFormik.errors.property_type}
+                              </div>
                             ) : null}
-                          </FormGroup> */}
-                          <Dropdown isOpen={prodropdownOpen} toggle={toggle}>
-                            <DropdownToggle caret>
-                              {propertyFormik.values.property_type ||
-                                "Property Type"}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              {propertyFormik.touched.property_type &&
-                              propertyFormik.errors.property_type ? (
-                                <DropdownItem style={{ color: "red" }}>
-                                  {propertyFormik.errors.property_type}
-                                </DropdownItem>
-                              ) : null}
-                              <DropdownItem
-                                onClick={() =>
-                                  propertyFormik.handleChange({
-                                    target: {
-                                      name: "property_type",
-                                      value: "Residential",
-                                    },
-                                  })
-                                }
-                              >
-                                Residential
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  propertyFormik.handleChange({
-                                    target: {
-                                      name: "property_type",
-                                      value: "Commercial",
-                                    },
-                                  })
-                                }
-                              >
-                                Commercial
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        </FormGroup>
-                      </Col>
-                    </Row>
+                        </Dropdown>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+
                     <br />
                   </div>
                   <hr className="my-4" />
@@ -320,7 +303,7 @@ React.useEffect(() => {
                             className="form-control-label"
                             htmlFor="input-property"
                           >
-                            What is the property sub type?
+                            Property Sub Type *
                           </label>
                           <br />
                           <br />
@@ -333,13 +316,14 @@ React.useEffect(() => {
                             onBlur={propertyFormik.handleBlur}
                             onChange={propertyFormik.handleChange}
                             value={propertyFormik.values.propertysub_type}
+                            required
                           />
-                          {propertyFormik.touched.propertysub_type &&
+                          {/* {propertyFormik.touched.propertysub_type &&
                           propertyFormik.errors.propertysub_type ? (
                             <div style={{ color: "red" }}>
                               {propertyFormik.errors.propertysub_type}
                             </div>
-                          ) : null}
+                          ) : null} */}
                         </FormGroup>
                       </Col>                                           
                     </Row>

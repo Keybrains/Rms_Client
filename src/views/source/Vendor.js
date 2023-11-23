@@ -212,8 +212,7 @@ const Vendor = () => {
                     <tr>
                       <th scope="col">Name</th>
                       <th scope="col">Phone Number</th>
-                      <th scope="col">E-Mail</th>
-                      <th scope="col">Password</th>
+                      <th scope="col">Mail ID</th>
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
@@ -223,7 +222,6 @@ const Vendor = () => {
                         <td>{vendor.vendor_name}</td>
                         <td>{vendor.vendor_phoneNumber}</td>
                         <td>{vendor.vendor_email}</td>
-                        <td>{vendor.vendor_password}</td>
                         <td>
                           <div style={{ display: "flex", gap: "5px" }}>
                             <div
