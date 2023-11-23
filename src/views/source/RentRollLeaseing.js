@@ -566,7 +566,7 @@ const RentRollLeaseing = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/property")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -1782,15 +1782,16 @@ const RentRollLeaseing = () => {
                                 overflowY: "auto",
                               }}
                             >
-                              {console.log(leaseFormik.values.entries[0].rental_adress, "hii")}
-                              {propertyData.map((property) => (
+                                 {propertyData.map((property) => (
                                 <DropdownItem
-                                  key={property}
+                                  key={property._id}
                                   onClick={() =>
-                                    handlePropertyTypeSelect(property)
+                                    handlePropertyTypeSelect(
+                                      property.rental_adress
+                                    )
                                   }
                                 >
-                                  {property}
+                                  {property.rental_adress}
                                 </DropdownItem>
                               ))}
                             </DropdownMenu>
@@ -3162,6 +3163,7 @@ const RentRollLeaseing = () => {
                                             />
                                             {consignerFormik.errors.entries &&
                                               consignerFormik.errors?.entries[0].cosigner_firstName &&
+                                           
                                               consignerFormik.touched.entries &&
                                               consignerFormik.touched?.entries[0].cosigner_firstName && consignerFormik.values.entries[0].cosigner_firstName === "" ? (
                                               <div style={{ color: "red" }}>
