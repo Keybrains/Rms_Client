@@ -57,7 +57,7 @@ const Applicants = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/applicant/applicant"
+        "https://propertymanager.cloudpress.host/api/applicant/applicant"
       );
       setRentalsData(response.data.data);
     } catch (error) {
@@ -86,7 +86,7 @@ const Applicants = () => {
       };
       // auth post method
       let res = await axios.post(
-        "http://localhost:4000/api/register/auth",
+        "https://propertymanager.cloudpress.host/api/register/auth",
         { purpose: "validate access" },
         authConfig
       );
@@ -129,7 +129,7 @@ const Applicants = () => {
   });
   const handleFormSubmit = (values, action) => {
     axios
-      .post("http://localhost:4000/api/applicant/applicant", values)
+      .post("https://propertymanager.cloudpress.host/api/applicant/applicant", values)
       .then((response) => {
         console.log("Applicant created successfully:", response.data.data._id); 
         closeModal();
@@ -151,7 +151,7 @@ const Applicants = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/rentals/allproperty")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -169,7 +169,7 @@ const Applicants = () => {
 
   const getApplicantData = () => {
     axios
-      .get("http://localhost:4000/api/applicant/applicant")
+      .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
       .then((response) => {
         setRentalsData(response.data.data);
         setLoader(false);
@@ -183,7 +183,7 @@ const Applicants = () => {
     getApplicantData();
   }, [isModalOpen]);
   // const deleteFile = (index) => {
-  //   axios.delete(`http://localhost:4000/api/applicant/applicant`,index).then((response) => {
+  //   axios.delete(`https://propertymanager.cloudpress.host/api/applicant/applicant`,index).then((response) => {
   //     console.log(response);
   //   }).catch((err) => {
   //     console.log(err);
@@ -201,7 +201,7 @@ const Applicants = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("http://localhost:4000/api/applicant/applicant", {
+          .delete("https://propertymanager.cloudpress.host/api/applicant/applicant", {
             data: { _id: id },
           })
           .then((response) => {

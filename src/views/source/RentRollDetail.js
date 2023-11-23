@@ -5,7 +5,6 @@ import Header from "components/Headers/Header";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { RotatingLines } from "react-loader-spinner";
-
 import {
   Button,
   Card,
