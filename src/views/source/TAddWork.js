@@ -240,6 +240,7 @@ const TAddWork = () => {
  
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
+  let cookie_id = cookies.get("Tenant ID");
 
   React.useEffect(() => {
     if (cookies.get("token")) {

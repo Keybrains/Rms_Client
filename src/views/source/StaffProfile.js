@@ -20,6 +20,7 @@ const StaffProfile = () => {
   const [staffDetails, setStaffDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  let cookie_id = cookies.get("Staff ID");
 
   const navigate = useNavigate();
   let cookies = new Cookies();
