@@ -32,6 +32,7 @@ import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
 import Cookies from 'universal-cookie';
+import { jwtDecode } from "jwt-decode";
 
 const AddPropertyType = () => {
   const { id } = useParams();
@@ -128,34 +129,19 @@ const AddPropertyType = () => {
 
 
 
+
   let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let  authConfig = {
-        headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post method
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
       navigate("/auth/login");
     }
-  } else {
-    navigate("/auth/login");
-  }
-};
+  }, [navigate]);
 
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
   React.useEffect(() => {
     if (id) {
       axios

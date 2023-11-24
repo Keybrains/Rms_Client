@@ -13,13 +13,14 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Button
+  Button,
 } from "reactstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import StaffHeader from "components/Headers/StaffHeader";
 import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const StaffWorkTable = () => {
   const navigate = useNavigate();
@@ -28,44 +29,26 @@ const StaffWorkTable = () => {
   const [loader, setLoader] = useState(true);
   const [staffmember_name, setStaffMember] = useState("");
   const [staffDetails, setStaffDetails] = useState({});
-  console.log('staffname', staffmember_name)
+  console.log("staffname", staffmember_name);
   console.log(staffDetails);
-  console.log('workData', workData)
+  console.log("workData", workData);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
-
+ 
   let cookies = new Cookies();
-  // let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   let cookie_id = cookies.get("Staff ID");
 
@@ -77,7 +60,7 @@ const StaffWorkTable = () => {
       if (response.data && response.data.data) {
         console.log(response.data.data);
         setStaffDetails(response.data.data);
-        setStaffMember(response.data.data.staffmember_name)
+        setStaffMember(response.data.data.staffmember_name);
         setTotalPages(Math.ceil(response.data.data.length / pageItem));
       } else {
         console.error("Invalid or missing data in API response.");
@@ -118,9 +101,6 @@ const StaffWorkTable = () => {
     //console.log(staffmember_name)
   }, [staffmember_name]);
 
-
-
-
   // Log staffmember_name after setting it
   console.log("staffmember_name:", staffmember_name);
 
@@ -146,12 +126,12 @@ const StaffWorkTable = () => {
   //       rental.priority.toLowerCase().includes(lowerCaseQuery)
   //     );
   //   });
-  // }; 
+  // };
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
       return paginatedData;
     }
-    
+
     return paginatedData.filter((rental) => {
       const lowerCaseQuery = searchQuery.toLowerCase();
       const isUnitAddress = (rental.unit_no + " " + rental.rental_adress)
@@ -228,9 +208,7 @@ const StaffWorkTable = () => {
                     {filterRentalsBySearch().map((vendor) => (
                       <tr
                         key={vendor._id}
-                        onClick={() =>
-                          navigateToDetails(vendor.workorder_id)
-                        }
+                        onClick={() => navigateToDetails(vendor.workorder_id)}
                         style={{ cursor: "pointer" }}
                       >
                         <td>{vendor.work_subject}</td>
@@ -242,58 +220,80 @@ const StaffWorkTable = () => {
                     ))}
                   </tbody>
                 </Table>
-                {paginatedData.length > 0 ? <Row>
-                  <Col className="text-right m-3">
-                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
-                      <DropdownToggle caret >
-                        {pageItem}
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem
-                          onClick={() => setPageItem(6)}
+                {paginatedData.length > 0 ? (
+                  <Row>
+                    <Col className="text-right m-3">
+                      <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                        <DropdownToggle caret>{pageItem}</DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(6);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            6
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(12);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            12
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(18);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            18
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-left"
+                          viewBox="0 0 16 16"
                         >
-                          6
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() =>
-                            setPageItem(12)
-                          }
+                          <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                        </svg>
+                      </Button>
+                      <span>
+                        Page {currentPage} of {totalPages}
+                      </span>{" "}
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-right"
+                          viewBox="0 0 16 16"
                         >
-                          12
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => setPageItem(18)}
-                        >
-                          18
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
-                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                      </svg>
-                    </Button>
-                    <span>
-                      Page {currentPage} of {totalPages}
-                    </span>{" "}
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
-                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                      </svg>
-                    </Button>{" "}
-
-                  </Col>
-                </Row> : <></>}
+                          <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                        </svg>
+                      </Button>{" "}
+                    </Col>
+                  </Row>
+                ) : (
+                  <></>
+                )}
               </Card>
             )}
           </div>

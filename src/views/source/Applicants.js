@@ -29,6 +29,7 @@ import Cookies from "universal-cookie";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
+import Checkbox from "@mui/material/Checkbox";
 import { RotatingLines } from "react-loader-spinner";
 
 import Header from "components/Headers/Header";
@@ -36,6 +37,7 @@ import * as React from "react";
 import axios from "axios";
 import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
+import { jwtDecode } from "jwt-decode";
 
 const Applicants = () => {
   const [rentalsData, setRentalsData] = useState([]);
@@ -86,6 +88,57 @@ const Applicants = () => {
     setCurrentPage(page);
   };
 
+  const [selectedRentalOwnerData, setSelectedRentalOwnerData] = useState([]);
+  console.log(selectedRentalOwnerData, "selectedRentalOwnerData");
+  const [selectedrentalOwners, setSelectedrentalOwners] = useState([]);
+  const [showRentalOwnerTable, setshowRentalOwnerTable] = useState(false);
+  const [checkedCheckbox, setCheckedCheckbox] = useState();
+  const [rentalownerData, setRentalownerData] = useState([]);
+
+  const handleChange = () => {
+    setshowRentalOwnerTable(!showRentalOwnerTable);
+  };
+
+  const [selectedTenantData, setSelectedTenantData] = useState([]);
+  const [selectedTenants, setSelectedTenants] = useState([]);
+
+  const handleCheckboxChange = (event, tenantInfo, mobileNumber) => {
+    if (checkedCheckbox === mobileNumber) {
+      // If the checkbox is already checked, uncheck it
+      setCheckedCheckbox(null);
+    } else {
+      // Otherwise, check the checkbox
+      setCheckedCheckbox(mobileNumber);
+    }
+
+    // Toggle the selected tenants in the state when their checkboxes are clicked
+    if (event.target.checked) {
+      setSelectedTenants([tenantInfo, ...selectedTenants]);
+      applicantFormik.setValues({
+        tenant_firstName: tenantInfo.tenant_firstName,
+        tenant_lastName: tenantInfo.tenant_lastName || "",
+        tenant_email: tenantInfo.tenant_email || "",
+        tenant_mobileNumber: tenantInfo.tenant_mobileNumber || "",
+        tenant_homeNumber: tenantInfo.tenant_homeNumber || "",
+        tenant_workNumber: tenantInfo.tenant_workNumber || "",
+      });
+      setshowRentalOwnerTable(false);
+      // console.log(tenantInfo.tenant_firstName);
+    } else {
+      setSelectedTenants(
+        selectedTenants.filter((tenant) => tenant !== tenantInfo)
+      );
+      applicantFormik.setValues({
+        tenant_firstName: "",
+        tenant_lastName: "",
+        tenant_email: "",
+        tenant_mobileNumber: "",
+        tenant_homeNumber: "",
+        tenant_workNumber: "",
+      });
+    }
+  };
+
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
     navigate("../Agent");
@@ -93,32 +146,43 @@ const Applicants = () => {
 
   let cookies = new Cookies();
   // Check Authe(token)
-  let chackAuth = async () => {
+  // let chackAuth = async () => {
+  //   if (cookies.get("token")) {
+  //     let authConfig = {
+  //       headers: {
+  //         Authorization: `Bearer ${cookies.get("token")}`,
+  //         token: cookies.get("token"),
+  //       },
+  //     };
+  //     // auth post method
+  //     let res = await axios.post(
+  //       "https://propertymanager.cloudpress.host/api/register/auth",
+  //       { purpose: "validate access" },
+  //       authConfig
+  //     );
+  //     if (res.data.statusCode !== 200) {
+  //       // cookies.remove("token");
+  //       navigate("/auth/login");
+  //     }
+  //   } else {
+  //     navigate("/auth/login");
+  //   }
+  // };
+
+  // React.useEffect(() => {
+  //   chackAuth();
+  // }, [cookies.get("token")]);
+
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   const applicantFormik = useFormik({
     initialValues: {
@@ -146,9 +210,12 @@ const Applicants = () => {
   });
   const handleFormSubmit = (values, action) => {
     axios
-      .post("https://propertymanager.cloudpress.host/api/applicant/applicant", values)
+      .post(
+        "https://propertymanager.cloudpress.host/api/applicant/applicant",
+        values
+      )
       .then((response) => {
-        console.log("Applicant created successfully:", response.data.data._id); 
+        console.log("Applicant created successfully:", response.data.data._id);
         closeModal();
 
         action.resetForm();
@@ -176,6 +243,25 @@ const Applicants = () => {
         } else {
           // Handle error
           console.error("Error:", data.message);
+        }
+      })
+      .catch((error) => {
+        // Handle network error
+        console.error("Network error:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    // Make an HTTP GET request to your Express API endpoint
+    fetch("https://propertymanager.cloudpress.host/api/applicant/applicant")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.statusCode === 200) {
+          setRentalownerData(data.data);
+          // console.log("here is my data", data.data);
+        } else {
+          // Handle error
+          // console.error("Error:", data.message);
         }
       })
       .catch((error) => {
@@ -218,9 +304,12 @@ const Applicants = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/applicant/applicant", {
-            data: { _id: id },
-          })
+          .delete(
+            "https://propertymanager.cloudpress.host/api/applicant/applicant",
+            {
+              data: { _id: id },
+            }
+          )
           .then((response) => {
             if (response.data.statusCode === 200) {
               swal("Success!", "Applicants deleted successfully", "success");
@@ -256,14 +345,17 @@ const Applicants = () => {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
-      const isFirstNameMatch = (tenant.tenant_firstName + " " + tenant.tenant_lastName)
+      const isFirstNameMatch = (
+        tenant.tenant_firstName +
+        " " +
+        tenant.tenant_lastName
+      )
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
       const isEmailMatch = tenant.tenant_email
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-
 
       return isRentalAddressMatch || isFirstNameMatch || isEmailMatch;
     });
@@ -375,58 +467,80 @@ const Applicants = () => {
                     ))}
                   </tbody>
                 </Table>
-                {paginatedData.length > 0 ? <Row>
-                  <Col className="text-right m-3">
-                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
-                      <DropdownToggle caret >
-                        {pageItem}
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem
-                          onClick={() => setPageItem(6)}
+                {paginatedData.length > 0 ? (
+                  <Row>
+                    <Col className="text-right m-3">
+                      <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                        <DropdownToggle caret>{pageItem}</DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(6);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            6
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(12);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            12
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(18);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            18
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-left"
+                          viewBox="0 0 16 16"
                         >
-                          6
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() =>
-                            setPageItem(12)
-                          }
+                          <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                        </svg>
+                      </Button>
+                      <span>
+                        Page {currentPage} of {totalPages}
+                      </span>{" "}
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-right"
+                          viewBox="0 0 16 16"
                         >
-                          12
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => setPageItem(18)}
-                        >
-                          18
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
-                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                      </svg>
-                    </Button>
-                    <span>
-                      Page {currentPage} of {totalPages}
-                    </span>{" "}
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
-                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                      </svg>
-                    </Button>{" "}
-
-                  </Col>
-                </Row> : <></>}
+                          <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                        </svg>
+                      </Button>{" "}
+                    </Col>
+                  </Row>
+                ) : (
+                  <></>
+                )}
               </Card>
             )}
           </div>
@@ -439,247 +553,317 @@ const Applicants = () => {
               toggle={closeModal}
               className="bg-secondary text-white"
             >
-              <strong style={{fontSize:18}}>Add Applicant</strong>
+              <strong style={{ fontSize: 18 }}>Add Applicant</strong>
             </ModalHeader>
 
             <ModalBody>
-              <Row>
-                <Col>
-                  <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-property"
-                  >
-                    First Name *
-                  </label>
-                    <Input
-                      type="text"
-                      id="tenant_firstName"
-                      placeholder="First Name"
-                      name="tenant_firstName"
-                      onBlur={applicantFormik.handleBlur}
-                      onChange={applicantFormik.handleChange}
-                      value={applicantFormik.values.tenant_firstName}
-                    // value={FirstName}
-                    // onChange={(e) => setFirstName(e.target.value)}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col>
-                  <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-property"
-                  >
-                    Last Name *
-                  </label>
-                    <Input
-                      type="text"
-                      id="tenant_lastName"
-                      placeholder="Enter last name"
-                      name="tenant_lastName"
-                      onBlur={applicantFormik.handleBlur}
-                      onChange={applicantFormik.handleChange}
-                      value={applicantFormik.values.tenant_lastName}
-                    // value={lastName}
-                    // onChange={(e) => setLastName(e.target.value)}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-              <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-property"
-                  >
-                    Email *
-                  </label>
-                <InputGroup>
-                  <InputGroupAddon addonType="prepend">
-                    <span className="input-group-text">
-                      <i className="fas fa-envelope"></i>
-                    </span>
-                  </InputGroupAddon>
-                  <Input
-                    type="text"
-                    id="tenant_email"
-                    placeholder="Enter Email"
-                    name="tenant_email"
-                    value={applicantFormik.values.tenant_email}
-                    onBlur={applicantFormik.handleBlur}
-                    onChange={applicantFormik.handleChange}
-                    required
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    paddingTop: "25px",
+                  }}
+                >
+                  <Checkbox
+                    onChange={handleChange}
+                    style={{ marginRight: "10px" }}
+                    checked={showRentalOwnerTable === true}
                   />
-                  
-                </InputGroup>
-              </FormGroup>
-              <div className="mb-3 form-check">
-                <Input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="exampleCheck1"
-                  checked={applicantFormik.values.exampleCheck1}
-                  onChange={applicantFormik.handleChange}
-                  name="exampleCheck1"
-                  value={applicantFormik.values.exampleCheck1}
-                />
-                <Label className="form-check-label" for="exampleCheck1">
-                  email link to online rental application
-                </Label>
+                  <label className="form-control-label">
+                    Choose an existing Applicant
+                  </label>
+                </div>
+                <br />
               </div>
-              <FormGroup>
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-property"
+              {showRentalOwnerTable && (
+                <div className="RentalOwnerTable">
+                  <table
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      border: "1px solid #ddd",
+                    }}
                   >
-                    Mobile Number *
-                  </label>
-                <InputGroup>
-                  <InputGroupAddon addonType="prepend">
-                    <span className="input-group-text">
-                      <i className="fas fa-mobile-alt"></i>
-                    </span>
-                  </InputGroupAddon>
-                  <Input
-                    type="tel" // Use type "tel" for mobile numbers
-                    id="tenant_mobileNumber"
-                    placeholder="Enter Mobile Number"
-                    name="tenant_mobileNumber"
-                    onBlur={applicantFormik.handleBlur}
-                    onChange={applicantFormik.handleChange}
-                    value={applicantFormik.values.tenant_mobileNumber}
-                    onInput={(e) => {
-                      const inputValue = e.target.value;
-                      const numericValue = inputValue.replace(
-                        /\D/g,
-                        ""
-                      ); // Remove non-numeric characters
-                      e.target.value = numericValue;
-                    }}
-                    required
-                  />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup>
-                  <InputGroupAddon addonType="prepend">
-                    <span className="input-group-text">
-                      <i className="fas fa-home"></i>
-                    </span>
-                  </InputGroupAddon>
-                  <Input
-                    type="text"
-                    id="tenant_homeNumber"
-                    placeholder="Enter Home Number"
-                    value={applicantFormik.values.tenant_homeNumber}
-                    onBlur={applicantFormik.handleBlur}
-                    onChange={applicantFormik.handleChange}
-                    onInput={(e) => {
-                      const inputValue = e.target.value;
-                      const numericValue = inputValue.replace(
-                        /\D/g,
-                        ""
-                      ); // Remove non-numeric characters
-                      e.target.value = numericValue;
-                    }}
-                  />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup>
-                  <InputGroupAddon addonType="prepend">
-                    <span className="input-group-text">
-                      <i className="fas fa-fax"></i>
-                    </span>
-                  </InputGroupAddon>
-                  <Input
-                    id="tenant_workNumber"
-                    type="text"
-                    placeholder="Enter Business Number"
-                    value={applicantFormik.values.tenant_workNumber}
-                    onBlur={applicantFormik.handleBlur}
-                    onChange={applicantFormik.handleChange}
-                    onInput={(e) => {
-                      const inputValue = e.target.value;
-                      const numericValue = inputValue.replace(
-                        /\D/g,
-                        ""
-                      ); // Remove non-numeric characters
-                      e.target.value = numericValue;
-                    }}
-                  />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup>
-                  <InputGroupAddon addonType="prepend">
-                    <span className="input-group-text">
-                      <i className="fas fa-fax"></i>
-                    </span>
-                  </InputGroupAddon>
-                  <Input
-                    type="text"
-                    id="tenant_faxPhoneNumber"
-                    placeholder="Enter Telephone Number"
-                    value={applicantFormik.values.tenant_faxPhoneNumber}
-                    onBlur={applicantFormik.handleBlur}
-                    onChange={applicantFormik.handleChange}
-                    onInput={(e) => {
-                      const inputValue = e.target.value;
-                      const numericValue = inputValue.replace(
-                        /\D/g,
-                        ""
-                      ); // Remove non-numeric characters
-                      e.target.value = numericValue;
-                    }}
-                  />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-              
-                  <label
-                    className="form-control-label"
-                    htmlFor="input-property"
-                  >
-                    Property *
-                  </label>
-                  {/* {console.log(propertyData, "propertyData")} */}
-                  <FormGroup>
-                    <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
-                      <DropdownToggle caret style={{ width: "100%" }}>
-                        {selectedPropertyType
-                          ? selectedPropertyType
-                          : "Select Property"}
-                      </DropdownToggle>
-                      <DropdownMenu
-                        style={{
-                          width: "100%",
-                          maxHeight: "200px",
-                          overflowY: "auto",
-                        }}
-                      >
-                        <DropdownItem value="">Select</DropdownItem>
-                        {propertyData.map((property) => (
-                          <DropdownItem
-                            key={property._id}
-                            onClick={() => handlePropertyTypeSelect(property.rental_adress)}
+                    <thead>
+                      <tr>
+                        <th>Applicant Name</th>
+                        <th>Select</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.isArray(rentalownerData) &&
+                        rentalownerData?.map((tenant, index) => (
+                          <tr
+                            key={index}
+                            style={{
+                              border: "1px solid #ddd",
+                            }}
                           >
-                            {property.rental_adress}
-                          </DropdownItem>
+                            <td>
+                              {tenant.tenant_firstName}&nbsp;
+                              {tenant.tenant_lastName}
+                            </td>
+                            <td>
+                              {/* <FormControlLabel
+                                                          control={  */}
+                              <Checkbox
+                                type="checkbox"
+                                name="tenant"
+                                id={tenant.tenant_mobileNumber}
+                                checked={
+                                  tenant.tenant_mobileNumber === checkedCheckbox
+                                }
+                                onChange={(event) => {
+                                  setCheckedCheckbox(
+                                    tenant.tenant_mobileNumber
+                                  );
+                                  // const tenantInfo = `${tenant.tenant_firstName ||
+                                  //   ""
+                                  //   } ${tenant.tenant_lastName ||
+                                  //   ""
+                                  //   } ${tenant.tenant_mobileNumber ||
+                                  //   ""
+                                  //   } ${tenant.tenant_email ||
+                                  //   ""
+                                  //   }`;
+                                  const tenantInfo = {
+                                    tenant_mobileNumber:
+                                      tenant.tenant_mobileNumber,
+                                    tenant_firstName: tenant.tenant_firstName,
+                                    tenant_lastName: tenant.tenant_lastName,
+                                    tenant_homeNumber: tenant.tenant_homeNumber,
+                                    tenant_email: tenant.tenant_email,
+                                    tenant_workNumber: tenant.tenant_workNumber,
+                                  };
+                                  handleCheckboxChange(
+                                    event,
+                                    tenantInfo,
+                                    tenant.tenant_mobileNumber
+                                  );
+                                }}
+                              />
+                            </td>
+                          </tr>
                         ))}
-                      </DropdownMenu>
-                      {applicantFormik.errors &&
-                              applicantFormik.errors?.rental_adress &&
-                              applicantFormik.touched &&
-                              applicantFormik.touched?.rental_adress && applicantFormik.values.rental_adress==="" ? (
-                                <div style={{ color: "red" }}>
-                                  {applicantFormik.errors.rental_adress}
-                                </div>
-                              ) : null}
-                    </Dropdown>
+                    </tbody>
+                  </table>
+                  <br />
+                </div>
+              )}
+              {!showRentalOwnerTable && (
+                <div>
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          First Name *
+                        </label>
+                        <Input
+                          type="text"
+                          id="tenant_firstName"
+                          placeholder="First Name"
+                          name="tenant_firstName"
+                          onBlur={applicantFormik.handleBlur}
+                          onChange={applicantFormik.handleChange}
+                          value={applicantFormik.values.tenant_firstName}
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Last Name *
+                        </label>
+                        <Input
+                          type="text"
+                          id="tenant_lastName"
+                          placeholder="Enter last name"
+                          name="tenant_lastName"
+                          onBlur={applicantFormik.handleBlur}
+                          onChange={applicantFormik.handleChange}
+                          value={applicantFormik.values.tenant_lastName}
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-property"
+                    >
+                      Email *
+                    </label>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-envelope"></i>
+                        </span>
+                      </InputGroupAddon>
+                      <Input
+                        type="text"
+                        id="tenant_email"
+                        placeholder="Enter Email"
+                        name="tenant_email"
+                        value={applicantFormik.values.tenant_email}
+                        onBlur={applicantFormik.handleBlur}
+                        onChange={applicantFormik.handleChange}
+                        required
+                      />
+                    </InputGroup>
                   </FormGroup>
-              
-              </FormGroup>
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-property"
+                    >
+                      Mobile Number *
+                    </label>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-mobile-alt"></i>
+                        </span>
+                      </InputGroupAddon>
+                      <Input
+                        type="tel" // Use type "tel" for mobile numbers
+                        id="tenant_mobileNumber"
+                        placeholder="Enter Mobile Number"
+                        name="tenant_mobileNumber"
+                        onBlur={applicantFormik.handleBlur}
+                        onChange={applicantFormik.handleChange}
+                        value={applicantFormik.values.tenant_mobileNumber}
+                        onInput={(e) => {
+                          const inputValue = e.target.value;
+                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                          e.target.value = numericValue;
+                        }}
+                        required
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-home"></i>
+                        </span>
+                      </InputGroupAddon>
+                      <Input
+                        type="text"
+                        id="tenant_homeNumber"
+                        placeholder="Enter Home Number"
+                        value={applicantFormik.values.tenant_homeNumber}
+                        onBlur={applicantFormik.handleBlur}
+                        onChange={applicantFormik.handleChange}
+                        onInput={(e) => {
+                          const inputValue = e.target.value;
+                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                          e.target.value = numericValue;
+                        }}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-fax"></i>
+                        </span>
+                      </InputGroupAddon>
+                      <Input
+                        id="tenant_workNumber"
+                        type="text"
+                        placeholder="Enter Business Number"
+                        value={applicantFormik.values.tenant_workNumber}
+                        onBlur={applicantFormik.handleBlur}
+                        onChange={applicantFormik.handleChange}
+                        onInput={(e) => {
+                          const inputValue = e.target.value;
+                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                          e.target.value = numericValue;
+                        }}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-fax"></i>
+                        </span>
+                      </InputGroupAddon>
+                      <Input
+                        type="text"
+                        id="tenant_faxPhoneNumber"
+                        placeholder="Enter Telephone Number"
+                        value={applicantFormik.values.tenant_faxPhoneNumber}
+                        onBlur={applicantFormik.handleBlur}
+                        onChange={applicantFormik.handleChange}
+                        onInput={(e) => {
+                          const inputValue = e.target.value;
+                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                          e.target.value = numericValue;
+                        }}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-property"
+                    >
+                      Property *
+                    </label>
+                    {/* {console.log(propertyData, "propertyData")} */}
+                    <FormGroup>
+                      <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
+                        <DropdownToggle caret style={{ width: "100%" }}>
+                          {selectedPropertyType
+                            ? selectedPropertyType
+                            : "Select Property"}
+                        </DropdownToggle>
+                        <DropdownMenu
+                          style={{
+                            width: "100%",
+                            maxHeight: "200px",
+                            overflowY: "auto",
+                          }}
+                        >
+                          <DropdownItem value="">Select</DropdownItem>
+                          {propertyData.map((property) => (
+                            <DropdownItem
+                              key={property._id}
+                              onClick={() =>
+                                handlePropertyTypeSelect(property.rental_adress)
+                              }
+                            >
+                              {property.rental_adress}
+                            </DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                        {applicantFormik.errors &&
+                        applicantFormik.errors?.rental_adress &&
+                        applicantFormik.touched &&
+                        applicantFormik.touched?.rental_adress &&
+                        applicantFormik.values.rental_adress === "" ? (
+                          <div style={{ color: "red" }}>
+                            {applicantFormik.errors.rental_adress}
+                          </div>
+                        ) : null}
+                      </Dropdown>
+                    </FormGroup>
+                  </FormGroup>
+                </div>
+              )}
             </ModalBody>
             <ModalFooter>
               <Button color="success" type="submit">

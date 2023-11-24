@@ -33,6 +33,7 @@ import { BedSharp, Clear, Image } from "@mui/icons-material";
 import { OpenImageDialog } from "components/OpenImageDialog";
 import { useFormik } from "formik";
 import moment from "moment";
+import { jwtDecode } from "jwt-decode";
 
 const style = {
   position: "absolute",
@@ -60,7 +61,7 @@ const PropDetails = () => {
       setpropertyDetails(response.data.data);
       console.log(response.data.data, "response frirn simmary");
       const matchedProperty = response.data.data.entries.find(
-        (property) => property.entryIndex === entryIndex
+        (property) => property._id === entryIndex
       );
       setMatchedProperty(matchedProperty);
       console.log(matchedProperty, `matched property`);
@@ -76,35 +77,17 @@ const PropDetails = () => {
     getRentalsData();
     console.log(id);
   }, [id]);
+ let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
 
-  let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   // const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");

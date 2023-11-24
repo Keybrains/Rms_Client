@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
+import Cookies from "universal-cookie";
 import swal from "sweetalert";
 import {
   Button,
@@ -29,6 +30,7 @@ import AddGenralLedgerHeader from "components/Headers/AddGenralLedgerHeader";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CloseIcon from "@mui/icons-material/Close";
+import { jwtDecode } from "jwt-decode";
 
 const AddGeneralLedger = () => {
   const [selectedProp, setSelectedProp] = useState("Select");
@@ -42,6 +44,18 @@ const AddGeneralLedger = () => {
   const [prodropdownOpen, setproDropdownOpen] = useState(false);
 
   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
+
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
   const generalledgerFormik = useFormik({
     initialValues: {
@@ -122,14 +136,14 @@ const AddGeneralLedger = () => {
       entries: updatedEntries,
     });
   };
-  
+
   useEffect(() => {
     fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
           setPropertyData(data.data);
-          console.log(data.data)
+          console.log(data.data);
         } else {
           console.error("Error:", data.message);
         }
@@ -140,7 +154,9 @@ const AddGeneralLedger = () => {
   }, []);
 
   useEffect(() => {
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -167,8 +183,8 @@ const AddGeneralLedger = () => {
   });
   const handleSubmit = async (values) => {
     const arrayOfNames = Array.isArray(file)
-    ? file.map((item) => item.name)
-    : [];
+      ? file.map((item) => item.name)
+      : [];
     try {
       const updatedValues = {
         date: values.date,
@@ -363,27 +379,23 @@ const AddGeneralLedger = () => {
                               </DropdownItem>
                             ))}
                           </DropdownMenu> */}
-                           <DropdownMenu
-                                style={{
-                                  width: "100%",
-                                  maxHeight: "200px",
-                                  overflowY: "auto",
-                                  overflowX: "hidden",
-                                }}
+                          <DropdownMenu
+                            style={{
+                              width: "100%",
+                              maxHeight: "200px",
+                              overflowY: "auto",
+                              overflowX: "hidden",
+                            }}
+                          >
+                            {propertyData.map((property) => (
+                              <DropdownItem
+                                key={property}
+                                onClick={() => handlePropSelection(property)}
                               >
-                                {propertyData.map((property) => (
-                                  <DropdownItem
-                                    key={property}
-                                    onClick={() =>
-                                      handlePropSelection(
-                                        property
-                                      )
-                                    }
-                                  >
-                                    {property}
-                                  </DropdownItem>
-                                ))}
-                              </DropdownMenu>
+                                {property}
+                              </DropdownItem>
+                            ))}
+                          </DropdownMenu>
                         </Dropdown>
                       </FormGroup>
                     </Col>

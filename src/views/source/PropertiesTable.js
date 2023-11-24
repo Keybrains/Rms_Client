@@ -4,6 +4,7 @@ import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
+import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
 
 import {
@@ -39,44 +40,27 @@ const PropertiesTables = () => {
     const propDetailsURL = `/admin/PropDetails/${rentalId}/${entryIndex}`;
     window.location.href = propDetailsURL;
   };
+ let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
 
-  let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/rentals/rental"
+        "https://propertymanager.cloudpress.host/api/rentals/rental"
       );
       console.log(response.data.data);
 
       setRentalsData(response.data.data);
+      setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setLoader(false);
     } catch (error) {
       console.error("Error fetching rental data:", error);
@@ -104,7 +88,6 @@ const PropertiesTables = () => {
                 "Rental property deleted successfully!",
                 "success"
               );
-              setTotalPages(Math.ceil(response.data.data.length / pageItem));
               getRentalsData(); // Refresh your rentals data or perform other actions
             } else if (response.data.statusCode === 201) {
               swal(
@@ -112,7 +95,6 @@ const PropertiesTables = () => {
                 "Property already assigned to Tenant!",
                 "warning"
               );
-              setTotalPages(Math.ceil(response.data.data.length / pageItem));
               getRentalsData();
             } else {
               swal("", response.data.message, "error");
@@ -141,7 +123,6 @@ const PropertiesTables = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
 
   const editProperty = (id, propertyIndex) => {
     navigate(`/admin/rentals/${id}/${propertyIndex}`);
@@ -226,21 +207,40 @@ const PropertiesTables = () => {
     //   );
     // });
     return paginatedData.filter((tenant) => {
-      const name = tenant.rentalOwner_firstName + " " + tenant.rentalOwner_lastName;
-      const add = tenant.entries.rental_city + " " + tenant.entries.rental_country;
-      console.log(tenant)
-      return tenant.entries.rental_adress.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.entries.property_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.entries.rental_city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.entries.rental_country.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.rentalOwner_firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.rentalOwner_lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.rentalOwner_companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.rentalOwner_primaryEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const name =
+        tenant.rentalOwner_firstName + " " + tenant.rentalOwner_lastName;
+      const add =
+        tenant.entries.rental_city + " " + tenant.entries.rental_country;
+      console.log(tenant);
+      return (
+        tenant.entries.rental_adress
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        tenant.entries.property_type
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        tenant.entries.rental_city
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        tenant.entries.rental_country
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        tenant.rentalOwner_firstName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        tenant.rentalOwner_lastName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        tenant.rentalOwner_companyName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        tenant.rentalOwner_primaryEmail
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
         name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         add.toLowerCase().includes(searchQuery.toLowerCase())
-    }
-    )
+      );
+    });
   };
   console.log(filterRentalsBySearch(), "filterasdadasdasdasdasda");
 
@@ -378,7 +378,10 @@ const PropertiesTables = () => {
                         >
                           <td>{tenant.entries.rental_adress}</td>
                           <td>{tenant.entries.property_type}</td>
-                          <td>{tenant.rentalOwner_firstName} {tenant.rentalOwner_lastName}</td>
+                          <td>
+                            {tenant.rentalOwner_firstName}{" "}
+                            {tenant.rentalOwner_lastName}
+                          </td>
                           <td>{tenant.rentalOwner_companyName}</td>
                           <td>{`${tenant.entries.rental_city}, ${tenant.entries.rental_country}`}</td>
                           <td>{tenant.rentalOwner_primaryEmail}</td>
@@ -391,7 +394,10 @@ const PropertiesTables = () => {
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  deleteRentals(tenant._id, tenant.entries.entryIndex);
+                                  deleteRentals(
+                                    tenant._id,
+                                    tenant.entries.entryIndex
+                                  );
                                   // console.log(entry.entryIndex,"dsgdg")
                                 }}
                               >
@@ -401,7 +407,10 @@ const PropertiesTables = () => {
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  editProperty(tenant._id, tenant.entries.entryIndex);
+                                  editProperty(
+                                    tenant._id,
+                                    tenant.entries.entryIndex
+                                  );
                                 }}
                               >
                                 <EditIcon />
@@ -457,58 +466,80 @@ const PropertiesTables = () => {
                     ))}
                   </tbody>
                 </Table>
-                {paginatedData.length > 0 ? <Row>
-                  <Col className="text-right m-3">
-                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
-                      <DropdownToggle caret >
-                        {pageItem}
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem
-                          onClick={() => setPageItem(6)}
+                {paginatedData.length > 0 ? (
+                  <Row>
+                    <Col className="text-right m-3">
+                      <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                        <DropdownToggle caret>{pageItem}</DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(6);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            6
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(12);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            12
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(18);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            18
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-left"
+                          viewBox="0 0 16 16"
                         >
-                          6
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() =>
-                            setPageItem(12)
-                          }
+                          <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                        </svg>
+                      </Button>
+                      <span>
+                        Page {currentPage} of {totalPages}
+                      </span>{" "}
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-right"
+                          viewBox="0 0 16 16"
                         >
-                          12
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => setPageItem(18)}
-                        >
-                          18
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
-                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                      </svg>
-                    </Button>
-                    <span>
-                      Page {currentPage} of {totalPages}
-                    </span>{" "}
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
-                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                      </svg>
-                    </Button>{" "}
-
-                  </Col>
-                </Row> : <></>}
+                          <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                        </svg>
+                      </Button>{" "}
+                    </Col>
+                  </Row>
+                ) : (
+                  <></>
+                )}
               </Card>
             )}
           </div>

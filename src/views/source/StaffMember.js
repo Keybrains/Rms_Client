@@ -17,7 +17,7 @@ import {
   DropdownItem,
 } from "reactstrap";
 import Header from "components/Headers/Header";
-import React from 'react';
+import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -29,7 +29,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { RotatingLines } from "react-loader-spinner";
-import Cookies from 'universal-cookie';
+import { jwtDecode } from "jwt-decode";
+import Cookies from "universal-cookie";
 
 const StaffMember = () => {
   const { id } = useParams();
@@ -58,35 +59,17 @@ const StaffMember = () => {
     setEditDialogOpen(false);
     setEditingStaffMember(null);
   };
+ let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
 
-  let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   const getStaffMemberData = async () => {
     try {
@@ -123,8 +106,8 @@ const StaffMember = () => {
     }
   };
 
-  console.log(StaffMemberData, "hii")
-  console.log("object")
+  console.log(StaffMemberData, "hii");
+  console.log("object");
 
   // Delete selected
   const deleteStaffMember = (id) => {
@@ -137,23 +120,31 @@ const StaffMember = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/addstaffmember/delete_staffmember", {
-            data: { _id: id },
-          })
+          .delete(
+            "https://propertymanager.cloudpress.host/api/addstaffmember/delete_staffmember",
+            {
+              data: { _id: id },
+            }
+          )
           .then((response) => {
             if (response.data.statusCode === 200) {
               swal("Success!", "Staff Member deleted successfully!", "success");
               getStaffMemberData();
-            }
-            else if (response.data.statusCode === 201) {
-              swal("Warning!", "Staff Member already assigned to workorder!", "warning");
+            } else if (response.data.statusCode === 201) {
+              swal(
+                "Warning!",
+                "Staff Member already assigned to workorder!",
+                "warning"
+              );
               getStaffMemberData();
-            }
-            else if (response.data.statusCode === 202) {
-              swal("Warning!", "Staff Member already assigned to property!", "warning");
+            } else if (response.data.statusCode === 202) {
+              swal(
+                "Warning!",
+                "Staff Member already assigned to property!",
+                "warning"
+              );
               getStaffMemberData();
-            }
-            else {
+            } else {
               swal("Error", response.data.message, "error");
             }
           })
@@ -202,7 +193,8 @@ const StaffMember = () => {
     }
 
     return paginatedData.filter((staff) => {
-      const isNameMatch = staff.staffmember_name.toLowerCase()
+      const isNameMatch = staff.staffmember_name
+        .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
       const isDesignationMatch = staff.staffmember_designation
@@ -221,9 +213,7 @@ const StaffMember = () => {
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
-              <h1 style={{ color: 'white' }}>
-                Staff Member
-              </h1>
+              <h1 style={{ color: "white" }}>Staff Member</h1>
             </FormGroup>
           </Col>
 
@@ -238,7 +228,8 @@ const StaffMember = () => {
               Add New Staff Member
             </Button>
           </Col>
-        </Row><br />
+        </Row>
+        <br />
         {/* Table */}
         <Row>
           <div className="col">
@@ -275,7 +266,6 @@ const StaffMember = () => {
                   </Row>
                 </CardHeader>
 
-
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
@@ -295,13 +285,13 @@ const StaffMember = () => {
                         <td>{staff.staffmember_email}</td>
                         <td>
                           <div style={{ display: "flex" }}>
-
                             <div
                               style={{ cursor: "pointer" }}
                               onClick={() => deleteStaffMember(staff._id)}
                             >
                               <DeleteIcon />
-                            </div>&nbsp; &nbsp; &nbsp;
+                            </div>
+                            &nbsp; &nbsp; &nbsp;
                             <div
                               style={{ cursor: "pointer" }}
                               onClick={() => editStaffMember(staff._id)}
@@ -314,59 +304,82 @@ const StaffMember = () => {
                     ))}
                   </tbody>
                 </Table>
-                {paginatedData.length > 0 ? <Row>
-                  <Col className="text-right m-3">
-                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
-                      <DropdownToggle caret >
-                        {pageItem}
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem
-                          onClick={() => setPageItem(6)}
+                {paginatedData.length > 0 ? (
+                  <Row>
+                    <Col className="text-right m-3">
+                      <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                        <DropdownToggle caret>{pageItem}</DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(6);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            6
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(12);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            12
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(18);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            18
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-left"
+                          viewBox="0 0 16 16"
                         >
-                          6
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() =>
-                            setPageItem(12)
-                          }
+                          <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                        </svg>
+                      </Button>
+                      <span>
+                        Page {currentPage} of {totalPages}
+                      </span>{" "}
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-right"
+                          viewBox="0 0 16 16"
                         >
-                          12
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => setPageItem(18)}
-                        >
-                          18
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
-                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                      </svg>
-                    </Button>
-                    <span>
-                      Page {currentPage} of {totalPages}
-                    </span>{" "}
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
-                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                      </svg>
-                    </Button>{" "}
-
-                  </Col>
-                </Row> : <></>}
-              </Card>)}
+                          <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                        </svg>
+                      </Button>{" "}
+                    </Col>
+                  </Row>
+                ) : (
+                  <></>
+                )}
+              </Card>
+            )}
           </div>
         </Row>
       </Container>
@@ -376,9 +389,9 @@ const StaffMember = () => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle style={{ background: "#F0F8FF" }}>Update</DialogTitle><br />
+        <DialogTitle style={{ background: "#F0F8FF" }}>Update</DialogTitle>
+        <br />
         <DialogContent style={{ width: "100%", maxWidth: "500px" }}>
-
           <FormGroup>
             <label className="form-control-label" htmlFor="input-property">
               What is the name of new staff member?
@@ -399,9 +412,9 @@ const StaffMember = () => {
                 }));
               }}
             />
-
-
-          </FormGroup><br /><br />
+          </FormGroup>
+          <br />
+          <br />
 
           <FormGroup>
             <label className="form-control-label" htmlFor="input-property">
