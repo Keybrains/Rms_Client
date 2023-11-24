@@ -31,6 +31,7 @@ const TenantProfile = () => {
   let cookies = new Cookies();
   let cookie_id = cookies.get("Tenant ID");
   let cookie_email = cookies.get("Tenant email");
+  const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
     if (cookies.get("token")) {
@@ -80,7 +81,9 @@ const TenantProfile = () => {
 
   useEffect(() => {
     getTenantData1();
-    console.log(`https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`);
+    console.log(
+      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
+    );
   }, [id]);
 
   function formatDateWithoutTime(dateString) {
@@ -165,7 +168,9 @@ const TenantProfile = () => {
                             <td class="font-weight-bold text-md">
                               Property Type:
                             </td>
-                            <td>{tenantDetails.entries.rental_adress || "N/A"}</td>
+                            <td>
+                              {tenantDetails.entries.rental_adress || "N/A"}
+                            </td>
                           </tr>
                           <tr>
                             <td class="font-weight-bold text-md">
@@ -186,8 +191,9 @@ const TenantProfile = () => {
                           <tr>
                             <td class="font-weight-bold text-md">End Date:</td>
                             <td>
-                              {formatDateWithoutTime(tenantDetails.entries.end_date) ||
-                                "N/A"}
+                              {formatDateWithoutTime(
+                                tenantDetails.entries.end_date
+                              ) || "N/A"}
                             </td>
                           </tr>
                           <tr>
@@ -210,12 +216,19 @@ const TenantProfile = () => {
                             <td class="font-weight-bold text-md">
                               Next Due Date:
                             </td>
-                            <td>{formatDateWithoutTime(tenantDetails.entries.nextDue_date) ||
-                              "N/A"}</td>
+                            <td>
+                              {formatDateWithoutTime(
+                                tenantDetails.entries.nextDue_date
+                              ) || "N/A"}
+                            </td>
                           </tr>
                           <tr>
-                            <td class="font-weight-bold text-md">Uploaded Files:</td>
-                            <td>{tenantDetails.entries.upload_file || "N/A"}</td>
+                            <td class="font-weight-bold text-md">
+                              Uploaded Files:
+                            </td>
+                            <td>
+                              {tenantDetails.entries.upload_file || "N/A"}
+                            </td>
                           </tr>
                         </tbody>
                       </>

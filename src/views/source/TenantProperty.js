@@ -31,6 +31,7 @@ const TenantProperty = () => {
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
+  let cookie_id = cookies.get("Tenant ID");
 
   React.useEffect(() => {
     if (cookies.get("token")) {
@@ -113,7 +114,7 @@ const TenantProperty = () => {
       <Container className="mt--6 ml--10" fluid>
         <Row>
           <div className="col">
-            <Card className="shadow" >
+            <Card className="shadow">
               <CardHeader className="border-0">
                 <h1 className="mb-0">Ledger</h1>
               </CardHeader>
@@ -123,12 +124,12 @@ const TenantProperty = () => {
                     <Table
                       className="align-items-center table-flush"
                       responsive
-                    // style={{
-                    //   width: "100%",
-                    //   border: "1px solid #e5e5e5",
-                    //   borderRadius: "8px",
-                    //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    // }}
+                      // style={{
+                      //   width: "100%",
+                      //   border: "1px solid #e5e5e5",
+                      //   borderRadius: "8px",
+                      //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                      // }}
                     >
                       <thead className="thead-light">
                         <tr>
@@ -167,10 +168,8 @@ const TenantProperty = () => {
                         ))}
                       </tbody>
                     </Table>
-
                   </>
                 </div>
-
               ) : (
                 <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                   <RotatingLines

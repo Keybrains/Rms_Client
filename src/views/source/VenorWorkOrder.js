@@ -28,6 +28,7 @@ const VenorWorkOrder = () => {
   const navigate = useNavigate();
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
+  let cookie_id = cookies.get("Vendor ID");
 
   React.useEffect(() => {
     if (cookies.get("token")) {
