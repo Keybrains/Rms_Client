@@ -65,7 +65,7 @@ const TenantsTable = ({ tenantDetails }) => {
     setCurrentPage(page);
   };
  let cookies = new Cookies();
-  const [accessType, setAccessType] = useState(null);
+  const [accessType, setAccessType] = React.useState(null);
 
   React.useEffect(() => {
     if (cookies.get("token")) {
