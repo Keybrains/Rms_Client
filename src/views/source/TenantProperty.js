@@ -16,6 +16,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
 
 const TenantProperty = () => {
@@ -29,38 +30,16 @@ const TenantProperty = () => {
   // console.log(id, tenantDetails);
 
   let cookies = new Cookies();
-  let cookie_id = cookies.get("Tenant ID");
-  //let cookie_email = cookies.get("Tenant email");
-  // let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
-    if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
-    } else {
-      if (!cookies.get("token")) {
-        navigate("/auth/login");
-      }
-    }
-  };
+  const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
   const getTenantData = async () => {
     try {

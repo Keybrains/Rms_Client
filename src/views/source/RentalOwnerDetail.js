@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "components/Headers/Header";
-import Cookies from 'universal-cookie';
+import Cookies from "universal-cookie";
 import {
   Card,
   CardHeader,
@@ -13,6 +13,7 @@ import {
   Table,
   Button,
 } from "reactstrap";
+import { jwtDecode } from "jwt-decode";
 
 const RentalOwnerDetail = () => {
   const { id } = useParams();
@@ -23,33 +24,16 @@ const RentalOwnerDetail = () => {
   let navigate = useNavigate();
 
   let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let  authConfig = {
-        headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post method
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
       navigate("/auth/login");
     }
-  } else {
-    navigate("/auth/login");
-  }
-};
-
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
+  }, [navigate]);
 
   const getRentalOwnerData = async () => {
     try {
@@ -155,7 +139,8 @@ React.useEffect(() => {
                             Company Name:
                           </td>
                           <td>
-                            {rentalOwnerDetails.rentalOwner_companyName || "N/A"}
+                            {rentalOwnerDetails.rentalOwner_companyName ||
+                              "N/A"}
                           </td>
                         </tr>
                         <tr>
@@ -207,7 +192,8 @@ React.useEffect(() => {
                             Primary Email:
                           </td>
                           <td>
-                            {rentalOwnerDetails.rentalOwner_primaryEmail || "N/A"}
+                            {rentalOwnerDetails.rentalOwner_primaryEmail ||
+                              "N/A"}
                           </td>
                         </tr>
                         <tr>
@@ -215,7 +201,8 @@ React.useEffect(() => {
                             Alternat Email:
                           </td>
                           <td>
-                            {rentalOwnerDetails.rentalOwner_alternateEmail || "N/A"}
+                            {rentalOwnerDetails.rentalOwner_alternateEmail ||
+                              "N/A"}
                           </td>
                         </tr>
                         <tr>
@@ -223,7 +210,8 @@ React.useEffect(() => {
                             Phone Number:
                           </td>
                           <td>
-                            {rentalOwnerDetails.rentalOwner_phoneNumber || "N/A"}
+                            {rentalOwnerDetails.rentalOwner_phoneNumber ||
+                              "N/A"}
                           </td>
                         </tr>
                         <tr>
@@ -239,7 +227,8 @@ React.useEffect(() => {
                             Business Number:
                           </td>
                           <td>
-                            {rentalOwnerDetails.rentalOwner_businessNumber || "N/A"}
+                            {rentalOwnerDetails.rentalOwner_businessNumber ||
+                              "N/A"}
                           </td>
                         </tr>
                         <tr>
@@ -247,7 +236,8 @@ React.useEffect(() => {
                             Telephone Number:
                           </td>
                           <td>
-                            {rentalOwnerDetails.rentalOwner_telephoneNumber || "N/A"}
+                            {rentalOwnerDetails.rentalOwner_telephoneNumber ||
+                              "N/A"}
                           </td>
                         </tr>
                         <tr>
@@ -255,21 +245,18 @@ React.useEffect(() => {
                             Street Address:
                           </td>
                           <td>
-                            {rentalOwnerDetails.rentalOwner_streetAdress || "N/A"}
+                            {rentalOwnerDetails.rentalOwner_streetAdress ||
+                              "N/A"}
                           </td>
                         </tr>
                         <tr>
-                          <td className="font-weight-bold text-md">
-                            City:
-                          </td>
+                          <td className="font-weight-bold text-md">City:</td>
                           <td>
                             {rentalOwnerDetails.rentalOwner_city || "N/A"}
                           </td>
                         </tr>
                         <tr>
-                          <td className="font-weight-bold text-md">
-                            State:
-                          </td>
+                          <td className="font-weight-bold text-md">State:</td>
                           <td>
                             {rentalOwnerDetails.rentalOwner_state || "N/A"}
                           </td>
@@ -278,14 +265,10 @@ React.useEffect(() => {
                           <td className="font-weight-bold text-md">
                             Zip Code:
                           </td>
-                          <td>
-                            {rentalOwnerDetails.rentalOwner_zip || "N/A"}
-                          </td>
+                          <td>{rentalOwnerDetails.rentalOwner_zip || "N/A"}</td>
                         </tr>
                         <tr>
-                          <td className="font-weight-bold text-md">
-                            Country:
-                          </td>
+                          <td className="font-weight-bold text-md">Country:</td>
                           <td>
                             {rentalOwnerDetails.rentalOwner_country || "N/A"}
                           </td>
@@ -318,9 +301,7 @@ React.useEffect(() => {
                           <td className="font-weight-bold text-md">
                             Text Payer Id:
                           </td>
-                          <td>
-                            {rentalOwnerDetails.textpayer_id || "N/A"}
-                          </td>
+                          <td>{rentalOwnerDetails.textpayer_id || "N/A"}</td>
                         </tr>
                       </tbody>
                     </>

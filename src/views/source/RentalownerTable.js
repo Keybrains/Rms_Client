@@ -11,6 +11,7 @@ import {
   Input,
   FormGroup,
 } from "reactstrap";
+import { jwtDecode } from "jwt-decode";
 import {
   TextField,
   Dialog,
@@ -20,6 +21,7 @@ import {
   Grid,
   InputLabel,
 } from "@mui/material";
+import Cookies from "universal-cookie";
 import Header from "components/Headers/Header";
 import axios from "axios";
 import EditIcon from "@mui/icons-material/Edit";
@@ -30,7 +32,6 @@ import { Link } from "react-router-dom";
 import InfoIcon from "@mui/icons-material/Info";
 import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
-import Cookies from 'universal-cookie';
 
 const RentalownerTable = () => {
   const [rentalsData, setRentalsData] = useState([]);
@@ -49,35 +50,17 @@ const RentalownerTable = () => {
   const [searchQuery, setSearchQuery] = useState("");
   let navigate = useNavigate();
 
-
   let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let  authConfig = {
-        headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post method
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
       navigate("/auth/login");
     }
-  } else {
-    navigate("/auth/login");
-  }
-};
-
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
+  }, [navigate]);
 
   const fetchRentalsData = async () => {
     try {
@@ -149,9 +132,12 @@ React.useEffect(() => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/rentalowner/delete_rentalowner", {
-            data: { _id: id },
-          })
+          .delete(
+            "https://propertymanager.cloudpress.host/api/rentalowner/delete_rentalowner",
+            {
+              data: { _id: id },
+            }
+          )
           .then((response) => {
             if (response.data.statusCode === 200) {
               fetchRentalsData();

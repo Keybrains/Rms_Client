@@ -34,6 +34,7 @@ import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import MailIcon from "@mui/icons-material/Mail";
 import HomeIcon from "@mui/icons-material/Home";
+import { jwtDecode } from "jwt-decode";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -244,39 +245,18 @@ const RentRollDetail = () => {
       }
     }
   }, [rental]);
-  let cookies = new Cookies();
 
-  // Check Authentication (token)
-  const checkAuth = async () => {
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      try {
-        // Authentication post method
-        const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/register/auth",
-          { purpose: "validate access" },
-          authConfig
-        );
-        if (res.data.statusCode !== 200) {
-          navigate("/auth/login");
-        }
-      } catch (error) {
-        console.error("Error validating access:", error);
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  useEffect(() => {
-    checkAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
@@ -309,9 +289,10 @@ const RentRollDetail = () => {
   const calculateBalance = (data) => {
     let balance = 0;
 
+    console.log(data);
     for (let i = data.length - 1; i >= 0; i--) {
       const currentEntry = data[i];
-     
+
       if (currentEntry.type === "Charge") {
         balance += currentEntry.charges_amount;
       } else if (currentEntry.type === "Payment") {
@@ -334,9 +315,10 @@ const RentRollDetail = () => {
 
       if (response.data && response.data.data) {
         const mergedData = response.data.data;
+        // console.log(mergedData)
         mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
         const dataWithBalance = calculateBalance(mergedData);
-        
+
         setGeneralLedgerData(dataWithBalance);
       } else {
         console.error("Unexpected response format:", response.data);
@@ -349,8 +331,6 @@ const RentRollDetail = () => {
   useEffect(() => {
     getGeneralLedgerData();
   }, [tenantId]);
-
-
 
   const deleteCharge = (chargeId, chargeIndex) => {
     swal({
@@ -1167,11 +1147,17 @@ const RentRollDetail = () => {
                                                   : "-"}
                                               </td>
                                               <td>
-                                                {console.log("first", generalledger.balance)}
-                                                {generalledger.balance !== undefined
+                                                {console.log(
+                                                  "first",
+                                                  generalledger.balance
+                                                )}
+                                                {generalledger.balance !==
+                                                undefined
                                                   ? generalledger.balance >= 0
-                                                  ? generalledger.balance
-                                                  : `$(${Math.abs(generalledger.balance)})`
+                                                    ? `$${generalledger.balance}`
+                                                    : `$(${Math.abs(
+                                                        generalledger.balance
+                                                      )})`
                                                   : "0"}
                                                 {/* {calculateBalance(
                                                   generalledger.type,
@@ -1215,7 +1201,7 @@ const RentRollDetail = () => {
                                                       <DeleteIcon />
                                                     </div>
                                                   )}
-                                                  
+
                                                   {generalledger.type ===
                                                     "Charge" && (
                                                     <div
@@ -1226,10 +1212,8 @@ const RentRollDetail = () => {
                                                         e.stopPropagation();
                                                         editcharge(
                                                           generalledger._id,
-                                                          entry.chargeIndex,
-                                                         
+                                                          entry.chargeIndex
                                                         );
-                                                        
                                                       }}
                                                     >
                                                       <EditIcon />

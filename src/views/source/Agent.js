@@ -30,41 +30,25 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
+
 
 const Agent = () => {
   const { id } = useParams();
   let [AgentData, setAgentData] = useState();
   let [loader, setLoader] = React.useState(true);
   let navigate = useNavigate();
+ let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
 
-  let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   // Delete selected
   const deleteAgent = (id) => {

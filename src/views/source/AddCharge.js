@@ -36,6 +36,8 @@ import "jspdf-autotable";
 import { values } from "pdf-lib";
 import Img from "assets/img/theme/team-4-800x800.jpg";
 import "jspdf-autotable";
+import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const AddCharge = () => {
   const { tenantId, entryIndex } = useParams();
@@ -88,6 +90,8 @@ const AddCharge = () => {
       charges_attachment: "",
     },
     validationSchema: yup.object({
+      date: yup.string().required("Required"),
+      charges_amount: yup.string().required("Required"),
       entries: yup.array().of(
         yup.object().shape({
           //   account: yup.string().required("Required"),
@@ -111,10 +115,24 @@ const AddCharge = () => {
   //   navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
   // };
 
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
+
   useEffect(() => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
-    fetch(`https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`)
+    fetch(
+      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -198,7 +216,9 @@ const AddCharge = () => {
   };
 
   useEffect(() => {
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -253,7 +273,7 @@ const AddCharge = () => {
       };
       console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_charges",          //https://propertymanager.cloudpress.host
+        "https://propertymanager.cloudpress.host/api/payment/add_charges", //https://propertymanager.cloudpress.host
         updatedValues
       );
 
@@ -295,7 +315,7 @@ const AddCharge = () => {
           charges_total_amount: charges_total_amount,
         })),
       };
-      console.log(tenantId,'vaibhav')
+      console.log(tenantId, "vaibhav");
 
       console.log(updatedValues, "updatedValues");
 
@@ -399,10 +419,10 @@ const AddCharge = () => {
           console.log(formattedDate, "formattedDate");
           const id = chargeData.tenant_id;
           setId(id);
-          console.log(id,'abcd')
-          const index = chargeData.entryIndex;          ;
+          console.log(id, "abcd");
+          const index = chargeData.entryIndex;
           setIndex(index);
-          console.log(index,'xyz')
+          console.log(index, "xyz");
           setSelectedRec(chargeData.tenant_firstName || "Select");
 
           const entriesData = chargeData.entries || [];

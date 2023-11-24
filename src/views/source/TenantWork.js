@@ -18,6 +18,7 @@ import {
 // core components
 import TenantsHeader from "components/Headers/TenantsHeader";
 import * as React from "react";
+import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -33,7 +34,6 @@ import { Link } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
 
-
 const TenantWork = () => {
   let navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
@@ -44,7 +44,7 @@ const TenantWork = () => {
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [editingRentals, setEditingRentals] = useState([]);
   let [modalShowForPopupForm, setModalShowForPopupForm] = useState(false);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   let [editData, setEditData] = useState({});
   const [propertyData, setPropertyData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,10 +60,9 @@ const TenantWork = () => {
   const [tenantDetails, setTenantDetails] = useState({});
   const [rental_adress, setRentalAddress] = useState("");
   const [rentalAddress, setRentalAddresses] = useState([]);
-  console.log(rental_adress)
+  console.log(rental_adress);
   const { id } = useParams();
   console.log(id, tenantDetails);
-  let cookies = new Cookies();
   let cookie_id = cookies.get("Tenant ID");
   console.log("cookie_id:", cookie_id);
   console.log(rental_adress);
@@ -86,40 +85,30 @@ const TenantWork = () => {
 
   // let cookies = new Cookies();
   // Check Authe(token)
-  let chackAuth = async () => {
+ 
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   const getTenantData = async () => {
     try {
-      const response = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`);
+      const response = await axios.get(
+        `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
+      );
       const entries = response.data.data.entries;
 
       if (entries.length > 0) {
-        const rentalAddresses = entries.map(entry => entry.rental_adress).join('-');
+        const rentalAddresses = entries
+          .map((entry) => entry.rental_adress)
+          .join("-");
         //console.log(rentalAddresses, "mansi");
         setTenantDetails(response.data.data);
         getRentalData(rentalAddresses);
@@ -151,26 +140,29 @@ const TenantWork = () => {
 
   const getRentalData = async (addresses) => {
     try {
-      const response = await axios.get(`https://propertymanager.cloudpress.host/api/workorder/workorder/tenant/${addresses}`);
+      const response = await axios.get(
+        `https://propertymanager.cloudpress.host/api/workorder/workorder/tenant/${addresses}`
+      );
       console.log(response, "abc");
 
       if (Array.isArray(response.data.data)) {
         // Response is an array of work orders
         setTotalPages(Math.ceil(response.data.data.length / pageItem));
         setWorkData((prevData) => [...prevData, ...response.data.data]);
-      } else if (typeof response.data.data === 'object') {
+      } else if (typeof response.data.data === "object") {
         // Response is a single work order object
         setTotalPages(Math.ceil(response.data.data.length / pageItem));
         setWorkData((prevData) => [...prevData, response.data.data]);
       } else {
-        console.error("Response data is not an array or object:", response.data.data);
+        console.error(
+          "Response data is not an array or object:",
+          response.data.data
+        );
       }
     } catch (error) {
       console.error("Error fetching work order data:", error);
     }
   };
-
-
 
   React.useEffect(() => {
     if (rentalAddress && rentalAddress.length > 0) {
@@ -211,9 +203,7 @@ const TenantWork = () => {
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
-              <h1 style={{ color: 'white' }}>
-                Work Orders
-              </h1>
+              <h1 style={{ color: "white" }}>Work Orders</h1>
             </FormGroup>
           </Col>
 
@@ -228,8 +218,8 @@ const TenantWork = () => {
               Add Work Order
             </Button>
           </Col>
-        </Row><br />
-
+        </Row>
+        <br />
 
         <Row>
           <div className="col">
@@ -256,7 +246,6 @@ const TenantWork = () => {
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           style={{
-
                             width: "100%",
                             maxWidth: "200px",
                             minWidth: "200px",
@@ -267,8 +256,6 @@ const TenantWork = () => {
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
-
-
                   <thead className="thead-light">
                     <tr>
                       <th scope="col">Work Order</th>
@@ -284,9 +271,8 @@ const TenantWork = () => {
                     {filterRentalsBySearch().map((rental) => (
                       <tr
                         key={rental._id}
-                        onClick={
-                          () => navigateToDetails(rental.workorder_id)}
-                        style={{ cursor: 'pointer' }}
+                        onClick={() => navigateToDetails(rental.workorder_id)}
+                        style={{ cursor: "pointer" }}
                       >
                         <td>{rental.work_subject}</td>
                         <td>{rental.rental_adress}</td>
@@ -295,9 +281,9 @@ const TenantWork = () => {
                         <td>{rental.status}</td>
 
                         <td>
-                          <div style={{ display: 'flex', gap: "5px" }}>
+                          <div style={{ display: "flex", gap: "5px" }}>
                             <div
-                              style={{ cursor: 'pointer' }}
+                              style={{ cursor: "pointer" }}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 // deleteRentals(rental._id);
@@ -321,59 +307,80 @@ const TenantWork = () => {
                     ))}
                   </tbody>
                 </Table>
-                {paginatedData.length > 0 ? <Row>
-                  <Col className="text-right m-3">
-                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
-                      <DropdownToggle caret >
-                        {pageItem}
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem
-                          onClick={() => setPageItem(6)}
+                {paginatedData.length > 0 ? (
+                  <Row>
+                    <Col className="text-right m-3">
+                      <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                        <DropdownToggle caret>{pageItem}</DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(6);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            6
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(12);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            12
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(18);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            18
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-left"
+                          viewBox="0 0 16 16"
                         >
-                          6
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() =>
-                            setPageItem(12)
-                          }
+                          <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                        </svg>
+                      </Button>
+                      <span>
+                        Page {currentPage} of {totalPages}
+                      </span>{" "}
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-right"
+                          viewBox="0 0 16 16"
                         >
-                          12
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => setPageItem(18)}
-                        >
-                          18
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
-                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                      </svg>
-                    </Button>
-                    <span>
-                      Page {currentPage} of {totalPages}
-                    </span>{" "}
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
-                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                      </svg>
-                    </Button>{" "}
-
-                  </Col>
-                </Row> : <></>}
-
+                          <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                        </svg>
+                      </Button>{" "}
+                    </Col>
+                  </Row>
+                ) : (
+                  <></>
+                )}
               </Card>
             )}
           </div>
@@ -381,9 +388,8 @@ const TenantWork = () => {
         <br />
         <br />
       </Container>
-
     </>
-  )
+  );
 };
 
 export default TenantWork;

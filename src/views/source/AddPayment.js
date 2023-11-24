@@ -36,6 +36,8 @@ import "jspdf-autotable";
 import { values } from "pdf-lib";
 import Img from "assets/img/theme/team-4-800x800.jpg";
 import "jspdf-autotable";
+import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const AddPayment = () => {
   const { tenantId, entryIndex } = useParams();
@@ -55,6 +57,18 @@ const AddPayment = () => {
 
   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
   const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
+
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
   const [selectedProp, setSelectedProp] = useState("Select Payment Method");
   const handlePropSelection = (propertyType) => {
@@ -93,6 +107,8 @@ const AddPayment = () => {
       total_amount: "",
     },
     validationSchema: yup.object({
+      date: yup.string().required("Required"),
+      amount: yup.string().required("Required"),
       entries: yup.array().of(
         yup.object().shape({
           account: yup.string().required("Required"),
@@ -118,7 +134,9 @@ const AddPayment = () => {
   useEffect(() => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
-    fetch(`https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`)
+    fetch(
+      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -202,7 +220,9 @@ const AddPayment = () => {
   };
 
   useEffect(() => {
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -259,7 +279,7 @@ const AddPayment = () => {
       };
       console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_payment",   ///https://propertymanager.cloudpress.host
+        "https://propertymanager.cloudpress.host/api/payment/add_payment", ///https://propertymanager.cloudpress.host
         updatedValues
       );
 
@@ -457,10 +477,10 @@ const AddPayment = () => {
           console.log(paymentData.entries, "entries data");
           const id = paymentData.tenant_id;
           setId(id);
-          console.log(id,'abcd')
-          const index = paymentData.entryIndex;          ;
+          console.log(id, "abcd");
+          const index = paymentData.entryIndex;
           setIndex(index);
-          console.log(index,'xyz')
+          console.log(index, "xyz");
 
           const formattedDate =
             paymentData && paymentData.date

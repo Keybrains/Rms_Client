@@ -26,6 +26,7 @@ import AddAgentHeader from "components/Headers/AddAgentHeader";
 import swal from "sweetalert";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const AddAgent = () => {
   const { id } = useParams();
@@ -56,33 +57,16 @@ const AddAgent = () => {
   // };
 
   let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   const AgentFormik = useFormik({
     initialValues: {

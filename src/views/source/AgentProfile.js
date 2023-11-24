@@ -13,6 +13,8 @@ import {
   Col,
 } from "reactstrap"; // Import other necessary components from 'reactstrap'
 import AgentHeader from "components/Headers/AgentHeader";
+import { jwtDecode } from "jwt-decode";
+
 
 const AgentProfile = () => {
   const { id } = useParams();
@@ -22,36 +24,18 @@ const AgentProfile = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
+  
   let cookies = new Cookies();
-  let cookie_id = cookies.get("Agent ID");
+  const [accessType, setAccessType] = useState(null);
 
-  // Check Authe(token)
-  let chackAuth = async () => {
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let  authConfig = {
-        headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post method
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
       navigate("/auth/login");
     }
-  } else {
-    navigate("/auth/login");
-  }
-};
-
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
+  }, [navigate]);
 
   useEffect(() => {
     const getAgentData = async () => {

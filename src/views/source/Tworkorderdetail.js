@@ -18,6 +18,9 @@ import {
     Table,
     Button,
 } from "reactstrap";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "universal-cookie";
+
   
   const TWorkOrderDetails = () => {
     const { id } = useParams();
@@ -29,6 +32,18 @@ import {
     const [hoveredButton, setHoveredButton] = useState(null);
     const [activeButton, setActiveButton] = useState('Summary');
     let navigate = useNavigate();
+
+    let cookies = new Cookies();
+    const [accessType, setAccessType] = useState(null);
+  
+    React.useEffect(() => {
+      if (cookies.get("token")) {
+        const jwt = jwtDecode(cookies.get("token"));
+        setAccessType(jwt.accessType);
+      } else {
+        navigate("/auth/login");
+      }
+    }, [navigate]);
   
     const getOutstandData = async () => {
       try {
