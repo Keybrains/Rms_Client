@@ -19,6 +19,7 @@ import {
 } from "reactstrap";
 
 import CloseIcon from "@mui/icons-material/Close";
+import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 // import RentalHeader from "components/Headers/RentalHeader.js";
 // import TenantsHeader from "components/Headers/TenantsHeader";
@@ -202,7 +203,7 @@ const Leaseing = () => {
   const handlePropertyTypeSelect = (propertyType) => {
     setSelectedPropertyType(propertyType);
     leaseFormik.values.entries[0].rental_adress = propertyType;
-    console.log(propertyType)
+    console.log(propertyType);
     // localStorage.setItem("propertyType", propertyType);
   };
 
@@ -221,25 +222,25 @@ const Leaseing = () => {
 
     switch (rentcycle) {
       case "Daily":
-        nextDue_date = moment(startDate).add(1, 'days').format('YYYY-MM-DD');
+        nextDue_date = moment(startDate).add(1, "days").format("YYYY-MM-DD");
         break;
       case "Weekly":
-        nextDue_date = moment(startDate).add(1, 'weeks').format('YYYY-MM-DD');
+        nextDue_date = moment(startDate).add(1, "weeks").format("YYYY-MM-DD");
         break;
       case "Every two weeks":
-        nextDue_date = moment(startDate).add(2, 'weeks').format('YYYY-MM-DD');
+        nextDue_date = moment(startDate).add(2, "weeks").format("YYYY-MM-DD");
         break;
       case "Monthly":
-        nextDue_date = moment(startDate).add(1, 'months').format('YYYY-MM-DD');
+        nextDue_date = moment(startDate).add(1, "months").format("YYYY-MM-DD");
         break;
       case "Every two months":
-        nextDue_date = moment(startDate).add(2, 'months').format('YYYY-MM-DD');
+        nextDue_date = moment(startDate).add(2, "months").format("YYYY-MM-DD");
         break;
       case "Quarterly":
-        nextDue_date = moment(startDate).add(3, 'months').format('YYYY-MM-DD');
+        nextDue_date = moment(startDate).add(3, "months").format("YYYY-MM-DD");
         break;
       default:
-        nextDue_date = moment(startDate).add(1, 'years').format('YYYY-MM-DD');
+        nextDue_date = moment(startDate).add(1, "years").format("YYYY-MM-DD");
     }
 
     leaseFormik.setFieldValue("tenant_nextDue_date", nextDue_date);
@@ -422,7 +423,8 @@ const Leaseing = () => {
           cosigner_firstName: "",
           cosigner_lastName: "",
           cosigner_mobileNumber: "",
-        }]
+        },
+      ],
     });
   };
 
@@ -434,7 +436,8 @@ const Leaseing = () => {
           recuring_amount: "",
           recuring_account: "",
           recuringmemo: "",
-        }]
+        },
+      ],
     });
   };
 
@@ -446,8 +449,8 @@ const Leaseing = () => {
           onetime_amount: "",
           onetime_account: "",
           onetime_memo: "",
-        }]
-
+        },
+      ],
     });
   };
   // Define a function to handle closing the dialog and navigating
@@ -469,10 +472,9 @@ const Leaseing = () => {
   };
 
   const handleDateChange = (date) => {
-    const nextDate = moment(date).add(1, 'months').format('YYYY-MM-DD');
+    const nextDate = moment(date).add(1, "months").format("YYYY-MM-DD");
     leaseFormik.values.entries[0].end_date = nextDate;
   };
-
 
   const [file, setFile] = useState("");
   let navigate = useNavigate();
@@ -603,7 +605,9 @@ const Leaseing = () => {
 
   const fetchingAccountNames = async () => {
     console.log("fetching account names");
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -622,7 +626,9 @@ const Leaseing = () => {
 
   const fetchingRecAccountNames = async () => {
     console.log("fetching rec accounr names");
-    fetch("https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -641,7 +647,9 @@ const Leaseing = () => {
 
   const fetchingOneTimeCharges = async () => {
     console.log("fetcjhiine pne rime charges");
-    fetch("https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -746,6 +754,7 @@ const Leaseing = () => {
         email: tenantInfo.email,
         emergency_PhoneNumber: tenantInfo.emergency_PhoneNumber,
       });
+      setShowTenantTable(false);
     } else {
       // console.log(selectedTenants)
       setSelectedTenants(
@@ -792,35 +801,17 @@ const Leaseing = () => {
         console.error("Network error:", error);
       });
   }, []);
+ let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
 
-  let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   let accountFormik = useFormik({
     initialValues: {
@@ -896,13 +887,13 @@ const Leaseing = () => {
     ),
   });
 
-
   const tenantsValidationSchema = yup.object({
     tenant_firstName: yup.string().required("Required"),
     tenant_lastName: yup.string().required("Required"),
     tenant_mobileNumber: yup.string().required("Required"),
     tenant_email: yup.string().required("Required"),
-    tenant_password: yup.string()
+    tenant_password: yup
+      .string()
       .min(8, "Password is too short")
       .matches(
         /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
@@ -1045,7 +1036,6 @@ const Leaseing = () => {
       ],
     },
 
-
     validationSchema: consignerValidationSchema,
 
     onSubmit: () => {
@@ -1076,7 +1066,6 @@ const Leaseing = () => {
       emergency_PhoneNumber: "",
     },
 
-
     validationSchema: tenantsValidationSchema,
 
     onSubmit: () => {
@@ -1091,14 +1080,16 @@ const Leaseing = () => {
 
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
-    console.log(id, entryIndex, "id && entry Id");
+    // console.log(id, propertyId, "id && entry Id");
     if (id && entryIndex) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`)
+        .get(
+          `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`
+        )
         .then((response) => {
           const laesingdata = response.data.data;
           //setleasingData(leasingData);
-          console.log(laesingdata, "gsgsgsdg");
+          // console.log(laesingdata, "gsgsgsdg");
           setTenantData(laesingdata);
           // Assuming you want to display tenant data in the table
           setSelectedTenantData({
@@ -1110,7 +1101,11 @@ const Leaseing = () => {
           const matchedLease = laesingdata.entries.find((entry) => {
             return entry.entryIndex === entryIndex;
           });
+          // console.log(laesingdata.entries[0].rental_adress)
+          // console.log(laesingdata)
           console.log(matchedLease, "matchedlease");
+          // setShowTenantTable(true);
+
           const formattedStartDate = matchedLease.start_date
             ? new Date(matchedLease.start_date).toISOString().split("T")[0]
             : "";
@@ -1131,14 +1126,14 @@ const Leaseing = () => {
 
           const formattedRecuringNextDueDate = matchedLease.recuringnextDue_date
             ? new Date(matchedLease.recuringnextDue_date)
-              .toISOString()
-              .split("T")[0]
+                .toISOString()
+                .split("T")[0]
             : "";
 
           const formattedOnetimeDueDate = matchedLease.onetime_Due_date
             ? new Date(matchedLease.onetime_Due_date)
-              .toISOString()
-              .split("T")[0]
+                .toISOString()
+                .split("T")[0]
             : "";
 
           setSelectedPropertyType(matchedLease.rental_adress || "Select");
@@ -1153,59 +1148,87 @@ const Leaseing = () => {
           setselectedAccountLevel(matchedLease.parent_account || "Select");
           setselectedFundType(matchedLease.fund_type || "Select");
           setSelectedAgent(matchedLease.leasing_agent || "Select");
-          // const arrayOfObjects = laesingdata.upload_file.map((innerArray) => innerArray[0])
 
           // setFile(arrayOfObjects || "Select");
-          console.log(matchedLease.upload_file, "upload_fileeee");
+          // console.log(matchedLease.upload_file, "upload_fileeee");
           const data = matchedLease.upload_file.map((item) => {
             return {
               name: item[0],
             };
           });
           // console.log(data, "data");
-          console.log(matchedLease.amount)
           setFile(data);
           leaseFormik.setValues({
-            // Add other properties as needed
-            start_date: formattedStartDate,
-            end_date: formattedEndDate,
-            amount: matchedLease.amount || "",
-            nextDue_date: formattedNextDueDate,
-            memo: matchedLease.memo || "",
-            // birth_date: formattedBirthDate,
-            // textpayer_id: laesingdata.textpayer_id || "",
-            // comments: laesingdata.comments || "",
-            // contact_name: laesingdata.contact_name || "",
-            // relationship_tenants: laesingdata.relationship_tenants || "",
-            // email: laesingdata.email || "",
-            // emergency_PhoneNumber: laesingdata.emergency_PhoneNumber || "",
-            Due_date: formattedDueDate,
-            // tenant_firstName: laesingdata.tenant_firstName || "",
-            // tenant_lastName: laesingdata.tenant_lastName || "",
-            // tenant_mobileNumber: laesingdata.tenant_mobileNumber || "",
-            // tenant_email: laesingdata.tenant_email || "",
-            // tenant_password: laesingdata.tenant_password || "",
-            // tenant_workNumber: laesingdata.tenant_workNumber || "",
-            // alternate_email: laesingdata.alternate_email || "",
-            // cosigner_firstName: matchedLease.cosigner_firstName || "",
-            // cosigner_lastName: matchedLease.cosigner_lastName || "",
-            // cosigner_mobileNumber: matchedLease.cosigner_mobileNumber || "",
-            // cosigner_workNumber: matchedLease.cosigner_workNumber || "",
-            // cosigner_homeNumber: matchedLease.cosigner_homeNumber || "",
-            // cosigner_faxPhoneNumber: matchedLease.cosigner_faxPhoneNumber || "",
-            // cosigner_email: matchedLease.cosigner_email || "",
-            // cosigner_alternateemail: matchedLease.cosigner_alternateemail || "",
-            // cosigner_streetAdress: matchedLease.cosigner_streetAdress || "",
-            // cosigner_city: matchedLease.cosigner_city || "",
-            // cosigner_state: matchedLease.cosigner_state || "",
-            // cosigner_country: matchedLease.cosigner_country || "",
-            // cosigner_postalcode: matchedLease.cosigner_postalcode || "",
-            recuring_amount: matchedLease.recuring_amount || "",
-            // recuringnextDue_date: formattedRecuringNextDueDate,
-            recuringmemo: matchedLease.recuringmemo || "",
-            onetime_amount: matchedLease.onetime_amount || "",
-            onetime_memo: matchedLease.onetime_memo || "",
-            Security_amount: matchedLease.Security_amount || "",
+            // start_date: formattedStartDate,
+            // end_date: formattedEndDate,
+            // amount: matchedLease.amount || "",
+            // nextDue_date: formattedNextDueDate,
+            // memo: matchedLease.memo || "",
+            // // birth_date: formattedBirthDate,
+            // // textpayer_id: laesingdata.textpayer_id || "",
+            // // comments: laesingdata.comments || "",
+            // // contact_name: laesingdata.contact_name || "",
+            // // relationship_tenants: laesingdata.relationship_tenants || "",
+            // // email: laesingdata.email || "",
+            // // emergency_PhoneNumber: laesingdata.emergency_PhoneNumber || "",
+            // Due_date: formattedDueDate,
+            // // tenant_firstName: laesingdata.tenant_firstName || "",
+            // // tenant_lastName: laesingdata.tenant_lastName || "",
+            // // tenant_mobileNumber: laesingdata.tenant_mobileNumber || "",
+            // // tenant_email: laesingdata.tenant_email || "",
+            // // tenant_password: laesingdata.tenant_password || "",
+            // // tenant_workNumber: laesingdata.tenant_workNumber || "",
+            // // alternate_email: laesingdata.alternate_email || "",
+            // // cosigner_firstName: matchedLease.cosigner_firstName || "",
+            // // cosigner_lastName: matchedLease.cosigner_lastName || "",
+            // // cosigner_mobileNumber: matchedLease.cosigner_mobileNumber || "",
+            // // cosigner_workNumber: matchedLease.cosigner_workNumber || "",
+            // // cosigner_homeNumber: matchedLease.cosigner_homeNumber || "",
+            // // cosigner_faxPhoneNumber: matchedLease.cosigner_faxPhoneNumber || "",
+            // // cosigner_email: matchedLease.cosigner_email || "",
+            // // cosigner_alternateemail: matchedLease.cosigner_alternateemail || "",
+            // // cosigner_streetAdress: matchedLease.cosigner_streetAdress || "",
+            // // cosigner_city: matchedLease.cosigner_city || "",
+            // // cosigner_state: matchedLease.cosigner_state || "",
+            // // cosigner_country: matchedLease.cosigner_country || "",
+            // // cosigner_postalcode: matchedLease.cosigner_postalcode || "",
+            // recuring_amount: matchedLease.recuring_amount || "",
+            // // recuringnextDue_date: formattedRecuringNextDueDate,
+            // recuringmemo: matchedLease.recuringmemo || "",
+            // onetime_amount: matchedLease.onetime_amount || "",
+            // onetime_memo: matchedLease.onetime_memo || "",
+            // Security_amount: matchedLease.Security_amount || "",
+            entries: [
+              {
+                rental_adress: matchedLease.rental_adress || "",
+                lease_type: matchedLease.lease_type || "",
+                start_date: matchedLease.start_date || "",
+                end_date: matchedLease.end_date || "",
+                amount: matchedLease.amount || "",
+                recuring_amount: matchedLease.recuring_amount || "",
+                recuring_account: matchedLease.recuring_account || "",
+                recuringmemo: matchedLease.recuringmemo || "",
+
+                //add one time charge
+                onetime_amount: matchedLease.onetime_amount || "",
+                onetime_account: matchedLease.onetime_account || "",
+                onetime_memo: matchedLease.onetime_memo || "",
+
+                // add account
+                account_name: matchedLease.account_name || "",
+                account_type: matchedLease.account_type || "",
+                account_number: matchedLease.account_number || "",
+
+                //upload File
+                upload_file: matchedLease.upload_file || "",
+
+                // parent account
+                parent_account: matchedLease.parent_account || "",
+                fund_type: matchedLease.fund_type || "",
+                cash_flow: matchedLease.cash_flow || "",
+                notes: matchedLease.notes || "",
+              },
+            ],
           });
 
           tenantsFormik.setValues({
@@ -1215,7 +1238,7 @@ const Leaseing = () => {
             // amount: matchedLease.amount || "",
             // nextDue_date: formattedNextDueDate,
             // memo: matchedLease.memo || "",
-            birth_date: formattedBirthDate,
+            birth_date: formattedBirthDate || "",
             textpayer_id: laesingdata.textpayer_id || "",
             comments: laesingdata.comments || "",
             contact_name: laesingdata.contact_name || "",
@@ -1252,7 +1275,6 @@ const Leaseing = () => {
             // Security_amount: matchedLease.Security_amount || "",
           });
 
-
           consignerFormik.setValues({
             // Add other properties as needed
             // start_date: formattedStartDate,
@@ -1275,19 +1297,25 @@ const Leaseing = () => {
             // tenant_password: laesingdata.tenant_password || "",
             // tenant_workNumber: laesingdata.tenant_workNumber || "",
             // alternate_email: laesingdata.alternate_email || "",
-            cosigner_firstName: matchedLease.cosigner_firstName || "",
-            cosigner_lastName: matchedLease.cosigner_lastName || "",
-            cosigner_mobileNumber: matchedLease.cosigner_mobileNumber || "",
-            cosigner_workNumber: matchedLease.cosigner_workNumber || "",
-            cosigner_homeNumber: matchedLease.cosigner_homeNumber || "",
-            cosigner_faxPhoneNumber: matchedLease.cosigner_faxPhoneNumber || "",
-            cosigner_email: matchedLease.cosigner_email || "",
-            cosigner_alternateemail: matchedLease.cosigner_alternateemail || "",
-            cosigner_streetAdress: matchedLease.cosigner_streetAdress || "",
-            cosigner_city: matchedLease.cosigner_city || "",
-            cosigner_state: matchedLease.cosigner_state || "",
-            cosigner_country: matchedLease.cosigner_country || "",
-            cosigner_postalcode: matchedLease.cosigner_postalcode || "",
+            entries: [
+              {
+                cosigner_firstName: matchedLease.cosigner_firstName || "",
+                cosigner_lastName: matchedLease.cosigner_lastName || "",
+                cosigner_mobileNumber: matchedLease.cosigner_mobileNumber || "",
+                cosigner_workNumber: matchedLease.cosigner_workNumber || "",
+                cosigner_homeNumber: matchedLease.cosigner_homeNumber || "",
+                cosigner_faxPhoneNumber:
+                  matchedLease.cosigner_faxPhoneNumber || "",
+                cosigner_email: matchedLease.cosigner_email || "",
+                cosigner_alternateemail:
+                  matchedLease.cosigner_alternateemail || "",
+                cosigner_streetAdress: matchedLease.cosigner_streetAdress || "",
+                cosigner_city: matchedLease.cosigner_city || "",
+                cosigner_state: matchedLease.cosigner_state || "",
+                cosigner_country: matchedLease.cosigner_country || "",
+                cosigner_postalcode: matchedLease.cosigner_postalcode || "",
+              },
+            ],
             // recuring_amount: matchedLease.recuring_amount || "",
             // recuringnextDue_date: formattedRecuringNextDueDate,
             // recuringmemo: matchedLease.recuringmemo || "",
@@ -1296,8 +1324,7 @@ const Leaseing = () => {
             // onetime_memo: matchedLease.onetime_memo || "",
             // Security_amount: matchedLease.Security_amount || "",
           });
-
-          console.log(matchedLease)
+          console.log(matchedLease);
         })
         .catch((error) => {
           console.error("Error fetching vendor data:", error);
@@ -1305,7 +1332,6 @@ const Leaseing = () => {
       handleAddTenant();
     }
   }, [id, entryIndex]);
-
 
   const handleSubmit = async (values) => {
     console.log(file, "values");
@@ -1333,18 +1359,25 @@ const Leaseing = () => {
       // add cosigner
       cosigner_firstName: consignerFormik.values.entries[0].cosigner_firstName,
       cosigner_lastName: consignerFormik.values.entries[0].cosigner_lastName,
-      cosigner_mobileNumber: consignerFormik.values.entries[0].cosigner_mobileNumber,
-      cosigner_workNumber: consignerFormik.values.entries[0].cosigner_workNumber,
-      cosigner_homeNumber: consignerFormik.values.entries[0].cosigner_homeNumber,
-      cosigner_faxPhoneNumber: consignerFormik.values.entries[0].cosigner_faxPhoneNumber,
+      cosigner_mobileNumber:
+        consignerFormik.values.entries[0].cosigner_mobileNumber,
+      cosigner_workNumber:
+        consignerFormik.values.entries[0].cosigner_workNumber,
+      cosigner_homeNumber:
+        consignerFormik.values.entries[0].cosigner_homeNumber,
+      cosigner_faxPhoneNumber:
+        consignerFormik.values.entries[0].cosigner_faxPhoneNumber,
       cosigner_email: consignerFormik.values.entries[0].cosigner_email,
-      cosigner_alternateemail: consignerFormik.values.entries[0].cosigner_alternateemail,
-      cosigner_streetAdress: consignerFormik.values.entries[0].cosigner_streetAdress,
+      cosigner_alternateemail:
+        consignerFormik.values.entries[0].cosigner_alternateemail,
+      cosigner_streetAdress:
+        consignerFormik.values.entries[0].cosigner_streetAdress,
       cosigner_city: consignerFormik.values.entries[0].cosigner_city,
       cosigner_state: consignerFormik.values.entries[0].cosigner_state,
       cosigner_zip: consignerFormik.values.entries[0].cosigner_zip,
       cosigner_country: consignerFormik.values.entries[0].cosigner_country,
-      cosigner_postalcode: consignerFormik.values.entries[0].cosigner_postalcode,
+      cosigner_postalcode:
+        consignerFormik.values.entries[0].cosigner_postalcode,
 
       // add recuring charge
       recuring_amount: leaseFormik.values.entries[0].recuring_amount,
@@ -1370,7 +1403,6 @@ const Leaseing = () => {
       cash_flow: leaseFormik.values.cash_flow,
       notes: leaseFormik.values.notes,
     };
-
 
     entriesArray.push(entriesObject);
 
@@ -1398,11 +1430,12 @@ const Leaseing = () => {
 
       entries: entriesArray,
     };
-    console.log(leaseObject)
-
+    console.log(leaseObject);
 
     try {
-      const res = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant`);
+      const res = await axios.get(
+        `https://propertymanager.cloudpress.host/api/tenant/tenant`
+      );
       if (res.data.statusCode === 200) {
         console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
@@ -1504,18 +1537,25 @@ const Leaseing = () => {
 
       cosigner_firstName: consignerFormik.values.entries[0].cosigner_firstName,
       cosigner_lastName: consignerFormik.values.entries[0].cosigner_lastName,
-      cosigner_mobileNumber: consignerFormik.values.entries[0].cosigner_mobileNumber,
-      cosigner_workNumber: consignerFormik.values.entries[0].cosigner_workNumber,
-      cosigner_homeNumber: consignerFormik.values.entries[0].cosigner_homeNumber,
-      cosigner_faxPhoneNumber: consignerFormik.values.entries[0].cosigner_faxPhoneNumber,
+      cosigner_mobileNumber:
+        consignerFormik.values.entries[0].cosigner_mobileNumber,
+      cosigner_workNumber:
+        consignerFormik.values.entries[0].cosigner_workNumber,
+      cosigner_homeNumber:
+        consignerFormik.values.entries[0].cosigner_homeNumber,
+      cosigner_faxPhoneNumber:
+        consignerFormik.values.entries[0].cosigner_faxPhoneNumber,
       cosigner_email: consignerFormik.values.entries[0].cosigner_email,
-      cosigner_alternateemail: consignerFormik.values.entries[0].cosigner_alternateemail,
-      cosigner_streetAdress: consignerFormik.values.entries[0].cosigner_streetAdress,
+      cosigner_alternateemail:
+        consignerFormik.values.entries[0].cosigner_alternateemail,
+      cosigner_streetAdress:
+        consignerFormik.values.entries[0].cosigner_streetAdress,
       cosigner_city: consignerFormik.values.entries[0].cosigner_city,
       cosigner_state: consignerFormik.values.entries[0].cosigner_state,
       cosigner_zip: consignerFormik.values.entries[0].cosigner_zip,
       cosigner_country: consignerFormik.values.entries[0].cosigner_country,
-      cosigner_postalcode: consignerFormik.values.entries[0].cosigner_postalcode,
+      cosigner_postalcode:
+        consignerFormik.values.entries[0].cosigner_postalcode,
 
       // add recuring charge
 
@@ -1702,9 +1742,11 @@ const Leaseing = () => {
                               ))}
                             </DropdownMenu>
                             {leaseFormik.errors.entries &&
-                              leaseFormik.errors?.entries[0].rental_adress &&
-                              leaseFormik.touched.entries &&
-                              leaseFormik.touched?.entries[0].rental_adress && leaseFormik.values.entries[0].rental_adress === "" ? (
+                            leaseFormik.errors?.entries[0].rental_adress &&
+                            leaseFormik.touched.entries &&
+                            leaseFormik.touched?.entries[0].rental_adress &&
+                            leaseFormik.values.entries[0].rental_adress ===
+                              "" ? (
                               <div style={{ color: "red" }}>
                                 {leaseFormik.errors.entries[0].rental_adress}
                               </div>
@@ -1751,9 +1793,10 @@ const Leaseing = () => {
                               </DropdownItem>
                             </DropdownMenu>
                             {leaseFormik.errors.entries &&
-                              leaseFormik.errors?.entries[0].lease_type &&
-                              leaseFormik.touched.entries &&
-                              leaseFormik.touched?.entries[0].lease_type && leaseFormik.values.entries[0].lease_type === "" ? (
+                            leaseFormik.errors?.entries[0].lease_type &&
+                            leaseFormik.touched.entries &&
+                            leaseFormik.touched?.entries[0].lease_type &&
+                            leaseFormik.values.entries[0].lease_type === "" ? (
                               <div style={{ color: "red" }}>
                                 {leaseFormik.errors.entries[0].lease_type}
                               </div>
@@ -1790,22 +1833,25 @@ const Leaseing = () => {
                             onBlur={leaseFormik.handleBlur}
                             onChange={(e) => {
                               leaseFormik.handleChange(e);
-                              leaseFormik.values.entries[0].start_date = moment(e.target.value).format('YYYY-MM-DD');
+                              leaseFormik.values.entries[0].start_date = moment(
+                                e.target.value
+                              ).format("YYYY-MM-DD");
                               handleDateChange(e.target.value);
                             }}
-                            value={moment(leaseFormik.values.entries[0].start_date).format(
-                              "YYYY-MM-DD"
-                            )}
+                            value={moment(
+                              leaseFormik.values.entries[0].start_date
+                            ).format("YYYY-MM-DD")}
                           />
                           {leaseFormik.touched.entries &&
-                            leaseFormik.touched.entries[0].start_date &&
-                            leaseFormik.errors.entries &&
-                            leaseFormik.errors.entries[0].start_date ? (
+                          leaseFormik.touched.entries[0].start_date &&
+                          leaseFormik.errors.entries &&
+                          leaseFormik.errors.entries[0].start_date ? (
                             <div style={{ color: "red" }}>
                               {leaseFormik.errors.entries[0].start_date}
-
                             </div>
-                          ) : <></>}
+                          ) : (
+                            <></>
+                          )}
                         </FormGroup>
                       </Col>
                       &nbsp; &nbsp; &nbsp;
@@ -1826,12 +1872,14 @@ const Leaseing = () => {
                             onBlur={leaseFormik.handleBlur}
                             onChange={(e) => {
                               leaseFormik.handleChange(e);
-                              leaseFormik.values.entries[0].end_date = moment(e.target.value).format('YYYY-MM-DD');
+                              leaseFormik.values.entries[0].end_date = moment(
+                                e.target.value
+                              ).format("YYYY-MM-DD");
                             }}
                             value={leaseFormik.values.entries[0].end_date}
-                            min={moment(leaseFormik.values.entries[0].start_date).format(
-                              "YYYY-MM-DD"
-                            )}
+                            min={moment(
+                              leaseFormik.values.entries[0].start_date
+                            ).format("YYYY-MM-DD")}
                           />
                           {/* {leaseFormik.touched.end_date &&
                             leaseFormik.errors.end_date ? (
@@ -1898,8 +1946,11 @@ const Leaseing = () => {
                         >
                           <b style={{ fontSize: "20px" }}>+</b> Add Tenant or
                           Consigner
-                          {display === false ? <></> :
-                            <div style={{ color: "red" }}>required</div>}
+                          {display === false ? (
+                            <></>
+                          ) : (
+                            <div style={{ color: "red" }}>required</div>
+                          )}
                         </span>
 
                         <Dialog open={openTenantsDialog} onClose={handleClose}>
@@ -1926,7 +1977,9 @@ const Leaseing = () => {
                                   color="primary"
                                   value={alignment}
                                   exclusive
-                                  onChange={(e) => { handleChange(e.target.value) }}
+                                  onChange={(e) => {
+                                    handleChange(e.target.value);
+                                  }}
                                   aria-label="Platform"
                                   style={{ width: "100%" }}
                                 >
@@ -2014,11 +2067,11 @@ const Leaseing = () => {
                                                           <pre>
                                                             {
                                                               tenant.tenant_firstName
-                                                            } {
+                                                            }{" "}
+                                                            {
                                                               tenant.tenant_lastName
                                                             }
                                                           </pre>
-
                                                         </td>
                                                         <td>
                                                           {/* <FormControlLabel
@@ -2033,9 +2086,13 @@ const Leaseing = () => {
                                                               tenant.tenant_mobileNumber ===
                                                               checkedCheckbox
                                                             }
-                                                            onChange={(event) => {
-                                                              setCheckedCheckbox(tenant.tenant_mobileNumber);
-                                                              // const tenantInfo = `${tenant.tenant_firstName || ""} 
+                                                            onChange={(
+                                                              event
+                                                            ) => {
+                                                              setCheckedCheckbox(
+                                                                tenant.tenant_mobileNumber
+                                                              );
+                                                              // const tenantInfo = `${tenant.tenant_firstName || ""}
                                                               // ${tenant.tenant_lastName ||
                                                               //   ""
                                                               //   } ${tenant.tenant_mobileNumber ||
@@ -2063,22 +2120,37 @@ const Leaseing = () => {
                                                               //   } ${tenant.alternate_email ||
                                                               //   ""
                                                               //   }`;
-                                                              const tenantInfo1 = {
-                                                                tenant_firstName: tenant.tenant_firstName,
-                                                                tenant_lastName: tenant.tenant_lastName,
-                                                                tenant_mobileNumber: tenant.tenant_mobileNumber,
-                                                                tenant_email: tenant.tenant_email,
-                                                                textpayer_id: tenant.textpayer_id,
-                                                                birth_date: tenant.birth_date,
-                                                                comments: tenant.comments,
-                                                                contact_name: tenant.contact_name,
-                                                                relationship_tenants: tenant.relationship_tenants,
-                                                                email: tenant.email,
-                                                                emergency_PhoneNumber: tenant.emergency_PhoneNumber,
-                                                                tenant_password: tenant.tenant_password,
-                                                                tenant_workNumber: tenant.tenant_workNumber,
-                                                                alternate_email: tenant.alternate_email,
-                                                              };
+                                                              const tenantInfo1 =
+                                                                {
+                                                                  tenant_firstName:
+                                                                    tenant.tenant_firstName,
+                                                                  tenant_lastName:
+                                                                    tenant.tenant_lastName,
+                                                                  tenant_mobileNumber:
+                                                                    tenant.tenant_mobileNumber,
+                                                                  tenant_email:
+                                                                    tenant.tenant_email,
+                                                                  textpayer_id:
+                                                                    tenant.textpayer_id,
+                                                                  birth_date:
+                                                                    tenant.birth_date,
+                                                                  comments:
+                                                                    tenant.comments,
+                                                                  contact_name:
+                                                                    tenant.contact_name,
+                                                                  relationship_tenants:
+                                                                    tenant.relationship_tenants,
+                                                                  email:
+                                                                    tenant.email,
+                                                                  emergency_PhoneNumber:
+                                                                    tenant.emergency_PhoneNumber,
+                                                                  tenant_password:
+                                                                    tenant.tenant_password,
+                                                                  tenant_workNumber:
+                                                                    tenant.tenant_workNumber,
+                                                                  alternate_email:
+                                                                    tenant.alternate_email,
+                                                                };
                                                               handleCheckboxChange(
                                                                 event,
                                                                 tenantInfo1,
@@ -2128,10 +2200,10 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_firstName"
-                                              // style={{
-                                              //   fontFamily: "monospace",
-                                              //   fontSize: "14px",
-                                              // }}
+                                                // style={{
+                                                //   fontFamily: "monospace",
+                                                //   fontSize: "14px",
+                                                // }}
                                               >
                                                 First Name *
                                               </label>
@@ -2147,7 +2219,9 @@ const Leaseing = () => {
                                                   flex: 1,
                                                 }} // Adjust flex property
                                                 name="tenant_firstName"
-                                                onBlur={tenantsFormik.handleBlur}
+                                                onBlur={
+                                                  tenantsFormik.handleBlur
+                                                }
                                                 onChange={
                                                   tenantsFormik.handleChange
                                                 }
@@ -2158,8 +2232,8 @@ const Leaseing = () => {
                                               />
                                               {tenantsFormik.touched
                                                 .tenant_firstName &&
-                                                tenantsFormik.errors
-                                                  .tenant_firstName ? (
+                                              tenantsFormik.errors
+                                                .tenant_firstName ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsFormik.errors
@@ -2177,10 +2251,10 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_lastName"
-                                              // style={{
-                                              //   fontFamily: "monospace",
-                                              //   fontSize: "14px",
-                                              // }}
+                                                // style={{
+                                                //   fontFamily: "monospace",
+                                                //   fontSize: "14px",
+                                                // }}
                                               >
                                                 Last Name *
                                               </label>
@@ -2196,7 +2270,9 @@ const Leaseing = () => {
                                                   flex: 1,
                                                 }} // Adjust flex property
                                                 name="tenant_lastName"
-                                                onBlur={tenantsFormik.handleBlur}
+                                                onBlur={
+                                                  tenantsFormik.handleBlur
+                                                }
                                                 onChange={
                                                   tenantsFormik.handleChange
                                                 }
@@ -2207,8 +2283,8 @@ const Leaseing = () => {
                                               />
                                               {tenantsFormik.touched
                                                 .tenant_lastName &&
-                                                tenantsFormik.errors
-                                                  .tenant_lastName ? (
+                                              tenantsFormik.errors
+                                                .tenant_lastName ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsFormik.errors
@@ -2236,10 +2312,10 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_mobileNumber"
-                                              // style={{
-                                              //   fontFamily: "monospace",
-                                              //   fontSize: "14px",
-                                              // }}
+                                                // style={{
+                                                //   fontFamily: "monospace",
+                                                //   fontSize: "14px",
+                                                // }}
                                               >
                                                 Phone Number*
                                               </label>
@@ -2255,7 +2331,9 @@ const Leaseing = () => {
                                                   flex: 1,
                                                 }} // Adjust flex property
                                                 name="tenant_mobileNumber"
-                                                onBlur={tenantsFormik.handleBlur}
+                                                onBlur={
+                                                  tenantsFormik.handleBlur
+                                                }
                                                 onChange={
                                                   tenantsFormik.handleChange
                                                 }
@@ -2276,8 +2354,8 @@ const Leaseing = () => {
                                               />
                                               {tenantsFormik.touched
                                                 .tenant_mobileNumber &&
-                                                tenantsFormik.errors
-                                                  .tenant_mobileNumber ? (
+                                              tenantsFormik.errors
+                                                .tenant_mobileNumber ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsFormik.errors
@@ -2373,8 +2451,8 @@ const Leaseing = () => {
                                                   />
                                                   {tenantsFormik.touched
                                                     .tenant_workNumber &&
-                                                    tenantsFormik.errors
-                                                      .tenant_workNumber ? (
+                                                  tenantsFormik.errors
+                                                    .tenant_workNumber ? (
                                                     <div
                                                       style={{ color: "red" }}
                                                     >
@@ -2405,10 +2483,10 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_email"
-                                              // style={{
-                                              //   fontFamily: "monospace",
-                                              //   fontSize: "14px",
-                                              // }}
+                                                // style={{
+                                                //   fontFamily: "monospace",
+                                                //   fontSize: "14px",
+                                                // }}
                                               >
                                                 Email*
                                               </label>
@@ -2424,7 +2502,9 @@ const Leaseing = () => {
                                                   flex: 1,
                                                 }} // Adjust flex property
                                                 name="tenant_email"
-                                                onBlur={tenantsFormik.handleBlur}
+                                                onBlur={
+                                                  tenantsFormik.handleBlur
+                                                }
                                                 onChange={
                                                   tenantsFormik.handleChange
                                                 }
@@ -2435,8 +2515,8 @@ const Leaseing = () => {
                                               />
                                               {tenantsFormik.touched
                                                 .tenant_email &&
-                                                tenantsFormik.errors
-                                                  .tenant_email ? (
+                                              tenantsFormik.errors
+                                                .tenant_email ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsFormik.errors
@@ -2522,9 +2602,10 @@ const Leaseing = () => {
                                                   />
                                                   {tenantsFormik.touched
                                                     .alternate_email &&
-                                                    tenantsFormik.errors
-                                                      .alternate_email && tenantsFormik.values
-                                                        .tenant_email === "" ? (
+                                                  tenantsFormik.errors
+                                                    .alternate_email &&
+                                                  tenantsFormik.values
+                                                    .tenant_email === "" ? (
                                                     <div
                                                       style={{ color: "red" }}
                                                     >
@@ -2547,10 +2628,10 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_password"
-                                              // style={{
-                                              //   fontFamily: "monospace",
-                                              //   fontSize: "14px",
-                                              // }}
+                                                // style={{
+                                                //   fontFamily: "monospace",
+                                                //   fontSize: "14px",
+                                                // }}
                                               >
                                                 Password*
                                               </label>
@@ -2606,11 +2687,16 @@ const Leaseing = () => {
                                                 </div>
                                               ) : null} */}
                                               {tenantsFormik.errors &&
-                                                tenantsFormik.errors?.tenant_password &&
-                                                tenantsFormik.touched &&
-                                                tenantsFormik.touched?.tenant_password ? (
+                                              tenantsFormik.errors
+                                                ?.tenant_password &&
+                                              tenantsFormik.touched &&
+                                              tenantsFormik.touched
+                                                ?.tenant_password ? (
                                                 <div style={{ color: "red" }}>
-                                                  {tenantsFormik.errors.tenant_password}
+                                                  {
+                                                    tenantsFormik.errors
+                                                      .tenant_password
+                                                  }
                                                   {/* {console.log(tenantsFormik.errors.tenant_password)} */}
                                                 </div>
                                               ) : null}
@@ -2706,15 +2792,16 @@ const Leaseing = () => {
                                                         />
                                                         {tenantsFormik.touched
                                                           .birth_date &&
-                                                          tenantsFormik.errors
-                                                            .birth_date ? (
+                                                        tenantsFormik.errors
+                                                          .birth_date ? (
                                                           <div
                                                             style={{
                                                               color: "red",
                                                             }}
                                                           >
                                                             {
-                                                              tenantsFormik.errors
+                                                              tenantsFormik
+                                                                .errors
                                                                 .birth_date
                                                             }
                                                           </div>
@@ -2747,15 +2834,16 @@ const Leaseing = () => {
                                                         />
                                                         {tenantsFormik.touched
                                                           .textpayer_id &&
-                                                          tenantsFormik.errors
-                                                            .textpayer_id ? (
+                                                        tenantsFormik.errors
+                                                          .textpayer_id ? (
                                                           <div
                                                             style={{
                                                               color: "red",
                                                             }}
                                                           >
                                                             {
-                                                              tenantsFormik.errors
+                                                              tenantsFormik
+                                                                .errors
                                                                 .textpayer_id
                                                             }
                                                           </div>
@@ -2795,16 +2883,16 @@ const Leaseing = () => {
                                                         />
                                                         {tenantsFormik.touched
                                                           .comments &&
-                                                          tenantsFormik.errors
-                                                            .comments ? (
+                                                        tenantsFormik.errors
+                                                          .comments ? (
                                                           <div
                                                             style={{
                                                               color: "red",
                                                             }}
                                                           >
                                                             {
-                                                              tenantsFormik.errors
-                                                                .comments
+                                                              tenantsFormik
+                                                                .errors.comments
                                                             }
                                                           </div>
                                                         ) : null}
@@ -2857,15 +2945,16 @@ const Leaseing = () => {
                                                         />
                                                         {tenantsFormik.touched
                                                           .contact_name &&
-                                                          tenantsFormik.errors
-                                                            .contact_name ? (
+                                                        tenantsFormik.errors
+                                                          .contact_name ? (
                                                           <div
                                                             style={{
                                                               color: "red",
                                                             }}
                                                           >
                                                             {
-                                                              tenantsFormik.errors
+                                                              tenantsFormik
+                                                                .errors
                                                                 .contact_name
                                                             }
                                                           </div>
@@ -2898,15 +2987,16 @@ const Leaseing = () => {
                                                         />
                                                         {tenantsFormik.touched
                                                           .relationship_tenants &&
-                                                          tenantsFormik.errors
-                                                            .relationship_tenants ? (
+                                                        tenantsFormik.errors
+                                                          .relationship_tenants ? (
                                                           <div
                                                             style={{
                                                               color: "red",
                                                             }}
                                                           >
                                                             {
-                                                              tenantsFormik.errors
+                                                              tenantsFormik
+                                                                .errors
                                                                 .relationship_tenants
                                                             }
                                                           </div>
@@ -2941,16 +3031,16 @@ const Leaseing = () => {
                                                         />
                                                         {tenantsFormik.touched
                                                           .email &&
-                                                          tenantsFormik.errors
-                                                            .email ? (
+                                                        tenantsFormik.errors
+                                                          .email ? (
                                                           <div
                                                             style={{
                                                               color: "red",
                                                             }}
                                                           >
                                                             {
-                                                              tenantsFormik.errors
-                                                                .email
+                                                              tenantsFormik
+                                                                .errors.email
                                                             }
                                                           </div>
                                                         ) : null}
@@ -2993,15 +3083,16 @@ const Leaseing = () => {
                                                         />
                                                         {tenantsFormik.touched
                                                           .emergency_PhoneNumber &&
-                                                          tenantsFormik.errors
-                                                            .emergency_PhoneNumber ? (
+                                                        tenantsFormik.errors
+                                                          .emergency_PhoneNumber ? (
                                                           <div
                                                             style={{
                                                               color: "red",
                                                             }}
                                                           >
                                                             {
-                                                              tenantsFormik.errors
+                                                              tenantsFormik
+                                                                .errors
                                                                 .emergency_PhoneNumber
                                                             }
                                                           </div>
@@ -3021,21 +3112,19 @@ const Leaseing = () => {
                                         className="btn btn-primary"
                                         onClick={() => {
                                           setShowTenantTable(false);
-                                          tenantsFormik.handleSubmit()
+                                          tenantsFormik.handleSubmit();
                                         }}
-                                      // style={{ background: "green" }}
+                                        // style={{ background: "green" }}
                                       >
                                         Add Tenant
                                       </button>
-                                      <Button
-                                        onClick={handleClose}
-                                      >
+                                      <Button onClick={handleClose}>
                                         Cancel
                                       </Button>
                                     </div>
                                   )}
                                   {/* {console.log(leaseFormik.errors)} */}
-                                  { }
+                                  {}
                                   {selectedOption === "Cosigner" && (
                                     <div className="cosigner">
                                       <div>
@@ -3079,20 +3168,31 @@ const Leaseing = () => {
                                               placeholder="First Name"
                                               type="text"
                                               name="entries[0].cosigner_firstName"
-                                              onBlur={consignerFormik.handleBlur}
+                                              onBlur={
+                                                consignerFormik.handleBlur
+                                              }
                                               onChange={
                                                 consignerFormik.handleChange
                                               }
                                               value={
-                                                consignerFormik.values.entries[0].cosigner_firstName
+                                                consignerFormik.values
+                                                  .entries[0].cosigner_firstName
                                               }
                                             />
                                             {consignerFormik.errors.entries &&
-                                              consignerFormik.errors?.entries[0].cosigner_firstName &&
-                                              consignerFormik.touched.entries &&
-                                              consignerFormik.touched?.entries[0].cosigner_firstName && consignerFormik.values.entries[0].cosigner_firstName === "" ? (
+                                            consignerFormik.errors?.entries[0]
+                                              .cosigner_firstName &&
+                                            consignerFormik.touched.entries &&
+                                            consignerFormik.touched?.entries[0]
+                                              .cosigner_firstName &&
+                                            consignerFormik.values.entries[0]
+                                              .cosigner_firstName === "" ? (
                                               <div style={{ color: "red" }}>
-                                                {consignerFormik.errors.entries[0].cosigner_firstName}
+                                                {
+                                                  consignerFormik.errors
+                                                    .entries[0]
+                                                    .cosigner_firstName
+                                                }
                                               </div>
                                             ) : null}
                                           </div>
@@ -3109,20 +3209,31 @@ const Leaseing = () => {
                                               placeholder="Last Name"
                                               type="text"
                                               name="entries[0].cosigner_lastName"
-                                              onBlur={consignerFormik.handleBlur}
+                                              onBlur={
+                                                consignerFormik.handleBlur
+                                              }
                                               onChange={
                                                 consignerFormik.handleChange
                                               }
                                               value={
-                                                consignerFormik.values.entries[0].cosigner_lastName
+                                                consignerFormik.values
+                                                  .entries[0].cosigner_lastName
                                               }
                                             />
                                             {consignerFormik.errors.entries &&
-                                              consignerFormik.errors?.entries[0].cosigner_lastName &&
-                                              consignerFormik.touched.entries &&
-                                              consignerFormik.touched?.entries[0].cosigner_lastName && consignerFormik.values.entries[0].cosigner_lastName === "" ? (
+                                            consignerFormik.errors?.entries[0]
+                                              .cosigner_lastName &&
+                                            consignerFormik.touched.entries &&
+                                            consignerFormik.touched?.entries[0]
+                                              .cosigner_lastName &&
+                                            consignerFormik.values.entries[0]
+                                              .cosigner_lastName === "" ? (
                                               <div style={{ color: "red" }}>
-                                                {consignerFormik.errors.entries[0].cosigner_lastName}
+                                                {
+                                                  consignerFormik.errors
+                                                    .entries[0]
+                                                    .cosigner_lastName
+                                                }
                                               </div>
                                             ) : null}
                                           </div>
@@ -3154,12 +3265,16 @@ const Leaseing = () => {
                                               placeholder="Phone Number"
                                               type="text"
                                               name="entries[0].cosigner_mobileNumber"
-                                              onBlur={consignerFormik.handleBlur}
+                                              onBlur={
+                                                consignerFormik.handleBlur
+                                              }
                                               onChange={
                                                 consignerFormik.handleChange
                                               }
                                               value={
-                                                consignerFormik.values.entries[0].cosigner_mobileNumber
+                                                consignerFormik.values
+                                                  .entries[0]
+                                                  .cosigner_mobileNumber
                                               }
                                               InputProps={{
                                                 startAdornment: (
@@ -3177,11 +3292,19 @@ const Leaseing = () => {
                                               }}
                                             />
                                             {consignerFormik.errors.entries &&
-                                              consignerFormik.errors?.entries[0].cosigner_mobileNumber &&
-                                              consignerFormik.touched.entries &&
-                                              consignerFormik.touched?.entries[0].cosigner_mobileNumber && consignerFormik.values.entries[0].cosigner_mobileNumber === "" ? (
+                                            consignerFormik.errors?.entries[0]
+                                              .cosigner_mobileNumber &&
+                                            consignerFormik.touched.entries &&
+                                            consignerFormik.touched?.entries[0]
+                                              .cosigner_mobileNumber &&
+                                            consignerFormik.values.entries[0]
+                                              .cosigner_mobileNumber === "" ? (
                                               <div style={{ color: "red" }}>
-                                                {consignerFormik.errors.entries[0].cosigner_mobileNumber}
+                                                {
+                                                  consignerFormik.errors
+                                                    .entries[0]
+                                                    .cosigner_mobileNumber
+                                                }
                                               </div>
                                             ) : null}
                                           </div>
@@ -3255,7 +3378,8 @@ const Leaseing = () => {
                                                     consignerFormik.handleChange
                                                   }
                                                   value={
-                                                    consignerFormik.values.entries[0]
+                                                    consignerFormik.values
+                                                      .entries[0]
                                                       .cosigner_workNumber
                                                   }
                                                   onInput={(e) => {
@@ -3268,11 +3392,10 @@ const Leaseing = () => {
                                                       ); // Remove non-numeric characters
                                                     e.target.value =
                                                       numericValue;
-                                                    consignerFormik.values.entries[0]
-                                                      .cosigner_workNumber = numericValue;
+                                                    consignerFormik.values.entries[0].cosigner_workNumber =
+                                                      numericValue;
                                                   }}
                                                 />
-
                                               </div>
                                             )}
                                           </div>
@@ -3304,7 +3427,9 @@ const Leaseing = () => {
                                               placeholder="Email"
                                               type="text"
                                               name="entries[0].cosigner_email"
-                                              onBlur={consignerFormik.handleBlur}
+                                              onBlur={
+                                                consignerFormik.handleBlur
+                                              }
                                               onChange={
                                                 consignerFormik.handleChange
                                               }
@@ -3321,11 +3446,18 @@ const Leaseing = () => {
                                               }}
                                             />
                                             {consignerFormik.errors.entries &&
-                                              consignerFormik.errors?.entries[0].cosigner_email &&
-                                              consignerFormik.touched.entries &&
-                                              consignerFormik.touched?.entries[0].cosigner_email && consignerFormik.values.entries[0].cosigner_email === "" ? (
+                                            consignerFormik.errors?.entries[0]
+                                              .cosigner_email &&
+                                            consignerFormik.touched.entries &&
+                                            consignerFormik.touched?.entries[0]
+                                              .cosigner_email &&
+                                            consignerFormik.values.entries[0]
+                                              .cosigner_email === "" ? (
                                               <div style={{ color: "red" }}>
-                                                {consignerFormik.errors.entries[0].cosigner_email}
+                                                {
+                                                  consignerFormik.errors
+                                                    .entries[0].cosigner_email
+                                                }
                                               </div>
                                             ) : null}
                                           </div>
@@ -3401,16 +3533,17 @@ const Leaseing = () => {
                                                   }
                                                   value={
                                                     consignerFormik.values
-                                                      .entries[0].cosigner_alternateemail
+                                                      .entries[0]
+                                                      .cosigner_alternateemail
                                                   }
                                                   onInput={(e) => {
-                                                    consignerFormik.values
-                                                      .entries[0].cosigner_alternateemail = e.target.value
+                                                    consignerFormik.values.entries[0].cosigner_alternateemail =
+                                                      e.target.value;
                                                   }}
-                                                // value={
-                                                //   consignerFormik.values.entries[0]
-                                                //     .cosigner_alternateemail
-                                                // }
+                                                  // value={
+                                                  //   consignerFormik.values.entries[0]
+                                                  //     .cosigner_alternateemail
+                                                  // }
                                                 />
                                                 {/* {consignerFormik.touched
                                                   .cosigner_alternateemail &&
@@ -3459,17 +3592,20 @@ const Leaseing = () => {
                                                 width: "100%",
                                                 maxWidth: "25rem",
                                               }}
-                                              onBlur={consignerFormik.handleBlur}
+                                              onBlur={
+                                                consignerFormik.handleBlur
+                                              }
                                               onChange={
                                                 consignerFormik.handleChange
                                               }
                                               value={
-                                                consignerFormik.values.entries[0]
+                                                consignerFormik.values
+                                                  .entries[0]
                                                   .cosigner_streetAdress
                                               }
                                               onInput={(e) => {
-                                                consignerFormik.values
-                                                  .entries[0].cosigner_streetAdress = e.target.value
+                                                consignerFormik.values.entries[0].cosigner_streetAdress =
+                                                  e.target.value;
                                               }}
                                             />
                                             {/* {consignerFormik.touched
@@ -3508,12 +3644,12 @@ const Leaseing = () => {
                                                     consignerFormik.handleChange
                                                   }
                                                   value={
-                                                    consignerFormik.values.entries[0]
-                                                      .cosigner_city
+                                                    consignerFormik.values
+                                                      .entries[0].cosigner_city
                                                   }
                                                   onInput={(e) => {
-                                                    consignerFormik.values
-                                                      .entries[0].cosigner_city = e.target.value
+                                                    consignerFormik.values.entries[0].cosigner_city =
+                                                      e.target.value;
                                                   }}
                                                 />
                                                 {/* {consignerFormik.touched
@@ -3550,12 +3686,13 @@ const Leaseing = () => {
                                                     consignerFormik.handleChange
                                                   }
                                                   value={
-                                                    consignerFormik.values.entries[0]
+                                                    consignerFormik.values
+                                                      .entries[0]
                                                       .cosigner_country
                                                   }
                                                   onInput={(e) => {
-                                                    consignerFormik.values
-                                                      .entries[0].cosigner_country = e.target.value
+                                                    consignerFormik.values.entries[0].cosigner_country =
+                                                      e.target.value;
                                                   }}
                                                 />
                                                 {/* {consignerFormik.touched
@@ -3592,7 +3729,8 @@ const Leaseing = () => {
                                                     consignerFormik.handleChange
                                                   }
                                                   value={
-                                                    consignerFormik.values.entries[0]
+                                                    consignerFormik.values
+                                                      .entries[0]
                                                       .cosigner_postalcode
                                                   }
                                                   onInput={(e) => {
@@ -3605,8 +3743,8 @@ const Leaseing = () => {
                                                       ); // Remove non-numeric characters
                                                     e.target.value =
                                                       numericValue;
-                                                    consignerFormik.values.entries[0]
-                                                      .cosigner_postalcode = numericValue;
+                                                    consignerFormik.values.entries[0].cosigner_postalcode =
+                                                      numericValue;
                                                   }}
                                                 />
                                                 {/* {consignerFormik.touched
@@ -3651,11 +3789,11 @@ const Leaseing = () => {
                                         // setOpenRecurringDialog={handleAddCosigner}
                                         onClick={() => {
                                           // handleAddCosigner();
-                                          consignerFormik.handleSubmit()
+                                          consignerFormik.handleSubmit();
                                           // consignerFormik.errors
                                           // handleDialogClose(); // Call this function to close the dialog
                                         }}
-                                      // style={{ background: "green" }}
+                                        // style={{ background: "green" }}
                                       >
                                         Add Cosigner
                                       </button>
@@ -3674,7 +3812,8 @@ const Leaseing = () => {
                           </DialogContent>
                         </Dialog>
                         {/* {console.log(Object.keys(selectedTenantData))} */}
-                        {selectedTenantData && Object.keys(selectedTenantData).length > 0 ? (
+                        {selectedTenantData &&
+                        Object.keys(selectedTenantData).length > 0 ? (
                           <div>
                             <table
                               style={{
@@ -3770,8 +3909,7 @@ const Leaseing = () => {
                               </tbody>
                             </table>
                           </div>
-                        ) : null
-                        }
+                        ) : null}
                         {cosignerData &&
                           Object.keys(cosignerData).length > 0 && (
                             <div>
@@ -3902,7 +4040,7 @@ const Leaseing = () => {
                                 value={leaseFormik.values.rent_cycle}
                               >
                                 {leaseFormik.touched.rent_cycle &&
-                                  leaseFormik.errors.rent_cycle ? (
+                                leaseFormik.errors.rent_cycle ? (
                                   <div style={{ color: "red" }}>
                                     {leaseFormik.errors.rent_cycle}
                                   </div>
@@ -3992,20 +4130,26 @@ const Leaseing = () => {
                                     value={leaseFormik.values.entries[0].amount}
                                     onChange={(e) => {
                                       const inputValue = e.target.value;
-                                      const numericValue = inputValue.replace(/\D/g, '');
-                                      leaseFormik.values.entries[0].amount = numericValue;
+                                      const numericValue = inputValue.replace(
+                                        /\D/g,
+                                        ""
+                                      );
+                                      leaseFormik.values.entries[0].amount =
+                                        numericValue;
                                       leaseFormik.handleChange({
                                         target: {
-                                          name: 'amount',
+                                          name: "amount",
                                           value: numericValue,
                                         },
                                       });
                                     }}
                                   />
                                   {leaseFormik.errors.entries &&
-                                    leaseFormik.errors?.entries[0].amount &&
-                                    leaseFormik.touched.entries &&
-                                    leaseFormik.touched?.entries[0].amount && leaseFormik.values.entries[0].amount === "" ? (
+                                  leaseFormik.errors?.entries[0].amount &&
+                                  leaseFormik.touched.entries &&
+                                  leaseFormik.touched?.entries[0].amount &&
+                                  leaseFormik.values.entries[0].amount ===
+                                    "" ? (
                                     <div style={{ color: "red" }}>
                                       {leaseFormik.errors.entries[0].amount}
                                     </div>
@@ -4314,7 +4458,8 @@ const Leaseing = () => {
                               className="form-control-label"
                               htmlFor="input-unitadd10"
                             >
-                              Don't forget to record the payment once you have connected the deposite
+                              Don't forget to record the payment once you have
+                              connected the deposite
                             </label>
                           </FormGroup>
                         </Col>
@@ -4395,7 +4540,8 @@ const Leaseing = () => {
                                         onBlur={leaseFormik.handleBlur}
                                         onChange={leaseFormik.handleChange}
                                         value={
-                                          leaseFormik.values.entries[0].recuring_account
+                                          leaseFormik.values.entries[0]
+                                            .recuring_account
                                         }
                                       >
                                         {/* {leaseFormik.touched.entries[0].recuring_account &&
@@ -4433,7 +4579,6 @@ const Leaseing = () => {
                                         </DropdownItem>
                                       </DropdownMenu>
                                     </Dropdown>
-
                                   </FormGroup>
                                   {/* {console.log(selectedAccount)} */}
                                 </div>
@@ -4486,7 +4631,10 @@ const Leaseing = () => {
                                       name="recuring_amount"
                                       onBlur={leaseFormik.handleBlur}
                                       onChange={leaseFormik.handleChange}
-                                      value={leaseFormik.values.entries[0].recuring_amount}
+                                      value={
+                                        leaseFormik.values.entries[0]
+                                          .recuring_amount
+                                      }
                                       onInput={(e) => {
                                         const inputValue = e.target.value;
                                         const numericValue = inputValue.replace(
@@ -4494,7 +4642,8 @@ const Leaseing = () => {
                                           ""
                                         ); // Remove non-numeric characters
                                         e.target.value = numericValue;
-                                        leaseFormik.values.entries[0].recuring_amount = numericValue;
+                                        leaseFormik.values.entries[0].recuring_amount =
+                                          numericValue;
                                       }}
                                     />
                                     {/* {leaseFormik.touched.recuring_amount &&
@@ -4519,9 +4668,13 @@ const Leaseing = () => {
                                     name="recuringmemo"
                                     onBlur={leaseFormik.handleBlur}
                                     onChange={leaseFormik.handleChange}
-                                    value={leaseFormik.values.entries[0].recuringmemo}
-                                    onInput={(e) => { leaseFormik.values.entries[0].recuringmemo = e.target.value }
+                                    value={
+                                      leaseFormik.values.entries[0].recuringmemo
                                     }
+                                    onInput={(e) => {
+                                      leaseFormik.values.entries[0].recuringmemo =
+                                        e.target.value;
+                                    }}
                                   />
 
                                   {/* {leaseFormik.touched.entries[0].recuringmemo &&
@@ -4703,7 +4856,8 @@ const Leaseing = () => {
                                         onBlur={leaseFormik.handleBlur}
                                         onChange={leaseFormik.handleChange}
                                         value={
-                                          leaseFormik.values.entries[0].onetime_account
+                                          leaseFormik.values.entries[0]
+                                            .onetime_account
                                         }
                                       >
                                         {/* {leaseFormik.touched.entries[0].onetime_account &&
@@ -4785,7 +4939,10 @@ const Leaseing = () => {
                                       name="onetime_amount"
                                       onBlur={leaseFormik.handleBlur}
                                       onChange={leaseFormik.handleChange}
-                                      value={leaseFormik.values.entries[0].onetime_amount}
+                                      value={
+                                        leaseFormik.values.entries[0]
+                                          .onetime_amount
+                                      }
                                       onInput={(e) => {
                                         const inputValue = e.target.value;
                                         const numericValue = inputValue.replace(
@@ -4793,7 +4950,8 @@ const Leaseing = () => {
                                           ""
                                         ); // Remove non-numeric characters
                                         e.target.value = numericValue;
-                                        leaseFormik.values.entries[0].onetime_amount = numericValue;
+                                        leaseFormik.values.entries[0].onetime_amount =
+                                          numericValue;
                                       }}
                                     />
                                     {/* {leaseFormik.touched.entries[0].onetime_amount &&
@@ -4818,8 +4976,13 @@ const Leaseing = () => {
                                     name="onetime_memo"
                                     onBlur={leaseFormik.handleBlur}
                                     onChange={leaseFormik.handleChange}
-                                    value={leaseFormik.values.entries[0].onetime_memo}
-                                    onInput={(e) => { leaseFormik.values.entries[0].onetime_memo = e.target.value }}
+                                    value={
+                                      leaseFormik.values.entries[0].onetime_memo
+                                    }
+                                    onInput={(e) => {
+                                      leaseFormik.values.entries[0].onetime_memo =
+                                        e.target.value;
+                                    }}
                                   />
                                   {/* {leaseFormik.touched.onetime_memo &&
                                     leaseFormik.errors.onetime_memo ? (
@@ -4853,36 +5016,22 @@ const Leaseing = () => {
                     </Col>
                   </Row>
                   <AccountDialog
-                    AddBankAccountDialogOpen={
-                      AddBankAccountDialogOpen
-                    }
+                    AddBankAccountDialogOpen={AddBankAccountDialogOpen}
                     handleCloseDialog={handleCloseDialog}
-                    selectAccountDropDown={
-                      selectAccountDropDown
-                    }
+                    selectAccountDropDown={selectAccountDropDown}
                     toggle8={toggle8}
-                    setAddBankAccountDialogOpen={
-                      setAddBankAccountDialogOpen
-                    }
+                    setAddBankAccountDialogOpen={setAddBankAccountDialogOpen}
                     toggle1={toggle1}
-                    selectAccountLevelDropDown={
-                      selectAccountLevelDropDown
-                    }
-                    selectFundTypeDropDown={
-                      selectFundTypeDropDown
-                    }
+                    selectAccountLevelDropDown={selectAccountLevelDropDown}
+                    selectFundTypeDropDown={selectFundTypeDropDown}
                     toggle10={toggle10}
                     selectedAccount={selectedAccount}
                     accountTypeName={accountTypeName}
                     setToggleApiCall={setToggleApiCall}
                     toggleApiCall={toggleApiCall}
                     hadleselectedAccount={hadleselectedAccount}
-                    hadleselectedOneTimeAccount={
-                      hadleselectedOneTimeAccount
-                    }
-                    hadleselectedRecuringAccount={
-                      hadleselectedRecuringAccount
-                    }
+                    hadleselectedOneTimeAccount={hadleselectedOneTimeAccount}
+                    hadleselectedRecuringAccount={hadleselectedRecuringAccount}
                   />
                   {recurringData && Object.keys(recurringData).length > 0 && (
                     <div>
@@ -5224,7 +5373,7 @@ const Leaseing = () => {
                     </div>
                   </div>
                   <hr />
-                  <Row>
+                  {/* <Row>
                     <Col lg="3">
                       <FormGroup>
                         <label
@@ -5251,7 +5400,7 @@ const Leaseing = () => {
                         labelPlacement="end"
                       />
                     </FormGroup>
-                  </Row>
+                  </Row> */}
                   {/* <Button
                   color="primary"
                   href="#rms"
@@ -5296,7 +5445,7 @@ const Leaseing = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                        console.log("object")
+                        console.log("object");
                         // console.log(leaseFormik.errors)
                         // console.log(tenantsFormik.values)
                         // console.log(leaseFormik.values)

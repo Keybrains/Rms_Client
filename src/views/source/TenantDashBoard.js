@@ -3,6 +3,7 @@ import classnames from "classnames";
 import Chart from "chart.js";
 
 import { Line, Bar } from "react-chartjs-2";
+import { jwtDecode } from "jwt-decode";
 
 import {
   Button,
@@ -51,69 +52,41 @@ const TenantDashBoard = (props) => {
   // console.log(cookies.get("token"), "abc")
 
   let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
-    if (cookies.get("token")) {
-      let  authConfig = {
-        headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post method
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
-      navigate("/auth/login");
-    }
-  } else {
-    navigate("/auth/login");
-  }
-};
-
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
-
-  
-  const cardStyle = {
-    // background: `url(${require("../assets/img/us3.jpeg").default})`, 
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    minHeight: '70vh',
-    alignItems: 'center',
-    justifyContent: "center",
-    // display: 'flex',
-    fontFamily: 'sans-serif',
-    fontSize: '30px',
-    color: 'black',
-    // textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-  };
-  
+  const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
+
+  const cardStyle = {
+    // background: `url(${require("../assets/img/us3.jpeg").default})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    minHeight: "70vh",
+    alignItems: "center",
+    justifyContent: "center",
+    // display: 'flex',
+    fontFamily: "sans-serif",
+    fontSize: "30px",
+    color: "black",
+    // textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+  };
 
   return (
     <>
       <TenantsHeader />
       {/* Page content */}
       <Container className="mt--7" fluid>
-          <div >
+        <div>
           <Card>
-            
-           <CardBody style={cardStyle}>
-              Welcome to 302 Properties
-            </CardBody>
+            <CardBody style={cardStyle}>Welcome to 302 Properties</CardBody>
           </Card>
-          
         </div>
-
       </Container>
     </>
   );

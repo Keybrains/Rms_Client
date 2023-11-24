@@ -1,20 +1,21 @@
 import {
-    Button,
-    Card,
-    CardHeader,
-    CardBody,
-    FormGroup,
-    Form,
-    Input,
-    Container,
-    Row,
-    Col,
-    Table,
-  } from "reactstrap";
-  import React, { useEffect, useState } from "react";
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  FormGroup,
+  Form,
+  Input,
+  Container,
+  Row,
+  Col,
+  Table,
+} from "reactstrap";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 import VendorHeader from "components/Headers/VendorHeader";
 
 const VenorWorkOrder = () => {
@@ -26,7 +27,16 @@ const VenorWorkOrder = () => {
 
   const navigate = useNavigate();
   let cookies = new Cookies();
-  let cookie_id = cookies.get("Vendor ID");
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
   const getWorkOrderDetails = async () => {
     try {
@@ -51,35 +61,6 @@ const VenorWorkOrder = () => {
   useEffect(() => {
     getWorkOrderDetails();
   }, [id]);
-
-  // let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
-    if (cookies.get("token")) {
-      let  authConfig = {
-        headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post method
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
-      navigate("/auth/login");
-    }
-  } else {
-    navigate("/auth/login");
-  }
-};
-
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
 
   return (
     <>

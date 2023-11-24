@@ -19,14 +19,15 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import AddVendorHeader from "components/Headers/AddVendorHeader";
-import Cookies from 'universal-cookie';
+import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const AddVendor = () => {
   // Initialize variables and state
   const navigate = useNavigate();
   const { id } = useParams();
   const [showPassword, setShowPassword] = useState(false);
- 
+
   // Define validation schema for form fields
   const validationSchema = yup.object({
     vendor_password: yup
@@ -38,7 +39,7 @@ const AddVendor = () => {
       )
       .required("Password is required"),
 
-      vendor_email: yup
+    vendor_email: yup
       .string()
       .email("Invalid email address")
       .required("Email is required"),
@@ -61,45 +62,29 @@ const AddVendor = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let  authConfig = {
-        headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post method
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
       navigate("/auth/login");
     }
-  } else {
-    navigate("/auth/login");
-  }
-};
-
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
-
+  }, [navigate]);
 
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${id}`)
+        .get(
+          `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${id}`
+        )
         .then((response) => {
           const vendorData = response.data.data;
           setVendorData(vendorData);
           setIsLoading(false);
-  
+
           // Initialize the form with fetched data
           VendorFormik.setValues({
             vendor_name: vendorData.vendor_name || "",
@@ -107,7 +92,7 @@ React.useEffect(() => {
             vendor_email: vendorData.vendor_email || "",
             vendor_password: vendorData?.vendor_password || "",
           });
-  
+
           console.log(vendorData);
         })
         .catch((error) => {
@@ -116,7 +101,6 @@ React.useEffect(() => {
         });
     }
   }, [id]);
-  
 
   // Handle form submission
   async function handleSubmit(values) {
@@ -272,12 +256,12 @@ React.useEffect(() => {
                             value={VendorFormik.values.vendor_email}
                             required
                           />
-                            {VendorFormik.touched.vendor_email &&
-                              VendorFormik.errors.vendor_email ? (
-                                <div style={{ color: "red" }}>
-                                  {VendorFormik.errors.vendor_email}
-                                </div>
-                              ) : null}
+                          {VendorFormik.touched.vendor_email &&
+                          VendorFormik.errors.vendor_email ? (
+                            <div style={{ color: "red" }}>
+                              {VendorFormik.errors.vendor_email}
+                            </div>
+                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -310,7 +294,11 @@ React.useEffect(() => {
                               style={{ padding: "7px" }}
                               onClick={() => setShowPassword(!showPassword)}
                             >
-                              {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                              {showPassword ? (
+                                <VisibilityOffIcon />
+                              ) : (
+                                <VisibilityIcon />
+                              )}
                             </Button>
                           </div>
                           {VendorFormik.touched.vendor_password &&

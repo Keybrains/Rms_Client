@@ -26,6 +26,7 @@ import VendorHeader from "components/Headers/VendorHeader";
 import swal from "sweetalert";
 import ClearIcon from "@mui/icons-material/Clear";
 import "react-datepicker/dist/react-datepicker.css";
+import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
 
 const VendorAddWork = () => {
@@ -34,9 +35,6 @@ const VendorAddWork = () => {
   const { id } = useParams();
   console.log(id, "id");
 
-  let cookies = new Cookies();
-  let cookie_id = cookies.get("Vendor ID");
-  console.log(cookie_id, "cookie_id");
   const [propdropdownOpen, setpropdropdownOpen] = React.useState(false);
   const [categorydropdownOpen, setcategorydropdownOpen] = React.useState(false);
   const [vendordropdownOpen, setvendordropdownOpen] = React.useState(false);
@@ -106,6 +104,18 @@ const VendorAddWork = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
+  
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
     navigate("../VendorWorkTable");

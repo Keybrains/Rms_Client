@@ -28,16 +28,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import "react-datepicker/dist/react-datepicker.css";
 import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate, useParams } from "react-router-dom";
 
 const TAddWork = () => {
   const [workOrderData, setWorkOrderData] = useState(null);
   const { id } = useParams();
-
-  let cookies = new Cookies();
-  let cookie_id = cookies.get("Tenant ID");
-  console.log(cookie_id, "cookie_id");
-
   const [open, setOpen] = React.useState(false);
 
   const [propdropdownOpen, setpropdropdownOpen] = React.useState(false);
@@ -241,32 +237,18 @@ const TAddWork = () => {
 
   // let cookies = new Cookies();
   // Check Authe(token)
-  let chackAuth = async () => {
+ 
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint

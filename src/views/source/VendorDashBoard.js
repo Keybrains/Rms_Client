@@ -3,6 +3,7 @@ import classnames from "classnames";
 import Chart from "chart.js";
 
 import { Line, Bar } from "react-chartjs-2";
+import { jwtDecode } from "jwt-decode";
 
 import {
   Button,
@@ -49,35 +50,16 @@ const VendorDashBoard = (props) => {
   };
 
   let cookies = new Cookies();
-  console.log(cookies.get("token"), "abc")
+  const [accessType, setAccessType] = useState(null);
 
- // Check Authe(token)
- let chackAuth = async () => {
-  if (cookies.get("token")) {
-    let  authConfig = {
-      headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post methodss
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
+  React.useEffect(() => {
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
       navigate("/auth/login");
     }
-  } else {
-    navigate("/auth/login");
-  }
-};
-
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
+  }, [navigate]);
 
   
   const cardStyle = {
@@ -95,9 +77,6 @@ React.useEffect(() => {
   };
   
 
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
 
   return (
     <>

@@ -4,7 +4,9 @@ import axios from "axios";
 import { Table, Container, Row, Card, CardHeader } from "reactstrap";
 import TenantsHeader from "components/Headers/TenantsHeader";
 import { FormGroup, Col, Button } from "reactstrap";
+import { jwtDecode } from "jwt-decode";
 import { OpenImageDialog } from "components/OpenImageDialog";
+import Cookies from "universal-cookie";
 
 const TenantPropertyDetail = () => {
   const { rental_adress } = useParams();
@@ -16,6 +18,18 @@ const TenantPropertyDetail = () => {
   const [selectedImage, setSelectedImage] = useState("");
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
+
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const getRentalData = async () => {

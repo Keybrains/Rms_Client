@@ -34,14 +34,15 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { RotatingLines } from "react-loader-spinner";
-import Cookies from 'universal-cookie';
+import { jwtDecode } from "jwt-decode";
+import Cookies from "universal-cookie";
 
 const PropertyType = () => {
   const { id } = useParams();
   let [propertyData, setPropertyData] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [isEditDialogOpen, setEditDialogOpen] = React.useState(false);
-  const [editingProperty, setEditingProperty] = useState([]) //niche set null karyu hatu
+  const [editingProperty, setEditingProperty] = useState([]); //niche set null karyu hatu
   // const [editingProperty, setEditingProperty] = React.useState({ property_type: '' }); //ana lidhe aave che?
   let navigate = useNavigate();
   let [modalShowForPopupForm, setModalShowForPopupForm] = React.useState(false);
@@ -80,35 +81,17 @@ const PropertyType = () => {
     setEditDialogOpen(false);
     setEditingProperty([]);
   };
+ let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
 
-  let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   const getPropertyData = async () => {
     try {
@@ -164,7 +147,7 @@ const PropertyType = () => {
 
       if (response.status === 200) {
         swal("", response.data.message, "success");
-        setEditDialogOpen(false)
+        setEditDialogOpen(false);
         getPropertyData(); // Refresh the data after successful edit
       } else {
         swal("", response.data.message, "error");
@@ -188,18 +171,29 @@ const PropertyType = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/newproparty/newproparty/", {
-            data: { _id: id },
-          })
+          .delete(
+            "https://propertymanager.cloudpress.host/api/newproparty/newproparty/",
+            {
+              data: { _id: id },
+            }
+          )
 
           .then((response) => {
-            console.log(response.data)
+            console.log(response.data);
             if (response.data.statusCode === 200) {
-              swal("Success!", "Property Type deleted successfully!", "success");
+              swal(
+                "Success!",
+                "Property Type deleted successfully!",
+                "success"
+              );
               getPropertyData();
             } else if (response.data.statusCode === 201) {
               // Handle the case where property is already assigned
-              swal("Warning!", "Property Type already assigned. Deletion not allowed.", "warning");
+              swal(
+                "Warning!",
+                "Property Type already assigned. Deletion not allowed.",
+                "warning"
+              );
             } else {
               swal("error", response.data.message, "error");
             }
@@ -212,9 +206,6 @@ const PropertyType = () => {
       }
     });
   };
-
-
-
 
   //  //   auto form fill up in edit
   //  let seletedEditData = async (datas) => {
@@ -240,7 +231,6 @@ const PropertyType = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-
 
   const editPropertyType = (id) => {
     navigate(`/admin/AddPropertyType/${id}`);
@@ -268,9 +258,7 @@ const PropertyType = () => {
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
-              <h1 style={{ color: 'white' }}>
-                Property Type
-              </h1>
+              <h1 style={{ color: "white" }}>Property Type</h1>
             </FormGroup>
           </Col>
 
@@ -285,7 +273,8 @@ const PropertyType = () => {
               Add New Property Type
             </Button>
           </Col>
-        </Row><br />
+        </Row>
+        <br />
         {/* Table */}
         <Row>
           <div className="col">
@@ -338,13 +327,13 @@ const PropertyType = () => {
                         <td>{property.propertysub_type}</td>
                         <td>
                           <div style={{ display: "flex" }}>
-
                             <div
                               style={{ cursor: "pointer" }}
                               onClick={() => deleteProperty(property._id)}
                             >
                               <DeleteIcon />
-                            </div>&nbsp; &nbsp; &nbsp;
+                            </div>
+                            &nbsp; &nbsp; &nbsp;
                             <div
                               style={{ cursor: "pointer" }}
                               onClick={() => editPropertyType(property._id)}
@@ -357,63 +346,85 @@ const PropertyType = () => {
                     ))}
                   </tbody>
                 </Table>
-                {paginatedData.length > 0 ? <Row>
-                  <Col className="text-right m-3">
-                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
-                      <DropdownToggle caret >
-                        {pageItem}
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem
-                          onClick={() => setPageItem(6)}
+                {paginatedData.length > 0 ? (
+                  <Row>
+                    <Col className="text-right m-3">
+                      <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                        <DropdownToggle caret>{pageItem}</DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(6);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            6
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(12);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            12
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(18);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            18
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-left"
+                          viewBox="0 0 16 16"
                         >
-                          6
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() =>
-                            setPageItem(12)
-                          }
+                          <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                        </svg>
+                      </Button>
+                      <span>
+                        Page {currentPage} of {totalPages}
+                      </span>{" "}
+                      <Button
+                        className="p-0"
+                        style={{ backgroundColor: "#d0d0d0" }}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-caret-right"
+                          viewBox="0 0 16 16"
                         >
-                          12
-                        </DropdownItem>
-                        <DropdownItem
-                          onClick={() => setPageItem(18)}
-                        >
-                          18
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left" viewBox="0 0 16 16">
-                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                      </svg>
-                    </Button>
-                    <span>
-                      Page {currentPage} of {totalPages}
-                    </span>{" "}
-                    <Button
-                      className="p-0"
-                      style={{ backgroundColor: '#d0d0d0' }}
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
-                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                      </svg>
-                    </Button>{" "}
-
-                  </Col>
-                </Row> : <></>}
-              </Card>)}
+                          <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                        </svg>
+                      </Button>{" "}
+                    </Col>
+                  </Row>
+                ) : (
+                  <></>
+                )}
+              </Card>
+            )}
           </div>
         </Row>
       </Container>
-
     </>
   );
 };

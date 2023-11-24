@@ -27,6 +27,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import Box from "@mui/material/Box";
+import { jwtDecode } from "jwt-decode";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -34,6 +35,8 @@ import TabPanel from "@mui/lab/TabPanel";
 import EmailIcon from "@mui/icons-material/Email";
 import ClearIcon from "@mui/icons-material/Clear";
 import EditIcon from "@mui/icons-material/Edit";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+
 import {
   CardActions,
   CardContent,
@@ -49,6 +52,8 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useFormik } from "formik";
+import Cookies from "universal-cookie";
+import MailIcon from "@mui/icons-material/Mail";
 
 const ApplicantSummary = () => {
   const navigate = useNavigate();
@@ -63,6 +68,17 @@ const ApplicantSummary = () => {
   const [propertyData, setPropertyData] = useState();
   const [isEdit, setIsEdit] = useState(false);
 
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
   const handleSearch = () => {
     // Handle search functionality here
     console.log("Searching for:", searchText);
@@ -78,15 +94,16 @@ const ApplicantSummary = () => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    console.log(newValue);
+    console.log(matchedApplicant?.tenant_mobileNumber);
+    tenantsData(matchedApplicant?.tenant_mobileNumber, newValue);
   };
 
-  const dropdownList = [
-    "Approved",
-    "Rejected",
-  ];
+  const dropdownList = ["Approved", "Rejected"];
 
   const selectedDropdown = (item) => {
     setselectedDropdownItem(item);
+
     console.log(item, "item");
   };
 
@@ -100,7 +117,7 @@ const ApplicantSummary = () => {
     initialValues: {
       applicant_checklist: [],
       applicant_checkedChecklist: [],
-      applicant_status: "",
+      status: "",
       tenant_firstName: "",
       tenant_lastName: "",
       tenant_mobileNumber: "",
@@ -115,9 +132,51 @@ const ApplicantSummary = () => {
     },
   });
 
+  const [rentaldata, setRentaldata] = useState([]);
+
+  const tenantsData = async (number, status) => {
+    // Construct the API URL
+    const apiUrl = `https://propertymanager.cloudpress.host/api/applicant/applicant_get?tenant_mobileNumber=${number}&status=${status}`;
+
+    try {
+      // Fetch tenant data
+      const response = await axios.get(apiUrl);
+      const tenantData = response.data.data;
+      //console.log(tenantData.tenant_firstName, "abcd");
+      // setTenantDetails(tenantData);
+      setRentaldata(tenantData);
+      console.log(response.data, "mansi");
+      // setLoading(false);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+      // setError(error);
+      // setLoading(false);
+    }
+  };
+
+  const handleEditStatus = (item) => {
+    console.log(selectedDropdownItem, "selectedDropdownItem");
+
+    // console.log(updatedApplicant, "updatedApplicant 403");
+    const status = {
+      status: item,
+    };
+    axios
+      .put(`https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/status`, status)
+      .catch((err) => {
+        console.error(err);
+      })
+      .then((res) => {
+        console.log(res, "res");
+        getApplicantData();
+      });
+  };
+
   const navigateToLease = (tenantID, entryIndex) => {
     axios
-      .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
+      .get(
+        `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
+      )
       .then((response) => {
         const data = response.data.data;
 
@@ -126,7 +185,9 @@ const ApplicantSummary = () => {
 
         console.log(rentalAddress, "Rental Addressss");
         axios
-          .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+          .get(
+            "https://propertymanager.cloudpress.host/api/rentals/allproperty"
+          )
           .then((response) => {
             const property = response.data.data;
             console.log(property, "properties");
@@ -238,9 +299,12 @@ const ApplicantSummary = () => {
   //       // setLoader(false);
   //     });
   // }, [id]);
+
   useEffect(() => {
     axios
-      .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
+      .get(
+        `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
+      )
       .then((applicants) => {
         axios
           .get("https://propertymanager.cloudpress.host/api/rentals/property")
@@ -407,6 +471,7 @@ const ApplicantSummary = () => {
       tenant_faxPhoneNumber: values.tenant_faxPhoneNumber,
       tenant_email: values.tenant_email,
       tenant_workNumber: values.tenant_workNumber,
+      status: selectedDropdownItem,
     };
     console.log(updatedApplicant, "updatedApplicant");
 
@@ -516,7 +581,11 @@ const ApplicantSummary = () => {
               toggle={toggle}
             >
               <DropdownToggle caret style={{ width: "100%" }}>
-                {selectedDropdownItem ? selectedDropdownItem : "Select"}
+                {matchedApplicant.status
+                  ? matchedApplicant.status
+                  : selectedDropdownItem
+                  ? selectedDropdownItem
+                  : "Select"}
               </DropdownToggle>
               <DropdownMenu
                 style={{ width: "100%" }}
@@ -529,7 +598,10 @@ const ApplicantSummary = () => {
                   return (
                     <DropdownItem
                       key={index}
-                      onClick={() => selectedDropdown(item)}
+                      onClick={() => {
+                        selectedDropdown(item);
+                        handleEditStatus(item);
+                      }}
                     >
                       {item}
                     </DropdownItem>
@@ -560,9 +632,27 @@ const ApplicantSummary = () => {
                     onChange={handleChange}
                     aria-label="lab API tabs example"
                   >
-                    <Tab label="Summary" value="Summary" />
-                    {/* <Tab label="Application" value="Application" /> */}
-                    {/* <Tab label="Screening" value="Screening" /> */}
+                    <Tab
+                      label="Summary"
+                      value="Summary"
+                      style={{ textTransform: "none" }}
+                    />
+                    <Tab
+                      label="Approved"
+                      value="Approved"
+                      style={{ textTransform: "none" }}
+                      // onClick={(e) =>
+                      //   tenantsData(
+                      //     matchedApplicant?.tenant_mobileNumber,
+                      //     e.target.value
+                      //   )
+                      // }
+                    />
+                    <Tab
+                      label="Rejected"
+                      value="Rejected"
+                      style={{ textTransform: "none" }}
+                    />
                   </TabList>
                 </Box>
                 <TabPanel value="Summary">
@@ -924,6 +1014,258 @@ const ApplicantSummary = () => {
                           )}
                         </Grid>
                       </Grid>
+                    </Col>
+                  </Row>
+                </TabPanel>
+                <TabPanel value="Approved">
+                  <CardHeader className="border-0">
+                    {/* <span>
+                        <span>Property :</span>
+                        <h2 style={{ color: "blue" }}> {rental}</h2>
+                      </span> */}
+                  </CardHeader>
+                  <Row>
+                    <Col>
+                      {/* {Array.isArray(rentaldata) ? ( */}
+                      <Grid container spacing={2}>
+                        {rentaldata.map((tenant, index) => (
+                          <Grid
+                            item
+                            xs={12}
+                            sm={6}
+                            // key={index}
+                          >
+                            {/* {tenant.entries.map((entry) => ( */}
+                            <Box
+                              // key={index}
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              padding="16px"
+                              maxWidth="400px"
+                              margin="20px"
+                            >
+                              <Row>
+                                <Col lg="2">
+                                  <Box
+                                    width="40px"
+                                    height="40px"
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    backgroundColor="grey"
+                                    borderRadius="8px"
+                                    color="white"
+                                    fontSize="24px"
+                                  >
+                                    <AssignmentIndIcon />
+                                  </Box>
+                                </Col>
+
+                                <Col lg="5">
+                                  <div
+                                    style={{
+                                      color: "blue",
+                                      height: "40px",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.tenant_firstName || "N/A"}{" "}
+                                    {/* Jadeja Yash */}
+                                    {tenant.tenant_lastName || "N/A"}
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      paddingTop: "3px",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "2px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <PhoneAndroidIcon />
+                                    </Typography>
+                                    {tenant.tenant_mobileNumber || "N/A"}
+                                    97587587584
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "7px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <HomeIcon />
+                                    </Typography>
+                                    {tenant.rental_adress || "N/A"}
+                                    {/* property1 */}
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      paddingTop: "3px",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                      color: "green",
+                                    }}
+                                  >
+                                    {/* {tenant.tenant_mobileNumber || "N/A"} */}
+                                    Approved
+                                  </div>
+                                </Col>
+                              </Row>
+                            </Box>
+                            {/* ))} */}
+                          </Grid>
+                        ))}
+                      </Grid>
+                      {/* ) : (
+                          <h3>No data available....</h3>
+                        )} */}
+                    </Col>
+                  </Row>
+                </TabPanel>
+                <TabPanel value="Rejected">
+                  <CardHeader className="border-0">
+                    {/* <span>
+                        <span>Property :</span>
+                        <h2 style={{ color: "blue" }}> {rental}</h2>
+                      </span> */}
+                  </CardHeader>
+                  <Row>
+                    <Col>
+                      {/* {Array.isArray(rentaldata) ? ( */}
+                      <Grid container spacing={2}>
+                        {rentaldata.map((tenant, index) => (
+                          <Grid
+                            item
+                            xs={12}
+                            sm={6}
+                            // key={index}
+                          >
+                            {/* {tenant.entries.map((entry) => ( */}
+                            <Box
+                              // key={index}
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              padding="16px"
+                              maxWidth="400px"
+                              margin="20px"
+                            >
+                              <Row>
+                                <Col lg="2">
+                                  <Box
+                                    width="40px"
+                                    height="40px"
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    backgroundColor="grey"
+                                    borderRadius="8px"
+                                    color="white"
+                                    fontSize="24px"
+                                  >
+                                    <AssignmentIndIcon />
+                                  </Box>
+                                </Col>
+
+                                <Col lg="5">
+                                  <div
+                                    style={{
+                                      color: "blue",
+                                      height: "40px",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.tenant_firstName || "N/A"}{" "}
+                                    {/* Jadeja Yash */}
+                                    {tenant.tenant_lastName || "N/A"}
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      paddingTop: "3px",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "2px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <PhoneAndroidIcon />
+                                    </Typography>
+                                    {tenant.tenant_mobileNumber || "N/A"}
+                                    97587587584
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "7px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <HomeIcon />
+                                    </Typography>
+                                    {tenant.rental_adress || "N/A"}
+                                    {/* property1 */}
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      paddingTop: "3px",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                      color: "red",
+                                    }}
+                                  >
+                                    {/* {tenant.tenant_mobileNumber || "N/A"} */}
+                                    Rejected
+                                  </div>
+                                </Col>
+                              </Row>
+                            </Box>
+                            {/* ))} */}
+                          </Grid>
+                        ))}
+                      </Grid>
+                      {/* ) : (
+                          <h3>No data available....</h3>
+                        )} */}
                     </Col>
                   </Row>
                 </TabPanel>

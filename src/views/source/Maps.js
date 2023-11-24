@@ -18,6 +18,8 @@
 import React from "react";
 
 // reactstrap components
+import Cookies from "universal-cookie";
+import { jwtDecode } from "jwt-decode";
 import { Card, Container, Row } from "reactstrap";
 
 // core components
@@ -88,6 +90,7 @@ const MapWrapper = () => {
       animation: google.maps.Animation.DROP,
       title: "Light Bootstrap Dashboard PRO React!",
     });
+    
 
     const contentString =
       '<div class="info-window-content"><h2>Light Bootstrap Dashboard PRO React</h2>' +

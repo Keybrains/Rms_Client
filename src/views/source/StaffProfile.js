@@ -12,6 +12,7 @@ import {
   Row,
   Col,
 } from "reactstrap"; // Import other necessary components from 'reactstrap'
+import { jwtDecode } from "jwt-decode";
 
 const StaffProfile = () => {
   const { id } = useParams();
@@ -22,37 +23,16 @@ const StaffProfile = () => {
 
   const navigate = useNavigate();
   let cookies = new Cookies();
-  let cookie_id = cookies.get("Staff ID");
+  const [accessType, setAccessType] = useState(null);
 
-  // let cookies = new Cookies();
-  // Check Authe(token)
-  let chackAuth = async () => {
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let  authConfig = {
-        headers: {
-        Authorization: `Bearer ${cookies.get("token")}`,
-        token: cookies.get("token"),
-      },
-    };
-    // auth post method
-    let res = await axios.post(
-      "https://propertymanager.cloudpress.host/api/register/auth",
-      { purpose: "validate access" },
-      authConfig
-    );
-    if (res.data.statusCode !== 200) {
-      // cookies.remove("token");
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
       navigate("/auth/login");
     }
-  } else {
-    navigate("/auth/login");
-  }
-};
-
-React.useEffect(() => {
-  chackAuth();
-}, [cookies.get("token")]);
-
+  }, [navigate]);
   useEffect(() => {
     const getStaffData = async () => {
       try {
@@ -75,8 +55,6 @@ React.useEffect(() => {
 
     getStaffData();
   }, [cookie_id, id]);
-
-  
 
   return (
     <>

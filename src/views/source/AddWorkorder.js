@@ -28,6 +28,8 @@ import ClearIcon from "@mui/icons-material/Clear";
 import "react-datepicker/dist/react-datepicker.css";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "universal-cookie";
 
 const AddWorkorder = () => {
   const { id } = useParams();
@@ -46,6 +48,18 @@ const AddWorkorder = () => {
   const [selectedStatus, setSelectedStatus] = useState("Select");
 
   const [selectedAccount, setSelectedAccount] = useState("");
+
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+
+  React.useEffect(() => {
+    if (cookies.get("token")) {
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
   const handleAccountSelection = (value, index) => {
     const updatedEntries = [...WorkFormik.values.entries];
