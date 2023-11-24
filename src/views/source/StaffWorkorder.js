@@ -25,7 +25,10 @@ const StaffWorkOrder = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   let cookies = new Cookies();
+  let cookie_id = cookies.get("Staff ID");
+  let cookie_name = cookies.get("Staff Name")
   const [accessType, setAccessType] = useState(null);
+  let navigate = useNavigate()
 
   React.useEffect(() => {
     if (cookies.get("token")) {

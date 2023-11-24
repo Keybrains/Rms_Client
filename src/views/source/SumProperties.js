@@ -42,6 +42,7 @@ const SumProperties = () => {
     );
     setRentalsData(responce.data.data);
   };
+  let navigate = useNavigate()
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);

@@ -47,6 +47,7 @@ const OutstandingBalance = () => {
   let [editData, setEditData] = React.useState();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredTenantsData, setFilteredTenantsData] = useState([]);
+  let navigate = useNavigate()
 
   const [selectedPropertyType, setSelectedPropertyType] = React.useState("");
   // console.log(selectedPropertyType, "selectedPropertyType")

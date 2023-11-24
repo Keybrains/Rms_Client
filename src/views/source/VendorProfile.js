@@ -51,9 +51,10 @@ const VendorProfile = () => {
 
   // let cookies = new Cookies();
   // Check Authe(token)
- 
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
+  let cookie_id = cookies.get("Vendor ID");
 
   React.useEffect(() => {
     if (cookies.get("token")) {
