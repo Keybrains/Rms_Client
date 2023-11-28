@@ -51,6 +51,57 @@ const Applicants = () => {
 
   // Step 1: Create state to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTenantData, setSelectedTenantData] = useState([]);
+  const [selectedTenants, setSelectedTenants] = useState([]);
+
+  const [propertyData, setPropertyData] = useState([]);
+  const [unitData, setUnitData] = useState([]);
+  const [selectedUnit, setSelectedUnit] = useState("");
+  const [userdropdownOpen, setuserDropdownOpen] = React.useState(false);
+  const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
+  const [selectedPropertyType, setSelectedPropertyType] = useState("");
+
+  const toggle9 = () => {
+    setuserDropdownOpen((prevState) => !prevState);
+  };
+
+  const toggle10 = () => {
+    setUnitDropdownOpen((prevState) => !prevState);
+  };
+
+  const fetchUnitsByProperty = async (propertyType) => {
+    try {
+      const response = await fetch(
+        `https://propertymanager.cloudpress.host/api/propertyunit/rentals_property/${propertyType}`
+      );
+      const data = await response.json();
+      // Ensure that units are extracted correctly and set as an array
+      const units = data?.data || [];
+      return units;
+    } catch (error) {
+      console.error("Error fetching units:", error);
+      return [];
+    }
+  };
+
+  // Function to handle property selection
+  const handlePropertyTypeSelect = async (propertyType) => {
+    setSelectedPropertyType(propertyType);
+    applicantFormik.setFieldValue("rental_adress", propertyType);
+    setSelectedUnit(""); // Reset selected unit when a new property is selected
+    try {
+      const units = await fetchUnitsByProperty(propertyType);
+      console.log(units, "units"); // Check the received units in the console
+      setUnitData(units); // Set the received units in the unitData state
+    } catch (error) {
+      console.error("Error handling selected property:", error);
+    }
+  };
+
+  const handleUnitSelect = (selectedUnit) => {
+    setSelectedUnit(selectedUnit);
+    applicantFormik.setFieldValue("rental_units", selectedUnit); // Update the formik state here
+  };
 
   // Step 2: Event handler to open the modal
   const openModal = () => {
@@ -98,9 +149,6 @@ const Applicants = () => {
   const handleChange = () => {
     setshowRentalOwnerTable(!showRentalOwnerTable);
   };
-
-  const [selectedTenantData, setSelectedTenantData] = useState([]);
-  const [selectedTenants, setSelectedTenants] = useState([]);
 
   const handleCheckboxChange = (event, tenantInfo, mobileNumber) => {
     if (checkedCheckbox === mobileNumber) {
@@ -194,6 +242,7 @@ const Applicants = () => {
       tenant_workNumber: "",
       tenant_faxPhoneNumber: "",
       rental_adress: "",
+      rental_units: "",
     },
     validationSchema: yup.object({
       tenant_firstName: yup.string().required("Required"),
@@ -208,14 +257,13 @@ const Applicants = () => {
       console.log(values, "values");
     },
   });
+
   const handleFormSubmit = (values, action) => {
     axios
-      .post(
-        "https://propertymanager.cloudpress.host/api/applicant/applicant",
-        values
-      )
+      .post("https://propertymanager.cloudpress.host/api/applicant/applicant", values)
       .then((response) => {
         console.log("Applicant created successfully:", response.data.data._id);
+        console.log(response.data.data);
         closeModal();
 
         action.resetForm();
@@ -228,10 +276,6 @@ const Applicants = () => {
         console.error("Error creating applicant:", error);
       });
   };
-  const [propertyData, setPropertyData] = useState([]);
-
-  const [userdropdownOpen, setuserDropdownOpen] = React.useState(false);
-  const toggle9 = () => setuserDropdownOpen((prevState) => !prevState);
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
@@ -304,12 +348,9 @@ const Applicants = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(
-            "https://propertymanager.cloudpress.host/api/applicant/applicant",
-            {
-              data: { _id: id },
-            }
-          )
+          .delete("https://propertymanager.cloudpress.host/api/applicant/applicant", {
+            data: { _id: id },
+          })
           .then((response) => {
             if (response.data.statusCode === 200) {
               swal("Success!", "Applicants deleted successfully", "success");
@@ -327,12 +368,6 @@ const Applicants = () => {
         swal("Cancelled", "Applicants is safe :)", "info");
       }
     });
-  };
-
-  const [selectedPropertyType, setSelectedPropertyType] = useState("");
-  const handlePropertyTypeSelect = (propertyType) => {
-    setSelectedPropertyType(propertyType);
-    applicantFormik.setFieldValue("rental_adress", propertyType);
   };
 
   const filterApplicantsBySearch = () => {
@@ -816,6 +851,7 @@ const Applicants = () => {
                       />
                     </InputGroup>
                   </FormGroup>
+
                   <FormGroup>
                     <label
                       className="form-control-label"
@@ -824,9 +860,12 @@ const Applicants = () => {
                       Property *
                     </label>
                     {/* {console.log(propertyData, "propertyData")} */}
-                    <FormGroup>
+                    <FormGroup style={{ marginRight: "15px" }}>
                       <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
-                        <DropdownToggle caret style={{ width: "100%" }}>
+                        <DropdownToggle
+                          caret
+                          style={{ width: "100%", marginRight: "15px" }}
+                        >
                           {selectedPropertyType
                             ? selectedPropertyType
                             : "Select Property"}
@@ -857,6 +896,46 @@ const Applicants = () => {
                         applicantFormik.values.rental_adress === "" ? (
                           <div style={{ color: "red" }}>
                             {applicantFormik.errors.rental_adress}
+                          </div>
+                        ) : null}
+                      </Dropdown>
+                    </FormGroup>
+                  </FormGroup>
+
+                  <FormGroup>
+                    <label className="form-control-label" htmlFor="input-unit">
+                      Unit *
+                    </label>
+                    <FormGroup style={{ marginLeft: "15px" }}>
+                      <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
+                        <DropdownToggle caret>
+                          {selectedUnit ? selectedUnit : "Select Unit"}
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          {unitData.length > 0 ? (
+                            unitData.map((unit) => (
+                              <DropdownItem
+                                key={unit._id}
+                                onClick={() =>
+                                  handleUnitSelect(unit.rental_units)
+                                }
+                              >
+                                {unit.rental_units}
+                              </DropdownItem>
+                            ))
+                          ) : (
+                            <DropdownItem disabled>
+                              No units available
+                            </DropdownItem>
+                          )}
+                        </DropdownMenu>
+                        {applicantFormik.errors &&
+                        applicantFormik.errors?.rental_units &&
+                        applicantFormik.touched &&
+                        applicantFormik.touched?.rental_units &&
+                        applicantFormik.values.rental_units === "" ? (
+                          <div style={{ color: "red" }}>
+                            {applicantFormik.errors.rental_units}
                           </div>
                         ) : null}
                       </Dropdown>
