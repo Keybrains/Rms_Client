@@ -287,19 +287,18 @@ const RentRollDetail = () => {
   const [loader, setLoader] = React.useState(true);
 
   const calculateBalance = (data) => {
+    // console.log(data);
     let balance = 0;
-
-    console.log(data);
     for (let i = data.length - 1; i >= 0; i--) {
       const currentEntry = data[i];
-
-      if (currentEntry.type === "Charge") {
-        balance += currentEntry.charges_amount;
-      } else if (currentEntry.type === "Payment") {
-        balance -= currentEntry.amount;
+      for (let j = currentEntry.entries.length - 1; j >= 0; j--) {
+        if (currentEntry.type === "Charge") {
+          balance += currentEntry.entries[j].charges_amount;
+        } else if (currentEntry.type === "Payment") {
+          balance -= currentEntry.entries[j].amount;
+        }
+        data[i].entries[j].balance = balance;
       }
-
-      data[i].balance = balance;
     }
 
     //console.log("data",data)
@@ -1147,16 +1146,11 @@ const RentRollDetail = () => {
                                                   : "-"}
                                               </td>
                                               <td>
-                                                {console.log(
-                                                  "first",
-                                                  generalledger.balance
-                                                )}
-                                                {generalledger.balance !==
-                                                undefined
-                                                  ? generalledger.balance >= 0
-                                                    ? `$${generalledger.balance}`
+                                                {entry.balance !== undefined
+                                                  ? entry.balance >= 0
+                                                    ? `$${entry.balance}`
                                                     : `$(${Math.abs(
-                                                        generalledger.balance
+                                                        entry.balance
                                                       )})`
                                                   : "0"}
                                                 {/* {calculateBalance(
@@ -1297,7 +1291,7 @@ const RentRollDetail = () => {
                                         </Box>
                                       </Col>
 
-                                      <Col lg="5">
+                                      <Col lg="7">
                                         <div
                                           style={{
                                             color: "blue",
@@ -1306,6 +1300,7 @@ const RentRollDetail = () => {
                                         >
                                           {tenant.tenant_firstName || "N/A"}{" "}
                                           {tenant.tenant_lastName || "N/A"}
+                                          <br></br>{entry.rental_adress }-{entry.rental_units}  
                                         </div>
 
                                         <div>

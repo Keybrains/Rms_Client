@@ -119,22 +119,19 @@ const TenantsTable = ({ tenantDetails }) => {
     }
     console.log(paginatedData);
     return paginatedData.filter((tenant) => {
+
+      if (!tenant.entries) {
+        return false; // If entries is undefined, exclude this tenant
+      }
+
       const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
-      console.log(tenant);
+
       return (
-        tenant.entries.rental_adress
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        tenant.tenant_firstName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        tenant.entries.lease_type
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        tenant.tenant_lastName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        name.toLowerCase().includes(searchQuery.toLowerCase())
+        (tenant.entries.rental_adress && tenant.entries.rental_adress.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (tenant.tenant_firstName && tenant.tenant_firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (tenant.entries.lease_type && tenant.entries.lease_type.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (tenant.tenant_lastName && tenant.tenant_lastName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (name.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     });
   };
@@ -354,7 +351,7 @@ const TenantsTable = ({ tenantDetails }) => {
                           <td>
                             {tenant.tenant_firstName} {tenant.tenant_lastName}
                           </td>
-                          <td>{tenant.entries.rental_adress}</td>
+                          <td>{tenant.entries.rental_adress}  {tenant.entries.rental_units}</td>
                           <td>{tenant.entries.lease_type}</td>
                           <td>{tenant.entries.start_date}</td>
                           <td>{tenant.entries.end_date}</td>
@@ -393,6 +390,7 @@ const TenantsTable = ({ tenantDetails }) => {
                                   e.stopPropagation();
                                   generatePDF(
                                     tenant._id,
+                                    tenant,
                                     tenant.entries.entryIndex
                                   );
                                 }}
