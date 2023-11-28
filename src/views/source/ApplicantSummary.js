@@ -387,7 +387,10 @@ const ApplicantSummary = () => {
           tenant_homeNumber: fetchedData.data.tenant_homeNumber,
           tenant_faxPhoneNumber: fetchedData.data.tenant_faxPhoneNumber,
           tenant_email: fetchedData.data.tenant_email,
-          entries: [{ rental_adress: fetchedData.data.rental_adress }], // You can add logic to populate the entries array if needed
+          entries: [{
+            rental_adress: fetchedData.data.rental_adress,
+
+          }],
         };
 
         // Step 3: Make a POST request to send the data to the server

@@ -38,7 +38,9 @@ const PropertiesTables = () => {
 
   const navigateToPropDetails = (rentalId, entryIndex) => {
     const propDetailsURL = `/admin/PropDetails/${rentalId}/${entryIndex}`;
-    window.location.href = propDetailsURL;
+
+    // window.location.href = propDetailsURL;
+    navigate(propDetailsURL)
   };
  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -125,6 +127,7 @@ const PropertiesTables = () => {
   };
 
   const editProperty = (id, propertyIndex) => {
+    console.log(propertyIndex,'ropeorjjhbuijo')
     navigate(`/admin/rentals/${id}/${propertyIndex}`);
     console.log(id);
   };

@@ -45,14 +45,14 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Cookies from "universal-cookie";
 import { OpenImageDialog } from "components/OpenImageDialog";
-import { Puff, RotatingLines } from "react-loader-spinner";
+import { Autocomplete } from "@mui/material";
 
 const Rentals = () => {
-  const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
+  const [prodropdownOpen, setproDropdownOpen] = React.useState(null);
   const [bankdropdownOpen, setbankDropdownOpen] = React.useState(false);
   const [userdropdownOpen, setuserDropdownOpen] = React.useState(false);
-  const [baddropdownOpen, setbadDropdownOpen] = React.useState(false);
-  const [bathdropdownOpen, setBathDropdownOpen] = React.useState(false);
+  const [baddropdownOpen, setbadDropdownOpen] = React.useState(null);
+  const [bathdropdownOpen, setBathDropdownOpen] = React.useState(null);
 
   const [isAddBankDialogOpen, setAddBankDialogOpen] = useState(false);
   const [isPhotoDialogOpen, setPhotoDialogOpen] = useState(false);
@@ -76,11 +76,11 @@ const Rentals = () => {
   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
   const toggle2 = () => setbankDropdownOpen((prevState) => !prevState);
   const toggle3 = () => setuserDropdownOpen((prevState) => !prevState);
-  const toggle4 = () => setbadDropdownOpen((prevState) => !prevState);
-  const toggle5 = () => setBathDropdownOpen((prevState) => !prevState);
+  const toggle4 = (index) =>
+    setbadDropdownOpen((prevIndex) => (prevIndex === index ? null : index));
+  const toggle5 = (index) =>
+    setBathDropdownOpen((prevState) => (prevState === index ? null : index));
 
-  // let [loader, setLoader] = React.useState(true);
-  const [imgLoader, setImgLoader] = useState(false);
   const [openImage, setOpenImage] = React.useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const isSmallScreen = useMediaQuery("(max-width:600px)");
@@ -91,6 +91,31 @@ const Rentals = () => {
   const [showRentalOwnerTable, setshowRentalOwnerTable] = useState(false);
   const [checkedCheckbox, setCheckedCheckbox] = useState();
 
+  const bathArray = [
+    "1 Bath",
+    "1.5 Bath",
+    "2 Bath",
+    "2.5 Bath",
+    "3 Bath",
+    "3.5 Bath",
+    "4 Bath",
+    "4.5 Bath",
+    "5 Bath",
+    "5+ Bath",
+  ];
+  const roomsArray = [
+    "1 Bed",
+    "2 Bed",
+    "3 Bed",
+    "4 Bed",
+    "5 Bed",
+    "6 Bed",
+    "7 Bed",
+    "8 Bed",
+    "9 Bed",
+    "9+ Bed",
+  ];
+
   const handleChange = () => {
     setshowRentalOwnerTable(!showRentalOwnerTable);
   };
@@ -98,7 +123,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/rental")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/rentals")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -212,9 +237,7 @@ const Rentals = () => {
     // rentalsFormik.setFieldValue("property_type", propertyType);
     // const propTypes=[];
     axios
-      .get(
-        "https://propertymanager.cloudpress.host/api/newproparty/propropartytype"
-      )
+      .get("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
       .then((data) => {
         console.log(data.data, "Data from adding the account");
         // setPropertyData(data.data.data);
@@ -269,9 +292,14 @@ const Rentals = () => {
     setuserDropdownOpen(true);
   };
 
-  const handleBadSelection = (value) => {
+  const handleBadSelection = (value, index) => {
+    rentalsFormik.setFieldValue(
+      `entries[0].residential[${index}].rental_bed`,
+      value
+    );
     setSelectedBad(value);
     // setbadDropdownOpen(true);
+    console.log(rentalsFormik.values, "valuessssswwws");
   };
 
   // const handleBathSelection = (value) => {
@@ -287,6 +315,108 @@ const Rentals = () => {
     setOpen(false);
     setRentalDialogOpen(false);
   };
+  let rentalOwnerFormik = useFormik({
+    initialValues: {
+      rentalOwner_firstName: "",
+      rentalOwner_lastName: "",
+      rentalOwner_companyName: "",
+      rentalOwner_primaryEmail: "",
+      rentalOwner_phoneNumber: "",
+      rentalOwner_homeNumber: "",
+      rentalOwner_businessNumber: "",
+      chooseExistingOwner: false,
+    },
+    validationSchema: yup.object({
+      // rentalOwner_firstName: yup.string().required("First Name is required"),
+      // rentalOwner_lastName: yup.string().required("Last Name is required"),
+      // rentalOwner_primaryEmail: yup
+      //   .string()
+      //   .email("Invalid email address")
+      //   .required("Email is required"),
+      // rentalOwner_phoneNumber: yup
+      //   .string()
+      //   .required("Phone Number is required"),
+    }),
+    onSubmit: (values) => {
+      console.log(values, "values");
+      setshowRentalOwnerTable(false);
+      handleAddrentalOwner();
+      handleClose();
+    },
+  });
+  let rentalsFormik = useFormik({
+    initialValues: {
+      //   Add Rental owner
+      rentalOwner_firstName: "",
+      rentalOwner_lastName: "",
+      rentalOwner_companyName: "",
+      rentalOwner_primaryEmail: "",
+      rentalOwner_phoneNumber: "",
+      rentalOwner_homeNumber: "",
+      rentalOwner_businessNumber: "",
+
+      entries: [
+        {
+          rental_id: "",
+          property_type: "",
+          rental_adress: "",
+          rental_city: "",
+          rental_country: "",
+          rental_state: "",
+          rental_postcode: "",
+          rentalOwner_operatingAccount: "",
+          rentalOwner_propertyReserve: "",
+          staffMember: "",
+          //rooms
+          //RESIDENTIAL
+          residential: [
+            {
+              rental_bed: "",
+              rental_bath: "",
+              propertyres_image: [],
+              rental_soft: "",
+              rental_units: "",
+              rental_unitsAdress: "",
+            },
+          ],
+
+          //COMMERCIAL
+          commercial: [
+            {
+              rentalcom_soft: "",
+              rentalcom_units: "",
+              rentalcom_unitsAdress: "",
+              property_image: [],
+            },
+          ],
+        },
+      ],
+    },
+    validationSchema: yup.object({
+      // rentalOwner_propertyReserve: yup.string().required("Required"),
+      // rentalOwner_primaryEmail: yup
+      //   .string()
+      //   .email("Invalid email address")
+      //   .required("Required"),
+      // rentalOwner_firstName: yup.string().required("Required"),
+      // rentalOwner_lastName: yup.string().required("Required"),
+      // rentalOwner_phoneNumber: yup.string().required("Required"),
+      // entries: yup.array().of(
+      //   yup.object({
+      //     property_type: yup.string().required("Required"),
+      //     rental_postcode: yup.string().required("Required"),
+      //     rental_adress: yup.string().required("Required"),
+      //     rental_city: yup.string().required("Required"),
+      //     rental_country: yup.string().required("Required"),
+      //     rental_state: yup.string().required("Required"),
+      //   })
+      // ),
+    }),
+    onSubmit: (values) => {
+      handleSubmit(values);
+      console.log(values, "rentals formik finmmal values");
+    },
+  });
 
   const handleRentalownerDelete = () => {
     setSelectedRentalOwnerData([]);
@@ -304,8 +434,13 @@ const Rentals = () => {
   };
 
   const [selectedbath, setSelectedbath] = useState("");
-  const handleBathSelect = (bath) => {
-    setSelectedbath(bath);
+  const handleBathSelect = (bath, index) => {
+    rentalsFormik.setFieldValue(
+      `entries[0].residential[${index}].rental_bath`,
+      bath
+    );
+    // setSelectedbath(bath);
+    // setSelectedbath(bath);
   };
 
   const [selectedOperatingAccount, setSelectedOperatingAccount] = useState("");
@@ -313,7 +448,7 @@ const Rentals = () => {
     setSelectedOperatingAccount(operatingAccount);
     localStorage.setItem("operatingAccount", operatingAccount);
   };
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -330,11 +465,11 @@ const Rentals = () => {
   // navigate(`/admin/rentals/rental/${id}/entry/${propertyIndex}`);
   const { id, entryIndex } = useParams();
   console.log(entryIndex, "entryIndex");
-  const [residentialImage, setResidentialImage] = useState([]);
-  const [commercialImage, setCommercialImage] = useState([]);
+  const [residentialImage, setResidentialImage] = useState([[]]);
+  const [commercialImage, setCommercialImage] = useState([[]]);
 
-  const fileData = async (file, name) => {
-    setImgLoader(true);
+  const fileData = async (file, name, index) => {
+    //setImgLoader(true);
     const allData = [];
     const axiosRequests = [];
 
@@ -367,59 +502,42 @@ const Rentals = () => {
     // Wait for all Axios requests to complete before logging the data
     await Promise.all(axiosRequests);
     if (name === "propertyres_image") {
-      setImgLoader(false);
-      setResidentialImage([...residentialImage, ...allData]);
+      rentalsFormik.setFieldValue(
+        `entries[0].residential[${index}].propertyres_image`,
+        ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
+        allData
+      );
+      if (residentialImage[index]) {
+        setResidentialImage([
+          ...residentialImage.slice(0, index),
+          [...residentialImage[index], ...allData],
+          ...residentialImage.slice(index + 1),
+        ]);
+      } else {
+        setResidentialImage([...allData]);
+      }
     } else {
-      setImgLoader(false);
-      setCommercialImage([...commercialImage, ...allData]);
+      rentalsFormik.setFieldValue(
+        `entries[0].commercial[${index}].property_image`,
+        ...rentalsFormik.values.entries[0].commercial[index].property_image,
+        allData
+      );
+      if (commercialImage[index]) {
+        setCommercialImage([
+          ...commercialImage.slice(0, index),
+          [...commercialImage[index], ...allData],
+          ...commercialImage.slice(index + 1),
+        ]);
+      } else {
+        setCommercialImage([...allData]);
+      }
     }
     // console.log(allData, "allData");
     console.log(residentialImage, "residentialImage");
     console.log(commercialImage, "commercialImage");
   };
 
-  // const fileData = async (file, name) => {
-  //   const allData = [];
-  //   const axiosRequests = [];
-
-  //   for (let i = 0; i < file.length; i++) {
-  //     const dataArray = new FormData();
-  //     dataArray.append('file', file[i]);
-
-  //     // Update the URL to point to your Express API
-  //     let url = 'https://propertymanager.cloudpress.host/api/uploadfile';
-
-  //     axiosRequests.push(
-  //       axios
-  //         .post(url, dataArray, {
-  //           headers: {
-  //             'Content-Type': 'multipart/form-data',
-  //           },
-  //         })
-  //         .then((res) => {
-  //           console.log('Response Object:', res);
-  //           const imagePath = res.data.filePath;
-  //           console.log('Image Path:', imagePath);
-
-  //           // Add the image path to your frontend state
-  //           allData.push(imagePath);
-  //         })
-  //         .catch((err) => {
-  //           console.log('Error uploading image:', err);
-  //         })
-  //     );
-  //   }
-
-  //   await Promise.all(axiosRequests);
-
-  //   if (name === 'propertyres_image') {
-  //     setResidentialImage([...residentialImage, ...allData]);
-  //   } else {
-  //     setCommercialImage([...commercialImage, ...allData]);
-  //   }
-  //   console.log(residentialImage, 'residentialImage');
-  //   console.log(commercialImage, 'commercialImage');
-  // };
+  console.log(commercialImage, "commercialImage");
 
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
@@ -427,174 +545,38 @@ const Rentals = () => {
     navigate("../propertiesTable");
   };
 
-  // const handleSubmit = async (values) => {
-  //   console.log(values, "values");
-  //   try {
-  //     values["property_type"] = selectedProp;
-  //     values['rental_bath'] = selectedbath;
-  //     values['rental_bed'] = selectedBad;
-  //     values['rentalOwner_operatingAccount']=selectedBank;
-  //     values["property_image"] = image;
-  //     values["propertyres_image"] = image;
-  //     values['staffMember'] =  selectedUser;
-
-  //     const res = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/rentals/rentals",
-  //       values
-  //     );
-
-  //     if (res.data.statusCode === 200) {
-  //       navigate("/admin/propertiesTable");
-  //       swal("Success!","Property Added Successfully","success");
-  //     } else {
-  //       alert(res.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  const clearSelectedPhoto = (image, name) => {
-    // const selectedPhotoPreview = document.getElementById(
-    //   "selectedPhotoPreview"
-    // );
-
-    // selectedPhotoPreview.src = "";
-
-    // const fileInput = document.getElementById("fileInput");
-    // if (fileInput) {
-    //   fileInput.value = "";
-    // }
+  const clearSelectedPhoto = (index, image, name) => {
     if (name === "propertyres_image") {
-      const filteredImage = residentialImage.filter((item) => {
+      const filteredImage = residentialImage[index].filter((item) => {
         return item !== image;
       });
-      setResidentialImage(filteredImage);
+      console.log(filteredImage, "filteredImage");
+      // setResidentialImage(filteredImage);
+      setResidentialImage([
+        ...residentialImage.slice(0, index),
+        [...filteredImage],
+        ...residentialImage.slice(index + 1),
+      ]);
     } else {
-      const filteredImage = commercialImage.filter((item) => {
+      const filteredImage = commercialImage[index].filter((item) => {
         return item !== image;
       });
-      setCommercialImage(filteredImage);
+      console.log(filteredImage, "filteredImage");
+      // setCommercialImage(filteredImage);
+      setCommercialImage([
+        ...commercialImage.slice(0, index),
+        [...filteredImage],
+        ...commercialImage.slice(index + 1),
+      ]);
     }
   };
-
-  const clearSelectedPhotores = () => {
-    const selectedPhotoresPreview1 = document.getElementById(
-      "selectedPhotoPreview1"
-    );
-
-    selectedPhotoresPreview1.src = "";
-    const fileInput = document.getElementById("fileInput");
-    //console.log(selectedPhotoresPreview1, "this is fileinput")
-
-    if (fileInput) {
-      fileInput.value = "";
-    }
-  };
-  let rentalOwnerFormik = useFormik({
-    initialValues: {
-      rentalOwner_firstName: "",
-      rentalOwner_lastName: "",
-      rentalOwner_companyName: "",
-      rentalOwner_primaryEmail: "",
-      rentalOwner_phoneNumber: "",
-      rentalOwner_homeNumber: "",
-      rentalOwner_businessNumber: "",
-      chooseExistingOwner: false,
-    },
-    validationSchema: yup.object({
-      rentalOwner_firstName: yup.string().required("First Name is required"),
-      rentalOwner_lastName: yup.string().required("Last Name is required"),
-      rentalOwner_primaryEmail: yup
-        .string()
-        .email("Invalid email address")
-        .required("Email is required"),
-      rentalOwner_phoneNumber: yup
-        .string()
-        .required("Phone Number is required"),
-    }),
-    onSubmit: (values) => {
-      console.log(values, "values");
-      setshowRentalOwnerTable(false);
-      handleAddrentalOwner();
-      handleClose();
-    },
-  });
-  let rentalsFormik = useFormik({
-    initialValues: {
-      //   Add Rental owner
-      rentalOwner_firstName: "",
-      rentalOwner_lastName: "",
-      rentalOwner_companyName: "",
-      rentalOwner_primaryEmail: "",
-      rentalOwner_phoneNumber: "",
-      rentalOwner_homeNumber: "",
-      rentalOwner_businessNumber: "",
-
-      entries: [
-        {
-          propType: "",
-          rental_id: "",
-          property_type: "",
-          rental_adress: "",
-          rental_city: "",
-          rental_country: "",
-          rental_postcode: "",
-          rentalOwner_operatingAccount: "",
-          rentalOwner_propertyReserve: "",
-          staffMember: "",
-          //rooms
-          //RESIDENTIAL
-          rental_bed: "",
-          rental_bath: "",
-          propertyres_image: [],
-
-          rental_soft: "",
-          rental_units: "",
-          rental_unitsAdress: "",
-
-          //COMMERCIAL
-          rentalcom_soft: "",
-          rentalcom_units: "",
-          rentalcom_unitsAdress: "",
-          property_image: [],
-        },
-      ],
-    },
-    validationSchema: yup.object({
-      // rentalOwner_propertyReserve: yup.string().required("Required"),
-
-      rentalOwner_primaryEmail: yup
-        .string()
-        .email("Invalid email address")
-        .required("Required"),
-      rentalOwner_firstName: yup.string().required("Required"),
-      rentalOwner_lastName: yup.string().required("Required"),
-      rentalOwner_phoneNumber: yup.string().required("Required"),
-      entries: yup.array().of(
-        yup.object({
-          property_type: yup.string().required("Required"),
-          rental_postcode: yup.string().required("Required"),
-          rental_adress: yup.string().required("Required"),
-          rental_city: yup.string().required("Required"),
-          rental_country: yup.string().required("Required"),
-        })
-      ),
-    }),
-    onSubmit: (values) => {
-      // handleSubmit(values);
-      console.log(values, "rentals formik finmmal values");
-    },
-  });
 
   useEffect(() => {
     const selectedPhotoresPreview = document.getElementById(
       "selectedPhotoresPreview"
     );
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      "https://propertymanager.cloudpress.host/api/newproparty/propropartytype"
-    )
+    fetch("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -612,9 +594,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      "https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember"
-    )
+    fetch("https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -631,19 +611,18 @@ const Rentals = () => {
   }, []);
   // navigate(`/admin/rentals/rental/${id}/entry/${propertyIndex}`);
   // const {id,entryId} = useParams();
-
+  const [unitData, setUnitData] = useState([]);
+  const [rentalOwnerData, setRentalOwnerData] = useState([]);
   useEffect(() => {
     console.log(id, entryIndex, "id && entry Id");
     if (id && entryIndex) {
       axios
-        .get(
-          `https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`
-        )
+        .get(`https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`)
         .then((response) => {
           const propertysData = response.data.data;
           // setRentalsData(rentalsData); // Update state with the fetched data
           console.log(propertysData, "properety data");
-          setRentalownerData(propertysData);
+          setRentalOwnerData(propertysData);
           // setRentalownerData(propertysData);
 
           setSelectedRentalOwnerData({
@@ -652,6 +631,7 @@ const Rentals = () => {
             phoneNumber: propertysData.rentalOwner_phoneNumber || "",
             // Add other fields you want to display in the table
           });
+
           const matchedProperty = propertysData.entries.find((entry) => {
             return entry.entryIndex === entryIndex;
           });
@@ -659,7 +639,8 @@ const Rentals = () => {
           // setshowRentalOwnerTable(true);
           // setRentalownerData(propertysData);
 
-          handlePropSelection(matchedProperty.property_type);
+          setSelectedProp(propertysData.property_type || "Select");
+          setCommercialImage(propertysData.property_image || "");
           setSelectedProp(matchedProperty.property_type || "Select");
           setSelectedbath(matchedProperty.rental_bath || "Select");
           setSelectedBad(matchedProperty.rental_bed || "Select");
@@ -667,161 +648,193 @@ const Rentals = () => {
             matchedProperty.rentalOwner_operatingAccount || "Select"
           );
           setCommercialImage(matchedProperty.property_image || "");
+
           setResidentialImage(matchedProperty.propertyres_image || "");
           setSelectedUser(matchedProperty.staffMember || "Select");
-          rentalsFormik.setValues({
-            rental_adress: matchedProperty.rental_adress || "",
-            rental_city: matchedProperty.rental_city || "",
-            rental_country: matchedProperty.rental_country || "",
-            rental_postcode: matchedProperty.rental_postcode || "",
-            rentalOwner_firstName:
-              propertysData.rentalOwner_firstName || "hello",
-            rentalOwner_lastName: propertysData.rentalOwner_lastName || "",
-            rentalOwner_companyName:
-              propertysData.rentalOwner_companyName || "",
-            rentalOwner_primaryEmail:
-              propertysData.rentalOwner_primaryEmail || "",
-            rentalOwner_phoneNumber:
-              propertysData.rentalOwner_phoneNumber || "",
-            rentalOwner_homeNumber: propertysData.rentalOwner_homeNumber || "",
-            rentalOwner_businessNumber:
-              propertysData.rentalOwner_businessNumber || "",
-            rentalOwner_propertyReserve:
-              propertysData.rentalOwner_propertyReserve || "",
-            rental_soft: matchedProperty.rental_soft || "",
-            rental_units: matchedProperty.rental_units || "",
-            rental_unitsAdress: matchedProperty.rental_unitsAdress || "",
-            rentalcom_soft: matchedProperty.rentalcom_soft || "",
-            rentalcom_units: matchedProperty.rentalcom_units || "",
-            rentalcom_unitsAdress: matchedProperty.rentalcom_unitsAdress || "",
-            property_image: matchedProperty.property_image || "",
-            propertyres_image: matchedProperty.propertyres_image || "",
-          });
-
+          // rentalsFormik.setValues({
+          //   rental_adress: matchedProperty.rental_adress || "",
+          //   rental_city: matchedProperty.rental_city || "",
+          //   rental_country: matchedProperty.rental_country || "",
+          //   rental_state: matchedProperty.rental_state || "",
+          //   rental_postcode: matchedProperty.rental_postcode || "",
+          //   rentalOwner_firstName: propertysData.rentalOwner_firstName || "",
+          //   rentalOwner_lastName: propertysData.rentalOwner_lastName || "",
+          //   rentalOwner_companyName:
+          //     propertysData.rentalOwner_companyName || "",
+          //   rentalOwner_primaryEmail:
+          //     propertysData.rentalOwner_primaryEmail || "",
+          //   rentalOwner_phoneNumber:
+          //     propertysData.rentalOwner_phoneNumber || "",
+          //   rentalOwner_homeNumber: propertysData.rentalOwner_homeNumber || "",
+          //   rentalOwner_businessNumber:
+          //     propertysData.rentalOwner_businessNumber || "",
+          //   rentalOwner_propertyReserve:
+          //     propertysData.rentalOwner_propertyReserve || "",
+          //   rental_sqft: "" || "",
+          //   rental_units: matchedProperty.rental_units || "",
+          //   rental_unitsAdress: matchedProperty.rental_unitsAdress || "",
+          //   rentalcom_soft: matchedProperty.rentalcom_soft || "",
+          //   rentalcom_units: matchedProperty.rentalcom_units || "",
+          //   rentalcom_unitsAdress: matchedProperty.rentalcom_unitsAdress || "",
+          //   property_image: matchedProperty.property_image || "",
+          //   propertyres_image: matchedProperty.propertyres_image || "",
+          // });
+          rentalsFormik.setFieldValue(
+            "entries[0].rental_adress",
+            matchedProperty.rental_adress || ""
+          );
+          rentalsFormik.setFieldValue(
+            "entries[0].rental_city",
+            matchedProperty.rental_city || ""
+          );
+          rentalsFormik.setFieldValue(
+            "entries[0].rental_country",
+            matchedProperty.rental_country || ""
+          );
+          rentalsFormik.setFieldValue(
+            "entries[0].rental_state",
+            matchedProperty.rental_state || ""
+          );
+          rentalsFormik.setFieldValue(
+            "entries[0].rental_postcode",
+            matchedProperty.rental_postcode || ""
+          );
+          console.log(rentalsFormik.values, "rental formik values");
           // Now, after setting all the fields and state, call handleAddrentalOwner
+          getUnitData(propertysData._id);
         })
         .catch((error) => {
           console.error("Error fetching rentals data:", error);
         });
-      handleAddrentalOwner();
+      // handleAddrentalOwner();
+      console.log(rentalsFormik.values, "rental formik values");
+      console.log(rentalOwnerFormik.values, "rental owner formik values");
     }
   }, [id, entryIndex]);
-  console.log(residentialImage, "residentialImage");
 
+  const getUnitData = async (id) => {
+    await axios
+      .get("https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" + id)
+      .then((res) => {
+        // setUnitProperty(res.data.data);
+        console.log(res.data.data, "property unit");
+        // setPropertyUnit(res.data.data);
+        // const matchedUnit = res.data.data.filter(
+        //   (item) => item._id ===
+        // );
+        // console.log(matchedUnit, "matchedUnit");
+        // setClickedObject(matchedUnit[0]);
+        setUnitData(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  console.log(residentialImage, "residentialImage");
+  console.log(propType, "proptype");
   const handleSubmit = async (values) => {
     console.log(residentialImage, "residentialImage after submit");
     console.log(commercialImage, "commercialImage after submit");
     console.log(file, "values");
 
     const entriesArray = [];
+    if (propType === "Residential") {
+      const entriesObject = {
+        property_type: selectedProp,
+        rental_adress: rentalsFormik.values.entries[0].rental_adress,
+        rental_city: rentalsFormik.values.entries[0].rental_city,
+        rental_state: rentalsFormik.values.entries[0].rental_state,
+        rental_country: rentalsFormik.values.entries[0].rental_country,
+        rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
 
-    const entriesObject = {
-      property_type: selectedProp,
-      rental_adress: rentalsFormik.values.entries[0].rental_adress,
-      rental_city: rentalsFormik.values.entries[0].rental_city,
-      rental_country: rentalsFormik.values.entries[0].rental_country,
-      rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
+        rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
+        rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
+        staffMember: selectedUser,
+        //RESIDENTIAL
+        residential: rentalsFormik.values.entries[0].residential,
+        //COMMERCIAL
+      };
 
-      rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
-      rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
-      staffMember: selectedUser,
-      //rooms
-      //RESIDENTIAL
-      rental_bed: selectedBad,
-      rental_bath: selectedBad,
-      property_image: commercialImage,
+      entriesArray.push(entriesObject);
 
-      rental_soft: rentalsFormik.values.entries[0].rental_soft,
-      rental_units: rentalsFormik.values.entries[0].rental_units,
-      rental_unitsAdress: rentalsFormik.values.entries[0].rental_unitsAdress,
+      const leaseObject = {
+        //   Add Rental owner
+        rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
+        rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
+        rentalOwner_companyName:
+          rentalOwnerFormik.values.rentalOwner_companyName,
+        rentalOwner_primaryEmail:
+          rentalOwnerFormik.values.rentalOwner_primaryEmail,
+        rentalOwner_phoneNumber:
+          rentalOwnerFormik.values.rentalOwner_phoneNumber,
+        rentalOwner_homeNumber: rentalOwnerFormik.values.rentalOwner_homeNumber,
+        rentalOwner_businessNumber:
+          rentalOwnerFormik.values.rentalOwner_businessNumber,
+        entries: entriesArray,
+      };
+      console.log(leaseObject, "leaseObject");
 
-      //COMMERCIAL
-      rentalcom_soft: values.rentalcom_soft,
-      rentalcom_units: values.rentalcom_units,
-      rentalcom_unitsAdress: values.rentalcom_unitsAdress,
-      propertyres_image: residentialImage,
-    };
-
-    entriesArray.push(entriesObject);
-
-    const leaseObject = {
-      //   Add Rental owner
-      rentalOwner_firstName: values.rentalOwner_firstName,
-      rentalOwner_lastName: values.rentalOwner_lastName,
-      rentalOwner_companyName: values.rentalOwner_companyName,
-      rentalOwner_primaryEmail: values.rentalOwner_primaryEmail,
-      rentalOwner_phoneNumber: values.rentalOwner_phoneNumber,
-      rentalOwner_homeNumber: values.rentalOwner_homeNumber,
-      rentalOwner_businessNumber: values.rentalOwner_businessNumber,
-      entries: entriesArray,
-    };
-    try {
-      const res = await axios.get(
-        "https://propertymanager.cloudpress.host/api/rentals/rental"
+      const res = await axios.post(
+        "https://propertymanager.cloudpress.host/api/rentals/rentals",
+        leaseObject
       );
       if (res.data.statusCode === 200) {
-        console.log(res.data.data, "allRentalOwner");
-
-        const allRentalOwner = res.data.data;
-        const filteredData = allRentalOwner.find((item) => {
-          return (
-            item.rentalOwner_firstName ===
-              rentalsFormik.values.rentalOwner_firstName &&
-            item.rentalOwner_lastName ===
-              rentalsFormik.values.rentalOwner_lastName &&
-            item.rentalOwner_primaryEmail ===
-              rentalsFormik.values.rentalOwner_primaryEmail
-          );
-        });
-
-        if (filteredData) {
-          debugger
-          const putObject = {
-            entries: leaseObject.entries,
-          };
-          const rentalOwnerId = filteredData._id;
-          console.log(rentalOwnerId, "rentalOwnerId");
-          console.log(putObject, "putObject");
-          axios
-            .put(
-              `https://propertymanager.cloudpress.host/api/rentals/rental/${rentalOwnerId}`,
-              putObject
-            )
-            .then((res) => {
-              console.log(res, "res");
-              swal("Success!", "Property Added Successfully", "success");
-              navigate("/admin/propertiestable");
-            })
-            .catch((err) => {
-              console.log(err, "err");
-            });
-        } else {
-          if (id === undefined) {
-            console.log(leaseObject, "leaseObject");
-            const res = await axios.post(
-              "https://propertymanager.cloudpress.host/api/rentals/rentals",
-              leaseObject
-            );
-            if (res.data.statusCode === 200) {
-              swal("Success!", "Property Added Successfully", "success");
-              navigate("/admin/RentalownerTable");
-            } else {
-              swal("", res.data.message, "error");
-            }
-            handleResponse(res);
-          } else {
-          }
-        }
+        swal("Success!", "Property Added Successfully", "success");
+        navigate("/admin/RentalownerTable");
+        console.log(res.data.data, "res.data.data after post");
       } else {
         swal("", res.data.message, "error");
       }
-    } catch (error) {
-      console.log(error);
-      if (error.response) {
-        console.error("Response Data:", error.response.data);
+      handleResponse(res);
+    } else {
+      const entriesObject = {
+        property_type: selectedProp,
+        rental_adress: rentalsFormik.values.entries[0].rental_adress,
+        rental_city: rentalsFormik.values.entries[0].rental_city,
+        rental_state: rentalsFormik.values.entries[0].rental_state,
+        rental_country: rentalsFormik.values.entries[0].rental_country,
+        rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
+
+        rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
+        rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
+        staffMember: selectedUser,
+        //RESIDENTIAL
+        // residential: rentalsFormik.values.entries[0].residential,
+        commercial: rentalsFormik.values.entries[0].commercial,
+        //COMMERCIAL
+      };
+      entriesArray.push(entriesObject);
+      const leaseObject = {
+        //   Add Rental owner
+        rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
+        rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
+        rentalOwner_companyName:
+          rentalOwnerFormik.values.rentalOwner_companyName,
+        rentalOwner_primaryEmail:
+          rentalOwnerFormik.values.rentalOwner_primaryEmail,
+        rentalOwner_phoneNumber:
+          rentalOwnerFormik.values.rentalOwner_phoneNumber,
+        rentalOwner_homeNumber: rentalOwnerFormik.values.rentalOwner_homeNumber,
+        rentalOwner_businessNumber:
+          rentalOwnerFormik.values.rentalOwner_businessNumber,
+        entries: entriesArray,
+      };
+      console.log(leaseObject, "leaseObject");
+
+      const res = await axios.post(
+        "https://propertymanager.cloudpress.host/api/rentals/rentals",
+        leaseObject
+      );
+      if (res.data.statusCode === 200) {
+        swal("Success!", "Property Added Successfully", "success");
+        navigate("/admin/RentalownerTable");
+        console.log(res.data.data, "res.data.data after post");
+      } else {
+        swal("", res.data.message, "error");
       }
+      handleResponse(res);
     }
-    // try {
+    //      try {
     //   values["property_type"] = selectedProp;
     //   values["rental_bath"] = selectedbath;
     //   values["rental_bed"] = selectedBad;
@@ -852,60 +865,125 @@ const Rentals = () => {
   const editProperty = async (id) => {
     const editUrl = `https://propertymanager.cloudpress.host/api/rentals/rental/${id}/entry/${entryIndex}`;
     const entriesArray = [];
+    if (propType === "Residential") {
+      const entriesObject = {
+        property_type: selectedProp,
+        rental_adress: rentalsFormik.values.entries[0].rental_adress,
+        rental_city: rentalsFormik.values.entries[0].rental_city,
+        rental_state: rentalsFormik.values.entries[0].rental_state,
+        rental_country: rentalsFormik.values.entries[0].rental_country,
+        rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
 
-    const entriesObject = {
-      property_type: selectedProp,
-      rental_adress: rentalsFormik.values.rental_adress,
-      rental_city: rentalsFormik.values.rental_city,
-      rental_country: rentalsFormik.values.rental_country,
-      rental_postcode: rentalsFormik.values.rental_postcode,
+        rentalOwner_operatingAccount:
+          rentalsFormik.values.entries[0].rentalOwner_operatingAccount,
+        rentalOwner_propertyReserve:
+          rentalsFormik.values.entries[0].rentalOwner_propertyReserve,
+        staffMember: selectedUser,
+        //rooms
+        //RESIDENTIAL
+        residential: unitData,
+        //COMMERCIAL
+        // commercial: rentalsFormik.values.entries[0].commercial,
+      };
+      entriesArray.push(entriesObject);
 
-      rentalOwner_operatingAccount:
-        rentalsFormik.values.rentalOwner_operatingAccount,
-      rentalOwner_propertyReserve:
-        rentalsFormik.values.rentalOwner_propertyReserve,
-      staffMember: selectedUser,
-      //rooms
-      //RESIDENTIAL
-      rental_bed: selectedBad,
-      rental_bath: selectedBad,
-      property_image: commercialImage,
+      const leaseObject = {
+        //   Add Rental owner
+        rentalOwner_firstName: rentalsFormik.values.rentalOwner_firstName
+          ? rentalsFormik.values.rentalOwner_firstName
+          : rentalOwnerData.rentalOwner_firstName,
+        rentalOwner_lastName: rentalsFormik.values.rentalOwner_lastName
+          ? rentalsFormik.values.rentalOwner_lastName
+          : rentalOwnerData.rentalOwner_lastName,
+        rentalOwner_companyName: rentalsFormik.values.rentalOwner_companyName
+          ? rentalsFormik.values.rentalOwner_companyName
+          : rentalOwnerData.rentalOwner_companyName,
+        rentalOwner_primaryEmail: rentalsFormik.values.rentalOwner_primaryEmail
+          ? rentalsFormik.values.rentalOwner_primaryEmail
+          : rentalOwnerData.rentalOwner_primaryEmail,
+        rentalOwner_phoneNumber: rentalsFormik.values.rentalOwner_phoneNumber
+          ? rentalsFormik.values.rentalOwner_phoneNumber
+          : rentalOwnerData.rentalOwner_phoneNumber,
+        rentalOwner_homeNumber: rentalsFormik.values.rentalOwner_homeNumber
+          ? rentalsFormik.values.rentalOwner_homeNumber
+          : rentalOwnerData.rentalOwner_homeNumber,
+        rentalOwner_businessNumber: rentalsFormik.values
+          .rentalOwner_businessNumber
+          ? rentalsFormik.values.rentalOwner_businessNumber
+          : rentalOwnerData.rentalOwner_businessNumber,
+        entries: entriesArray,
+      };
 
-      rental_soft: rentalsFormik.values.rental_soft,
-      rental_units: rentalsFormik.values.rental_units,
-      rental_unitsAdress: rentalsFormik.values.rental_unitsAdress,
+      console.log(leaseObject, "updated values");
+      await axios
+        .put(editUrl, leaseObject)
+        .then((response) => {
+          console.log(response, "response1111");
+          handleResponse(response);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    } else {
+      const entriesObject = {
+        property_type: selectedProp,
+        rental_adress: rentalsFormik.values.entries[0].rental_adress,
+        rental_city: rentalsFormik.values.entries[0].rental_city,
+        rental_state: rentalsFormik.values.entries[0].rental_state,
+        rental_country: rentalsFormik.values.entries[0].rental_country,
+        rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
 
-      //COMMERCIAL
-      rentalcom_soft: rentalsFormik.values.rentalcom_soft,
-      rentalcom_units: rentalsFormik.values.rentalcom_units,
-      rentalcom_unitsAdress: rentalsFormik.values.rentalcom_unitsAdress,
-      propertyres_image: residentialImage,
-    };
-    entriesArray.push(entriesObject);
+        rentalOwner_operatingAccount:
+          rentalsFormik.values.entries[0].rentalOwner_operatingAccount,
+        rentalOwner_propertyReserve:
+          rentalsFormik.values.entries[0].rentalOwner_propertyReserve,
+        staffMember: selectedUser,
+        //rooms
+        //RESIDENTIAL
+        // residential: rentalsFormik.values.entries[0].residential,
+        //COMMERCIAL
+        commercial: unitData,
+      };
+      entriesArray.push(entriesObject);
 
-    const leaseObject = {
-      //   Add Rental owner
-      rentalOwner_firstName: rentalsFormik.values.rentalOwner_firstName,
-      rentalOwner_lastName: rentalsFormik.values.rentalOwner_lastName,
-      rentalOwner_companyName: rentalsFormik.values.rentalOwner_companyName,
-      rentalOwner_primaryEmail: rentalsFormik.values.rentalOwner_primaryEmail,
-      rentalOwner_phoneNumber: rentalsFormik.values.rentalOwner_phoneNumber,
-      rentalOwner_homeNumber: rentalsFormik.values.rentalOwner_homeNumber,
-      rentalOwner_businessNumber:
-        rentalsFormik.values.rentalOwner_businessNumber,
-      entries: entriesArray,
-    };
+      const leaseObject = {
+        //   Add Rental owner
+        rentalOwner_firstName: rentalsFormik.values.rentalOwner_firstName
+          ? rentalsFormik.values.rentalOwner_firstName
+          : rentalOwnerData.rentalOwner_firstName,
+        rentalOwner_lastName: rentalsFormik.values.rentalOwner_lastName
+          ? rentalsFormik.values.rentalOwner_lastName
+          : rentalOwnerData.rentalOwner_lastName,
+        rentalOwner_companyName: rentalsFormik.values.rentalOwner_companyName
+          ? rentalsFormik.values.rentalOwner_companyName
+          : rentalOwnerData.rentalOwner_companyName,
+        rentalOwner_primaryEmail: rentalsFormik.values.rentalOwner_primaryEmail
+          ? rentalsFormik.values.rentalOwner_primaryEmail
+          : rentalOwnerData.rentalOwner_primaryEmail,
+        rentalOwner_phoneNumber: rentalsFormik.values.rentalOwner_phoneNumber
+          ? rentalsFormik.values.rentalOwner_phoneNumber
+          : rentalOwnerData.rentalOwner_phoneNumber,
+        rentalOwner_homeNumber: rentalsFormik.values.rentalOwner_homeNumber
+          ? rentalsFormik.values.rentalOwner_homeNumber
+          : rentalOwnerData.rentalOwner_homeNumber,
+        rentalOwner_businessNumber: rentalsFormik.values
+          .rentalOwner_businessNumber
+          ? rentalsFormik.values.rentalOwner_businessNumber
+          : rentalOwnerData.rentalOwner_businessNumber,
+        entries: entriesArray,
+      };
 
-    console.log(leaseObject, "updated values");
-    await axios
-      .put(editUrl, leaseObject)
-      .then((response) => {
-        console.log(response, "response1111");
-        handleResponse(response);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+      console.log(leaseObject, "updated values");
+      await axios
+        .put(editUrl, leaseObject)
+        .then((response) => {
+          console.log(response, "response1111");
+          handleResponse(response);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
   };
   function handleResponse(response) {
     console.log(response, "response");
@@ -920,6 +998,87 @@ const Rentals = () => {
       alert(response.data.message);
     }
   }
+  const addCommercialUnit = () => {
+    const newUnit = {
+      rentalcom_units: "",
+      rentalcom_soft: "",
+      rentalcom_unitsAdress: "",
+      property_image: [],
+    };
+
+    rentalsFormik.setValues({
+      ...rentalsFormik.values,
+      entries: [
+        {
+          ...rentalsFormik.values.entries[0],
+          commercial: [...rentalsFormik.values.entries[0].commercial, newUnit],
+        },
+      ],
+    });
+    const commercialUnit = [];
+    setCommercialImage([...commercialImage, commercialUnit]);
+    // rentalsFormik.values.propertyres_image.push(newUnit)
+  };
+
+  const deleteCommercialUnit = (index) => {
+    console.log("delete commercial");
+    const updatedCommercialUnits = [
+      ...rentalsFormik.values.entries[0].commercial,
+    ];
+    updatedCommercialUnits.splice(index, 1);
+    rentalsFormik.setValues({
+      ...rentalsFormik.values,
+      entries: [
+        {
+          ...rentalsFormik.values.entries[0],
+          commercial: updatedCommercialUnits,
+        },
+      ],
+    });
+  };
+
+  const addResidentialUnits = () => {
+    const newUnit = {
+      rental_bed: "",
+      rental_bath: "",
+      propertyres_image: [],
+      rental_soft: "",
+      rental_units: "",
+      rental_unitsAdress: "",
+    };
+
+    rentalsFormik.setValues({
+      ...rentalsFormik.values,
+      entries: [
+        {
+          ...rentalsFormik.values.entries[0],
+          residential: [
+            ...rentalsFormik.values.entries[0].residential,
+            newUnit,
+          ],
+        },
+      ],
+    });
+    const residentialUnit = [];
+    setResidentialImage([...residentialImage, residentialUnit]);
+  };
+  const deleteResidentialUnit = (index) => {
+    const updatedResidentialUnits = [
+      ...rentalsFormik.values.entries[0].residential,
+    ];
+    updatedResidentialUnits.splice(index, 1);
+    rentalsFormik.setValues({
+      ...rentalsFormik.values,
+      entries: [
+        {
+          ...rentalsFormik.values.entries[0],
+          residential: updatedResidentialUnits,
+        },
+      ],
+    });
+  };
+
+  console.log(rentalsFormik.values, "commercialUnits");
 
   return (
     <>
@@ -992,10 +1151,6 @@ const Rentals = () => {
                                           subtype.propertysub_type
                                         );
 
-                                        console.log(
-                                          rentalsFormik.values,
-                                          "values fsdfkm,"
-                                        );
                                         rentalsFormik.setFieldValue(
                                           "entries[0].property_type",
                                           subtype.propertysub_type
@@ -1048,6 +1203,7 @@ const Rentals = () => {
                               Address
                             </label>
                             <Input
+                              required
                               className="form-control-alternative"
                               id="input-address"
                               placeholder="Address"
@@ -1090,7 +1246,7 @@ const Rentals = () => {
                       </Col>
                     </Row>
                     <Row>
-                      <Col lg="4">
+                      <Col lg="3">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -1099,6 +1255,7 @@ const Rentals = () => {
                             City
                           </label>
                           <Input
+                          required
                             className="form-control-alternative"
                             id="input-city"
                             placeholder="New York"
@@ -1132,7 +1289,51 @@ const Rentals = () => {
                           }
                         </FormGroup>
                       </Col>
-                      <Col lg="4">
+                      <Col lg="3">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-country"
+                          >
+                            State
+                          </label>
+                          <Input
+                          required
+                            className="form-control-alternative"
+                            id="input-country"
+                            placeholder="state"
+                            type="text"
+                            name="rental_state"
+                            onBlur={rentalsFormik.handleBlur}
+                            onChange={(e) =>
+                              rentalsFormik.setFieldValue(
+                                "entries[0].rental_state",
+                                e.target.value
+                              )
+                            }
+                            value={
+                              rentalsFormik.values?.entries[0]?.rental_state
+                            }
+                          />
+                          {
+                            <div>
+                              {rentalsFormik.errors.entries &&
+                              rentalsFormik.errors?.entries[0]?.rental_state &&
+                              rentalsFormik.touched?.entries &&
+                              rentalsFormik.touched?.entries[0]
+                                ?.rental_state ? (
+                                <div style={{ color: "red" }}>
+                                  {
+                                    rentalsFormik.errors?.entries[0]
+                                      ?.rental_state
+                                  }
+                                </div>
+                              ) : null}
+                            </div>
+                          }
+                        </FormGroup>
+                      </Col>
+                      <Col lg="3">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -1141,6 +1342,7 @@ const Rentals = () => {
                             Country
                           </label>
                           <Input
+                          required
                             className="form-control-alternative"
                             id="input-country"
                             placeholder="United States"
@@ -1176,7 +1378,7 @@ const Rentals = () => {
                           }
                         </FormGroup>
                       </Col>
-                      <Col lg="4">
+                      <Col lg="3">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -1185,6 +1387,7 @@ const Rentals = () => {
                             Postal code
                           </label>
                           <Input
+                          required
                             className="form-control-alternative"
                             id="input-postal-code"
                             placeholder="Postal code"
@@ -1423,6 +1626,7 @@ const Rentals = () => {
                                       </label>
                                       <br />
                                       <Input
+                                      required
                                         id="standard-multiline-static"
                                         className="popinput"
                                         type="text"
@@ -1459,6 +1663,7 @@ const Rentals = () => {
                                       ) : null}
                                       <br />
                                       <Input
+                                      required
                                         id="standard-multiline-static"
                                         className="popinput"
                                         type="text"
@@ -1506,6 +1711,7 @@ const Rentals = () => {
                                       </label>
                                       <br />
                                       <Input
+                                      required
                                         id="standard-multiline-static"
                                         className="popinput"
                                         type="text"
@@ -1565,6 +1771,7 @@ const Rentals = () => {
                                         }}
                                       >
                                         <Input
+                                        required
                                           id="standard-multiline-static"
                                           className="popinput"
                                           type="text"
@@ -1630,6 +1837,7 @@ const Rentals = () => {
                                         }}
                                       >
                                         <Input
+                                        required
                                           id="standard-multiline-static"
                                           className="popinput"
                                           type="text"
@@ -2264,493 +2472,624 @@ const Rentals = () => {
                         </label>
                         <br />
                         <br />
-                        <Row>
-                          <Col lg="2">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-city"
-                              >
-                                Units *
-                              </label>
-                              <Input
-                                className="form-control-alternative"
-                                id="input-unit"
-                                placeholder="102"
-                                type="number"
-                                name="rental_units"
-                                onBlur={rentalsFormik.handleBlur}
-                                onChange={(e) => {
-                                  const value = parseInt(e.target.value, 10); // Parse the value as an integer
-                                  if (!isNaN(value) && value >= 0) {
-                                    rentalsFormik.setFieldValue(
-                                      "entries[0].rental_units",
-                                      value.toString() // Update the field value
-                                    );
-                                  }
-                                  // You might want to add an else statement to handle invalid input if needed
-                                }}
-                                value={
-                                  rentalsFormik.values.entries[0].rental_units
-                                }
-                              />
-                              {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors.entries[0]?.rental_units &&
-                              rentalsFormik.touched.entries &&
-                              rentalsFormik.touched.entries[0]?.rental_units ? (
-                                <div style={{ color: "red" }}>
-                                  {
-                                    rentalsFormik.errors.entries[0]
-                                      ?.rental_units
-                                  }
-                                </div>
-                              ) : null}
-                            </FormGroup>
-                          </Col>
-                          <Col lg="4">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-unitadd"
-                              >
-                                Unit Address *
-                              </label>
-                              <Input
-                                className="form-control-alternative"
-                                id="input-unitadd"
-                                placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
-                                type="text"
-                                name="rental_unitsAdress"
-                                onBlur={rentalsFormik.handleBlur}
-                                onChange={rentalsFormik.handleChange}
-                                value={rentalsFormik.values.rental_unitsAdress}
-                              />
-                              {rentalsFormik.touched.rental_unitsAdress &&
-                              rentalsFormik.errors.rental_unitsAdress ? (
-                                <div style={{ color: "red" }}>
-                                  {rentalsFormik.errors.rental_unitsAdress}
-                                </div>
-                              ) : null}
-                            </FormGroup>
-                          </Col>
-                          <Col lg="4.5">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-country"
-                              >
-                                Rooms
-                              </label>
-                              <br />
-                              <div style={{ display: "flex" }}>
-                                <Dropdown
-                                  isOpen={baddropdownOpen}
-                                  toggle={toggle4}
-                                >
-                                  <DropdownToggle
-                                    caret
-                                    style={{ width: "100%" }}
-                                  >
-                                    {selectedBad
-                                      ? selectedBad
-                                      : setSelectedBad("5 Bed")}{" "}
-                                    &nbsp;&nbsp;
-                                  </DropdownToggle>
-                                  <DropdownMenu style={{ width: "200px" }}>
-                                    <DropdownItem
-                                      onClick={() =>
-                                        handleBadSelection("2 Bed")
-                                      }
-                                    >
-                                      2 Bed
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() =>
-                                        handleBadSelection("3 Bed")
-                                      }
-                                    >
-                                      3 Bed
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() =>
-                                        handleBadSelection("4 Bed")
-                                      }
-                                    >
-                                      4 Bed
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() =>
-                                        handleBadSelection("5 Bed")
-                                      }
-                                    >
-                                      5 Bed
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() =>
-                                        handleBadSelection("6 Bed")
-                                      }
-                                    >
-                                      6 Bed
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() =>
-                                        handleBadSelection("7 Bed")
-                                      }
-                                    >
-                                      7 Bed
-                                    </DropdownItem>
-                                  </DropdownMenu>
-                                </Dropdown>
-                                &nbsp;
-                                <Dropdown
-                                  isOpen={bathdropdownOpen}
-                                  toggle={toggle5}
-                                >
-                                  <DropdownToggle
-                                    caret
-                                    style={{ width: "100%" }}
-                                  >
-                                    {selectedbath
-                                      ? selectedbath
-                                      : setSelectedbath("5 Bath")}{" "}
-                                    &nbsp;&nbsp;
-                                  </DropdownToggle>
-                                  <DropdownMenu style={{ width: "200px" }}>
-                                    <DropdownItem
-                                      onClick={() => handleBathSelect("2 Bath")}
-                                    >
-                                      2 Bath
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => handleBathSelect("3 Bath")}
-                                    >
-                                      3 Bath
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => handleBathSelect("4 Bath")}
-                                    >
-                                      4 Bath
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => handleBathSelect("5 Bath")}
-                                    >
-                                      5 Bath
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => handleBathSelect("6 Bath")}
-                                    >
-                                      6 Bath
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => handleBathSelect("7 Bath")}
-                                    >
-                                      7 Bath
-                                    </DropdownItem>
-                                  </DropdownMenu>
-                                </Dropdown>
-                              </div>
-                              &nbsp;&nbsp;
-                            </FormGroup>
-                          </Col>
-                          <Col lg="2">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-unitadd"
-                              >
-                                SQFT
-                              </label>
-                              <Input
-                                className="form-control-alternative"
-                                id="input-unitadd"
-                                placeholder="3000"
-                                type="number"
-                                name="rental_soft"
-                                onBlur={rentalsFormik.handleBlur}
-                                onChange={rentalsFormik.handleChange}
-                                value={rentalsFormik.values.rental_soft}
-                              />
-                              {rentalsFormik.touched.rental_soft &&
-                              rentalsFormik.errors.rental_soft ? (
-                                <div style={{ color: "red" }}>
-                                  {rentalsFormik.errors.rental_soft}
-                                </div>
-                              ) : null}
-                            </FormGroup>
-                          </Col>
-                          <Col lg="2">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-unitadd"
-                              >
-                                Photo
-                              </label>
-                              <span
-                                onClick={togglePhotoresDialog}
-                                style={{
-                                  cursor: "pointer",
-                                  fontSize: "14px",
-                                  fontFamily: "monospace",
-                                  color: "blue",
-                                }}
-                              >
-                                {" "}
-                                <br />
-                                <input
-                                  type="file"
-                                  className="form-control-file d-none"
-                                  accept="image/*"
-                                  multiple
-                                  id="propertyres_image"
-                                  name="propertyres_image"
-                                  onChange={(e) => {
-                                    const file = [...e.target.files];
-                                    fileData(file, "propertyres_image");
-
-                                    if (file.length > 0) {
-                                      const allImages = file.map((file) => {
-                                        return URL.createObjectURL(file);
-                                      });
-                                      setResidentialImage([
-                                        ...residentialImage,
-                                        ...allImages,
-                                      ]);
-                                    } else {
-                                      // selectedPhotoPreview1.src = "";
-                                      // rentalsFormik.setFieldValue(
-                                      //   "propertyres_image",""
-                                      setResidentialImage([
-                                        ...residentialImage,
-                                      ]);
-                                      // )
-                                    }
-                                  }}
-                                />
-                                <label htmlFor="propertyres_image">
-                                  <b style={{ fontSize: "20px" }}>+</b> Add
-                                </label>
-                                {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
-                              </span>
-                            </FormGroup>
-                            {/* <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-unitadd"
-                            >
-                              Photo
-                            </label>
-                            <span
-                            onClick={togglePhotoresDialog}
-                            style={{
-                              cursor: "pointer",
-                              fontSize: "14px",
-                              fontFamily: "monospace",
-                              color: "blue",
-                            }}
-                          > <br/>
-                            <b style={{ fontSize: "20px" }}>+</b> Add 
-                            
-                          </span>
-                          {rentalsFormik.values.propertyres_image && (
-                            <span
-                              onClick={clearSelectedPhotores}
-                              style={{
-                                cursor: "pointer",
-                                fontSize: "15px",
-                                position: "absolute",
-                                top: "10px",
-                                right: "10px",
-                                color: "black",
-                              }}
-                            >
-                              <ClearIcon />
-                            </span>
-                          )}
-
-                          <div className="mt-3">
-                          {selectedPhoto && (
-                            <img
-                              id="selectedPhotoresPreview"
-                              src={selectedPhoto}
-                              alt=""
-                              style={{ maxWidth: "150px", maxHeight: "150px" }}
-                            />
-                          )}
-                          </div>
-                          <Dialog open={isPhotoresDialogOpen} onClose={handlePhotoCloseDialog}>
-                            <DialogTitle style={{ background: "#F0F8FF" }}>
-                              Add Photo
-                            </DialogTitle>
-                            <DialogContent
-                              style={{ width: "100%", maxWidth: "500px" }}
-                            >
-                              <div
-                                className="formInput"
-                                style={{ margin: "5rem 5rem" ,size:'100%'}}
-                              >
-                                
-                                
-                                <br />
-                                <div className="mb-3 mt-3">
-                                  <label className="d-block">Select Image</label>
-                                  <input
-                                  type="file"
-                                  className="form-control-file d-block"
-                                  accept="image/*"
-                                  name="propertyres_image"
-                                  // onChange={handleFileInputChange}
-
-                                  onChange={(e) => {
-                                    const file = e.target.files[0];
-
-                                    // Update property_image field in Formik
-                                    rentalsFormik.setFieldValue("propertyres_image", file);
-
-                                    // Update the selected photo preview
-                                    const selectedPhotoPreview1 = document.getElementById("selectedPhotoPreview1");
-                                    if (file) {
-                                      const imageUrl = URL.createObjectURL(file);
-                                      selectedPhotoPreview1.src = imageUrl;
-                                    } else {
-                                      selectedPhotoPreview1.src = "";
-                                    }
-                                  }}
-                                />
-                                </div>
-                                
-                              </div>
-                            </DialogContent>
-                            <DialogActions>
-                              <Button onClick={handlePhotoCloseDialog}>Cancel</Button>
-                              <Button onClick={handlePhotoCloseDialog} color="primary">Add</Button>
-                            </DialogActions>
-                          </Dialog>
-                          </FormGroup> */}
-                          </Col>
-
-                          <div
-                            className="mt-3 d-flex"
-                            style={{
-                              justifyContent: "center",
-                              flexWrap: "wrap", // Allow images to wrap to the next row
-                            }}
-                          >
-                            {residentialImage &&
-                              residentialImage.length > 0 &&
-                              residentialImage.map((image, index) => (
-                                <div
-                                  key={image}
+                        {rentalsFormik.values.entries &&
+                          rentalsFormik.values.entries[0].residential.map(
+                            (residential, residentialIndex) => (
+                              <Row style={{ position: "relative" }}>
+                                <ClearIcon
                                   style={{
-                                    position: "relative",
-                                    width: "100px",
-                                    height: "100px",
-                                    margin: "10px",
-                                    display: "flex",
-                                    flexDirection: "column",
+                                    cursor: "pointer",
+                                    position: "absolute",
+                                    right: "10px",
                                   }}
-                                >
-                                  {index !== residentialImage.length - 1 ? (
-                                    <>
-                                      <img
-                                        src={image}
-                                        alt=""
-                                        style={{
-                                          width: "100px",
-                                          height: "100px",
-                                          maxHeight: "100%",
-                                          maxWidth: "100%",
-                                          borderRadius: "10px",
-                                          // objectFit: "cover",
-                                        }}
-                                        onClick={() => {
-                                          setSelectedImage(image);
-                                          setOpen(true);
-                                        }}
-                                      />
-                                      <ClearIcon
-                                        style={{
-                                          cursor: "pointer",
-                                          alignSelf: "flex-start",
-                                          position: "absolute",
-                                          top: "-12px",
-                                          right: "-12px",
-                                        }}
-                                        onClick={() =>
-                                          clearSelectedPhoto(
-                                            image,
-                                            "propertyres_image"
-                                          )
-                                        }
-                                      />
-                                    </>
-                                  ) : (
-                                    <></>
-                                  )}
-                                  {imgLoader &&
-                                  index === residentialImage.length - 1 ? (
-                                    <div
-                                      style={{
-                                        position: "absolute",
-                                        top: "50%",
-                                        left: "50%",
-                                        transform: "translate(-50%, -50%)",
-                                      }}
+                                  onClick={() => {
+                                    deleteResidentialUnit(residentialIndex);
+                                  }}
+                                />
+                                <Col lg="3">
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-city"
                                     >
-                                      {/* Use RotatingLines or any other spinner you prefer */}
-                                      <RotatingLines color="#00BFFF" />
-                                    </div>
-                                  ) : (
-                                    <>
-                                      {index === residentialImage.length - 1 &&
-                                      residentialImage[index] ? (
-                                        <>
-                                          {/* {image ? <>hii</> : <>b</>} */}
-                                          <img
-                                            src={image}
-                                            alt=""
-                                            style={{
-                                              width: "100px",
-                                              height: "100px",
-                                              maxHeight: "100%",
-                                              maxWidth: "100%",
-                                              borderRadius: "10px",
-                                              // objectFit: "cover",
-                                            }}
-                                            onClick={() => {
-                                              setSelectedImage(image);
-                                              setOpen(true);
-                                            }}
-                                          />
-                                          <ClearIcon
-                                            style={{
-                                              cursor: "pointer",
-                                              alignSelf: "flex-start",
-                                              position: "absolute",
-                                              top: "-12px",
-                                              right: "-12px",
-                                            }}
+                                      Units *
+                                    </label>
+                                    <Input
+                                    required
+                                      className="form-control-alternative"
+                                      id="input-unit"
+                                      placeholder="102"
+                                      type="text"
+                                      name={`entries${[
+                                        residentialIndex,
+                                      ]}.rental_units`}
+                                      onBlur={rentalsFormik.handleBlur}
+                                      onChange={(e) => {
+                                        // setUnit(e.target.value)
+                                        rentalsFormik.setFieldValue(
+                                          `entries[0].residential[${residentialIndex}].rental_units`,
+                                          e.target.value
+                                        );
+                                        // rentalsFormik.handleChange(e)
+                                      }}
+                                      onInput={(e) => {
+                                        const inputValue = e.target.value;
+                                        const numericValue = inputValue.replace(
+                                          /\D/g,
+                                          ""
+                                        ); // Remove non-numeric characters
+                                        e.target.value = numericValue;
+                                      }}
+                                      value={
+                                        rentalsFormik.values.entries[0]
+                                          .residential[residentialIndex]
+                                          .rental_units
+                                      }
+                                    />
+                                    {rentalsFormik.errors.entries &&
+                                    rentalsFormik.errors.entries[0].residential[
+                                      residentialIndex
+                                    ]?.rental_units &&
+                                    rentalsFormik.touched.entries &&
+                                    rentalsFormik.touched.entries[0]
+                                      .residential[residentialIndex]
+                                      ?.rental_units ? (
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalsFormik.errors.entries[0]
+                                            .residential[residentialIndex]
+                                            ?.rental_units
+                                        }
+                                      </div>
+                                    ) : null}
+                                  </FormGroup>
+                                </Col>
+                                <Col lg="4">
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-unitadd"
+                                    >
+                                      Unit Address *
+                                    </label>
+                                    <Input
+                                    required
+                                      className="form-control-alternative"
+                                      id="input-unitadd"
+                                      placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
+                                      type="text"
+                                      name={`entries${[
+                                        residentialIndex,
+                                      ]}.rental_unitsAdress`}
+                                      onBlur={rentalsFormik.handleBlur}
+                                      onChange={(e) =>
+                                        rentalsFormik.setFieldValue(
+                                          `entries[0].residential[${residentialIndex}].rental_unitsAdress`,
+                                          e.target.value
+                                        )
+                                      }
+                                      value={
+                                        rentalsFormik.values.entries[0]
+                                          .residential[residentialIndex]
+                                          .rental_unitsAdress
+                                      }
+                                    />
+                                    {/* {rentalsFormik.touched.rental_unitsAdress &&
+                                    rentalsFormik.errors.rental_unitsAdress ? (
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalsFormik.errors
+                                            .rental_unitsAdress
+                                        }
+                                      </div>
+                                    ) : null} */}
+                                  </FormGroup>
+                                </Col>{" "}
+                                <Col lg="3">
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-unitadd"
+                                    >
+                                      SQFT
+                                    </label>
+                                    <Input
+                                    required
+                                      className="form-control-alternative"
+                                      id="input-unitadd"
+                                      placeholder="3000"
+                                      type="text"
+                                      name={`entries[0].residential[${residentialIndex}].rental_soft`}
+                                      onBlur={rentalsFormik.handleBlur}
+                                      onChange={(e) => {
+                                        rentalsFormik.setFieldValue(
+                                          `entries[0].residential[${residentialIndex}].rental_soft`,
+                                          e.target.value
+                                        );
+                                      }}
+                                      value={
+                                        rentalsFormik.values.entries[0]
+                                          .residential[residentialIndex]
+                                          .rental_soft
+                                      }
+                                      onInput={(e) => {
+                                        const inputValue = e.target.value;
+                                        const numericValue = inputValue.replace(
+                                          /\D/g,
+                                          ""
+                                        ); // Remove non-numeric characters
+                                        e.target.value = numericValue;
+                                      }}
+                                    />
+                                    {/* {rentalsFormik.touched.rental_soft &&
+                                    rentalsFormik.errors.rental_soft ? (
+                                      <div style={{ color: "red" }}>
+                                        {rentalsFormik.errors.rental_soft}
+                                      </div>
+                                    ) : null} */}
+                                  </FormGroup>
+                                </Col>
+                                <Col lg="8">
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-country"
+                                    >
+                                      Rooms
+                                    </label>
+                                    <br />
+                                    {/* <div style={{ display: "flex" }}>
+                                      {console.log(baddropdownOpen, "clg")}
+                                      <Dropdown
+                                        isOpen={
+                                          baddropdownOpen === residentialIndex
+                                        }
+                                        toggle={() => {
+                                          toggle4(residentialIndex);
+                                        }}
+                                      >
+                                        <DropdownToggle
+                                          caret
+                                          style={{ width: "100%" }}
+                                        >
+                                          {rentalsFormik.values.entries[0]
+                                            .residential[residentialIndex]
+                                            .rental_bed
+                                            ? rentalsFormik.values.entries[0]
+                                                .residential[residentialIndex]
+                                                .rental_bed
+                                            : "Select"}{" "}
+                                          &nbsp;&nbsp;
+                                        </DropdownToggle>
+                                        <DropdownMenu
+                                          style={{ width: "200px" }}
+                                        >
+                                          <DropdownItem
                                             onClick={() =>
-                                              clearSelectedPhoto(
-                                                image,
-                                                "propertyres_image"
+                                              handleBadSelection(
+                                                "2 Bed",
+                                                residentialIndex
                                               )
                                             }
+                                          >
+                                            2 Bed
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBadSelection(
+                                                "3 Bed",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            3 Bed
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBadSelection(
+                                                "4 Bed",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            4 Bed
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBadSelection(
+                                                "5 Bed",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            5 Bed
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBadSelection(
+                                                "6 Bed",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            6 Bed
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBadSelection(
+                                                "7 Bed",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            7 Bed
+                                          </DropdownItem>
+                                        </DropdownMenu>
+                                      </Dropdown>
+                                      &nbsp;
+                                      <Dropdown
+                                        isOpen={
+                                          bathdropdownOpen === residentialIndex
+                                        }
+                                        toggle={() => toggle5(residentialIndex)}
+                                      >
+                                        <DropdownToggle
+                                          caret
+                                          style={{ width: "100%" }}
+                                        >
+                                          {rentalsFormik.values.entries[0]
+                                            .residential[residentialIndex]
+                                            .rental_bath
+                                            ? rentalsFormik.values.entries[0]
+                                                .residential[residentialIndex]
+                                                .rental_bath
+                                            : "Select"}{" "}
+                                          &nbsp;&nbsp;
+                                        </DropdownToggle>
+                                        <DropdownMenu
+                                          style={{ width: "200px" }}
+                                        >
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBathSelect(
+                                                "2 Bath",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            2 Bath
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBathSelect(
+                                                "3 Bath",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            3 Bath
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBathSelect(
+                                                "4 Bath",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            4 Bath
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBathSelect(
+                                                "5 Bath",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            5 Bath
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBathSelect(
+                                                "6 Bath",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            6 Bath
+                                          </DropdownItem>
+                                          <DropdownItem
+                                            onClick={() =>
+                                              handleBathSelect(
+                                                "7 Bath",
+                                                residentialIndex
+                                              )
+                                            }
+                                          >
+                                            7 Bath
+                                          </DropdownItem>
+                                        </DropdownMenu>
+                                      </Dropdown>
+                                    </div> */}
+                                    <Row
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                      }}
+                                    >
+                                      <Col md="4">
+                                        <FormGroup>
+                                          <label
+                                            className="form-control-label"
+                                            htmlFor="input-unitadd"
+                                          >
+                                            Bath
+                                          </label>
+                                          <Autocomplete
+                                            className="form-control-alternative"
+                                            // id="free-solo-demo"
+                                            id="input-unitadd"
+                                            freeSolo
+                                            size="small"
+                                            options={bathArray.map(
+                                              (option) => option
+                                            )}
+                                            onChange={(event, newValue) => {
+                                              rentalsFormik.setFieldValue(
+                                                `entries[0].residential[${residentialIndex}].rental_bath`,
+                                                newValue
+                                              );
+                                            }}
+                                            renderInput={(params) => (
+                                              <TextField
+                                                {...params}
+                                                name={`residential[${residentialIndex}].rental_bath`}
+                                                id={`residential[${residentialIndex}].rental_bath`}
+                                                value={
+                                                  rentalsFormik.values
+                                                    .entries[0].residential[
+                                                    residentialIndex
+                                                  ].rental_bath
+                                                }
+                                                // onChange={rentalsFormik.handleChange}
+                                                onChange={(e) => {
+                                                  rentalsFormik.setFieldValue(
+                                                    `entries[0].residential[${residentialIndex}].rental_bath`,
+                                                    e.target.value
+                                                  );
+                                                }}
+                                              />
+                                            )}
                                           />
-                                        </>
-                                      ) : (
-                                        <></>
+                                          {console.log(
+                                            rentalsFormik.values.entries[0]
+                                              .residential[residentialIndex],
+                                            "hiufhbgvwejnkml"
+                                          )}
+                                        </FormGroup>
+                                      </Col>
+                                      <Col md="4">
+                                        <FormGroup>
+                                          <label
+                                            className="form-control-label"
+                                            htmlFor="input-unitadd"
+                                          >
+                                            Bed
+                                          </label>
+
+                                          <Autocomplete
+                                            className="form-control-alternative"
+                                            // id="free-solo-demo"
+                                            id="input-unitadd"
+                                            freeSolo
+                                            size="small"
+                                            options={roomsArray.map(
+                                              (option) => option
+                                            )}
+                                            onChange={(event, newValue) => {
+                                              rentalsFormik.setFieldValue(
+                                                `entries[0].residential[${residentialIndex}].rental_bed`,
+                                                newValue
+                                              );
+                                            }}
+                                            renderInput={(params) => (
+                                              <TextField
+                                                {...params}
+                                                name={`residential[${residentialIndex}].rental_bed`}
+                                                id={`residential[${residentialIndex}].rental_bed`}
+                                                value={
+                                                  rentalsFormik.values
+                                                    .entries[0].residential[
+                                                    residentialIndex
+                                                  ].rental_bed
+                                                }
+                                                // onChange={rentalsFormik.handleChange}
+                                                onChange={(e) => {
+                                                  rentalsFormik.setFieldValue(
+                                                    `entries[0].residential[${residentialIndex}].rental_bed`,
+                                                    e.target.value
+                                                  );
+                                                }}
+                                              />
+                                            )}
+                                          />
+                                        </FormGroup>
+                                      </Col>
+                                      <Col lg="2">
+                                        <FormGroup>
+                                          <label
+                                            className="form-control-label"
+                                            htmlFor="input-unitadd"
+                                          >
+                                            Photo
+                                          </label>
+                                          <span
+                                            onClick={togglePhotoresDialog}
+                                            style={{
+                                              cursor: "pointer",
+                                              fontSize: "14px",
+                                              fontFamily: "monospace",
+                                              color: "blue",
+                                            }}
+                                          >
+                                            {" "}
+                                            <br />
+                                            <input
+                                              type="file"
+                                              className="form-control-file d-none"
+                                              accept="image/*"
+                                              multiple
+                                              id={`propertyres_image_${residentialIndex}`}
+                                              name={`propertyres_image_${residentialIndex}`}
+                                              onChange={(e) => {
+                                                const file = [
+                                                  ...e.target.files,
+                                                ];
+                                                fileData(
+                                                  file,
+                                                  "propertyres_image",
+                                                  residentialIndex
+                                                );
+
+                                                if (file.length > 0) {
+                                                  const allImages = file.map(
+                                                    (file) => {
+                                                      return URL.createObjectURL(
+                                                        file
+                                                      );
+                                                    }
+                                                  );
+                                                  console.log(
+                                                    residentialIndex,
+                                                    "indexxxxxx"
+                                                  );
+                                                  if (
+                                                    residentialImage[
+                                                      residentialIndex
+                                                    ]
+                                                  ) {
+                                                    setResidentialImage([
+                                                      ...residentialImage.slice(
+                                                        0,
+                                                        residentialIndex
+                                                      ),
+                                                      [
+                                                        ...residentialImage[
+                                                          residentialIndex
+                                                        ],
+                                                        ...allImages,
+                                                      ],
+                                                      ...residentialImage.slice(
+                                                        1 + residentialIndex
+                                                      ),
+                                                    ]);
+                                                  } else {
+                                                    setResidentialImage([
+                                                      ...allImages,
+                                                    ]);
+                                                  }
+                                                } else {
+                                                  setResidentialImage([
+                                                    ...residentialImage,
+                                                  ]);
+                                                  // )
+                                                }
+                                              }}
+                                            />
+                                            <label
+                                              htmlFor={`propertyres_image_${residentialIndex}`}
+                                            >
+                                              <b style={{ fontSize: "20px" }}>
+                                                +
+                                              </b>{" "}
+                                              Add
+                                            </label>
+                                            {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                                          </span>
+                                        </FormGroup>
+                                      </Col>
+                                    </Row>
+                                    &nbsp;&nbsp;
+                                  </FormGroup>
+                                </Col>
+                                <Row>
+                                  <div
+                                    className="mt-3 d-flex"
+                                    style={{
+                                      justifyContent: "center",
+                                      flexWrap: "wrap", // Allow images to wrap to the next row
+                                    }}
+                                  >
+                                    {residentialImage[residentialIndex] &&
+                                      residentialImage[residentialIndex]
+                                        .length > 0 &&
+                                      residentialImage[residentialIndex].map(
+                                        (residentialImage) => (
+                                          <div
+                                            key={residentialImage}
+                                            style={{
+                                              position: "relative",
+                                              width: "100px",
+                                              height: "100px",
+                                              margin: "10px",
+                                              display: "flex",
+                                              flexDirection: "column",
+                                            }}
+                                          >
+                                            <img
+                                              src={residentialImage}
+                                              alt=""
+                                              style={{
+                                                width: "100px",
+                                                height: "100px",
+                                                maxHeight: "100%",
+                                                maxWidth: "100%",
+                                                borderRadius: "10px",
+                                                // objectFit: "cover",
+                                              }}
+                                              onClick={() => {
+                                                setSelectedImage(
+                                                  residentialImage
+                                                );
+                                                setOpen(true);
+                                              }}
+                                            />
+                                            <ClearIcon
+                                              style={{
+                                                cursor: "pointer",
+                                                alignSelf: "flex-start",
+                                                position: "absolute",
+                                                top: "-12px",
+                                                right: "-12px",
+                                              }}
+                                              onClick={() =>
+                                                clearSelectedPhoto(
+                                                  residentialIndex,
+                                                  residentialImage,
+                                                  "propertyres_image"
+                                                )
+                                              }
+                                            />
+                                          </div>
+                                        )
                                       )}
-                                    </>
-                                  )}
-                                </div>
-                              ))}
-                            <OpenImageDialog
-                              open={open}
-                              setOpen={setOpen}
-                              selectedImage={selectedImage}
-                            />
-                          </div>
+                                    <OpenImageDialog
+                                      open={open}
+                                      setOpen={setOpen}
+                                      selectedImage={selectedImage}
+                                    />
+                                  </div>
+                                </Row>
+                              </Row>
+                            )
+                          )}
+                        <Row>
+                          <Col>
+                            <Button onClick={addResidentialUnits}>
+                              Add another unit
+                            </Button>
+                          </Col>
                         </Row>
                       </FormGroup>
                     </div>
@@ -2770,262 +3109,306 @@ const Rentals = () => {
                         </label>
                         <br />
                         <br />
-                        <Row>
-                          <Col lg="2">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-city"
-                              >
-                                Units *
-                              </label>
-                              <Input
-                                className="form-control-alternative"
-                                id="input-unit"
-                                placeholder="102"
-                                type="number"
-                                name="rentalcom_units"
-                                onBlur={rentalsFormik.handleBlur}
-                                onChange={rentalsFormik.handleChange}
-                                value={rentalsFormik.values.rentalcom_units}
-                              />
-                              {rentalsFormik.touched.rentalcom_units &&
-                              rentalsFormik.errors.rentalcom_units ? (
-                                <div style={{ color: "red" }}>
-                                  {rentalsFormik.errors.rentalcom_units}
-                                </div>
-                              ) : null}
-                            </FormGroup>
-                          </Col>
-                          <Col lg="4">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-unitadd"
-                              >
-                                Unit Address *
-                              </label>
-                              <Input
-                                className="form-control-alternative"
-                                id="input-unitadd"
-                                placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
-                                type="text"
-                                name="rentalcom_unitsAdress"
-                                onBlur={rentalsFormik.handleBlur}
-                                onChange={rentalsFormik.handleChange}
-                                value={
-                                  rentalsFormik.values.rentalcom_unitsAdress
-                                }
-                              />
-                              {rentalsFormik.touched.rentalcom_unitsAdress &&
-                              rentalsFormik.errors.rentalcom_unitsAdress ? (
-                                <div style={{ color: "red" }}>
-                                  {rentalsFormik.errors.rentalcom_unitsAdress}
-                                </div>
-                              ) : null}
-                            </FormGroup>
-                          </Col>
-                          <Col lg="2">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-unitadd"
-                              >
-                                SQFT
-                              </label>
-                              <Input
-                                className="form-control-alternative"
-                                id="input-unitadd"
-                                placeholder="3000"
-                                type="number"
-                                name="rentalcom_soft"
-                                onBlur={rentalsFormik.handleBlur}
-                                onChange={rentalsFormik.handleChange}
-                                value={rentalsFormik.values.rentalcom_soft}
-                              />
-                              {rentalsFormik.touched.rentalcom_soft &&
-                              rentalsFormik.errors.rentalcom_soft ? (
-                                <div style={{ color: "red" }}>
-                                  {rentalsFormik.errors.rentalcom_soft}
-                                </div>
-                              ) : null}
-                            </FormGroup>
-                          </Col>
-                          <Col lg="4"></Col>
-                          <Col lg="2">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-unitadd"
-                              >
-                                Photo
-                              </label>
-                              <span
-                                onClick={togglePhotoDialog}
-                                style={{
-                                  cursor: "pointer",
-                                  fontSize: "14px",
-                                  fontFamily: "monospace",
-                                  color: "blue",
-                                }}
-                              >
-                                {" "}
-                                <br />
-                                <input
-                                  type="file"
-                                  className="form-control-file d-none"
-                                  accept="image/*"
-                                  name="property_image"
-                                  multiple
-                                  id="property_image"
-                                  onChange={(e) => {
-                                    const file = [...e.target.files];
-                                    fileData(file, "property_image");
-
-                                    if (file) {
-                                      const allImages = file.map((file) => {
-                                        return URL.createObjectURL(file);
-                                      });
-
-                                      setCommercialImage([
-                                        ...commercialImage,
-                                        ...allImages,
-                                      ]);
-                                    } else {
-                                      setCommercialImage([...commercialImage]);
-                                    }
+                        {rentalsFormik.values.entries &&
+                          rentalsFormik.values.entries[0].commercial.map(
+                            (commercialUnit, index) => (
+                              <div style={{ position: "relative" }}>
+                                <ClearIcon
+                                  style={{
+                                    cursor: "pointer",
+                                    position: "absolute",
+                                    right: "10px",
+                                  }}
+                                  onClick={() => {
+                                    deleteCommercialUnit(index);
                                   }}
                                 />
-                                <label htmlFor="property_image">
-                                  <b style={{ fontSize: "20px" }}>+</b> Add
-                                </label>
-                              </span>
-                            </FormGroup>
-                          </Col>
-
-                          <div
-                            className="mt-3 d-flex"
-                            style={{
-                              justifyContent: "center",
-                              flexWrap: "wrap", // Allow images to wrap to the next row
-                            }}
-                          >
-                            {commercialImage &&
-                              commercialImage.length > 0 &&
-                              commercialImage.map((image, index) => (
-                                <div
-                                  key={image}
-                                  style={{
-                                    position: "relative",
-                                    width: "100px",
-                                    height: "100px",
-                                    margin: "10px",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                  }}
-                                >
-                                  {index !== commercialImage.length - 1 ? (
-                                    <>
-                                      <img
-                                        src={image}
-                                        alt=""
-                                        style={{
-                                          width: "100px",
-                                          height: "100px",
-                                          maxHeight: "100%",
-                                          maxWidth: "100%",
-                                          borderRadius: "10px",
-
-                                          // objectFit: "cover",
+                                <Row>
+                                  <Col lg="3">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-city"
+                                      >
+                                        Units *
+                                      </label>
+                                      <Input
+                                      required
+                                        className="form-control-alternative"
+                                        id="input-unit"
+                                        placeholder="102"
+                                        type="text"
+                                        //name should be dynamic
+                                        name={`rentalcom_units${index}`}
+                                        onBlur={rentalsFormik.handleBlur}
+                                        onChange={(e) => {
+                                          rentalsFormik.setFieldValue(
+                                            `entries[0].commercial[${index}].rentalcom_units`,
+                                            e.target.value
+                                          );
                                         }}
-                                        onClick={() => {
-                                          setSelectedImage(commercialImage);
-                                          setOpen(true);
-                                        }}
+                                        value={
+                                          rentalsFormik.values.entries[0]
+                                            .commercial[index].rentalcom_units
+                                        }
+                                        onInput={(e) => {
+                                        const inputValue = e.target.value;
+                                        const numericValue = inputValue.replace(
+                                          /\D/g,
+                                          ""
+                                        ); // Remove non-numeric characters
+                                        e.target.value = numericValue;
+                                      }}
                                       />
-                                      <ClearIcon
-                                        style={{
-                                          cursor: "pointer",
-                                          alignSelf: "flex-start",
-                                          position: "absolute",
-                                          top: "-12px",
-                                          right: "-12px",
+                                      {/* {rentalsFormik.touched.rentalcom_units &&
+                                      rentalsFormik.errors.rentalcom_units ? (
+                                        <div style={{ color: "red" }}>
+                                          {rentalsFormik.errors.rentalcom_units}
+                                        </div>
+                                      ) : null} */}
+                                    </FormGroup>
+                                  </Col>
+                                  <Col lg="4">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-unitadd"
+                                      >
+                                        Unit Address *
+                                      </label>
+                                      <Input
+                                      required
+                                        className="form-control-alternative"
+                                        id="input-unitadd"
+                                        placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
+                                        type="text"
+                                        name={`rentalcom_unitsAdress${index}`}
+                                        onBlur={rentalsFormik.handleBlur}
+                                        onChange={(e) => {
+                                          rentalsFormik.setFieldValue(
+                                            `entries[0].commercial[${index}].rentalcom_unitsAdress`,
+                                            e.target.value
+                                          );
                                         }}
-                                        onClick={() =>
-                                          clearSelectedPhoto(
-                                            image,
-                                            "property_image"
-                                          )
+                                        value={
+                                          rentalsFormik.values.entries[0]
+                                            .commercial[index]
+                                            .rentalcom_unitsAdress
                                         }
                                       />
-                                    </>
-                                  ) : (
-                                    <></>
-                                  )}
-                                  {imgLoader &&
-                                  index === commercialImage.length - 1 ? (
-                                    <div
-                                      style={{
-                                        position: "absolute",
-                                        top: "50%",
-                                        left: "50%",
-                                        transform: "translate(-50%, -50%)",
+                                      {/* {rentalsFormik.touched
+                                        .rentalcom_unitsAdress &&
+                                      rentalsFormik.errors
+                                        .rentalcom_unitsAdress ? (
+                                        <div style={{ color: "red" }}>
+                                          {
+                                            rentalsFormik.errors
+                                              .rentalcom_unitsAdress
+                                          }
+                                        </div>
+                                      ) : null} */}
+                                    </FormGroup>
+                                  </Col>
+                                  <Col lg="2">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-unitadd"
+                                      >
+                                        SQFT
+                                      </label>
+                                      <Input
+                                      required
+                                        className="form-control-alternative"
+                                        id="input-unitadd"
+                                        placeholder="3000"
+                                        type="text"
+                                        name={`rentalcom_soft${index}`}
+                                        onBlur={rentalsFormik.handleBlur}
+                                        onChange={(e) => {
+                                          rentalsFormik.setFieldValue(
+                                            `entries[0].commercial[${index}].rentalcom_soft`,
+                                            e.target.value
+                                          );
+                                        }}
+                                        onInput={(e) => {
+                                        const inputValue = e.target.value;
+                                        const numericValue = inputValue.replace(
+                                          /\D/g,
+                                          ""
+                                        ); // Remove non-numeric characters
+                                        e.target.value = numericValue;
                                       }}
-                                    >
-                                      {/* Use RotatingLines or any other spinner you prefer */}
-                                      <RotatingLines color="#00BFFF" />
-                                    </div>
-                                  ) : (
-                                    <>
-                                      {index === commercialImage.length - 1 &&
-                                      commercialImage[index] ? (
-                                        <>
-                                          {/* {image ? <>hii</> : <>b</>} */}
-                                          <img
-                                            src={image}
-                                            alt=""
+                                        value={
+                                          rentalsFormik.values.entries[0]
+                                            .commercial[index].rentalcom_soft
+                                        }
+                                      />
+                                      {/* {rentalsFormik.touched.rentalcom_soft &&
+                                      rentalsFormik.errors.rentalcom_soft ? (
+                                        <div style={{ color: "red" }}>
+                                          {rentalsFormik.errors.rentalcom_soft}
+                                        </div>
+                                      ) : null} */}
+                                    </FormGroup>
+                                  </Col>
+                                  <Col lg="4"></Col>
+                                  <Col lg="2">
+                                    <FormGroup>
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-unitadd"
+                                      >
+                                        Photo
+                                      </label>
+                                      <span
+                                        onClick={togglePhotoDialog}
+                                        style={{
+                                          cursor: "pointer",
+                                          fontSize: "14px",
+                                          fontFamily: "monospace",
+                                          color: "blue",
+                                        }}
+                                      >
+                                        {" "}
+                                        <br />
+                                        <input
+                                          type="file"
+                                          className="form-control-file d-none"
+                                          accept="image/*"
+                                          // name="property_image"
+                                          multiple
+                                          id={`property_image${index}`}
+                                          name={`property_image${index}`}
+                                          onChange={(e) => {
+                                            const file = [...e.target.files];
+                                            fileData(
+                                              file,
+                                              "property_image",
+                                              index
+                                            );
+
+                                            if (file) {
+                                              const allImages = file.map(
+                                                (file) => {
+                                                  return URL.createObjectURL(
+                                                    file
+                                                  );
+                                                }
+                                              );
+
+                                              if (commercialImage[index]) {
+                                                setCommercialImage([
+                                                  ...commercialImage.slice(
+                                                    0,
+                                                    index
+                                                  ),
+                                                  [
+                                                    ...commercialImage[index],
+                                                    ...allImages,
+                                                  ],
+                                                  ...commercialImage.slice(
+                                                    index + 1
+                                                  ),
+                                                ]);
+                                              } else {
+                                                setCommercialImage([
+                                                  ...allImages,
+                                                ]);
+                                              }
+                                            } else {
+                                              setCommercialImage([
+                                                ...commercialImage,
+                                              ]);
+                                            }
+                                          }}
+                                        />
+                                        <label
+                                          htmlFor={`property_image${index}`}
+                                        >
+                                          <b style={{ fontSize: "20px" }}>+</b>{" "}
+                                          Add
+                                        </label>
+                                      </span>
+                                    </FormGroup>
+                                  </Col>
+
+                                  <div
+                                    className="mt-3 d-flex"
+                                    style={{
+                                      justifyContent: "center",
+                                      flexWrap: "wrap", // Allow images to wrap to the next row
+                                    }}
+                                  >
+                                    {commercialImage[index] &&
+                                      commercialImage[index].length > 0 &&
+                                      commercialImage[index].map(
+                                        (commercialImage) => (
+                                          <div
+                                            key={commercialImage}
                                             style={{
+                                              position: "relative",
                                               width: "100px",
                                               height: "100px",
-                                              maxHeight: "100%",
-                                              maxWidth: "100%",
-                                              borderRadius: "10px",
-                                              // objectFit: "cover",
+                                              margin: "10px",
+                                              display: "flex",
+                                              flexDirection: "column",
                                             }}
-                                            onClick={() => {
-                                              setSelectedImage(image);
-                                              setOpen(true);
-                                            }}
-                                          />
-                                          <ClearIcon
-                                            style={{
-                                              cursor: "pointer",
-                                              alignSelf: "flex-start",
-                                              position: "absolute",
-                                              top: "-12px",
-                                              right: "-12px",
-                                            }}
-                                            onClick={() =>
-                                              clearSelectedPhoto(
-                                                image,
-                                                "property_image"
-                                              )
-                                            }
-                                          />
-                                        </>
-                                      ) : (
-                                        <></>
+                                          >
+                                            <img
+                                              src={commercialImage}
+                                              alt=""
+                                              style={{
+                                                width: "100px",
+                                                height: "100px",
+                                                maxHeight: "100%",
+                                                maxWidth: "100%",
+                                                borderRadius: "10px",
+
+                                                // objectFit: "cover",
+                                              }}
+                                              onClick={() => {
+                                                setSelectedImage(
+                                                  commercialImage
+                                                );
+                                                setOpen(true);
+                                              }}
+                                            />
+                                            <ClearIcon
+                                              style={{
+                                                cursor: "pointer",
+                                                alignSelf: "flex-start",
+                                                position: "absolute",
+                                                top: "-12px",
+                                                right: "-12px",
+                                              }}
+                                              onClick={() =>
+                                                clearSelectedPhoto(
+                                                  index,
+                                                  commercialImage,
+                                                  "property_image"
+                                                )
+                                              }
+                                            />
+                                          </div>
+                                        )
                                       )}
-                                    </>
-                                  )}
-                                </div>
-                              ))}
-                            <OpenImageDialog
-                              open={open}
-                              setOpen={setOpen}
-                              selectedImage={selectedImage}
-                            />
-                          </div>
+                                    <OpenImageDialog
+                                      open={open}
+                                      setOpen={setOpen}
+                                      selectedImage={selectedImage}
+                                    />
+                                  </div>
+                                </Row>
+                              </div>
+                            )
+                          )}
+                        <Row>
+                          <Col>
+                            <Button onClick={addCommercialUnit}>
+                              Add another unit
+                            </Button>
+                          </Col>
                         </Row>
                       </FormGroup>
                     </div>
@@ -3053,7 +3436,6 @@ const Rentals = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         rentalsFormik.handleSubmit();
-                        handleSubmit(rentalsFormik.values);
                       }}
                     >
                       Create Property
