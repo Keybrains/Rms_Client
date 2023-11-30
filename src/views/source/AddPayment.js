@@ -119,7 +119,7 @@ const AddPayment = () => {
     }),
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
 
@@ -153,10 +153,10 @@ const AddPayment = () => {
   }, [rentAddress]);
 
   const handleAccountSelection = (value, index) => {
-    console.log("Selected index:", index);
+    //console.log("Selected index:", index);
 
     const updatedEntries = [...generalledgerFormik.values.entries];
-    console.log("Current entries:", updatedEntries);
+    //console.log("Current entries:", updatedEntries);
 
     if (updatedEntries[index]) {
       updatedEntries[index].account = value;
@@ -277,7 +277,7 @@ const AddPayment = () => {
           total_amount: total_amount,
         })),
       };
-      console.log(updatedValues, "updatedValues");
+      //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
         "https://propertymanager.cloudpress.host/api/payment/add_payment", ///https://propertymanager.cloudpress.host
         updatedValues
@@ -436,12 +436,12 @@ const AddPayment = () => {
       .then((res) => {
         //setImgLoader(false);
         const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        console.log(imagePath, "imagePath");
+        //console.log(imagePath, "imagePath");
         // setFile(imagePath);
       })
       .catch((err) => {
         //setImgLoader(false);
-        console.log("Error uploading image:", err);
+        //console.log("Error uploading image:", err);
       });
   };
 
@@ -452,19 +452,19 @@ const AddPayment = () => {
   };
 
   const handleOpenFile = (item) => {
-    // console.log(file,"fike")
+    // //console.log(file,"fike")
     // const fileToOpen = file.filter((file) => {
     //   return file.name === item.name
     // })
-    // console.log(fileToOpen, "fileToOpen");
-    console.log(item, "item");
+    // //console.log(fileToOpen, "fileToOpen");
+    //console.log(item, "item");
     const url = URL.createObjectURL(item);
     window.open(url, "_blank");
   };
   const [paymentData, setpaymentData] = useState(null);
 
   useEffect(() => {
-    console.log(mainId, paymentIndex, "mainid && payment Id");
+    //console.log(mainId, paymentIndex, "mainid && payment Id");
     if (mainId && paymentIndex) {
       axios
         .get(
@@ -473,20 +473,20 @@ const AddPayment = () => {
         .then((response) => {
           const paymentData = response.data.data;
           setpaymentData(paymentData);
-          console.log(paymentData, "paymentData");
-          console.log(paymentData.entries, "entries data");
+          //console.log(paymentData, "paymentData");
+          //console.log(paymentData.entries, "entries data");
           const id = paymentData.tenant_id;
           setId(id);
-          console.log(id, "abcd");
+          //console.log(id, "abcd");
           const index = paymentData.entryIndex;
           setIndex(index);
-          console.log(index, "xyz");
+          //console.log(index, "xyz");
 
           const formattedDate =
             paymentData && paymentData.date
               ? new Date(paymentData.date).toISOString().split("T")[0]
               : "";
-          console.log(formattedDate, "formattedDate");
+          //console.log(formattedDate, "formattedDate");
 
           setSelectedRec(paymentData.tenant_firstName || "Select");
           setSelectedProp(paymentData.payment_method || "Select");
@@ -559,7 +559,7 @@ const AddPayment = () => {
         })),
       };
 
-      console.log(updatedValues, "updatedValues");
+      //console.log(updatedValues, "updatedValues");
 
       const putUrl = `https://propertymanager.cloudpress.host/api/payment/payments/${mainId}/payment/${paymentIndex}`;
       const response = await axios.put(putUrl, updatedValues);

@@ -49,7 +49,7 @@ const TenantDashBoard = (props) => {
   };
 
   // let cookies = new Cookies();
-  // console.log(cookies.get("token"), "abc")
+  // //console.log(cookies.get("token"), "abc")
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);

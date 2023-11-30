@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 const AgentNavbar = (props) => {
   let cookies = new Cookies();
   let cookie_id = cookies.get("Agent ID");
-  console.log(cookie_id);
+  //console.log(cookie_id);
   let Logout = () => {
     cookies.remove("token");
     cookies.remove("Agent ID");
@@ -40,7 +40,7 @@ const AgentNavbar = (props) => {
   };
   useEffect(() => {
     getVendorDetails();
-    console.log(cookie_id);
+    //console.log(cookie_id);
   }, [cookie_id]);
 
   return (

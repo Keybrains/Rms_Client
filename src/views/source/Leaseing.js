@@ -39,7 +39,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 // import TextField from "@mui/material/TextField";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import { FormControlLabel, Switch } from "@mui/material";
+import { FormControlLabel, Switch, TextField } from "@mui/material";
 import LeaseHeader from "components/Headers/LeaseHeader.js";
 // import IconButton from "@material-ui/core/IconButton";
 import axios from "axios";
@@ -96,6 +96,9 @@ const Leaseing = () => {
   const [rentincdropdownOpen3, setrentincDropdownOpen3] = React.useState(false);
   const [rentincdropdownOpen4, setrentincDropdownOpen4] = React.useState(false);
 
+  const [apiData, setApiData] = useState([]);
+  const [isDateRangeUsed, setIsDateRangeUsed] = useState(false);
+
   const [showTenantTable, setShowTenantTable] = useState(false);
 
   const [selectedAgent, setSelectedAgent] = useState("");
@@ -127,7 +130,19 @@ const Leaseing = () => {
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState("");
   const [unitData, setUnitData] = useState([]);
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const rentOptions = [
+    "Daily",
+    "Weekly",
+    "Every two weeks",
+    "Monthly",
+    "Every two months",
+    "Quarterly",
+    "Yearly",
+  ];
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
   const toggle = () => setagentDropdownOpen((prevState) => !prevState);
   const toggle1 = () =>
     setSelectAccountLevelDropDown((prevState) => !prevState);
@@ -152,7 +167,10 @@ const Leaseing = () => {
     setShowTenantTable(!showTenantTable);
     setAlignment(value);
   };
-
+  const [signature, setSignature] = useState("Signed");
+  const handleSignatureChange = (event) => {
+    setSignature(event.target.value);
+  };
   const handleClick1 = (event) => {
     setrentincDropdownOpen2((current) => !current);
   };
@@ -259,6 +277,8 @@ const Leaseing = () => {
 
   const [selectedRentCycle, setselectedRentCycle] = useState("");
   const handleselectedRentCycle = (rentcycle) => {
+    setselectedRentCycle(rentcycle);
+
     const startDate = entrySchema.values.start_date;
     let nextDue_date;
 
@@ -286,7 +306,8 @@ const Leaseing = () => {
     }
 
     entrySchema.setFieldValue("nextDue_date", nextDue_date);
-    entrySchema.values.rent_cycle = rentcycle;
+    // entrySchema.values.rent_cycle = rentcycle;
+    // console.log(rentcycle, "rentcycle");
     setselectedRentCycle(rentcycle);
   };
 
@@ -361,21 +382,6 @@ const Leaseing = () => {
       const selectedTenant = selectedTenants[0];
       console.log(selectedTenants, "selectedTenants");
       const tenantParts = selectedTenant.split(" ");
-      // leaseFormik.setFieldValue("tenant_firstName", tenantParts[0] || "");
-      // leaseFormik.setFieldValue("tenant_lastName", tenantParts[1] || "");
-      // leaseFormik.setFieldValue("tenant_mobileNumber", tenantParts[2] || "");
-      // leaseFormik.setFieldValue("tenant_email", tenantParts[3] || "");
-      // leaseFormik.setFieldValue("textpayer_id", tenantParts[4] || "");
-      // leaseFormik.setFieldValue("birth_date", tenantParts[5] || "");
-      // leaseFormik.setFieldValue("comments", tenantParts[6] || "");
-      // leaseFormik.setFieldValue("contact_name", tenantParts[7] || "");
-      // leaseFormik.setFieldValue("relationship_tenants", tenantParts[8] || "");
-      // leaseFormik.setFieldValue("email", tenantParts[9] || "");
-      // leaseFormik.setFieldValue("emergency_PhoneNumber", tenantParts[10] || "");
-      // leaseFormik.setFieldValue("tenant_password", tenantParts[11] || "");
-      // leaseFormik.setFieldValue("tenant_workNumber", tenantParts[12] || "");
-      // leaseFormik.setFieldValue("alternate_email", tenantParts[13] || "");
-
       const tenantDetails = {
         firstName: tenantParts[0],
         lastName: tenantParts[1],
@@ -551,9 +557,12 @@ const Leaseing = () => {
     setselectedAccountLevel(value);
   };
 
+  const [isDateUnavailable, setIsDateUnavailable] = useState(false);
   const handleDateChange = (date) => {
     const nextDate = moment(date).add(1, "months").format("YYYY-MM-DD");
     entrySchema.values.end_date = nextDate;
+    setIsDateUnavailable(false);
+    checkDate(date);
   };
 
   const [file, setFile] = useState("");
@@ -613,15 +622,45 @@ const Leaseing = () => {
     const filesArray = [...files];
 
     if (filesArray.length <= 10 && file.length === 0) {
-      setFile([...filesArray]);
+      const finalArray = [];
+      // i want to loop and create object
+      for (let i = 0; i < filesArray.length; i++) {
+        const object = {
+          upload_file: filesArray[i],
+          upload_date: moment().format("YYYY-MM-DD"),
+          upload_time: moment().format("HH:mm:ss"),
+          upload_by: localStorage.getItem("user_id"),
+          file_name: filesArray[i].name,
+        };
+        // Do something with the object... push it to final array
+        finalArray.push(object);
+      }
+      setFile([...finalArray]);
+      entrySchema.setFieldValue("upload_file", [...finalArray]);
     } else if (
       file.length >= 0 &&
       file.length <= 10 &&
       filesArray.length + file.length > 10
     ) {
       setFile([...file]);
+      entrySchema.setFieldValue("upload_file", [...file]);
     } else {
-      setFile([...file, ...filesArray]);
+      const finalArray = [];
+
+      for (let i = 0; i < filesArray.length; i++) {
+        const object = {
+          upload_file: filesArray[i],
+          upload_date: moment().format("YYYY-MM-DD"),
+          upload_time: moment().format("HH:mm:ss"),
+          upload_by: localStorage.getItem("user_id"),
+          file_name: filesArray[i].name,
+        };
+        // Do something with the object... push it to final array
+        finalArray.push(object);
+      }
+      setFile([...file, ...finalArray]);
+
+      entrySchema.setFieldValue("upload_file", [...file, ...finalArray]);
     }
 
     // console.log(file, "fileanaadsaa");
@@ -639,7 +678,7 @@ const Leaseing = () => {
       .then((res) => {
         //setImgLoader(false);
         const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        console.log(imagePath, "imagePath");
+        // console.log(imagePath, "imagePath");
         // setFile(imagePath);
       })
       .catch((err) => {
@@ -654,9 +693,11 @@ const Leaseing = () => {
   };
 
   const handleOpenFile = (item) => {
-    console.log(item, "item");
-    const url = URL.createObjectURL(item);
-    window.open(url, "_blank");
+    if (file.length > 0) {
+      console.log(item, "item");
+      const url = URL.createObjectURL(item);
+      window.open(url, "_blank");
+    }
   };
 
   useEffect(() => {
@@ -809,7 +850,7 @@ const Leaseing = () => {
         email: tenantInfo.email,
         emergency_PhoneNumber: tenantInfo.emergency_PhoneNumber,
       });
-      setShowTenantTable(false);
+      // setShowTenantTable(false);
       console.log(tenantInfo.tenant_firstName, "yup", tenantsSchema.values);
     } else {
       // console.log(selectedTenants)
@@ -846,7 +887,7 @@ const Leaseing = () => {
   };
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/tenant/tenant")
+    fetch("https://propertymanager.cloudpress.host/api/tenant/existing/tenant")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -874,27 +915,27 @@ const Leaseing = () => {
     }
   }, [navigate]);
 
-  // let accountFormik = useFormik({
-  //   initialValues: {
-  //     // add account
-  //     account_name: "",
-  //     account_type: "",
-  //     parent_account: "",
-  //     account_number: "",
-  //     fund_type: "",
-  //     cash_flow: "",
-  //     notes: "",
+  let accountFormik = useFormik({
+    initialValues: {
+      // add account
+      account_name: "",
+      account_type: "",
+      parent_account: "",
+      account_number: "",
+      fund_type: "",
+      cash_flow: "",
+      notes: "",
 
-  //     //account level (sub account)
-  //   },
-  //   validationSchema: yup.object({
-  //     account_name: yup.string().required("Required"),
-  //   }),
-  //   onSubmit: (values) => {
-  //     handleAdd(values);
-  //     console.log(values, "values");
-  //   },
-  // });
+      //account level (sub account)
+    },
+    validationSchema: yup.object({
+      account_name: yup.string().required("Required"),
+    }),
+    onSubmit: (values) => {
+      handleAdd(values);
+      console.log(values, "values");
+    },
+  });
 
   // const leaseValidationSchema = yup.object({
   //   entries: yup.array().of(
@@ -1038,6 +1079,46 @@ const Leaseing = () => {
   //     // console.log(values, "values");
   //   },
   // });
+
+  const [overlapLease, setOverlapLease] = useState(null);
+
+  const checkDate = async (dates) => {
+    if (selectedPropertyType && selectedUnit) {
+      let response = await axios.get(
+        "https://propertymanager.cloudpress.host/api/tenant/tenants"
+      );
+      const data = response.data.data;
+
+      let isUnavailable = false;
+      let overlappingLease = null;
+
+      data.forEach((entry) => {
+        if (
+          selectedPropertyType === entry.entries.rental_adress &&
+          selectedUnit === entry.entries.rental_units
+        ) {
+          const sDate = new Date(entry.entries.start_date);
+          const eDate = new Date(entry.entries.end_date);
+          const inputDate = new Date(dates);
+
+          if (
+            sDate.getTime() < inputDate.getTime() &&
+            inputDate.getTime() < eDate.getTime()
+          ) {
+            isUnavailable = true;
+            overlappingLease = entry.entries;
+          }
+        }
+      });
+
+      setIsDateUnavailable(isUnavailable);
+      setOverlapLease(overlappingLease);
+    }
+  };
+
+  useEffect(() => {
+    console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
+  }, [isDateUnavailable]);
 
   let recurringChargeSchema = useFormik({
     initialValues: {
@@ -1281,13 +1362,9 @@ const Leaseing = () => {
           // console.log(laesingdata, "yashraj")
           // setFile(arrayOfObjects || "Select");
           // console.log(matchedLease.upload_file, "upload_fileeee");
-          const data = matchedLease.upload_file.map((item) => {
-            return {
-              name: item[0],
-            };
-          });
+
           // console.log(data, "data");
-          setFile(data);
+          setFile(matchedLease.upload_file);
           entrySchema.setValues({
             entryIndex: matchedLease.entryIndex,
             rental_adress: matchedLease.rental_adress,
@@ -1454,9 +1531,9 @@ const Leaseing = () => {
 
   const handleSubmit = async (values) => {
     // console.log(file, "values");
-    const arrayOfNames = Array.isArray(file)
-      ? file.map((item) => item.name)
-      : [];
+    // const arrayOfNames = Array.isArray(file)
+    //   ? file.map((item) => item.name)
+    //   : [];
     // const entriesArray = [];
 
     // const entriesObject = {
@@ -1578,8 +1655,8 @@ const Leaseing = () => {
       emergency_PhoneNumber: tenantsSchema.values.emergency_PhoneNumber,
       entries: [
         {
-          rental_units: entrySchema.values.rental_units,
           entryIndex: entrySchema.values.entryIndex,
+          rental_units: entrySchema.values.rental_units,
           rental_adress: entrySchema.values.rental_adress,
           lease_type: entrySchema.values.lease_type,
           start_date: entrySchema.values.start_date,
@@ -1869,7 +1946,7 @@ const Leaseing = () => {
               </CardHeader>
               <CardBody>
                 <Form>
-                  {/* <h6 className="heading-small text-muted mb-4">Signature</h6>
+                  <h6 className="heading-small text-muted mb-4">Signature</h6>
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
@@ -1886,9 +1963,9 @@ const Leaseing = () => {
                           >
                             <ToggleButtonGroup
                               color="primary"
-                              value={alignment}
+                              value={signature}
                               exclusive
-                              onChange={handleChange}
+                              onChange={handleSignatureChange}
                               aria-label="Platform"
                               style={{ width: "100%" }}
                             >
@@ -1915,7 +1992,7 @@ const Leaseing = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                  </div> */}
+                  </div>
                   <br />
 
                   <div className="pl-lg-4">
@@ -1944,11 +2021,11 @@ const Leaseing = () => {
                               {propertyData.map((property) => (
                                 <DropdownItem
                                   key={property._id}
-                                  onClick={() =>
+                                  onClick={() => {
                                     handlePropertyTypeSelect(
                                       property.rental_adress
-                                    )
-                                  }
+                                    );
+                                  }}
                                 >
                                   {property.rental_adress}
                                 </DropdownItem>
@@ -1972,6 +2049,7 @@ const Leaseing = () => {
                         <label
                           className="form-control-label"
                           htmlFor="input-unit"
+                          style={{ marginLeft: "15px" }}
                         >
                           Unit *
                         </label>
@@ -2057,17 +2135,6 @@ const Leaseing = () => {
                               </div>
                             ) : null}
                           </Dropdown>
-
-                          {/* {leaseFormik.touched.entries &&
-                            leaseFormik.touched.entries[0] &&
-                            leaseFormik.touched.entries[0].lease_type &&
-                            leaseFormik.errors.entries &&
-                            leaseFormik.errors.entries[0] &&
-                            leaseFormik.errors.entries[0].lease_type ? (
-                            <div style={{ color: "red" }}>
-                              {leaseFormik.errors.entries[0].lease_type}
-                            </div>
-                          ) : null} */}
                         </FormGroup>
                       </Col>
                       &nbsp; &nbsp; &nbsp; &nbsp;
@@ -2106,7 +2173,14 @@ const Leaseing = () => {
                         </FormGroup>
                       </Col>
                       &nbsp; &nbsp; &nbsp;
-                      <Col lg="3">
+                      <Col
+                        lg="3"
+                        style={
+                          selectedLeaseType === "At-will"
+                            ? { display: "none" }
+                            : { display: "block" }
+                        }
+                      >
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -2123,6 +2197,11 @@ const Leaseing = () => {
                             onBlur={entrySchema.handleBlur}
                             onChange={(e) => {
                               entrySchema.handleChange(e);
+                              checkDate(e.target.value);
+                              console.log(
+                                "isDateUnavailable:",
+                                isDateUnavailable
+                              );
                             }}
                             value={moment(entrySchema.values.end_date).format(
                               "YYYY-MM-DD"
@@ -2131,6 +2210,20 @@ const Leaseing = () => {
                               "YYYY-MM-DD"
                             )}
                           />
+
+                          {isDateUnavailable && (
+                            <div style={{ color: "red", marginTop: "8px" }}>
+                              This date range overlaps with an existing lease:{" "}
+                              {overlapLease?.rental_adress} | -{" "}
+                              {moment(overlapLease?.start_date).format(
+                                "DD-MM-YYYY"
+                              )}{" "}
+                              {moment(overlapLease?.end_date).format(
+                                "DD-MM-YYYY"
+                              )}
+                              . Please adjust your date range and try again.
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -2283,6 +2376,19 @@ const Leaseing = () => {
                                       {showTenantTable &&
                                         tenantData.length > 0 && (
                                           <div className="TenantTable">
+                                            <Input
+                                              type="text"
+                                              placeholder="Search by first and last name"
+                                              value={searchQuery}
+                                              onChange={handleSearch}
+                                              style={{
+                                                marginBottom: "10px",
+                                                width: "100%",
+                                                padding: "8px",
+                                                border: "1px solid #ccc",
+                                                borderRadius: "4px",
+                                              }}
+                                            />
                                             <table
                                               style={{
                                                 width: "100%",
@@ -2298,8 +2404,16 @@ const Leaseing = () => {
                                               </thead>
                                               <tbody>
                                                 {Array.isArray(tenantData) &&
-                                                  tenantData?.map(
-                                                    (tenant, index) => (
+                                                  tenantData
+                                                    .filter((tenant) => {
+                                                      const fullName = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
+                                                      return fullName
+                                                        .toLowerCase()
+                                                        .includes(
+                                                          searchQuery.toLowerCase()
+                                                        );
+                                                    })
+                                                    .map((tenant, index) => (
                                                       <tr
                                                         key={index}
                                                         style={{
@@ -2311,10 +2425,11 @@ const Leaseing = () => {
                                                           <pre>
                                                             {
                                                               tenant.tenant_firstName
-                                                            }{" "}
+                                                            }
                                                             {
                                                               tenant.tenant_lastName
                                                             }
+                                                            {`(${tenant.tenant_mobileNumber})`}
                                                           </pre>
                                                         </td>
                                                         <td>
@@ -2405,8 +2520,7 @@ const Leaseing = () => {
                                                           />
                                                         </td>
                                                       </tr>
-                                                    )
-                                                  )}
+                                                    ))}
                                               </tbody>
                                             </table>
                                             <br />
@@ -4232,61 +4346,16 @@ const Leaseing = () => {
                                 onChange={(e) => entrySchema.handleChange(e)}
                                 value={entrySchema.values.rent_cycle}
                               >
-                                {/* {entrySchema.touched.rent_cycle &&
-                                  entrySchema.errors.rent_cycle ? (
-                                  <div style={{ color: "red" }}>
-                                    {entrySchema.errors.rent_cycle}
-                                  </div>
-                                ) : null} */}
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Daily")
-                                  }
-                                >
-                                  Daily
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Weekly")
-                                  }
-                                >
-                                  Weekly
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Every two weeks")
-                                  }
-                                >
-                                  Every two weeks
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Monthly")
-                                  }
-                                >
-                                  Monthly
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Every two months")
-                                  }
-                                >
-                                  Every two months
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Quarterly")
-                                  }
-                                >
-                                  Quarterly
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleselectedRentCycle("Yearly")
-                                  }
-                                >
-                                  Yearly
-                                </DropdownItem>
+                                {rentOptions.map((option) => (
+                                  <DropdownItem
+                                    key={option}
+                                    onClick={() =>
+                                      handleselectedRentCycle(option)
+                                    }
+                                  >
+                                    {option}
+                                  </DropdownItem>
+                                ))}
                               </DropdownMenu>
                             </Dropdown>
                           </FormGroup>
@@ -4299,10 +4368,10 @@ const Leaseing = () => {
 
                   <div className="pl-lg-4">
                     <Row>
-                      <Col lg="7">
+                      <Col lg="12">
                         <FormGroup>
                           <Row>
-                            <Col lg="4">
+                            <Col lg="3">
                               <FormGroup>
                                 <label
                                   className="form-control-label"
@@ -4354,134 +4423,130 @@ const Leaseing = () => {
                                 </FormGroup>
                               </FormGroup>
                             </Col>
-                            {/* <Col lg="5">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Account
-                                </label>
-                                <br />
-                                <FormGroup>
-                                  <Dropdown
-                                    isOpen={rentincdropdownOpen}
-                                    toggle={toggle4}
-                                  >
-                                    <DropdownToggle
-                                      caret
-                                      style={{ width: "100%" }}
-                                    >
-                                      {selectedAccount
-                                        ? selectedAccount
-                                        : "Select"}
-                                    </DropdownToggle>
-                                    <DropdownMenu
-                                      style={{
-                                        zIndex: 999,
-                                        maxHeight: "280px",
-                                        // overflowX: "hidden",
-                                        overflowY: "auto",
-                                        width: "100%",
-                                      }}
-                                    >
-                                      {leaseFormik.touched.account &&
-                                      leaseFormik.errors.account ? (
-                                        <div style={{ color: "red" }}>
-                                          {leaseFormik.errors.account}
-                                        </div>
-                                      ) : null}
-                                      <DropdownItem
-                                        header
-                                        style={{ color: "blue" }}
-                                      >
-                                        Income Account
-                                      </DropdownItem>
-                                      {accountNames.map((item) => {
-                                        const accountName =
-                                          item.account_name || ""; // Use an empty string if account_name is missing
-                                        return (
-                                          <DropdownItem
-                                            key={item._id}
-                                            onClick={() =>
-                                              hadleselectedAccount(accountName)
-                                            }
-                                          >
-                                            {accountName}
-                                          </DropdownItem>
-                                        );
-                                      })}
-                                      <DropdownItem
-                                        onClick={() =>
-                                          AddNewAccountName("rentAccountName")
-                                        }
-                                      >
-                                        Add new account..
-                                      </DropdownItem>
-                                    </DropdownMenu>
-                                  </Dropdown>
-                                  {/* <AccountDialog
-                                    AddBankAccountDialogOpen={
-                                      AddBankAccountDialogOpen
-                                    }
-                                    handleCloseDialog={handleCloseDialog}
-                                    selectAccountDropDown={
-                                      selectAccountDropDown
-                                    }
-                                    toggle8={toggle8}
-                                    setAddBankAccountDialogOpen={
-                                      setAddBankAccountDialogOpen
-                                    }
-                                    toggle1={toggle1}
-                                    selectAccountLevelDropDown={
-                                      selectAccountLevelDropDown
-                                    }
-                                    selectFundTypeDropDown={
-                                      selectFundTypeDropDown
-                                    }
-                                    toggle10={toggle10}
-                                    selectedAccount={selectedAccount}
-                                    accountTypeName={accountTypeName}
-                                    setToggleApiCall={setToggleApiCall}
-                                    toggleApiCall={toggleApiCall}
-                                  /> 
-                                  <AccountDialog
-                                    AddBankAccountDialogOpen={
-                                      AddBankAccountDialogOpen
-                                    }
-                                    handleCloseDialog={handleCloseDialog}
-                                    selectAccountDropDown={
-                                      selectAccountDropDown
-                                    }
-                                    toggle8={toggle8}
-                                    setAddBankAccountDialogOpen={
-                                      setAddBankAccountDialogOpen
-                                    }
-                                    toggle1={toggle1}
-                                    selectAccountLevelDropDown={
-                                      selectAccountLevelDropDown
-                                    }
-                                    selectFundTypeDropDown={
-                                      selectFundTypeDropDown
-                                    }
-                                    toggle10={toggle10}
-                                    selectedAccount={selectedAccount}
-                                    accountTypeName={accountTypeName}
-                                    setToggleApiCall={setToggleApiCall}
-                                    toggleApiCall={toggleApiCall}
-                                    hadleselectedAccount={hadleselectedAccount}
-                                    hadleselectedOneTimeAccount={
-                                      hadleselectedOneTimeAccount
-                                    }
-                                    hadleselectedRecuringAccount={
-                                      hadleselectedRecuringAccount
-                                    }
-                                  />
-                                </FormGroup>
-                              </FormGroup>
-                            </Col> */}
 
-                            <Col lg="4">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                                style={{ marginLeft: "10px" }}
+                              >
+                                Account
+                              </label>
+                              <br />
+                              <FormGroup style={{ marginLeft: "10px" }}>
+                                <Dropdown
+                                  isOpen={rentincdropdownOpen}
+                                  toggle={toggle4}
+                                >
+                                  <DropdownToggle
+                                    caret
+                                    style={{ width: "100%" }}
+                                  >
+                                    {selectedAccount
+                                      ? selectedAccount
+                                      : "Select"}
+                                  </DropdownToggle>
+                                  <DropdownMenu
+                                    style={{
+                                      zIndex: 999,
+                                      maxHeight: "280px",
+                                      // overflowX: "hidden",
+                                      overflowY: "auto",
+                                      width: "100%",
+                                    }}
+                                  >
+                                    {entrySchema.touched.account &&
+                                    entrySchema.errors.account ? (
+                                      <div style={{ color: "red" }}>
+                                        {entrySchema.errors.account}
+                                      </div>
+                                    ) : null}
+                                    <DropdownItem
+                                      header
+                                      style={{ color: "blue" }}
+                                    >
+                                      Income Account
+                                    </DropdownItem>
+                                    {accountNames.map((item) => {
+                                      const accountName =
+                                        item.account_name || ""; // Use an empty string if account_name is missing
+                                      return (
+                                        <DropdownItem
+                                          key={item._id}
+                                          onClick={() =>
+                                            hadleselectedAccount(accountName)
+                                          }
+                                        >
+                                          {accountName}
+                                        </DropdownItem>
+                                      );
+                                    })}
+                                    <DropdownItem
+                                      onClick={() =>
+                                        AddNewAccountName("rentAccountName")
+                                      }
+                                    >
+                                      Add new account..
+                                    </DropdownItem>
+                                  </DropdownMenu>
+                                </Dropdown>
+                                <AccountDialog
+                                  AddBankAccountDialogOpen={
+                                    AddBankAccountDialogOpen
+                                  }
+                                  handleCloseDialog={handleCloseDialog}
+                                  selectAccountDropDown={selectAccountDropDown}
+                                  toggle8={toggle8}
+                                  setAddBankAccountDialogOpen={
+                                    setAddBankAccountDialogOpen
+                                  }
+                                  toggle1={toggle1}
+                                  selectAccountLevelDropDown={
+                                    selectAccountLevelDropDown
+                                  }
+                                  selectFundTypeDropDown={
+                                    selectFundTypeDropDown
+                                  }
+                                  toggle10={toggle10}
+                                  selectedAccount={selectedAccount}
+                                  accountTypeName={accountTypeName}
+                                  setToggleApiCall={setToggleApiCall}
+                                  toggleApiCall={toggleApiCall}
+                                />
+                                <AccountDialog
+                                  AddBankAccountDialogOpen={
+                                    AddBankAccountDialogOpen
+                                  }
+                                  handleCloseDialog={handleCloseDialog}
+                                  selectAccountDropDown={selectAccountDropDown}
+                                  toggle8={toggle8}
+                                  setAddBankAccountDialogOpen={
+                                    setAddBankAccountDialogOpen
+                                  }
+                                  toggle1={toggle1}
+                                  selectAccountLevelDropDown={
+                                    selectAccountLevelDropDown
+                                  }
+                                  selectFundTypeDropDown={
+                                    selectFundTypeDropDown
+                                  }
+                                  toggle10={toggle10}
+                                  selectedAccount={selectedAccount}
+                                  accountTypeName={accountTypeName}
+                                  setToggleApiCall={setToggleApiCall}
+                                  toggleApiCall={toggleApiCall}
+                                  hadleselectedAccount={hadleselectedAccount}
+                                  hadleselectedOneTimeAccount={
+                                    hadleselectedOneTimeAccount
+                                  }
+                                  hadleselectedRecuringAccount={
+                                    hadleselectedRecuringAccount
+                                  }
+                                />
+                              </FormGroup>
+                            </FormGroup>
+
+                            <Col lg="3">
                               <FormGroup>
                                 <label
                                   className="form-control-label"
@@ -4531,7 +4596,7 @@ const Leaseing = () => {
                               </FormGroup>
                             </Col>
 
-                            <Col lg="5">
+                            <Col lg="3">
                               <FormGroup>
                                 <label
                                   className="form-control-label"
@@ -4577,7 +4642,7 @@ const Leaseing = () => {
                       </label> */}
                       <br />
                       <Row>
-                        {/* <Col lg="2">
+                        <Col lg="2">
                           <FormGroup>
                             <label
                               className="form-control-label"
@@ -4591,19 +4656,19 @@ const Leaseing = () => {
                               placeholder="3000"
                               type="date"
                               name="Due_date"
-                              onBlur={leaseFormik.handleBlur}
-                              onChange={leaseFormik.handleChange}
-                              value={leaseFormik.values.Due_date}
+                              onBlur={entrySchema.handleBlur}
+                              onChange={entrySchema.handleChange}
+                              value={entrySchema.values.Due_date}
                             />
-                            
-                            {leaseFormik.touched.tenant_start_date &&
-                            leaseFormik.errors.Due_date ? (
+
+                            {entrySchema.touched.tenant_start_date &&
+                            entrySchema.errors.Due_date ? (
                               <div style={{ color: "red" }}>
-                                {leaseFormik.errors.Due_date}
+                                {entrySchema.errors.Due_date}
                               </div>
                             ) : null}
                           </FormGroup>
-                        </Col> */}
+                        </Col>
                         <Col lg="2">
                           <FormGroup>
                             <label
@@ -4644,6 +4709,8 @@ const Leaseing = () => {
 
                         <Col lg="7">
                           <FormGroup>
+                            <br />
+
                             <label
                               className="form-control-label"
                               htmlFor="input-unitadd10"
@@ -4714,8 +4781,10 @@ const Leaseing = () => {
                                       toggle={toggle5}
                                     >
                                       <DropdownToggle caret>
-                                        {selectedRecuringAccount
-                                          ? selectedRecuringAccount
+                                        {recurringChargeSchema.values
+                                          .recuring_account
+                                          ? recurringChargeSchema.values
+                                              .recuring_account
                                           : "Select"}
                                       </DropdownToggle>
                                       <DropdownMenu
@@ -4868,7 +4937,7 @@ const Leaseing = () => {
                                     className="form-control-label"
                                     htmlFor="recuringmemo"
                                   >
-                                    Memo*
+                                    Memo
                                   </label>
                                   <Input
                                     className="form-control-alternative"
@@ -4952,8 +5021,10 @@ const Leaseing = () => {
                                       toggle={toggle7}
                                     >
                                       <DropdownToggle caret>
-                                        {selectedOneTimeAccount
-                                          ? selectedOneTimeAccount
+                                        {oneTimeChargeSchema.values
+                                          .onetime_account
+                                          ? oneTimeChargeSchema.values
+                                              .onetime_account
                                           : "Select"}
                                       </DropdownToggle>
                                       <DropdownMenu
@@ -5411,18 +5482,26 @@ const Leaseing = () => {
                   </div> */}
                   <div class="d-flex">
                     <div class="file-upload-wrapper">
-                      <input
+                      <TextField
                         type="file"
                         className="form-control-file d-none"
                         accept="file/*"
                         name="upload_file"
                         id="upload_file"
                         multiple
+                        inputProps={{
+                          multiple: true,
+                          accept: "application/pdf",
+                          max: 10,
+                        }}
+                        // inputProps={{ multiple: true }}
                         onChange={(e) => {
+                          console.log(e.target.files, "target.files");
+                          // entrySchema.setFieldValue("upload_file", [...e.target.files]);
                           fileData(e.target.files);
                         }}
                         // onChange={rentalsFormik.handleChange}
-                        value={entrySchema.values.upload_file[0]}
+                        // value={entrySchema.values.upload_file}
                       />
                       <label for="upload_file" class="btn">
                         Upload
@@ -5497,16 +5576,20 @@ const Leaseing = () => {
                           >
                             {!id ? (
                               <p
-                                onClick={() => handleOpenFile(file)}
+                                onClick={() => handleOpenFile(file.upload_file)}
                                 style={{ cursor: "pointer" }}
                               >
-                                {file?.name?.substr(0, 5)}
-                                {file?.name?.length > 5 ? "..." : null}
+                                {file.file_name?.substr(0, 5)}
+                                {file.file_name?.length > 5 ? "..." : null}
                               </p>
                             ) : (
-                              <p style={{ cursor: "pointer" }}>
-                                {file?.name?.substr(0, 5)}
-                                {file?.name?.length > 5 ? "..." : null}
+                              <p
+                                // onClick={() => handleOpenFile(file.upload_file)}
+                                style={{ cursor: "pointer" }}
+                              >
+                                {console.log(file, "file 5803")}
+                                {file[0]?.file_name?.substr(0, 5)}
+                                {file[0]?.file_name?.length > 5 ? "..." : null}
                               </p>
                             )}
                             <CloseIcon
@@ -5523,7 +5606,7 @@ const Leaseing = () => {
                     </div>
                   </div>
                   <hr />
-                  {/* <Row>
+                  <Row>
                     <Col lg="3">
                       <FormGroup>
                         <label
@@ -5545,12 +5628,23 @@ const Leaseing = () => {
 
                     <FormGroup>
                       <FormControlLabel
-                        control={<Switch color="primary" />}
-                        // label="End"
+                        control={
+                          <Switch
+                            color="primary"
+                            value={tenantsSchema.values.tenant_residentStatus}
+                            onChange={(e) => {
+                              tenantsSchema.setFieldValue(
+                                "tenant_residentStatus",
+                                e.target.checked
+                              );
+                              console.log(e.target.checked);
+                            }}
+                          />
+                        } // label="End"
                         labelPlacement="end"
                       />
                     </FormGroup>
-                  </Row> */}
+                  </Row>
                   {/* <Button
                   color="primary"
                   href="#rms"

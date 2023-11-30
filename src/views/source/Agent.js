@@ -104,7 +104,7 @@ const Agent = () => {
 
   const editAgent = (id) => {
     navigate(`/admin/AddAgent/${id}`);
-    console.log(id);
+    //console.log(id);
   };
   return (
     <>

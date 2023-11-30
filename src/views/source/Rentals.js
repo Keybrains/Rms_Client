@@ -19,10 +19,8 @@ import {
   Label,
 } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
-
 import { useState, useEffect } from "react";
 import RentalHeader from "components/Headers/RentalHeader.js";
-
 import Checkbox from "@mui/material/Checkbox";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -86,11 +84,11 @@ const Rentals = () => {
   const isSmallScreen = useMediaQuery("(max-width:600px)");
   const [rentalsData, setRentalsData] = useState(null);
   const [selectedRentalOwnerData, setSelectedRentalOwnerData] = useState([]);
-  console.log(selectedRentalOwnerData, "selectedRentalOwnerData");
+  // console.log(selectedRentalOwnerData, "selectedRentalOwnerData");
   const [selectedrentalOwners, setSelectedrentalOwners] = useState([]);
   const [showRentalOwnerTable, setshowRentalOwnerTable] = useState(false);
   const [checkedCheckbox, setCheckedCheckbox] = useState();
-
+  const [searchQuery, setSearchQuery] = useState("");
   const bathArray = [
     "1 Bath",
     "1.5 Bath",
@@ -118,6 +116,9 @@ const Rentals = () => {
 
   const handleChange = () => {
     setshowRentalOwnerTable(!showRentalOwnerTable);
+  };
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
   };
   const [file, setFile] = useState("");
 
@@ -184,7 +185,7 @@ const Rentals = () => {
     } else {
       setSelectedrentalOwners([]);
       const selectedrentalOwner = selectedrentalOwners[0];
-      console.log(selectedrentalOwners, "selectedrentalOwners");
+      // console.log(selectedrentalOwners, "selectedrentalOwners");
       const rentalOwnerParts = selectedrentalOwner.split(" ");
       rentalsFormik.setFieldValue(
         "rentalOwner_firstName",
@@ -220,7 +221,7 @@ const Rentals = () => {
         phoneNumber: rentalOwnerParts[4],
       };
       setSelectedRentalOwnerData(rentalOwnerDetails);
-      console.log(rentalOwnerParts);
+      // console.log(rentalOwnerParts);
       if (!id) {
         swal("Success!", "rentalOwner details Added", "success");
       }
@@ -233,18 +234,18 @@ const Rentals = () => {
   };
   const [propType, setPropType] = useState("");
   const handlePropSelection = (propertyType) => {
-    console.log(rentalsFormik.values, "values");
+    // console.log(rentalsFormik.values, "values");
     // rentalsFormik.setFieldValue("property_type", propertyType);
     // const propTypes=[];
     axios
       .get("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
       .then((data) => {
-        console.log(data.data, "Data from adding the account");
+        // console.log(data.data, "Data from adding the account");
         // setPropertyData(data.data.data);
         setSelectedProp(propertyType);
         const selectedType = Object.keys(data.data.data).find((item) => {
           return data.data.data[item].some(
-            (data) => data.propertysub_type === propertyType
+            (data) => data.propertysub_type === propertyType.propertysub_type
           );
         });
         setPropType(selectedType);
@@ -299,7 +300,7 @@ const Rentals = () => {
     );
     setSelectedBad(value);
     // setbadDropdownOpen(true);
-    console.log(rentalsFormik.values, "valuessssswwws");
+    // console.log(rentalsFormik.values, "valuessssswwws");
   };
 
   // const handleBathSelection = (value) => {
@@ -338,7 +339,7 @@ const Rentals = () => {
       //   .required("Phone Number is required"),
     }),
     onSubmit: (values) => {
-      console.log(values, "values");
+      // console.log(values, "values");
       setshowRentalOwnerTable(false);
       handleAddrentalOwner();
       handleClose();
@@ -374,7 +375,7 @@ const Rentals = () => {
               rental_bed: "",
               rental_bath: "",
               propertyres_image: [],
-              rental_soft: "",
+              rental_sqft: "",
               rental_units: "",
               rental_unitsAdress: "",
             },
@@ -383,7 +384,7 @@ const Rentals = () => {
           //COMMERCIAL
           commercial: [
             {
-              rentalcom_soft: "",
+              rentalcom_sqft: "",
               rentalcom_units: "",
               rentalcom_unitsAdress: "",
               property_image: [],
@@ -414,7 +415,7 @@ const Rentals = () => {
     }),
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "rentals formik finmmal values");
+      // console.log(values, "rentals formik finmmal values");
     },
   });
 
@@ -430,7 +431,7 @@ const Rentals = () => {
       rentalOwner_businessNumber: "",
     });
 
-    console.log("first");
+    // console.log("first");
   };
 
   const [selectedbath, setSelectedbath] = useState("");
@@ -464,7 +465,7 @@ const Rentals = () => {
 
   // navigate(`/admin/rentals/rental/${id}/entry/${propertyIndex}`);
   const { id, entryIndex } = useParams();
-  console.log(entryIndex, "entryIndex");
+  // console.log(entryIndex, "entryIndex");
   const [residentialImage, setResidentialImage] = useState([[]]);
   const [commercialImage, setCommercialImage] = useState([[]]);
 
@@ -494,7 +495,7 @@ const Rentals = () => {
           })
           .catch((err) => {
             //setImgLoader(false);
-            console.log("Error uploading image:", err);
+            // console.log("Error uploading image:", err);
           })
       );
     }
@@ -533,11 +534,11 @@ const Rentals = () => {
       }
     }
     // console.log(allData, "allData");
-    console.log(residentialImage, "residentialImage");
-    console.log(commercialImage, "commercialImage");
+    // console.log(residentialImage, "residentialImage");
+    // console.log(commercialImage, "commercialImage");
   };
 
-  console.log(commercialImage, "commercialImage");
+  // console.log(commercialImage, "commercialImage");
 
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
@@ -550,7 +551,7 @@ const Rentals = () => {
       const filteredImage = residentialImage[index].filter((item) => {
         return item !== image;
       });
-      console.log(filteredImage, "filteredImage");
+      // console.log(filteredImage, "filteredImage");
       // setResidentialImage(filteredImage);
       setResidentialImage([
         ...residentialImage.slice(0, index),
@@ -561,7 +562,7 @@ const Rentals = () => {
       const filteredImage = commercialImage[index].filter((item) => {
         return item !== image;
       });
-      console.log(filteredImage, "filteredImage");
+      // console.log(filteredImage, "filteredImage");
       // setCommercialImage(filteredImage);
       setCommercialImage([
         ...commercialImage.slice(0, index),
@@ -614,17 +615,29 @@ const Rentals = () => {
   const [unitData, setUnitData] = useState([]);
   const [rentalOwnerData, setRentalOwnerData] = useState([]);
   useEffect(() => {
-    console.log(id, entryIndex, "id && entry Id");
+    // console.log(id, entryIndex, "id && entry Id");
     if (id && entryIndex) {
       axios
         .get(`https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`)
         .then((response) => {
           const propertysData = response.data.data;
           // setRentalsData(rentalsData); // Update state with the fetched data
-          console.log(propertysData, "properety data");
+          // console.log(propertysData, "properety data");
           setRentalOwnerData(propertysData);
           // setRentalownerData(propertysData);
-
+          rentalOwnerFormik.setValues({
+            rentalOwner_firstName: propertysData.rentalOwner_firstName || "",
+            rentalOwner_lastName: propertysData.rentalOwner_lastName || "",
+            rentalOwner_primaryEmail:
+              propertysData.rentalOwner_primaryEmail || "",
+            rentalOwner_phoneNumber:
+              propertysData.rentalOwner_phoneNumber || "",
+            rentalOwner_companyName:
+              propertysData.rentalOwner_companyName || "",
+            rentalOwner_homeNumber: propertysData.rentalOwner_homeNumber || "",
+            rentalOwner_businessNumber:
+              propertysData.rentalOwner_businessNumber || "",
+          });
           setSelectedRentalOwnerData({
             firstName: propertysData.rentalOwner_firstName || "",
             lastName: propertysData.rentalOwner_lastName || "",
@@ -635,7 +648,7 @@ const Rentals = () => {
           const matchedProperty = propertysData.entries.find((entry) => {
             return entry.entryIndex === entryIndex;
           });
-          console.log(matchedProperty, "matchedPropeort");
+          // console.log(matchedProperty, "matchedPropeort");
           // setshowRentalOwnerTable(true);
           // setRentalownerData(propertysData);
 
@@ -699,7 +712,7 @@ const Rentals = () => {
             "entries[0].rental_postcode",
             matchedProperty.rental_postcode || ""
           );
-          console.log(rentalsFormik.values, "rental formik values");
+          // console.log(rentalsFormik.values, "rental formik values");
           // Now, after setting all the fields and state, call handleAddrentalOwner
           getUnitData(propertysData._id);
         })
@@ -707,8 +720,8 @@ const Rentals = () => {
           console.error("Error fetching rentals data:", error);
         });
       // handleAddrentalOwner();
-      console.log(rentalsFormik.values, "rental formik values");
-      console.log(rentalOwnerFormik.values, "rental owner formik values");
+      // console.log(rentalsFormik.values, "rental formik values");
+      // console.log(rentalOwnerFormik.values, "rental owner formik values");
     }
   }, [id, entryIndex]);
 
@@ -717,7 +730,7 @@ const Rentals = () => {
       .get("https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" + id)
       .then((res) => {
         // setUnitProperty(res.data.data);
-        console.log(res.data.data, "property unit");
+        // console.log(res.data.data, "property unit");
         // setPropertyUnit(res.data.data);
         // const matchedUnit = res.data.data.filter(
         //   (item) => item._id ===
@@ -730,23 +743,23 @@ const Rentals = () => {
         console.log(err);
       });
   };
-  console.log(residentialImage, "residentialImage");
-  console.log(propType, "proptype");
+  // console.log(residentialImage, "residentialImage");
+  // console.log(propType, "proptype");
   const handleSubmit = async (values) => {
-    console.log(residentialImage, "residentialImage after submit");
-    console.log(commercialImage, "commercialImage after submit");
-    console.log(file, "values");
+    // console.log(residentialImage, "residentialImage after submit");
+    // console.log(commercialImage, "commercialImage after submit");
+    // console.log(file, "values");
 
     const entriesArray = [];
     if (propType === "Residential") {
       const entriesObject = {
-        property_type: selectedProp,
+        property_type: selectedProp.propertysub_type,
         rental_adress: rentalsFormik.values.entries[0].rental_adress,
         rental_city: rentalsFormik.values.entries[0].rental_city,
         rental_state: rentalsFormik.values.entries[0].rental_state,
         rental_country: rentalsFormik.values.entries[0].rental_country,
         rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-
+        rental_sqft: rentalsFormik.values.entries[0].rental_soft,
         rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
         rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
         staffMember: selectedUser,
@@ -772,7 +785,7 @@ const Rentals = () => {
           rentalOwnerFormik.values.rentalOwner_businessNumber,
         entries: entriesArray,
       };
-      console.log(leaseObject, "leaseObject");
+      // console.log(leaseObject, "leaseObject");
 
       const res = await axios.post(
         "https://propertymanager.cloudpress.host/api/rentals/rentals",
@@ -781,20 +794,20 @@ const Rentals = () => {
       if (res.data.statusCode === 200) {
         swal("Success!", "Property Added Successfully", "success");
         navigate("/admin/RentalownerTable");
-        console.log(res.data.data, "res.data.data after post");
+        // console.log(res.data.data, "res.data.data after post");
       } else {
         swal("", res.data.message, "error");
       }
       handleResponse(res);
     } else {
       const entriesObject = {
-        property_type: selectedProp,
+        property_type: selectedProp.propertysub_type,
         rental_adress: rentalsFormik.values.entries[0].rental_adress,
         rental_city: rentalsFormik.values.entries[0].rental_city,
         rental_state: rentalsFormik.values.entries[0].rental_state,
         rental_country: rentalsFormik.values.entries[0].rental_country,
         rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-
+        rental_sqft: rentalsFormik.values.entries[0].rental_soft,
         rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
         rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
         staffMember: selectedUser,
@@ -819,7 +832,7 @@ const Rentals = () => {
           rentalOwnerFormik.values.rentalOwner_businessNumber,
         entries: entriesArray,
       };
-      console.log(leaseObject, "leaseObject");
+      // console.log(leaseObject, "leaseObject");
 
       const res = await axios.post(
         "https://propertymanager.cloudpress.host/api/rentals/rentals",
@@ -828,7 +841,7 @@ const Rentals = () => {
       if (res.data.statusCode === 200) {
         swal("Success!", "Property Added Successfully", "success");
         navigate("/admin/RentalownerTable");
-        console.log(res.data.data, "res.data.data after post");
+        // console.log(res.data.data, "res.data.data after post");
       } else {
         swal("", res.data.message, "error");
       }
@@ -867,7 +880,7 @@ const Rentals = () => {
     const entriesArray = [];
     if (propType === "Residential") {
       const entriesObject = {
-        property_type: selectedProp,
+        property_type: selectedProp.propertysub_type,
         rental_adress: rentalsFormik.values.entries[0].rental_adress,
         rental_city: rentalsFormik.values.entries[0].rental_city,
         rental_state: rentalsFormik.values.entries[0].rental_state,
@@ -914,11 +927,11 @@ const Rentals = () => {
         entries: entriesArray,
       };
 
-      console.log(leaseObject, "updated values");
+      // console.log(leaseObject, "updated values");
       await axios
         .put(editUrl, leaseObject)
         .then((response) => {
-          console.log(response, "response1111");
+          // console.log(response, "response1111");
           handleResponse(response);
         })
         .catch((error) => {
@@ -926,7 +939,7 @@ const Rentals = () => {
         });
     } else {
       const entriesObject = {
-        property_type: selectedProp,
+        property_type: selectedProp.propertysub_type,
         rental_adress: rentalsFormik.values.entries[0].rental_adress,
         rental_city: rentalsFormik.values.entries[0].rental_city,
         rental_state: rentalsFormik.values.entries[0].rental_state,
@@ -973,11 +986,11 @@ const Rentals = () => {
         entries: entriesArray,
       };
 
-      console.log(leaseObject, "updated values");
+      // console.log(leaseObject, "updated values");
       await axios
         .put(editUrl, leaseObject)
         .then((response) => {
-          console.log(response, "response1111");
+          // console.log(response, "response1111");
           handleResponse(response);
         })
         .catch((error) => {
@@ -986,7 +999,7 @@ const Rentals = () => {
     }
   };
   function handleResponse(response) {
-    console.log(response, "response");
+    // console.log(response, "response");
     if (response.status === 200) {
       navigate("/admin/propertiesTable");
       swal(
@@ -1021,7 +1034,7 @@ const Rentals = () => {
   };
 
   const deleteCommercialUnit = (index) => {
-    console.log("delete commercial");
+    // console.log("delete commercial");
     const updatedCommercialUnits = [
       ...rentalsFormik.values.entries[0].commercial,
     ];
@@ -1042,7 +1055,7 @@ const Rentals = () => {
       rental_bed: "",
       rental_bath: "",
       propertyres_image: [],
-      rental_soft: "",
+      rental_sqft: "",
       rental_units: "",
       rental_unitsAdress: "",
     };
@@ -1078,7 +1091,7 @@ const Rentals = () => {
     });
   };
 
-  console.log(rentalsFormik.values, "commercialUnits");
+  // console.log(rentalsFormik.values, "commercialUnits");
 
   return (
     <>
@@ -1129,9 +1142,9 @@ const Rentals = () => {
                           <br />
                           <Dropdown isOpen={prodropdownOpen} toggle={toggle1}>
                             <DropdownToggle caret>
-                              {selectedProp
-                                ? selectedProp
-                                : "Select Property Type"}
+                              {selectedProp && selectedProp.propertysub_type 
+                                ? selectedProp.propertysub_type
+                                : selectedProp && !selectedProp.propertysub_type ? selectedProp : "Select Property Type"}
                             </DropdownToggle>
                             {/* {console.log(propertyData, "property data")} */}
                             <DropdownMenu>
@@ -1148,7 +1161,7 @@ const Rentals = () => {
                                       key={subtype.propertysub_type}
                                       onClick={() => {
                                         handlePropSelection(
-                                          subtype.propertysub_type
+                                          subtype
                                         );
 
                                         rentalsFormik.setFieldValue(
@@ -1220,10 +1233,10 @@ const Rentals = () => {
                                 rentalsFormik.values?.entries[0]?.rental_adress
                               }
                             />
-                            {console.log(
+                            {/* {console.log(
                               rentalsFormik.values,
                               "values fsdfkm,"
-                            )}
+                            )} */}
                             {
                               <div>
                                 {rentalsFormik.errors.entries &&
@@ -1255,7 +1268,7 @@ const Rentals = () => {
                             City
                           </label>
                           <Input
-                          required
+                            required
                             className="form-control-alternative"
                             id="input-city"
                             placeholder="New York"
@@ -1298,7 +1311,7 @@ const Rentals = () => {
                             State
                           </label>
                           <Input
-                          required
+                            required
                             className="form-control-alternative"
                             id="input-country"
                             placeholder="state"
@@ -1342,7 +1355,7 @@ const Rentals = () => {
                             Country
                           </label>
                           <Input
-                          required
+                            required
                             className="form-control-alternative"
                             id="input-country"
                             placeholder="United States"
@@ -1387,7 +1400,7 @@ const Rentals = () => {
                             Postal code
                           </label>
                           <Input
-                          required
+                            required
                             className="form-control-alternative"
                             id="input-postal-code"
                             placeholder="Postal code"
@@ -1502,6 +1515,19 @@ const Rentals = () => {
                                 </div>
                                 {showRentalOwnerTable && rentalownerData && (
                                   <div className="RentalOwnerTable">
+                                    <Input
+                                      type="text"
+                                      placeholder="Search by first and last name"
+                                      value={searchQuery}
+                                      onChange={handleSearch}
+                                      style={{
+                                        marginBottom: "10px",
+                                        width: "100%",
+                                        padding: "8px",
+                                        border: "1px solid #ccc",
+                                        borderRadius: "4px",
+                                      }}
+                                    />
                                     <table
                                       style={{
                                         width: "100%",
@@ -1517,18 +1543,26 @@ const Rentals = () => {
                                       </thead>
                                       <tbody>
                                         {Array.isArray(rentalownerData) &&
-                                          rentalownerData?.map(
-                                            (rentalOwner, index) => (
+                                          rentalownerData
+                                            .filter((rentalOwner) => {
+                                              const fullName = `${rentalOwner.rentalOwner_firstName} ${rentalOwner.rentalOwner_lastName}`;
+                                              return fullName
+                                                .toLowerCase()
+                                                .includes(
+                                                  searchQuery.toLowerCase()
+                                                );
+                                            })
+                                            .map((rentalOwner, index) => (
                                               <tr
                                                 key={index}
                                                 style={{
                                                   border: "1px solid #ddd",
                                                 }}
                                               >
-                                                {console.log(
+                                                {/* {console.log(
                                                   rentalOwner,
                                                   "revsefw"
-                                                )}
+                                                )} */}
                                                 <td>
                                                   {
                                                     rentalOwner.rentalOwner_firstName
@@ -1605,8 +1639,7 @@ const Rentals = () => {
                                                   />
                                                 </td>
                                               </tr>
-                                            )
-                                          )}
+                                            ))}
                                       </tbody>
                                     </table>
                                     <br />
@@ -1626,7 +1659,7 @@ const Rentals = () => {
                                       </label>
                                       <br />
                                       <Input
-                                      required
+                                        required
                                         id="standard-multiline-static"
                                         className="popinput"
                                         type="text"
@@ -1663,7 +1696,7 @@ const Rentals = () => {
                                       ) : null}
                                       <br />
                                       <Input
-                                      required
+                                        required
                                         id="standard-multiline-static"
                                         className="popinput"
                                         type="text"
@@ -1711,7 +1744,7 @@ const Rentals = () => {
                                       </label>
                                       <br />
                                       <Input
-                                      required
+                                        required
                                         id="standard-multiline-static"
                                         className="popinput"
                                         type="text"
@@ -1771,7 +1804,7 @@ const Rentals = () => {
                                         }}
                                       >
                                         <Input
-                                        required
+                                          required
                                           id="standard-multiline-static"
                                           className="popinput"
                                           type="text"
@@ -1837,7 +1870,7 @@ const Rentals = () => {
                                         }}
                                       >
                                         <Input
-                                        required
+                                          required
                                           id="standard-multiline-static"
                                           className="popinput"
                                           type="text"
@@ -2486,7 +2519,7 @@ const Rentals = () => {
                                     deleteResidentialUnit(residentialIndex);
                                   }}
                                 />
-                                <Col lg="3">
+                                <Col lg="3" style={selectedProp.ismultiunit ? {display:"block"}:{display:"none"}}>
                                   <FormGroup>
                                     <label
                                       className="form-control-label"
@@ -2495,7 +2528,7 @@ const Rentals = () => {
                                       Units *
                                     </label>
                                     <Input
-                                    required
+                                      required
                                       className="form-control-alternative"
                                       id="input-unit"
                                       placeholder="102"
@@ -2544,7 +2577,7 @@ const Rentals = () => {
                                     ) : null}
                                   </FormGroup>
                                 </Col>
-                                <Col lg="4">
+                                <Col lg="4" style={selectedProp.ismultiunit ? {display:"block"}:{display:"none"}}>
                                   <FormGroup>
                                     <label
                                       className="form-control-label"
@@ -2553,7 +2586,7 @@ const Rentals = () => {
                                       Unit Address *
                                     </label>
                                     <Input
-                                    required
+                                      required
                                       className="form-control-alternative"
                                       id="input-unitadd"
                                       placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
@@ -2594,23 +2627,23 @@ const Rentals = () => {
                                       SQFT
                                     </label>
                                     <Input
-                                    required
+                                      required
                                       className="form-control-alternative"
                                       id="input-unitadd"
                                       placeholder="3000"
                                       type="text"
-                                      name={`entries[0].residential[${residentialIndex}].rental_soft`}
+                                      name={`entries[0].residential[${residentialIndex}].rental_sqft`}
                                       onBlur={rentalsFormik.handleBlur}
                                       onChange={(e) => {
                                         rentalsFormik.setFieldValue(
-                                          `entries[0].residential[${residentialIndex}].rental_soft`,
+                                          `entries[0].residential[${residentialIndex}].rental_sqft`,
                                           e.target.value
                                         );
                                       }}
                                       value={
                                         rentalsFormik.values.entries[0]
                                           .residential[residentialIndex]
-                                          .rental_soft
+                                          .rental_sqft
                                       }
                                       onInput={(e) => {
                                         const inputValue = e.target.value;
@@ -2862,11 +2895,11 @@ const Rentals = () => {
                                               />
                                             )}
                                           />
-                                          {console.log(
+                                          {/* {console.log(
                                             rentalsFormik.values.entries[0]
                                               .residential[residentialIndex],
                                             "hiufhbgvwejnkml"
-                                          )}
+                                          )} */}
                                         </FormGroup>
                                       </Col>
                                       <Col md="4">
@@ -2960,10 +2993,10 @@ const Rentals = () => {
                                                       );
                                                     }
                                                   );
-                                                  console.log(
-                                                    residentialIndex,
-                                                    "indexxxxxx"
-                                                  );
+                                                  // console.log(
+                                                  //   residentialIndex,
+                                                  //   "indexxxxxx"
+                                                  // );
                                                   if (
                                                     residentialImage[
                                                       residentialIndex
@@ -3094,7 +3127,7 @@ const Rentals = () => {
                       </FormGroup>
                     </div>
                   )}
-                  {console.log(propType, "propType")}
+                  {/* {console.log(propType, "propType")} */}
                   {propType === "Commercial" && (
                     <div className="pl-lg-4">
                       <h6 className="heading-small text-muted mb-4">
@@ -3124,7 +3157,7 @@ const Rentals = () => {
                                   }}
                                 />
                                 <Row>
-                                  <Col lg="3">
+                                  <Col lg="3" style={selectedProp.ismultiunit ? {display:"block"}:{display:"none"}}>
                                     <FormGroup>
                                       <label
                                         className="form-control-label"
@@ -3133,7 +3166,7 @@ const Rentals = () => {
                                         Units *
                                       </label>
                                       <Input
-                                      required
+                                        required
                                         className="form-control-alternative"
                                         id="input-unit"
                                         placeholder="102"
@@ -3152,13 +3185,11 @@ const Rentals = () => {
                                             .commercial[index].rentalcom_units
                                         }
                                         onInput={(e) => {
-                                        const inputValue = e.target.value;
-                                        const numericValue = inputValue.replace(
-                                          /\D/g,
-                                          ""
-                                        ); // Remove non-numeric characters
-                                        e.target.value = numericValue;
-                                      }}
+                                          const inputValue = e.target.value;
+                                          const numericValue =
+                                            inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                          e.target.value = numericValue;
+                                        }}
                                       />
                                       {/* {rentalsFormik.touched.rentalcom_units &&
                                       rentalsFormik.errors.rentalcom_units ? (
@@ -3168,7 +3199,7 @@ const Rentals = () => {
                                       ) : null} */}
                                     </FormGroup>
                                   </Col>
-                                  <Col lg="4">
+                                  <Col lg="4" style={selectedProp.ismultiunit ? {display:"block"}:{display:"none"}}>
                                     <FormGroup>
                                       <label
                                         className="form-control-label"
@@ -3177,7 +3208,7 @@ const Rentals = () => {
                                         Unit Address *
                                       </label>
                                       <Input
-                                      required
+                                        required
                                         className="form-control-alternative"
                                         id="input-unitadd"
                                         placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
@@ -3218,30 +3249,28 @@ const Rentals = () => {
                                         SQFT
                                       </label>
                                       <Input
-                                      required
+                                        required
                                         className="form-control-alternative"
                                         id="input-unitadd"
                                         placeholder="3000"
                                         type="text"
-                                        name={`rentalcom_soft${index}`}
+                                        name={`rentalcom_sqft${index}`}
                                         onBlur={rentalsFormik.handleBlur}
                                         onChange={(e) => {
                                           rentalsFormik.setFieldValue(
-                                            `entries[0].commercial[${index}].rentalcom_soft`,
+                                            `entries[0].commercial[${index}].rentalcom_sqft`,
                                             e.target.value
                                           );
                                         }}
                                         onInput={(e) => {
-                                        const inputValue = e.target.value;
-                                        const numericValue = inputValue.replace(
-                                          /\D/g,
-                                          ""
-                                        ); // Remove non-numeric characters
-                                        e.target.value = numericValue;
-                                      }}
+                                          const inputValue = e.target.value;
+                                          const numericValue =
+                                            inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                          e.target.value = numericValue;
+                                        }}
                                         value={
                                           rentalsFormik.values.entries[0]
-                                            .commercial[index].rentalcom_soft
+                                            .commercial[index].rentalcom_sqft
                                         }
                                       />
                                       {/* {rentalsFormik.touched.rentalcom_soft &&

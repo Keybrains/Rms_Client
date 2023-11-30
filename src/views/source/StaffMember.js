@@ -87,12 +87,12 @@ const StaffMember = () => {
   const editStaffMemberData = async (id, updatedData) => {
     try {
       const editUrl = `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember/${id}`;
-      console.log("Edit URL:", editUrl);
-      console.log("ID:", id);
-      console.log("Updated Data:", updatedData); // Log the updated data for debugging
+      //console.log("Edit URL:", editUrl);
+      //console.log("ID:", id);
+      //console.log("Updated Data:", updatedData); // Log the updated data for debugging
 
       const response = await axios.put(editUrl, updatedData); // Send the updated data in the request body
-      console.log("Edit Response:", response);
+      //console.log("Edit Response:", response);
 
       if (response.status === 200) {
         swal("Success!", "Staff Member updated successfully!", "success");
@@ -106,8 +106,8 @@ const StaffMember = () => {
     }
   };
 
-  console.log(StaffMemberData, "hii");
-  console.log("object");
+  //console.log(StaffMemberData, "hii");
+  //console.log("object");
 
   // Delete selected
   const deleteStaffMember = (id) => {
@@ -184,7 +184,7 @@ const StaffMember = () => {
 
   const editStaffMember = (id) => {
     navigate(`/admin/AddStaffMember/${id}`);
-    console.log(id);
+    //console.log(id);
   };
 
   const filterTenantsBySearch = () => {

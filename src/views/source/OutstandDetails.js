@@ -18,7 +18,7 @@ import { jwtDecode } from "jwt-decode";
   
   const PropDetails = () => {
     const { id } = useParams();
-    console.log(id);
+    //console.log(id);
     const [outstandDetails, setoutstandDetails] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -38,7 +38,7 @@ import { jwtDecode } from "jwt-decode";
 
     React.useEffect(() => {
       getOutstandData();
-      console.log(id)
+      //console.log(id)
     }, [id]);
 
     let cookies = new Cookies();

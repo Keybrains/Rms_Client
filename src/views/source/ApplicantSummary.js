@@ -36,7 +36,8 @@ import EmailIcon from "@mui/icons-material/Email";
 import ClearIcon from "@mui/icons-material/Clear";
 import EditIcon from "@mui/icons-material/Edit";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-
+import FileOpenIcon from "@mui/icons-material/FileOpen";
+import NoteIcon from "@mui/icons-material/Note";
 import {
   CardActions,
   CardContent,
@@ -54,16 +55,26 @@ import axios from "axios";
 import { useFormik } from "formik";
 import Cookies from "universal-cookie";
 import MailIcon from "@mui/icons-material/Mail";
+import FileOpen from "@mui/icons-material/FileOpen";
+import { CheckBox } from "@mui/icons-material";
 
 const ApplicantSummary = () => {
   const navigate = useNavigate();
   const id = useParams().id;
-  console.log(id, "id");
+  //console.log(id, "id");
+  const [file, setFile] = useState("");
   const [selectedDropdownItem, setselectedDropdownItem] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [value, setValue] = React.useState("Summary");
   const [searchText, setSearchText] = useState("");
+  // const [isChecklistVisible, setIsChecklistVisible] = useState(false);
   const [isAttachFile, setIsAttachFile] = useState(false);
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState("");
+  const [files, setFiles] = useState([]);
+  const [newFile, setNewFile] = useState("");
+  const [showNotesFiles, setShowNotesFiles] = useState(false);
+
   const [applicantData, setApplicantData] = useState();
   const [propertyData, setPropertyData] = useState();
   const [isEdit, setIsEdit] = useState(false);
@@ -81,7 +92,7 @@ const ApplicantSummary = () => {
   }, [navigate]);
   const handleSearch = () => {
     // Handle search functionality here
-    console.log("Searching for:", searchText);
+    //console.log("Searching for:", searchText);
   };
 
   const handleAttachFile = () => {
@@ -94,8 +105,8 @@ const ApplicantSummary = () => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    console.log(newValue);
-    console.log(matchedApplicant?.tenant_mobileNumber);
+    //console.log(newValue);
+    //console.log(matchedApplicant?.tenant_mobileNumber);
     tenantsData(matchedApplicant?.tenant_mobileNumber, newValue);
   };
 
@@ -104,7 +115,7 @@ const ApplicantSummary = () => {
   const selectedDropdown = (item) => {
     setselectedDropdownItem(item);
 
-    console.log(item, "item");
+    //console.log(item, "item");
   };
 
   const handleOpen = () => {
@@ -125,12 +136,57 @@ const ApplicantSummary = () => {
       tenant_homeNumber: "",
       tenant_faxPhoneNumber: "",
       tenant_email: "",
+      attachment: "",
+      applicant_notes: notes,
+      applicant_attachment: file,
     },
     onSubmit: (values) => {
       handleEdit(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
+
+  const applicantFormik1 = useFormik({
+    initialValues: {
+      applicant_notes: notes,
+      applicant_attachment: file,
+    },
+    onSubmit: (values) => {
+      handleSubmit(values);
+    },
+  });
+
+  const handleSubmit = (values) => {
+    // Handle form submission
+    hadlenotesandfile(values); // Call handleEdit function to make PUT request
+  };
+  console.log(typeof(applicantFormik1.values.applicant_notes))
+  console.log(typeof(applicantFormik1.values.applicant_attachment))
+
+  const hadlenotesandfile = (values) => {
+    // Make a PUT request to update the data in the backend
+    console.log(values)
+
+    const data = {
+      applicant_notes: applicantFormik1.values.applicant_notes,
+      applicant_attachment: applicantFormik1.values.applicant_attachment,
+    }
+
+    const apiUrl = `https://propertymanager.cloudpress.host/api/applicant//applicant/note_attachment/${id}`;
+
+    axios
+      .put(apiUrl, data)
+      .then((response) => {
+        // Handle successful response from the API
+        console.log("Data updated successfully:", response.data);
+        // You might perform additional actions upon successful submission
+      })
+      .catch((error) => {
+        // Handle errors if the PUT request fails
+        console.error("Error updating data:", error);
+        // You might display an error message to the user or perform other actions
+      });
+  };
 
   const [rentaldata, setRentaldata] = useState([]);
 
@@ -142,10 +198,10 @@ const ApplicantSummary = () => {
       // Fetch tenant data
       const response = await axios.get(apiUrl);
       const tenantData = response.data.data;
-      //console.log(tenantData.tenant_firstName, "abcd");
+      ////console.log(tenantData.tenant_firstName, "abcd");
       // setTenantDetails(tenantData);
       setRentaldata(tenantData);
-      console.log(response.data, "mansi");
+      //console.log(response.data, "mansi");
       // setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -155,9 +211,9 @@ const ApplicantSummary = () => {
   };
 
   const handleEditStatus = (item) => {
-    console.log(selectedDropdownItem, "selectedDropdownItem");
+    //console.log(selectedDropdownItem, "selectedDropdownItem");
 
-    // console.log(updatedApplicant, "updatedApplicant 403");
+    // //console.log(updatedApplicant, "updatedApplicant 403");
     const status = {
       status: item,
     };
@@ -167,54 +223,50 @@ const ApplicantSummary = () => {
         console.error(err);
       })
       .then((res) => {
-        console.log(res, "res");
+        //console.log(res, "res");
         getApplicantData();
       });
   };
 
   const navigateToLease = (tenantID, entryIndex) => {
     axios
-      .get(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
-      )
+      .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
       .then((response) => {
         const data = response.data.data;
 
         // Extract the rental address from the response
         const rentalAddress = data.rental_adress;
 
-        console.log(rentalAddress, "Rental Addressss");
+        //console.log(rentalAddress, "Rental Addressss");
         axios
-          .get(
-            "https://propertymanager.cloudpress.host/api/rentals/allproperty"
-          )
+          .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
           .then((response) => {
             const property = response.data.data;
-            console.log(property, "properties");
+            //console.log(property, "properties");
             const matchedProperty = property.find((property) => {
               return property.rental_adress === rentalAddress;
             });
-            console.log(matchedProperty, "matchedProperty");
+            //console.log(matchedProperty, "matchedProperty");
             if (!matchedProperty) {
               alert("Property not found");
               return;
             } else {
               // navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
-              console.log(tenantID, "tenantID");
+              //console.log(tenantID, "tenantID");
               navigate(`/admin/RentRollLeaseing/${tenantID}/${entryIndex}`);
-              console.log(matchedApplicant, "matchedApplicant");
+              //console.log(matchedApplicant, "matchedApplicant");
               // axios
               // .get("https://propertymanager.cloudpress.host/api/tenant/tenant")
               // .then((response) => {
-              //   console.log(response.data.data,'response.data.data');
+              //   //console.log(response.data.data,'response.data.data');
               //   const tenant = response.data.data;
               //   const matchedTenant = tenant.find((tenant) => {
               //     return tenant._id === id;
               //   })
-              //   console.log(matchedTenant, "matchedTenantdddd");
+              //   //console.log(matchedTenant, "matchedTenantdddd");
               // })
               // .then((err) => {
-              //   console.log(err);
+              //   //console.log(err);
               //   // setLoader(false);
               // });
               // navigate(`/admin/rentrolldetail/${id}/`);
@@ -223,7 +275,7 @@ const ApplicantSummary = () => {
 
         // Navigate to the leasing page with the rental address
 
-        // console.log(`/admin/RentRollLeaseing/${rentalAddress}`, "fgbasfg");
+        // //console.log(`/admin/RentRollLeaseing/${rentalAddress}`, "fgbasfg");
       })
       .catch((err) => {
         console.error(err);
@@ -237,8 +289,8 @@ const ApplicantSummary = () => {
   //       axios
   //         .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
   //         .then((properties) => {
-  //           console.log(applicants.data.data, "applicants");
-  //           console.log(properties.data.data, "properties");
+  //           //console.log(applicants.data.data, "applicants");
+  //           //console.log(properties.data.data, "properties");
   //           setApplicantData(applicants.data.data);
   //           const allProperties = properties.data.data;
   //           const allApplicants = applicants.data.data;
@@ -246,21 +298,21 @@ const ApplicantSummary = () => {
   //             return property.rental_adress === allApplicants[0].rental_adress;
   //           });
   //           setPropertyData(matchedProperty);
-  //           console.log(matchedProperty, "matchedProperty");
+  //           //console.log(matchedProperty, "matchedProperty");
   //           navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
-  //           // console.log(response.data.data,'response.data.data');
+  //           // //console.log(response.data.data,'response.data.data');
 
   //           // setRentalsData(response.data.data);
 
   //           // setLoader(false);
   //         })
   //         .then((err) => {
-  //           console.log(err);
+  //           //console.log(err);
   //           // setLoader(false);
   //         });
   //     })
   //     .then((err) => {
-  //       console.log(err);
+  //       //console.log(err);
   //       // setLoader(false);rental_adressrental_address
   //     });
   // };
@@ -272,8 +324,8 @@ const ApplicantSummary = () => {
   //       axios
   //         .get("https://propertymanager.cloudpress.host/api/rentals/property")
   //         .then((properties) => {
-  //           console.log(applicants.data.data, "applicants");
-  //           console.log(properties.data.data, "properties");
+  //           //console.log(applicants.data.data, "applicants");
+  //           //console.log(properties.data.data, "properties");
   //           setApplicantData(applicants.data.data);
   //           const allProperties = properties.data.data;
   //           const allApplicants = applicants.data.data;
@@ -281,36 +333,34 @@ const ApplicantSummary = () => {
   //             return property.rental_adress === allApplicants.rental_adress;
   //           });
   //           setPropertyData(matchedProperty);
-  //           console.log(matchedProperty, "matchedProperty");
+  //           //console.log(matchedProperty, "matchedProperty");
   //           // navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
-  //           // console.log(response.data.data,'response.data.data');
+  //           // //console.log(response.data.data,'response.data.data');
 
   //           // setRentalsData(response.data.data);
 
   //           // setLoader(false);
   //         })
   //         .then((err) => {
-  //           console.log(err);
+  //           //console.log(err);
   //           // setLoader(false);
   //         });
   //     })
   //     .then((err) => {
-  //       console.log(err);
+  //       //console.log(err);
   //       // setLoader(false);
   //     });
   // }, [id]);
 
   useEffect(() => {
     axios
-      .get(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
-      )
+      .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
       .then((applicants) => {
         axios
           .get("https://propertymanager.cloudpress.host/api/rentals/property")
           .then((properties) => {
-            console.log(applicants.data.data, "applicants");
-            console.log(properties.data.data, "properties");
+            //console.log(applicants.data.data, "applicants");
+            //console.log(properties.data.data, "properties");
             setApplicantData(applicants.data.data);
             const allProperties = properties.data.data;
             const allApplicants = applicants.data.data;
@@ -318,7 +368,7 @@ const ApplicantSummary = () => {
               return property.rental_adress === allApplicants.rental_adress;
             });
             setPropertyData(matchedProperty);
-            console.log(matchedProperty, "matchedProperty");
+            //console.log(matchedProperty, "matchedProperty");
           })
           .catch((error) => {
             console.error("Error fetching rental properties:", error);
@@ -343,20 +393,20 @@ const ApplicantSummary = () => {
     if (newItem.trim() !== "") {
       setChecklistItems([...checklistItems, newItem]);
       const allCheckbox = [...checklistItems, newItem];
-      console.log(allCheckbox, "allCheckbox");
-      console.log(matchedApplicant, "matchedApplicant");
+      //console.log(allCheckbox, "allCheckbox");
+      //console.log(matchedApplicant, "matchedApplicant");
       const updatedApplicant = {
         ...matchedApplicant,
         applicant_checklist: [...matchedApplicant.applicant_checklist, newItem],
       };
-      console.log(updatedApplicant, "updatedApplicant");
+      //console.log(updatedApplicant, "updatedApplicant");
       axios
         .put(
           `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/checklist`,
           updatedApplicant
         )
         .then((response) => {
-          console.log(response.data.data, "response.data.data");
+          //console.log(response.data.data, "response.data.data");
           getApplicantData();
         })
         .catch((err) => {
@@ -375,7 +425,7 @@ const ApplicantSummary = () => {
 
       // Check if the response contains the data you expect
       const fetchedData = response.data;
-      console.log(fetchedData, "fetched data");
+      //console.log(fetchedData, "fetched data");
       if (fetchedData) {
         // Step 2: Create an object with the fetched data
         const dataToSend = {
@@ -387,10 +437,12 @@ const ApplicantSummary = () => {
           tenant_homeNumber: fetchedData.data.tenant_homeNumber,
           tenant_faxPhoneNumber: fetchedData.data.tenant_faxPhoneNumber,
           tenant_email: fetchedData.data.tenant_email,
-          entries: [{
-            rental_adress: fetchedData.data.rental_adress,
-
-          }],
+          entries: [
+            {
+              rental_adress: fetchedData.data.rental_adress,
+              rental_units: fetchedData.data.rental_units,
+            },
+          ],
         };
 
         // Step 3: Make a POST request to send the data to the server
@@ -399,9 +451,9 @@ const ApplicantSummary = () => {
           dataToSend
         );
 
-        console.log(dataToSend, "hagfjg");
+        //console.log(dataToSend, "hagfjg");
         if (postResponse.status === 200) {
-          console.log("Data posted successfully:", postResponse.data.data);
+          //console.log("Data posted successfully:", postResponse.data.data);
           // setTenantID(postResponse.data.data._id)
           navigateToLease(
             postResponse.data.data._id,
@@ -431,13 +483,13 @@ const ApplicantSummary = () => {
     await axios
       .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
       .then((response) => {
-        console.log(response.data.data);
+        //console.log(response.data.data);
         if (response.data.data) {
           const applicantData = response.data.data;
           const matchedApplicant = applicantData.find((applicant) => {
             return applicant._id === id;
           });
-          console.log(matchedApplicant, "matchedApplicant");
+          //console.log(matchedApplicant, "matchedApplicant");
           setMatchedApplicant(matchedApplicant);
         }
       })
@@ -447,7 +499,7 @@ const ApplicantSummary = () => {
   };
   const onClickEditButton = () => {
     setIsEdit(true);
-    console.log(matchedApplicant, "matchedApplicant from edit ");
+    //console.log(matchedApplicant, "matchedApplicant from edit ");
     applicantFormik.setValues({
       tenant_firstName: matchedApplicant.tenant_firstName,
       tenant_lastName: matchedApplicant.tenant_lastName,
@@ -462,7 +514,7 @@ const ApplicantSummary = () => {
 
   const handleEdit = (values) => {
     setIsEdit(false);
-    console.log(matchedApplicant, "matchedApplicant from edit ");
+    //console.log(matchedApplicant, "matchedApplicant from edit ");
     const updatedApplicant = {
       ...matchedApplicant,
       tenant_firstName: values.tenant_firstName,
@@ -476,7 +528,7 @@ const ApplicantSummary = () => {
       tenant_workNumber: values.tenant_workNumber,
       status: selectedDropdownItem,
     };
-    console.log(updatedApplicant, "updatedApplicant");
+    //console.log(updatedApplicant, "updatedApplicant");
 
     axios
       .put(
@@ -487,7 +539,7 @@ const ApplicantSummary = () => {
         console.error(err);
       })
       .then((res) => {
-        console.log(res, "res");
+        //console.log(res, "res");
         getApplicantData();
       });
   };
@@ -500,23 +552,23 @@ const ApplicantSummary = () => {
     // if (event.target.checked) {
     //   setChecklistItems([...checklistItems, item]);
     //   const allCheckbox = [...checklistItems, item];
-    //   console.log(allCheckbox, "allCheckbox");
-    //   console.log(matchedApplicant, "matchedApplicant");
+    //   //console.log(allCheckbox, "allCheckbox");
+    //   //console.log(matchedApplicant, "matchedApplicant");
     //   const updatedApplicant = {
     //     ...matchedApplicant,
     //     applicant_checklist: [...matchedApplicant.applicant_checklist, item],
     //   };
-    //   console.log(updatedApplicant, "updatedApplicant");
+    //   //console.log(updatedApplicant, "updatedApplicant");
     // }
     if (event.target.checked) {
-      console.log(item, "item");
+      //console.log(item, "item");
       if (!applicantFormik.values.applicant_checkedChecklist.includes(item)) {
         applicantFormik.setFieldValue("applicant_checkedChecklist", [
           ...applicantFormik.values.applicant_checkedChecklist,
           item,
         ]);
       }
-      // console.log(applicantFormik.values, "ssssssssssss");
+      // //console.log(applicantFormik.values, "ssssssssssss");
     } else {
       applicantFormik.setFieldValue(
         "applicant_checkedChecklist",
@@ -527,7 +579,113 @@ const ApplicantSummary = () => {
       // setChecklistItems([...checklistItems, item]);
     }
   };
-  console.log(applicantFormik.values, "formik");
+  const fileData = (files) => {
+    //setImgLoader(true);
+    // //console.log(files, "file");
+    const filesArray = Array.from(files);
+
+    if (filesArray.length <= 10 && file.length === 0) {
+      setFile([...filesArray]);
+    } else if (
+      file.length >= 0 &&
+      file.length <= 10 &&
+      filesArray.length + file.length > 10
+    ) {
+      setFile([...file]);
+    } else {
+      setFile([...file, ...filesArray]);
+    }
+
+    // //console.log(file, "fileanaadsaa");
+
+    const dataArray = new FormData();
+    dataArray.append("b_video", files);
+
+    let url = "https://cdn.brandingprofitable.com/image_upload.php/";
+    axios
+      .post(url, dataArray, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        //setImgLoader(false);
+        const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
+        //console.log(imagePath, "imagePath");
+        // setFile(imagePath);
+        applicantFormik1.values.applicant_attachment = imagePath;
+      })
+      .catch((err) => {
+        //setImgLoader(false);
+        //console.log("Error uploading image:", err);
+      });
+  };
+
+  const deleteFile = (index) => {
+    const newFile = [...file];
+    newFile.splice(index, 1);
+    setFile(newFile);
+  };
+
+  const handleOpenFile = (file) => {
+    if (file.type === "text/plain") {
+      // Read the contents of the text file
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const fileContent = event.target.result;
+
+        // Display the content to the user (for demonstration, you might use an alert)
+        alert("Content of the text file:\n\n" + fileContent);
+      };
+      reader.readAsText(file);
+    } else {
+      // For other file types, handle accordingly (e.g., open in a new tab)
+      window.open(URL.createObjectURL(file));
+    }
+  };
+
+  //console.log(applicantFormik.values, "formik");
+  const getFileNameWithExtension = (file) => {
+    const fileName = file?.name;
+    return fileName;
+  };
+
+  const handleAddNote = () => {
+    if (newNote !== "") {
+      setNotes([...notes, newNote]);
+      setNewNote("");
+    }
+  };
+
+  const handleAddFile = () => {
+    // Modify logic to add files only upon clicking "Save"
+    // You can keep the existing logic if needed for immediate addition
+    if (newFile !== "") {
+      setNewFile("");
+    }
+  };
+
+  const handleSave = () => {
+    // Add selected files to the table on Save button click
+    if (files.length + file.length <= 10) {
+      setFile([...file, ...files]);
+      setFiles([]);
+    }
+    setShowNotesFiles(true);
+  };
+
+  const handleClearAll = () => {
+    setNotes([]);
+    setFiles([]);
+    setFile([]);
+    setNewNote("");
+    setNewFile("");
+  };
+  const openFileInNewTab = (selectedFile) => {
+    const fileURL = URL.createObjectURL(selectedFile);
+    window.open(fileURL, "_blank");
+  };
+
   return (
     <>
       <Header title="ApplicantSummary" />
@@ -572,10 +730,35 @@ const ApplicantSummary = () => {
               </Button>
             </InputGroupAddon>
           </InputGroup> */}
-
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Typography
+              style={{
+                fontSize: "25px",
+                color: "black",
+                marginRight: "10px",
+                padding: "25px 0 0 25px ",
+              }}
+              color="text.secondary"
+              gutterBottom
+            >
+              {matchedApplicant?.tenant_firstName +
+                " " +
+                matchedApplicant?.tenant_lastName +
+                " : " +
+                matchedApplicant.rental_adress +
+                " - " +
+                matchedApplicant.rental_units}
+            </Typography>
+          </div>
           <div
             className="formInput d-flex flex-direction-row"
-            style={{ margin: "30px 30px", paddingTop: "20px" }}
+            style={{ margin: "30px 30px" }}
           >
             <Dropdown
               //   isOpen={selectAccountDropDown}
@@ -660,10 +843,329 @@ const ApplicantSummary = () => {
                 </Box>
                 <TabPanel value="Summary">
                   <Row>
+                    <Col lg="4">
+                      <FormGroup>
+                        <div>
+                          {showNotesFiles &&
+                            (notes.length > 0 || file.length > 0) && (
+                              <div
+                                style={{
+                                  boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+                                  padding: "10px",
+                                }}
+                              >
+                                <tbody>
+                                  <tr>
+                                    <td
+                                      style={{
+                                        border: "1px solid #ccc",
+                                        padding: "10px",
+                                        width:
+                                          "100%" /* Example: Divide the table into two equal columns */,
+                                      }}
+                                    >
+                                      {notes.map((note, index) => (
+                                        <div key={index}>
+                                          <div>
+                                            <p style={{ fontWeight: "bold" }}>
+                                              Note: {note}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </td>
+                                    <td
+                                      style={{
+                                        border: "1px solid #ccc",
+                                        padding: "10px",
+                                        width:
+                                          "100%" /* Example: Divide the table into two equal columns */,
+                                      }}
+                                    >
+                                      {file?.map((selectedFile, index) => (
+                                        <div key={index}>
+                                          <p
+                                            onClick={() =>
+                                              openFileInNewTab(selectedFile)
+                                            }
+                                            style={{
+                                              cursor: "pointer",
+                                              fontWeight: "bold",
+                                            }}
+                                          >
+                                            <FileOpenIcon />
+                                            {selectedFile.name}
+                                          </p>
+                                        </div>
+                                      ))}
+                                    </td>
+                                  </tr>
+                                  {notes.length > 0 || file.length > 0 ? (
+                                    <tr>
+                                      <td
+                                        colSpan="2"
+                                        style={{
+                                          padding: "10px",
+                                          border: "1px solid #ccc",
+                                          // textAlign: "center",
+                                        }}
+                                      >
+                                        <button
+                                          style={{
+                                            padding: "5px 10px",
+                                            borderRadius: "3px",
+                                            background: "#28a745",
+                                            color: "#fff",
+                                            border: "none",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => {
+                                            handleClearAll();
+                                          }}
+                                        >
+                                          Clear
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  ) : null}
+                                </tbody>
+                              </div>
+                            )}
+                        </div>
+
+                        <div>
+                          {isAttachFile ? (
+                            <Card
+                              style={{
+                                width: "400px",
+                                margin: "20px auto",
+                                position: "relative",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  top: "5px",
+                                  right: "5px",
+                                  cursor: "pointer",
+                                  fontSize: "24px",
+                                }}
+                                onClick={() => {
+                                  setIsAttachFile(false);
+                                }}
+                              >
+                                &times;
+                              </span>
+                              <CardBody>
+                                <CardTitle tag="h4">Notes</CardTitle>
+
+                                {/* Notes */}
+                                <div>
+                                  {notes.map((note, index) => (
+                                    <div key={index}>
+                                      <p>{note}</p>
+                                    </div>
+                                  ))}
+                                  <div>
+                                    <TextField
+                                      type="text"
+                                      size="small"
+                                      fullWidth
+                                      value={newNote}
+                                      onChange={(e) =>
+                                        {setNewNote(e.target.value);
+                                          applicantFormik1.values.applicant_notes = e.target.value}
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                                <label
+                                  htmlFor="upload_file"
+                                  className="form-control-label"
+                                  style={{
+                                    display: "block",
+                                    marginBottom: "8px",
+                                  }}
+                                >
+                                  Upload Files (Maximum of 10)
+                                </label>
+                                <div className="d-flex align-items-center">
+                                  <input
+                                    type="file"
+                                    className="form-control-file d-none"
+                                    accept="file/*"
+                                    name="upload_file"
+                                    id="upload_file"
+                                    multiple
+                                    onChange={(e) => fileData(e.target.files)}
+                                  />
+                                  <label
+                                    htmlFor="upload_file"
+                                    className="btn btn-primary mr-3"
+                                    style={{
+                                      borderRadius: "5px",
+                                      padding: "8px",
+                                    }}
+                                  >
+                                    Choose Files
+                                  </label>
+                                  {applicantFormik1.touched
+                                    .applicant_attachment &&
+                                  applicantFormik1.errors
+                                    .applicant_attachment ? (
+                                    <div style={{ color: "red" }}>
+                                      {
+                                        applicantFormik1.errors
+                                          .applicant_attachment
+                                      }
+                                    </div>
+                                  ) : null}
+                                  {file.length > 0 &&
+                                    file.map((file, index) => (
+                                      <div
+                                        key={index}
+                                        className="position-relative"
+                                        style={{ marginRight: "10px" }}
+                                      >
+                                        <p
+                                          onClick={() => handleOpenFile(file)}
+                                          style={{
+                                            cursor: "pointer",
+                                            textDecoration: "underline",
+                                          }}
+                                        >
+                                          {getFileNameWithExtension(file)}
+                                        </p>
+                                        <span
+                                          className="close-icon"
+                                          onClick={() => deleteFile(index)}
+                                          style={{
+                                            cursor: "pointer",
+                                            position: "absolute",
+                                            top: "-8px",
+                                            right: "-5px",
+                                            fontSize: "18px",
+                                          }}
+                                        >
+                                          &times;
+                                        </span>
+                                      </div>
+                                    ))}
+                                </div>
+
+                                <div className="mt-3">
+                                  <Button
+                                    color="success"
+                                    onClick={() => {
+                                      setIsAttachFile(false);
+                                      handleAddNote();
+                                      handleAddFile();
+                                      handleSave();
+                                      handleSubmit();
+                                    }}
+                                    style={{ marginRight: "10px" }}
+                                  >
+                                    Save
+                                  </Button>
+                                  <Button
+                                    onClick={() => setIsAttachFile(false)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </CardBody>
+                            </Card>
+                          ) : (
+                            <Button
+                              onClick={handleAttachFile}
+                              style={{
+                                marginTop: "3px",
+                                padding: "10px 20px",
+                                fontSize: "16px",
+                                borderRadius: "15px",
+                                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                              }}
+                            >
+                              Attach note or file
+                            </Button>
+                          )}
+                        </div>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
                     <Col>
                       <Grid container spacing={3}>
                         <Grid item xs={9}>
                           <div>
+                            <div>
+                              <input
+                                type="checkbox"
+                                id="vehicle1"
+                                name="vehicle1"
+                                value="CreditCheck"
+                                style={{
+                                  transform: "scale(1.5)",
+                                  marginLeft: "4px",
+                                  marginTop: "20px",
+                                  fontWeight: 'bold'
+                                }}
+                              />{" "}
+                              Credit and background check <br />
+                              <input
+                                type="checkbox"
+                                id="vehicle2"
+                                name="vehicle2"
+                                value="EmploymentVerification"
+                                style={{
+                                  transform: "scale(1.5)",
+                                  marginLeft: "4px",
+                                  marginTop: "20px",
+                                  fontWeight: 'bold'
+                                }}
+                              />{" "}
+                              Employment verification <br />
+                              <input
+                                type="checkbox"
+                                id="vehicle3"
+                                name="vehicle3"
+                                value="ApplicationFee"
+                                style={{
+                                  transform: "scale(1.5)",
+                                  marginLeft: "4px",
+                                  marginTop: "20px",
+                                  fontWeight: 'bold'
+                                }}
+                              />{" "}
+                              Application fee collected <br />
+                              <input
+                                type="checkbox"
+                                id="vehicle4"
+                                name="vehicle4"
+                                value="IncomeVerification"
+                                style={{
+                                  transform: "scale(1.5)",
+                                  marginLeft: "4px",
+                                  marginTop: "20px",
+                                  fontWeight: 'bold'
+                                }}
+                              />{" "}
+                              Income verification <br />
+                              <input
+                                type="checkbox"
+                                id="vehicle5"
+                                name="vehicle5"
+                                value="LandlordVerification"
+                                style={{
+                                  transform: "scale(1.5)",
+                                  marginLeft: "4px",
+                                  marginTop: "20px",
+                                  fontWeight: 'bold'
+                                }}
+                              />{" "}
+                              Landlord verification <br />
+                            </div>
+
                             <Box display="flex" flexDirection="column">
                               {matchedApplicant?.applicant_checklist?.map(
                                 (item, index) => (
@@ -721,6 +1223,7 @@ const ApplicantSummary = () => {
                                       height: "30px",
                                       marginLeft: "5px",
                                     }}
+                                    onClick={toggleChecklist}
                                   />
                                 </Box>
                               </div>
@@ -1098,7 +1601,6 @@ const ApplicantSummary = () => {
                                       <PhoneAndroidIcon />
                                     </Typography>
                                     {tenant.tenant_mobileNumber || "N/A"}
-                                    97587587584
                                   </div>
 
                                   <div
@@ -1224,7 +1726,6 @@ const ApplicantSummary = () => {
                                       <PhoneAndroidIcon />
                                     </Typography>
                                     {tenant.tenant_mobileNumber || "N/A"}
-                                    97587587584
                                   </div>
 
                                   <div

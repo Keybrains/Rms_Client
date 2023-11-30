@@ -17,7 +17,7 @@ import { jwtDecode } from "jwt-decode";
 
 const RentalOwnerDetail = () => {
   const { id } = useParams();
-  console.log(id);
+  //console.log(id);
   const [rentalOwnerDetails, setRentalOwnerDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,7 +40,7 @@ const RentalOwnerDetail = () => {
       const response = await axios.get(
         `https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`
       );
-      console.log(response.data.data);
+      //console.log(response.data.data);
       setRentalOwnerDetails(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -52,7 +52,7 @@ const RentalOwnerDetail = () => {
 
   useEffect(() => {
     getRentalOwnerData();
-    console.log(id);
+    //console.log(id);
   }, [id]);
 
   function formatDateWithoutTime(dateString) {

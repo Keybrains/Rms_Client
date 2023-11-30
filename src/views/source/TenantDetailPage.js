@@ -244,10 +244,10 @@ const TenantDetailPage = () => {
                           </td>
                           <td>{tenantDetails.entries.amount || "N/A"}</td>
                         </tr>
-                        <tr>
+                        {/* <tr>
                           <td className="font-weight-bold text-md">Account:</td>
                           <td>{tenantDetails.entries.account || "N/A"}</td>
-                        </tr>
+                        </tr> */}
                         <tr>
                           <td className="font-weight-bold text-md">
                             Next Due Date:
@@ -303,7 +303,7 @@ const TenantDetailPage = () => {
                             {tenantDetails.entries.cosigner_workNumber || "N/A"}
                           </td>
                         </tr>
-                        <tr>
+                        {/* <tr>
                           <td className="font-weight-bold text-md">
                             Home Number:
                           </td>
@@ -319,7 +319,7 @@ const TenantDetailPage = () => {
                             {tenantDetails.entries.cosigner_faxPhoneNumber ||
                               "N/A"}
                           </td>
-                        </tr>
+                        </tr> */}
                         <tr>
                           <td className="font-weight-bold text-md">Email:</td>
                           <td>
@@ -350,12 +350,12 @@ const TenantDetailPage = () => {
                             {tenantDetails.entries.cosigner_city || "N/A"}
                           </td>
                         </tr>
-                        <tr>
+                        {/* <tr>
                           <td className="font-weight-bold text-md">State:</td>
                           <td>
                             {tenantDetails.entries.cosigner_state || "N/A"}
                           </td>
-                        </tr>
+                        </tr> */}
                         <tr>
                           <td className="font-weight-bold text-md">Country:</td>
                           <td>
@@ -373,24 +373,33 @@ const TenantDetailPage = () => {
                       </tbody>
 
                       <tbody>
-                        <tr>
-                          <th colSpan="2" className="text-primary text-lg">
-                            Recurring Payment Details
-                          </th>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Amount:</td>
-                          <td>
-                            {tenantDetails.entries.recuring_amount || "N/A"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Account:</td>
-                          <td>
-                            {tenantDetails.entries.recuring_account || "N/A"}
-                          </td>
-                        </tr>
-                        <tr>
+                        {tenantDetails.entries.recurring_charges.map((data) => (
+                          <>
+                            <tr>
+                              <th colSpan="2" className="text-primary text-lg">
+                                Recurring Payment Details
+                              </th>
+                            </tr>
+                            <tr>
+                              <td className="font-weight-bold text-md">Amount:</td>
+                              <td>
+                                {data.recuring_amount || "N/A"}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="font-weight-bold text-md">Account:</td>
+                              <td>
+                                {data.recuring_account || "N/A"}
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td className="font-weight-bold text-md">Memo:</td>
+                              <td>{data.recuringmemo || "N/A"}</td>
+                            </tr>
+                          </>
+                        ))}
+                        {/* <tr>
                           <td className="font-weight-bold text-md">
                             Next Due Date:
                           </td>
@@ -398,53 +407,44 @@ const TenantDetailPage = () => {
                             {tenantDetails.entries.recuringnextDue_date ||
                               "N/A"}
                           </td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Memo:</td>
-                          <td>{tenantDetails.entries.recuringmemo || "N/A"}</td>
-                        </tr>
-                        <tr>
+                        </tr> */}
+                        {/* <tr>
                           <td className="font-weight-bold text-md">
                             Frequency:
                           </td>
                           <td>
                             {tenantDetails.entries.recuringfrequency || "N/A"}
                           </td>
-                        </tr>
+                        </tr> */}
                       </tbody>
 
                       <tbody>
-                        <tr>
-                          <th colSpan="2" className="text-primary text-lg">
-                            One-time Payment Details
-                          </th>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Amount:</td>
-                          <td>
-                            {tenantDetails.entries.onetime_amount || "N/A"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Account:</td>
-                          <td>
-                            {tenantDetails.entries.onetime_account || "N/A"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">
-                            Due Date:
-                          </td>
-                          <td>
-                            {formatDateWithoutTime(
-                              tenantDetails.entries.onetime_Due_date
-                            ) || "N/A"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Memo:</td>
-                          <td>{tenantDetails.entries.onetime_memo || "N/A"}</td>
-                        </tr>
+                        {tenantDetails.entries.one_time_charges.map((data) => (
+                          <>
+                            <tr>
+                              <th colSpan="2" className="text-primary text-lg">
+                                One Time Payment Details
+                              </th>
+                            </tr>
+                            <tr>
+                              <td className="font-weight-bold text-md">Amount:</td>
+                              <td>
+                                {data.onetime_amount || "N/A"}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="font-weight-bold text-md">Account:</td>
+                              <td>
+                                {data.onetime_account || "N/A"}
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td className="font-weight-bold text-md">Memo:</td>
+                              <td>{data.onetime_memo || "N/A"}</td>
+                            </tr>
+                          </>
+                        ))}
                       </tbody>
                     </>
                   ) : (
@@ -458,11 +458,11 @@ const TenantDetailPage = () => {
               </div>
             </Card>
           </div>
-        </Row>
+        </Row >
         <br />
         <br />
-      </Container>
-    </div>
+      </Container >
+    </div >
   );
 };
 

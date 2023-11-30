@@ -83,9 +83,9 @@ const TenantSidebar = (props) => {
   };
 
   const { id } = useParams();
-  console.log(id);
+  // console.log(id);
   let cookie_id = cookies.get("Tenant ID");
-  console.log(cookie_id)
+  // console.log(cookie_id)
 
   // verifies if routeName is the one active (in browser input)
   const activeRoute = (routeName) => {
@@ -144,7 +144,7 @@ const fetchNotification = async () => {
     //   });
     axios.get(`https://propertymanager.cloudpress.host/api/notification/tenantnotification/tenant/${rental_adress}`).then((response) => {
       if (response.status === 200) {
-        console.log(response.data.data,'asfhuiasfjkouhygtyuhij')
+        // console.log(response.data.data,'asfhuiasfjkouhygtyuhij')
         setNotificationData(response.data.data);
         setNotificationCount(response.data.data.length);
       }
@@ -157,7 +157,7 @@ const fetchNotification = async () => {
 const getRentalData = async (addresses) => {
   try {
     const response = await axios.get(`https://propertymanager.cloudpress.host/api/notification/tenantnotification/tenant/${addresses}`);
-    console.log(response, "abc");
+    // console.log(response, "abc");
 
     if (Array.isArray(response.data.data)) {
       // Filter the notifications with isTenantread set to false
@@ -208,7 +208,7 @@ const getRentalData = async (addresses) => {
 
   useEffect(() => {
     getVendorDetails();
-    console.log(id);
+    // console.log(id);
   }, [id]);
 
   const unreadNotificationCount = notificationData.filter(notification => !notification.isTenantread).length;
@@ -226,9 +226,9 @@ const getRentalData = async (addresses) => {
               return notification;
             });
             setNotificationData(updatedNotificationData);
-            console.log("updatedNotificationData", updatedNotificationData)
+            // console.log("updatedNotificationData", updatedNotificationData)
             setNotificationCount(updatedNotificationData.length);
-            console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
+            // console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
             fetchNotification();
           } else {
           console.error(`Failed to delete notification with workorder_id ${workorder_id}.`);
@@ -325,7 +325,7 @@ const getRentalData = async (addresses) => {
                     Notifications
                   </h2>
                   <Divider />
-                  {console.log(notificationData, "notificationData")}
+                  {/* {console.log(notificationData, "notificationData")} */}
                   {notificationData.map((data) => {
                     if(data.isTenantread === true){
                       return null

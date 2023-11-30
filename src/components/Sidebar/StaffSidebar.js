@@ -85,9 +85,9 @@ const StaffSidebar = (props) => {
   };
 
   const { id } = useParams();
-  console.log(id);
+  //console.log(id);
   let cookie_id = cookies.get("Staff ID");
-  console.log(cookie_id)
+  //console.log(cookie_id)
 
   const toggleCollapse = () => {
     setCollapseOpen(!collapseOpen);
@@ -112,7 +112,7 @@ const StaffSidebar = (props) => {
       const response = await axios.get(
         `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
       );
-      console.log(response.data.data)
+      //console.log(response.data.data)
       setVendorDetails(response.data.data);
       setVendorname(response.data.data.staffmember_name)
       setLoading(false);
@@ -148,7 +148,7 @@ const StaffSidebar = (props) => {
 
   useEffect(() => {
     getVendorDetails();
-    console.log(id);
+    //console.log(id);
   }, [id]);
 
 
@@ -166,7 +166,7 @@ const StaffSidebar = (props) => {
             setNotificationData(updatedNotificationData);
             setNotificationCount(updatedNotificationData.length);
             fetchNotification();
-           console.log(`Notification with workorder_id ${workorder_id} deleted successfully.`);
+           //console.log(`Notification with workorder_id ${workorder_id} deleted successfully.`);
         } else {
           console.error(`Failed to mark notification with workorder_id ${workorder_id} as read.`);
         }

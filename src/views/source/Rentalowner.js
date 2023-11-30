@@ -131,7 +131,7 @@ const Rentals = () => {
   // const handleSubmit = async (values) => {
   //   values["rentalOwner_country"] = selectedState;
 
-  //   console.log(values, "values");
+  //   //console.log(values, "values");
   //   try {
   //     // values["property_type"] = localStorage.getItem("propertyType");
   //     const res = await axios.post(
@@ -145,7 +145,7 @@ const Rentals = () => {
   //       swal("", res.data.message, "error");
   //     }
   //   } catch (error) {
-  //     console.log(error);
+  //     //console.log(error);
   //   }
   // };
   async function handleSubmit(values) {
@@ -234,7 +234,7 @@ const Rentals = () => {
     }),
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
   const filterRentalsBySearch = () => {
@@ -276,7 +276,7 @@ const Rentals = () => {
     fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Data from API:", data); // Log the response data
+        //console.log("Data from API:", data); // Log the response data
         if (data.statusCode === 200) {
           setPropertyData(data.data);
         } else {
@@ -301,7 +301,7 @@ const Rentals = () => {
         .then((response) => {
           const rentalOwnerdata = response.data.data;
           setRentalOwnerData(rentalOwnerData);
-          console.log(rentalOwnerdata);
+          //console.log(rentalOwnerdata);
           setIsLoading(false);
           setSelectedState(rentalOwnerdata.rentalOwner_country || "Select");
 
@@ -314,9 +314,9 @@ const Rentals = () => {
           // const formattedBirthDate = rentalsFormik.birth_date
           //   ? new Date(rentalOwnerdata.birth_date).toISOString().split("T")[0]
           //   : "";
-          //   console.log("Formatted Start Date:", formattedStartDate);
-          //   console.log("Formatted End Date:", formattedEndDate);
-          //   console.log("Formatted Birth Date:", formattedBirthDate);
+          //   //console.log("Formatted Start Date:", formattedStartDate);
+          //   //console.log("Formatted End Date:", formattedEndDate);
+          //   //console.log("Formatted Birth Date:", formattedBirthDate);
           // // Initialize the form with fetched data
           rentalsFormik.setValues({
             rentalowner_firstName: rentalOwnerdata.rentalowner_firstName || "",

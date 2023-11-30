@@ -21,7 +21,7 @@ import { jwtDecode } from "jwt-decode";
 const StaffWorkOrder = () => {
   const [workOrderDetails, setWorkOrderDetails] = useState({});
   const { id } = useParams();
-  console.log(id, workOrderDetails);
+  //console.log(id, workOrderDetails);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   let cookies = new Cookies();
@@ -49,7 +49,7 @@ const StaffWorkOrder = () => {
         `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`
       );
 
-      console.log("API Response:", response.data.data);
+      //console.log("API Response:", response.data.data);
       setWorkOrderDetails(response.data.data);
       setLoading(false);
     } catch (error) {

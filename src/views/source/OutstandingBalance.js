@@ -50,7 +50,7 @@ const OutstandingBalance = () => {
   let navigate = useNavigate()
 
   const [selectedPropertyType, setSelectedPropertyType] = React.useState("");
-  // console.log(selectedPropertyType, "selectedPropertyType")
+  // //console.log(selectedPropertyType, "selectedPropertyType")
   const handlePropertyTypeSelect = (propertyType) => {
     setSelectedPropertyType(propertyType);
     // localStorage.setItem("propertyType", propertyType);
@@ -83,12 +83,12 @@ const OutstandingBalance = () => {
   const editPropertyData = async (id, updatedData) => {
     try {
       const editUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant/${id}`;
-      console.log("Edit URL:", editUrl);
-      console.log("Property ID:", id);
-      console.log("Updated Data:", updatedData); // Log the updated data for debugging
+      //console.log("Edit URL:", editUrl);
+      //console.log("Property ID:", id);
+      //console.log("Updated Data:", updatedData); // Log the updated data for debugging
 
       const response = await axios.put(editUrl, updatedData); // Send the updated data in the request body
-      console.log("Edit Response:", response);
+      //console.log("Edit Response:", response);
 
       if (response.status === 200) {
         swal("Success!", "Balance updated successfully", "success");

@@ -57,7 +57,7 @@ const TenantProperty = () => {
           `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
         );
         setPropertyDetails(allTenants.data.data.entries);
-        console.log(allTenants.data.data, "allTenants");
+        // console.log(allTenants.data.data, "allTenants");
       } else {
         console.error("Data structure is not as expected:", response.data);
         setRentalAddress([]); // Set rental_adress to an empty array
@@ -75,9 +75,9 @@ const TenantProperty = () => {
 
   useEffect(() => {
     getTenantData();
-    console.log(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_rental_addresses/${cookie_id}`
-    );
+    // console.log(
+    //   `https://propertymanager.cloudpress.host/api/tenant/tenant_rental_addresses/${cookie_id}`
+    // );
   }, [cookie_id]);
 
   const navigate = useNavigate();
@@ -105,7 +105,7 @@ const TenantProperty = () => {
   function navigateToTenantsDetails(rental_adress) {
     const tenantsDetailsURL = `/tenant/tenantpropertydetail/${rental_adress}`;
     window.location.href = tenantsDetailsURL;
-    console.log("Rental Address", rental_adress);
+    // console.log("Rental Address", rental_adress);
   }
   return (
     <>

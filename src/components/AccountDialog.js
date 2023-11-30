@@ -66,12 +66,12 @@ function AccountDialog(props) {
     }),
     onSubmit: (values) => {
       handleAdd(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
 
   const navigate = useNavigate();
-  // console.log(props,'props');
+  // //console.log(props,'props');
 
   const handleAdd = async (values) => {
     values["account_name "] = props.selectedAccount;
@@ -88,7 +88,7 @@ function AccountDialog(props) {
           props.setToggleApiCall(!props.toggleApiCall);
           props.hadleselectedAccount(values.account_name)
 
-          navigate("/admin/Leaseing");
+          // navigate("/admin/RentRollLeaseing");
         } else {
           swal("", res.data.message, "error");
         }
@@ -110,7 +110,7 @@ function AccountDialog(props) {
           fund_type: "",
           notes: "",
         });
-        console.log(error, "error");
+        //console.log(error, "error");
       }
     }
 
@@ -123,7 +123,7 @@ function AccountDialog(props) {
         );
         if (res.data.statusCode === 200) {
           swal("", res.data.message, "success");
-          navigate("/admin/Leaseing");
+          // navigate("/admin/RentRollLeaseing");
           props.setToggleApiCall(!props.toggleApiCall);
           props.hadleselectedRecuringAccount(values.account_name)
           accountFormik.setValues({
@@ -137,7 +137,7 @@ function AccountDialog(props) {
           swal("", res.data.message, "error");
         }
       } catch (error) {
-        console.log(error);
+        //console.log(error);
       }
     }
     if (props.accountTypeName === "oneTimeName") {
@@ -149,7 +149,7 @@ function AccountDialog(props) {
         );
         if (res.data.statusCode === 200) {
           swal("", res.data.message, "success");
-          navigate("/admin/Leaseing");
+          // navigate("/admin/RentRollLeaseing");
           props.setToggleApiCall(!props.toggleApiCall);
           props.hadleselectedOneTimeAccount(values.account_name)
           accountFormik.setValues({
@@ -163,7 +163,7 @@ function AccountDialog(props) {
           swal("", res.data.message, "error");
         }
       } catch (error) {
-        console.log(error);
+        //console.log(error);
       }
     }
     // try {
@@ -179,7 +179,7 @@ function AccountDialog(props) {
     //     swal("", res.data.message, "error");
     //   }
     // } catch (error) {
-    //   console.log(error);
+    //   //console.log(error);
     // }
   };
   return (
@@ -255,7 +255,7 @@ function AccountDialog(props) {
                 Non Operating Income
               </DropdownItem>
             </DropdownMenu>
-            {/* {console.log(accountFormik.values, selectedAccountType)} */}
+            {/* {//console.log(accountFormik.values, selectedAccountType)} */}
           </Dropdown>
         </div>
         {/* <div className="formInput" style={{ margin: "30px 10px" }}>

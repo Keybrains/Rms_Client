@@ -51,6 +51,8 @@ import Cookies from "universal-cookie";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
@@ -66,35 +68,16 @@ const Index = (props) => {
   };
 
   let cookies = new Cookies();
-  console.log(cookies.get("token"), "abc")
+  const [accessType, setAccessType] = useState(null);
 
-  // Check Authe(token)
-  let chackAuth = async () => {
+  React.useEffect(() => {
     if (cookies.get("token")) {
-      let  authConfig = {
-        headers: {
-          Authorization: `Bearer ${cookies.get("token")}`,
-          token: cookies.get("token"),
-        },
-      };
-      // auth post method
-      let res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/auth",
-        { purpose: "validate access" },
-        authConfig
-      );
-      if (res.data.statusCode !== 200) {
-        // cookies.remove("token");
-        navigate("/auth/login");
-      }
+      const jwt = jwtDecode(cookies.get("token"));
+      setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
-  };
-
-  React.useEffect(() => {
-    chackAuth();
-  }, [cookies.get("token")]);
+  }, [navigate]);
 
   return (
     <>

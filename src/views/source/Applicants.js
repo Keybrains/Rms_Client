@@ -60,7 +60,10 @@ const Applicants = () => {
   const [userdropdownOpen, setuserDropdownOpen] = React.useState(false);
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
-
+  const [searchQueryy, setSearchQueryy] = useState("");
+  const handleSearch = (e) => {
+    setSearchQueryy(e.target.value);
+  };
   const toggle9 = () => {
     setuserDropdownOpen((prevState) => !prevState);
   };
@@ -91,7 +94,7 @@ const Applicants = () => {
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
       const units = await fetchUnitsByProperty(propertyType);
-      console.log(units, "units"); // Check the received units in the console
+      //console.log(units, "units"); // Check the received units in the console
       setUnitData(units); // Set the received units in the unitData state
     } catch (error) {
       console.error("Error handling selected property:", error);
@@ -140,7 +143,7 @@ const Applicants = () => {
   };
 
   const [selectedRentalOwnerData, setSelectedRentalOwnerData] = useState([]);
-  console.log(selectedRentalOwnerData, "selectedRentalOwnerData");
+  //console.log(selectedRentalOwnerData, "selectedRentalOwnerData");
   const [selectedrentalOwners, setSelectedrentalOwners] = useState([]);
   const [showRentalOwnerTable, setshowRentalOwnerTable] = useState(false);
   const [checkedCheckbox, setCheckedCheckbox] = useState();
@@ -171,7 +174,7 @@ const Applicants = () => {
         tenant_workNumber: tenantInfo.tenant_workNumber || "",
       });
       setshowRentalOwnerTable(false);
-      // console.log(tenantInfo.tenant_firstName);
+      // //console.log(tenantInfo.tenant_firstName);
     } else {
       setSelectedTenants(
         selectedTenants.filter((tenant) => tenant !== tenantInfo)
@@ -254,7 +257,7 @@ const Applicants = () => {
     onSubmit: (values, action) => {
       handleFormSubmit(values, action);
 
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
 
@@ -262,8 +265,8 @@ const Applicants = () => {
     axios
       .post("https://propertymanager.cloudpress.host/api/applicant/applicant", values)
       .then((response) => {
-        console.log("Applicant created successfully:", response.data.data._id);
-        console.log(response.data.data);
+        //console.log("Applicant created successfully:", response.data.data._id);
+        //console.log(response.data.data);
         closeModal();
 
         action.resetForm();
@@ -297,12 +300,12 @@ const Applicants = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/applicant/applicant")
+    fetch("https://propertymanager.cloudpress.host/api/applicant/existing/applicant")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
           setRentalownerData(data.data);
-          // console.log("here is my data", data.data);
+          // //console.log("here is my data", data.data);
         } else {
           // Handle error
           // console.error("Error:", data.message);
@@ -329,13 +332,7 @@ const Applicants = () => {
   useEffect(() => {
     getApplicantData();
   }, [isModalOpen]);
-  // const deleteFile = (index) => {
-  //   axios.delete(`https://propertymanager.cloudpress.host/api/applicant/applicant`,index).then((response) => {
-  //     console.log(response);
-  //   }).catch((err) => {
-  //     console.log(err);
-  //   })
-  // }
+
 
   const deleteRentals = (id) => {
     // Show a confirmation dialog to the user
@@ -613,6 +610,19 @@ const Applicants = () => {
               </div>
               {showRentalOwnerTable && (
                 <div className="RentalOwnerTable">
+                  <Input
+                    type="text"
+                    placeholder="Search by first and last name"
+                    value={searchQueryy}
+                    onChange={handleSearch}
+                    style={{
+                      marginBottom: "10px",
+                      width: "100%",
+                      padding: "8px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                    }}
+                  />
                   <table
                     style={{
                       width: "100%",
@@ -628,59 +638,72 @@ const Applicants = () => {
                     </thead>
                     <tbody>
                       {Array.isArray(rentalownerData) &&
-                        rentalownerData?.map((tenant, index) => (
-                          <tr
-                            key={index}
-                            style={{
-                              border: "1px solid #ddd",
-                            }}
-                          >
-                            <td>
-                              {tenant.tenant_firstName}&nbsp;
-                              {tenant.tenant_lastName}
-                            </td>
-                            <td>
-                              {/* <FormControlLabel
+                        rentalownerData
+                          .filter((tenant) => {
+                            const fullName = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
+                            return fullName
+                              .toLowerCase()
+                              .includes(searchQueryy.toLowerCase());
+                          })
+                          .map((tenant, index) => (
+                            <tr
+                              key={index}
+                              style={{
+                                border: "1px solid #ddd",
+                              }}
+                            >
+                              <td>
+                                <pre>
+                                  {tenant.tenant_firstName}&nbsp;
+                                  {tenant.tenant_lastName}
+                                  {`(${tenant.tenant_mobileNumber})`}
+                                </pre>
+                              </td>
+                              <td>
+                                {/* <FormControlLabel
                                                           control={  */}
-                              <Checkbox
-                                type="checkbox"
-                                name="tenant"
-                                id={tenant.tenant_mobileNumber}
-                                checked={
-                                  tenant.tenant_mobileNumber === checkedCheckbox
-                                }
-                                onChange={(event) => {
-                                  setCheckedCheckbox(
-                                    tenant.tenant_mobileNumber
-                                  );
-                                  // const tenantInfo = `${tenant.tenant_firstName ||
-                                  //   ""
-                                  //   } ${tenant.tenant_lastName ||
-                                  //   ""
-                                  //   } ${tenant.tenant_mobileNumber ||
-                                  //   ""
-                                  //   } ${tenant.tenant_email ||
-                                  //   ""
-                                  //   }`;
-                                  const tenantInfo = {
-                                    tenant_mobileNumber:
-                                      tenant.tenant_mobileNumber,
-                                    tenant_firstName: tenant.tenant_firstName,
-                                    tenant_lastName: tenant.tenant_lastName,
-                                    tenant_homeNumber: tenant.tenant_homeNumber,
-                                    tenant_email: tenant.tenant_email,
-                                    tenant_workNumber: tenant.tenant_workNumber,
-                                  };
-                                  handleCheckboxChange(
-                                    event,
-                                    tenantInfo,
-                                    tenant.tenant_mobileNumber
-                                  );
-                                }}
-                              />
-                            </td>
-                          </tr>
-                        ))}
+                                <Checkbox
+                                  type="checkbox"
+                                  name="tenant"
+                                  id={tenant.tenant_mobileNumber}
+                                  checked={
+                                    tenant.tenant_mobileNumber ===
+                                    checkedCheckbox
+                                  }
+                                  onChange={(event) => {
+                                    setCheckedCheckbox(
+                                      tenant.tenant_mobileNumber
+                                    );
+                                    // const tenantInfo = `${tenant.tenant_firstName ||
+                                    //   ""
+                                    //   } ${tenant.tenant_lastName ||
+                                    //   ""
+                                    //   } ${tenant.tenant_mobileNumber ||
+                                    //   ""
+                                    //   } ${tenant.tenant_email ||
+                                    //   ""
+                                    //   }`;
+                                    const tenantInfo = {
+                                      tenant_mobileNumber:
+                                        tenant.tenant_mobileNumber,
+                                      tenant_firstName: tenant.tenant_firstName,
+                                      tenant_lastName: tenant.tenant_lastName,
+                                      tenant_homeNumber:
+                                        tenant.tenant_homeNumber,
+                                      tenant_email: tenant.tenant_email,
+                                      tenant_workNumber:
+                                        tenant.tenant_workNumber,
+                                    };
+                                    handleCheckboxChange(
+                                      event,
+                                      tenantInfo,
+                                      tenant.tenant_mobileNumber
+                                    );
+                                  }}
+                                />
+                              </td>
+                            </tr>
+                          ))}
                     </tbody>
                   </table>
                   <br />
@@ -859,7 +882,7 @@ const Applicants = () => {
                     >
                       Property *
                     </label>
-                    {/* {console.log(propertyData, "propertyData")} */}
+                    {/* {//console.log(propertyData, "propertyData")} */}
                     <FormGroup style={{ marginRight: "15px" }}>
                       <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
                         <DropdownToggle

@@ -39,7 +39,7 @@ const TenantPropertyDetail = () => {
 
         const response = await axios.get(url);
         setPropertyDetails(response.data.data);
-        console.log(response.data.data);
+        //console.log(response.data.data);
         setPropertyLoading(false);
       } catch (error) {
         setPropertyError(error);

@@ -96,10 +96,10 @@ const VendorSidebar = (props) => {
   };
 
   let cookie_id = cookies.get("Vendor ID");
-  console.log(cookie_id)
+  //console.log(cookie_id)
 
   const { id } = useParams();
-  console.log(id);
+  //console.log(id);
 
   const [vendor_name, setVendorname] = useState("");
   
@@ -108,7 +108,7 @@ const VendorSidebar = (props) => {
         const response = await axios.get(
           `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${cookie_id}`
         );
-        console.log(response.data.data)
+        //console.log(response.data.data)
         setVendorDetails(response.data.data);
         setVendorname(response.data.data.vendor_name)
         setLoading(false);
@@ -132,8 +132,8 @@ const VendorSidebar = (props) => {
             const unreadNotifications = data.data.filter(notification => !notification.isVendorread);
             setNotificationData(unreadNotifications);
             setNotificationCount(unreadNotifications.length);
-            console.log("Unread Notifications", unreadNotifications);
-            console.log("vendor", vendor_name);
+            //console.log("Unread Notifications", unreadNotifications);
+            //console.log("vendor", vendor_name);
           } else {
             // Handle error
             console.error("Error:", data.message);
@@ -147,7 +147,7 @@ const VendorSidebar = (props) => {
     
     useEffect(() => {
       getVendorDetails();
-      console.log(id);
+      //console.log(id);
     }, [id]);
   
     const navigateToDetails = (workorder_id) => {
@@ -162,9 +162,9 @@ const VendorSidebar = (props) => {
               return notification;
             });
             setNotificationData(updatedNotificationData);
-            console.log("updatedNotificationData", updatedNotificationData)
+            //console.log("updatedNotificationData", updatedNotificationData)
             setNotificationCount(updatedNotificationData.length);
-            console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
+            //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
             fetchNotification();
           } else {
             console.error(`Failed to mark notification with workorder_id ${workorder_id} as read.`);

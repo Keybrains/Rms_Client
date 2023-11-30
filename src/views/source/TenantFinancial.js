@@ -42,18 +42,18 @@ const TenantFinancial = () => {
   }
 
   const calculateBalance = (data) => {
+    // console.log(data);
     let balance = 0;
-
     for (let i = data.length - 1; i >= 0; i--) {
       const currentEntry = data[i];
-
-      if (currentEntry.type === "Charge") {
-        balance += currentEntry.charges_amount;
-      } else if (currentEntry.type === "Payment") {
-        balance -= currentEntry.amount;
+      for (let j = currentEntry.entries.length - 1; j >= 0; j--) {
+        if (currentEntry.type === "Charge") {
+          balance += currentEntry.entries[j].charges_amount;
+        } else if (currentEntry.type === "Payment") {
+          balance -= currentEntry.entries[j].amount;
+        }
+        data[i].entries[j].balance = balance;
       }
-
-      data[i].balance = balance;
     }
 
     //console.log("data",data)
@@ -113,7 +113,7 @@ const TenantFinancial = () => {
           `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
         );
         setPropertyDetails(allTenants.data.data.entries);
-        console.log(allTenants.data.data, "allTenants");
+        // console.log(allTenants.data.data, "allTenants");
       } else {
         console.error("Data structure is not as expected:", response.data);
         setRentalAddress([]); // Set rental_adress to an empty array
@@ -129,9 +129,9 @@ const TenantFinancial = () => {
 
   useEffect(() => {
     getTenantData();
-    console.log(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_rental_addresses/${cookie_id}`
-    );
+    // console.log(
+    //   `https://propertymanager.cloudpress.host/api/tenant/tenant_rental_addresses/${cookie_id}`
+    // );
   }, [cookie_id]);
 
   const navigate = useNavigate();
@@ -159,7 +159,7 @@ const TenantFinancial = () => {
   function navigateToTenantsDetails(rental_adress) {
     const tenantsDetailsURL = `/tenant/tenantpropertydetail/${rental_adress}`;
     window.location.href = tenantsDetailsURL;
-    console.log("Rental Address", rental_adress);
+    // console.log("Rental Address", rental_adress);
   }
   return (
     <>
@@ -200,152 +200,110 @@ const TenantFinancial = () => {
               </div>
             ) : (
               <Card className="shadow">
-                <CardHeader className="border-0"></CardHeader>
+                <Container className="mt--10" fluid>
+                  <Row>
+                    <div className="col">
+                      {loader ? (
+                        <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                          <RotatingLines
+                            strokeColor="grey"
+                            strokeWidth="5"
+                            animationDuration="0.75"
+                            width="50"
+                            visible={loader}
+                          />
+                        </div>
+                      ) : (
+                        <Card className="shadow">
+                          <CardHeader className="border-0"></CardHeader>
 
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">Date</th>
-                      <th scope="col">Type</th>
-                      <th scope="col">Account</th>
-                      <th scope="col">Memo</th>
-                      <th scope="col">Increase</th>
-                      <th scope="col">Decrease</th>
-                      <th scope="col">Balance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.isArray(GeneralLedgerData) ? (
-                      GeneralLedgerData.map((generalledger) => (
-                        <>
-                          {generalledger.entries.map((entry, index) => (
-                            <tr key={`${generalledger._id}_${index}`}>
-                              <td>
-                                {formatDateWithoutTime(
-                                  generalledger.type === "Charge"
-                                    ? generalledger.date
-                                    : generalledger.date
-                                ) || "N/A"}
-                              </td>
-                              <td>{generalledger.type}</td>
-                              <td>
-                                {generalledger.type === "Charge"
-                                  ? entry.charges_account
-                                  : entry.account}
-                              </td>
-                              <td>
-                                {generalledger.type === "Charge"
-                                  ? generalledger.charges_memo
-                                  : generalledger.memo}
-                              </td>
-                              <td>
-                                {generalledger.type === "Charge"
-                                  ? "$" + entry.charges_amount
-                                  : "-"}
-                              </td>
-                              <td>
-                                {generalledger.type === "Payment"
-                                  ? "$" + entry.amount
-                                  : "-"}
-                              </td>
-                              <td>
-                                {console.log("first", generalledger.balance)}
-                                {generalledger.balance !== undefined
-                                  ? generalledger.balance >= 0
-                                    ? generalledger.balance
-                                    : `$(${Math.abs(generalledger.balance)})`
-                                  : "0"}
-                                {/* {calculateBalance(
+                          <Table
+                            className="align-items-center table-flush"
+                            responsive
+                          >
+                            <thead className="thead-light">
+                              <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Account</th>
+                                <th scope="col">Memo</th>
+                                <th scope="col">Increase</th>
+                                <th scope="col">Decrease</th>
+                                <th scope="col">Balance</th>
+                              </tr>
+                            </thead>
+                            {/* {console.log(GeneralLedgerData)} */}
+                            <tbody>
+                              {Array.isArray(GeneralLedgerData) ? (
+                                GeneralLedgerData.map((generalledger) => (
+                                  <>
+                                    {generalledger.entries.map(
+                                      (entry, index) => (
+                                        <tr
+                                          key={`${generalledger._id}_${index}`}
+                                        >
+                                          <td>
+                                            {formatDateWithoutTime(
+                                              generalledger.type ===
+                                                "Charge"
+                                                ? generalledger.date
+                                                : generalledger.date
+                                            ) || "N/A"}
+                                          </td>
+                                          <td>{generalledger.type}</td>
+                                          <td>
+                                            {generalledger.type === "Charge"
+                                              ? entry.charges_account
+                                              : entry.account}
+                                          </td>
+                                          <td>
+                                            {generalledger.type === "Charge"
+                                              ? generalledger.charges_memo
+                                              : generalledger.memo}
+                                          </td>
+                                          <td>
+                                            {generalledger.type === "Charge"
+                                              ? "$" + entry.charges_amount
+                                              : "-"}
+                                          </td>
+                                          <td>
+                                            {generalledger.type ===
+                                              "Payment"
+                                              ? "$" + entry.amount
+                                              : "-"}
+                                          </td>
+                                          <td>
+                                            {entry.balance !== undefined
+                                              ? entry.balance >= 0
+                                                ? `$${entry.balance}`
+                                                : `$(${Math.abs(
+                                                  entry.balance
+                                                )})`
+                                              : "0"}
+                                            {/* {console.log(entry.balance)} */}
+                                            {/* {calculateBalance(
                                                   generalledger.type,
                                                   entry,
                                                   index
                                                 )} */}
-                              </td>
-                              {/* <td>
-                                                <div
-                                                  style={{
-                                                    display: "flex",
-                                                    gap: "5px",
-                                                  }}
-                                                >
-                                                  {generalledger.type ===
-                                                    "Charge" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        console.log(
-                                                          "Entry Object:",
-                                                          entry
-                                                        );
-                                                        deleteCharge(
-                                                          generalledger._id,
-                                                          entry.chargeIndex
-                                                        );
-                                                        console.log(
-                                                          generalledger._id,
-                                                          "dsgdg"
-                                                        );
-                                                        console.log(
-                                                          entry.chargeIndex,
-                                                          "dsgdg"
-                                                        );
-                                                      }}
-                                                    >
-                                                      <DeleteIcon />
-                                                    </div>
-                                                  )}
-                                                  
-                                                  {generalledger.type ===
-                                                    "Charge" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        editcharge(
-                                                          generalledger._id,
-                                                          entry.chargeIndex,
-                                                         
-                                                        );
-                                                        
-                                                      }}
-                                                    >
-                                                      <EditIcon />
-                                                    </div>
-                                                  )}
-
-                                                  {generalledger.type ===
-                                                    "Payment" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        editpayment(
-                                                          generalledger._id,
-                                                          entry.paymentIndex
-                                                        );
-                                                      }}
-                                                    >
-                                                      <EditIcon />
-                                                    </div>
-                                                  )}
-                                                </div>
-                                              </td> */}
-                            </tr>
-                          ))}
-                        </>
-                      ))
-                    ) : (
-                      <p>GeneralLedgerData is not an array</p>
-                    )}
-                  </tbody>
-                </Table>
+                                          </td>
+                                        </tr>
+                                      )
+                                    )}
+                                  </>
+                                ))
+                              ) : (
+                                <p>GeneralLedgerData is not an array</p>
+                              )}
+                            </tbody>
+                          </Table>
+                        </Card>
+                      )}
+                    </div>
+                  </Row>
+                  <br />
+                  <br />
+                </Container>
               </Card>
             )}
           </div>

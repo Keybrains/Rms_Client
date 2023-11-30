@@ -68,7 +68,7 @@ const Vendor = () => {
       setLoader(false);
       setVendorData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
-      // console.log(response.data.data);
+      // //console.log(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -116,7 +116,7 @@ const Vendor = () => {
 
   const editVendor = (id) => {
     navigate(`/admin/addvendor/${id}`);
-    console.log(id);
+    //console.log(id);
   };
 
   const filterTenantsBySearch = () => {
