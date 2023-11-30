@@ -20,7 +20,7 @@ import VendorHeader from "components/Headers/VendorHeader";
 
 const VenorWorkOrder = () => {
   const { id } = useParams();
-  console.log(id);
+  //console.log(id);
   const [workOrderDetails, setWorkOrderDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -49,7 +49,7 @@ const VenorWorkOrder = () => {
         `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`
       );
 
-      console.log("API Response:", response.data.data);
+      //console.log("API Response:", response.data.data);
       setWorkOrderDetails(response.data.data);
       setLoading(false);
     } catch (error) {

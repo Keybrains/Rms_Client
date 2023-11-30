@@ -178,8 +178,8 @@ const AddWorkorder = () => {
     axios
       .get("https://propertymanager.cloudpress.host/api/vendor/vendor_name")
       .then((res) => {
-        console.log(res, "res of all vendors");
-        console.log(res.data.data, "ressssssss");
+        // console.log(res, "res of all vendors");
+        // console.log(res.data.data, "ressssssss");
         const names = res.data.data.map((item) => {
           return item.vendor_name;
         });
@@ -201,7 +201,7 @@ const AddWorkorder = () => {
         .then((response) => {
           const vendorData = response.data.data;
           setWorkOrderData(vendorData); // Use vendorData here
-          console.log(vendorData);
+          // console.log(vendorData);
 
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
@@ -281,7 +281,7 @@ const AddWorkorder = () => {
 
         // Check if the work order was created successfully
         if (workOrderRes.status === 200) {
-          console.log(workOrderRes.data);
+          // console.log(workOrderRes.data);
           // Use the work order data from the response to create the notification
           const notificationRes = await axios.post(
             "https://propertymanager.cloudpress.host/api/notification/notification",
@@ -368,7 +368,7 @@ const AddWorkorder = () => {
 
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "values");
+      // console.log(values, "values");
     },
   });
 
@@ -551,7 +551,7 @@ console.log(WorkFormik.values,'workForjnik')
                                 >
                                   {property.rental_adress}
 
-                                    {console.log(selectedProp, "abcd")}
+                                    {/* {console.log(selectedProp, "abcd")} */}
                                 </DropdownItem>
                               ))}
                             </DropdownMenu>

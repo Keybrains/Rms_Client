@@ -29,9 +29,9 @@ const StaffWorkTable = () => {
   const [loader, setLoader] = useState(true);
   const [staffmember_name, setStaffMember] = useState("");
   const [staffDetails, setStaffDetails] = useState({});
-  console.log("staffname", staffmember_name);
-  console.log(staffDetails);
-  console.log("workData", workData);
+  //console.log("staffname", staffmember_name);
+  //console.log(staffDetails);
+  //console.log("workData", workData);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(6);
@@ -58,7 +58,7 @@ const StaffWorkTable = () => {
         `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
       );
       if (response.data && response.data.data) {
-        console.log(response.data.data);
+        //console.log(response.data.data);
         setStaffDetails(response.data.data);
         setStaffMember(response.data.data.staffmember_name);
         setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -88,7 +88,7 @@ const StaffWorkTable = () => {
         `https://propertymanager.cloudpress.host/api/workorder/workorder/by-staff-member/${staffmember_name}`
       );
       setWorkData(response.data.data);
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       console.error("Error fetching work order data:", error);
     }
@@ -98,16 +98,16 @@ const StaffWorkTable = () => {
     if (staffmember_name) {
       getRentalData();
     }
-    //console.log(staffmember_name)
+    ////console.log(staffmember_name)
   }, [staffmember_name]);
 
   // Log staffmember_name after setting it
-  console.log("staffmember_name:", staffmember_name);
+  //console.log("staffmember_name:", staffmember_name);
 
   const navigateToDetails = (workorder_id) => {
     // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
     navigate(`/staff/staffworkdetails/${workorder_id}`);
-    console.log(workorder_id);
+    //console.log(workorder_id);
   };
 
   // const filterRentalsBySearch = () => {

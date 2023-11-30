@@ -90,12 +90,12 @@ const RentalownerTable = () => {
   const editTenantData = async (id, updatedData) => {
     try {
       const editUrl = `https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`;
-      console.log("Edit URL:", editUrl);
-      console.log("Property ID:", id);
-      console.log("Updated Data:", updatedData); // Log the updated data for debugging
+      //console.log("Edit URL:", editUrl);
+      //console.log("Property ID:", id);
+      //console.log("Updated Data:", updatedData); // Log the updated data for debugging
 
       const response = await axios.put(editUrl, updatedData); // Send the updated data in the request body
-      console.log("Edit Response:", response);
+      //console.log("Edit Response:", response);
 
       if (response.status === 200) {
         swal("", response.data.message, "success");
@@ -119,7 +119,7 @@ const RentalownerTable = () => {
 
   const editRentalOwner = (id) => {
     navigate(`/admin/Rentalowner/${id}`);
-    console.log(id);
+    //console.log(id);
   };
   const deleteTenant = (id) => {
     // Show a confirmation dialog to the user

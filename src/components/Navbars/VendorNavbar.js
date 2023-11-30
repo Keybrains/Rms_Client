@@ -41,10 +41,10 @@ const VendorNavbar = (props) => {
     cookies.remove("Vendor ID");
   };
   const { id } = useParams();
-  console.log(id);
+  // console.log(id);
   const [vendorDetails, setVendorDetails] = useState({});
   const [vendor_name, setVendorname] = useState("");
-  console.log(vendor_name);
+  // console.log(vendor_name);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
@@ -56,14 +56,14 @@ const VendorNavbar = (props) => {
   const navigate = useNavigate();
 
   let cookie_id = cookies.get("Vendor ID");
-  console.log(cookie_id);
+  // console.log(cookie_id);
 
   const getVendorDetails = async () => {
     try {
       const response = await axios.get(
         `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${cookie_id}`
       );
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setVendorDetails(response.data.data);
       setVendorname(response.data.data.vendor_name);
       setLoading(false);
@@ -78,7 +78,7 @@ const VendorNavbar = (props) => {
   const [notificationCount, setNotificationCount] = useState(0);
   const [notificationData, setNotificationData] = useState([]);
 
-  console.log("Vendor Name:", vendor_name);
+  // console.log("Vendor Name:", vendor_name);
 
   const [selectedProp, setSelectedProp] = useState("Select");
 
@@ -103,8 +103,8 @@ const VendorNavbar = (props) => {
           );
           setNotificationData(unreadNotifications);
           setNotificationCount(unreadNotifications.length);
-          console.log("Unread Notifications", unreadNotifications);
-          console.log("vendor", vendor_name);
+          // console.log("Unread Notifications", unreadNotifications);
+          // console.log("vendor", vendor_name);
         } else {
           // Handle error
           console.error("Error:", data.message);
@@ -117,7 +117,7 @@ const VendorNavbar = (props) => {
   };
   useEffect(() => {
     getVendorDetails();
-    console.log(id);
+    // console.log(id);
   }, [id]);
 
   const navigateToDetails = (workorder_id) => {
@@ -137,13 +137,13 @@ const VendorNavbar = (props) => {
             }
           );
           setNotificationData(updatedNotificationData);
-          console.log("updatedNotificationData", updatedNotificationData);
+          // console.log("updatedNotificationData", updatedNotificationData);
           setNotificationCount(updatedNotificationData.length);
           fetchNotification();
 
-          console.log(
-            `Notification with workorder_id ${workorder_id} marked as read.`
-          );
+          // console.log(
+          //   `Notification with workorder_id ${workorder_id} marked as read.`
+          // );
         } else {
           console.error(
             `Failed to mark notification with workorder_id ${workorder_id} as read.`

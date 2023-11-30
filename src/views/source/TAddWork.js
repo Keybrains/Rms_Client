@@ -115,7 +115,7 @@ const TAddWork = () => {
   //       .then((response) => {
   //         const vendorData = response.data.data;
   //         setWorkOrderData(workOrderData);
-  //         console.log(vendorData);
+  //         //console.log(vendorData);
 
   //         const formattedDueDate = vendorData.due_date
   //           ? new Date(vendorData.due_date).toISOString().split("T")[0]
@@ -149,7 +149,7 @@ const TAddWork = () => {
   const { v4: uuidv4 } = require("uuid");
 
   const handleSubmit = async (values) => {
-    console.log(values, "values");
+    //console.log(values, "values");
     try {
       values["rental_adress"] = selectedProp;
       values["work_category"] = selectedCategory;
@@ -170,7 +170,7 @@ const TAddWork = () => {
 
         // Check if the work order was created successfully
         if (workOrderRes.status === 200) {
-          console.log(workOrderRes.data, "fjalkjflsk");
+          //console.log(workOrderRes.data, "fjalkjflsk");
           // Use the work order data from the response to create the notification
           const notificationRes = await axios.post(
             "https://propertymanager.cloudpress.host/api/notification/notification/tenant",
@@ -231,7 +231,7 @@ const TAddWork = () => {
 
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
 

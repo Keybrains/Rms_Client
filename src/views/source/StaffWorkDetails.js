@@ -23,7 +23,7 @@ import Cookies from "universal-cookie";
 
 const StaffWorkDetails = () => {
   const { workorder_id } = useParams();
-  console.log(workorder_id);
+  //console.log(workorder_id);
   const [outstandDetails, setoutstandDetails] = useState({});
   const [showTenantTable, setShowTenantTable] = useState(false);
   const [loading, setLoading] = useState(true);

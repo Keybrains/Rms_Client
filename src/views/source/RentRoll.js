@@ -53,8 +53,8 @@ const RentRoll = () => {
 
   const navigateToRentRollDetails = (tenantId, entryIndex) => {
     navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
-    console.log(tenantId, "Tenant Id");
-    console.log(entryIndex, "Entry Index");
+    //console.log(tenantId, "Tenant Id");
+    //console.log(entryIndex, "Entry Index");
   };
  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -139,7 +139,7 @@ const RentRoll = () => {
         return false; // If entries is undefined, exclude this tenant
       }
       const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
-      console.log(tenant);
+      //console.log(tenant);
       return (
         (tenant.entries.rental_adress && tenant.entries.rental_adress.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (tenant.tenant_firstName && tenant.tenant_firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -184,7 +184,7 @@ const RentRoll = () => {
 
   const editLeasing = (id, entryIndex) => {
     navigate(`/admin/RentRollLeaseing/${id}/${entryIndex}`);
-    console.log(id);
+    //console.log(id);
   };
   return (
     <>
@@ -287,7 +287,7 @@ const RentRoll = () => {
                                     tenant._id,
                                     tenant.entries.entryIndex
                                   );
-                                  // console.log(entry.entryIndex,"dsgdg")
+                                  // //console.log(entry.entryIndex,"dsgdg")
                                 }}
                               >
                                 <DeleteIcon />

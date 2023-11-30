@@ -71,7 +71,7 @@ const VendorWorkTable = () => {
   const navigateToDetails = (workorder_id) => {
     // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
     navigate(`/vendor/vendorworkdetail/${workorder_id}`);
-    console.log(workorder_id);
+    //console.log(workorder_id);
   };
 
   // const filterRentalsBySearch = () => {

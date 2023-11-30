@@ -42,13 +42,14 @@ const TenantsTable = ({ tenantDetails }) => {
 
   const navigateToTenantsDetails = (tenantId, entryIndex) => {
     navigate(`/admin/tenantdetail/${tenantId}/${entryIndex}`);
-    console.log(tenantId, "Tenant Id");
-    console.log(entryIndex, "Entry Index");
+    // console.log(tenantId, "Tenant Id");
+    // console.log(entryIndex, "Entry Index");
   };
 
   let navigate = useNavigate();
   let getTenantsDate = async () => {
     let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
+    //console.log('responce', responce.data.data)
     setLoader(false);
     setTenantsDate(responce.data.data);
     setTotalPages(Math.ceil(responce.data.data.length / pageItem));
@@ -64,7 +65,7 @@ const TenantsTable = ({ tenantDetails }) => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = React.useState(null);
 
   React.useEffect(() => {
@@ -117,9 +118,8 @@ const TenantsTable = ({ tenantDetails }) => {
     if (searchQuery === undefined) {
       return paginatedData;
     }
-    console.log(paginatedData);
+    //console.log(paginatedData);
     return paginatedData.filter((tenant) => {
-
       if (!tenant.entries) {
         return false; // If entries is undefined, exclude this tenant
       }
@@ -127,11 +127,23 @@ const TenantsTable = ({ tenantDetails }) => {
       const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
 
       return (
-        (tenant.entries.rental_adress && tenant.entries.rental_adress.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_firstName && tenant.tenant_firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (tenant.entries.lease_type && tenant.entries.lease_type.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_lastName && tenant.tenant_lastName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (name.toLowerCase().includes(searchQuery.toLowerCase()))
+        (tenant.entries.rental_adress &&
+          tenant.entries.rental_adress
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (tenant.tenant_firstName &&
+          tenant.tenant_firstName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (tenant.entries.lease_type &&
+          tenant.entries.lease_type
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (tenant.tenant_lastName &&
+          tenant.tenant_lastName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     });
   };
@@ -157,7 +169,7 @@ const TenantsTable = ({ tenantDetails }) => {
 
   const editLeasing = (id, entryIndex) => {
     navigate(`/admin/Leaseing/${id}/${entryIndex}`);
-    console.log(id, entryIndex, "fsdfsdfhdiuysdifusdyiuf");
+    //console.log(id, entryIndex, "fsdfsdfhdiuysdifusdyiuf");
   };
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
@@ -175,12 +187,38 @@ const TenantsTable = ({ tenantDetails }) => {
           `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
         );
         tenantData = response.data.data;
-        console.log(tenantData, "tenantData");
+        //console.log(tenantData, "tenantData");
       }
       const doc = new jsPDF();
       doc.text(`Lease Details`, 10, 10);
 
       const headers = ["Title", "Value"];
+
+      const recuringCharges = tenantData.entries.recurring_charges.map(
+        (charge, index) => {
+          return [
+            ["Recurring Charge", index + 1, ":"],
+            ["Recurring Amount", charge.recuring_amount],
+            ["Recurring Account", charge.recuring_account],
+            // ["Recurring NextDue Date", tenantData.entries.recuringnextDue_date],
+            ["Recurring Memo", charge.recuringmemo],
+            // ["Recurring Frequency", tenantData.entries.recuringfrequency],
+          ];
+        }
+      );
+      const onetimeCharges = tenantData.entries.one_time_charges.map(
+        (charge, index) => {
+          return [
+            ["Recurring Charge", index + 1, ":"],
+            ["Recurring Amount", charge.onetime_amount],
+            ["Recurring Account", charge.onetime_account],
+            // ["Recurring NextDue Date", tenantData.entries.recuringnextDue_date],
+            ["Recurring Memo", charge.onetime_memo],
+            // ["Recurring Frequency", tenantData.entries.recuringfrequency],
+          ];
+        }
+      );
+
       const data = [
         [
           "Tenant Name",
@@ -223,18 +261,18 @@ const TenantsTable = ({ tenantDetails }) => {
         ["Cosigner State", tenantData.entries.cosigner_state],
         ["Cosigner Country", tenantData.entries.cosigner_country],
         ["Cosigner PostalCode", tenantData.entries.cosigner_postalcode],
-        ["Recurring Amount", tenantData.entries.recuring_amount],
-        ["Recurring Account", tenantData.entries.recuring_account],
-        ["Recurring NextDue Date", tenantData.entries.recuringnextDue_date],
-        ["Recurring Memo", tenantData.entries.recuringmemo],
-        ["Recurring Frequency", tenantData.entries.recuringfrequency],
-        ["One Time Amont", tenantData.entries.onetime_amount],
-        ["One Time Account", tenantData.entries.onetime_account],
-        [
-          "One Time Due Date",
-          formatDateWithoutTime(tenantData.entries.onetime_Due_date),
-        ],
-        ["One Time Memo", tenantData.entries.onetime_memo],
+        ["Recurring Charges", recuringCharges],
+        // ["Recurring Account", tenantData.entries.recuring_account],
+        // ["Recurring NextDue Date", tenantData.entries.recuringnextDue_date],
+        // ["Recurring Memo", tenantData.entries.recuringmemo],
+        // ["Recurring Frequency", tenantData.entries.recuringfrequency],
+        ["One Time Charges", onetimeCharges],
+        // ["One Time Account", tenantData.entries.onetime_account],
+        // [
+        //   "One Time Due Date",
+        //   formatDateWithoutTime(tenantData.entries.onetime_Due_date),
+        // ],
+        // ["One Time Memo", tenantData.entries.onetime_memo],
         // ["Uploaded Files", tenantData.upload_file[0]],
       ];
 
@@ -261,6 +299,20 @@ const TenantsTable = ({ tenantDetails }) => {
       }
     } catch (error) {
       console.error("Error generating PDF:", error);
+    }
+  };
+
+  const getStatus = (startDate, endDate) => {
+    const today = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    if (today >= start && today <= end) {
+      return 'TENANT';
+    } else if (today < start) {
+      return 'FUTURE TENANT';
+    } else {
+      return '-'; // Change this to suit your requirement for other cases
     }
   };
 
@@ -328,10 +380,10 @@ const TenantsTable = ({ tenantDetails }) => {
                   <thead className="thead-light">
                     <tr>
                       <th scope="col">Tenant name</th>
-                      <th scope="col">Property Type</th>
-                      <th scope="col">Lease Type</th>
-                      <th scope="col">Start Date</th>
-                      <th scope="col">End Date</th>
+                      <th scope="col">Unit Number</th>
+                      <th scope="col">Phone</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Start-End Date</th>
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
@@ -350,11 +402,18 @@ const TenantsTable = ({ tenantDetails }) => {
                         >
                           <td>
                             {tenant.tenant_firstName} {tenant.tenant_lastName}
+                            <br/>
+                             <i>
+                            {getStatus(tenant.entries.start_date, tenant.entries.end_date)}
+                            </i>
+                            
                           </td>
-                          <td>{tenant.entries.rental_adress}  {tenant.entries.rental_units}</td>
-                          <td>{tenant.entries.lease_type}</td>
-                          <td>{tenant.entries.start_date}</td>
-                          <td>{tenant.entries.end_date}</td>
+                          <td>
+                            {tenant.entries.rental_adress}{tenant.entries.rental_units ? " - " + tenant.entries.rental_units : null }
+                          </td> 
+                          <td>{tenant.tenant_mobileNumber}</td>
+                          <td>{tenant.tenant_email}</td>
+                          <td>{tenant.entries.start_date} {tenant.entries.end_date ? " To " + tenant.entries.end_date : null}</td>
                           {/* <td>{tenant.entries.entryIndex}</td>
                           <td>{tenant.entries.rental_adress}</td> */}
                           <td style={{}}>
@@ -472,7 +531,7 @@ const TenantsTable = ({ tenantDetails }) => {
                         >
                           <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
                         </svg>
-                      </Button>{" "}
+                      </Button>
                     </Col>
                   </Row>
                 ) : (

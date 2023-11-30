@@ -122,7 +122,7 @@ const RentRollDetail = () => {
       //console.log(response.data.data, "hiiii");
       const rental = response.data.data.entries.rental_adress;
       setRental(rental);
-      console.log(rental, "hell");
+      // console.log(rental, "hell");
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -133,7 +133,7 @@ const RentRollDetail = () => {
 
   const navigateToSummary = async (tenantId, entryIndex) => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -157,7 +157,7 @@ const RentRollDetail = () => {
   };
 
   const navigateToTenant = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -168,7 +168,7 @@ const RentRollDetail = () => {
       const rentalAddress = tenantData.entries.rental_adress;
       // Set the tenantDetails state and loading state
       setTenantDetails(tenantData);
-      console.log(rentalAddress, "rentalAddress");
+      // console.log(rentalAddress, "rentalAddress");
       setLoading(false);
       // Set the active tab to "Tenant" and navigate to the appropriate path using rentalAddress
       setValue("Tenant");
@@ -182,7 +182,7 @@ const RentRollDetail = () => {
 
   const navigateToFinancial = async () => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}/entry/${entry}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -233,7 +233,7 @@ const RentRollDetail = () => {
     if (tenantId && entryIndex) {
       getTenantData();
       // getTenantData();
-      console.log(rental, "rental");
+      // console.log(rental, "rental");
       setValue("Tenant");
       // tenantsData();
 
@@ -364,11 +364,11 @@ const RentRollDetail = () => {
   };
   const editcharge = (id, chargeIndex) => {
     navigate(`/admin/AddCharge/${id}/charge/${chargeIndex}`);
-    console.log(id);
+    // console.log(id);
   };
   const editpayment = (id, paymentIndex) => {
     navigate(`/admin/AddPayment/${id}/payment/${paymentIndex}`);
-    console.log(id);
+    // console.log(id);
   };
   return (
     <div>
@@ -617,14 +617,14 @@ const RentRollDetail = () => {
                                       {tenantDetails.entries.amount || "N/A"}
                                     </td>
                                   </tr>
-                                  <tr>
+                                  {/* <tr>
                                     <td className="font-weight-bold text-md">
                                       Account:
                                     </td>
                                     <td>
                                       {tenantDetails.entries.account || "N/A"}
                                     </td>
-                                  </tr>
+                                  </tr> */}
                                   <tr>
                                     <td className="font-weight-bold text-md">
                                       Next Due Date:
@@ -690,7 +690,7 @@ const RentRollDetail = () => {
                                         .cosigner_workNumber || "N/A"}
                                     </td>
                                   </tr>
-                                  <tr>
+                                  {/* <tr>
                                     <td className="font-weight-bold text-md">
                                       Home Number:
                                     </td>
@@ -707,7 +707,7 @@ const RentRollDetail = () => {
                                       {tenantDetails.entries
                                         .cosigner_faxPhoneNumber || "N/A"}
                                     </td>
-                                  </tr>
+                                  </tr> */}
                                   <tr>
                                     <td className="font-weight-bold text-md">
                                       Email:
@@ -774,109 +774,78 @@ const RentRollDetail = () => {
                                 </tbody>
 
                                 <tbody>
-                                  <tr>
-                                    <th
-                                      colSpan="2"
-                                      className="text-primary text-lg"
-                                    >
-                                      Recurring Payment Details
-                                    </th>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Amount:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.recuring_amount ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Account:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.recuring_account ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Next Due Date:
-                                    </td>
-                                    <td>
-                                      {formatDateWithoutTime(
-                                        tenantDetails.entries
-                                          .recuringnextDue_date
-                                      ) || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Memo:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.recuringmemo ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Frequency:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries
-                                        .recuringfrequency || "N/A"}
-                                    </td>
-                                  </tr>
+                                  {tenantDetails.entries.recurring_charges.map((data) => (
+                                    <>
+                                      <tr>
+                                        <th colSpan="2" className="text-primary text-lg">
+                                          Recurring Payment Details
+                                        </th>
+                                      </tr>
+                                      <tr>
+                                        <td className="font-weight-bold text-md">Amount:</td>
+                                        <td>
+                                          {data.recuring_amount || "N/A"}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td className="font-weight-bold text-md">Account:</td>
+                                        <td>
+                                          {data.recuring_account || "N/A"}
+                                        </td>
+                                      </tr>
+
+                                      <tr>
+                                        <td className="font-weight-bold text-md">Memo:</td>
+                                        <td>{data.recuringmemo || "N/A"}</td>
+                                      </tr>
+                                    </>
+                                  ))}
+                                  {/* <tr>
+                          <td className="font-weight-bold text-md">
+                            Next Due Date:
+                          </td>
+                          <td>
+                            {tenantDetails.entries.recuringnextDue_date ||
+                              "N/A"}
+                          </td>
+                        </tr> */}
+                                  {/* <tr>
+                          <td className="font-weight-bold text-md">
+                            Frequency:
+                          </td>
+                          <td>
+                            {tenantDetails.entries.recuringfrequency || "N/A"}
+                          </td>
+                        </tr> */}
                                 </tbody>
 
                                 <tbody>
-                                  <tr>
-                                    <th
-                                      colSpan="2"
-                                      className="text-primary text-lg"
-                                    >
-                                      One-time Payment Details
-                                    </th>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Amount:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.onetime_amount ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Account:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.onetime_account ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Due Date:
-                                    </td>
-                                    <td>
-                                      {formatDateWithoutTime(
-                                        tenantDetails.entries.onetime_Due_date
-                                      ) || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Memo:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.onetime_memo ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
+                                  {tenantDetails.entries.one_time_charges.map((data) => (
+                                    <>
+                                      <tr>
+                                        <th colSpan="2" className="text-primary text-lg">
+                                          One Time Payment Details
+                                        </th>
+                                      </tr>
+                                      <tr>
+                                        <td className="font-weight-bold text-md">Amount:</td>
+                                        <td>
+                                          {data.onetime_amount || "N/A"}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td className="font-weight-bold text-md">Account:</td>
+                                        <td>
+                                          {data.onetime_account || "N/A"}
+                                        </td>
+                                      </tr>
+
+                                      <tr>
+                                        <td className="font-weight-bold text-md">Memo:</td>
+                                        <td>{data.onetime_memo || "N/A"}</td>
+                                      </tr>
+                                    </>
+                                  ))}
                                 </tbody>
                               </>
                             ) : (
@@ -1106,6 +1075,7 @@ const RentRollDetail = () => {
                                     <th scope="col">Action</th>
                                   </tr>
                                 </thead>
+                                {/* {console.log(GeneralLedgerData)} */}
                                 <tbody>
                                   {Array.isArray(GeneralLedgerData) ? (
                                     GeneralLedgerData.map((generalledger) => (
@@ -1141,7 +1111,7 @@ const RentRollDetail = () => {
                                               </td>
                                               <td>
                                                 {generalledger.type ===
-                                                "Payment"
+                                                  "Payment"
                                                   ? "$" + entry.amount
                                                   : "-"}
                                               </td>
@@ -1150,8 +1120,8 @@ const RentRollDetail = () => {
                                                   ? entry.balance >= 0
                                                     ? `$${entry.balance}`
                                                     : `$(${Math.abs(
-                                                        entry.balance
-                                                      )})`
+                                                      entry.balance
+                                                    )})`
                                                   : "0"}
                                                 {/* {calculateBalance(
                                                   generalledger.type,
@@ -1168,69 +1138,69 @@ const RentRollDetail = () => {
                                                 >
                                                   {generalledger.type ===
                                                     "Charge" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        console.log(
-                                                          "Entry Object:",
-                                                          entry
-                                                        );
-                                                        deleteCharge(
-                                                          generalledger._id,
-                                                          entry.chargeIndex
-                                                        );
-                                                        console.log(
-                                                          generalledger._id,
-                                                          "dsgdg"
-                                                        );
-                                                        console.log(
-                                                          entry.chargeIndex,
-                                                          "dsgdg"
-                                                        );
-                                                      }}
-                                                    >
-                                                      <DeleteIcon />
-                                                    </div>
-                                                  )}
+                                                      <div
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          // console.log(
+                                                          //   "Entry Object:",
+                                                          //   entry
+                                                          // );
+                                                          deleteCharge(
+                                                            generalledger._id,
+                                                            entry.chargeIndex
+                                                          );
+                                                          // console.log(
+                                                          //   generalledger._id,
+                                                          //   "dsgdg"
+                                                          // );
+                                                          // console.log(
+                                                          //   entry.chargeIndex,
+                                                          //   "dsgdg"
+                                                          // );
+                                                        }}
+                                                      >
+                                                        <DeleteIcon />
+                                                      </div>
+                                                    )}
 
                                                   {generalledger.type ===
                                                     "Charge" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        editcharge(
-                                                          generalledger._id,
-                                                          entry.chargeIndex
-                                                        );
-                                                      }}
-                                                    >
-                                                      <EditIcon />
-                                                    </div>
-                                                  )}
+                                                      <div
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          editcharge(
+                                                            generalledger._id,
+                                                            entry.chargeIndex
+                                                          );
+                                                        }}
+                                                      >
+                                                        <EditIcon />
+                                                      </div>
+                                                    )}
 
                                                   {generalledger.type ===
                                                     "Payment" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        editpayment(
-                                                          generalledger._id,
-                                                          entry.paymentIndex
-                                                        );
-                                                      }}
-                                                    >
-                                                      <EditIcon />
-                                                    </div>
-                                                  )}
+                                                      <div
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          editpayment(
+                                                            generalledger._id,
+                                                            entry.paymentIndex
+                                                          );
+                                                        }}
+                                                      >
+                                                        <EditIcon />
+                                                      </div>
+                                                    )}
                                                 </div>
                                               </td>
                                             </tr>
@@ -1300,7 +1270,7 @@ const RentRollDetail = () => {
                                         >
                                           {tenant.tenant_firstName || "N/A"}{" "}
                                           {tenant.tenant_lastName || "N/A"}
-                                          <br></br>{entry.rental_adress }-{entry.rental_units}  
+                                          <br></br>{entry.rental_adress}-{entry.rental_units}
                                         </div>
 
                                         <div>

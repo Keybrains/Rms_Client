@@ -138,12 +138,12 @@ const PropertyType = () => {
   const editPropertyData = async (id, updatedData) => {
     try {
       const editUrl = `https://propertymanager.cloudpress.host/api/newproparty/proparty-type/${id}`;
-      console.log("Edit URL:", editUrl);
-      console.log("Property ID:", id);
-      console.log("Updated Data:", updatedData); // Log the updated data for debugging
+      //console.log("Edit URL:", editUrl);
+      //console.log("Property ID:", id);
+      //console.log("Updated Data:", updatedData); // Log the updated data for debugging
 
       const response = await axios.put(editUrl, updatedData); // Send the updated data in the request body
-      console.log("Edit Response:", response);
+      //console.log("Edit Response:", response);
 
       if (response.status === 200) {
         swal("", response.data.message, "success");
@@ -156,7 +156,7 @@ const PropertyType = () => {
     } catch (error) {
       console.error("Error editing property:", error);
     }
-    // console.log("object")
+    // //console.log("object")
   };
 
   // Delete selected
@@ -179,7 +179,7 @@ const PropertyType = () => {
           )
 
           .then((response) => {
-            console.log(response.data);
+            //console.log(response.data);
             if (response.data.statusCode === 200) {
               swal(
                 "Success!",
@@ -234,7 +234,7 @@ const PropertyType = () => {
 
   const editPropertyType = (id) => {
     navigate(`/admin/AddPropertyType/${id}`);
-    console.log(id);
+    //console.log(id);
   };
 
   const filterPropertyBySearch = () => {

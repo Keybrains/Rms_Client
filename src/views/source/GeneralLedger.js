@@ -31,7 +31,7 @@ const GeneralLedger = () => {
   const navigate = useNavigate();
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
   const [propertyData, setPropertyData] = React.useState([]);
-  console.log(propertyData);
+  //console.log(propertyData);
   const [selectedAccount, setselectedAccount] = React.useState("Select");
   const [accountData, setAccountData] = React.useState([]);
   const [bankdropdownOpen, setbankDropdownOpen] = React.useState(false);
@@ -79,7 +79,7 @@ const GeneralLedger = () => {
       .then((data) => {
         if (data.statusCode === 200) {
           setAccountData(data.data);
-          console.log(data.data);
+          //console.log(data.data);
         } else {
           // Handle error
           console.error("Error:", data.message);
@@ -106,7 +106,7 @@ const GeneralLedger = () => {
       const response = await axios.get("https://propertymanager.cloudpress.host/api/ledger/ledger");
       setLoader(false);
       setGeneralLedgerData(response.data.data);
-      console.log(response.data.data);
+      //console.log(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

@@ -46,7 +46,7 @@ const Workorder = () => {
       setWorkData(response.data.data);
       setLoader(false);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
-      // console.log(response.data);
+      // //console.log(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -112,7 +112,7 @@ const Workorder = () => {
   };
   const editWorkOrder = (id) => {
     navigate(`/admin/addworkorder/${id}`);
-    console.log(id);
+    //console.log(id);
   };
 
   // const filterRentalsBySearch = () => {
@@ -160,7 +160,7 @@ const Workorder = () => {
   const navigateToDetails = (workorder_id) => {
     // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
     navigate(`/admin/workorderdetail/${workorder_id}`);
-    console.log(workorder_id);
+    //console.log(workorder_id);
   };
 
   return (

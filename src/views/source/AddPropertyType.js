@@ -33,13 +33,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
 import Cookies from 'universal-cookie';
 import { jwtDecode } from "jwt-decode";
+import Checkbox from "@mui/material/Checkbox";
 
 const AddPropertyType = () => {
   const { id } = useParams();
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
+  const [isMultiUnit, setIsMultiUnit] = React.useState(false);
 
   const [selectedProperty, setSelectedProperty] = React.useState("");
-  // console.log(selectedProperty, "selectedProperty")
+  // //console.log(selectedProperty, "selectedProperty")
 
   const toggle = () => setproDropdownOpen((prevState) => !prevState);
 
@@ -59,6 +61,10 @@ const AddPropertyType = () => {
     navigate("../PropertyType");
   };
 
+  const handleChangecheck = (e) => {
+    setIsMultiUnit(e.target.checked);
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -69,13 +75,13 @@ const AddPropertyType = () => {
 
   // const handlePropertySelection = (values) => {
   //   setSelectedProperty(values);
-  //   console.log(`Selected Property: ${values}`);
+  //   //console.log(`Selected Property: ${values}`);
   // };
 
   const handlePropertySelection = (value) => {
     setSelectedProperty(value);
     localStorage.setItem("property", value);
-    console.log(`Selected Property: ${value}`);
+    //console.log(`Selected Property: ${value}`);
   };
 
   // let [editData, setEditData] = React.useState({});
@@ -90,7 +96,7 @@ const AddPropertyType = () => {
 
   //let navigate = useNavigate();
   // const handleSubmit = async (values) => {
-  //   console.log(values, "values");
+  //   //console.log(values, "values");
   //   try {
   //     values["property_type"] = selectedProperty;
   //     const res = await axios.post(
@@ -101,13 +107,13 @@ const AddPropertyType = () => {
   //     if (res.data.statusCode === 200) {
   //       navigate("/admin/PropertyType");
   //       swal("Success!", "Property Type added successfully!", "success");
-  //       console.log(`Selected Property: ${values.property_type}`);
+  //       //console.log(`Selected Property: ${values.property_type}`);
 
   //     } else {
   //       alert(res.data.message);
   //     }
   //   } catch (error) {
-  //     console.log("Error", error);
+  //     //console.log("Error", error);
   //   }
   // };
 
@@ -121,7 +127,7 @@ const AddPropertyType = () => {
     }),
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
   
@@ -149,7 +155,7 @@ const AddPropertyType = () => {
         .then((response) => {
           const propertyData = response.data.data;
           setpropertyType(propertyType);
-          console.log(propertyData);
+          //console.log(propertyData);
 
           setSelectedProperty(propertyData.property_type || "Select");
 
@@ -167,6 +173,8 @@ const AddPropertyType = () => {
 
   async function handleSubmit(values) {
     try {
+       // Include isMultiUnit in the values to be sent to the server
+       values.ismultiunit = isMultiUnit;
       // values["property_type"] = selectedProperty;
       if (id === undefined) {
         const res = await axios.post(
@@ -304,12 +312,15 @@ const AddPropertyType = () => {
                             value={propertyFormik.values.propertysub_type}
                             required
                           />
-                          {/* {propertyFormik.touched.propertysub_type &&
-                          propertyFormik.errors.propertysub_type ? (
-                            <div style={{ color: "red" }}>
-                              {propertyFormik.errors.propertysub_type}
-                            </div>
-                          ) : null} */}
+                          <br></br>
+                           <Checkbox
+                                      onChange={handleChangecheck}
+                                      checked={isMultiUnit}
+                                      style={{ marginRight: "10px" }}
+                                    />
+                                    <label className="form-control-label">
+                                      Multi unit 
+                                    </label>
                         </FormGroup>
                       </Col>                                           
                     </Row>

@@ -102,7 +102,7 @@ const AddCharge = () => {
     }),
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
 
@@ -149,10 +149,10 @@ const AddCharge = () => {
   }, [rentAddress]);
 
   const handleAccountSelection = (value, index) => {
-    console.log("Selected index:", index);
+    //console.log("Selected index:", index);
 
     const updatedEntries = [...generalledgerFormik.values.entries];
-    console.log("Current entries:", updatedEntries);
+    //console.log("Current entries:", updatedEntries);
 
     if (updatedEntries[index]) {
       updatedEntries[index].charges_account = value;
@@ -271,7 +271,7 @@ const AddCharge = () => {
           charges_total_amount: charges_total_amount,
         })),
       };
-      console.log(updatedValues, "updatedValues");
+      //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
         "https://propertymanager.cloudpress.host/api/payment/add_charges", //https://propertymanager.cloudpress.host
         updatedValues
@@ -315,9 +315,9 @@ const AddCharge = () => {
           charges_total_amount: charges_total_amount,
         })),
       };
-      console.log(tenantId, "vaibhav");
+      //console.log(tenantId, "vaibhav");
 
-      console.log(updatedValues, "updatedValues");
+      //console.log(updatedValues, "updatedValues");
 
       const putUrl = `https://propertymanager.cloudpress.host/api/payment/charges/${mainId}/charge/${chargeIndex}`;
       const response = await axios.put(putUrl, updatedValues);
@@ -327,11 +327,11 @@ const AddCharge = () => {
         navigate(`/admin/rentrolldetail/${id}/${index}`);
         // navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
         // if (tenantId && entryIndex) {
-        //   console.log(tenantId,'mm')
-        //   console.log(entryIndex,'nn')
+        //   //console.log(tenantId,'mm')
+        //   //console.log(entryIndex,'nn')
         //   navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
         // }
-        // console.log(`/admin/rentrolldetail/${tenantId}/${entryIndex}`,"fdsfsdfsf")
+        // //console.log(`/admin/rentrolldetail/${tenantId}/${entryIndex}`,"fdsfsdfsf")
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -372,12 +372,12 @@ const AddCharge = () => {
       .then((res) => {
         //setImgLoader(false);
         const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        console.log(imagePath, "imagePath");
+        //console.log(imagePath, "imagePath");
         // setFile(imagePath);
       })
       .catch((err) => {
         //setImgLoader(false);
-        console.log("Error uploading image:", err);
+        //console.log("Error uploading image:", err);
       });
   };
 
@@ -388,12 +388,12 @@ const AddCharge = () => {
   };
 
   const handleOpenFile = (item) => {
-    // console.log(file,"fike")
+    // //console.log(file,"fike")
     // const fileToOpen = file.filter((file) => {
     //   return file.name === item.name
     // })
-    // console.log(fileToOpen, "fileToOpen");
-    console.log(item, "item");
+    // //console.log(fileToOpen, "fileToOpen");
+    //console.log(item, "item");
     const url = URL.createObjectURL(item);
     window.open(url, "_blank");
   };
@@ -401,7 +401,7 @@ const AddCharge = () => {
   const [chargeData, setchargeData] = useState(null);
 
   useEffect(() => {
-    console.log(mainId, chargeIndex, "mainid && charge Id");
+    //console.log(mainId, chargeIndex, "mainid && charge Id");
     if (mainId && chargeIndex) {
       axios
         .get(
@@ -410,19 +410,19 @@ const AddCharge = () => {
         .then((response) => {
           const chargeData = response.data.data;
           setchargeData(chargeData);
-          console.log(chargeData, "chargedata");
-          console.log(chargeData.entries, "entries data");
+          //console.log(chargeData, "chargedata");
+          //console.log(chargeData.entries, "entries data");
           const formattedDate =
             chargeData && chargeData.charges_date
               ? new Date(chargeData.charges_date).toISOString().split("T")[0]
               : "";
-          console.log(formattedDate, "formattedDate");
+          //console.log(formattedDate, "formattedDate");
           const id = chargeData.tenant_id;
           setId(id);
-          console.log(id, "abcd");
+          //console.log(id, "abcd");
           const index = chargeData.entryIndex;
           setIndex(index);
-          console.log(index, "xyz");
+          //console.log(index, "xyz");
           setSelectedRec(chargeData.tenant_firstName || "Select");
 
           const entriesData = chargeData.entries || [];
@@ -920,7 +920,7 @@ const AddCharge = () => {
                           onClick={(e) => {
                             e.preventDefault();
                             generalledgerFormik.handleSubmit();
-                            console.log(generalledgerFormik.values);
+                            //console.log(generalledgerFormik.values);
                           }}
                         >
                           {mainId ? "Edit Charge" : "New Charge"}
@@ -950,7 +950,7 @@ const AddCharge = () => {
                             onClick={(e) => {
                               e.preventDefault();
                               generalledgerFormik.handleSubmit();
-                              console.log(generalledgerFormik.values);
+                              //console.log(generalledgerFormik.values);
                             }}
                           >
                             Add Charge

@@ -23,7 +23,7 @@ import { jwtDecode } from "jwt-decode";
 
 const WorkOrderDetails = () => {
   const { workorder_id } = useParams();
-  console.log("ID:", workorder_id);
+  //console.log("ID:", workorder_id);
   const [outstandDetails, setoutstandDetails] = useState({});
   const [showTenantTable, setShowTenantTable] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -51,7 +51,7 @@ const WorkOrderDetails = () => {
       );
       setoutstandDetails(response.data.data);
       setLoading(false);
-      console.log("Data", response.data.data);
+      //console.log("Data", response.data.data);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
