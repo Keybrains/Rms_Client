@@ -141,9 +141,9 @@ const Sidebar = (props) => {
           return notification;
         });
         setNotificationData(updatedNotificationData);
-        console.log("updatedNotificationData", updatedNotificationData)
+        //console.log("updatedNotificationData", updatedNotificationData)
         setNotificationCount(updatedNotificationData.length);
-        console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
+        //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
         fetchNotification();
       } else {
       console.error(`Failed to delete notification with workorder_id ${workorder_id}.`);

@@ -128,7 +128,10 @@ const RentRollLeaseing = () => {
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState("");
   const [unitData, setUnitData] = useState([]);
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
   const toggle = () => setagentDropdownOpen((prevState) => !prevState);
   const toggle1 = () =>
     setSelectAccountLevelDropDown((prevState) => !prevState);
@@ -555,9 +558,12 @@ const RentRollLeaseing = () => {
     setselectedAccountLevel(value);
   };
 
+  const [isDateUnavailable, setIsDateUnavailable] = useState(false);
   const handleDateChange = (date) => {
     const nextDate = moment(date).add(1, "months").format("YYYY-MM-DD");
     entrySchema.values.end_date = nextDate;
+    setIsDateUnavailable(false);
+    checkDate(date); 
   };
 
   const [file, setFile] = useState("");
@@ -1202,6 +1208,46 @@ const RentRollLeaseing = () => {
   //     // console.log(values, "values");
   //   },
   // });
+
+  const [overlapLease, setOverlapLease] = useState(null);
+
+
+  const checkDate = async (dates) => {
+    if (selectedPropertyType && selectedUnit) {
+      let response = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
+      const data = response.data.data;
+  
+      let isUnavailable = false;
+      let overlappingLease = null;
+  
+      data.forEach((entry) => {
+        if (
+          selectedPropertyType === entry.entries.rental_adress &&
+          selectedUnit === entry.entries.rental_units
+        ) {
+          const sDate = new Date(entry.entries.start_date);
+          const eDate = new Date(entry.entries.end_date);
+          const inputDate = new Date(dates);
+  
+          if (sDate.getTime() < inputDate.getTime() && inputDate.getTime() < eDate.getTime()) {
+            isUnavailable = true;
+            overlappingLease = entry.entries;
+          }
+        }
+      });
+  
+      setIsDateUnavailable(isUnavailable);
+      setOverlapLease(overlappingLease);
+    }
+  };
+  
+  
+
+  useEffect(() => {
+    console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
+  }, [isDateUnavailable]);
+  
+
 
   let recurringChargeSchema = useFormik({
     initialValues: {
@@ -2375,7 +2421,37 @@ const RentRollLeaseing = () => {
                         </FormGroup>
                       </Col>
                       &nbsp; &nbsp; &nbsp;
+
                       <Col lg="3">
+  <FormGroup>
+    <label className="form-control-label" htmlFor="input-unitadd2">
+      End Date *
+    </label>
+    <Input
+      className="form-control-alternative"
+      id="input-unitadd2"
+      placeholder="3000"
+      type="date"
+      name="end_date"
+      onBlur={entrySchema.handleBlur}
+      onChange={(e) => {
+        entrySchema.handleChange(e);
+        checkDate(e.target.value);
+        console.log("isDateUnavailable:", isDateUnavailable);
+      }}
+      value={moment(entrySchema.values.end_date).format("YYYY-MM-DD")}
+      min={moment(entrySchema.values.start_date).format("YYYY-MM-DD")}
+    />
+    
+    {isDateUnavailable && (
+      <div style={{ color: "red", marginTop: "8px" }}>
+       This date range overlaps with an existing lease: {overlapLease?.rental_adress} | - {moment(overlapLease?.start_date).format("DD-MM-YYYY")} {moment(overlapLease?.end_date).format("DD-MM-YYYY")}. Please adjust your date range and try again.
+      </div>
+    )}
+  </FormGroup>
+</Col>
+
+                      {/* <Col lg="3">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -2401,38 +2477,10 @@ const RentRollLeaseing = () => {
                             )}
                           />
                         </FormGroup>
-                      </Col>
+                      </Col> */}
                     </Row>
 
-                    {/* <Row>
-                      <Col lg="6">
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Leasing Agent
-                        </label>
-                        <FormGroup>
-                          <Dropdown isOpen={agentdropdownOpen} toggle={toggle}>
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectedAgent ? selectedAgent : "Select Agent"}{" "}
-                              &nbsp;&nbsp;&nbsp;&nbsp;
-                            </DropdownToggle>
-                            <DropdownMenu style={{ width: "100%" }}>
-                              <DropdownItem value="">Select</DropdownItem>
-                              {agentData.map((agent) => (
-                                <DropdownItem
-                                  key={agent._id}
-                                  onClick={() => handleAgentSelect(agent)}
-                                >
-                                  {agent.agent_name}
-                                </DropdownItem>
-                              ))}
-                            </DropdownMenu>
-                          </Dropdown>
-                        </FormGroup>
-                      </Col>
-                    </Row> */}
+
                   </div>
 
                   <hr className="my-4" />

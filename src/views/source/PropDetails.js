@@ -52,7 +52,7 @@ const style = {
 };
 const PropDetails = () => {
   const { id, entryIndex } = useParams();
-  console.log(id);
+  // console.log(id); 
   const [propertyDetails, setpropertyDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -70,7 +70,7 @@ const PropDetails = () => {
         `https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`
       );
       setpropertyDetails(response.data.data);
-      console.log(response.data.data, "response frirn simmary");
+      // console.log(response.data.data, "response frirn simmary");
       const rentalId = response.data.data._id;
       getUnitProperty(rentalId);
       const matchedProperty = response.data.data.entries.find(
@@ -78,7 +78,7 @@ const PropDetails = () => {
       );
       setMatchedProperty(matchedProperty);
       setRentAdd(matchedProperty.rental_adress);
-      console.log(matchedProperty, `matched property`);
+      // console.log(matchedProperty, `matched property`);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -89,7 +89,7 @@ const PropDetails = () => {
 
   React.useEffect(() => {
     getRentalsData();
-    console.log(id);
+    // console.log(id);
   }, [id, clickedObject]);
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -161,7 +161,7 @@ const PropDetails = () => {
   const [value, setValue] = React.useState("summary");
   const [addUnitDialogOpen, setAddUnitDialogOpen] = useState(false);
   const [clickedObject, setClickedObject] = useState({});
-  console.log(matchedProperty, "matchedProperty");
+  // console.log(matchedProperty, "matchedProperty");
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -195,7 +195,7 @@ const PropDetails = () => {
     },
 
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
     },
   });
   const [financialType, setFinancialType] = React.useState("");
@@ -222,7 +222,7 @@ const PropDetails = () => {
     // Print the names of the last three months
 
     const todayDate = moment().format("YYYY-MM-DD");
-    console.log(todayDate, "todayDate");
+    // console.log(todayDate, "todayDate");
     const monthNumber = todayDate.substring(5, 7);
     const month = new Date(0, monthNumber - 1).toLocaleString("en-US", {
       month: "long",
@@ -286,7 +286,7 @@ const PropDetails = () => {
         console.log(err);
       });
 
-    console.log(clickedObject, "clickedObject after update");
+    // console.log(clickedObject, "clickedObject after update");
   };
 
   const handleListingEdit = async (id, rentalId) => {
@@ -311,7 +311,7 @@ const PropDetails = () => {
         console.log(err);
       });
 
-    console.log(clickedObject, "clickedObject after update");
+    // console.log(clickedObject, "clickedObject after update");
   };
 
   const handleDeleteUnit = (id) => {
@@ -326,7 +326,7 @@ const PropDetails = () => {
         axios
           .delete("https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" + id)
           .then((response) => {
-            console.log(response.data.data, "deleted data");
+            // console.log(response.data.data, "deleted data");
             getRentalsData();
             setPropSummary(false);
           })
@@ -357,7 +357,7 @@ const PropDetails = () => {
       rentalcom_units: addUnitFormik.values.rentalcom_units,
       // property_image: addUnitFormik.values.property_image,
     };
-    console.log("formData", formData);
+    // console.log("formData", formData);
     try {
       const response = await axios.post(
         "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit",
@@ -729,7 +729,7 @@ const PropDetails = () => {
                               </tr>
                             </tbody>
 
-                            <tbody>
+                            {/* <tbody>
                               <tr>
                                 <th
                                   colSpan="2"
@@ -780,7 +780,7 @@ const PropDetails = () => {
                                     "N/A"}
                                 </td>
                               </tr>
-                            </tbody>
+                            </tbody> */}
                           </>
                         ) : (
                           <tbody>
@@ -1211,7 +1211,7 @@ const PropDetails = () => {
                                   City *
                                 </label>
                                 <Input
-                                required
+                                  required
                                   className="form-control-alternative"
                                   id="city"
                                   placeholder="City"
@@ -1232,7 +1232,7 @@ const PropDetails = () => {
                                   State *
                                 </label>
                                 <Input
-                                required
+                                  required
                                   className="form-control-alternative"
                                   id="state"
                                   placeholder="State"
@@ -1253,7 +1253,7 @@ const PropDetails = () => {
                                   Zip *
                                 </label>
                                 <Input
-                                required
+                                  required
                                   className="form-control-alternative"
                                   id="zip"
                                   placeholder="Zip"
@@ -1276,7 +1276,7 @@ const PropDetails = () => {
                                   Country *
                                 </label>
                                 <Input
-                                requi
+                                  requi
                                   className="form-control-alternative"
                                   id="country"
                                   placeholder="Country"
@@ -1484,9 +1484,13 @@ const PropDetails = () => {
                                 }}
                                 style={{ cursor: "pointer" }}
                               >
-                                <td>{unit.rental_units}</td>
-                                <td>{unit.rental_adress}</td>
-                                <td>{"-"}</td>
+                                <td>{unit.rental_units || "N/A"}</td>
+                                <td>{unit.rental_adress || "N/A"}</td>
+                                <td>
+                                  {unit.tenant_firstName +
+                                    " " +
+                                    unit.tenant_lastName}
+                                </td>
                                 <td>{"N/A"}</td>
                               </tr>
                             ))}
@@ -1550,10 +1554,10 @@ const PropDetails = () => {
                                       setEditUnitDialogOpen(
                                         !editUnitDialogOpen
                                       );
-                                      console.log(
-                                        clickedObject,
-                                        "clicked object 1438"
-                                      );
+                                      // console.log(
+                                      //   clickedObject,
+                                      //   "clicked object 1438"
+                                      // );
                                       addUnitFormik.setValues({
                                         unit_number: clickedObject.rental_units,
                                         address: clickedObject.rental_adress,
@@ -1681,8 +1685,9 @@ const PropDetails = () => {
                                       Property Type
                                     </td>
                                     <td>
-                                      {clickedObject.property_type || "N/A"}
+                                      {clickedObject.rental_adress || "N/A"}
                                     </td>
+                                    {/* {console.log(clickedObject, "yash")} */}
                                   </tr>
                                 </>
                               ) : (
@@ -1717,7 +1722,6 @@ const PropDetails = () => {
                                               <h5>Unit Number</h5>
                                             </div>
                                             <TextField
-                                              
                                               type="text"
                                               size="small"
                                               id="unit_number"
@@ -2044,6 +2048,7 @@ const PropDetails = () => {
                                   </td>
                                   <td>{clickedObject.market_rent || "N/A"}</td>
                                 </tr>
+                                {/* {console.log(clickedObject, "yash")} */}
                                 <tr>
                                   <td className="font-weight-bold text-md">
                                     Description

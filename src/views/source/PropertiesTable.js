@@ -24,6 +24,8 @@ import {
 } from "reactstrap";
 import Header from "components/Headers/Header";
 import Cookies from "universal-cookie";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const PropertiesTables = () => {
   const navigate = useNavigate();
@@ -35,14 +37,18 @@ const PropertiesTables = () => {
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  // const [onClickUpArrow, setOnClickUpArrow] = useState(false);
+  const [upArrow, setUpArrow] = useState([]);
+  const [sortBy, setSortBy] = useState([]);
+  // const [onClickDownArrow, setOnClickDownArrow] = useState(false);
 
   const navigateToPropDetails = (rentalId, entryIndex) => {
     const propDetailsURL = `/admin/PropDetails/${rentalId}/${entryIndex}`;
 
     // window.location.href = propDetailsURL;
-    navigate(propDetailsURL)
+    navigate(propDetailsURL);
   };
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -59,7 +65,7 @@ const PropertiesTables = () => {
       const response = await axios.get(
         "https://propertymanager.cloudpress.host/api/rentals/rental"
       );
-      console.log(response.data.data);
+      //console.log(response.data.data);
 
       setRentalsData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -127,9 +133,9 @@ const PropertiesTables = () => {
   };
 
   const editProperty = (id, propertyIndex) => {
-    console.log(propertyIndex,'ropeorjjhbuijo')
+    //console.log(propertyIndex, "ropeorjjhbuijo");
     navigate(`/admin/rentals/${id}/${propertyIndex}`);
-    console.log(id);
+    //console.log(id);
   };
 
   // const filterRentalsBySearch = () => {
@@ -155,97 +161,144 @@ const PropertiesTables = () => {
   // };
 
   const filterRentalsBySearch = () => {
+    //console.log(upArrow, "upArrow");
     if (!searchQuery) {
-      console.log(rentalsData, "rental from table of properties");
-      return paginatedData;
+      //console.log(rentalsData, "rental from table of properties");
+      if (upArrow.length === 0) {
+        // getRentalsData();
+        return paginatedData;
+      } else {
+        // debugger
+        upArrow.map((sort) => {
+          // return (paginatedData = sort(rentalsData));
+          //console.log(sort, "sort");
+
+          const sorted = rentalsData.sort((a, b) => {
+            if (sort === "rental_adress") {
+              if (a.entries.rental_adress.toLowerCase() < b.entries.rental_adress.toLowerCase()) {
+                return -1;
+              }
+              if (a.entries.rental_adress.toLowerCase().toLowerCase() > b.entries.rental_adress.toLowerCase()) {
+                return 1;
+              }
+              return 0;
+            } else if (sort === "property_type") {
+              if (a.entries.property_type.toLowerCase() < b.entries.property_type.toLowerCase()) {
+                return -1;
+              }
+              if (a.entries.property_type.toLowerCase() > b.entries.property_type.toLowerCase()) {
+                return 1;
+              }
+              return 0;
+            } else if (sort === "rental_city") {
+              if (a.entries.rental_city.toLowerCase() < b.entries.rental_city.toLowerCase()) {
+                return -1;
+              }
+              if (a.entries.rental_city.toLowerCase() > b.entries.rental_city.toLowerCase()) {
+                return 1;
+              }
+              return 0;
+            } else if (sort === "rentalOwner_firstName") {
+              if (a.rentalOwner_firstName.toLowerCase() < b.rentalOwner_firstName.toLowerCase()) {
+                return -1;
+              }
+              if (a.rentalOwner_firstName.toLowerCase() > b.rentalOwner_firstName.toLowerCase()) {
+                return 1;
+              }
+              return 0;
+            } else if (sort === "rentalOwner_companyName") {
+              if (a.rentalOwner_companyName.toLowerCase() < b.rentalOwner_companyName.toLowerCase()) {
+                return -1;
+              }
+              if (a.rentalOwner_companyName.toLowerCase() > b.rentalOwner_companyName.toLowerCase()) {
+                return 1;
+              }
+              return 0;
+            } else if (sort === "rentalOwner_primaryEmail") {
+              if (a.rentalOwner_primaryEmail.toLowerCase() < b.rentalOwner_primaryEmail.toLowerCase()) {
+                return -1;
+              }
+              if (a.rentalOwner_primaryEmail.toLowerCase() > b.rentalOwner_primaryEmail.toLowerCase()) {
+                return 1;
+              }
+              return 0;
+            } else if (sort === "rentalOwner_phoneNumber") {
+              if (a.rentalOwner_phoneNumber < b.rentalOwner_phoneNumber) {
+                return -1;
+              }
+              if (a.rentalOwner_phoneNumber > b.rentalOwner_phoneNumber) {
+                return 1;
+              }
+              return 0;
+            }
+          });
+          //console.log(sorted, "sorted");
+          // getRentalsData();
+          return sorted;
+        });
+      }
+    } else {
+      return paginatedData.filter((tenant) => {
+        const name =
+          tenant.rentalOwner_firstName + " " + tenant.rentalOwner_lastName;
+        const add =
+          tenant.entries.rental_city + " " + tenant.entries.rental_country;
+        //console.log(tenant);
+        return (
+          tenant.entries.rental_adress
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          tenant.entries.property_type
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          tenant.entries.rental_city
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          tenant.entries.rental_country
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          tenant.rentalOwner_firstName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          tenant.rentalOwner_lastName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          tenant.rentalOwner_companyName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          tenant.rentalOwner_primaryEmail
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          add.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      });
     }
 
-    // const lowerCaseQuery = searchQuery.toLowerCase();
-
-    // return paginatedData.filter((rental) => {
-    //   const matchesRentalAddress = rental.entries.some(
-    //     (entry) =>
-    //       entry.rental_adress &&
-    //       entry.rental_adress.toLowerCase().includes(lowerCaseQuery)
-    //   );
-
-    //   const matchesPropertyType = rental.entries.some(
-    //     (entry) =>
-    //       entry.property_type &&
-    //       entry.property_type.toLowerCase().includes(lowerCaseQuery)
-    //   );
-
-    //   const ownerFullName = `${rental.rentalOwner_firstName || ""} ${rental.rentalOwner_lastName || ""
-    //     }`.toLowerCase();
-
-    //   const matchesOwnerInfo =
-    //     ownerFullName.includes(lowerCaseQuery) ||
-    //     (rental.rentalOwner_companyName &&
-    //       rental.rentalOwner_companyName
-    //         .toLowerCase()
-    //         .includes(lowerCaseQuery)) ||
-    //     (rental.rentalOwner_primaryEmail &&
-    //       rental.rentalOwner_primaryEmail
-    //         .toLowerCase()
-    //         .includes(lowerCaseQuery));
-
-    //   const matchesCity = rental.entries.some(
-    //     (entry) =>
-    //       entry.rental_city &&
-    //       entry.rental_city.toLowerCase().includes(lowerCaseQuery)
-    //   );
-
-    //   const matchesCountry = rental.entries.some(
-    //     (entry) =>
-    //       entry.rental_country &&
-    //       entry.rental_country.toLowerCase().includes(lowerCaseQuery)
-    //   );
-
-    //   return (
-    //     matchesRentalAddress ||
-    //     matchesPropertyType ||
-    //     matchesOwnerInfo ||
-    //     matchesCity ||
-    //     matchesCountry
-    //   );
-    // });
-    return paginatedData.filter((tenant) => {
-      const name =
-        tenant.rentalOwner_firstName + " " + tenant.rentalOwner_lastName;
-      const add =
-        tenant.entries.rental_city + " " + tenant.entries.rental_country;
-      console.log(tenant);
-      return (
-        tenant.entries.rental_adress
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        tenant.entries.property_type
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        tenant.entries.rental_city
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        tenant.entries.rental_country
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        tenant.rentalOwner_firstName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        tenant.rentalOwner_lastName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        tenant.rentalOwner_companyName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        tenant.rentalOwner_primaryEmail
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        add.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    });
+    return rentalsData.slice(startIndex, endIndex);
   };
-  console.log(filterRentalsBySearch(), "filterasdadasdasdasdasda");
+  //console.log(filterRentalsBySearch(), "filterasdadasdasdasdasda");
+
+  const sortData = (value) => {
+    if (!sortBy.includes(value)) {
+      setSortBy([...sortBy, value]);
+      setUpArrow([...upArrow, value]);
+      filterRentalsBySearch();
+    } else {
+      setSortBy(sortBy.filter((sort) => sort !== value));
+      setUpArrow(upArrow.filter((sort) => sort !== value));
+      filterRentalsBySearch();
+    }
+    //console.log(value);
+    // setOnClickUpArrow(!onClickUpArrow);
+  };
+  //console.log(sortBy, "sortBy");
+
+  useEffect(() => {
+    // setLoader(false);
+    // filterRentalsBySearch(); 
+    getRentalsData();
+  }, [upArrow, sortBy]);
 
   return (
     <>
@@ -307,18 +360,150 @@ const PropertiesTables = () => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">Address</th>
-                      <th scope="col">Property Type</th>
-                      <th scope="col">Rental Owners</th>
-                      <th scope="col">Rental Company Name</th>
-                      <th scope="col">Locality</th>
-                      <th scope="col">Primary Email</th>
-                      <th scope="col">Phone Number</th>
+                      <th scope="col">
+                        Address{" "}
+                        {sortBy.includes("rental_adress") ? (
+                          upArrow.includes("rental_adress") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rental_adress")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Property Type{" "}
+                        {sortBy.includes("property_type") ? (
+                          upArrow.includes("property_type") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("property_type")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("property_type")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("property_type")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Rental Owners Name{" "}
+                        {sortBy.includes("rentalOwner_firstName") ? (
+                          upArrow.includes("rentalOwner_firstName") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("rentalOwner_firstName")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("rentalOwner_firstName")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rentalOwner_firstName")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Rental Company Name{" "}
+                        {sortBy.includes("rentalOwner_companyName") ? (
+                          upArrow.includes("rentalOwner_companyName") ? (
+                            <ArrowDownwardIcon
+                              onClick={() =>
+                                sortData("rentalOwner_companyName")
+                              }
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() =>
+                                sortData("rentalOwner_companyName")
+                              }
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rentalOwner_companyName")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Locality{" "}
+                        {sortBy.includes("rental_city") ? (
+                          upArrow.includes("rental_city") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("rental_city")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("rental_city")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rental_city")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Primary Email{" "}
+                        {sortBy.includes("rentalOwner_primaryEmail") ? (
+                          upArrow.includes("rentalOwner_primaryEmail") ? (
+                            <ArrowDownwardIcon
+                              onClick={() =>
+                                sortData("rentalOwner_primaryEmail")
+                              }
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() =>
+                                sortData("rentalOwner_primaryEmail")
+                              }
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rentalOwner_primaryEmail")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Phone Number
+                        {sortBy.includes("rentalOwner_phoneNumber") ? (
+                          upArrow.includes("rentalOwner_phoneNumber") ? (
+                            <ArrowDownwardIcon
+                              onClick={() =>
+                                sortData("rentalOwner_phoneNumber")
+                              }
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() =>
+                                sortData("rentalOwner_phoneNumber")
+                              }
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rentalOwner_phoneNumber")}
+                          />
+                        )}
+                      </th>
+
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* {console.log(filterRentalsBySearch(), "filter")} */}
+                    {/* {//console.log(filterRentalsBySearch(), "filter")} */}
                     {/* {filterRentalsBySearch().map((rental) =>
                       rental.entries.map((property) => (
                         <tr
@@ -389,6 +574,7 @@ const PropertiesTables = () => {
                           <td>{`${tenant.entries.rental_city}, ${tenant.entries.rental_country}`}</td>
                           <td>{tenant.rentalOwner_primaryEmail}</td>
                           <td>{tenant.rentalOwner_phoneNumber}</td>
+                          {/* <td>{tenant.entries.createdAt}</td> */}
                           {/* <td>{tenant.entries.entryIndex}</td>
                         <td>{tenant.entries.rental_adress}</td> */}
                           <td style={{}}>
@@ -401,7 +587,7 @@ const PropertiesTables = () => {
                                     tenant._id,
                                     tenant.entries.entryIndex
                                   );
-                                  // console.log(entry.entryIndex,"dsgdg")
+                                  // //console.log(entry.entryIndex,"dsgdg")
                                 }}
                               >
                                 <DeleteIcon />

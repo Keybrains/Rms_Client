@@ -20,7 +20,7 @@ import Cookies from "universal-cookie";
 
 const TenantProfile = () => {
   const { id } = useParams();
-  console.log(id);
+  // console.log(id);
   const [tenantDetails, setTenantDetails] = useState({});
   const [tenantDetails1, setTenantDetails1] = useState({});
   const [loading, setLoading] = useState(true);
@@ -47,7 +47,7 @@ const TenantProfile = () => {
       const response = await axios.get(
         `https://propertymanager.cloudpress.host/api/tenant/tenant/${cookie_id}/entries`
       );
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setTenantDetails(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -59,9 +59,9 @@ const TenantProfile = () => {
 
   useEffect(() => {
     getTenantData();
-    console.log(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant/${cookie_id}/entries`
-    );
+    // console.log(
+    //   `https://propertymanager.cloudpress.host/api/tenant/tenant/${cookie_id}/entries`
+    // );
   }, [id]);
 
   const getTenantData1 = async () => {
@@ -70,7 +70,7 @@ const TenantProfile = () => {
         `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
       );
       setTenantDetails1([response.data.data]);
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -81,9 +81,9 @@ const TenantProfile = () => {
 
   useEffect(() => {
     getTenantData1();
-    console.log(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
-    );
+    // console.log(
+    //   `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
+    // );
   }, [id]);
 
   function formatDateWithoutTime(dateString) {

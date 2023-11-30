@@ -54,7 +54,7 @@ const AddStaffMember = () => {
   };
 
   // const handleSubmit = async (values) => {
-  //   console.log(values, "values");
+  //   //console.log(values, "values");
   //   try {
   //     // values["property_type"] = selectedProperty;
   //     const res = await axios.post(
@@ -65,12 +65,12 @@ const AddStaffMember = () => {
   //     if (res.data.statusCode === 200) {
   //       navigate("/admin/StaffMember");
   //       swal("Success!", "Staff Member added successfully!", "success");
-  //       console.log(`Staffmember: ${values.staffmember_name}`);
+  //       //console.log(`Staffmember: ${values.staffmember_name}`);
   //     } else {
   //       alert(res.data.message);
   //     }
   //   } catch (error) {
-  //     console.log("Error", error);
+  //     //console.log("Error", error);
   //   }
   // };
  
@@ -108,7 +108,7 @@ const AddStaffMember = () => {
     }),
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
 
@@ -129,7 +129,7 @@ const AddStaffMember = () => {
         .then((response) => {
           const staffMamberdata = response.data.data;
           setstaffMamberData(staffMamberData);
-          console.log(staffMamberdata);
+          //console.log(staffMamberdata);
 
           StaffMemberFormik.setValues({
             staffmember_name: staffMamberdata.staffmember_name || "",

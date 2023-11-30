@@ -39,10 +39,10 @@ const StaffNavbar = (props) => {
   const [error, setError] = useState(null);
 
   const { id } = useParams();
-  console.log(id);
+  //console.log(id);
   const [vendorDetails, setVendorDetails] = useState({});
   const [staffmember_name, setVendorname] = useState("");
-  console.log(staffmember_name)
+  //console.log(staffmember_name)
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -51,7 +51,7 @@ const StaffNavbar = (props) => {
   const navigate = useNavigate();
 
   let cookie_id = cookies.get("Staff ID");
-  console.log(cookie_id)
+  //console.log(cookie_id)
 
   const [selectedProp, setSelectedProp] = useState("Select");
 
@@ -64,7 +64,7 @@ const StaffNavbar = (props) => {
       const response = await axios.get(
         `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
       );
-      console.log(response.data.data)
+      //console.log(response.data.data)
       setVendorDetails(response.data.data);
       setVendorname(response.data.data.staffmember_name)
       setLoading(false);
@@ -100,7 +100,7 @@ const StaffNavbar = (props) => {
 
   useEffect(() => {
     getVendorDetails();
-    console.log(id);
+    //console.log(id);
   }, [id]);
 
 
@@ -117,7 +117,7 @@ const StaffNavbar = (props) => {
             });
             setNotificationData(updatedNotificationData);
             setNotificationCount(updatedNotificationData.length);
-           console.log(`Notification with workorder_id ${workorder_id} deleted successfully.`);
+           //console.log(`Notification with workorder_id ${workorder_id} deleted successfully.`);
            fetchNotification();
 
         } else {
@@ -135,7 +135,7 @@ const StaffNavbar = (props) => {
   // const navigateToDetails = (workorder_id) => {
   //   // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
   //   navigate(`/staff/staffworkdetails/${workorder_id}`);
-  //   console.log(workorder_id);
+  //   //console.log(workorder_id);
   // };
 
   return (

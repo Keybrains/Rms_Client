@@ -93,7 +93,7 @@ const AddVendor = () => {
             vendor_password: vendorData?.vendor_password || "",
           });
 
-          console.log(vendorData);
+          //console.log(vendorData);
         })
         .catch((error) => {
           console.error("Error fetching vendor data:", error);

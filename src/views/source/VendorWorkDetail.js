@@ -24,7 +24,7 @@ import { jwtDecode } from "jwt-decode";
 
 const VendorWorkDetail = () => {
   const { id } = useParams();
-  console.log(id);
+  //console.log(id);
   const [outstandDetails, setoutstandDetails] = useState({});
   const [showTenantTable, setShowTenantTable] = useState(false);
   const [loading, setLoading] = useState(true);

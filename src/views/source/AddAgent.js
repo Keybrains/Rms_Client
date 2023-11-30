@@ -38,7 +38,7 @@ const AddAgent = () => {
   };
 
   // const handleSubmit = async (values) => {
-  //   console.log(values, "values");
+  //   //console.log(values, "values");
   //   try {
   //     const res = await axios.post(
   //       "https://propertymanager.cloudpress.host/api/addagent/addagent",
@@ -52,7 +52,7 @@ const AddAgent = () => {
   //       alert(res.data.message);
   //     }
   //   } catch (error) {
-  //     console.log("Error", error);
+  //     //console.log("Error", error);
   //   }
   // };
 
@@ -92,7 +92,7 @@ const AddAgent = () => {
 
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
 
@@ -105,7 +105,7 @@ const AddAgent = () => {
         .then((response) => {
           const agentdata = response.data.data;
           setagentData(agentData);
-          console.log(agentdata);
+          //console.log(agentdata);
           AgentFormik.setValues({
             agent_name: agentdata.agent_name || "",
             agent_phoneNumber: agentdata.agent_phoneNumber || "",

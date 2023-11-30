@@ -68,12 +68,12 @@ const Header = () => {
             applicant_property: property,
         };
     
-        console.log('Form Data:', formData); // Log the formData
+        //console.log('Form Data:', formData); // Log the formData
     
         axios
             .post('https://propertymanager.cloudpress.host/api/applicant/applicant', formData)
             .then((response) => {
-                console.log('Applicant created successfully:', response.data); // Log the response
+                //console.log('Applicant created successfully:', response.data); // Log the response
                 closeModal();
                  // Reset the form fields by setting state variables to empty strings
                  setFirstName("");

@@ -16,15 +16,15 @@ import { jwtDecode } from "jwt-decode";
 
 const StaffProfile = () => {
   const { id } = useParams();
-  console.log(id);
+  //console.log(id);
   const [staffDetails, setStaffDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  let cookie_id = cookies.get("Staff ID");
 
   const navigate = useNavigate();
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
+  let cookie_id = cookies.get("Staff ID");
 
   React.useEffect(() => {
     if (cookies.get("token")) {
@@ -34,6 +34,7 @@ const StaffProfile = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
+  
   useEffect(() => {
     const getStaffData = async () => {
       try {
@@ -44,7 +45,7 @@ const StaffProfile = () => {
         const response = await axios.get(
           `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
         );
-        console.log(response.data.data);
+        //console.log(response.data.data);
         setStaffDetails(response.data.data);
         setLoading(false);
       } catch (error) {

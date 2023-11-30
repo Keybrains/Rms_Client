@@ -21,7 +21,7 @@ import VendorHeader from "components/Headers/VendorHeader";
 
 const VendorProfile = () => {
   const { id } = useParams();
-  console.log(id);
+  //console.log(id);
   const [vendorDetails, setVendorDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,7 +34,7 @@ const VendorProfile = () => {
       const response = await axios.get(
         `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${cookie_id}`
       );
-      console.log(response.data.data);
+      //console.log(response.data.data);
       setVendorDetails(response.data.data);
       setLoading(false);
     } catch (error) {
@@ -46,7 +46,7 @@ const VendorProfile = () => {
 
   useEffect(() => {
     getVendorData();
-    console.log(id);
+    //console.log(id);
   }, [id]);
 
   // let cookies = new Cookies();

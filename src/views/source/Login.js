@@ -58,7 +58,7 @@ const Login = () => {
           if (value) {
             cookies.set("token", adminRes.data.token);
             navigate("/admin/index");
-            console.log("Admin ID:", adminRes.data.data._id);
+            //console.log("Admin ID:", adminRes.data.data._id);
           }
         });
       } else {
@@ -77,7 +77,7 @@ const Login = () => {
 
           // Check if tenantData contains _id
           if (tenantData && tenantData._id) {
-            console.log("Tenant ID:", tenantData._id);
+            //console.log("Tenant ID:", tenantData._id);
             swal("Success!", "Tenant Login Successful!", "success").then(
               (value) => {
                 if (value) {
@@ -105,11 +105,11 @@ const Login = () => {
           if (agentRes.data.statusCode === 200) {
             // Agent login successful
             const agentData = agentRes.data.data; // Assuming the API response structure
-            console.log("Agent ID:", agentData._id);
+            //console.log("Agent ID:", agentData._id);
 
             // Check if agentData contains _id
             if (agentData && agentData._id) {
-              console.log("Agent ID:", agentData._id);
+              //console.log("Agent ID:", agentData._id);
               swal("Success!", "Agent Login Successful!", "success").then(
                 (value) => {
                   if (value) {
@@ -137,11 +137,11 @@ const Login = () => {
             if (staffRes.data.statusCode === 200) {
               // Staff login successful
               const staffData = staffRes.data.data; // Assuming the API response structure
-              console.log("Staff ID:", staffData._id);
+              //console.log("Staff ID:", staffData._id);
 
               // Check if staffData contains _id
               if (staffData && staffData._id) {
-                console.log("Staff ID:", staffData._id);
+                //console.log("Staff ID:", staffData._id);
                 swal("Success!", "Staff Login Successful!", "success").then(
                   (value) => {
                     if (value) {
@@ -169,11 +169,11 @@ const Login = () => {
               if (vendorRes.data.statusCode === 200) {
                 // Vendor login successful
                 const vendorData = vendorRes.data.data; // Assuming the API response structure
-                console.log("Vendor ID:", vendorData._id);
+                //console.log("Vendor ID:", vendorData._id);
 
                 // Check if vendorData contains _id
                 if (vendorData && vendorData._id) {
-                  console.log("Vendor ID:", vendorData._id);
+                  //console.log("Vendor ID:", vendorData._id);
                   swal("Success!", "Vendor Login Successful!", "success").then(
                     (value) => {
                       if (value) {
@@ -197,7 +197,7 @@ const Login = () => {
         }
       }
     } catch (error) {
-      console.log(error);
+      //console.log(error);
     } finally {
       setIsLoading(false); // Set loading state to false after API call completes
     }

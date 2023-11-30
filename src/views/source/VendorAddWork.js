@@ -31,9 +31,9 @@ import Cookies from "universal-cookie";
 
 const VendorAddWork = () => {
   const { workorder_id } = useParams();
-  console.log(workorder_id, "workorder_id");
+  //console.log(workorder_id, "workorder_id");
   const { id } = useParams();
-  console.log(id, "id");
+  //console.log(id, "id");
 
   const [propdropdownOpen, setpropdropdownOpen] = React.useState(false);
   const [categorydropdownOpen, setcategorydropdownOpen] = React.useState(false);
@@ -196,7 +196,7 @@ const VendorAddWork = () => {
         .then((response) => {
           const vendorData = response.data.data;
           setWorkOrderData(vendorData);
-          console.log("VendorData", vendorData);
+          //console.log("VendorData", vendorData);
 
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
@@ -318,8 +318,8 @@ const VendorAddWork = () => {
           console.error("Work Order Error:", res.data);
         }
 
-        console.log("ID", id);
-        console.log("Workorderid", workorder_id);
+        //console.log("ID", id);
+        //console.log("Workorderid", workorder_id);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -375,7 +375,7 @@ const VendorAddWork = () => {
 
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
 

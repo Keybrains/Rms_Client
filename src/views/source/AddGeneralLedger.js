@@ -87,7 +87,7 @@ const AddGeneralLedger = () => {
     }),
     onSubmit: (values) => {
       handleSubmit(values);
-      console.log(values, "values");
+      //console.log(values, "values");
     },
   });
 
@@ -143,7 +143,7 @@ const AddGeneralLedger = () => {
       .then((data) => {
         if (data.statusCode === 200) {
           setPropertyData(data.data);
-          console.log(data.data);
+          //console.log(data.data);
         } else {
           console.error("Error:", data.message);
         }
@@ -221,7 +221,7 @@ const AddGeneralLedger = () => {
 
   const fileData = (files) => {
     //setImgLoader(true);
-    // console.log(files, "file");
+    // //console.log(files, "file");
     const filesArray = [...files];
 
     if (filesArray.length <= 10 && file.length === 0) {
@@ -236,7 +236,7 @@ const AddGeneralLedger = () => {
       setFile([...file, ...filesArray]);
     }
 
-    // console.log(file, "fileanaadsaa");
+    // //console.log(file, "fileanaadsaa");
 
     const dataArray = new FormData();
     dataArray.append("b_video", files);
@@ -251,12 +251,12 @@ const AddGeneralLedger = () => {
       .then((res) => {
         //setImgLoader(false);
         const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        console.log(imagePath, "imagePath");
+        //console.log(imagePath, "imagePath");
         // setFile(imagePath);
       })
       .catch((err) => {
         //setImgLoader(false);
-        console.log("Error uploading image:", err);
+        //console.log("Error uploading image:", err);
       });
   };
   const deleteFile = (index) => {
@@ -265,12 +265,12 @@ const AddGeneralLedger = () => {
     setFile(newFile);
   };
   const handleOpenFile = (item) => {
-    // console.log(file,"fike")
+    // //console.log(file,"fike")
     // const fileToOpen = file.filter((file) => {
     //   return file.name === item.name
     // })
-    // console.log(fileToOpen, "fileToOpen");
-    console.log(item, "item");
+    // //console.log(fileToOpen, "fileToOpen");
+    //console.log(item, "item");
     const url = URL.createObjectURL(item);
     window.open(url, "_blank");
   };

@@ -18,7 +18,7 @@
 
 // const AgentProfile = () => {
 //   const { id } = useParams();
-//   console.log(id);
+//   //console.log(id);
 //   const [agentDetails, setagentDetails] = useState({});
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
@@ -47,7 +47,7 @@
 //         const response = await axios.get(
 //           `https://propertymanager.cloudpress.host/api/addagent/agent_summary/${cookie_id}`
 //         );
-//         console.log(response.data.data);
+//         //console.log(response.data.data);
 //         setagentDetails(response.data.data);
 //         setLoading(false);
 //       } catch (error) {

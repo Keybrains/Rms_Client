@@ -60,12 +60,12 @@ const TenantWork = () => {
   const [tenantDetails, setTenantDetails] = useState({});
   const [rental_adress, setRentalAddress] = useState("");
   const [rentalAddress, setRentalAddresses] = useState([]);
-  console.log(rental_adress);
+  //console.log(rental_adress);
   const { id } = useParams();
-  console.log(id, tenantDetails);
-  let cookie_id = cookies.get("Tenant ID");
-  console.log("cookie_id:", cookie_id);
-  console.log(rental_adress);
+  //console.log(id, tenantDetails);
+ 
+  //console.log("cookie_id:", cookie_id);
+  //console.log(rental_adress);
   const [loading, setLoading] = useState(true);
   // const { rental_adress } = useParams();
   const handlePropSelection = (value) => {
@@ -88,7 +88,7 @@ const TenantWork = () => {
  
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
-
+  let cookie_id = cookies.get("Tenant ID");
   React.useEffect(() => {
     if (cookies.get("token")) {
       const jwt = jwtDecode(cookies.get("token"));
@@ -109,7 +109,7 @@ const TenantWork = () => {
         const rentalAddresses = entries
           .map((entry) => entry.rental_adress)
           .join("-");
-        //console.log(rentalAddresses, "mansi");
+        ////console.log(rentalAddresses, "mansi");
         setTenantDetails(response.data.data);
         getRentalData(rentalAddresses);
         //getVendorDetails(rentalAddresses);
@@ -125,7 +125,7 @@ const TenantWork = () => {
   };
   React.useEffect(() => {
     getTenantData();
-    // console.log(id)
+    // //console.log(id)
   }, [cookie_id, pageItem]);
 
   const startIndex = (currentPage - 1) * pageItem;
@@ -143,7 +143,7 @@ const TenantWork = () => {
       const response = await axios.get(
         `https://propertymanager.cloudpress.host/api/workorder/workorder/tenant/${addresses}`
       );
-      console.log(response, "abc");
+      //console.log(response, "abc");
 
       if (Array.isArray(response.data.data)) {
         // Response is an array of work orders
@@ -173,7 +173,7 @@ const TenantWork = () => {
   const navigateToDetails = (tenantId) => {
     // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
     navigate(`/tenant/Tworkorderdetail/${tenantId}`);
-    console.log(tenantId);
+    //console.log(tenantId);
   };
 
   const filterRentalsBySearch = () => {

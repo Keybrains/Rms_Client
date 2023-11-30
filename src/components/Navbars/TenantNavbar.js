@@ -43,7 +43,7 @@ const TenantNavbar = (props) => {
     cookies.remove("Tenant ID");
   };
   const { id } = useParams();
-  console.log(id);
+  //console.log(id);
   const [vendorDetails, setVendorDetails] = useState({});
   const [rental_adress, setRentalAddress] = useState("");
   const [loading, setLoading] = useState(true);
@@ -57,7 +57,7 @@ const TenantNavbar = (props) => {
   let navigate = useNavigate();
 
   let cookie_id = cookies.get("Tenant ID");
-  console.log(cookie_id)
+  //console.log(cookie_id)
   
   const getVendorDetails = async () => {
     try {
@@ -66,7 +66,7 @@ const TenantNavbar = (props) => {
   
       if (entries.length > 0) {
         const rentalAddresses = entries.map(entry => entry.rental_adress).join('-');
-        //console.log(rentalAddresses, "mansi");
+        ////console.log(rentalAddresses, "mansi");
         setVendorDetails(response.data.data);
         getRentalData(rentalAddresses);
         //getVendorDetails(rentalAddresses);
@@ -83,7 +83,7 @@ const TenantNavbar = (props) => {
 
   useEffect(() => {
     getVendorDetails();
-    console.log(id);
+    //console.log(id);
   }, [id]);
 
 // const {vendor_name}= useParams();
@@ -105,7 +105,7 @@ const handlePropertySelect = (property) => {
 const getRentalData = async (addresses) => {
   try {
     const response = await axios.get(`https://propertymanager.cloudpress.host/api/notification/tenantnotification/tenant/${addresses}`);
-    console.log(response, "abc");
+    //console.log(response, "abc");
 
     if (Array.isArray(response.data.data)) {
       // Filter the notifications with isTenantread set to false
@@ -113,7 +113,7 @@ const getRentalData = async (addresses) => {
 
       // Update the state with the filtered unread notifications
       setWorkData((prevData) => [...prevData, ...unreadNotifications]);
-      console.log("unreadNotifications", unreadNotifications)
+      //console.log("unreadNotifications", unreadNotifications)
       setNotificationData((prevNotificationData) => [...prevNotificationData, ...response.data.data]);
       setNotificationCount(unreadNotifications.length);
     } else if (typeof response.data.data === 'object') {
@@ -153,7 +153,7 @@ const fetchNotification = async () => {
       .then((data) => {
         const unreadNotifications = notificationData.filter(notification => !notification.isTenantread);
         setNotificationData(unreadNotifications);
-        console.log("Notification",data.data)
+        //console.log("Notification",data.data)
         
         setNotificationCount(unreadNotifications.length)
       })
@@ -178,9 +178,9 @@ const navigateToDetails = (workorder_id) => {
             return notification;
           });
           setNotificationData(updatedNotificationData);
-          console.log("updatedNotificationData", updatedNotificationData)
+          //console.log("updatedNotificationData", updatedNotificationData)
           setNotificationCount(updatedNotificationData.length);
-          console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
+          //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
           fetchNotification();
         } else {
         console.error(`Failed to delete notification with workorder_id ${workorder_id}.`);
@@ -197,7 +197,7 @@ const navigateToDetails = (workorder_id) => {
 // const navigateToDetails = (workorder_id) => {
 //   // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
 //   navigate(`/tenant/tworkorderdetail/${workorder_id}`);
-//   console.log(workorder_id);
+//   //console.log(workorder_id);
 // };
 
 

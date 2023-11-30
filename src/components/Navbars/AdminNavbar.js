@@ -37,7 +37,7 @@ const AdminNavbar = (props) => {
   const [notificationCount, setNotificationCount] = useState(0);
   
   const [notificationData, setNotificationData] = useState([]);
-  console.log("Rental Address", rental_adress);
+  //console.log("Rental Address", rental_adress);
   const notifyData = [];
 
   let cookies = new Cookies();
@@ -48,10 +48,10 @@ const AdminNavbar = (props) => {
     // navigate("/login");
   };
   const { workorder_id } = useParams();
-  console.log("workid:",workorder_id);
+  //console.log("workid:",workorder_id);
   const [vendorDetails, setVendorDetails] = useState({});
   const [rental_adress, setRentalAddress] = useState("");
-  console.log(rental_adress)
+  //console.log(rental_adress)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
@@ -67,7 +67,7 @@ const AdminNavbar = (props) => {
   };
 
   let cookie_id = cookies.get("Tenant ID");
-  console.log(cookie_id)
+  //console.log(cookie_id)
 
   useEffect(() => {
     fetchNotification();
@@ -104,9 +104,9 @@ const AdminNavbar = (props) => {
           return notification;
         });
         setNotificationData(updatedNotificationData);
-        console.log("updatedNotificationData", updatedNotificationData)
+        //console.log("updatedNotificationData", updatedNotificationData)
         setNotificationCount(updatedNotificationData.length);
-        console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
+        //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
         fetchNotification();
 
       } else {
@@ -129,7 +129,7 @@ const AdminNavbar = (props) => {
   // const navigateToDetails = (workorder_id) => {
   //   // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
   //   navigate(`/admin/workorderdetail/${workorder_id}`);
-  //   console.log(workorder_id);
+  //   //console.log(workorder_id);
   // };
 
   return (
