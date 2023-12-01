@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "components/Headers/Header";
 import { useNavigate } from "react-router-dom";
@@ -66,8 +66,13 @@ const RentRollDetail = () => {
   const navigate = useNavigate();
   const [value, setValue] = React.useState("Summary");
   const [rental, setRental] = useState("");
+  const [unit, setUnit] = useState("");
   const [rentaldata, setRentaldata] = useState([]);
   const [paymentData, setPaymentData] = useState(null);
+  const [myData, setMyData] = useState([]);
+  const [balance, setBalance] = useState("");
+ const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
+ const [loader, setLoader] = React.useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,8 +126,10 @@ const RentRollDetail = () => {
       setTenantDetails(response.data.data);
       //console.log(response.data.data, "hiiii");
       const rental = response.data.data.entries.rental_adress;
+      const unit = response.data.data.entries.rental_units;
       setRental(rental);
       // console.log(rental, "hell");
+      setUnit(unit);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -204,9 +211,36 @@ const RentRollDetail = () => {
     }
   };
 
+  // const tenantsData = async () => {
+  //   // Construct the API URL
+  //   const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+
+  //   try {
+  //     // Fetch tenant data
+  //     const response = await axios.get(apiUrl);
+  //     const tenantData = response.data.data;
+  //     //console.log(tenantData.tenant_firstName, "abcd");
+  //     setTenantDetails(tenantData);
+  //     setRentaldata(tenantData);
+  //     //console.log(tenantData, "mansi");
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error("Error fetching tenant details:", error);
+  //     setError(error);
+  //     setLoading(false);
+  //   }
+  // };
+  //console.log(rentaldata, "rentalData");
   const tenantsData = async () => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+
+    let apiUrl;
+
+    if (unit === undefined) {
+      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+    } else {
+      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
+    }
 
     try {
       // Fetch tenant data
@@ -223,8 +257,6 @@ const RentRollDetail = () => {
       setLoading(false);
     }
   };
-  //console.log(rentaldata, "rentalData");
-
   useEffect(() => {
     getTenantData();
   }, []);
@@ -234,7 +266,7 @@ const RentRollDetail = () => {
       getTenantData();
       // getTenantData();
       // console.log(rental, "rental");
-      setValue("Tenant");
+      setValue("Summary");
       // tenantsData();
 
       if (rental) {
@@ -281,10 +313,7 @@ const RentRollDetail = () => {
     }
   };
 
-  //Financial functions
-  const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
-  //console.log("GeneralLedgerData",GeneralLedgerData)
-  const [loader, setLoader] = React.useState(true);
+ 
 
   const calculateBalance = (data) => {
     // console.log(data);
@@ -304,21 +333,64 @@ const RentRollDetail = () => {
     //console.log("data",data)
     return data;
   };
+  const doSomething = async () => {
+    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
+    const data = responce.data.data;
+    const filteredData = data.filter((item) => item._id === tenantId);
+    console.log(filteredData, "yashr");
+    setMyData(filteredData);
+  };
 
+  useEffect(() => {
+    doSomething();
+  }, []);
+
+  const getStatus = (startDate, endDate) => {
+    const today = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (today >= start && today <= end) {
+      return "ACTIVE";
+    } else if (today < start) {
+      return "FUTURE";
+    } else {
+      return "-"; // Change this to suit your requirement for other cases
+    }
+  };
+  // const getGeneralLedgerData = async () => {
+  //   const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+
+  //   try {
+  //     const response = await axios.get(apiUrl);
+  //     setLoader(false);
+
+  //     if (response.data && response.data.data) {
+  //       const mergedData = response.data.data;
+  //       // console.log(mergedData)
+  //       mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
+  //       const dataWithBalance = calculateBalance(mergedData);
+
+  //       setGeneralLedgerData(dataWithBalance);
+  //     } else {
+  //       console.error("Unexpected response format:", response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
   const getGeneralLedgerData = async () => {
     const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
-
     try {
       const response = await axios.get(apiUrl);
-      setLoader(false);
-
+  setLoader(false);
       if (response.data && response.data.data) {
         const mergedData = response.data.data;
         // console.log(mergedData)
         mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
         const dataWithBalance = calculateBalance(mergedData);
-
-        setGeneralLedgerData(dataWithBalance);
+        
+        setBalance(dataWithBalance[0].entries[0].balance);
       } else {
         console.error("Unexpected response format:", response.data);
       }
@@ -370,6 +442,7 @@ const RentRollDetail = () => {
     navigate(`/admin/AddPayment/${id}/payment/${paymentIndex}`);
     // console.log(id);
   };
+  
   return (
     <div>
       <Header />
@@ -393,7 +466,17 @@ const RentRollDetail = () => {
         <Row>
           <div className="col">
             <Card className="shadow">
-              <CardHeader className="border-0"></CardHeader>
+              <CardHeader className="border-0">
+                <div className="ml-3">
+                  <h1>
+                    {tenantDetails?.entries.rental_adress}
+                    {"-"}
+                    {tenantDetails?.entries.rental_units}
+                    {"●"}
+                    {tenantDetails?.tenant_firstName}
+                  </h1>
+                </div>
+              </CardHeader>
               <Col>
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -422,518 +505,213 @@ const RentRollDetail = () => {
 
                   <TabPanel value="Summary">
                     <Row>
-                      <Col>
-                        <div className="table-responsive">
-                          <Table
-                            className="align-items-center table-flush"
-                            responsive
-                            style={{ width: "100%" }}
-                          >
-                            {loading ? (
-                              <tr>
-                                <td>Loading tenant details...</td>
-                              </tr>
-                            ) : error ? (
-                              <tr>
-                                <td>Error: {error.message}</td>
-                              </tr>
-                            ) : tenantDetails._id ? (
-                              <>
-                                <tbody>
-                                  <tr>
-                                    <th
-                                      colSpan="2"
-                                      className="text-primary text-lg"
-                                    >
-                                      Tenant Details
-                                    </th>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      First Name:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.tenant_firstName || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Last Name:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.tenant_lastName || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Phone:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.tenant_mobileNumber ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Email:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.tenant_email || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <th
-                                      colSpan="2"
-                                      className="text-primary text-lg"
-                                    >
-                                      Personal Information
-                                    </th>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Birth Date:
-                                    </td>
-                                    <td>
-                                      {formatDateWithoutTime(
-                                        tenantDetails.birth_date
-                                      ) || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      TextPayer Id:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.textpayer_id || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Comments:
-                                    </td>
-                                    <td>{tenantDetails.comments || "N/A"}</td>
-                                  </tr>
-                                  <th
-                                    colSpan="2"
-                                    className="text-primary text-lg"
-                                  >
-                                    Emergency Contact
-                                  </th>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Contact Name:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.contact_name || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Relation With Tenants:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.relationship_tenants ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Emergency Email:
-                                    </td>
-                                    <td>{tenantDetails.email || "N/A"}</td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Emergency PhoneNumber:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.emergency_PhoneNumber ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                </tbody>
-
-                                <tbody>
-                                  <tr>
-                                    <th
-                                      colSpan="2"
-                                      className="text-primary text-lg"
-                                    >
-                                      Lease Details
-                                    </th>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Property Type:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.rental_adress ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Lease Type:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.lease_type ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Start Date:
-                                    </td>
-                                    <td>
-                                      {formatDateWithoutTime(
-                                        tenantDetails.entries.start_date
-                                      ) || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      End Date:
-                                    </td>
-                                    <td>
-                                      {formatDateWithoutTime(
-                                        tenantDetails.entries.end_date
-                                      ) || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Rent Cycle:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.rent_cycle ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Rent Amount:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.amount || "N/A"}
-                                    </td>
-                                  </tr>
-                                  {/* <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Account:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.account || "N/A"}
-                                    </td>
-                                  </tr> */}
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Next Due Date:
-                                    </td>
-                                    <td>
-                                      {formatDateWithoutTime(
-                                        tenantDetails.entries.nextDue_date
-                                      ) || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Memo:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.memo || "N/A"}
-                                    </td>
-                                  </tr>
-                                </tbody>
-
-                                <tbody>
-                                  <tr>
-                                    <th
-                                      colSpan="2"
-                                      className="text-primary text-lg"
-                                    >
-                                      Co-signer Details
-                                    </th>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      First Name:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries
-                                        .cosigner_firstName || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Last Name:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries
-                                        .cosigner_lastName || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Mobile Number:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries
-                                        .cosigner_mobileNumber || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Work Number:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries
-                                        .cosigner_workNumber || "N/A"}
-                                    </td>
-                                  </tr>
-                                  {/* <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Home Number:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries
-                                        .cosigner_homeNumber || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Fax Number:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries
-                                        .cosigner_faxPhoneNumber || "N/A"}
-                                    </td>
-                                  </tr> */}
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Email:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.cosigner_email ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Alternate Email:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries
-                                        .cosigner_alternateemail || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Street Address:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries
-                                        .cosigner_streetAdress || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      City:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.cosigner_city ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      State:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.cosigner_state ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Country:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries.cosigner_country ||
-                                        "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Postal Code:
-                                    </td>
-                                    <td>
-                                      {tenantDetails.entries
-                                        .cosigner_postalcode || "N/A"}
-                                    </td>
-                                  </tr>
-                                </tbody>
-
-                                <tbody>
-                                  {tenantDetails.entries.recurring_charges.map((data) => (
-                                    <>
-                                      <tr>
-                                        <th colSpan="2" className="text-primary text-lg">
-                                          Recurring Payment Details
-                                        </th>
-                                      </tr>
-                                      <tr>
-                                        <td className="font-weight-bold text-md">Amount:</td>
-                                        <td>
-                                          {data.recuring_amount || "N/A"}
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td className="font-weight-bold text-md">Account:</td>
-                                        <td>
-                                          {data.recuring_account || "N/A"}
-                                        </td>
-                                      </tr>
-
-                                      <tr>
-                                        <td className="font-weight-bold text-md">Memo:</td>
-                                        <td>{data.recuringmemo || "N/A"}</td>
-                                      </tr>
-                                    </>
-                                  ))}
-                                  {/* <tr>
-                          <td className="font-weight-bold text-md">
-                            Next Due Date:
-                          </td>
-                          <td>
-                            {tenantDetails.entries.recuringnextDue_date ||
-                              "N/A"}
-                          </td>
-                        </tr> */}
-                                  {/* <tr>
-                          <td className="font-weight-bold text-md">
-                            Frequency:
-                          </td>
-                          <td>
-                            {tenantDetails.entries.recuringfrequency || "N/A"}
-                          </td>
-                        </tr> */}
-                                </tbody>
-
-                                <tbody>
-                                  {tenantDetails.entries.one_time_charges.map((data) => (
-                                    <>
-                                      <tr>
-                                        <th colSpan="2" className="text-primary text-lg">
-                                          One Time Payment Details
-                                        </th>
-                                      </tr>
-                                      <tr>
-                                        <td className="font-weight-bold text-md">Amount:</td>
-                                        <td>
-                                          {data.onetime_amount || "N/A"}
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td className="font-weight-bold text-md">Account:</td>
-                                        <td>
-                                          {data.onetime_account || "N/A"}
-                                        </td>
-                                      </tr>
-
-                                      <tr>
-                                        <td className="font-weight-bold text-md">Memo:</td>
-                                        <td>{data.onetime_memo || "N/A"}</td>
-                                      </tr>
-                                    </>
-                                  ))}
-                                </tbody>
-                              </>
-                            ) : (
-                              <tbody>
-                                <tr>
-                                  <td>No tenant details found.</td>
-                                </tr>
-                              </tbody>
-                            )}
-                          </Table>
-                        </div>
-                      </Col>
-                      <Col xs="12" md="6" lg="4" xl="3">
-                        {paymentData && (
-                          <Card style={{ background: "#F4F6FF" }}>
-                            <CardContent>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                }}
-                              >
-                                <Typography
-                                  sx={{ fontSize: 14, fontWeight: "bold" }}
-                                  color="text.secondary"
-                                  gutterBottom
+                      <div className="col">
+                        <Card className="shadow">
+                          <CardHeader className="border-0"></CardHeader>
+                          <div className="table-responsive">
+                            <div className="row m-3">
+                              <div className="col-9">
+                                <div
+                                  className="align-items-center table-flush"
+                                  responsive
+                                  style={{ width: "100%" }}
                                 >
-                                  Credit balance:
-                                </Typography>
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    marginLeft: "10px",
-                                    fontWeight: "bold",
-                                  }}
-                                >
-                                  ${paymentData.amount}
-                                </Typography>
-                              </div>
-                              <hr
-                                style={{
-                                  marginTop: "2px",
-                                  marginBottom: "6px",
-                                }}
-                              />
-                              {/* Display entries data */}
-                              {paymentData.entries &&
-                                paymentData.entries.length > 0 && (
-                                  <>
-                                    <div>
-                                      {paymentData.entries.map(
-                                        (entry, index) => (
-                                          <div
-                                            key={index}
-                                            className="entry-container"
+                                  {loading ? (
+                                    <tbody>
+                                      <tr>
+                                        <td>Loading tenant details...</td>
+                                      </tr>
+                                    </tbody>
+                                  ) : error ? (
+                                    <tbody>
+                                      <tr>
+                                        <td>Error: {error.message}</td>
+                                      </tr>
+                                    </tbody>
+                                  ) : tenantDetails._id ? (
+                                    <div className="w-100">
+                                      <Row
+                                        className="w-100 my-3 "
+                                        style={{
+                                          fontSize: "18px",
+                                          textTransform: "capitalize",
+                                          color: "#5e72e4",
+                                          fontWeight: "600",
+                                          borderBottom: "1px solid #ddd",
+                                        }}
+                                      >
+                                        <Col>Tenant Details</Col>
+                                      </Row>
+                                      <Row
+                                        className="w-100 mb-1 "
+                                        style={{
+                                          fontSize: "10px",
+                                          textTransform: "uppercase",
+                                          color: "#aaa",
+                                        }}
+                                      >
+                                        <Col>Unit</Col>
+                                        <Col>Rental Owner</Col>
+                                        <Col>Tenant</Col>
+                                      </Row>
+                                      <Row
+                                        className="w-100 mt-1 mb-5"
+                                        style={{
+                                          fontSize: "12px",
+                                          textTransform: "capitalize",
+                                          color: "#000",
+                                        }}
+                                      >
+                                        <Col>
+                                          {tenantDetails?.entries
+                                            .rental_adress +
+                                            " " +
+                                            tenantDetails?.entries
+                                              .rental_units || "N/A"}
+                                        </Col>
+                                        <Col>
+                                          <a
+                                            href={`tel:${tenantDetails.tenant_mobileNumber}`}
                                           >
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                alignItems: "center",
-                                                marginBottom: "5px",
-                                              }}
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              width="15"
+                                              height="15"
+                                              fill="currentColor"
+                                              class="bi bi-telephone-outbound"
+                                              viewBox="0 0 16 16"
                                             >
-                                              <Typography
-                                                sx={{
-                                                  fontSize: 14,
-                                                  fontWeight: "bold",
-                                                  marginRight: "10px",
-                                                }}
-                                                color="text.secondary"
-                                                gutterBottom
-                                              >
-                                                {entry.account}:
-                                              </Typography>
-                                              <Typography sx={{ fontSize: 14 }}>
-                                                {entry.amount}
-                                              </Typography>
-                                            </div>
-                                          </div>
-                                        )
-                                      )}
+                                              <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511zM11 .5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V1.707l-4.146 4.147a.5.5 0 0 1-.708-.708L14.293 1H11.5a.5.5 0 0 1-.5-.5" />
+                                            </svg>{" "}
+                                            {tenantDetails.rental_owner ||
+                                              "N/A"}
+                                          </a>
+                                        </Col>
+                                        <Col>
+                                          {tenantDetails?.tenant_firstName +
+                                            " " +
+                                            tenantDetails?.tenant_lastName ||
+                                            "N/A"}
+                                        </Col>
+                                      </Row>
+
+                                      <Row
+                                        className="w-100 my-3 "
+                                        style={{
+                                          fontSize: "18px",
+                                          textTransform: "capitalize",
+                                          color: "#5e72e4",
+                                          fontWeight: "600",
+                                          borderBottom: "1px solid #ddd",
+                                        }}
+                                      >
+                                        <Col>Lease Details</Col>
+                                      </Row>
+                                      <Row
+                                        className="mb-1 m-0 p-0"
+                                        style={{
+                                          fontSize: "12px",
+                                          color: "#000",
+                                        }}
+                                      >
+                                        <Table>
+                                          <tbody
+                                            className="tbbody p-0 m-0"
+                                            style={{
+                                              borderTopRightRadius: "5px",
+                                              borderTopLeftRadius: "5px",
+                                              borderBottomLeftRadius: "5px",
+                                              borderBottomRightRadius: "5px",
+                                            }}
+                                          >
+                                            <tr className="header">
+                                              <th>Status</th>
+                                              <th>Start - End</th>
+                                              <th>Property</th>
+                                              <th>Type</th>
+                                              <th>Rent</th>
+                                            </tr>
+                                            {myData ? (
+                                              <>
+                                                {myData.map((item) => (
+                                                  <>
+                                                    <tr className="body">
+                                                      <td>
+                                                        {getStatus(
+                                                          item.entries
+                                                            .start_date,
+                                                          item.entries.end_date
+                                                        )}
+                                                      </td>
+                                                      <td>
+                                                        <Link
+                                                          to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                                          onClick={(e) => {
+                                                            // Handle any additional actions onClick if needed
+                                                            console.log(
+                                                              item._id,
+                                                              "Tenant Id"
+                                                            );
+                                                            console.log(
+                                                              item.entries
+                                                                .entryIndex,
+                                                              "Entry Index"
+                                                            );
+                                                          }}
+                                                        >
+                                                          {formatDateWithoutTime(
+                                                            item.entries
+                                                              .start_date
+                                                          ) +
+                                                            "-" +
+                                                            formatDateWithoutTime(
+                                                              item.entries
+                                                                .end_date
+                                                            ) || "N/A"}
+                                                        </Link>
+                                                      </td>
+                                                      <td>
+                                                        {item.entries
+                                                          .rental_adress ||
+                                                          "N/A"}
+                                                      </td>
+                                                      <td>
+                                                        {item.entries
+                                                          .lease_type || "N/A"}
+                                                      </td>
+                                                      <td>
+                                                        {item.entries.amount}
+                                                      </td>
+                                                    </tr>
+                                                  </>
+                                                ))}
+                                              </>
+                                            ) : null}
+                                          </tbody>
+                                        </Table>
+                                      </Row>
+                                      <Row className="w-100 my-3 text-left">
+                                        <Col>
+                                          <a href="#">Reset Pasword</a>
+                                        </Col>
+                                      </Row>
                                     </div>
+                                  ) : (
+                                    <tbody>
+                                      <tr>
+                                        <td>No tenant details found.</td>
+                                      </tr>
+                                    </tbody>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="col-3 mt-3">
+                                <Card style={{ background: "#F4F6FF" }}>
+                                  <CardContent>
                                     <div
                                       style={{
                                         display: "flex",
                                         flexDirection: "row",
-                                        marginTop: "10px",
                                       }}
                                     >
                                       <Typography
@@ -944,58 +722,129 @@ const RentRollDetail = () => {
                                         color="text.secondary"
                                         gutterBottom
                                       >
-                                        Due date :
+                                        Credit balance:
                                       </Typography>
                                       <Typography
                                         sx={{
                                           fontSize: 14,
                                           marginLeft: "10px",
+                                          fontWeight: "bold",
                                         }}
                                       >
-                                        10/12/2023
+                                        {"$" + balance}
                                       </Typography>
                                     </div>
-                                  </>
-                                )}
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  marginTop: "10px",
-                                }}
-                              >
-                                <Button
-                                  color="success"
-                                  onClick={handleClick}
-                                  style={{
-                                    fontSize: "13px",
-                                    background: "white",
-                                    color: "green",
-                                    "&:hover": {
-                                      background: "green",
-                                      color: "white",
-                                    },
-                                  }}
-                                >
-                                  Payment
-                                </Button>
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    marginLeft: "10px",
-                                    paddingTop: "10px",
-                                    cursor: "pointer",
-                                    color: "blue",
-                                  }}
-                                  onClick={() => handleChange("Financial")}
-                                >
-                                  Lease Ledger
-                                </Typography>
+                                    <hr
+                                      style={{
+                                        marginTop: "2px",
+                                        marginBottom: "6px",
+                                      }}
+                                    />
+
+                                    {/* {paymentData.entries &&
+                          paymentData.entries.length > 0 && ( */}
+                                    <>
+                                      <div>
+                                        {/* {paymentData.entries.map(
+                                  (entry, index) => ( */}
+                                        <div className="entry-container">
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              alignItems: "center",
+                                              marginBottom: "5px",
+                                            }}
+                                          >
+                                            <Typography
+                                              sx={{
+                                                fontSize: 14,
+                                                fontWeight: "bold",
+                                                marginRight: "10px",
+                                              }}
+                                              color="text.secondary"
+                                              gutterBottom
+                                            >
+                                              entry.account:
+                                            </Typography>
+                                            <Typography sx={{ fontSize: 14 }}>
+                                              entry.amount
+                                            </Typography>
+                                          </div>
+                                        </div>
+                                        {/* )
+                                )} */}
+                                      </div>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "row",
+                                          marginTop: "10px",
+                                        }}
+                                      >
+                                        <Typography
+                                          sx={{
+                                            fontSize: 14,
+                                            fontWeight: "bold",
+                                          }}
+                                          color="text.secondary"
+                                          gutterBottom
+                                        >
+                                          Due date :
+                                        </Typography>
+                                        <Typography
+                                          sx={{
+                                            fontSize: 14,
+                                            marginLeft: "10px",
+                                          }}
+                                        >
+                                          10/12/2023
+                                        </Typography>
+                                      </div>
+                                    </>
+
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Button
+                                        color="success"
+                                        // onClick={handleClick}
+                                        style={{
+                                          fontSize: "13px",
+                                          background: "white",
+                                          color: "green",
+                                          "&:hover": {
+                                            background: "green",
+                                            color: "white",
+                                          },
+                                        }}
+                                      >
+                                        Payment
+                                      </Button>
+                                      <Typography
+                                        sx={{
+                                          fontSize: 14,
+                                          marginLeft: "10px",
+                                          paddingTop: "10px",
+                                          cursor: "pointer",
+                                          color: "blue",
+                                        }}
+                                        // onClick={() => handleChange("Financial")}
+                                      >
+                                        Lease Ledger
+                                      </Typography>
+                                    </div>
+                                  </CardContent>
+                                </Card>
                               </div>
-                            </CardContent>
-                          </Card>
-                        )}
-                      </Col>
+                            </div>
+                          </div>
+                        </Card>
+                      </div>
                     </Row>
                   </TabPanel>
 
@@ -1111,7 +960,7 @@ const RentRollDetail = () => {
                                               </td>
                                               <td>
                                                 {generalledger.type ===
-                                                  "Payment"
+                                                "Payment"
                                                   ? "$" + entry.amount
                                                   : "-"}
                                               </td>
@@ -1120,8 +969,8 @@ const RentRollDetail = () => {
                                                   ? entry.balance >= 0
                                                     ? `$${entry.balance}`
                                                     : `$(${Math.abs(
-                                                      entry.balance
-                                                    )})`
+                                                        entry.balance
+                                                      )})`
                                                   : "0"}
                                                 {/* {calculateBalance(
                                                   generalledger.type,
@@ -1138,69 +987,69 @@ const RentRollDetail = () => {
                                                 >
                                                   {generalledger.type ===
                                                     "Charge" && (
-                                                      <div
-                                                        style={{
-                                                          cursor: "pointer",
-                                                        }}
-                                                        onClick={(e) => {
-                                                          e.stopPropagation();
-                                                          // console.log(
-                                                          //   "Entry Object:",
-                                                          //   entry
-                                                          // );
-                                                          deleteCharge(
-                                                            generalledger._id,
-                                                            entry.chargeIndex
-                                                          );
-                                                          // console.log(
-                                                          //   generalledger._id,
-                                                          //   "dsgdg"
-                                                          // );
-                                                          // console.log(
-                                                          //   entry.chargeIndex,
-                                                          //   "dsgdg"
-                                                          // );
-                                                        }}
-                                                      >
-                                                        <DeleteIcon />
-                                                      </div>
-                                                    )}
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        // console.log(
+                                                        //   "Entry Object:",
+                                                        //   entry
+                                                        // );
+                                                        deleteCharge(
+                                                          generalledger._id,
+                                                          entry.chargeIndex
+                                                        );
+                                                        // console.log(
+                                                        //   generalledger._id,
+                                                        //   "dsgdg"
+                                                        // );
+                                                        // console.log(
+                                                        //   entry.chargeIndex,
+                                                        //   "dsgdg"
+                                                        // );
+                                                      }}
+                                                    >
+                                                      <DeleteIcon />
+                                                    </div>
+                                                  )}
 
                                                   {generalledger.type ===
                                                     "Charge" && (
-                                                      <div
-                                                        style={{
-                                                          cursor: "pointer",
-                                                        }}
-                                                        onClick={(e) => {
-                                                          e.stopPropagation();
-                                                          editcharge(
-                                                            generalledger._id,
-                                                            entry.chargeIndex
-                                                          );
-                                                        }}
-                                                      >
-                                                        <EditIcon />
-                                                      </div>
-                                                    )}
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        editcharge(
+                                                          generalledger._id,
+                                                          entry.chargeIndex
+                                                        );
+                                                      }}
+                                                    >
+                                                      <EditIcon />
+                                                    </div>
+                                                  )}
 
                                                   {generalledger.type ===
                                                     "Payment" && (
-                                                      <div
-                                                        style={{
-                                                          cursor: "pointer",
-                                                        }}
-                                                        onClick={(e) => {
-                                                          e.stopPropagation();
-                                                          editpayment(
-                                                            generalledger._id,
-                                                            entry.paymentIndex
-                                                          );
-                                                        }}
-                                                      >
-                                                        <EditIcon />
-                                                      </div>
-                                                    )}
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        editpayment(
+                                                          generalledger._id,
+                                                          entry.paymentIndex
+                                                        );
+                                                      }}
+                                                    >
+                                                      <EditIcon />
+                                                    </div>
+                                                  )}
                                                 </div>
                                               </td>
                                             </tr>
@@ -1226,7 +1075,10 @@ const RentRollDetail = () => {
                     <CardHeader className="border-0">
                       <span>
                         <span>Property :</span>
-                        <h2 style={{ color: "blue" }}> {rental}</h2>
+                        <h2 style={{ color: "blue" }}>
+                          {rental}
+                          {unit && `- ${unit}`}
+                        </h2>
                       </span>
                     </CardHeader>
                     <Row>
@@ -1270,7 +1122,9 @@ const RentRollDetail = () => {
                                         >
                                           {tenant.tenant_firstName || "N/A"}{" "}
                                           {tenant.tenant_lastName || "N/A"}
-                                          <br></br>{entry.rental_adress}-{entry.rental_units}
+                                          <br></br>
+                                          {entry.rental_adress}-
+                                          {entry.rental_units}
                                         </div>
 
                                         <div>

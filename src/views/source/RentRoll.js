@@ -186,6 +186,24 @@ const RentRoll = () => {
     navigate(`/admin/RentRollLeaseing/${id}/${entryIndex}`);
     //console.log(id);
   };
+
+
+  const getStatus = (startDate, endDate) => {
+    const today = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+  
+    if (today >= start && today <= end) {
+      return 'ACTIVE';
+    } else if (today < start) {
+      return 'FUTURE TENANT';
+    } else {
+      return '-'; // Change this to suit your requirement for other cases
+    }
+  };
+
+
+  
   return (
     <>
       <Header />
@@ -250,8 +268,8 @@ const RentRoll = () => {
                       <th scope="col">Tenant Name</th>
                       <th scope="col">Lease</th>
                       <th scope="col">Type</th>
-                      <th scope="col">Start Date</th>
-                      <th scope="col">End Date</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Start Date-End Date</th>
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
@@ -271,10 +289,12 @@ const RentRoll = () => {
                           <td>
                             {tenant.tenant_firstName} {tenant.tenant_lastName}
                           </td>
-                           <td>{tenant.entries.rental_adress} {tenant.entries.rental_units} </td>
+                           <td>{tenant.entries.rental_adress} {tenant.entries.rental_units  ? " - " + tenant.entries.rental_units: null} </td>
                           <td>{tenant.entries.lease_type}</td>
-                          <td>{tenant.entries.start_date}</td>
-                          <td>{tenant.entries.end_date}</td>
+                          <td>
+                          {getStatus(tenant.entries.start_date, tenant.entries.end_date)}
+                          </td>
+                          <td>{tenant.entries.start_date} to {tenant.entries.end_date}</td>
                           {/* <td>{tenant.entries.entryIndex}</td>
                         <td>{tenant.entries.rental_adress}</td> */}
                           <td style={{}}>
@@ -287,7 +307,7 @@ const RentRoll = () => {
                                     tenant._id,
                                     tenant.entries.entryIndex
                                   );
-                                  // //console.log(entry.entryIndex,"dsgdg")
+                                  // console.log(entry.entryIndex,"dsgdg")
                                 }}
                               >
                                 <DeleteIcon />
