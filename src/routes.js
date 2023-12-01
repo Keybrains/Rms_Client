@@ -58,6 +58,7 @@ import Payment from "views/source/Payment";
 import AddPayment from "views/source/AddPayment";
 import AddCharge from "views/source/AddCharge";
 import TenantFinancial from "views/source/TenantFinancial";
+import ApplicantForm from "views/source/ApplicantForm"
 
 var routes = [
   {
@@ -593,6 +594,11 @@ var routes = [
   {
     path: "/AddCharge/:mainId/charge/:chargeIndex",
     component: <AddCharge />,
+    layout: "/admin",
+  },
+  {
+    path: "/applicant-form/:id",
+    component: <ApplicantForm />,
     layout: "/admin",
   },
 ];

@@ -96,6 +96,8 @@ const Leaseing = () => {
   const [rentincdropdownOpen3, setrentincDropdownOpen3] = React.useState(false);
   const [rentincdropdownOpen4, setrentincDropdownOpen4] = React.useState(false);
 
+
+
   const [apiData, setApiData] = useState([]);
   const [isDateRangeUsed, setIsDateRangeUsed] = useState(false);
 
@@ -171,6 +173,7 @@ const Leaseing = () => {
   const handleSignatureChange = (event) => {
     setSignature(event.target.value);
   };
+
   const handleClick1 = (event) => {
     setrentincDropdownOpen2((current) => !current);
   };
@@ -562,7 +565,7 @@ const Leaseing = () => {
     const nextDate = moment(date).add(1, "months").format("YYYY-MM-DD");
     entrySchema.values.end_date = nextDate;
     setIsDateUnavailable(false);
-    checkDate(date);
+    checkDate(date); 
   };
 
   const [file, setFile] = useState("");
@@ -693,11 +696,9 @@ const Leaseing = () => {
   };
 
   const handleOpenFile = (item) => {
-    if (file.length > 0) {
-      console.log(item, "item");
-      const url = URL.createObjectURL(item);
-      window.open(url, "_blank");
-    }
+    console.log(item, "item");
+    const url = URL.createObjectURL(item);
+    window.open(url, "_blank");
   };
 
   useEffect(() => {
@@ -755,6 +756,7 @@ const Leaseing = () => {
         console.error("Network error:", error);
       });
   };
+
 
   const fetchingOneTimeCharges = async () => {
     // console.log("fetcjhiine pne rime charges");
@@ -1082,16 +1084,15 @@ const Leaseing = () => {
 
   const [overlapLease, setOverlapLease] = useState(null);
 
+
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit) {
-      let response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/tenant/tenants"
-      );
+      let response = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
       const data = response.data.data;
-
+  
       let isUnavailable = false;
       let overlappingLease = null;
-
+  
       data.forEach((entry) => {
         if (
           selectedPropertyType === entry.entries.rental_adress &&
@@ -1100,26 +1101,28 @@ const Leaseing = () => {
           const sDate = new Date(entry.entries.start_date);
           const eDate = new Date(entry.entries.end_date);
           const inputDate = new Date(dates);
-
-          if (
-            sDate.getTime() < inputDate.getTime() &&
-            inputDate.getTime() < eDate.getTime()
-          ) {
+  
+          if (sDate.getTime() < inputDate.getTime() && inputDate.getTime() < eDate.getTime()) {
             isUnavailable = true;
             overlappingLease = entry.entries;
           }
         }
       });
-
+  
       setIsDateUnavailable(isUnavailable);
       setOverlapLease(overlappingLease);
     }
   };
+  
+  
 
   useEffect(() => {
     console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
   }, [isDateUnavailable]);
+  
 
+
+  
   let recurringChargeSchema = useFormik({
     initialValues: {
       recuring_amount: "",
@@ -1362,7 +1365,7 @@ const Leaseing = () => {
           // console.log(laesingdata, "yashraj")
           // setFile(arrayOfObjects || "Select");
           // console.log(matchedLease.upload_file, "upload_fileeee");
-
+          
           // console.log(data, "data");
           setFile(matchedLease.upload_file);
           entrySchema.setValues({
@@ -1655,8 +1658,8 @@ const Leaseing = () => {
       emergency_PhoneNumber: tenantsSchema.values.emergency_PhoneNumber,
       entries: [
         {
-          entryIndex: entrySchema.values.entryIndex,
           rental_units: entrySchema.values.rental_units,
+          entryIndex: entrySchema.values.entryIndex,
           rental_adress: entrySchema.values.rental_adress,
           lease_type: entrySchema.values.lease_type,
           start_date: entrySchema.values.start_date,
@@ -1808,7 +1811,7 @@ const Leaseing = () => {
       account: entrySchema.values.account,
       nextDue_date: entrySchema.values.nextDue_date,
       memo: entrySchema.values.memo,
-      upload_file: arrayOfNames,
+      upload_file: entrySchema.values.upload_file,
       isrenton: entrySchema.values.isrenton,
       rent_paid: entrySchema.values.rent_paid,
       propertyOnRent: entrySchema.values.propertyOnRent,
@@ -1946,8 +1949,8 @@ const Leaseing = () => {
               </CardHeader>
               <CardBody>
                 <Form>
-                  <h6 className="heading-small text-muted mb-4">Signature</h6>
-                  <div className="pl-lg-4">
+                  {/* <h6 className="heading-small text-muted mb-4">Signature</h6> */}
+                  {/* <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
                         <FormGroup>
@@ -1992,7 +1995,7 @@ const Leaseing = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                  </div>
+                  </div> */}
                   <br />
 
                   <div className="pl-lg-4">
@@ -2018,14 +2021,14 @@ const Leaseing = () => {
                                 overflowY: "auto",
                               }}
                             >
-                              {propertyData.map((property) => (
+                              {propertyData.map((property,index) => (
                                 <DropdownItem
-                                  key={property._id}
-                                  onClick={() => {
+                                  key={index}
+                                  onClick={() =>{
                                     handlePropertyTypeSelect(
                                       property.rental_adress
-                                    );
-                                  }}
+                                    )}
+                                  }
                                 >
                                   {property.rental_adress}
                                 </DropdownItem>
@@ -2114,15 +2117,15 @@ const Leaseing = () => {
                               </DropdownItem>
                               <DropdownItem
                                 onClick={() =>
-                                  handleLeaseTypeSelect("Fixed wirollover")
+                                  handleLeaseTypeSelect("Fixed w/rollover")
                                 }
                               >
-                                Fixed wirollover
+                                Fixed w/rollover
                               </DropdownItem>
                               <DropdownItem
-                                onClick={() => handleLeaseTypeSelect("At-will")}
+                                onClick={() => handleLeaseTypeSelect("At-will(month to month)")}
                               >
-                                At-will
+                                At-will(month to month)
                               </DropdownItem>
                             </DropdownMenu>
                             {entrySchema.errors &&
@@ -2156,6 +2159,7 @@ const Leaseing = () => {
                             onChange={(e) => {
                               handleDateChange(e.target.value);
                               entrySchema.handleChange(e);
+                              
                             }}
                             value={moment(entrySchema.values.start_date).format(
                               "YYYY-MM-DD"
@@ -2173,59 +2177,44 @@ const Leaseing = () => {
                         </FormGroup>
                       </Col>
                       &nbsp; &nbsp; &nbsp;
-                      <Col
-                        lg="3"
-                        style={
+                      
+
+<Col 
+lg="3" 
+style={
                           selectedLeaseType === "At-will"
                             ? { display: "none" }
                             : { display: "block" }
-                        }
-                      >
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-unitadd2"
-                          >
-                            End Date *
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-unitadd2"
-                            placeholder="3000"
-                            type="date"
-                            name="end_date"
-                            onBlur={entrySchema.handleBlur}
-                            onChange={(e) => {
-                              entrySchema.handleChange(e);
-                              checkDate(e.target.value);
-                              console.log(
-                                "isDateUnavailable:",
-                                isDateUnavailable
-                              );
-                            }}
-                            value={moment(entrySchema.values.end_date).format(
-                              "YYYY-MM-DD"
-                            )}
-                            min={moment(entrySchema.values.start_date).format(
-                              "YYYY-MM-DD"
-                            )}
-                          />
+                        }>
+  <FormGroup>
+    <label className="form-control-label" htmlFor="input-unitadd2">
+      End Date *
+    </label>
+    <Input
+      className="form-control-alternative"
+      id="input-unitadd2"
+      placeholder="3000"
+      type="date"
+      name="end_date"
+      onBlur={entrySchema.handleBlur}
+      onChange={(e) => {
+        entrySchema.handleChange(e);
+        checkDate(e.target.value);
+        console.log("isDateUnavailable:", isDateUnavailable);
+      }}
+      value={moment(entrySchema.values.end_date).format("YYYY-MM-DD")}
+      min={moment(entrySchema.values.start_date).format("YYYY-MM-DD")}
+    />
+    
+    {isDateUnavailable && (
+      <div style={{ color: "red", marginTop: "8px" }}>
+       This date range overlaps with an existing lease: {overlapLease?.rental_adress} | - {moment(overlapLease?.start_date).format("DD-MM-YYYY")} {moment(overlapLease?.end_date).format("DD-MM-YYYY")}. Please adjust your date range and try again.
+      </div>
+    )}
+  </FormGroup>
+</Col>
 
-                          {isDateUnavailable && (
-                            <div style={{ color: "red", marginTop: "8px" }}>
-                              This date range overlaps with an existing lease:{" "}
-                              {overlapLease?.rental_adress} | -{" "}
-                              {moment(overlapLease?.start_date).format(
-                                "DD-MM-YYYY"
-                              )}{" "}
-                              {moment(overlapLease?.end_date).format(
-                                "DD-MM-YYYY"
-                              )}
-                              . Please adjust your date range and try again.
-                            </div>
-                          )}
-                        </FormGroup>
-                      </Col>
+
                     </Row>
 
                     {/* <Row>
@@ -4346,7 +4335,7 @@ const Leaseing = () => {
                                 onChange={(e) => entrySchema.handleChange(e)}
                                 value={entrySchema.values.rent_cycle}
                               >
-                                {rentOptions.map((option) => (
+                               {rentOptions.map((option) => (
                                   <DropdownItem
                                     key={option}
                                     onClick={() =>
@@ -4423,7 +4412,6 @@ const Leaseing = () => {
                                 </FormGroup>
                               </FormGroup>
                             </Col>
-
                             <FormGroup>
                               <label
                                 className="form-control-label"
@@ -4660,7 +4648,7 @@ const Leaseing = () => {
                               onChange={entrySchema.handleChange}
                               value={entrySchema.values.Due_date}
                             />
-
+                            
                             {entrySchema.touched.tenant_start_date &&
                             entrySchema.errors.Due_date ? (
                               <div style={{ color: "red" }}>
@@ -4709,8 +4697,7 @@ const Leaseing = () => {
 
                         <Col lg="7">
                           <FormGroup>
-                            <br />
-
+                            <br/>
                             <label
                               className="form-control-label"
                               htmlFor="input-unitadd10"
@@ -4781,7 +4768,7 @@ const Leaseing = () => {
                                       toggle={toggle5}
                                     >
                                       <DropdownToggle caret>
-                                        {recurringChargeSchema.values
+                                      {recurringChargeSchema.values
                                           .recuring_account
                                           ? recurringChargeSchema.values
                                               .recuring_account
@@ -5021,7 +5008,7 @@ const Leaseing = () => {
                                       toggle={toggle7}
                                     >
                                       <DropdownToggle caret>
-                                        {oneTimeChargeSchema.values
+                                      {oneTimeChargeSchema.values
                                           .onetime_account
                                           ? oneTimeChargeSchema.values
                                               .onetime_account
@@ -5494,14 +5481,11 @@ const Leaseing = () => {
                           accept: "application/pdf",
                           max: 10,
                         }}
-                        // inputProps={{ multiple: true }}
                         onChange={(e) => {
-                          console.log(e.target.files, "target.files");
-                          // entrySchema.setFieldValue("upload_file", [...e.target.files]);
                           fileData(e.target.files);
                         }}
                         // onChange={rentalsFormik.handleChange}
-                        // value={entrySchema.values.upload_file}
+                        // value={entrySchema.values.upload_file[0]}
                       />
                       <label for="upload_file" class="btn">
                         Upload
@@ -5576,20 +5560,16 @@ const Leaseing = () => {
                           >
                             {!id ? (
                               <p
-                                onClick={() => handleOpenFile(file.upload_file)}
+                                onClick={() => handleOpenFile(file)}
                                 style={{ cursor: "pointer" }}
                               >
-                                {file.file_name?.substr(0, 5)}
-                                {file.file_name?.length > 5 ? "..." : null}
+                                {file?.name?.substr(0, 5)}
+                                {file?.name?.length > 5 ? "..." : null}
                               </p>
                             ) : (
-                              <p
-                                // onClick={() => handleOpenFile(file.upload_file)}
-                                style={{ cursor: "pointer" }}
-                              >
-                                {console.log(file, "file 5803")}
-                                {file[0]?.file_name?.substr(0, 5)}
-                                {file[0]?.file_name?.length > 5 ? "..." : null}
+                              <p style={{ cursor: "pointer" }}>
+                                {file?.name?.substr(0, 5)}
+                                {file?.name?.length > 5 ? "..." : null}
                               </p>
                             )}
                             <CloseIcon
@@ -5640,7 +5620,8 @@ const Leaseing = () => {
                               console.log(e.target.checked);
                             }}
                           />
-                        } // label="End"
+                        }
+                        // label="End"
                         labelPlacement="end"
                       />
                     </FormGroup>
@@ -5689,7 +5670,12 @@ const Leaseing = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                        entrySchema.handleSubmit();
+                        if (selectedTenantData.length !== 0) {
+                          handleSubmit(entrySchema.values);
+                        } else {
+                          // console.log("data not ok")
+                          setDisplay(true);
+                        }
                       }}
                     >
                       Create Lease
@@ -5697,7 +5683,7 @@ const Leaseing = () => {
                   )}
                   <Button
                     color="primary"
-                    href="#rms"
+                    // href="#rms"
                     onClick={handleCloseButtonClick}
                     className="btn btn-primary"
                     style={{

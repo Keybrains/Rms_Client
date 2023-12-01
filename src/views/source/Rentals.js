@@ -1571,6 +1571,7 @@ const Rentals = () => {
                                                   {
                                                     rentalOwner.rentalOwner_lastName
                                                   }
+                                                  {`(${rentalOwner.rentalOwner_phoneNumber})`}
                                                 </td>
                                                 <td>
                                                   <Checkbox

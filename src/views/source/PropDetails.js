@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "components/Headers/Header";
@@ -36,7 +36,7 @@ import { OpenImageDialog } from "components/OpenImageDialog";
 import { useFormik } from "formik";
 import moment from "moment";
 import { jwtDecode } from "jwt-decode";
-import { TextField } from "@mui/material";
+import { Grid, Paper, TextField, Typography } from "@mui/material";
 import { getUnit } from "@mui/material/styles/cssUtils";
 import swal from "sweetalert";
 
@@ -52,7 +52,7 @@ const style = {
 };
 const PropDetails = () => {
   const { id, entryIndex } = useParams();
-  // console.log(id); 
+  console.log(id);
   const [propertyDetails, setpropertyDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -63,6 +63,7 @@ const PropDetails = () => {
   const [editUnitDialogOpen, setEditUnitDialogOpen] = useState(false);
   const [editListingData, setEditListingData] = useState(false);
   const [RentAdd, setRentAdd] = useState({});
+  const [propType, setPropType] = useState("");
 
   const getRentalsData = async () => {
     try {
@@ -70,7 +71,7 @@ const PropDetails = () => {
         `https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`
       );
       setpropertyDetails(response.data.data);
-      // console.log(response.data.data, "response frirn simmary");
+      console.log(response.data.data, "response frirn simmary");
       const rentalId = response.data.data._id;
       getUnitProperty(rentalId);
       const matchedProperty = response.data.data.entries.find(
@@ -78,8 +79,21 @@ const PropDetails = () => {
       );
       setMatchedProperty(matchedProperty);
       setRentAdd(matchedProperty.rental_adress);
-      // console.log(matchedProperty, `matched property`);
+      console.log(matchedProperty, `matched property`);
       setLoading(false);
+
+      const resp = await axios.get(`
+        https://propertymanager.cloudpress.host/api/newproparty/propropartytype
+        `);
+      console.log(resp, "resp");
+
+      const selectedType = Object.keys(resp.data.data).find((item) => {
+        return resp.data.data[item].some(
+          (data) => data.propertysub_type === matchedProperty.property_type
+        );
+      });
+
+      setPropType(selectedType);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
@@ -89,7 +103,7 @@ const PropDetails = () => {
 
   React.useEffect(() => {
     getRentalsData();
-    // console.log(id);
+    console.log(id);
   }, [id, clickedObject]);
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -156,12 +170,13 @@ const PropDetails = () => {
   // const closeModal = () => {
   //   setIsModalOpen(false);
   // };
+  // const navigate = useNavigate();
 
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("summary");
   const [addUnitDialogOpen, setAddUnitDialogOpen] = useState(false);
   const [clickedObject, setClickedObject] = useState({});
-  // console.log(matchedProperty, "matchedProperty");
+  console.log(matchedProperty, "matchedProperty");
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -195,7 +210,7 @@ const PropDetails = () => {
     },
 
     onSubmit: (values) => {
-      // console.log(values);
+      console.log(values);
     },
   });
   const [financialType, setFinancialType] = React.useState("");
@@ -203,6 +218,7 @@ const PropDetails = () => {
   const [threeMonths, setThreeMonths] = useState([]);
   const [propSummary, setPropSummary] = useState(false);
   const [propId, setPropId] = useState("");
+  const [addAppliances, setAddAppliances] = useState(false);
 
   const handleFinancialSelection = (value) => {
     // console.log(value);
@@ -222,7 +238,7 @@ const PropDetails = () => {
     // Print the names of the last three months
 
     const todayDate = moment().format("YYYY-MM-DD");
-    // console.log(todayDate, "todayDate");
+    console.log(todayDate, "todayDate");
     const monthNumber = todayDate.substring(5, 7);
     const month = new Date(0, monthNumber - 1).toLocaleString("en-US", {
       month: "long",
@@ -260,6 +276,14 @@ const PropDetails = () => {
         console.log(err);
       });
   };
+  function formatDateWithoutTime(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${month}-${day}-${year}`;
+  }
 
   const handleUnitDetailsEdit = async (id, rentalId) => {
     const updatedValues = {
@@ -286,7 +310,7 @@ const PropDetails = () => {
         console.log(err);
       });
 
-    // console.log(clickedObject, "clickedObject after update");
+    console.log(clickedObject, "clickedObject after update");
   };
 
   const handleListingEdit = async (id, rentalId) => {
@@ -311,7 +335,7 @@ const PropDetails = () => {
         console.log(err);
       });
 
-    // console.log(clickedObject, "clickedObject after update");
+    console.log(clickedObject, "clickedObject after update");
   };
 
   const handleDeleteUnit = (id) => {
@@ -326,7 +350,7 @@ const PropDetails = () => {
         axios
           .delete("https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" + id)
           .then((response) => {
-            // console.log(response.data.data, "deleted data");
+            console.log(response.data.data, "deleted data");
             getRentalsData();
             setPropSummary(false);
           })
@@ -357,7 +381,7 @@ const PropDetails = () => {
       rentalcom_units: addUnitFormik.values.rentalcom_units,
       // property_image: addUnitFormik.values.property_image,
     };
-    // console.log("formData", formData);
+    console.log("formData", formData);
     try {
       const response = await axios.post(
         "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit",
@@ -398,7 +422,30 @@ const PropDetails = () => {
         <Row>
           <div className="col">
             <Card className="shadow">
-              <CardHeader className="border-0"></CardHeader>
+              <CardHeader className="border-0">
+                {console.log(matchedProperty, "matchedProperty 402")}
+                {console.log(propType, "proptype")}
+                <Row>
+                  <Col md="4">
+                    <div>
+                      <div>
+                        <h1 className="mb-0">
+                          {matchedProperty.rental_adress}
+                        </h1>
+                      </div>
+                      <div>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          {matchedProperty.property_type} | {propType}
+                        </Typography>
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+              </CardHeader>
               <Col>
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -417,10 +464,11 @@ const PropDetails = () => {
                         value="financial"
                       />
                       <Tab
-                        label="Units"
+                        label={`Units (${propertyUnit.length})`}
                         style={{ textTransform: "none" }}
                         value="units"
                       />
+                      {console.log(propertyUnit, "property unit")}
                     </TabList>
                   </Box>
                   <TabPanel value="summary">
@@ -1487,9 +1535,14 @@ const PropDetails = () => {
                                 <td>{unit.rental_units || "N/A"}</td>
                                 <td>{unit.rental_adress || "N/A"}</td>
                                 <td>
-                                  {unit.tenant_firstName +
+                                  {unit.tenant_firstName  == null
+                                    ? "-"
+                                    : unit.tenant_firstName +
+                                      " " +
+                                      unit.tenant_lastName}
+                                  {/* {unit.tenant_firstName +
                                     " " +
-                                    unit.tenant_lastName}
+                                    unit.tenant_lastName} */}
                                 </td>
                                 <td>{"N/A"}</td>
                               </tr>
@@ -1499,53 +1552,145 @@ const PropDetails = () => {
                         <></>
                       </div>
                     ) : (
-                      <div className="table-responsive">
-                        <Table
-                          className="align-items-center table-flush"
-                          responsive
-                          style={{ width: "100%" }}
+                      // <div className="table-responsive">
+                      //   <Table
+                      //     className="align-items-center table-flush"
+                      //     responsive
+                      //     style={{ width: "100%" }}
+                      //   >
+                      <>
+                        <Button
+                          className="btn-icon btn-2"
+                          // color="primary"
+                          // style={{ marginRight: "10px" }}
+                          style={{
+                            background: "white",
+                            color: "blue",
+                            // marginRight: "10px",
+                          }}
+                          size="sm"
+                          onClick={() => setPropSummary(false)}
                         >
-                          <>
-                            <Button
-                              className="btn-icon btn-2"
-                              // color="primary"
-                              // style={{ marginRight: "10px" }}
+                          <span className="btn-inner--text">Back</span>
+                        </Button>
+                        <Button
+                          className="btn-icon btn-2"
+                          // color="primary"
+                          style={{
+                            background: "white",
+                            color: "blue",
+                            // marginRight: "10px",
+                          }}
+                          size="sm"
+                          onClick={() => {
+                            handleDeleteUnit(clickedObject._id);
+                          }}
+                        >
+                          Delete unit
+                        </Button>
+
+                        <Grid container>
+                          <Grid container md={9} style={{ display: "flex" }}>
+                            <Grid item md={3}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexWrap: "wrap",
+                                }}
+                              >
+                                {clickedObject.propertyres_image &&
+                                  clickedObject.propertyres_image.length >
+                                    0 && (
+                                    <div
+                                      style={{
+                                        width: "100%", // Expands to full width by default
+                                      }}
+                                    >
+                                      {clickedObject.propertyres_image.map(
+                                        (propertyres_image, index) => (
+                                          <img
+                                            key={index}
+                                            src={propertyres_image}
+                                            alt="Property Details"
+                                            onClick={() => {
+                                              setSelectedImage(
+                                                propertyres_image
+                                              );
+                                              setOpen(true);
+                                            }}
+                                            style={{
+                                              width: "200px",
+                                              height: "150px",
+                                              // objectFit: "cover",
+                                              margin: "10px",
+                                              borderRadius: "20px",
+                                              "@media (max-width: 768px)": {
+                                                width: "100%", // Full-width on smaller screens
+                                              },
+                                            }}
+                                          />
+                                        )
+                                      )}
+                                      <OpenImageDialog
+                                        open={open}
+                                        setOpen={setOpen}
+                                        selectedImage={selectedImage}
+                                      />
+                                    </div>
+                                  )}
+                                {clickedObject.property_image &&
+                                  clickedObject.property_image.length > 0 && (
+                                    <div
+                                      style={{
+                                        width: "100%", // Expands to full width by default
+                                      }}
+                                    >
+                                      {clickedObject.property_image.map(
+                                        (property_image, index) => (
+                                          <img
+                                            key={index}
+                                            src={property_image}
+                                            alt="Property Details"
+                                            style={{
+                                              width: "100px",
+                                              height: "100px",
+                                              // objectFit: "cover",
+                                              margin: "10px",
+                                              borderRadius: "10px",
+                                              "@media (max-width: 768px)": {
+                                                width: "100%", // Full-width on smaller screens
+                                              },
+                                            }}
+                                          />
+                                        )
+                                      )}
+                                    </div>
+                                  )}
+                              </div>
+                            </Grid>
+                            <Grid
+                              item
+                              md={8}
                               style={{
-                                background: "white",
-                                color: "blue",
-                                // marginRight: "10px",
-                              }}
-                              size="sm"
-                              onClick={() => setPropSummary(false)}
-                            >
-                              <span className="btn-inner--text">Back</span>
-                            </Button>
-                            <Button
-                              className="btn-icon btn-2"
-                              // color="primary"
-                              style={{
-                                background: "white",
-                                color: "blue",
-                                // marginRight: "10px",
-                              }}
-                              size="sm"
-                              onClick={() => {
-                                handleDeleteUnit(clickedObject._id);
+                                width: "100%",
+                                marginLeft: "20px",
                               }}
                             >
-                              Delete unit
-                            </Button>
-                            <tbody>
-                              <tr>
-                                <th
-                                  colSpan="2"
-                                  className="text-primary text-lg"
+                              <div>
+                                {console.log(clickedObject, "clickedObject")}
+                                <Typography
+                                  variant="h6"
+                                  sx={{
+                                    fontSize: "18px",
+                                    textTransform: "capitalize",
+                                    color: "#5e72e4",
+                                    fontWeight: "600",
+                                  }}
                                 >
-                                  Unit Details{" "}
+                                  {clickedObject.rental_unitsAdress}
                                   <span
                                     className="text-sm"
                                     style={{
-                                      textDecoration: "underline",
                                       cursor: "pointer",
                                       color: "black",
                                       marginLeft: "10px",
@@ -1554,10 +1699,10 @@ const PropDetails = () => {
                                       setEditUnitDialogOpen(
                                         !editUnitDialogOpen
                                       );
-                                      // console.log(
-                                      //   clickedObject,
-                                      //   "clicked object 1438"
-                                      // );
+                                      console.log(
+                                        clickedObject,
+                                        "clicked object 1438"
+                                      );
                                       addUnitFormik.setValues({
                                         unit_number: clickedObject.rental_units,
                                         address: clickedObject.rental_adress,
@@ -1569,146 +1714,338 @@ const PropDetails = () => {
                                     }}
                                   >
                                     {" "}
-                                    Edit
+                                    <Button
+                                      size="sm"
+                                      style={{
+                                        background: "white",
+                                        color: "blue",
+                                        // marginRight: "10px",
+                                      }}
+                                      onClick={() => {
+                                        setEditUnitDialogOpen(
+                                          !editUnitDialogOpen
+                                        );
+                                      }}
+                                    >
+                                      Edit
+                                    </Button>
                                   </span>
-                                </th>
-                              </tr>
-                              {!editUnitDialogOpen ? (
+                                  <hr style={{ marginTop: "10px" }} />
+                                </Typography>
+                              </div>
+                              <span style={{ marginTop: "0px" }}>
+                                ADDRESS
+                                <br />
+                                {clickedObject?.rental_units +
+                                  ", " +
+                                  clickedObject?.rental_adress +
+                                  ", " +
+                                  clickedObject?.rental_city || "N/A"}
+                                <br />
+                                {clickedObject?.rental_state +
+                                  ", " +
+                                  clickedObject?.rental_postcode +
+                                  ", " +
+                                  clickedObject?.rental_country || "N/A"}
+                              </span>
+
+                              {/* i want to put this div to the extreme rigth of main div */}
+                            </Grid>
+                            <Grid item xs={3}></Grid>
+                            <Grid item xs={9}>
+                              {editUnitDialogOpen ? (
                                 <>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Address
-                                    </td>
-                                    <td>
-                                      {clickedObject?.rental_units +
-                                        ", " +
-                                        clickedObject?.rental_adress +
-                                        ", " +
-                                        clickedObject?.rental_city +
-                                        ", " +
-                                        clickedObject?.rental_state +
-                                        ", " +
-                                        clickedObject?.rental_postcode +
-                                        ", " +
-                                        clickedObject?.rental_country || "N/A"}
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Image
-                                    </td>
-                                    <td>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexWrap: "wrap",
-                                        }}
-                                      >
-                                        {clickedObject.propertyres_image &&
-                                          clickedObject.propertyres_image
-                                            .length > 0 && (
+                                  <Row>
+                                    <Col md={11}>
+                                      <Card style={{ position: "relative" }}>
+                                        <CloseIcon
+                                          style={{
+                                            position: "absolute",
+                                            top: "10px",
+                                            right: "10px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => {
+                                            setEditUnitDialogOpen(
+                                              !editUnitDialogOpen
+                                            );
+                                          }}
+                                        />
+                                        <CardBody>
+                                          {/* <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
+                                          <form
+                                            onSubmit={
+                                              addUnitFormik.handleSubmit
+                                            }
+                                          >
                                             <div
                                               style={{
-                                                width: "100%", // Expands to full width by default
+                                                display: "flex",
+                                                flexDirection: "column",
                                               }}
                                             >
-                                              Residential:
-                                              {clickedObject.propertyres_image.map(
-                                                (propertyres_image, index) => (
-                                                  <img
-                                                    key={index}
-                                                    src={propertyres_image}
-                                                    alt="Property Details"
-                                                    onClick={() => {
-                                                      setSelectedImage(
-                                                        propertyres_image
-                                                      );
-                                                      setOpen(true);
-                                                    }}
-                                                    style={{
-                                                      width: "100px",
-                                                      height: "100px",
-                                                      // objectFit: "cover",
-                                                      margin: "10px",
-                                                      borderRadius: "10px",
-                                                      "@media (max-width: 768px)":
-                                                        {
-                                                          width: "100%", // Full-width on smaller screens
-                                                        },
-                                                    }}
-                                                  />
-                                                )
-                                              )}
-                                              <OpenImageDialog
-                                                open={open}
-                                                setOpen={setOpen}
-                                                selectedImage={selectedImage}
+                                              <div>
+                                                <h5>Unit Number</h5>
+                                              </div>
+                                              <TextField
+                                                type="text"
+                                                size="small"
+                                                id="unit_number"
+                                                name="unit_number"
+                                                value={
+                                                  addUnitFormik.values
+                                                    .unit_number
+                                                }
+                                                onChange={
+                                                  addUnitFormik.handleChange
+                                                }
+                                                onBlur={
+                                                  addUnitFormik.handleBlur
+                                                }
                                               />
                                             </div>
-                                          )}
-                                        {clickedObject.property_image &&
-                                          clickedObject.property_image.length >
-                                            0 && (
                                             <div
                                               style={{
-                                                width: "100%", // Expands to full width by default
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                marginTop: "10px",
                                               }}
                                             >
-                                              Commercial:
-                                              {clickedObject.property_image.map(
-                                                (property_image, index) => (
-                                                  <img
-                                                    key={index}
-                                                    src={property_image}
-                                                    alt="Property Details"
-                                                    style={{
-                                                      width: "100px",
-                                                      height: "100px",
-                                                      // objectFit: "cover",
-                                                      margin: "10px",
-                                                      borderRadius: "10px",
-                                                      "@media (max-width: 768px)":
-                                                        {
-                                                          width: "100%", // Full-width on smaller screens
-                                                        },
-                                                    }}
-                                                  />
-                                                )
-                                              )}
+                                              <div>
+                                                <h5>Street Address</h5>
+                                              </div>
+                                              <TextField
+                                                type="text"
+                                                size="small"
+                                                id="address"
+                                                name="address"
+                                                value={
+                                                  addUnitFormik.values.address
+                                                }
+                                                onChange={
+                                                  addUnitFormik.handleChange
+                                                }
+                                                onBlur={
+                                                  addUnitFormik.handleBlur
+                                                }
+                                              />
                                             </div>
-                                          )}
-                                      </div>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td className="font-weight-bold text-md">
-                                      Property Type
-                                    </td>
-                                    <td>
-                                      {clickedObject.rental_adress || "N/A"}
-                                    </td>
-                                    {/* {console.log(clickedObject, "yash")} */}
-                                  </tr>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }}
+                                            >
+                                              <div>
+                                                <div>
+                                                  <h5>City</h5>
+                                                </div>
+                                                <TextField
+                                                  type="text"
+                                                  size="small"
+                                                  id="city"
+                                                  name="city"
+                                                  value={
+                                                    addUnitFormik.values.city
+                                                  }
+                                                  onChange={
+                                                    addUnitFormik.handleChange
+                                                  }
+                                                  onBlur={
+                                                    addUnitFormik.handleBlur
+                                                  }
+                                                />
+                                              </div>
+                                              <div
+                                                style={{ marginLeft: "10px" }}
+                                              >
+                                                <div>
+                                                  <h5>State</h5>
+                                                </div>
+                                                <TextField
+                                                  type="text"
+                                                  size="small"
+                                                  id="state"
+                                                  name="state"
+                                                  value={
+                                                    addUnitFormik.values.state
+                                                  }
+                                                  onChange={
+                                                    addUnitFormik.handleChange
+                                                  }
+                                                  onBlur={
+                                                    addUnitFormik.handleBlur
+                                                  }
+                                                />
+                                              </div>
+                                              <div
+                                                style={{ marginLeft: "10px" }}
+                                              >
+                                                <div>
+                                                  <h5>Zip</h5>
+                                                </div>
+                                                <TextField
+                                                  type="text"
+                                                  size="small"
+                                                  id="zip"
+                                                  name="zip"
+                                                  value={
+                                                    addUnitFormik.values.zip
+                                                  }
+                                                  onChange={
+                                                    addUnitFormik.handleChange
+                                                  }
+                                                  onBlur={
+                                                    addUnitFormik.handleBlur
+                                                  }
+                                                />
+                                              </div>
+                                            </div>
+
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                              }}
+                                            >
+                                              <div
+                                                style={{ marginTop: "10px" }}
+                                              >
+                                                <h5>Country</h5>
+                                              </div>
+                                              <TextField
+                                                type="text"
+                                                size="small"
+                                                id="country"
+                                                name="country"
+                                                value={
+                                                  addUnitFormik.values.country
+                                                }
+                                                onChange={
+                                                  addUnitFormik.handleChange
+                                                }
+                                                onBlur={
+                                                  addUnitFormik.handleBlur
+                                                }
+                                              />
+                                            </div>
+
+                                            <div style={{ marginTop: "10px" }}>
+                                              <Button
+                                                color="success"
+                                                type="submit"
+                                                onClick={() => {
+                                                  handleUnitDetailsEdit(
+                                                    clickedObject._id,
+                                                    clickedObject.rentalId
+                                                  );
+                                                  // setIsEdit(false);
+                                                  setEditUnitDialogOpen(
+                                                    !editUnitDialogOpen
+                                                  );
+                                                }}
+                                              >
+                                                Save
+                                              </Button>
+                                              <Button
+                                                onClick={() => {
+                                                  setEditUnitDialogOpen(
+                                                    !editUnitDialogOpen
+                                                  );
+                                                }}
+                                              >
+                                                Cancel
+                                              </Button>
+                                            </div>
+                                          </form>
+                                        </CardBody>
+                                      </Card>
+                                    </Col>
+                                  </Row>
                                 </>
-                              ) : (
+                              ) : null}
+                            </Grid>
+                            <Grid item xs="12" style={{ marginTop: "20px" }}>
+                              <>
+                                <Row
+                                  className="w-100 my-3 "
+                                  style={{
+                                    fontSize: "18px",
+                                    textTransform: "capitalize",
+                                    color: "#5e72e4",
+                                    fontWeight: "600",
+                                    borderBottom: "1px solid #ddd",
+                                  }}
+                                >
+                                  <Col>
+                                    Listing Information{" "}
+                                    <Button
+                                      size="sm"
+                                      style={{
+                                        background: "white",
+                                        color: "blue",
+                                        marginBottom: "5px",
+                                        // marginRight: "10px",
+                                      }}
+                                      onClick={() => {
+                                        setEditListingData(!editListingData);
+                                      }}
+                                    >
+                                      Edit
+                                    </Button>
+                                  </Col>
+                                </Row>
+                                <Row
+                                  className="w-100 mb-1 "
+                                  style={{
+                                    fontSize: "10px",
+                                    textTransform: "uppercase",
+                                    color: "#aaa",
+                                  }}
+                                >
+                                  <Col>Market Rent</Col>
+                                  <Col>Size</Col>
+                                  <Col>Description</Col>
+                                  <Col></Col>
+                                </Row>
+                                {console.log(clickedObject.values, "clduhjik")}
+                                <Row
+                                  className="w-100 mt-1  mb-5"
+                                  style={{
+                                    fontSize: "12px",
+                                    textTransform: "capitalize",
+                                    color: "#000",
+                                  }}
+                                >
+                                  <Col>
+                                    {clickedObject.market_rent || "N/A"}
+                                  </Col>
+                                  <Col>
+                                    {clickedObject.rental_sqft || "N/A"}
+                                  </Col>
+                                  <Col style={{ textTransform: "lowercase" }}>
+                                    {clickedObject.description || "N/A"}
+                                  </Col>
+                                  <Col></Col>
+                                </Row>
+                              </>
+                              {editListingData ? (
                                 <Row>
-                                  <Col md={8}>
+                                  <Col>
                                     <Card style={{ position: "relative" }}>
                                       <CloseIcon
+                                        onClick={() => {
+                                          setEditListingData(!editListingData);
+                                        }}
                                         style={{
                                           position: "absolute",
                                           top: "10px",
                                           right: "10px",
                                           cursor: "pointer",
                                         }}
-                                        onClick={() => {
-                                          setEditUnitDialogOpen(
-                                            !editUnitDialogOpen
-                                          );
-                                        }}
                                       />
                                       <CardBody>
-                                        {/* <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
                                         <form
                                           onSubmit={addUnitFormik.handleSubmit}
                                         >
@@ -1719,15 +2056,15 @@ const PropDetails = () => {
                                             }}
                                           >
                                             <div>
-                                              <h5>Unit Number</h5>
+                                              <h5>Market Rent</h5>
                                             </div>
                                             <TextField
-                                              type="text"
+                                              type="number"
                                               size="small"
-                                              id="unit_number"
-                                              name="unit_number"
+                                              id="market_rent"
+                                              name="market_rent"
                                               value={
-                                                addUnitFormik.values.unit_number
+                                                addUnitFormik.values.market_rent
                                               }
                                               onChange={
                                                 addUnitFormik.handleChange
@@ -1735,30 +2072,7 @@ const PropDetails = () => {
                                               onBlur={addUnitFormik.handleBlur}
                                             />
                                           </div>
-                                          <div
-                                            style={{
-                                              display: "flex",
-                                              flexDirection: "column",
-                                              marginTop: "10px",
-                                            }}
-                                          >
-                                            <div>
-                                              <h5>Street Address</h5>
-                                            </div>
-                                            <TextField
-                                              type="text"
-                                              size="small"
-                                              id="address"
-                                              name="address"
-                                              value={
-                                                addUnitFormik.values.address
-                                              }
-                                              onChange={
-                                                addUnitFormik.handleChange
-                                              }
-                                              onBlur={addUnitFormik.handleBlur}
-                                            />
-                                          </div>
+
                                           <div
                                             style={{
                                               display: "flex",
@@ -1768,15 +2082,17 @@ const PropDetails = () => {
                                           >
                                             <div>
                                               <div>
-                                                <h5>City</h5>
+                                                <h5>Description</h5>
                                               </div>
-                                              <TextField
-                                                type="text"
-                                                size="small"
-                                                id="city"
-                                                name="city"
+                                              <Input
+                                                type="textarea"
+                                                // size="small"
+                                                id="description"
+                                                name="description"
+                                                // style={{width: '100%'}}
                                                 value={
-                                                  addUnitFormik.values.city
+                                                  addUnitFormik.values
+                                                    .description
                                                 }
                                                 onChange={
                                                   addUnitFormik.handleChange
@@ -1786,68 +2102,6 @@ const PropDetails = () => {
                                                 }
                                               />
                                             </div>
-                                            <div style={{ marginLeft: "10px" }}>
-                                              <div>
-                                                <h5>State</h5>
-                                              </div>
-                                              <TextField
-                                                type="text"
-                                                size="small"
-                                                id="state"
-                                                name="state"
-                                                value={
-                                                  addUnitFormik.values.state
-                                                }
-                                                onChange={
-                                                  addUnitFormik.handleChange
-                                                }
-                                                onBlur={
-                                                  addUnitFormik.handleBlur
-                                                }
-                                              />
-                                            </div>
-                                            <div style={{ marginLeft: "10px" }}>
-                                              <div>
-                                                <h5>Zip</h5>
-                                              </div>
-                                              <TextField
-                                                type="text"
-                                                size="small"
-                                                id="zip"
-                                                name="zip"
-                                                value={addUnitFormik.values.zip}
-                                                onChange={
-                                                  addUnitFormik.handleChange
-                                                }
-                                                onBlur={
-                                                  addUnitFormik.handleBlur
-                                                }
-                                              />
-                                            </div>
-                                          </div>
-
-                                          <div
-                                            style={{
-                                              display: "flex",
-                                              flexDirection: "column",
-                                            }}
-                                          >
-                                            <div style={{ marginTop: "10px" }}>
-                                              <h5>Country</h5>
-                                            </div>
-                                            <TextField
-                                              type="text"
-                                              size="small"
-                                              id="country"
-                                              name="country"
-                                              value={
-                                                addUnitFormik.values.country
-                                              }
-                                              onChange={
-                                                addUnitFormik.handleChange
-                                              }
-                                              onBlur={addUnitFormik.handleBlur}
-                                            />
                                           </div>
 
                                           <div style={{ marginTop: "10px" }}>
@@ -1855,13 +2109,20 @@ const PropDetails = () => {
                                               color="success"
                                               type="submit"
                                               onClick={() => {
-                                                handleUnitDetailsEdit(
+                                                // handleUnitDetailsEdit(
+                                                //   clickedObject._id
+                                                // );
+                                                // // setIsEdit(false);
+                                                // setEditUnitDialogOpen(
+                                                //   !editUnitDialogOpen
+                                                // );
+                                                handleListingEdit(
                                                   clickedObject._id,
                                                   clickedObject.rentalId
                                                 );
-                                                // setIsEdit(false);
-                                                setEditUnitDialogOpen(
-                                                  !editUnitDialogOpen
+
+                                                setEditListingData(
+                                                  !editListingData
                                                 );
                                               }}
                                             >
@@ -1869,8 +2130,8 @@ const PropDetails = () => {
                                             </Button>
                                             <Button
                                               onClick={() => {
-                                                setEditUnitDialogOpen(
-                                                  !editUnitDialogOpen
+                                                setEditListingData(
+                                                  !editListingData
                                                 );
                                               }}
                                             >
@@ -1879,211 +2140,393 @@ const PropDetails = () => {
                                           </div>
                                         </form>
                                       </CardBody>
-
-                                      {/* <Button
-                              color="success"
-                              onClick={() => {
-                                setIsEdit(false);
-                              }}
-                              >
-                              Save
-                            </Button> */}
                                     </Card>
                                   </Col>
                                 </Row>
-                              )}
-                            </tbody>
-                            <tbody>
-                              <tr>
-                                <th
-                                  colSpan="2"
-                                  className="text-primary text-lg"
-                                >
-                                  Listing information{" "}
-                                  <span
-                                    className="text-sm"
+                              ) : null}
+
+                              <Row
+                                className="w-100 my-3 "
+                                style={{
+                                  fontSize: "18px",
+                                  textTransform: "capitalize",
+                                  color: "#5e72e4",
+                                  fontWeight: "600",
+                                  borderBottom: "1px solid #ddd",
+                                }}
+                              >
+                                <Col>Leases</Col>
+                              </Row>
+                              <Row
+                                className="mb-1 m-0 p-0"
+                                style={{ fontSize: "12px", color: "#000" }}
+                              >
+                                <Table responsive>
+                                  <tbody
+                                    className="tbbody p-0 m-0"
                                     style={{
-                                      textDecoration: "underline",
-                                      cursor: "pointer",
-                                      color: "black",
-                                      marginLeft: "10px",
-                                    }}
-                                    onClick={() => {
-                                      setEditListingData(!editListingData);
+                                      borderTopRightRadius: "5px",
+                                      borderTopLeftRadius: "5px",
+                                      borderBottomLeftRadius: "5px",
+                                      borderBottomRightRadius: "5px",
                                     }}
                                   >
-                                    {" "}
-                                    Edit
-                                  </span>
-                                </th>
-                              </tr>
-                            </tbody>
-
-                            {editListingData ? (
-                              <Row>
+                                    <tr className="header">
+                                      <th>Status</th>
+                                      <th>Start - End</th>
+                                      <th>Tenant</th>
+                                      <th>Type</th>
+                                      <th>Rent</th>
+                                    </tr>
+                                    {clickedObject &&
+                                    clickedObject.tenant_firstName &&
+                                    clickedObject.tenant_lastName ? (
+                                      <>
+                                        <tr className="body">
+                                          <td>
+                                            {clickedObject.start_date
+                                              ? clickedObject.start_date +
+                                                " " +
+                                                clickedObject.end_date
+                                              : "Inctive"}
+                                          </td>
+                                          <td>
+                                            {clickedObject.start_date &&
+                                            clickedObject.end_date ? (
+                                              <>
+                                                <Link
+                                                  to={`/admin/tenantdetail/${clickedObject._id}`}
+                                                  onClick={(e) => {
+                                                    // Handle any additional actions onClick if needed
+                                                    // console.log(
+                                                    //   item._id,
+                                                    //   "Tenant Id"
+                                                    // );
+                                                    // console.log(
+                                                    //   item.entries.entryIndex,
+                                                    //   "Entry Index"
+                                                    // );
+                                                  }}
+                                                >
+                                                  {formatDateWithoutTime(
+                                                    clickedObject.start_date
+                                                  ) +
+                                                    "-" +
+                                                    formatDateWithoutTime(
+                                                      clickedObject.end_date
+                                                    )}
+                                                </Link>
+                                              </>
+                                            ) : (
+                                              "N/A"
+                                            )}
+                                          </td>
+                                          <td>
+                                            {clickedObject.tenant_firstName &&
+                                            clickedObject.tenant_lastName
+                                              ? clickedObject.tenant_firstName +
+                                                " " +
+                                                clickedObject.tenant_lastName
+                                              : "N/A"}
+                                          </td>
+                                          <td>
+                                            {clickedObject.lease_type || "N/A"}
+                                          </td>
+                                          <td>
+                                            {clickedObject.property_rent ||
+                                              "N/A"}
+                                          </td>
+                                        </tr>
+                                      </>
+                                    ) : (
+                                      <Row>
+                                        <Col>
+                                          <Typography
+                                            variant="body2"
+                                            color="textSecondary"
+                                            component="p"
+                                          >
+                                            You don't have any leases for this
+                                            unit right now.
+                                          </Typography>
+                                        </Col>
+                                      </Row>
+                                    )}
+                                  </tbody>
+                                </Table>
+                              </Row>
+                              <Row
+                                className="w-100 my-3 "
+                                style={{
+                                  fontSize: "18px",
+                                  textTransform: "capitalize",
+                                  color: "#5e72e4",
+                                  fontWeight: "600",
+                                  borderBottom: "1px solid #ddd",
+                                }}
+                              >
                                 <Col>
-                                  <Card style={{ position: "relative" }}>
-                                    <CloseIcon
-                                      onClick={() => {
-                                        setEditListingData(!editListingData);
-                                      }}
-                                      style={{
-                                        position: "absolute",
-                                        top: "10px",
-                                        right: "10px",
-                                        cursor: "pointer",
-                                      }}
-                                    />
-                                    <CardBody>
-                                      {/* <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
-                                      <form
-                                        onSubmit={addUnitFormik.handleSubmit}
-                                      >
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                          }}
-                                        >
-                                          <div>
-                                            <h5>Market Rent</h5>
-                                          </div>
-                                          <TextField
-                                            type="number"
-                                            size="small"
-                                            id="market_rent"
-                                            name="market_rent"
-                                            value={
-                                              addUnitFormik.values.market_rent
-                                            }
-                                            onChange={
-                                              addUnitFormik.handleChange
-                                            }
-                                            onBlur={addUnitFormik.handleBlur}
-                                          />
-                                        </div>
-
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }}
-                                        >
-                                          <div>
-                                            <div>
-                                              <h5>Description</h5>
-                                            </div>
-                                            <Input
-                                              type="textarea"
-                                              // size="small"
-                                              id="description"
-                                              name="description"
-                                              // style={{width: '100%'}}
-                                              value={
-                                                addUnitFormik.values.description
-                                              }
-                                              onChange={
-                                                addUnitFormik.handleChange
-                                              }
-                                              onBlur={addUnitFormik.handleBlur}
-                                            />
-                                          </div>
-                                        </div>
-
-                                        <div style={{ marginTop: "10px" }}>
-                                          <Button
-                                            color="success"
-                                            type="submit"
-                                            onClick={() => {
-                                              // handleUnitDetailsEdit(
-                                              //   clickedObject._id
-                                              // );
-                                              // // setIsEdit(false);
-                                              // setEditUnitDialogOpen(
-                                              //   !editUnitDialogOpen
-                                              // );
-                                              handleListingEdit(
-                                                clickedObject._id,
-                                                clickedObject.rentalId
-                                              );
-
-                                              setEditListingData(
-                                                !editListingData
-                                              );
-                                            }}
-                                          >
-                                            Save
-                                          </Button>
-                                          <Button
-                                            onClick={() => {
-                                              setEditUnitDialogOpen(
-                                                !editUnitDialogOpen
-                                              );
-                                            }}
-                                          >
-                                            Cancel
-                                          </Button>
-                                        </div>
-                                      </form>
-                                    </CardBody>
-                                  </Card>
+                                  Appliances{" "}
+                                  <Button
+                                    size="sm"
+                                    style={{
+                                      background: "white",
+                                      color: "blue",
+                                      marginBottom: "5px",
+                                      // marginRight: "10px",
+                                    }}
+                                    onClick={() => {
+                                      setAddAppliances(!addAppliances);
+                                    }}
+                                  >
+                                    Add
+                                  </Button>
                                 </Col>
                               </Row>
-                            ) : (
-                              <>
-                                <tr>
-                                  <td className="font-weight-bold text-md">
-                                    Unit
-                                  </td>
-                                  <td>
-                                    {clickedObject.rental_units ||
-                                      clickedObject.rentalcom_units ||
-                                      "N/A"}
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td className="font-weight-bold text-md">
-                                    Market Rent
-                                  </td>
-                                  <td>{clickedObject.market_rent || "N/A"}</td>
-                                </tr>
-                                {/* {console.log(clickedObject, "yash")} */}
-                                <tr>
-                                  <td className="font-weight-bold text-md">
-                                    Description
-                                  </td>
-                                  <td>{clickedObject.description || "N/A"}</td>
-                                </tr>
+                              {addAppliances ? (
+                                <>
+                                  <Row>
+                                    <Col md={11}>
+                                      <Card style={{ position: "relative" }}>
+                                        <CloseIcon
+                                          style={{
+                                            position: "absolute",
+                                            top: "10px",
+                                            right: "10px",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => {
+                                            setAddAppliances(!addAppliances);
+                                          }}
+                                        />
+                                        <CardBody>
+                                          {/* <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
+                                          <form
+                                            onSubmit={
+                                              addUnitFormik.handleSubmit
+                                            }
+                                          >
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                              }}
+                                            >
+                                              <div>
+                                                <h5>Name</h5>
+                                              </div>
+                                              <TextField
+                                                type="text"
+                                                size="small"
+                                                id="appliance_name"
+                                                name="appliance_name"
+                                                // value={
+                                                //   addUnitFormik.values.unit_number
+                                                // }
+                                                // onChange={
+                                                //   addUnitFormik.handleChange
+                                                // }
+                                                // onBlur={addUnitFormik.handleBlur}
+                                              />
+                                            </div>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                marginTop: "10px",
+                                              }}
+                                            >
+                                              <div>
+                                                <h5>Description</h5>
+                                              </div>
+                                              <TextField
+                                                type="textarea"
+                                                size="small"
+                                                id="appliance_description"
+                                                name="appliance_description"
+                                                // value={
+                                                //   addUnitFormik.values.appliance_description
+                                                // }
+                                                // onChange={
+                                                //   addUnitFormik.handleChange
+                                                // }
+                                                // onBlur={addUnitFormik.handleBlur}
+                                              />
+                                            </div>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }}
+                                            >
+                                              <div>
+                                                <div>
+                                                  <h5>Installed Date</h5>
+                                                </div>
+                                                <TextField
+                                                  type="date"
+                                                  size="small"
+                                                  id="installed_date"
+                                                  name="installed_date"
+                                                  // value={
+                                                  //   addUnitFormik.values.city
+                                                  // }
+                                                  // onChange={
+                                                  //   addUnitFormik.handleChange
+                                                  // }
+                                                  // onBlur={
+                                                  //   addUnitFormik.handleBlur
+                                                  // }
+                                                />
+                                              </div>
+                                            </div>
+                                            <div style={{ marginTop: "10px" }}>
+                                              <Button
+                                                color="success"
+                                                type="submit"
+                                                onClick={() => {
+                                                  // handleUnitDetailsEdit(
+                                                  //   clickedObject._id,
+                                                  //   clickedObject.rentalId
+                                                  // );
+                                                  // setIsEdit(false);
+                                                  setAddAppliances(
+                                                    !addAppliances
+                                                  );
+                                                }}
+                                              >
+                                                Save
+                                              </Button>
+                                              <Button
+                                                onClick={() => {
+                                                  setAddAppliances(
+                                                    !addAppliances
+                                                  );
+                                                }}
+                                              >
+                                                Cancel
+                                              </Button>
+                                            </div>
+                                          </form>
+                                        </CardBody>
+                                      </Card>
+                                    </Col>
+                                  </Row>
+                                </>
+                              ) : (
+                                <>
+                                  {clickedObject.appliances ? (
+                                    <>
+                                      {clickedObject.appliances.map(
+                                        (appliance, index) => {
+                                          <Row key={index}>
+                                            <Col>{appliance}</Col>
+                                          </Row>;
+                                        }
+                                      )}
+                                    </>
+                                  ) : (
+                                    <Row>
+                                      <Col>
+                                        <Typography
+                                          variant="body2"
+                                          color="textSecondary"
+                                          component="p"
+                                        >
+                                          You don't have any appliances for this
+                                          unit right now.
+                                        </Typography>
+                                      </Col>
+                                    </Row>
+                                  )}
+                                </>
+                              )}
+                            </Grid>
+                          </Grid>
+                          <Grid container md={3}>
+                            <Grid item md={12}>
+                              <Paper elevation={2}>
+                                <Card
+                                  style={{
+                                    backgroundColor: "lightgrey",
+                                  }}
+                                >
+                                  <CardBody
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      padding: "20px", // Add padding for spacing
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        fontSize: "14px", // Increase font size
+                                        fontWeight: "bold",
+                                        textTransform: "uppercase",
+                                        marginBottom: "10px", // Add margin for spacing
+                                      }}
+                                    >
+                                      Listing
+                                    </span>
+                                    <span>1/12/2023</span>
+                                    <span style={{ margin: "5px 0" }}>
+                                      $900 available 1/12/2023
+                                    </span>
+                                    <span
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        textTransform: "uppercase",
+                                        marginTop: "15px", // Add margin for spacing
+                                      }}
+                                    >
+                                      Lease
+                                    </span>
+                                    <Button
+                                      className="btn"
+                                      style={{
+                                        marginTop: "5px", // Add margin for spacing
+                                      }}
+                                      onClick={() => {
+                                        // const navigate = useNavigate();
+                                        navigate(`/admin/Leaseing`);
+                                      }}
+                                    >
+                                      Add Lease
+                                    </Button>
+                                    <span
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "bold",
+                                        textTransform: "uppercase",
+                                        marginTop: "15px",
+                                      }}
+                                    >
+                                      Rental Applications
+                                    </span>
+                                    <Button
+                                      size="small"
+                                      style={{
+                                        marginTop: "5px",
+                                      }}
+                                      onClick={() => {
+                                        navigate(`/admin/Applicants`);
+                                      }}
+                                    >
+                                      Create Applicant
+                                    </Button>{" "}
+                                  </CardBody>
+                                </Card>
+                              </Paper>
+                            </Grid>
+                          </Grid>
+                        </Grid>
 
-                                <tr>
-                                  <td className="font-weight-bold text-md">
-                                    Bed
-                                  </td>
-                                  <td>{clickedObject.rental_bed || "N/A"}</td>
-                                </tr>
-                                <tr>
-                                  <td className="font-weight-bold text-md">
-                                    Bath
-                                  </td>
-                                  <td>{clickedObject.rental_bath || "N/A"}</td>
-                                </tr>
-                                <tr>
-                                  <td className="font-weight-bold text-md">
-                                    SQFT
-                                  </td>
-                                  <td>
-                                    {clickedObject.rental_sqft ||
-                                      clickedObject.rentalcom_sqft ||
-                                      "N/A"}
-                                  </td>
-                                </tr>
-                              </>
-                            )}
-                            {/* </tbody> */}
-                          </>
-                        </Table>
-                      </div>
+                        {/* </tbody> */}
+                      </>
+                      //   </Table>
+                      // </div>
                     )}
                   </TabPanel>
                 </TabContext>
