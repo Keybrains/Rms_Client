@@ -3,7 +3,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   grid-auto-rows: minmax(100px, auto);
-  /* padding-left: 5%; */
+ 
 }
 
 @media only screen and (max-width: 1150px) {
@@ -16,7 +16,6 @@
 } 
 }
 
-/* CSS to hide number input dropdown arrows */
 .no-spinner::-webkit-inner-spin-button,
 .no-spinner::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -25,3 +24,27 @@
 .no-spinner {
   -moz-appearance: textfield;
 }
+
+.tbbody {
+  text-align: left;
+  border: 1px solid #ddd;
+  overflow: hidden;
+}
+.tbbody .header {
+  background: #EFEFEF;
+  text-transform: uppercase;
+}
+.tbbody .body {
+  text-transform: capitalize;
+}
+.tbbody .header th {
+  border: 1px solid #ddd;
+  text-align: left;
+}
+.tbbody .body td {
+  border: 1px solid #ddd;
+}
+.tbbody .body:hover {
+  background: #EFEFEF;
+}
+  
