@@ -63,7 +63,7 @@ const PropertiesTables = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/rentals/rental"
+        "http://localhost:4000/api/rentals/rental"
       );
       console.log(response.data.data);
 
@@ -87,7 +87,7 @@ const PropertiesTables = () => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/rentals/rental/${id}/entry/${entryIndex}`
+            `http://localhost:4000/api/rentals/rental/${id}/entry/${entryIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -499,7 +499,7 @@ const PropertiesTables = () => {
                         )}
                       </th>
 
-                      <th scope="col">Created On</th>
+                      {/* <th scope="col">Created On</th> */}
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
@@ -575,7 +575,7 @@ const PropertiesTables = () => {
                           <td>{`${tenant.entries.rental_city}, ${tenant.entries.rental_country}`}</td>
                           <td>{tenant.rentalOwner_primaryEmail}</td>
                           <td>{tenant.rentalOwner_phoneNumber}</td>
-                          <td>{tenant.entries.createdAt}</td>
+                          {/* <td>{tenant.entries.createdAt}</td> */}
                           {/* <td>{tenant.entries.createdAt}</td> */}
                           {/* <td>{tenant.entries.entryIndex}</td>
                         <td>{tenant.entries.rental_adress}</td> */}
