@@ -71,15 +71,15 @@ const RentRollDetail = () => {
   const [paymentData, setPaymentData] = useState(null);
   const [myData, setMyData] = useState([]);
   const [balance, setBalance] = useState("");
- const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
- const [loader, setLoader] = React.useState(true);
+  const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
+  const [loader, setLoader] = React.useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
         const response = await fetch(
-          `https://propertymanager.cloudpress.host/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
+          `http://localhost:4000/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -115,7 +115,7 @@ const RentRollDetail = () => {
   //     navigate("/payment-page");
   //   }
   // };
-  const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
   const id = tenantId;
   const entry = entryIndex;
@@ -140,7 +140,7 @@ const RentRollDetail = () => {
 
   const navigateToSummary = async (tenantId, entryIndex) => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -164,7 +164,7 @@ const RentRollDetail = () => {
   };
 
   const navigateToTenant = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -189,7 +189,7 @@ const RentRollDetail = () => {
 
   const navigateToFinancial = async () => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -213,7 +213,7 @@ const RentRollDetail = () => {
 
   // const tenantsData = async () => {
   //   // Construct the API URL
-  //   const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+  //   const apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
 
   //   try {
   //     // Fetch tenant data
@@ -237,9 +237,9 @@ const RentRollDetail = () => {
     let apiUrl;
 
     if (unit === undefined) {
-      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+      apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
     } else {
-      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
+      apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
     }
 
     try {
@@ -313,8 +313,6 @@ const RentRollDetail = () => {
     }
   };
 
- 
-
   const calculateBalance = (data) => {
     // console.log(data);
     let balance = 0;
@@ -334,7 +332,7 @@ const RentRollDetail = () => {
     return data;
   };
   const doSomething = async () => {
-    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
+    let responce = await axios.get("http://localhost:4000/api/tenant/tenants");
     const data = responce.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
     console.log(filteredData, "yashr");
@@ -359,7 +357,7 @@ const RentRollDetail = () => {
     }
   };
   // const getGeneralLedgerData = async () => {
-  //   const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+  //   const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
 
   //   try {
   //     const response = await axios.get(apiUrl);
@@ -380,16 +378,16 @@ const RentRollDetail = () => {
   //   }
   // };
   const getGeneralLedgerData = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+    const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
     try {
       const response = await axios.get(apiUrl);
-  setLoader(false);
+      setLoader(false);
       if (response.data && response.data.data) {
         const mergedData = response.data.data;
         // console.log(mergedData)
         mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
         const dataWithBalance = calculateBalance(mergedData);
-        
+        setGeneralLedgerData(dataWithBalance);
         setBalance(dataWithBalance[0].entries[0].balance);
       } else {
         console.error("Unexpected response format:", response.data);
@@ -414,7 +412,7 @@ const RentRollDetail = () => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/payment/delete_charge/${chargeId}/${chargeIndex}`
+            `http://localhost:4000/api/payment/delete_charge/${chargeId}/${chargeIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -442,14 +440,24 @@ const RentRollDetail = () => {
     navigate(`/admin/AddPayment/${id}/payment/${paymentIndex}`);
     // console.log(id);
   };
-  
+
   return (
     <div>
       <Header />
-      <Container className="mt--7" fluid>
+      <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
-            <h1 style={{ color: "white" }}>Rent Roll Details</h1>
+            <FormGroup className="">
+              <h1 style={{ color: "white" }}>
+                {tenantDetails.tenant_firstName +
+                  " " +
+                  tenantDetails.tenant_lastName}
+              </h1>
+              <h5 style={{ color: "white" }}>
+                Tenant |{" "}
+                {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
+              </h5>
+            </FormGroup>
           </Col>
           <Col className="text-right" xs="12" sm="6">
             <Button
@@ -467,7 +475,7 @@ const RentRollDetail = () => {
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                <div className="ml-3">
+                {/* <div className="ml-3">
                   <h1>
                     {tenantDetails?.entries.rental_adress}
                     {"-"}
@@ -475,7 +483,7 @@ const RentRollDetail = () => {
                     {"●"}
                     {tenantDetails?.tenant_firstName}
                   </h1>
-                </div>
+                </div> */}
               </CardHeader>
               <Col>
                 <TabContext value={value}>
@@ -507,7 +515,6 @@ const RentRollDetail = () => {
                     <Row>
                       <div className="col">
                         <Card className="shadow">
-                          <CardHeader className="border-0"></CardHeader>
                           <div className="table-responsive">
                             <div className="row m-3">
                               <div className="col-9">
@@ -731,7 +738,7 @@ const RentRollDetail = () => {
                                           fontWeight: "bold",
                                         }}
                                       >
-                                        {"$" + balance}
+                                        {"$" + Math.abs(balance)}
                                       </Typography>
                                     </div>
                                     <hr
@@ -740,7 +747,7 @@ const RentRollDetail = () => {
                                         marginBottom: "6px",
                                       }}
                                     />
-
+                                    {/* Display entries data */}
                                     {/* {paymentData.entries &&
                           paymentData.entries.length > 0 && ( */}
                                     <>
@@ -765,11 +772,66 @@ const RentRollDetail = () => {
                                               color="text.secondary"
                                               gutterBottom
                                             >
-                                              entry.account:
+                                              Prepayments:
                                             </Typography>
                                             <Typography sx={{ fontSize: 14 }}>
-                                              entry.amount
+                                              {/* entry.amount */}
                                             </Typography>
+                                          </div>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              alignItems: "center",
+                                              marginBottom: "5px",
+                                            }}
+                                          >
+                                            <Typography
+                                              sx={{
+                                                fontSize: 14,
+                                                fontWeight: "bold",
+                                                marginRight: "10px",
+                                              }}
+                                              color="text.secondary"
+                                              gutterBottom
+                                            >
+                                              Deposite held:
+                                            </Typography>
+                                          </div>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              alignItems: "center",
+                                              marginBottom: "5px",
+                                            }}
+                                          >
+                                            <Typography
+                                              sx={{
+                                                fontSize: 14,
+                                                fontWeight: "bold",
+                                                marginRight: "10px",
+                                              }}
+                                              color="text.secondary"
+                                              gutterBottom
+                                            >
+                                              Rent:
+                                            </Typography>
+                                            {myData.map((item) => (
+                                              <>
+                                                <Typography
+                                                  sx={{
+                                                    fontSize: 14,
+                                                    fontWeight: "bold",
+                                                    marginRight: "10px",
+                                                  }}
+                                                  color="text.secondary"
+                                                  gutterBottom
+                                                >
+                                                  ${item.entries.amount}
+                                                </Typography>
+                                              </>
+                                            ))}
                                           </div>
                                         </div>
                                         {/* )
@@ -792,17 +854,24 @@ const RentRollDetail = () => {
                                         >
                                           Due date :
                                         </Typography>
-                                        <Typography
-                                          sx={{
-                                            fontSize: 14,
-                                            marginLeft: "10px",
-                                          }}
-                                        >
-                                          10/12/2023
-                                        </Typography>
+                                        {myData.map((item) => (
+                                          <>
+                                            <Typography
+                                              sx={{
+                                                fontSize: 14,
+                                                fontWeight: "bold",
+                                                marginRight: "10px",
+                                              }}
+                                              color="text.secondary"
+                                              gutterBottom
+                                            >
+                                              {item.entries.nextDue_date}
+                                            </Typography>
+                                          </>
+                                        ))}
                                       </div>
                                     </>
-
+                                    {/* )} */}
                                     <div
                                       style={{
                                         display: "flex",
@@ -823,20 +892,34 @@ const RentRollDetail = () => {
                                           },
                                         }}
                                       >
-                                        Payment
+                                        <Link
+                                          to={`/admin/AddPayment/${tenantId}/${entryIndex}`}
+                                          onClick={(e) => {}}
+                                        >
+                                          Receive Payment
+                                        </Link>
                                       </Button>
-                                      <Typography
-                                        sx={{
-                                          fontSize: 14,
-                                          marginLeft: "10px",
-                                          paddingTop: "10px",
-                                          cursor: "pointer",
-                                          color: "blue",
-                                        }}
-                                        // onClick={() => handleChange("Financial")}
-                                      >
-                                        Lease Ledger
-                                      </Typography>
+                                      {myData.map((item) => (
+                                        <>
+                                          <Typography
+                                            sx={{
+                                              fontSize: 14,
+                                              marginLeft: "10px",
+                                              paddingTop: "10px",
+                                              cursor: "pointer",
+                                              color: "blue",
+                                            }}
+                                            // onClick={() => handleChange("Financial")}
+                                          >
+                                            <Link
+                                              to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                              onClick={(e) => {}}
+                                            >
+                                              Lease Ledger
+                                            </Link>
+                                          </Typography>
+                                        </>
+                                      ))}
                                     </div>
                                   </CardContent>
                                 </Card>
@@ -1221,104 +1304,130 @@ const RentRollDetail = () => {
                         )}
                       </Col>
                       <Col xs="12" md="6" lg="4" xl="3">
-                        {paymentData && (
-                          <Card style={{ background: "#F4F6FF" }}>
-                            <CardContent>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
+                        <Card style={{ background: "#F4F6FF" }}>
+                          <CardContent>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: 14,
+                                  fontWeight: "bold",
+                                }}
+                                color="text.secondary"
+                                gutterBottom
+                              >
+                                Credit balance:
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontSize: 14,
+                                  marginLeft: "10px",
+                                  fontWeight: "bold",
                                 }}
                               >
-                                <Typography
-                                  sx={{ fontSize: 14, fontWeight: "bold" }}
-                                  color="text.secondary"
-                                  gutterBottom
-                                >
-                                  Credit balance:
-                                </Typography>
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    marginLeft: "10px",
-                                    fontWeight: "bold",
-                                  }}
-                                >
-                                  ${paymentData.amount}
-                                </Typography>
-                              </div>
-                              <hr
-                                style={{
-                                  marginTop: "2px",
-                                  marginBottom: "6px",
-                                }}
-                              />
-                              {/* Display entries data */}
-                              {paymentData.entries &&
-                                paymentData.entries.length > 0 && (
-                                  <>
-                                    <div>
-                                      {paymentData.entries.map(
-                                        (entry, index) => (
-                                          <div
-                                            key={index}
-                                            className="entry-container"
-                                          >
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                alignItems: "center",
-                                                marginBottom: "5px",
-                                              }}
-                                            >
-                                              <Typography
-                                                sx={{
-                                                  fontSize: 14,
-                                                  fontWeight: "bold",
-                                                  marginRight: "10px",
-                                                }}
-                                                color="text.secondary"
-                                                gutterBottom
-                                              >
-                                                {entry.account}:
-                                              </Typography>
-                                              <Typography sx={{ fontSize: 14 }}>
-                                                {entry.amount}
-                                              </Typography>
-                                            </div>
-                                          </div>
-                                        )
-                                      )}
-                                    </div>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        marginTop: "10px",
+                                {"$" + Math.abs(balance)}
+                              </Typography>
+                            </div>
+                            <hr
+                              style={{
+                                marginTop: "2px",
+                                marginBottom: "6px",
+                              }}
+                            />
+                            {/* Display entries data */}
+                            {/* {paymentData.entries &&
+                          paymentData.entries.length > 0 && ( */}
+                            <>
+                              <div>
+                                {/* {paymentData.entries.map(
+                                  (entry, index) => ( */}
+                                <div className="entry-container">
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      marginBottom: "5px",
+                                    }}
+                                  >
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        fontWeight: "bold",
+                                        marginRight: "10px",
                                       }}
+                                      color="text.secondary"
+                                      gutterBottom
                                     >
-                                      <Typography
-                                        sx={{
-                                          fontSize: 14,
-                                          fontWeight: "bold",
-                                        }}
-                                        color="text.secondary"
-                                        gutterBottom
-                                      >
-                                        Due date :
-                                      </Typography>
-                                      <Typography
-                                        sx={{
-                                          fontSize: 14,
-                                          marginLeft: "10px",
-                                        }}
-                                      >
-                                        10/12/2023
-                                      </Typography>
-                                    </div>
-                                  </>
-                                )}
+                                      Prepayments:
+                                    </Typography>
+                                    <Typography sx={{ fontSize: 14 }}>
+                                      {/* entry.amount */}
+                                    </Typography>
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      marginBottom: "5px",
+                                    }}
+                                  >
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        fontWeight: "bold",
+                                        marginRight: "10px",
+                                      }}
+                                      color="text.secondary"
+                                      gutterBottom
+                                    >
+                                      Deposite held:
+                                    </Typography>
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      marginBottom: "5px",
+                                    }}
+                                  >
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        fontWeight: "bold",
+                                        marginRight: "10px",
+                                      }}
+                                      color="text.secondary"
+                                      gutterBottom
+                                    >
+                                      Rent:
+                                    </Typography>
+                                    {myData.map((item) => (
+                                      <>
+                                        <Typography
+                                          sx={{
+                                            fontSize: 14,
+                                            fontWeight: "bold",
+                                            marginRight: "10px",
+                                          }}
+                                          color="text.secondary"
+                                          gutterBottom
+                                        >
+                                          ${item.entries.amount}
+                                        </Typography>
+                                      </>
+                                    ))}
+                                  </div>
+                                </div>
+                                {/* )
+                                )} */}
+                              </div>
                               <div
                                 style={{
                                   display: "flex",
@@ -1326,37 +1435,85 @@ const RentRollDetail = () => {
                                   marginTop: "10px",
                                 }}
                               >
-                                <Button
-                                  color="success"
-                                  onClick={handleClick}
-                                  style={{
-                                    fontSize: "13px",
-                                    background: "white",
-                                    color: "green",
-                                    "&:hover": {
-                                      background: "green",
-                                      color: "white",
-                                    },
-                                  }}
-                                >
-                                  Payment
-                                </Button>
                                 <Typography
                                   sx={{
                                     fontSize: 14,
-                                    marginLeft: "10px",
-                                    paddingTop: "10px",
-                                    cursor: "pointer",
-                                    color: "blue",
+                                    fontWeight: "bold",
                                   }}
-                                  onClick={() => handleChange("Financial")}
+                                  color="text.secondary"
+                                  gutterBottom
                                 >
-                                  Lease Ledger
+                                  Due date :
                                 </Typography>
+                                {myData.map((item) => (
+                                  <>
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        fontWeight: "bold",
+                                        marginRight: "10px",
+                                      }}
+                                      color="text.secondary"
+                                      gutterBottom
+                                    >
+                                      {item.entries.nextDue_date}
+                                    </Typography>
+                                  </>
+                                ))}
                               </div>
-                            </CardContent>
-                          </Card>
-                        )}
+                            </>
+                            {/* )} */}
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                marginTop: "10px",
+                              }}
+                            >
+                              <Button
+                                color="success"
+                                // onClick={handleClick}
+                                style={{
+                                  fontSize: "13px",
+                                  background: "white",
+                                  color: "green",
+                                  "&:hover": {
+                                    background: "green",
+                                    color: "white",
+                                  },
+                                }}
+                              >
+                                <Link
+                                  to={`/admin/AddPayment/${tenantId}/${entryIndex}`}
+                                  onClick={(e) => {}}
+                                >
+                                  Receive Payment
+                                </Link>
+                              </Button>
+                              {myData.map((item) => (
+                                <>
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      marginLeft: "10px",
+                                      paddingTop: "10px",
+                                      cursor: "pointer",
+                                      color: "blue",
+                                    }}
+                                    // onClick={() => handleChange("Financial")}
+                                  >
+                                    <Link
+                                      to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                      onClick={(e) => {}}
+                                    >
+                                      Lease Ledger
+                                    </Link>
+                                  </Typography>
+                                </>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
                       </Col>
                     </Row>
                   </TabPanel>

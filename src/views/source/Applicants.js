@@ -76,7 +76,7 @@ const Applicants = () => {
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
-        `https://propertymanager.cloudpress.host/api/propertyunit/rentals_property/${propertyType}`
+        `http://localhost:4000/api/propertyunit/rentals_property/${propertyType}`
       );
       const data = await response.json();
       // Ensure that units are extracted correctly and set as an array
@@ -120,7 +120,7 @@ const Applicants = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/applicant/applicant"
+        "http://localhost:4000/api/applicant/applicant"
       );
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setRentalsData(response.data.data);
@@ -208,7 +208,7 @@ const Applicants = () => {
   //     };
   //     // auth post method
   //     let res = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/register/auth",
+  //       "http://localhost:4000/api/register/auth",
   //       { purpose: "validate access" },
   //       authConfig
   //     );
@@ -264,7 +264,7 @@ const Applicants = () => {
 
   const handleFormSubmit = (values, action) => {
     axios
-      .post("https://propertymanager.cloudpress.host/api/applicant/applicant", values)
+      .post("http://localhost:4000/api/applicant/applicant", values)
       .then((response) => {
         //console.log("Applicant created successfully:", response.data.data._id);
         //console.log(response.data.data);
@@ -283,7 +283,7 @@ const Applicants = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+    fetch("http://localhost:4000/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -301,7 +301,7 @@ const Applicants = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/applicant/existing/applicant")
+    fetch("http://localhost:4000/api/applicant/existing/applicant")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -320,7 +320,7 @@ const Applicants = () => {
 
   const getApplicantData = () => {
     axios
-      .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
+      .get("http://localhost:4000/api/applicant/applicant")
       .then((response) => {
         setRentalsData(response.data.data);
         setLoader(false);
@@ -346,7 +346,7 @@ const Applicants = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/applicant/applicant", {
+          .delete("http://localhost:4000/api/applicant/applicant", {
             data: { _id: id },
           })
           .then((response) => {
@@ -398,7 +398,7 @@ const Applicants = () => {
     <>
       <Header />
       {/* Page content */}
-      <Container className="mt--7" fluid>
+      <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
             <FormGroup>

@@ -124,7 +124,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/rentals")
+    fetch("http://localhost:4000/api/rentals/rentals")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -238,7 +238,7 @@ const Rentals = () => {
     // rentalsFormik.setFieldValue("property_type", propertyType);
     // const propTypes=[];
     axios
-      .get("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
+      .get("http://localhost:4000/api/newproparty/propropartytype")
       .then((data) => {
         // console.log(data.data, "Data from adding the account");
         // setPropertyData(data.data.data);
@@ -577,7 +577,7 @@ const Rentals = () => {
       "selectedPhotoresPreview"
     );
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
+    fetch("http://localhost:4000/api/newproparty/propropartytype")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -595,7 +595,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember")
+    fetch("http://localhost:4000/api/addstaffmember/find_staffmember")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -618,7 +618,7 @@ const Rentals = () => {
     // console.log(id, entryIndex, "id && entry Id");
     if (id && entryIndex) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`)
+        .get(`http://localhost:4000/api/rentals/rentals_summary/${id}`)
         .then((response) => {
           const propertysData = response.data.data;
           // setRentalsData(rentalsData); // Update state with the fetched data
@@ -727,7 +727,7 @@ const Rentals = () => {
 
   const getUnitData = async (id) => {
     await axios
-      .get("https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" + id)
+      .get("http://localhost:4000/api/propertyunit/propertyunit/" + id)
       .then((res) => {
         // setUnitProperty(res.data.data);
         // console.log(res.data.data, "property unit");
@@ -788,7 +788,7 @@ const Rentals = () => {
       // console.log(leaseObject, "leaseObject");
 
       const res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/rentals/rentals",
+        "http://localhost:4000/api/rentals/rentals",
         leaseObject
       );
       if (res.data.statusCode === 200) {
@@ -835,7 +835,7 @@ const Rentals = () => {
       // console.log(leaseObject, "leaseObject");
 
       const res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/rentals/rentals",
+        "http://localhost:4000/api/rentals/rentals",
         leaseObject
       );
       if (res.data.statusCode === 200) {
@@ -858,12 +858,12 @@ const Rentals = () => {
     //   if (id === undefined) {
     //     console.log(values, "values after submit");
     //     const res = await axios.post(
-    //       "https://propertymanager.cloudpress.host/api/rentals/rentals",
+    //       "http://localhost:4000/api/rentals/rentals",
     //       values
     //     );
     //     handleResponse(res);
     //   } else {
-    //     const editUrl = `https://propertymanager.cloudpress.host/api/rentals/rentals/${id}`;
+    //     const editUrl = `http://localhost:4000/api/rentals/rentals/${id}`;
     //     const res = await axios.put(editUrl, values);
     //     handleResponse(res);
     //   }
@@ -876,7 +876,7 @@ const Rentals = () => {
     // }
   };
   const editProperty = async (id) => {
-    const editUrl = `https://propertymanager.cloudpress.host/api/rentals/rental/${id}/entry/${entryIndex}`;
+    const editUrl = `http://localhost:4000/api/rentals/rental/${id}/entry/${entryIndex}`;
     const entriesArray = [];
     if (propType === "Residential") {
       const entriesObject = {
