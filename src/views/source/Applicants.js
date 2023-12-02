@@ -76,7 +76,7 @@ const Applicants = () => {
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/propertyunit/rentals_property/${propertyType}`
+        `https://propertymanager.cloudpress.host/api/propertyunit/rentals_property/${propertyType}`
       );
       const data = await response.json();
       // Ensure that units are extracted correctly and set as an array
@@ -120,7 +120,7 @@ const Applicants = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/applicant/applicant"
+        "https://propertymanager.cloudpress.host/api/applicant/applicant"
       );
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setRentalsData(response.data.data);
@@ -208,7 +208,7 @@ const Applicants = () => {
   //     };
   //     // auth post method
   //     let res = await axios.post(
-  //       "http://localhost:4000/api/register/auth",
+  //       "https://propertymanager.cloudpress.host/api/register/auth",
   //       { purpose: "validate access" },
   //       authConfig
   //     );
@@ -284,7 +284,7 @@ const Applicants = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/rentals/allproperty")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -303,7 +303,7 @@ const Applicants = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/applicant/existing/applicant")
+    fetch("https://propertymanager.cloudpress.host/api/applicant/existing/applicant")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -322,7 +322,7 @@ const Applicants = () => {
 
   const getApplicantData = () => {
     axios
-      .get("http://localhost:4000/api/applicant/applicant")
+      .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
       .then((response) => {
         console.log(response.data.data,'respones.data');
         setRentalsData(response.data.data);
@@ -349,7 +349,7 @@ const Applicants = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("http://localhost:4000/api/applicant/applicant", {
+          .delete("https://propertymanager.cloudpress.host/api/applicant/applicant", {
             data: { _id: id },
           })
           .then((response) => {

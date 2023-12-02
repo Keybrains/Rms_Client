@@ -36,7 +36,7 @@ const VendorWorkTable = () => {
   const getWorkData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/workorder/workorder"
+        "https://propertymanager.cloudpress.host/api/workorder/workorder"
       );
       setLoader(false);
       setWorkData(response.data.data);
