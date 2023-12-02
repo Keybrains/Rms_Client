@@ -115,7 +115,7 @@ const Applicants = () => {
   // Event handler to close the modal
   const closeModal = () => {
     setIsModalOpen(false);
-  };
+  };  
 
   const getRentalsData = async () => {
     try {
@@ -226,17 +226,19 @@ const Applicants = () => {
   // }, [cookies.get("token")]);
 
   const [accessType, setAccessType] = useState(null);
-
+  const [manager,setManager]=useState("");
   React.useEffect(() => {
     if (cookies.get("token")) {
       const jwt = jwtDecode(cookies.get("token"));
       setAccessType(jwt.accessType);
+      setManager(jwt.userName)
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
 
   const applicantFormik = useFormik({
+    
     initialValues: {
       tenant_firstName: "",
       tenant_lastName: "",
@@ -247,6 +249,7 @@ const Applicants = () => {
       tenant_faxPhoneNumber: "",
       rental_adress: "",
       rental_units: "",
+      statusUpdatedBy:"",
     },
     validationSchema: yup.object({
       tenant_firstName: yup.string().required("Required"),
@@ -257,19 +260,17 @@ const Applicants = () => {
     }),
     onSubmit: (values, action) => {
       handleFormSubmit(values, action);
-
       //console.log(values, "values");
     },
   });
 
   const handleFormSubmit = (values, action) => {
     axios
-      .post("https://propertymanager.cloudpress.host/api/applicant/applicant", values)
+      .post("https://propertymanager.cloudpress.host/api/applicant/applicant", {...values,statusUpdatedBy:manager})
       .then((response) => {
         //console.log("Applicant created successfully:", response.data.data._id);
-        //console.log(response.data.data);
+        // console.log(response.data.data);
         closeModal();
-
         action.resetForm();
         navigate(`/admin/Applicants/${response.data.data._id}`);
         setSelectedPropertyType("");
@@ -287,6 +288,7 @@ const Applicants = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
+
           setPropertyData(data.data);
         } else {
           // Handle error
@@ -322,6 +324,7 @@ const Applicants = () => {
     axios
       .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
       .then((response) => {
+        console.log(response.data.data,'respones.data');
         setRentalsData(response.data.data);
         setLoader(false);
       })
@@ -464,6 +467,7 @@ const Applicants = () => {
                       <th scope="col">Email</th>
                       <th scope="col">Phone Number</th>
                       <th scope="col">Property</th>
+                      <th scope="col">Updated At</th>
                       <th scope="col">Status</th>
                       <th scope="col">Actions</th>
 
@@ -479,12 +483,14 @@ const Applicants = () => {
                           navigate(`/admin/Applicants/${applicant._id}`)
                         }
                       >
+                        {console.log(applicant,'Applicant')}
                         <td>{applicant.tenant_firstName}</td>
                         <td>{applicant.tenant_lastName}</td>
                         <td>{applicant.tenant_email}</td>
                         <td>{applicant.tenant_mobileNumber}</td>
                         <td>{applicant.rental_adress}</td>
-                        <td>{applicant.status || "Undecided"}</td>
+                        <td>{applicant.updateAt}</td>
+                        <td>{applicant?.applicant_status[0]?.status || "Undecided"}</td>
                         <td>
                           <DeleteIcon
                             onClick={(e) => {
