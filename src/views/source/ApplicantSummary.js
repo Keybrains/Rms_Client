@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import HomeIcon from "@mui/icons-material/Home";
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
   Card,
@@ -101,11 +102,13 @@ const ApplicantSummary = () => {
   };
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
-
+  const [manager, setManager] = useState(null);
   React.useEffect(() => {
     if (cookies.get("token")) {
       const jwt = jwtDecode(cookies.get("token"));
+      console.log(jwt,jwt)
       setAccessType(jwt.accessType);
+      setManager(jwt.userName)
     } else {
       navigate("/auth/login");
     }
@@ -290,13 +293,36 @@ const ApplicantSummary = () => {
     }
   };
 
+  const arrayOfStatus = [
+    {
+      value: "Approved",
+      label: "The new rental application status",
+    },
+    {
+      value: "Rejected",
+      label: "The new rental application status",
+    },
+    {
+      value: "Lease assigned",
+      label: "Applicant added to a lease",
+    },
+    {
+      value: "New",
+      label: "New applicant record created",
+    },
+  ];
+
   const handleEditStatus = (item) => {
     //console.log(selectedDropdownItem, "selectedDropdownItem");
 
     // //console.log(updatedApplicant, "updatedApplicant 403");
+    console.log(item, "item");
     const status = {
       status: item,
+      statusUpdatedBy:manager
     };
+    console.log(status, "status");
+    console.log(id, "id");
     axios
       .put(`http://localhost:4000/api/applicant/applicant/${id}/status`, status)
       .catch((err) => {
@@ -316,7 +342,6 @@ const ApplicantSummary = () => {
 
         // Extract the rental address from the response
         const rentalAddress = data.rental_adress;
-
         //console.log(rentalAddress, "Rental Addressss");
         axios
           .get("http://localhost:4000/api/rentals/allproperty")
@@ -436,6 +461,8 @@ const ApplicantSummary = () => {
     axios
       .get(`http://localhost:4000/api/applicant/applicant_summary/${id}`)
       .then((applicants) => {
+        console.log(applicants.data.data,'gggg')
+
         axios
           .get("http://localhost:4000/api/rentals/property")
           .then((properties) => {
@@ -590,6 +617,7 @@ const ApplicantSummary = () => {
     await axios
       .get("http://localhost:4000/api/applicant/applicant")
       .then((response) => {
+        console.log(response.data.data, "response.data.data");
         //console.log(response.data.data);
         if (response.data.data) {
           const applicantData = response.data.data;
@@ -853,7 +881,7 @@ const ApplicantSummary = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/applicant/applicant_summary/${id}`
+          `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
         );
 
         if (response.data && response.data.data) {
@@ -877,14 +905,14 @@ const ApplicantSummary = () => {
     applicant_firstName: "",
     applicant_lastName: "",
   });
-  // console.log(formData, "formData");
+  console.log(formData, "formData");
 
   const handleApplicationSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const apiUrl =
-        "http://localhost:4000/api/applicant/application/6565bbf79cb24516b8e50f95";
+        "https://propertymanager.cloudpress.host/api/applicant/application/6565bbf79cb24516b8e50f95";
 
       const updatedData = {
         // Add other fields as needed
@@ -971,7 +999,7 @@ const ApplicantSummary = () => {
   let sendApplicantMailData = async () => {
     setSendApplicantMailLoader(true);
     let responce = await axios.get(
-      `http://localhost:4000/api/applicant/applicant/mail/${id}`
+      `https://propertymanager.cloudpress.host/api/applicant/applicant/mail/${id}`
     );
     setSendApplicantMail(responce.data.data);
 
@@ -983,6 +1011,11 @@ const ApplicantSummary = () => {
       swal("", responce.data.message, "error");
     }
   };
+
+  const [loading, setLoading] = React.useState(false);
+  function handleClick() {
+    setLoading(true);
+  }
 
   return (
     <>
@@ -1077,9 +1110,10 @@ const ApplicantSummary = () => {
               isOpen={isOpen}
               toggle={toggle}
             >
+              {console.log(matchedApplicant.applicant_status, "status")}
               <DropdownToggle caret style={{ width: "100%" }}>
-                {matchedApplicant.status
-                  ? matchedApplicant.status
+                {matchedApplicant && matchedApplicant.applicant_status && matchedApplicant?.applicant_status[0]?.status
+                  ? matchedApplicant?.applicant_status[0]?.status
                   : selectedDropdownItem
                   ? selectedDropdownItem
                   : "Select"}
@@ -1106,7 +1140,9 @@ const ApplicantSummary = () => {
                 })}
               </DropdownMenu>
             </Dropdown>
-            <Button
+            <LoadingButton
+              variant="contained"
+              loading={loading}
               style={
                 selectedDropdownItem === "Approved"
                   ? { display: "block", marginLeft: "10px" }
@@ -1115,11 +1151,12 @@ const ApplicantSummary = () => {
               color="success"
               onClick={(e) => {
                 fetchDataAndPost();
+                handleClick();
                 // navigate("/admin/RentRoll");
               }}
             >
               Move in
-            </Button>
+            </LoadingButton>
           </div>
           <Row>
             <Col>
@@ -1997,6 +2034,48 @@ const ApplicantSummary = () => {
                                 </div>
                               </CardContent>
                             </Card>
+                          )}
+                        </Grid>
+                        <Grid item xs={9}>
+                          <Row
+                            className="w-100 my-3 "
+                            style={{
+                              fontSize: "18px",
+                              textTransform: "capitalize",
+                              color: "#5e72e4",
+                              fontWeight: "600",
+                              borderBottom: "1px solid #ddd",
+                            }}
+                          >
+                            <Col>Updates</Col>
+                          </Row>
+
+                          {matchedApplicant?.applicant_status?.map(
+                            (item, index) => (
+                              <Row
+                                className="w-100 mt-1  mb-5"
+                                style={{
+                                  fontSize: "12px",
+                                  textTransform: "capitalize",
+                                  color: "#000",
+                                }}
+                                key={index}
+                              >
+                                <Col>{item.status || "N/A"}</Col>
+                                <Col>
+                                  {item?.status
+                                    ? arrayOfStatus.find(
+                                        (x) => x.value === item.status
+                                      )?.label
+                                    : "N/A"}
+                                </Col>
+                                <Col>
+                                  {item.statusUpdatedBy +
+                                    " At " +
+                                    item.updateAt || "N/A"}
+                                </Col>
+                              </Row>
+                            )
                           )}
                         </Grid>
                       </Grid>

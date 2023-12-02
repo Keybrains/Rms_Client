@@ -1533,7 +1533,7 @@ const PropDetails = () => {
                                 style={{ cursor: "pointer" }}
                               >
                                 <td>{unit.rental_units || "N/A"}</td>
-                                <td>{unit.rental_adress || "N/A"}</td>
+                                <td>{unit.rental_unitsAdress +','+ unit.rental_adress || "N/A"}</td>
                                 <td>
                                   {unit.tenant_firstName  == null
                                     ? "-"

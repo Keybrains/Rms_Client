@@ -195,7 +195,7 @@ const TenantDetailPage = () => {
                               borderBottom: "1px solid #ddd",
                             }}
                           >
-                            <Col>Tenant Details</Col>
+                            <Col>Contact Information</Col>
                           </Row>
                           <Row
                             className="w-100 mb-1 "

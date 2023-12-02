@@ -270,12 +270,16 @@ const RentRoll = () => {
                       <th scope="col">Type</th>
                       <th scope="col">Status</th>
                       <th scope="col">Start Date-End Date</th>
+                      <th scope="col"> Rent </th>
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filterRentRollsBySearch()?.map((tenant) => (
+                      
+                      
                       <>
+                      {console.log(tenant,'ttenenenen')}
                         <tr
                           key={tenant._id}
                           onClick={() =>
@@ -295,6 +299,8 @@ const RentRoll = () => {
                           {getStatus(tenant.entries.start_date, tenant.entries.end_date)}
                           </td>
                           <td>{tenant.entries.start_date} to {tenant.entries.end_date}</td>
+                          <td>{tenant.entries.amount}</td>
+
                           {/* <td>{tenant.entries.entryIndex}</td>
                         <td>{tenant.entries.rental_adress}</td> */}
                           <td style={{}}>

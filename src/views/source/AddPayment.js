@@ -279,7 +279,7 @@ const AddPayment = () => {
       };
       //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "http://localhost:4000/api/payment/add_payment", ///http://localhost:4000
+        "https://propertymanager.cloudpress.host/api/payment/add_payment", ///http://localhost:4000
         updatedValues
       );
 
