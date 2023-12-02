@@ -38,7 +38,7 @@ const RentalOwnerDetail = () => {
   const getRentalOwnerData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/rentalowner/rentalowner/${id}`
+        `https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`
       );
       //console.log(response.data.data);
       setRentalOwnerDetails(response.data.data);
