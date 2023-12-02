@@ -47,7 +47,7 @@ import Cookies from "universal-cookie";
   
     const getOutstandData = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/api/workorder/workorder_summary/${id}`);
+        const response = await axios.get(`https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`);
         setoutstandDetails(response.data.data);
         setLoading(false);
       } catch (error) {

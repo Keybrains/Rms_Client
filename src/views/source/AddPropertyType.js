@@ -100,7 +100,7 @@ const AddPropertyType = () => {
   //   try {
   //     values["property_type"] = selectedProperty;
   //     const res = await axios.post(
-  //       "http://localhost:4000/api/newproparty/newproparty",
+  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty",
   //       values
   //     );
 
@@ -151,7 +151,7 @@ const AddPropertyType = () => {
   React.useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:4000/api/newproparty/newproperty_summary/${id}`)
+        .get(`https://propertymanager.cloudpress.host/api/newproparty/newproperty_summary/${id}`)
         .then((response) => {
           const propertyData = response.data.data;
           setpropertyType(propertyType);
@@ -178,12 +178,12 @@ const AddPropertyType = () => {
       // values["property_type"] = selectedProperty;
       if (id === undefined) {
         const res = await axios.post(
-          "http://localhost:4000/api/newproparty/newproparty",
+          "https://propertymanager.cloudpress.host/api/newproparty/newproparty",
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `http://localhost:4000/api/newproparty/proparty-type/${id}`;
+        const editUrl = `https://propertymanager.cloudpress.host/api/newproparty/proparty-type/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }

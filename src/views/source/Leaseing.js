@@ -238,7 +238,7 @@ const Leaseing = () => {
     try {
       console.log(propertyType, "propertyType");
       const response = await fetch(
-        `http://localhost:4000/api/propertyunit/rentals_property/${propertyType}`
+        `https://propertymanager.cloudpress.host/api/propertyunit/rentals_property/${propertyType}`
       );
       const data = await response.json();
       // Ensure that units are extracted correctly and set as an array
@@ -586,7 +586,7 @@ const Leaseing = () => {
     try {
       // values["property_type"] = localStorage.getItem("propertyType");
       const res = await axios.post(
-        "http://localhost:4000/api/addaccount/addaccount",
+        "https://propertymanager.cloudpress.host/api/addaccount/addaccount",
         values
       );
       if (res.data.statusCode === 200) {
@@ -707,7 +707,7 @@ const Leaseing = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/rentals/allproperty")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -727,7 +727,7 @@ const Leaseing = () => {
 
   const fetchingAccountNames = async () => {
     // console.log("fetching account names");
-    fetch("http://localhost:4000/api/addaccount/find_accountname")
+    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -746,7 +746,7 @@ const Leaseing = () => {
 
   const fetchingRecAccountNames = async () => {
     // console.log("fetching rec accounr names");
-    fetch("http://localhost:4000/api/recurringAcc/find_accountname")
+    fetch("https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -766,7 +766,7 @@ const Leaseing = () => {
 
   const fetchingOneTimeCharges = async () => {
     // console.log("fetcjhiine pne rime charges");
-    fetch("http://localhost:4000/api/onetimecharge/find_accountname")
+    fetch("https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -802,7 +802,7 @@ const Leaseing = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/addagent/find_agentname")
+    fetch("https://propertymanager.cloudpress.host/api/addagent/find_agentname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -895,7 +895,7 @@ const Leaseing = () => {
   };
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/tenant/existing/tenant")
+    fetch("https://propertymanager.cloudpress.host/api/tenant/existing/tenant")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -1093,7 +1093,7 @@ const Leaseing = () => {
 
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit) {
-      let response = await axios.get("http://localhost:4000/api/tenant/tenants");
+      let response = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
       const data = response.data.data;
   
       let isUnavailable = false;
@@ -1314,7 +1314,7 @@ const Leaseing = () => {
   useEffect(() => {
     if (id && entryIndex) {
       axios
-        .get(`http://localhost:4000/api/tenant/tenant_summary/${id}`)
+        .get(`https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`)
         .then((response) => {
           const laesingdata = response.data.data;
           setTenantData(laesingdata);
@@ -1727,7 +1727,7 @@ const Leaseing = () => {
 
     console.log(tenantObject, "tenantObject");
     try {
-      const res = await axios.get(`http://localhost:4000/api/tenant/tenant`);
+      const res = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant`);
       if (res.data.statusCode === 200) {
         console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
@@ -1747,7 +1747,7 @@ const Leaseing = () => {
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
           const res = await axios.put(
-            `http://localhost:4000/api/tenant/tenant/${tenantId}`,
+            `https://propertymanager.cloudpress.host/api/tenant/tenant/${tenantId}`,
             putObject
           );
           if (res.data.statusCode === 200) {
@@ -1761,7 +1761,7 @@ const Leaseing = () => {
           if (id === undefined) {
             console.log(tenantObject, "leaseObject");
             const res = await axios.post(
-              "http://localhost:4000/api/tenant/tenant",
+              "https://propertymanager.cloudpress.host/api/tenant/tenant",
               tenantObject
             );
             if (res.data.statusCode === 200) {
@@ -1807,7 +1807,7 @@ const Leaseing = () => {
   const editLease = async (id) => {
     const arrayOfNames = file.map((item) => item.name);
 
-    const editUrl = `http://localhost:4000/api/tenant/tenants/${id}/entry/${entryIndex}`;
+    const editUrl = `https://propertymanager.cloudpress.host/api/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
 
     const entriesObject = {

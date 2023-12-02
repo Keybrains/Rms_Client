@@ -62,7 +62,7 @@ const Agent = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("http://localhost:4000/api/addagent/delete_agent", {
+          .delete("https://propertymanager.cloudpress.host/api/addagent/delete_agent", {
             data: { _id: id },
           })
           .then((response) => {
@@ -90,7 +90,7 @@ const Agent = () => {
   const getAgentData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/addagent/addagent"
+        "https://propertymanager.cloudpress.host/api/addagent/addagent"
       );
       setLoader(false);
       setAgentData(response.data.data);
