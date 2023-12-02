@@ -467,7 +467,7 @@ const Applicants = () => {
                       <th scope="col">Email</th>
                       <th scope="col">Phone Number</th>
                       <th scope="col">Property</th>
-                      <th scope="col">Updated At</th>
+                      <th scope="col">Created At</th>
                       <th scope="col">Status</th>
                       <th scope="col">Actions</th>
 
@@ -489,7 +489,7 @@ const Applicants = () => {
                         <td>{applicant.tenant_email}</td>
                         <td>{applicant.tenant_mobileNumber}</td>
                         <td>{applicant.rental_adress}</td>
-                        <td>{applicant.updateAt}</td>
+                        <td>{applicant.createAt}</td>
                         <td>{applicant?.applicant_status[0]?.status || "Undecided"}</td>
                         <td>
                           <DeleteIcon

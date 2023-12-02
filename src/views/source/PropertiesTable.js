@@ -499,7 +499,7 @@ const PropertiesTables = () => {
                         )}
                       </th>
 
-                      <th scope="col">Created On</th>
+                      {/* <th scope="col">Created On</th> */}
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
@@ -575,7 +575,7 @@ const PropertiesTables = () => {
                           <td>{`${tenant.entries.rental_city}, ${tenant.entries.rental_country}`}</td>
                           <td>{tenant.rentalOwner_primaryEmail}</td>
                           <td>{tenant.rentalOwner_phoneNumber}</td>
-                          <td>{tenant.entries.createdAt}</td>
+                          {/* <td>{tenant.entries.createdAt}</td> */}
                           {/* <td>{tenant.entries.createdAt}</td> */}
                           {/* <td>{tenant.entries.entryIndex}</td>
                         <td>{tenant.entries.rental_adress}</td> */}
