@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import HomeIcon from "@mui/icons-material/Home";
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
   Card,
@@ -63,6 +64,7 @@ import Cookies from "universal-cookie";
 import MailIcon from "@mui/icons-material/Mail";
 import FileOpen from "@mui/icons-material/FileOpen";
 import { CheckBox } from "@mui/icons-material";
+import * as yup from "yup";
 
 const ApplicantSummary = () => {
   const navigate = useNavigate();
@@ -100,15 +102,18 @@ const ApplicantSummary = () => {
   };
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
-
+  const [manager, setManager] = useState(null);
   React.useEffect(() => {
     if (cookies.get("token")) {
       const jwt = jwtDecode(cookies.get("token"));
+      console.log(jwt,jwt)
       setAccessType(jwt.accessType);
+      setManager(jwt.userName)
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
+
   const handleSearch = () => {
     // Handle search functionality here
     //console.log("Searching for:", searchText);
@@ -226,6 +231,9 @@ const ApplicantSummary = () => {
       applicant_notes: notes,
       applicant_attachment: files,
     },
+    validationSchema: yup.object({
+      applicant_notes: yup.string().required("Required"),
+    }),
     onSubmit: (values) => {
       handleSubmit(values);
     },
@@ -285,13 +293,36 @@ const ApplicantSummary = () => {
     }
   };
 
+  const arrayOfStatus = [
+    {
+      value: "Approved",
+      label: "The new rental application status",
+    },
+    {
+      value: "Rejected",
+      label: "The new rental application status",
+    },
+    {
+      value: "Lease assigned",
+      label: "Applicant added to a lease",
+    },
+    {
+      value: "New",
+      label: "New applicant record created",
+    },
+  ];
+
   const handleEditStatus = (item) => {
     //console.log(selectedDropdownItem, "selectedDropdownItem");
 
     // //console.log(updatedApplicant, "updatedApplicant 403");
+    console.log(item, "item");
     const status = {
       status: item,
+      statusUpdatedBy:manager
     };
+    console.log(status, "status");
+    console.log(id, "id");
     axios
       .put(`https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/status`, status)
       .catch((err) => {
@@ -311,7 +342,6 @@ const ApplicantSummary = () => {
 
         // Extract the rental address from the response
         const rentalAddress = data.rental_adress;
-
         //console.log(rentalAddress, "Rental Addressss");
         axios
           .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
@@ -431,6 +461,8 @@ const ApplicantSummary = () => {
     axios
       .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
       .then((applicants) => {
+        console.log(applicants.data.data,'gggg')
+
         axios
           .get("https://propertymanager.cloudpress.host/api/rentals/property")
           .then((properties) => {
@@ -585,6 +617,7 @@ const ApplicantSummary = () => {
     await axios
       .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
       .then((response) => {
+        console.log(response.data.data, "response.data.data");
         //console.log(response.data.data);
         if (response.data.data) {
           const applicantData = response.data.data;
@@ -621,7 +654,7 @@ const ApplicantSummary = () => {
 
   const handleEdit = (values) => {
     setIsEdit(false);
-    console.log(values,'values')
+    console.log(values, "values");
     let rentalUnitsValue = values.rental_units || matchedApplicant.rental_units;
 
     if (
@@ -840,156 +873,171 @@ const ApplicantSummary = () => {
     }
   };
 
+  // ----------------------------------------------Applicant Put----------------------------------------------------------------------------
 
+  const [applicantDatas, setApplicantDatas] = useState({});
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
+        );
 
-   // ----------------------------------------------Applicant Put----------------------------------------------------------------------------
+        if (response.data && response.data.data) {
+          setApplicantDatas(response.data.data.applicant);
+        } else {
+          console.error("Invalid data format received from the API");
+        }
+      } catch (error) {
+        console.error("Data fetch failed", error);
+      }
+    };
 
-   const [applicantDatas, setApplicantDatas] = useState({});
+    fetchData();
+  }, []);
 
-   useEffect(() => {
-     const fetchData = async () => {
-       try {
-         const response = await axios.get(
-           `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
-         );
- 
-         if (response.data && response.data.data) {
-           setApplicantDatas(response.data.data.applicant);
-         } else {
-           console.error("Invalid data format received from the API");
-         }
-       } catch (error) {
-         console.error("Data fetch failed", error);
-       }
-     };
- 
-     fetchData();
-   }, []);
- 
-   // const isApplicantDataEmpty = Object?.keys(applicantDatas)?.length === 0;
-   const isApplicantDataEmpty =
-     !applicantDatas || Object.keys(applicantDatas).length === 0;
- 
-   const [formData, setFormData] = useState({
-     applicant_firstName: "",
-     applicant_lastName: "",
-   });
-   console.log(formData, "formData");
- 
-   const handleApplicationSubmit = async (e) => {
-     e.preventDefault();
- 
-     try {
-       const apiUrl =
-         "https://propertymanager.cloudpress.host/api/applicant/application/6565bbf79cb24516b8e50f95";
- 
-       const updatedData = {
-         // Add other fields as needed
-         applicant: {
-           applicant_firstName: formData.applicant_firstName,
-           applicant_lastName: formData.applicant_lastName,
- 
-           applicant_socialSecurityNumber:
-             formData.applicant_socialSecurityNumber,
-           applicant_dob: formData.applicant_dob,
-           applicant_country: formData.applicant_country,
-           applicant_adress: formData.applicant_adress,
-           applicant_city: formData.applicant_city,
-           applicant_state: formData.applicant_state,
-           applicant_zipcode: formData.applicant_zipcode,
-           applicant_email: formData.applicant_email,
-           applicant_cellPhone: formData.applicant_cellPhone,
-           applicant_homePhone: formData.applicant_homePhone,
-           applicant_emergencyContact_firstName:
-             formData.applicant_emergencyContact_firstName,
-           applicant_emergencyContact_lasttName:
-             formData.applicant_emergencyContact_lasttName,
-           applicant_emergencyContact_relationship:
-             formData.applicant_emergencyContact_relationship,
-           applicant_emergencyContact_email:
-             formData.applicant_emergencyContact_email,
-           applicant_emergencyContact_phone:
-             formData.applicant_emergencyContact_phone,
- 
-           rental_country: formData.rental_country,
-           rental_adress: formData.rental_adress,
-           rental_city: formData.rental_city,
-           rental_state: formData.rental_state,
-           rental_zipcode: formData.rental_zipcode,
-           rental_data_from: formData.rental_data_from,
-           rental_date_to: formData.rental_date_to,
-           rental_monthlyRent: formData.rental_monthlyRent,
-           rental_resaonForLeaving: formData.rental_resaonForLeaving,
-           rental_landlord_firstName: formData.rental_landlord_firstName,
-           rental_landlord_lasttName: formData.rental_landlord_lasttName,
-           rental_landlord_phoneNumber: formData.rental_landlord_phoneNumber,
-           rental_landlord_email: formData.rental_landlord_email,
- 
-           employment_name: formData.employment_name,
-           employment_country: formData.employment_country,
-           employment_adress: formData.employment_adress,
-           employment_city: formData.employment_city,
-           employment_state: formData.employment_state,
-           employment_zipcode: formData.employment_zipcode,
-           employment_phoneNumber: formData.employment_phoneNumber,
-           employment_email: formData.employment_email,
-           employment_position: formData.employment_position,
-           employment_date_from: formData.employment_date_from,
-           employment_date_to: formData.employment_date_to,
-           employment_monthlyGrossSalary: formData.employment_monthlyGrossSalary,
-           employment_supervisor_name: formData.employment_supervisor_name,
-           employment_supervisor_title: formData.employment_supervisor_title,
-         },
-       };
- 
-       const response = await axios.put(apiUrl, updatedData);
- 
-       console.log("PUT request response:", response.data);
-     } catch (error) {
-       console.error("Error updating data:", error);
-     }
-   };
- 
-   const handleApplicantChange = (e) => {
-     const { name, value } = e.target;
-     setFormData((prevData) => ({
-       ...prevData,
-       [name]: value,
-     }));
-   };
- 
-   const handleManuallyEnterClick = () => {
-     navigate("/admin/aplicant-form");
-   };
- 
-   const [sendApplicantMail, setSendApplicantMail] = useState();
-   const [sendApplicantMailLoader, setSendApplicantMailLoader] = useState(false);
- 
-   let sendApplicantMailData = async () => {
-     setSendApplicantMailLoader(true);
-     let responce = await axios.get(
-       `https://propertymanager.cloudpress.host/api/applicant/applicant/mail/${id}`
-     );
-     setSendApplicantMail(responce.data.data);
- 
-     if (responce.data.statusCode === 200) {
-       setSendApplicantMailLoader(false)
-       swal("", "Application emailed", "success");
-     } else {
-       setSendApplicantMailLoader(false);
-       swal("", responce.data.message, "error");
-     }
-   };
- 
+  // const isApplicantDataEmpty = Object?.keys(applicantDatas)?.length === 0;
+  const isApplicantDataEmpty =
+    !applicantDatas || Object.keys(applicantDatas).length === 0;
+
+  const [formData, setFormData] = useState({
+    applicant_firstName: "",
+    applicant_lastName: "",
+  });
+  console.log(formData, "formData");
+
+  const handleApplicationSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const apiUrl =
+        "https://propertymanager.cloudpress.host/api/applicant/application/6565bbf79cb24516b8e50f95";
+
+      const updatedData = {
+        // Add other fields as needed
+        applicant: {
+          applicant_firstName: formData.applicant_firstName,
+          applicant_lastName: formData.applicant_lastName,
+
+          applicant_socialSecurityNumber:
+            formData.applicant_socialSecurityNumber,
+          applicant_dob: formData.applicant_dob,
+          applicant_country: formData.applicant_country,
+          applicant_adress: formData.applicant_adress,
+          applicant_city: formData.applicant_city,
+          applicant_state: formData.applicant_state,
+          applicant_zipcode: formData.applicant_zipcode,
+          applicant_email: formData.applicant_email,
+          applicant_cellPhone: formData.applicant_cellPhone,
+          applicant_homePhone: formData.applicant_homePhone,
+          applicant_emergencyContact_firstName:
+            formData.applicant_emergencyContact_firstName,
+          applicant_emergencyContact_lasttName:
+            formData.applicant_emergencyContact_lasttName,
+          applicant_emergencyContact_relationship:
+            formData.applicant_emergencyContact_relationship,
+          applicant_emergencyContact_email:
+            formData.applicant_emergencyContact_email,
+          applicant_emergencyContact_phone:
+            formData.applicant_emergencyContact_phone,
+
+          rental_country: formData.rental_country,
+          rental_adress: formData.rental_adress,
+          rental_city: formData.rental_city,
+          rental_state: formData.rental_state,
+          rental_zipcode: formData.rental_zipcode,
+          rental_data_from: formData.rental_data_from,
+          rental_date_to: formData.rental_date_to,
+          rental_monthlyRent: formData.rental_monthlyRent,
+          rental_resaonForLeaving: formData.rental_resaonForLeaving,
+          rental_landlord_firstName: formData.rental_landlord_firstName,
+          rental_landlord_lasttName: formData.rental_landlord_lasttName,
+          rental_landlord_phoneNumber: formData.rental_landlord_phoneNumber,
+          rental_landlord_email: formData.rental_landlord_email,
+
+          employment_name: formData.employment_name,
+          employment_country: formData.employment_country,
+          employment_adress: formData.employment_adress,
+          employment_city: formData.employment_city,
+          employment_state: formData.employment_state,
+          employment_zipcode: formData.employment_zipcode,
+          employment_phoneNumber: formData.employment_phoneNumber,
+          employment_email: formData.employment_email,
+          employment_position: formData.employment_position,
+          employment_date_from: formData.employment_date_from,
+          employment_date_to: formData.employment_date_to,
+          employment_monthlyGrossSalary: formData.employment_monthlyGrossSalary,
+          employment_supervisor_name: formData.employment_supervisor_name,
+          employment_supervisor_title: formData.employment_supervisor_title,
+        },
+      };
+
+      const response = await axios.put(apiUrl, updatedData);
+
+      console.log("PUT request response:", response.data);
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
+  };
+
+  const handleApplicantChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleManuallyEnterClick = () => {
+    navigate("/admin/aplicant-form");
+  };
+
+  const [sendApplicantMail, setSendApplicantMail] = useState();
+  const [sendApplicantMailLoader, setSendApplicantMailLoader] = useState(false);
+
+  let sendApplicantMailData = async () => {
+    setSendApplicantMailLoader(true);
+    let responce = await axios.get(
+      `https://propertymanager.cloudpress.host/api/applicant/applicant/mail/${id}`
+    );
+    setSendApplicantMail(responce.data.data);
+
+    if (responce.data.statusCode === 200) {
+      setSendApplicantMailLoader(false);
+      swal("", "Application emailed", "success");
+    } else {
+      setSendApplicantMailLoader(false);
+      swal("", responce.data.message, "error");
+    }
+  };
+
+  const [loading, setLoading] = React.useState(false);
+  function handleClick() {
+    setLoading(true);
+  }
+
   return (
     <>
       <Header title="ApplicantSummary" />
-      <Container className="mt--8" fluid>
+      <Container className="mt--9" fluid>
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
-              <h1 style={{ color: "white" }}>Applicant Details</h1>
+              <h1 style={{ color: "white" }}>
+                Applicant :
+                {" " +
+                  matchedApplicant?.tenant_firstName +
+                  " " +
+                  matchedApplicant?.tenant_lastName}
+              </h1>
+              <h4 style={{ color: "white" }}>
+                {/* Tenant |{" "} */}
+                {matchedApplicant.rental_adress}
+                {matchedApplicant.rental_units
+                  ? " - " + matchedApplicant.rental_units
+                  : " "}
+              </h4>
             </FormGroup>
           </Col>
           <Col className="text-right" xs="12" sm="6">
@@ -1026,7 +1074,7 @@ const ApplicantSummary = () => {
               </Button>
             </InputGroupAddon>
           </InputGroup> */}
-          <div
+          {/* <div
             style={{
               display: "flex",
               flexDirection: "row",
@@ -1051,7 +1099,7 @@ const ApplicantSummary = () => {
                 " - " +
                 matchedApplicant.rental_units}
             </Typography>
-          </div>
+          </div> */}
           <div
             className="formInput d-flex flex-direction-row"
             style={{ margin: "30px 30px" }}
@@ -1062,9 +1110,10 @@ const ApplicantSummary = () => {
               isOpen={isOpen}
               toggle={toggle}
             >
+              {console.log(matchedApplicant.applicant_status, "status")}
               <DropdownToggle caret style={{ width: "100%" }}>
-                {matchedApplicant.status
-                  ? matchedApplicant.status
+                {matchedApplicant && matchedApplicant.applicant_status && matchedApplicant?.applicant_status[0]?.status
+                  ? matchedApplicant?.applicant_status[0]?.status
                   : selectedDropdownItem
                   ? selectedDropdownItem
                   : "Select"}
@@ -1091,7 +1140,9 @@ const ApplicantSummary = () => {
                 })}
               </DropdownMenu>
             </Dropdown>
-            <Button
+            <LoadingButton
+              variant="contained"
+              loading={loading}
               style={
                 selectedDropdownItem === "Approved"
                   ? { display: "block", marginLeft: "10px" }
@@ -1100,11 +1151,12 @@ const ApplicantSummary = () => {
               color="success"
               onClick={(e) => {
                 fetchDataAndPost();
+                handleClick();
                 // navigate("/admin/RentRoll");
               }}
             >
               Move in
-            </Button>
+            </LoadingButton>
           </div>
           <Row>
             <Col>
@@ -1119,7 +1171,7 @@ const ApplicantSummary = () => {
                       value="Summary"
                       style={{ textTransform: "none" }}
                     />
-                      <Tab
+                    <Tab
                       label="Application"
                       value="Application"
                       style={{ textTransform: "none" }}
@@ -1465,106 +1517,118 @@ const ApplicantSummary = () => {
                             </Button>
                           </div>
 
-                          <tbody
-                            style={{
-                              width: "100%",
-                              display: "table",
-                              borderCollapse: "collapse",
-                            }}
-                          >
-                            {combinedData.map((data, index) => (
-                              <>
-                                <h3 style={{ paddingTop: "20px" }}>Updates</h3>
-                                <tr key={index}>
-                                  <td
-                                    style={{
-                                      border: "1px solid #ccc",
-                                      padding: "10px",
-                                      backgroundColor:
-                                        index % 2 === 0 ? "#f2f2f2" : "#fff", // Alternate row colors
-                                    }}
-                                  >
-                                    {data.note && (
-                                      <p style={{ fontWeight: "bold" }}>
-                                        Note: {data.note}
-                                      </p>
-                                    )}
-                                  </td>
-                                  <td
-                                    style={{
-                                      border: "1px solid #ccc",
-                                      padding: "10px",
-                                      backgroundColor:
-                                        index % 2 === 0 ? "#f2f2f2" : "#fff", // Alternate row colors
-                                    }}
-                                  >
-                                    {data.file && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                        }}
-                                      >
-                                        <p
-                                          onClick={() =>
-                                            openFileInNewTab(data.file)
-                                          }
+                          {combinedData.length > 0 && (
+                            <tbody
+                              style={{
+                                width: "60%",
+                                display: "table",
+                                borderCollapse: "collapse",
+                              }}
+                            >
+                              <h3 style={{ paddingTop: "20px" }}>Updates</h3>
+                              {combinedData.map((data, index) => (
+                                <>
+                                  <tr key={index}>
+                                    <td
+                                      style={{
+                                        border: "1px solid #ccc",
+                                        // padding: "2px",
+                                        paddingLeft: "5px",
+                                        paddingTop: "5px",
+                                        backgroundColor:
+                                          index % 2 === 0 ? "#f2f2f2" : "#fff", // Alternate row colors
+                                      }}
+                                    >
+                                      {data.note && (
+                                        <p style={{ fontWeight: "bold" }}>
+                                          Note: {data.note}
+                                        </p>
+                                      )}
+                                    </td>
+                                    <td
+                                      style={{
+                                        border: "1px solid #ccc",
+                                        // padding: "2px",
+                                        backgroundColor:
+                                          index % 2 === 0 ? "#f2f2f2" : "#fff", // Alternate row colors
+                                      }}
+                                    >
+                                      {data.file && (
+                                        <div
                                           style={{
-                                            cursor: "pointer",
-                                            fontWeight: "bold",
-                                            marginRight: "10px",
+                                            display: "flex",
+                                            alignItems: "center",
                                           }}
                                         >
-                                          <FileOpenIcon />
-                                          {data.file.name}
-                                        </p>
-                                      </div>
-                                    )}
-                                  </td>
-                                </tr>
-                              </>
-                            ))}
-                            {combinedData.length > 0 && (
-                              <tr>
-                                <td
-                                  colSpan="2"
-                                  style={{
-                                    padding: "10px",
-                                    border: "1px solid #ccc",
-                                  }}
-                                >
-                                  <button
+                                          <p
+                                            onClick={() =>
+                                              openFileInNewTab(data.file)
+                                            }
+                                            style={{
+                                              cursor: "pointer",
+                                              fontWeight: "bold",
+                                              paddingLeft: "5px",
+                                              paddingTop: "5px",
+                                            }}
+                                          >
+                                            <FileOpenIcon
+                                              style={{
+                                                color: "black",
+                                                paddingRight: "3px",
+                                              }}
+                                            />
+                                            {data.file.name}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </td>
+                                  </tr>
+                                </>
+                              ))}
+                              {combinedData.length > 0 && (
+                                <tr>
+                                  <td
+                                    colSpan="2"
                                     style={{
-                                      padding: "8px 12px", // Adjust padding for smaller size
-                                      borderRadius: "5px",
-                                      background: "#ff6347", // Red background color
-                                      color: "#fff",
-                                      border: "none",
-                                      cursor: "pointer",
-                                      // width: "100%", // Remove full width
-                                      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)", // Add a subtle shadow
-                                      transition: "background-color 0.3s ease", // Smooth transition on hover
-                                      float: "left", // Align button to the left side
-                                      marginRight: "10px", // Margin to create space
-                                    }}
-                                    onClick={() => {
-                                      handleClearAll();
-                                    }}
-                                    onMouseOver={(e) => {
-                                      e.target.style.backgroundColor =
-                                        "#d44a2e"; // Lighter shade on hover
-                                    }}
-                                    onMouseOut={(e) => {
-                                      e.target.style.backgroundColor =
-                                        "#ff6347"; // Restore original color on mouse out
+                                      padding: "2px",
+                                      border: "1px solid #ccc",
                                     }}
                                   >
-                                    Clear
-                                  </button>
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
+                                    <button
+                                      style={{
+                                        // padding: "8px 12px", // Adjust padding for smaller size
+                                        borderRadius: "5px",
+                                        background: "#ff6347", // Red background color
+                                        color: "#fff",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        // width: "100%", // Remove full width
+                                        boxShadow:
+                                          "0 2px 4px rgba(0, 0, 0, 0.2)", // Add a subtle shadow
+                                        transition:
+                                          "background-color 0.3s ease", // Smooth transition on hover
+                                        float: "left", // Align button to the left side
+                                        marginRight: "10px", // Margin to create space
+                                      }}
+                                      onClick={() => {
+                                        handleClearAll();
+                                      }}
+                                      onMouseOver={(e) => {
+                                        e.target.style.backgroundColor =
+                                          "#d44a2e"; // Lighter shade on hover
+                                      }}
+                                      onMouseOut={(e) => {
+                                        e.target.style.backgroundColor =
+                                          "#ff6347"; // Restore original color on mouse out
+                                      }}
+                                    >
+                                      Clear
+                                    </button>
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          )}
                         </Grid>
                         <Grid item xs="12" md="6" lg="4" xl="3">
                           {isEdit ? (
@@ -1970,6 +2034,48 @@ const ApplicantSummary = () => {
                                 </div>
                               </CardContent>
                             </Card>
+                          )}
+                        </Grid>
+                        <Grid item xs={9}>
+                          <Row
+                            className="w-100 my-3 "
+                            style={{
+                              fontSize: "18px",
+                              textTransform: "capitalize",
+                              color: "#5e72e4",
+                              fontWeight: "600",
+                              borderBottom: "1px solid #ddd",
+                            }}
+                          >
+                            <Col>Updates</Col>
+                          </Row>
+
+                          {matchedApplicant?.applicant_status?.map(
+                            (item, index) => (
+                              <Row
+                                className="w-100 mt-1  mb-5"
+                                style={{
+                                  fontSize: "12px",
+                                  textTransform: "capitalize",
+                                  color: "#000",
+                                }}
+                                key={index}
+                              >
+                                <Col>{item.status || "N/A"}</Col>
+                                <Col>
+                                  {item?.status
+                                    ? arrayOfStatus.find(
+                                        (x) => x.value === item.status
+                                      )?.label
+                                    : "N/A"}
+                                </Col>
+                                <Col>
+                                  {item.statusUpdatedBy +
+                                    " At " +
+                                    item.updateAt || "N/A"}
+                                </Col>
+                              </Row>
+                            )
                           )}
                         </Grid>
                       </Grid>

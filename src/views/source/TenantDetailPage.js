@@ -108,7 +108,6 @@ const TenantDetailPage = () => {
     console.log(filteredData, "yashr");
     setMyData(filteredData);
   };
-
   useEffect(() => {
     doSomething();
   }, []);
@@ -131,7 +130,7 @@ const TenantDetailPage = () => {
     <div>
       <Header />
 
-      <Container className="mt--7" fluid>
+      <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
@@ -196,7 +195,7 @@ const TenantDetailPage = () => {
                               borderBottom: "1px solid #ddd",
                             }}
                           >
-                            <Col>Tenant Details</Col>
+                            <Col>Contact Information</Col>
                           </Row>
                           <Row
                             className="w-100 mb-1 "
@@ -454,24 +453,89 @@ const TenantDetailPage = () => {
                     <Card style={{ background: "#F4F6FF" }}>
                       <CardContent>
                         <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            marginBottom: "5px",
-                          }}
+                          style={{ display: "flex", flexDirection: "column" }}
                         >
-                          <Typography
-                            sx={{
-                              fontSize: 14,
-                              fontWeight: "bold",
-                              marginRight: "10px",
-                            }}
-                            gutterBottom
-                          >
-                            Active lease
-                          </Typography>
+                          {myData.map((item, index) => (
+                            <div key={index} style={{ marginBottom: "10px" }}>
+                              <Typography
+                                sx={{
+                                  fontSize: 14,
+                                  fontWeight: "bold",
+                                  fontStyle: 'italic',
+                                  fontFamily: "Arial",
+                                  textTransform: "capitalize",
+                                  marginRight: "10px",
+                                }}
+                                color="text.secondary"
+                                gutterBottom
+                              >
+                                {getStatus(
+                                  item.entries.start_date,
+                                  item.entries.end_date
+                                )
+                                  .charAt(0)
+                                  .toUpperCase() +
+                                  getStatus(
+                                    item.entries.start_date,
+                                    item.entries.end_date
+                                  )
+                                    .substring(1)
+                                    .toLowerCase()}
+                              </Typography>
+
+                              <Typography
+                                sx={{
+                                  fontSize: 14,
+                                  // fontWeight: "bold",
+                                  marginRight: "10px",
+                                }}
+                                color="text.secondary"
+                                gutterBottom
+                              >
+                                {item.entries.rental_adress || "N/A"}
+                              </Typography>
+                            </div>
+                          ))}
                         </div>
+                        <div
+                          style={{ display: "flex", flexDirection: "column" }}
+                        >
+                          {myData.map((item, index) => (
+                            <div key={index}>
+                              <Typography
+                                sx={{
+                                  fontSize: 14,
+                                  fontWeight: "bold",
+                                  fontFamily: "Arial",
+                                  fontStyle: 'italic',
+                                  marginRight: "10px",
+                                }}
+                                color="text.secondary"
+                                gutterBottom
+                              >
+                                {item.entries.lease_type || "N/A"}
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontSize: 14,
+                                  // fontWeight: "bold",
+                                  marginRight: "10px",
+                                }}
+                                color="text.secondary"
+                                gutterBottom
+                              >
+                                {formatDateWithoutTime(
+                                  item.entries.start_date
+                                ) +
+                                  " To " +
+                                  formatDateWithoutTime(
+                                    item.entries.end_date
+                                  ) || "N/A"}
+                              </Typography>
+                            </div>
+                          ))}
+                        </div>
+
                         <div
                           style={{
                             display: "flex",
@@ -491,6 +555,12 @@ const TenantDetailPage = () => {
                             {myData.entries.lease_type}
                           </Typography> */}
                         </div>
+                        <hr
+                          style={{
+                            marginTop: "2px",
+                            marginBottom: "6px",
+                          }}
+                        />
                         <div
                           style={{
                             display: "flex",
@@ -591,19 +661,19 @@ const TenantDetailPage = () => {
                                   Rent:
                                 </Typography>
                                 {myData.map((item) => (
-                                      <>
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    fontWeight: "bold",
-                                    marginRight: "10px",
-                                  }}
-                                  color="text.secondary"
-                                  gutterBottom
-                                >
-                                 ${item.entries.amount}
-                                </Typography>
-                                </>
+                                  <>
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        fontWeight: "bold",
+                                        marginRight: "10px",
+                                      }}
+                                      color="text.secondary"
+                                      gutterBottom
+                                    >
+                                      ${item.entries.amount}
+                                    </Typography>
+                                  </>
                                 ))}
                               </div>
                             </div>
@@ -627,14 +697,21 @@ const TenantDetailPage = () => {
                             >
                               Due date :
                             </Typography>
-                            <Typography
-                              sx={{
-                                fontSize: 14,
-                                marginLeft: "10px",
-                              }}
-                            >
-                              {/* 10/12/2023 */}
-                            </Typography>
+                            {myData.map((item) => (
+                              <>
+                                <Typography
+                                  sx={{
+                                    fontSize: 14,
+                                    fontWeight: "bold",
+                                    marginRight: "10px",
+                                  }}
+                                  color="text.secondary"
+                                  gutterBottom
+                                >
+                                  {item.entries.nextDue_date}
+                                </Typography>
+                              </>
+                            ))}
                           </div>
                         </>
                         {/* )} */}
@@ -658,11 +735,8 @@ const TenantDetailPage = () => {
                               },
                             }}
                           >
-                            <Link
-                                  to={`/admin/AddPayment/`}
-                                  onClick={(e) => {}}
-                                >
-                            Receive Payment
+                            <Link to={`/admin/AddPayment/`} onClick={(e) => {}}>
+                              Receive Payment
                             </Link>
                           </Button>
                           {myData.map((item) => (
@@ -670,7 +744,7 @@ const TenantDetailPage = () => {
                               <Typography
                                 sx={{
                                   fontSize: 14,
-                                  marginLeft: "50px",
+                                  marginLeft: "10px",
                                   paddingTop: "10px",
                                   cursor: "pointer",
                                   color: "blue",

@@ -65,7 +65,7 @@ const PropertiesTables = () => {
       const response = await axios.get(
         "https://propertymanager.cloudpress.host/api/rentals/rental"
       );
-      //console.log(response.data.data);
+      console.log(response.data.data);
 
       setRentalsData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
