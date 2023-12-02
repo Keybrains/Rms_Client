@@ -68,7 +68,7 @@ const PropDetails = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`
+        `http://localhost:4000/api/rentals/rentals_summary/${id}`
       );
       setpropertyDetails(response.data.data);
       console.log(response.data.data, "response frirn simmary");
@@ -83,7 +83,7 @@ const PropDetails = () => {
       setLoading(false);
 
       const resp = await axios.get(`
-        https://propertymanager.cloudpress.host/api/newproparty/propropartytype
+        http://localhost:4000/api/newproparty/propropartytype
         `);
       console.log(resp, "resp");
 
@@ -263,7 +263,7 @@ const PropDetails = () => {
 
   const getUnitProperty = async (rentalId) => {
     await axios
-      .get("https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" + rentalId)
+      .get("http://localhost:4000/api/propertyunit/propertyunit/" + rentalId)
       .then((res) => {
         // setUnitProperty(res.data.data);
         console.log(res.data.data, "property unit");
@@ -296,7 +296,7 @@ const PropDetails = () => {
     };
     await axios
       .put(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" + id,
+        "http://localhost:4000/api/propertyunit/propertyunit/" + id,
         updatedValues
       )
       .then((response) => {
@@ -321,7 +321,7 @@ const PropDetails = () => {
 
     await axios
       .put(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" + id,
+        "http://localhost:4000/api/propertyunit/propertyunit/" + id,
         updatedValues
       )
       .then((response) => {
@@ -348,7 +348,7 @@ const PropDetails = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" + id)
+          .delete("http://localhost:4000/api/propertyunit/propertyunit/" + id)
           .then((response) => {
             console.log(response.data.data, "deleted data");
             getRentalsData();
@@ -384,7 +384,7 @@ const PropDetails = () => {
     console.log("formData", formData);
     try {
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit",
+        "http://localhost:4000/api/propertyunit/propertyunit",
         formData
       );
       if (response.data.statusCode === 200) {
@@ -1533,7 +1533,7 @@ const PropDetails = () => {
                                 style={{ cursor: "pointer" }}
                               >
                                 <td>{unit.rental_units || "N/A"}</td>
-                                <td>{unit.rental_adress || "N/A"}</td>
+                                <td>{unit.rental_unitsAdress +','+ unit.rental_adress || "N/A"}</td>
                                 <td>
                                   {unit.tenant_firstName  == null
                                     ? "-"

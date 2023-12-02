@@ -63,9 +63,9 @@ const PropertiesTables = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/rentals/rental"
+        "http://localhost:4000/api/rentals/rental"
       );
-      //console.log(response.data.data);
+      console.log(response.data.data);
 
       setRentalsData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -87,7 +87,7 @@ const PropertiesTables = () => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/rentals/rental/${id}/entry/${entryIndex}`
+            `http://localhost:4000/api/rentals/rental/${id}/entry/${entryIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {

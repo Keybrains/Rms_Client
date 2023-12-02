@@ -55,7 +55,7 @@ const StaffWorkTable = () => {
   const getWorkData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
+        `http://localhost:4000/api/addstaffmember/staffmember_summary/${cookie_id}`
       );
       if (response.data && response.data.data) {
         //console.log(response.data.data);
@@ -85,7 +85,7 @@ const StaffWorkTable = () => {
   const getRentalData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/workorder/workorder/by-staff-member/${staffmember_name}`
+        `http://localhost:4000/api/workorder/workorder/by-staff-member/${staffmember_name}`
       );
       setWorkData(response.data.data);
       //console.log(response.data);

@@ -32,7 +32,7 @@ const VendorProfile = () => {
   const getVendorData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${cookie_id}`
+        `http://localhost:4000/api/vendor/vendor_summary/${cookie_id}`
       );
       //console.log(response.data.data);
       setVendorDetails(response.data.data);
