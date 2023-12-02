@@ -401,7 +401,7 @@ const Applicants = () => {
     <>
       <Header />
       {/* Page content */}
-      <Container className="mt--7" fluid>
+      <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
             <FormGroup>

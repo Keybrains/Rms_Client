@@ -64,6 +64,7 @@ import Cookies from "universal-cookie";
 import MailIcon from "@mui/icons-material/Mail";
 import FileOpen from "@mui/icons-material/FileOpen";
 import { CheckBox } from "@mui/icons-material";
+import * as yup from "yup";
 
 const ApplicantSummary = () => {
   const navigate = useNavigate();
@@ -112,6 +113,7 @@ const ApplicantSummary = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
+
   const handleSearch = () => {
     // Handle search functionality here
     //console.log("Searching for:", searchText);
@@ -229,6 +231,9 @@ const ApplicantSummary = () => {
       applicant_notes: notes,
       applicant_attachment: files,
     },
+    validationSchema: yup.object({
+      applicant_notes: yup.string().required("Required"),
+    }),
     onSubmit: (values) => {
       handleSubmit(values);
     },
@@ -1015,11 +1020,24 @@ const ApplicantSummary = () => {
   return (
     <>
       <Header title="ApplicantSummary" />
-      <Container className="mt--8" fluid>
+      <Container className="mt--9" fluid>
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
-              <h1 style={{ color: "white" }}>Applicant Details</h1>
+              <h1 style={{ color: "white" }}>
+                Applicant :
+                {" " +
+                  matchedApplicant?.tenant_firstName +
+                  " " +
+                  matchedApplicant?.tenant_lastName}
+              </h1>
+              <h4 style={{ color: "white" }}>
+                {/* Tenant |{" "} */}
+                {matchedApplicant.rental_adress}
+                {matchedApplicant.rental_units
+                  ? " - " + matchedApplicant.rental_units
+                  : " "}
+              </h4>
             </FormGroup>
           </Col>
           <Col className="text-right" xs="12" sm="6">
@@ -1056,7 +1074,7 @@ const ApplicantSummary = () => {
               </Button>
             </InputGroupAddon>
           </InputGroup> */}
-          <div
+          {/* <div
             style={{
               display: "flex",
               flexDirection: "row",
@@ -1081,7 +1099,7 @@ const ApplicantSummary = () => {
                 " - " +
                 matchedApplicant.rental_units}
             </Typography>
-          </div>
+          </div> */}
           <div
             className="formInput d-flex flex-direction-row"
             style={{ margin: "30px 30px" }}
@@ -1499,106 +1517,118 @@ const ApplicantSummary = () => {
                             </Button>
                           </div>
 
-                          <tbody
-                            style={{
-                              width: "100%",
-                              display: "table",
-                              borderCollapse: "collapse",
-                            }}
-                          >
-                            {combinedData.map((data, index) => (
-                              <>
-                                <h3 style={{ paddingTop: "20px" }}>Updates</h3>
-                                <tr key={index}>
-                                  <td
-                                    style={{
-                                      border: "1px solid #ccc",
-                                      padding: "10px",
-                                      backgroundColor:
-                                        index % 2 === 0 ? "#f2f2f2" : "#fff", // Alternate row colors
-                                    }}
-                                  >
-                                    {data.note && (
-                                      <p style={{ fontWeight: "bold" }}>
-                                        Note: {data.note}
-                                      </p>
-                                    )}
-                                  </td>
-                                  <td
-                                    style={{
-                                      border: "1px solid #ccc",
-                                      padding: "10px",
-                                      backgroundColor:
-                                        index % 2 === 0 ? "#f2f2f2" : "#fff", // Alternate row colors
-                                    }}
-                                  >
-                                    {data.file && (
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                        }}
-                                      >
-                                        <p
-                                          onClick={() =>
-                                            openFileInNewTab(data.file)
-                                          }
+                          {combinedData.length > 0 && (
+                            <tbody
+                              style={{
+                                width: "60%",
+                                display: "table",
+                                borderCollapse: "collapse",
+                              }}
+                            >
+                              <h3 style={{ paddingTop: "20px" }}>Updates</h3>
+                              {combinedData.map((data, index) => (
+                                <>
+                                  <tr key={index}>
+                                    <td
+                                      style={{
+                                        border: "1px solid #ccc",
+                                        // padding: "2px",
+                                        paddingLeft: "5px",
+                                        paddingTop: "5px",
+                                        backgroundColor:
+                                          index % 2 === 0 ? "#f2f2f2" : "#fff", // Alternate row colors
+                                      }}
+                                    >
+                                      {data.note && (
+                                        <p style={{ fontWeight: "bold" }}>
+                                          Note: {data.note}
+                                        </p>
+                                      )}
+                                    </td>
+                                    <td
+                                      style={{
+                                        border: "1px solid #ccc",
+                                        // padding: "2px",
+                                        backgroundColor:
+                                          index % 2 === 0 ? "#f2f2f2" : "#fff", // Alternate row colors
+                                      }}
+                                    >
+                                      {data.file && (
+                                        <div
                                           style={{
-                                            cursor: "pointer",
-                                            fontWeight: "bold",
-                                            marginRight: "10px",
+                                            display: "flex",
+                                            alignItems: "center",
                                           }}
                                         >
-                                          <FileOpenIcon />
-                                          {data.file.name}
-                                        </p>
-                                      </div>
-                                    )}
-                                  </td>
-                                </tr>
-                              </>
-                            ))}
-                            {combinedData.length > 0 && (
-                              <tr>
-                                <td
-                                  colSpan="2"
-                                  style={{
-                                    padding: "10px",
-                                    border: "1px solid #ccc",
-                                  }}
-                                >
-                                  <button
+                                          <p
+                                            onClick={() =>
+                                              openFileInNewTab(data.file)
+                                            }
+                                            style={{
+                                              cursor: "pointer",
+                                              fontWeight: "bold",
+                                              paddingLeft: "5px",
+                                              paddingTop: "5px",
+                                            }}
+                                          >
+                                            <FileOpenIcon
+                                              style={{
+                                                color: "black",
+                                                paddingRight: "3px",
+                                              }}
+                                            />
+                                            {data.file.name}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </td>
+                                  </tr>
+                                </>
+                              ))}
+                              {combinedData.length > 0 && (
+                                <tr>
+                                  <td
+                                    colSpan="2"
                                     style={{
-                                      padding: "8px 12px", // Adjust padding for smaller size
-                                      borderRadius: "5px",
-                                      background: "#ff6347", // Red background color
-                                      color: "#fff",
-                                      border: "none",
-                                      cursor: "pointer",
-                                      // width: "100%", // Remove full width
-                                      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)", // Add a subtle shadow
-                                      transition: "background-color 0.3s ease", // Smooth transition on hover
-                                      float: "left", // Align button to the left side
-                                      marginRight: "10px", // Margin to create space
-                                    }}
-                                    onClick={() => {
-                                      handleClearAll();
-                                    }}
-                                    onMouseOver={(e) => {
-                                      e.target.style.backgroundColor =
-                                        "#d44a2e"; // Lighter shade on hover
-                                    }}
-                                    onMouseOut={(e) => {
-                                      e.target.style.backgroundColor =
-                                        "#ff6347"; // Restore original color on mouse out
+                                      padding: "2px",
+                                      border: "1px solid #ccc",
                                     }}
                                   >
-                                    Clear
-                                  </button>
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
+                                    <button
+                                      style={{
+                                        // padding: "8px 12px", // Adjust padding for smaller size
+                                        borderRadius: "5px",
+                                        background: "#ff6347", // Red background color
+                                        color: "#fff",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        // width: "100%", // Remove full width
+                                        boxShadow:
+                                          "0 2px 4px rgba(0, 0, 0, 0.2)", // Add a subtle shadow
+                                        transition:
+                                          "background-color 0.3s ease", // Smooth transition on hover
+                                        float: "left", // Align button to the left side
+                                        marginRight: "10px", // Margin to create space
+                                      }}
+                                      onClick={() => {
+                                        handleClearAll();
+                                      }}
+                                      onMouseOver={(e) => {
+                                        e.target.style.backgroundColor =
+                                          "#d44a2e"; // Lighter shade on hover
+                                      }}
+                                      onMouseOut={(e) => {
+                                        e.target.style.backgroundColor =
+                                          "#ff6347"; // Restore original color on mouse out
+                                      }}
+                                    >
+                                      Clear
+                                    </button>
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          )}
                         </Grid>
                         <Grid item xs="12" md="6" lg="4" xl="3">
                           {isEdit ? (
