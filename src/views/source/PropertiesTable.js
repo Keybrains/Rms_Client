@@ -552,7 +552,7 @@ const PropertiesTables = () => {
                         )}
                       </th>
 
-                      <th scope="col">Created On</th>
+                      {/* <th scope="col">Created On</th> */}
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
