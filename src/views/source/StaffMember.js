@@ -273,6 +273,7 @@ const StaffMember = () => {
                       <th scope="col">DESIGNATION</th>
                       <th scope="col">Contact</th>
                       <th scope="col">Mail Id</th>
+                      <th scope="col">Created at</th>
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
@@ -283,6 +284,7 @@ const StaffMember = () => {
                         <td>{staff.staffmember_designation}</td>
                         <td>{staff.staffmember_phoneNumber}</td>
                         <td>{staff.staffmember_email}</td>
+                        <td>{staff.createAt}</td>
                         <td>
                           <div style={{ display: "flex" }}>
                             <div

@@ -493,16 +493,17 @@ const Applicants = () => {
                         <td>{applicant?.applicant_status[0]?.status || "Undecided"}</td>
                         <td>
                           <DeleteIcon
+                           
                             onClick={(e) => {
                               e.stopPropagation();
                               deleteRentals(applicant._id);
                             }}
                           />
-                          <EditIcon
+                          {/* <EditIcon
                             onClick={() =>
                               navigate(`/admin/Applicants/${applicant._id}`)
                             }
-                          />
+                          /> */}
                         </td>
                       </tr>
                     ))}

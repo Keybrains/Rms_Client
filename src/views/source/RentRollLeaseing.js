@@ -749,7 +749,9 @@ const RentRollLeaseing = () => {
 
   const fetchingAccountNames = async () => {
     console.log("fetching account names");
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -768,7 +770,9 @@ const RentRollLeaseing = () => {
 
   const fetchingRecAccountNames = async () => {
     console.log("fetching rec accounr names");
-    fetch("https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -787,7 +791,9 @@ const RentRollLeaseing = () => {
 
   const fetchingOneTimeCharges = async () => {
     // console.log("fetcjhiine pne rime charges");
-    fetch("https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -1486,7 +1492,9 @@ const RentRollLeaseing = () => {
   useEffect(() => {
     if (id && entryIndex) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`)
+        .get(
+          `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`
+        )
         .then((response) => {
           const laesingdata = response.data.data;
           console.log(laesingdata, "laesingdata");
@@ -1903,7 +1911,9 @@ const RentRollLeaseing = () => {
     };
 
     try {
-      const res = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant`);
+      const res = await axios.get(
+        `https://propertymanager.cloudpress.host/api/tenant/tenant`
+      );
       if (res.data.statusCode === 200) {
         console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
@@ -1983,7 +1993,7 @@ const RentRollLeaseing = () => {
   };
 
   const editLease = async (id) => {
-    const arrayOfNames = file.map((item) => item.name);
+    // const arrayOfNames = file.map((item) => item.name);
 
     const editUrl = `https://propertymanager.cloudpress.host/api/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
@@ -2398,17 +2408,9 @@ const RentRollLeaseing = () => {
                             </DropdownToggle>
                             <DropdownMenu
                               style={{ width: "100%" }}
-                              // name="lease_type"
-                              // onBlur={leaseFormik.handleBlur}
-                              // onChange={leaseFormik.handleChange}
-                              // value={leaseFormik.values.lease_type}
+                           
                             >
-                              {/* {leaseFormik.touched.lease_type &&
-                                leaseFormik.errors.lease_type ? (
-                                <div style={{ color: "red" }}>
-                                  {leaseFormik.errors.lease_type}
-                                </div>
-                              ) : null} */}
+                             
                               <DropdownItem
                                 onClick={() => handleLeaseTypeSelect("Fixed")}
                               >
@@ -4432,85 +4434,54 @@ const RentRollLeaseing = () => {
                             </div>
                           </DialogContent>
                         </Dialog>
-                        {selectedTenantData &&
-                        Object.keys(selectedTenantData).length > 0 ? (
-                          <div>
-                            <table
-                              style={{
-                                borderCollapse: "collapse",
-                                width: "100%",
-                                marginTop: "2%",
-                              }}
-                            >
-                              <thead>
-                                <tr style={{ background: "#f2f2f2" }}>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    First Name
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Last Name
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Phone Number
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {selectedTenantData.firstName}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {selectedTenantData.lastName}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {selectedTenantData.mobileNumber}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    <EditIcon
+                        <div>
+                          {selectedTenantData &&
+                          Object.keys(selectedTenantData).length > 0 ? (
+                            <>
+                              <Row
+                                className="w-100 my-3"
+                                style={{
+                                  fontSize: "18px",
+                                  textTransform: "capitalize",
+                                  color: "#5e72e4",
+                                  fontWeight: "600",
+                                  borderBottom: "1px solid #ddd",
+                                  paddingTop: "15px",
+                                }}
+                              >
+                                <Col>Tenant</Col>
+                              </Row>
+
+                              <Row
+                                className="w-100 mb-1"
+                                style={{
+                                  fontSize: "17px",
+                                  // textTransform: "uppercase",
+                                  color: "#aaa",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                <Col>First Name</Col>
+                                <Col>Last Name</Col>
+                                <Col>Phone Number</Col>
+                                <Col>Action</Col>
+                              </Row>
+
+                          
+                                <Row
+                                  className="w-100 mt-1"
+                                  style={{
+                                    fontSize: "14px",
+                                    textTransform: "capitalize",
+                                    color: "#000",
+                                  }}
+                                  
+                                >
+                                  <Col>{selectedTenantData.firstName}</Col>
+                                  <Col>{selectedTenantData.lastName}</Col>
+                                  <Col>{selectedTenantData.mobileNumber}</Col>
+                                  <Col>
+                                  <EditIcon
                                       onClick={() => {
                                         setShowTenantTable(false);
                                         setOpenTenantsDialog(true);
@@ -4523,103 +4494,71 @@ const RentRollLeaseing = () => {
                                         handleTenantDelete();
                                       }}
                                     />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        ) : null}
+                                  </Col>
+                                </Row>
+                            
+                            </>
+                          ) : null}
+                        </div>
+
+                        <div>
                         {cosignerData &&
                           Object.keys(cosignerData).length > 0 && (
-                            <div>
-                              <h3 style={{ marginTop: "2%" }}>
-                                Cosigner Information
-                              </h3>
-                              <table
+                            <>
+                              <Row
+                                className="w-100 my-3"
                                 style={{
-                                  borderCollapse: "collapse",
-                                  width: "100%",
-                                  marginTop: "2%",
+                                  fontSize: "18px",
+                                  textTransform: "capitalize",
+                                  color: "#5e72e4",
+                                  fontWeight: "600",
+                                  borderBottom: "1px solid #ddd",
+                                  paddingTop: "15px",
                                 }}
                               >
-                                <thead>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    FirstName
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    LastName
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Mobile Number
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      {cosignerData.firstName}
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      {cosignerData.lastName}
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      {cosignerData.mobileNumber}
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      <EditIcon
+                                <Col>Cosigner</Col>
+                              </Row>
+
+                              <Row
+                                className="w-100 mb-1"
+                                style={{
+                                  fontSize: "17px",
+                                  // textTransform: "uppercase",
+                                  color: "#aaa",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                <Col>First Name</Col>
+                                <Col>Last Name</Col>
+                                <Col>Phone Number</Col>
+                                <Col>Action</Col>
+                              </Row>
+
+                          
+                                <Row
+                                  className="w-100 mt-1"
+                                  style={{
+                                    fontSize: "14px",
+                                    textTransform: "capitalize",
+                                    color: "#000",
+                                  }}
+                                  
+                                >
+                                  <Col>{cosignerData.firstName}</Col>
+                                  <Col>{cosignerData.lastName}</Col>
+                                  <Col>{cosignerData.mobileNumber}</Col>
+                                  <Col>
+                                  <EditIcon
                                         onClick={setOpenTenantsDialog}
                                       />
                                       <DeleteIcon
                                         onClick={handleCosignerDelete}
                                       />
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
+                                  </Col>
+                                </Row>
+                            </>
                           )}
+                        </div>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -4730,7 +4669,7 @@ const RentRollLeaseing = () => {
                               </FormGroup>
                             </Col>
 
-                            <FormGroup>
+                            {/* <FormGroup>
                               <label
                                 className="form-control-label"
                                 htmlFor="input-property"
@@ -4850,7 +4789,7 @@ const RentRollLeaseing = () => {
                                   }
                                 />
                               </FormGroup>
-                            </FormGroup>
+                            </FormGroup> */}
 
                             <Col lg="3">
                               <FormGroup>
@@ -5450,7 +5389,7 @@ const RentRollLeaseing = () => {
                                     className="form-control-label"
                                     htmlFor="input-unitadd12"
                                   >
-                                    Memo*
+                                    Memo
                                   </label>
                                   <Input
                                     className="form-control-alternative"
@@ -5517,109 +5456,58 @@ const RentRollLeaseing = () => {
                     hadleselectedOneTimeAccount={hadleselectedOneTimeAccount}
                     hadleselectedRecuringAccount={hadleselectedRecuringAccount}
                   />
+
                   <div>
                     {recurringData.length > 0 ? (
                       <>
-                        <h3
+                        <Row
+                          className="w-100 my-3"
                           style={{
-                            marginTop: "2%",
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#5e72e4",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                            paddingTop: "15px",
                           }}
                         >
-                          Recurring Information
-                        </h3>
-                        <table
+                          <Col>Recurring Information</Col>
+                        </Row>
+
+                        <Row
+                          className="w-100 mb-1"
                           style={{
-                            borderCollapse: "collapse",
-                            width: "100%",
-                            marginTop: "2%",
+                            fontSize: "17px",
+                            // textTransform: "uppercase",
+                            color: "#aaa",
+                            fontWeight: "bold",
                           }}
                         >
-                          {recurringData.map((data, index) => (
-                            <>
-                              <thead>
-                                <tr style={{ background: "#f2f2f2" }}>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Account
-                                  </th>
+                          <Col>Account</Col>
+                          <Col>Amount</Col>
+                          <Col>Action</Col>
+                        </Row>
 
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Amount
-                                  </th>
-                                  {/* <th
-                                style={{
-                                  padding: "8px",
-                                  textAlign: "left",
-                                }}
-                              >
-                                Next Due Date
-                              </th> */}
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {data.recuring_account}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {data.recuring_amount}
-                                  </td>
-                                  {/* <td
-                                style={{
-                                  padding: "8px",
-                                  textAlign: "left",
-                                }}
-                              >
-                                {recurringData.recuringnextDue_date}
-                              </td> */}
-
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    <EditIcon
-                                      onClick={() => editeReccuring(index)}
-                                    />
-                                    <DeleteIcon
-                                      onClick={() =>
-                                        handleRecurringDelete(index)
-                                      }
-                                    />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </>
-                          ))}
-                        </table>
+                        {recurringData.map((data, index) => (
+                          <Row
+                            className="w-100 mt-1"
+                            style={{
+                              fontSize: "14px",
+                              textTransform: "capitalize",
+                              color: "#000",
+                            }}
+                            key={index} // Add a unique key to each iterated element
+                          >
+                            <Col>{data.recuring_account}</Col>
+                            <Col>{data.recuring_amount}</Col>
+                            <Col>
+                              <EditIcon onClick={() => editeReccuring(index)} />
+                              <DeleteIcon
+                                onClick={() => handleRecurringDelete(index)}
+                              />
+                            </Col>
+                          </Row>
+                        ))}
                       </>
                     ) : null}
                   </div>
@@ -5627,108 +5515,59 @@ const RentRollLeaseing = () => {
                   <div>
                     {oneTimeData.length > 0 ? (
                       <>
-                        <h3
+                        <Row
+                          className="w-100 my-3"
                           style={{
-                            marginTop: "2%",
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#5e72e4",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                            paddingTop: "15px",
                           }}
                         >
-                          One Time Information
-                        </h3>
-                        <table
+                          <Col>One Time Information</Col>
+                        </Row>
+
+                        <Row
+                          className="w-100 mb-1"
                           style={{
-                            borderCollapse: "collapse",
-                            width: "100%",
-                            marginTop: "2%",
+                            fontSize: "17px",
+                            // textTransform: "uppercase",
+                            color: "#aaa",
+                            fontWeight: "bold",
                           }}
                         >
-                          {oneTimeData.map((data, index) => (
-                            <>
-                              <thead>
-                                <tr style={{ background: "#f2f2f2" }}>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Account
-                                  </th>
+                          <Col>Account</Col>
+                          <Col>Amount</Col>
+                          <Col>Action</Col>
+                        </Row>
 
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Amount
-                                  </th>
-                                  {/* <th
-                                 style={{
-                                   padding: "8px",
-                                   textAlign: "left",
-                                 }}
-                               >
-                                 Next Due Date
-                               </th> */}
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {data.onetime_account}
-                                  </td>
-
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {data.onetime_amount}
-                                  </td>
-                                  {/* <td
-                                 style={{
-                                   padding: "8px",
-                                   textAlign: "left",
-                                 }}
-                               >
-                                 {oneTimeData.onetime_Due_date}
-                               </td> */}
-
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    <EditIcon
-                                      onClick={() => editOneTime(index)}
-                                    />
-                                    <DeleteIcon
-                                      onClick={() => handleOnetimeDelete(index)}
-                                    />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </>
-                          ))}
-                        </table>
+                        {oneTimeData.map((data, index) => (
+                          <Row
+                            className="w-100 mt-1"
+                            style={{
+                              fontSize: "14px",
+                              textTransform: "capitalize",
+                              color: "#000",
+                            }}
+                            key={index} // Add a unique key to each iterated element
+                          >
+                            <Col>{data.onetime_account}</Col>
+                            <Col>{data.onetime_amount}</Col>
+                            <Col>
+                              <EditIcon onClick={() => editOneTime(index)} />
+                              <DeleteIcon
+                                onClick={() => handleOnetimeDelete(index)}
+                              />
+                            </Col>
+                          </Row>
+                        ))}
                       </>
                     ) : null}
                   </div>
+
+                
                   <hr />
                   <Row>
                     <Col lg="4">
@@ -5864,7 +5703,7 @@ const RentRollLeaseing = () => {
                                 onClick={() => handleOpenFile(file.upload_file)}
                                 style={{ cursor: "pointer" }}
                               >
-                              {console.log(file,'fromm 5867')}
+                                {console.log(file, "fromm 5867")}
                                 {file.file_name?.substr(0, 5)}
                                 {file.file_name?.length > 5 ? "..." : null}
                               </p>

@@ -317,6 +317,8 @@ const PropertyType = () => {
                       {/* <th scope="col">Property_ID</th> */}
                       <th scope="col">Main Type</th>
                       <th scope="col">Sub Type</th>
+                      <th scope="col">Created At</th>
+                      <th scope="col">Updated At</th>
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
@@ -325,6 +327,8 @@ const PropertyType = () => {
                       <tr key={property._id}>
                         <td>{property.property_type}</td>
                         <td>{property.propertysub_type}</td>
+                        <td>{property.createAt}</td>
+                        <td>{property.updateAt ? property.updateAt : '-'}</td>
                         <td>
                           <div style={{ display: "flex" }}>
                             <div
