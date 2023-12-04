@@ -96,8 +96,6 @@ const Leaseing = () => {
   const [rentincdropdownOpen3, setrentincDropdownOpen3] = React.useState(false);
   const [rentincdropdownOpen4, setrentincDropdownOpen4] = React.useState(false);
 
-
-
   const [apiData, setApiData] = useState([]);
   const [isDateRangeUsed, setIsDateRangeUsed] = useState(false);
 
@@ -570,7 +568,7 @@ const Leaseing = () => {
     const nextDate = moment(date).add(1, "months").format("YYYY-MM-DD");
     entrySchema.values.end_date = nextDate;
     setIsDateUnavailable(false);
-    checkDate(date); 
+    checkDate(date);
   };
 
   const [file, setFile] = useState("");
@@ -728,7 +726,9 @@ const Leaseing = () => {
 
   const fetchingAccountNames = async () => {
     // console.log("fetching account names");
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -747,7 +747,9 @@ const Leaseing = () => {
 
   const fetchingRecAccountNames = async () => {
     // console.log("fetching rec accounr names");
-    fetch("https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -764,10 +766,11 @@ const Leaseing = () => {
       });
   };
 
-
   const fetchingOneTimeCharges = async () => {
     // console.log("fetcjhiine pne rime charges");
-    fetch("https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname")
+    fetch(
+      "https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname"
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -1091,15 +1094,16 @@ const Leaseing = () => {
 
   const [overlapLease, setOverlapLease] = useState(null);
 
-
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit) {
-      let response = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
+      let response = await axios.get(
+        "https://propertymanager.cloudpress.host/api/tenant/tenants"
+      );
       const data = response.data.data;
-  
+
       let isUnavailable = false;
       let overlappingLease = null;
-  
+
       data.forEach((entry) => {
         if (
           selectedPropertyType === entry.entries.rental_adress &&
@@ -1108,28 +1112,26 @@ const Leaseing = () => {
           const sDate = new Date(entry.entries.start_date);
           const eDate = new Date(entry.entries.end_date);
           const inputDate = new Date(dates);
-  
-          if (sDate.getTime() < inputDate.getTime() && inputDate.getTime() < eDate.getTime()) {
+
+          if (
+            sDate.getTime() < inputDate.getTime() &&
+            inputDate.getTime() < eDate.getTime()
+          ) {
             isUnavailable = true;
             overlappingLease = entry.entries;
           }
         }
       });
-  
+
       setIsDateUnavailable(isUnavailable);
       setOverlapLease(overlappingLease);
     }
   };
-  
-  
 
   useEffect(() => {
     console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
   }, [isDateUnavailable]);
-  
 
-
-  
   let recurringChargeSchema = useFormik({
     initialValues: {
       recuring_amount: "",
@@ -1172,7 +1174,7 @@ const Leaseing = () => {
   let entrySchema = useFormik({
     initialValues: {
       rental_adress: "",
-      
+
       lease_type: "",
       rental_units: "",
       start_date: "",
@@ -1187,7 +1189,7 @@ const Leaseing = () => {
       isrenton: false,
       rent_paid: false,
       propertyOnRent: false,
-      ownerDetail:{},
+      ownerDetail: {},
 
       //security deposite
       Due_date: "",
@@ -1315,7 +1317,9 @@ const Leaseing = () => {
   useEffect(() => {
     if (id && entryIndex) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`)
+        .get(
+          `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`
+        )
         .then((response) => {
           const laesingdata = response.data.data;
           setTenantData(laesingdata);
@@ -1374,7 +1378,7 @@ const Leaseing = () => {
           // console.log(laesingdata, "yashraj")
           // setFile(arrayOfObjects || "Select");
           // console.log(matchedLease.upload_file, "upload_fileeee");
-          
+
           // console.log(data, "data");
           setFile(matchedLease.upload_file);
           entrySchema.setValues({
@@ -1542,7 +1546,7 @@ const Leaseing = () => {
     }
   }, [id, entryIndex]);
   console.log(entrySchema.values, "entrySchema");
-  console.log(ownerData, "ownerData")
+  console.log(ownerData, "ownerData");
   const handleSubmit = async (values) => {
     // console.log(file, "values");
     // const arrayOfNames = Array.isArray(file)
@@ -1684,7 +1688,7 @@ const Leaseing = () => {
           isrenton: entrySchema.values.isrenton,
           rent_paid: entrySchema.values.rent_paid,
           propertyOnRent: entrySchema.values.propertyOnRent,
-          rentalOwner_name:"",
+          rentalOwner_name: "",
           //security deposite
           Due_date: entrySchema.values.Due_date,
           Security_amount: entrySchema.values.Security_amount,
@@ -1729,7 +1733,9 @@ const Leaseing = () => {
 
     console.log(tenantObject, "tenantObject");
     try {
-      const res = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant`);
+      const res = await axios.get(
+        `https://propertymanager.cloudpress.host/api/tenant/tenant`
+      );
       if (res.data.statusCode === 200) {
         console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
@@ -2036,15 +2042,12 @@ const Leaseing = () => {
                                 overflowY: "auto",
                               }}
                             >
-                              {propertyData.map((property,index) => (
+                              {propertyData.map((property, index) => (
                                 <DropdownItem
                                   key={index}
-                                  onClick={() =>{
-                                    handlePropertyTypeSelect(
-                                      property,
-                                      
-                                    )}
-                                  }
+                                  onClick={() => {
+                                    handlePropertyTypeSelect(property);
+                                  }}
                                 >
                                   {property.rental_adress}
                                 </DropdownItem>
@@ -2139,7 +2142,11 @@ const Leaseing = () => {
                                 Fixed w/rollover
                               </DropdownItem>
                               <DropdownItem
-                                onClick={() => handleLeaseTypeSelect("At-will(month to month)")}
+                                onClick={() =>
+                                  handleLeaseTypeSelect(
+                                    "At-will(month to month)"
+                                  )
+                                }
                               >
                                 At-will(month to month)
                               </DropdownItem>
@@ -2175,7 +2182,6 @@ const Leaseing = () => {
                             onChange={(e) => {
                               handleDateChange(e.target.value);
                               entrySchema.handleChange(e);
-                              
                             }}
                             value={moment(entrySchema.values.start_date).format(
                               "YYYY-MM-DD"
@@ -2193,44 +2199,59 @@ const Leaseing = () => {
                         </FormGroup>
                       </Col>
                       &nbsp; &nbsp; &nbsp;
-                      
-
-<Col 
-lg="3" 
-style={
+                      <Col
+                        lg="3"
+                        style={
                           selectedLeaseType === "At-will"
                             ? { display: "none" }
                             : { display: "block" }
-                        }>
-  <FormGroup>
-    <label className="form-control-label" htmlFor="input-unitadd2">
-      End Date *
-    </label>
-    <Input
-      className="form-control-alternative"
-      id="input-unitadd2"
-      placeholder="3000"
-      type="date"
-      name="end_date"
-      onBlur={entrySchema.handleBlur}
-      onChange={(e) => {
-        entrySchema.handleChange(e);
-        checkDate(e.target.value);
-        console.log("isDateUnavailable:", isDateUnavailable);
-      }}
-      value={moment(entrySchema.values.end_date).format("YYYY-MM-DD")}
-      min={moment(entrySchema.values.start_date).format("YYYY-MM-DD")}
-    />
-    
-    {isDateUnavailable && (
-      <div style={{ color: "red", marginTop: "8px" }}>
-       This date range overlaps with an existing lease: {overlapLease?.rental_adress} | - {moment(overlapLease?.start_date).format("DD-MM-YYYY")} {moment(overlapLease?.end_date).format("DD-MM-YYYY")}. Please adjust your date range and try again.
-      </div>
-    )}
-  </FormGroup>
-</Col>
+                        }
+                      >
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-unitadd2"
+                          >
+                            End Date *
+                          </label>
+                          <Input
+                            className="form-control-alternative"
+                            id="input-unitadd2"
+                            placeholder="3000"
+                            type="date"
+                            name="end_date"
+                            onBlur={entrySchema.handleBlur}
+                            onChange={(e) => {
+                              entrySchema.handleChange(e);
+                              checkDate(e.target.value);
+                              console.log(
+                                "isDateUnavailable:",
+                                isDateUnavailable
+                              );
+                            }}
+                            value={moment(entrySchema.values.end_date).format(
+                              "YYYY-MM-DD"
+                            )}
+                            min={moment(entrySchema.values.start_date).format(
+                              "YYYY-MM-DD"
+                            )}
+                          />
 
-
+                          {isDateUnavailable && (
+                            <div style={{ color: "red", marginTop: "8px" }}>
+                              This date range overlaps with an existing lease:{" "}
+                              {overlapLease?.rental_adress} | -{" "}
+                              {moment(overlapLease?.start_date).format(
+                                "DD-MM-YYYY"
+                              )}{" "}
+                              {moment(overlapLease?.end_date).format(
+                                "DD-MM-YYYY"
+                              )}
+                              . Please adjust your date range and try again.
+                            </div>
+                          )}
+                        </FormGroup>
+                      </Col>
                     </Row>
 
                     {/* <Row>
@@ -3481,8 +3502,7 @@ style={
                                       </Button>
                                     </div>
                                   )}
-                                  {/* {console.log(leaseFormik.errors)} */}
-                                  {}
+
                                   {selectedOption === "Cosigner" && (
                                     <div className="cosigner">
                                       <div>
@@ -4125,85 +4145,54 @@ style={
                             </div>
                           </DialogContent>
                         </Dialog>
-                        {selectedTenantData &&
-                        Object.keys(selectedTenantData).length > 0 ? (
-                          <div>
-                            <table
-                              style={{
-                                borderCollapse: "collapse",
-                                width: "100%",
-                                marginTop: "2%",
-                              }}
-                            >
-                              <thead>
-                                <tr style={{ background: "#f2f2f2" }}>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    First Name
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Last Name
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Phone Number
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {selectedTenantData.firstName}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {selectedTenantData.lastName}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {selectedTenantData.mobileNumber}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    <EditIcon
+                        <div>
+                          {selectedTenantData &&
+                          Object.keys(selectedTenantData).length > 0 ? (
+                            <>
+                              <Row
+                                className="w-100 my-3"
+                                style={{
+                                  fontSize: "18px",
+                                  textTransform: "capitalize",
+                                  color: "#5e72e4",
+                                  fontWeight: "600",
+                                  borderBottom: "1px solid #ddd",
+                                  paddingTop: "15px",
+                                }}
+                              >
+                                <Col>Tenant</Col>
+                              </Row>
+
+                              <Row
+                                className="w-100 mb-1"
+                                style={{
+                                  fontSize: "17px",
+                                  // textTransform: "uppercase",
+                                  color: "#aaa",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                <Col>First Name</Col>
+                                <Col>Last Name</Col>
+                                <Col>Phone Number</Col>
+                                <Col>Action</Col>
+                              </Row>
+
+                          
+                                <Row
+                                  className="w-100 mt-1"
+                                  style={{
+                                    fontSize: "14px",
+                                    textTransform: "capitalize",
+                                    color: "#000",
+                                  }}
+                                  
+                                >
+                                  <Col>{selectedTenantData.firstName}</Col>
+                                  <Col>{selectedTenantData.lastName}</Col>
+                                  <Col>{selectedTenantData.mobileNumber}</Col>
+                                  <Col>
+                                  <EditIcon
                                       onClick={() => {
                                         setShowTenantTable(false);
                                         setOpenTenantsDialog(true);
@@ -4216,103 +4205,71 @@ style={
                                         handleTenantDelete();
                                       }}
                                     />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        ) : null}
+                                  </Col>
+                                </Row>
+                            
+                            </>
+                          ) : null}
+                        </div>
+
+                        <div>
                         {cosignerData &&
                           Object.keys(cosignerData).length > 0 && (
-                            <div>
-                              <h3 style={{ marginTop: "2%" }}>
-                                Cosigner Information
-                              </h3>
-                              <table
+                            <>
+                              <Row
+                                className="w-100 my-3"
                                 style={{
-                                  borderCollapse: "collapse",
-                                  width: "100%",
-                                  marginTop: "2%",
+                                  fontSize: "18px",
+                                  textTransform: "capitalize",
+                                  color: "#5e72e4",
+                                  fontWeight: "600",
+                                  borderBottom: "1px solid #ddd",
+                                  paddingTop: "15px",
                                 }}
                               >
-                                <thead>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    FirstName
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    LastName
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Mobile Number
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      {cosignerData.firstName}
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      {cosignerData.lastName}
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      {cosignerData.mobileNumber}
-                                    </td>
-                                    <td
-                                      style={{
-                                        padding: "8px",
-                                        textAlign: "left",
-                                      }}
-                                    >
-                                      <EditIcon
+                                <Col>Cosigner</Col>
+                              </Row>
+
+                              <Row
+                                className="w-100 mb-1"
+                                style={{
+                                  fontSize: "17px",
+                                  // textTransform: "uppercase",
+                                  color: "#aaa",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                <Col>First Name</Col>
+                                <Col>Last Name</Col>
+                                <Col>Phone Number</Col>
+                                <Col>Action</Col>
+                              </Row>
+
+                          
+                                <Row
+                                  className="w-100 mt-1"
+                                  style={{
+                                    fontSize: "14px",
+                                    textTransform: "capitalize",
+                                    color: "#000",
+                                  }}
+                                  
+                                >
+                                  <Col>{cosignerData.firstName}</Col>
+                                  <Col>{cosignerData.lastName}</Col>
+                                  <Col>{cosignerData.mobileNumber}</Col>
+                                  <Col>
+                                  <EditIcon
                                         onClick={setOpenTenantsDialog}
                                       />
                                       <DeleteIcon
                                         onClick={handleCosignerDelete}
                                       />
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
+                                  </Col>
+                                </Row>
+                            </>
                           )}
+                        </div>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -4351,7 +4308,7 @@ style={
                                 onChange={(e) => entrySchema.handleChange(e)}
                                 value={entrySchema.values.rent_cycle}
                               >
-                               {rentOptions.map((option) => (
+                                {rentOptions.map((option) => (
                                   <DropdownItem
                                     key={option}
                                     onClick={() =>
@@ -4428,7 +4385,7 @@ style={
                                 </FormGroup>
                               </FormGroup>
                             </Col>
-                            <FormGroup>
+                            {/* <FormGroup>
                               <label
                                 className="form-control-label"
                                 htmlFor="input-property"
@@ -4548,7 +4505,7 @@ style={
                                   }
                                 />
                               </FormGroup>
-                            </FormGroup>
+                            </FormGroup> */}
 
                             <Col lg="3">
                               <FormGroup>
@@ -4664,7 +4621,7 @@ style={
                               onChange={entrySchema.handleChange}
                               value={entrySchema.values.Due_date}
                             />
-                            
+
                             {entrySchema.touched.tenant_start_date &&
                             entrySchema.errors.Due_date ? (
                               <div style={{ color: "red" }}>
@@ -4713,7 +4670,7 @@ style={
 
                         <Col lg="7">
                           <FormGroup>
-                            <br/>
+                            <br />
                             <label
                               className="form-control-label"
                               htmlFor="input-unitadd10"
@@ -4784,7 +4741,7 @@ style={
                                       toggle={toggle5}
                                     >
                                       <DropdownToggle caret>
-                                      {recurringChargeSchema.values
+                                        {recurringChargeSchema.values
                                           .recuring_account
                                           ? recurringChargeSchema.values
                                               .recuring_account
@@ -5024,7 +4981,7 @@ style={
                                       toggle={toggle7}
                                     >
                                       <DropdownToggle caret>
-                                      {oneTimeChargeSchema.values
+                                        {oneTimeChargeSchema.values
                                           .onetime_account
                                           ? oneTimeChargeSchema.values
                                               .onetime_account
@@ -5243,106 +5200,54 @@ style={
                   <div>
                     {recurringData.length > 0 ? (
                       <>
-                        <h3
+                        <Row
+                          className="w-100 my-3"
                           style={{
-                            marginTop: "2%",
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#5e72e4",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                            paddingTop: "15px",
                           }}
                         >
-                          Recurring Information
-                        </h3>
-                        <table
+                          <Col>Recurring Information</Col>
+                        </Row>
+
+                        <Row
+                          className="w-100 mb-1"
                           style={{
-                            borderCollapse: "collapse",
-                            width: "100%",
-                            marginTop: "2%",
+                            fontSize: "17px",
+                            // textTransform: "uppercase",
+                            color: "#aaa",
+                            fontWeight: "bold",
                           }}
                         >
-                          {recurringData.map((data, index) => (
-                            <>
-                              <thead>
-                                <tr style={{ background: "#f2f2f2" }}>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Account
-                                  </th>
+                          <Col>Account</Col>
+                          <Col>Amount</Col>
+                          <Col>Action</Col>
+                        </Row>
 
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Amount
-                                  </th>
-                                  {/* <th
-                                style={{
-                                  padding: "8px",
-                                  textAlign: "left",
-                                }}
-                              >
-                                Next Due Date
-                              </th> */}
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {data.recuring_account}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {data.recuring_amount}
-                                  </td>
-                                  {/* <td
-                                style={{
-                                  padding: "8px",
-                                  textAlign: "left",
-                                }}
-                              >
-                                {recurringData.recuringnextDue_date}
-                              </td> */}
-
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    <EditIcon
-                                      onClick={() => editeReccuring(index)}
-                                    />
-                                    <DeleteIcon
-                                      onClick={() =>
-                                        handleRecurringDelete(index)
-                                      }
-                                    />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </>
-                          ))}
-                        </table>
+                        {recurringData.map((data, index) => (
+                          <Row
+                            className="w-100 mt-1"
+                            style={{
+                              fontSize: "14px",
+                              textTransform: "capitalize",
+                              color: "#000",
+                            }}
+                            key={index} // Add a unique key to each iterated element
+                          >
+                            <Col>{data.recuring_account}</Col>
+                            <Col>{data.recuring_amount}</Col>
+                            <Col>
+                              <EditIcon onClick={() => editeReccuring(index)} />
+                              <DeleteIcon
+                                onClick={() => handleRecurringDelete(index)}
+                              />
+                            </Col>
+                          </Row>
+                        ))}
                       </>
                     ) : null}
                   </div>
@@ -5350,105 +5255,54 @@ style={
                   <div>
                     {oneTimeData.length > 0 ? (
                       <>
-                        <h3
+                        <Row
+                          className="w-100 my-3"
                           style={{
-                            marginTop: "2%",
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#5e72e4",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                            paddingTop: "15px",
                           }}
                         >
-                          One Time Information
-                        </h3>
-                        <table
+                          <Col>One Time Information</Col>
+                        </Row>
+
+                        <Row
+                          className="w-100 mb-1"
                           style={{
-                            borderCollapse: "collapse",
-                            width: "100%",
-                            marginTop: "2%",
+                            fontSize: "17px",
+                            // textTransform: "uppercase",
+                            color: "#aaa",
+                            fontWeight: "bold",
                           }}
                         >
-                          {oneTimeData.map((data, index) => (
-                            <>
-                              <thead>
-                                <tr style={{ background: "#f2f2f2" }}>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Account
-                                  </th>
+                          <Col>Account</Col>
+                          <Col>Amount</Col>
+                          <Col>Action</Col>
+                        </Row>
 
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Amount
-                                  </th>
-                                  {/* <th
-                                 style={{
-                                   padding: "8px",
-                                   textAlign: "left",
-                                 }}
-                               >
-                                 Next Due Date
-                               </th> */}
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {data.onetime_account}
-                                  </td>
-
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {data.onetime_amount}
-                                  </td>
-                                  {/* <td
-                                 style={{
-                                   padding: "8px",
-                                   textAlign: "left",
-                                 }}
-                               >
-                                 {oneTimeData.onetime_Due_date}
-                               </td> */}
-
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    <EditIcon
-                                      onClick={() => editOneTime(index)}
-                                    />
-                                    <DeleteIcon
-                                      onClick={() => handleOnetimeDelete(index)}
-                                    />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </>
-                          ))}
-                        </table>
+                        {oneTimeData.map((data, index) => (
+                          <Row
+                            className="w-100 mt-1"
+                            style={{
+                              fontSize: "14px",
+                              textTransform: "capitalize",
+                              color: "#000",
+                            }}
+                            key={index} // Add a unique key to each iterated element
+                          >
+                            <Col>{data.onetime_account}</Col>
+                            <Col>{data.onetime_amount}</Col>
+                            <Col>
+                              <EditIcon onClick={() => editOneTime(index)} />
+                              <DeleteIcon
+                                onClick={() => handleOnetimeDelete(index)}
+                              />
+                            </Col>
+                          </Row>
+                        ))}
                       </>
                     ) : null}
                   </div>
@@ -5574,12 +5428,12 @@ style={
                             key={index}
                             style={{ position: "relative", marginLeft: "50px" }}
                           >
-                           {!id  ? (
+                            {!id ? (
                               <p
                                 onClick={() => handleOpenFile(file.upload_file)}
                                 style={{ cursor: "pointer" }}
                               >
-                              {console.log(file,'fromm 5867')}
+                                {console.log(file, "fromm 5867")}
                                 {file.file_name?.substr(0, 5)}
                                 {file.file_name?.length > 5 ? "..." : null}
                               </p>

@@ -71,18 +71,15 @@ const ApplicantSummary = () => {
   const id = useParams().id;
   //console.log(id, "id");
   // const [file, setFile] = useState("");
+
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+  const [manager, setManager] = useState(null);
+
   const [selectedDropdownItem, setselectedDropdownItem] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [value, setValue] = React.useState("Summary");
-  const [searchText, setSearchText] = useState("");
-  // const [isChecklistVisible, setIsChecklistVisible] = useState(false);
-  const [isAttachFile, setIsAttachFile] = useState(false);
-  const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState("");
-  const [files, setFiles] = useState([]);
-  const [newFile, setNewFile] = useState("");
-  const [showNotesFiles, setShowNotesFiles] = useState(false);
-  const [combinedData, setCombinedData] = useState([]);
+
   const [applicantData, setApplicantData] = useState();
   const [propertyData, setPropertyData] = useState();
   const [isEdit, setIsEdit] = useState(false);
@@ -93,6 +90,42 @@ const ApplicantSummary = () => {
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
 
+  const [isAttachFile, setIsAttachFile] = useState(false);
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState("");
+  const [files, setFiles] = useState([]);
+  const [newFile, setNewFile] = useState("");
+  const [combinedData, setCombinedData] = useState([]);
+  const [fileName, setFileName] = useState("");
+
+  const [isChecklistVisible, setChecklistVisible] = useState(false);
+  const [checklistItems, setChecklistItems] = useState([]);
+  const [newItem, setNewItem] = useState("");
+  const [checkedChecklist, CheckedChecklist] = useState([]);
+  const [checkedItems, setCheckedItems] = useState([]);
+
+  const handleStaticCheckboxChange = (event) => {
+    const { id, checked } = event.target;
+    const storedCheckedItems =
+      JSON.parse(localStorage.getItem("staticCheckedItems")) || [];
+
+    if (checked && !storedCheckedItems.includes(id)) {
+      storedCheckedItems.push(id);
+    } else if (!checked && storedCheckedItems.includes(id)) {
+      const index = storedCheckedItems.indexOf(id);
+      storedCheckedItems.splice(index, 1);
+    }
+
+    localStorage.setItem(
+      "staticCheckedItems",
+      JSON.stringify(storedCheckedItems)
+    );
+  };
+
+  const toggleChecklist = () => {
+    setChecklistVisible(!isChecklistVisible);
+  };
+
   const toggle9 = () => {
     setuserDropdownOpen((prevState) => !prevState);
   };
@@ -100,24 +133,18 @@ const ApplicantSummary = () => {
   const toggle10 = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
-  let cookies = new Cookies();
-  const [accessType, setAccessType] = useState(null);
-  const [manager, setManager] = useState(null);
+
   React.useEffect(() => {
     if (cookies.get("token")) {
       const jwt = jwtDecode(cookies.get("token"));
-      console.log(jwt,jwt)
+      console.log(jwt, jwt);
       setAccessType(jwt.accessType);
-      setManager(jwt.userName)
+      setManager(jwt.userName);
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
 
-  const handleSearch = () => {
-    // Handle search functionality here
-    //console.log("Searching for:", searchText);
-  };
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
@@ -179,10 +206,6 @@ const ApplicantSummary = () => {
       });
   }, []);
 
-  const handleClear = () => {
-    setSearchText("");
-  };
-
   const handleChange = (event, newValue) => {
     setValue(newValue);
     //console.log(newValue);
@@ -198,9 +221,6 @@ const ApplicantSummary = () => {
     //console.log(item, "item");
   };
 
-  const handleOpen = () => {
-    setIsOpen(true);
-  };
   const toggle = () => setIsOpen((prevState) => !prevState);
   // const id = useParams().id;
 
@@ -225,51 +245,6 @@ const ApplicantSummary = () => {
       //console.log(values, "values");
     },
   });
-
-  const applicantFormik1 = useFormik({
-    initialValues: {
-      applicant_notes: notes,
-      applicant_attachment: files,
-    },
-    validationSchema: yup.object({
-      applicant_notes: yup.string().required("Required"),
-    }),
-    onSubmit: (values) => {
-      handleSubmit(values);
-    },
-  });
-
-  const handleSubmit = (values) => {
-    // Handle form submission
-    hadlenotesandfile(values); // Call handleEdit function to make PUT request
-  };
-  console.log(typeof applicantFormik1.values.applicant_notes);
-  console.log(typeof applicantFormik1.values.applicant_attachment);
-
-  const hadlenotesandfile = (values) => {
-    // Make a PUT request to update the data in the backend
-    console.log(values);
-
-    const data = {
-      applicant_notes: applicantFormik1.values.applicant_notes,
-      applicant_attachment: applicantFormik1.values.applicant_attachment,
-    };
-
-    const apiUrl = `https://propertymanager.cloudpress.host/api/applicant/applicant/note_attachment/${id}`;
-
-    axios
-      .put(apiUrl, data)
-      .then((response) => {
-        // Handle successful response from the API
-        console.log("Data updated successfully:", response.data);
-        // You might perform additional actions upon successful submission
-      })
-      .catch((error) => {
-        // Handle errors if the PUT request fails
-        console.error("Error updating data:", error);
-        // You might display an error message to the user or perform other actions
-      });
-  };
 
   const [rentaldata, setRentaldata] = useState([]);
 
@@ -319,7 +294,7 @@ const ApplicantSummary = () => {
     console.log(item, "item");
     const status = {
       status: item,
-      statusUpdatedBy:manager
+      statusUpdatedBy: manager,
     };
     console.log(status, "status");
     console.log(id, "id");
@@ -461,7 +436,7 @@ const ApplicantSummary = () => {
     axios
       .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
       .then((applicants) => {
-        console.log(applicants.data.data,'gggg')
+        console.log(applicants.data.data, "gggg");
 
         axios
           .get("https://propertymanager.cloudpress.host/api/rentals/property")
@@ -487,14 +462,6 @@ const ApplicantSummary = () => {
         // Handle the error, e.g., display an error message to the user.
       });
   }, [id]);
-
-  const [isChecklistVisible, setChecklistVisible] = useState(false);
-  const [checklistItems, setChecklistItems] = useState([]);
-  const [newItem, setNewItem] = useState("");
-
-  const toggleChecklist = () => {
-    setChecklistVisible(!isChecklistVisible);
-  };
 
   const handleAddItem = () => {
     if (newItem.trim() !== "") {
@@ -522,6 +489,7 @@ const ApplicantSummary = () => {
       setNewItem(""); // Clear the input field
     }
   };
+
   const handleRemoveItem = (itemToRemove) => {
     const updatedChecklist = checklistItems.filter(
       (item) => item !== itemToRemove
@@ -701,58 +669,31 @@ const ApplicantSummary = () => {
     getApplicantData();
   }, []);
 
-  const handleChecklistChange = (event, item) => {
-    // if (event.target.checked) {
-    //   setChecklistItems([...checklistItems, item]);
-    //   const allCheckbox = [...checklistItems, item];
-    //   //console.log(allCheckbox, "allCheckbox");
-    //   //console.log(matchedApplicant, "matchedApplicant");
-    //   const updatedApplicant = {
-    //     ...matchedApplicant,
-    //     applicant_checklist: [...matchedApplicant.applicant_checklist, item],
-    //   };
-    //   //console.log(updatedApplicant, "updatedApplicant");
-    // }
-    if (event.target.checked) {
-      //console.log(item, "item");
-      if (!applicantFormik.values.applicant_checkedChecklist.includes(item)) {
-        applicantFormik.setFieldValue("applicant_checkedChecklist", [
-          ...applicantFormik.values.applicant_checkedChecklist,
-          item,
-        ]);
-      }
-      // //console.log(applicantFormik.values, "ssssssssssss");
-    } else {
-      applicantFormik.setFieldValue(
-        "applicant_checkedChecklist",
-        applicantFormik.values.applicant_checkedChecklist.filter(
-          (checklistItem) => checklistItem !== item
-        )
-      );
-      // setChecklistItems([...checklistItems, item]);
-    }
-  };
-
   useEffect(() => {
-    const maxLength = Math.max(notes.length, files.length);
-    const updatedCombinedData = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      const note = i < notes.length ? notes[i] : null;
-      const file = i < files.length ? files[i] : null;
-
-      updatedCombinedData.push({ note, file });
+    const storageKey = `applicant_${id}_checkedChecklist`;
+    const storedCheckedItems = JSON.parse(localStorage.getItem(storageKey));
+    if (storedCheckedItems) {
+      setCheckedItems(storedCheckedItems);
     }
+  }, [id]);
 
-    setCombinedData(updatedCombinedData);
-  }, [notes, files]);
+  const handleChecklistChange = (event, item) => {
+    const updatedItems = event.target.checked
+      ? [...checkedItems, item]
+      : checkedItems.filter((checkedItem) => checkedItem !== item);
 
-  const deleteColumn = (index) => {
-    const updatedData = [...combinedData];
-    updatedData.splice(index, 1);
-    setCombinedData(updatedData);
-    // Perform other necessary operations
+    setCheckedItems(updatedItems);
+
+    const storageKey = `applicant_${id}_checkedChecklist`;
+    localStorage.setItem(storageKey, JSON.stringify(updatedItems));
   };
+
+  // const deleteColumn = (index) => {
+  //   const updatedData = [...combinedData];
+  //   updatedData.splice(index, 1);
+  //   setCombinedData(updatedData);
+  //   // Perform other necessary operations
+  // };
 
   // const fileData = (files) => {
   //   const filesArray = Array.from(files);
@@ -781,34 +722,48 @@ const ApplicantSummary = () => {
   //   }
   // };
 
-  const deleteFile = (index) => {
-    const newFile = [...files];
-    newFile.splice(index, 1);
-    setFiles(newFile);
-  };
+  // const deleteFile = (index) => {
+  //   const newFile = [...files];
+  //   newFile.splice(index, 1);
+  //   setFiles(newFile);
+  // };
 
-  const handleOpenFile = (file) => {
-    if (file.type === "text/plain") {
-      // Read the contents of the text file
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const fileContent = event.target.result;
+  // const handleOpenFile = (file) => {
+  //   if (file.type === "text/plain") {
+  //     // Read the contents of the text file
+  //     const reader = new FileReader();
+  //     reader.onload = (event) => {
+  //       const fileContent = event.target.result;
 
-        // Display the content to the user (for demonstration, you might use an alert)
-        alert("Content of the text file:\n\n" + fileContent);
-      };
-      reader.readAsText(file);
-    } else {
-      // For other file types, handle accordingly (e.g., open in a new tab)
-      window.open(URL.createObjectURL(file));
-    }
-  };
+  //       // Display the content to the user (for demonstration, you might use an alert)
+  //       alert("Content of the text file:\n\n" + fileContent);
+  //     };
+  //     reader.readAsText(file);
+  //   } else {
+  //     // For other file types, handle accordingly (e.g., open in a new tab)
+  //     window.open(URL.createObjectURL(file));
+  //   }
+  // };
 
   //console.log(applicantFormik.values, "formik");
-  const getFileNameWithExtension = (file) => {
-    const fileName = file?.name;
-    return fileName;
-  };
+  // const getFileNameWithExtension = (file) => {
+  //   const fileName = file?.name;
+  //   return fileName;
+  // };
+
+  useEffect(() => {
+    const maxLength = Math.max(notes.length, files.length);
+    const updatedCombinedData = [];
+
+    for (let i = 0; i < maxLength; i++) {
+      const note = i < notes.length ? notes[i] : null;
+      const file = i < files.length ? files[i] : null;
+
+      updatedCombinedData.push({ note, file });
+    }
+
+    setCombinedData(updatedCombinedData);
+  }, [notes, files]);
 
   const handleAddNote = () => {
     if (newNote !== "") {
@@ -842,35 +797,94 @@ const ApplicantSummary = () => {
   };
 
   const handleSave = () => {
-    // Add selected files to the table on Save button click
-    // If you have already handled file addition in the fileData function, you might not need this logic here
-    setShowNotesFiles(true);
+    if (newNote === "" || newFile === null) {
+      // Display an alert or error message for incomplete fields
+      swal("Warning!", "Please fill in both the note and file.", "warning");
+      return; // Prevent further execution
+    }
 
-    // Clear notes and selected file input fields after saving
-    setNotes([]);
-    setFiles([]);
-    setNewNote("");
-    setNewFile("");
-  };
-
-  const handleClearAll = () => {
-    setNotes([]);
-    setFiles([]);
-    // setFile([]);
-    setNewNote("");
-    setNewFile("");
-  };
-  const openFileInNewTab = (selectedFile) => {
-    const fileURL = URL.createObjectURL(selectedFile);
-    window.open(fileURL, "_blank");
-  };
-  const addNoteAndFile = () => {
-    if (newNote !== "" && newFile !== "") {
+    if (newNote !== "" && newFile !== null) {
       setNotes([...notes, newNote]);
       setFiles([...files, newFile]);
       setNewNote("");
       setNewFile("");
+      setIsAttachFile(false); // Close the box after adding data
+      handleSubmit(); // Handle form submission or any other necessary actions
+    } else {
+      // Display an alert or error message for incomplete fields
+      swal("Warning!", "Please fill in both the note and file.", "warning");
     }
+  };
+
+  const openFileInNewTab = (selectedFile) => {
+    const fileURL = URL.createObjectURL(selectedFile);
+    window.open(fileURL, "_blank");
+  };
+
+  const handleClearRow = (rowIndex) => {
+    const updatedCombinedData = [...combinedData];
+    updatedCombinedData.splice(rowIndex, 1);
+
+    // Remove corresponding note and file from their states
+    const updatedNotes = [...notes];
+    updatedNotes.splice(rowIndex, 1);
+
+    const updatedFiles = [...files];
+    updatedFiles.splice(rowIndex, 1);
+
+    setCombinedData(updatedCombinedData);
+    setNotes(updatedNotes);
+    setFiles(updatedFiles);
+  };
+
+  const openFileInBrowser = (selectedFile) => {
+    const fileURL = URL.createObjectURL(selectedFile);
+    window.open(fileURL, "_blank");
+  };
+
+  const applicantFormik1 = useFormik({
+    initialValues: {
+      applicant_notes: notes,
+      applicant_attachment: files,
+    },
+    validationSchema: yup.object({
+      applicant_notes: yup.string().required("Required"),
+    }),
+    onSubmit: (values) => {
+      handleSubmit(values);
+    },
+  });
+
+  const handleSubmit = (values) => {
+    // Handle form submission
+    hadlenotesandfile(values); // Call handleEdit function to make PUT request
+  };
+  console.log(typeof applicantFormik1.values.applicant_notes);
+  console.log(typeof applicantFormik1.values.applicant_attachment);
+
+  const hadlenotesandfile = (values) => {
+    // Make a PUT request to update the data in the backend
+    console.log(values);
+
+    const data = {
+      applicant_notes: applicantFormik1.values.applicant_notes,
+      applicant_attachment: applicantFormik1.values.applicant_attachment,
+    };
+
+    const apiUrl = `https://propertymanager.cloudpress.host/api/applicant/applicant/note_attachment/${id}`;
+
+    axios
+      .put(apiUrl, data)
+      .then((response) => {
+        // Handle successful response from the API
+        console.log("Data updated successfully:", response.data);
+        // You might perform additional actions upon successful submission
+      })
+      .catch((error) => {
+        // Handle errors if the PUT request fails
+        console.error("Error updating data:", error);
+        // You might display an error message to the user or perform other actions
+      });
   };
 
   // ----------------------------------------------Applicant Put----------------------------------------------------------------------------
@@ -1020,7 +1034,11 @@ const ApplicantSummary = () => {
   return (
     <>
       <Header title="ApplicantSummary" />
-      <Container className="mt--9" fluid>
+      <Container
+        className="mt--9"
+        onSubmit={applicantFormik.handleSubmit}
+        fluid
+      >
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
@@ -1112,7 +1130,9 @@ const ApplicantSummary = () => {
             >
               {console.log(matchedApplicant.applicant_status, "status")}
               <DropdownToggle caret style={{ width: "100%" }}>
-                {matchedApplicant && matchedApplicant.applicant_status && matchedApplicant?.applicant_status[0]?.status
+                {matchedApplicant &&
+                matchedApplicant.applicant_status &&
+                matchedApplicant?.applicant_status[0]?.status
                   ? matchedApplicant?.applicant_status[0]?.status
                   : selectedDropdownItem
                   ? selectedDropdownItem
@@ -1261,9 +1281,13 @@ const ApplicantSummary = () => {
                                         name="upload_file"
                                         id="upload_file"
                                         multiple
-                                        onChange={(e) =>
-                                          setNewFile(e.target.files[0])
-                                        }
+                                        onChange={(e) => {
+                                          setNewFile(e.target.files[0]);
+                                          // Display the file name
+                                          setFileName(
+                                            e.target.files[0]?.name || ""
+                                          ); // Store the file name in state
+                                        }}
                                       />
                                       <label
                                         htmlFor="upload_file"
@@ -1275,6 +1299,20 @@ const ApplicantSummary = () => {
                                       >
                                         Choose Files
                                       </label>
+                                      {newFile && (
+                                        <p
+                                          style={{
+                                            cursor: "pointer",
+                                            color: "blue",
+                                          }}
+                                          onClick={() =>
+                                            openFileInBrowser(newFile)
+                                          }
+                                        >
+                                          {fileName}
+                                        </p>
+                                      )}
+
                                       {/* <button onClick={addNoteAndFile}>Add Note and File</button> */}
                                       {applicantFormik1.touched
                                         .applicant_attachment &&
@@ -1292,18 +1330,12 @@ const ApplicantSummary = () => {
                                     <div className="mt-3">
                                       <Button
                                         color="success"
-                                        onClick={() => {
-                                          setIsAttachFile(false);
-                                          handleAddNote();
-                                          handleAddFile();
-                                          handleSave();
-                                          addNoteAndFile();
-                                          handleSubmit();
-                                        }}
+                                        onClick={handleSave}
                                         style={{ marginRight: "10px" }}
                                       >
                                         Save
                                       </Button>
+
                                       <Button
                                         onClick={() => setIsAttachFile(false)}
                                       >
@@ -1333,8 +1365,8 @@ const ApplicantSummary = () => {
                             <div>
                               <input
                                 type="checkbox"
-                                id="vehicle1"
-                                name="vehicle1"
+                                id="CreditCheck"
+                                name="CreditCheck"
                                 value="CreditCheck"
                                 style={{
                                   transform: "scale(1.5)",
@@ -1342,12 +1374,16 @@ const ApplicantSummary = () => {
                                   marginTop: "20px",
                                   fontWeight: "bold",
                                 }}
+                                onChange={(e) =>
+                                  handleChecklistChange(e, "CreditCheck")
+                                }
+                                checked={checkedItems.includes("CreditCheck")}
                               />{" "}
                               Credit and background check <br />
                               <input
                                 type="checkbox"
-                                id="vehicle2"
-                                name="vehicle2"
+                                id="EmploymentVerification"
+                                name="EmploymentVerification"
                                 value="EmploymentVerification"
                                 style={{
                                   transform: "scale(1.5)",
@@ -1355,12 +1391,21 @@ const ApplicantSummary = () => {
                                   marginTop: "20px",
                                   fontWeight: "bold",
                                 }}
+                                onChange={(e) =>
+                                  handleChecklistChange(
+                                    e,
+                                    "EmploymentVerification"
+                                  )
+                                }
+                                checked={checkedItems.includes(
+                                  "EmploymentVerification"
+                                )}
                               />{" "}
                               Employment verification <br />
                               <input
                                 type="checkbox"
-                                id="vehicle3"
-                                name="vehicle3"
+                                id="ApplicationFee"
+                                name="ApplicationFee"
                                 value="ApplicationFee"
                                 style={{
                                   transform: "scale(1.5)",
@@ -1368,12 +1413,18 @@ const ApplicantSummary = () => {
                                   marginTop: "20px",
                                   fontWeight: "bold",
                                 }}
+                                onChange={(e) =>
+                                  handleChecklistChange(e, "ApplicationFee")
+                                }
+                                checked={checkedItems.includes(
+                                  "ApplicationFee"
+                                )}
                               />{" "}
                               Application fee collected <br />
                               <input
                                 type="checkbox"
-                                id="vehicle4"
-                                name="vehicle4"
+                                id="IncomeVerification"
+                                name="IncomeVerification"
                                 value="IncomeVerification"
                                 style={{
                                   transform: "scale(1.5)",
@@ -1381,12 +1432,18 @@ const ApplicantSummary = () => {
                                   marginTop: "20px",
                                   fontWeight: "bold",
                                 }}
+                                onChange={(e) =>
+                                  handleChecklistChange(e, "IncomeVerification")
+                                }
+                                checked={checkedItems.includes(
+                                  "IncomeVerification"
+                                )}
                               />{" "}
                               Income verification <br />
                               <input
                                 type="checkbox"
-                                id="vehicle5"
-                                name="vehicle5"
+                                id="LandlordVerification"
+                                name="LandlordVerification"
                                 value="LandlordVerification"
                                 style={{
                                   transform: "scale(1.5)",
@@ -1395,6 +1452,15 @@ const ApplicantSummary = () => {
                                   marginBottom: "20px",
                                   fontWeight: "bold",
                                 }}
+                                onChange={(e) =>
+                                  handleChecklistChange(
+                                    e,
+                                    "LandlordVerification"
+                                  )
+                                }
+                                checked={checkedItems.includes(
+                                  "LandlordVerification"
+                                )}
                               />{" "}
                               Landlord verification <br />
                             </div>
@@ -1422,12 +1488,10 @@ const ApplicantSummary = () => {
                                           type="checkbox"
                                           value={item}
                                           color="success"
-                                          onChange={(e) => {
-                                            handleChecklistChange(e, item);
-                                          }}
-                                          checked={applicantFormik.values.applicant_checkedChecklist.includes(
-                                            item
-                                          )}
+                                          onChange={(e) =>
+                                            handleChecklistChange(e, item)
+                                          }
+                                          checked={checkedItems.includes(item)}
                                         />
                                       }
                                       label={
@@ -1518,118 +1582,123 @@ const ApplicantSummary = () => {
                           </div>
 
                           {combinedData.length > 0 && (
-                            <tbody
-                              style={{
-                                width: "60%",
-                                display: "table",
-                                borderCollapse: "collapse",
-                              }}
-                            >
-                              <h3 style={{ paddingTop: "20px" }}>Updates</h3>
+                            <>
+                              <Row
+                                className="w-100 my-3"
+                                style={{
+                                  fontSize: "18px",
+                                  textTransform: "capitalize",
+                                  color: "#5e72e4",
+                                  fontWeight: "600",
+                                  borderBottom: "1px solid #ddd",
+                                  paddingTop: "15px",
+                                }}
+                              >
+                                <Col>Updates</Col>
+                              </Row>
+
+                              <Row
+                                className="w-100 mb-1"
+                                style={{
+                                  fontSize: "15px",
+                                  // textTransform: "uppercase",
+                                  color: "#aaa",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                <Col>Note</Col>
+                                <Col>File</Col>
+                                <Col>Clear</Col>
+                              </Row>
+
                               {combinedData.map((data, index) => (
-                                <>
-                                  <tr key={index}>
-                                    <td
-                                      style={{
-                                        border: "1px solid #ccc",
-                                        // padding: "2px",
-                                        paddingLeft: "5px",
-                                        paddingTop: "5px",
-                                        backgroundColor:
-                                          index % 2 === 0 ? "#f2f2f2" : "#fff", // Alternate row colors
-                                      }}
-                                    >
-                                      {data.note && (
-                                        <p style={{ fontWeight: "bold" }}>
-                                          Note: {data.note}
-                                        </p>
-                                      )}
-                                    </td>
-                                    <td
-                                      style={{
-                                        border: "1px solid #ccc",
-                                        // padding: "2px",
-                                        backgroundColor:
-                                          index % 2 === 0 ? "#f2f2f2" : "#fff", // Alternate row colors
-                                      }}
-                                    >
-                                      {data.file && (
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                          }}
+                                <Row
+                                  className="w-100 mt-1"
+                                  style={{
+                                    fontSize: "12px",
+                                    textTransform: "capitalize",
+                                    color: "#000",
+                                  }}
+                                  key={index} // Ensure to provide a unique key when iterating in React
+                                >
+                                  <Col>{data.note && <p>{data.note}</p>}</Col>
+                                  <Col>
+                                    {data.file && (
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          // alignItems: "center",
+                                        }}
+                                      >
+                                        <p
+                                          onClick={() =>
+                                            openFileInNewTab(data.file)
+                                          }
                                         >
-                                          <p
-                                            onClick={() =>
-                                              openFileInNewTab(data.file)
-                                            }
-                                            style={{
-                                              cursor: "pointer",
-                                              fontWeight: "bold",
-                                              paddingLeft: "5px",
-                                              paddingTop: "5px",
-                                            }}
-                                          >
-                                            <FileOpenIcon
-                                              style={{
-                                                color: "black",
-                                                paddingRight: "3px",
-                                              }}
-                                            />
-                                            {data.file.name}
-                                          </p>
-                                        </div>
-                                      )}
-                                    </td>
-                                  </tr>
-                                </>
-                              ))}
-                              {combinedData.length > 0 && (
-                                <tr>
-                                  <td
-                                    colSpan="2"
-                                    style={{
-                                      padding: "2px",
-                                      border: "1px solid #ccc",
-                                    }}
-                                  >
-                                    <button
-                                      style={{
-                                        // padding: "8px 12px", // Adjust padding for smaller size
-                                        borderRadius: "5px",
-                                        background: "#ff6347", // Red background color
-                                        color: "#fff",
-                                        border: "none",
-                                        cursor: "pointer",
-                                        // width: "100%", // Remove full width
-                                        boxShadow:
-                                          "0 2px 4px rgba(0, 0, 0, 0.2)", // Add a subtle shadow
-                                        transition:
-                                          "background-color 0.3s ease", // Smooth transition on hover
-                                        float: "left", // Align button to the left side
-                                        marginRight: "10px", // Margin to create space
-                                      }}
+                                          <FileOpenIcon />
+                                          {data.file.name}
+                                        </p>
+                                      </div>
+                                    )}
+                                  </Col>
+                                  <Col>
+                                    <ClearIcon
                                       onClick={() => {
-                                        handleClearAll();
-                                      }}
-                                      onMouseOver={(e) => {
-                                        e.target.style.backgroundColor =
-                                          "#d44a2e"; // Lighter shade on hover
-                                      }}
-                                      onMouseOut={(e) => {
-                                        e.target.style.backgroundColor =
-                                          "#ff6347"; // Restore original color on mouse out
+                                        handleClearRow(index);
                                       }}
                                     >
                                       Clear
-                                    </button>
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
+                                    </ClearIcon>
+                                  </Col>
+                                </Row>
+                              ))}
+                            </>
                           )}
+
+                          <>
+                            <Row
+                              className="w-100 my-3 "
+                              style={{
+                                fontSize: "18px",
+                                textTransform: "capitalize",
+                                color: "#5e72e4",
+                                fontWeight: "600",
+                                borderBottom: "1px solid #ddd",
+                              }}
+                            >
+                              <Col>Updates</Col>
+                            </Row>
+
+                            {matchedApplicant?.applicant_status?.map(
+                              (item, index) => (
+                                <Row
+                                  className="w-100 mt-1  mb-5"
+                                  style={{
+                                    fontSize: "12px",
+                                    textTransform: "capitalize",
+                                    color: "#000",
+                                  }}
+                                  key={index}
+                                >
+                                  <Col>{item.status || "N/A"}</Col>
+                                  <Col>
+                                    {item?.status
+                                      ? arrayOfStatus.find(
+                                          (x) => x.value === item.status
+                                        )?.label
+                                      : "N/A"}
+                                  </Col>
+                                  <Col>
+                                    {item.statusUpdatedBy +
+                                      " At " +
+                                      item.updateAt || "N/A"}
+                                  </Col>
+                                </Row>
+                              )
+                            )}
+                          </>
                         </Grid>
+
                         <Grid item xs="12" md="6" lg="4" xl="3">
                           {isEdit ? (
                             <Card
@@ -1640,7 +1709,7 @@ const ApplicantSummary = () => {
                             >
                               <CardBody>
                                 {/* <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
-                                <form onSubmit={applicantFormik.handleSubmit}>
+                                <form>
                                   <div
                                     style={{
                                       display: "flex",
@@ -2034,48 +2103,6 @@ const ApplicantSummary = () => {
                                 </div>
                               </CardContent>
                             </Card>
-                          )}
-                        </Grid>
-                        <Grid item xs={9}>
-                          <Row
-                            className="w-100 my-3 "
-                            style={{
-                              fontSize: "18px",
-                              textTransform: "capitalize",
-                              color: "#5e72e4",
-                              fontWeight: "600",
-                              borderBottom: "1px solid #ddd",
-                            }}
-                          >
-                            <Col>Updates</Col>
-                          </Row>
-
-                          {matchedApplicant?.applicant_status?.map(
-                            (item, index) => (
-                              <Row
-                                className="w-100 mt-1  mb-5"
-                                style={{
-                                  fontSize: "12px",
-                                  textTransform: "capitalize",
-                                  color: "#000",
-                                }}
-                                key={index}
-                              >
-                                <Col>{item.status || "N/A"}</Col>
-                                <Col>
-                                  {item?.status
-                                    ? arrayOfStatus.find(
-                                        (x) => x.value === item.status
-                                      )?.label
-                                    : "N/A"}
-                                </Col>
-                                <Col>
-                                  {item.statusUpdatedBy +
-                                    " At " +
-                                    item.updateAt || "N/A"}
-                                </Col>
-                              </Row>
-                            )
                           )}
                         </Grid>
                       </Grid>
