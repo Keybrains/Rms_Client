@@ -384,12 +384,15 @@ const TenantsTable = ({ tenantDetails }) => {
                       <th scope="col">Phone</th>
                       <th scope="col">Email</th>
                       <th scope="col">Start-End Date</th>
+                      <th scope="col">Created At</th>
+                      <th scope="col">Last Updated</th>
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filterTenantsBySearch().map((tenant) => (
                       <>
+                      {console.log(filterTenantsBySearch(),'filterTenantsBySearch')}
                         <tr
                           key={tenant._id}
                           onClick={() =>
@@ -414,6 +417,8 @@ const TenantsTable = ({ tenantDetails }) => {
                           <td>{tenant.tenant_mobileNumber}</td>
                           <td>{tenant.tenant_email}</td>
                           <td>{tenant.entries.start_date} {tenant.entries.end_date ? " To " + tenant.entries.end_date : null}</td>
+                          <td>{tenant.entries.createdAt } </td>
+                          <td>{tenant.entries.updateAt ? tenant.entries.updateAt : '-'} </td>
                           {/* <td>{tenant.entries.entryIndex}</td>
                           <td>{tenant.entries.rental_adress}</td> */}
                           <td style={{}}>

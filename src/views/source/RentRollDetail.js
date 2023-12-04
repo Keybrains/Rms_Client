@@ -54,6 +54,9 @@ import {
   Typography,
 } from "@mui/material";
 import { BloodtypeOutlined } from "@mui/icons-material";
+import LogoutIcon from "@mui/icons-material/Logout";
+import DoneIcon from "@mui/icons-material/Done";
+import { Modal } from "react-bootstrap";
 
 const RentRollDetail = () => {
   const { tenantId, entryIndex } = useParams();
@@ -240,6 +243,7 @@ const RentRollDetail = () => {
       apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
     } else {
       apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
+      console.log(apiUrl, "apiUrl");
     }
 
     try {
@@ -332,7 +336,9 @@ const RentRollDetail = () => {
     return data;
   };
   const doSomething = async () => {
-    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
+    let responce = await axios.get(
+      "https://propertymanager.cloudpress.host/api/tenant/tenants"
+    );
     const data = responce.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
     console.log(filteredData, "yashr");
@@ -439,6 +445,56 @@ const RentRollDetail = () => {
   const editpayment = (id, paymentIndex) => {
     navigate(`/admin/AddPayment/${id}/payment/${paymentIndex}`);
     // console.log(id);
+  };
+
+  // =====================================================================
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleMoveOutClick = () => {
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  // ============================================================================
+
+  const [moveOutDate, setMoveOutDate] = useState("");
+  const [noticeGivenDate, setNoticeGivenDate] = useState("");
+
+  useEffect(() => {
+    // Set noticeGivenDate to the current date when the component mounts
+    const currentDate = new Date().toISOString().split("T")[0];
+    setNoticeGivenDate(currentDate);
+  }, []);
+
+  const handleMoveout = () => {
+    const updatedApplicant = {
+      moveout_date: moveOutDate,
+      moveout_notice_given_date: noticeGivenDate,
+      end_date: moveOutDate,
+    };
+
+    axios
+      .put(
+        `https://propertymanager.cloudpress.host/api/tenant/moveout/${tenantId}/${entryIndex}`,
+        updatedApplicant
+      )
+      .then((res) => {
+        console.log(res, "res");
+        if (res.data.statusCode === 200) {
+          swal("Success!", "Move-out Successfully", "success");
+          // Close the modal if the status code is 200
+          handleModalClose();
+          getTenantData();
+        }
+      })
+      .catch((err) => {
+        swal("Error", "An error occurred while Move-out", "error");
+        console.error(err);
+      });
   };
 
   return (
@@ -1179,6 +1235,152 @@ const RentRollDetail = () => {
                                     maxWidth="700px"
                                     margin="20px"
                                   >
+                                    {!entry.moveout_notice_given_date ? (
+                                      <div
+                                        className="d-flex justify-content-end h5"
+                                        onClick={handleMoveOutClick}
+                                        style={{ cursor: "pointer" }}
+                                      >
+                                        <LogoutIcon fontSize="small" /> Move out
+                                      </div>
+                                    ) : (
+                                      <div
+                                        className="d-flex justify-content-end h5"
+                                        // style={{ cursor: "pointer" }}
+                                      >
+                                        <DoneIcon fontSize="small" /> Move Out
+                                      </div>
+                                    )}
+
+                                    <Modal
+                                      show={showModal}
+                                      onHide={handleModalClose}
+                                    >
+                                      <Modal.Header>
+                                        <Modal.Title>
+                                          Move out tenants
+                                        </Modal.Title>
+                                      </Modal.Header>
+                                      <Modal.Body>
+                                        <div>
+                                          Select tenants to move out. If
+                                          everyone is moving, the lease will end
+                                          on the last move-out date. If some
+                                          tenants are staying, you’ll need to
+                                          renew the lease. Note: Renters
+                                          insurance policies will be permanently
+                                          deleted upon move-out.
+                                        </div>
+                                        <hr />
+                                        {/* {rentaldata?.map((country) => ( */}
+                                        <React.Fragment>
+                                          <Table striped bordered responsive>
+                                            <thead>
+                                              <tr>
+                                                <th>Adress / Unit</th>
+                                                <th>LEASE TYPE</th>
+                                                <th>START - END</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {/* Example rows */}
+                                              <tr>
+                                                <td>
+                                                  {entry.rental_adress
+                                                    ? entry.rental_adress
+                                                    : ""}{" "}
+                                                  {entry.rental_units
+                                                    ? entry.rental_units
+                                                    : ""}
+                                                </td>
+                                                <td>Fixed</td>
+                                                <td>
+                                                  {entry.start_date
+                                                    ? entry.start_date
+                                                    : ""}{" "}
+                                                  {entry.end_date
+                                                    ? entry.end_date
+                                                    : ""}
+                                                </td>
+                                              </tr>
+                                              {/* Add more rows dynamically based on your data */}
+                                            </tbody>
+                                          </Table>
+                                          <Table striped bordered responsive>
+                                            <thead>
+                                              <tr>
+                                                <th>TENANT</th>
+                                                <th>NOTICE GIVEN DATE</th>
+                                                <th>MOVE-OUT DATE</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {/* Example rows */}
+                                              <tr>
+                                                <td>
+                                                  {tenant.tenant_firstName +
+                                                    " "}{" "}
+                                                  {tenant.tenant_lastName}
+                                                </td>
+                                                <td>
+                                                  <div className="col">
+                                                    <input
+                                                      type="date"
+                                                      className="form-control"
+                                                      placeholder="Notice Given Date"
+                                                      value={noticeGivenDate}
+                                                      // onChange={(e) =>
+                                                      //   setMoveOutDate(
+                                                      //     e.target.value
+                                                      //   )
+                                                      // }
+                                                      onChange={(e) =>
+                                                        setNoticeGivenDate(
+                                                          e.target.value
+                                                        )
+                                                      }
+                                                    />
+                                                  </div>
+                                                </td>
+                                                <td>
+                                                  <div className="col">
+                                                    <input
+                                                      type="date"
+                                                      className="form-control"
+                                                      placeholder="Move-out Date"
+                                                      value={moveOutDate}
+                                                      onChange={(e) =>
+                                                        setMoveOutDate(
+                                                          e.target.value
+                                                        )
+                                                      }
+                                                    />
+                                                  </div>
+                                                </td>
+                                              </tr>
+                                              {/* Add more rows dynamically based on your data */}
+                                            </tbody>
+                                          </Table>
+                                        </React.Fragment>
+                                        {/* ))} */}
+                                      </Modal.Body>
+                                      <Modal.Footer>
+                                        <Button
+                                          style={{ backgroundColor: "#25d559" }}
+                                          onClick={handleMoveout}
+                                        >
+                                          Move out
+                                        </Button>
+                                        <Button
+                                          style={{ backgroundColor: "#25d559" }}
+                                          onClick={handleModalClose}
+                                        >
+                                          Close
+                                        </Button>
+                                        {/* You can add additional buttons or actions as needed */}
+                                      </Modal.Footer>
+                                    </Modal>
+
                                     <Row>
                                       <Col lg="2">
                                         <Box
@@ -1280,6 +1482,7 @@ const RentRollDetail = () => {
                                             flexDirection: "row",
                                             marginTop: "10px",
                                           }}
+                                          
                                         >
                                           <Typography
                                             style={{
@@ -1292,6 +1495,53 @@ const RentRollDetail = () => {
                                           </Typography>
                                           {tenant.tenant_email || "N/A"}
                                         </div>
+                                        <div
+                                          style={
+                                          entry.moveout_notice_given_date ? {
+                                            // display:"block",
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                          }:{
+                                            display:"none"
+                                          }
+                                        }
+                                        >
+                                          <Typography
+                                            style={{
+                                              paddingRight: "3px",
+                                              // fontSize: "7px",
+                                              color: "black",
+                                            }}
+                                          >
+                                            Notice date:
+                                          </Typography>
+                                          {entry.moveout_notice_given_date  || "N/A"}
+                                        </div>
+                                        <div
+                                          style={
+                                          entry.moveout_date ? {
+                                            // display:"block",
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                          }:{
+                                            display:"none"
+                                          }}
+                                        >
+                                          <Typography
+                                            style={{
+                                              paddingRight: "3px",
+                                              // fontSize: "7px",
+                                              color: "black",
+                                            }}
+                                          >
+                                            Move out:
+                                          </Typography>
+                                          {entry.moveout_date || "N/A"}
+                                        </div>
+                                        
+                                        
                                       </Col>
                                     </Row>
                                   </Box>
@@ -1516,6 +1766,8 @@ const RentRollDetail = () => {
                         </Card>
                       </Col>
                     </Row>
+                    <Row>
+    </Row>
                   </TabPanel>
                 </TabContext>
               </Col>

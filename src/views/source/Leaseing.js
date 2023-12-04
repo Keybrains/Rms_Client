@@ -686,6 +686,7 @@ const Leaseing = () => {
       .then((res) => {
         //setImgLoader(false);
         const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
+        console.log(imagePath, "imagePath");
         // console.log(imagePath, "imagePath");
         // setFile(imagePath);
       })
@@ -1639,7 +1640,7 @@ const Leaseing = () => {
 
     //   entries: entriesArray,
     // };
-
+    console.log(tenantsSchema.values,'tenantsSchema.values')
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -1653,7 +1654,6 @@ const Leaseing = () => {
       tenant_email: tenantsSchema.values.tenant_email,
       tenant_password: tenantsSchema.values.tenant_password,
       alternate_email: tenantsSchema.values.alternate_email,
-      tenant_residentStatus: tenantsSchema.values.tenant_residentStatus,
 
       // personal information
       birth_date: tenantsSchema.values.birth_date,
@@ -1720,6 +1720,8 @@ const Leaseing = () => {
 
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
+      tenant_residentStatus: tenantsSchema.values.tenant_residentStatus,
+
           ownerDetail : ownerData
         },
       ],
@@ -1751,6 +1753,7 @@ const Leaseing = () => {
             putObject
           );
           if (res.data.statusCode === 200) {
+            console.log(res.data.data,'clgtttt')
             swal("", res.data.message, "success");
             navigate("/admin/TenantsTable");
           } else {

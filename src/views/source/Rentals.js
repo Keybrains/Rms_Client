@@ -44,6 +44,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Cookies from "universal-cookie";
 import { OpenImageDialog } from "components/OpenImageDialog";
 import { Autocomplete } from "@mui/material";
+import moment from "moment/moment";
 
 const Rentals = () => {
   const [prodropdownOpen, setproDropdownOpen] = React.useState(null);
@@ -765,8 +766,10 @@ const Rentals = () => {
         staffMember: selectedUser,
         //RESIDENTIAL
         residential: rentalsFormik.values.entries[0].residential,
-        //COMMERCIAL
+        // createdAt:moment().format("YYYY-MM-DD"),
       };
+
+        //COMMERCIAL
 
       entriesArray.push(entriesObject);
 
@@ -785,7 +788,7 @@ const Rentals = () => {
           rentalOwnerFormik.values.rentalOwner_businessNumber,
         entries: entriesArray,
       };
-      // console.log(leaseObject, "leaseObject");
+      console.log(leaseObject, "leaseObject");
 
       const res = await axios.post(
         "https://propertymanager.cloudpress.host/api/rentals/rentals",
@@ -794,7 +797,7 @@ const Rentals = () => {
       if (res.data.statusCode === 200) {
         swal("Success!", "Property Added Successfully", "success");
         navigate("/admin/RentalownerTable");
-        // console.log(res.data.data, "res.data.data after post");
+        console.log(res.data.data, "res.data.data after post");
       } else {
         swal("", res.data.message, "error");
       }
@@ -814,6 +817,8 @@ const Rentals = () => {
         //RESIDENTIAL
         // residential: rentalsFormik.values.entries[0].residential,
         commercial: rentalsFormik.values.entries[0].commercial,
+        // createdAt:moment().format("YYYY-MM-DD"),
+
         //COMMERCIAL
       };
       entriesArray.push(entriesObject);
@@ -832,7 +837,8 @@ const Rentals = () => {
           rentalOwnerFormik.values.rentalOwner_businessNumber,
         entries: entriesArray,
       };
-      // console.log(leaseObject, "leaseObject");
+      debugger
+      console.log(leaseObject, "leaseObject");
 
       const res = await axios.post(
         "https://propertymanager.cloudpress.host/api/rentals/rentals",
@@ -840,7 +846,8 @@ const Rentals = () => {
       );
       if (res.data.statusCode === 200) {
         swal("Success!", "Property Added Successfully", "success");
-        navigate("/admin/RentalownerTable");
+        // navigate("/admin/RentalownerTable");
+        console.log(res.data.data,'form response')
         // console.log(res.data.data, "res.data.data after post");
       } else {
         swal("", res.data.message, "error");
@@ -886,6 +893,7 @@ const Rentals = () => {
         rental_state: rentalsFormik.values.entries[0].rental_state,
         rental_country: rentalsFormik.values.entries[0].rental_country,
         rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
+
 
         rentalOwner_operatingAccount:
           rentalsFormik.values.entries[0].rentalOwner_operatingAccount,
@@ -1140,7 +1148,7 @@ const Rentals = () => {
                           </label>
                           <br />
                           <br />
-                          <Dropdown isOpen={prodropdownOpen} toggle={toggle1}>
+                          <Dropdown isOpen={prodropdownOpen} toggle={toggle1} disabled={id && entryIndex}>
                             <DropdownToggle caret>
                               {selectedProp && selectedProp.propertysub_type 
                                 ? selectedProp.propertysub_type
