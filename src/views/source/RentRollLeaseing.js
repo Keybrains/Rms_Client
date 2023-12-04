@@ -1993,7 +1993,7 @@ const RentRollLeaseing = () => {
   };
 
   const editLease = async (id) => {
-    const arrayOfNames = file.map((item) => item.name);
+    // const arrayOfNames = file.map((item) => item.name);
 
     const editUrl = `https://propertymanager.cloudpress.host/api/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
