@@ -74,7 +74,7 @@ const StaffMember = () => {
   const getStaffMemberData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/addstaffmember/addstaffmember"
+        "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember"
       );
       setLoader(false);
       setStaffMemberData(response.data.data);
@@ -86,7 +86,7 @@ const StaffMember = () => {
 
   const editStaffMemberData = async (id, updatedData) => {
     try {
-      const editUrl = `http://localhost:4000/api/addstaffmember/staffmember/${id}`;
+      const editUrl = `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember/${id}`;
       //console.log("Edit URL:", editUrl);
       //console.log("ID:", id);
       //console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -121,7 +121,7 @@ const StaffMember = () => {
       if (willDelete) {
         axios
           .delete(
-            "http://localhost:4000/api/addstaffmember/delete_staffmember",
+            "https://propertymanager.cloudpress.host/api/addstaffmember/delete_staffmember",
             {
               data: { _id: id },
             }

@@ -82,7 +82,7 @@ const RentRollDetail = () => {
       try {
         // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
         const response = await fetch(
-          `http://localhost:4000/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
+          `https://propertymanager.cloudpress.host/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -118,7 +118,7 @@ const RentRollDetail = () => {
   //     navigate("/payment-page");
   //   }
   // };
-  const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
   const id = tenantId;
   const entry = entryIndex;
@@ -143,7 +143,7 @@ const RentRollDetail = () => {
 
   const navigateToSummary = async (tenantId, entryIndex) => {
     // Construct the API URL
-    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -167,7 +167,7 @@ const RentRollDetail = () => {
   };
 
   const navigateToTenant = async () => {
-    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -192,7 +192,7 @@ const RentRollDetail = () => {
 
   const navigateToFinancial = async () => {
     // Construct the API URL
-    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -216,7 +216,7 @@ const RentRollDetail = () => {
 
   // const tenantsData = async () => {
   //   // Construct the API URL
-  //   const apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
+  //   const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
 
   //   try {
   //     // Fetch tenant data
@@ -240,9 +240,9 @@ const RentRollDetail = () => {
     let apiUrl;
 
     if (unit === undefined) {
-      apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
+      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
     } else {
-      apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
+      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
       console.log(apiUrl, "apiUrl");
     }
 
@@ -337,7 +337,7 @@ const RentRollDetail = () => {
   };
   const doSomething = async () => {
     let responce = await axios.get(
-      "http://localhost:4000/api/tenant/tenants"
+      "https://propertymanager.cloudpress.host/api/tenant/tenants"
     );
     const data = responce.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
@@ -363,7 +363,7 @@ const RentRollDetail = () => {
     }
   };
   // const getGeneralLedgerData = async () => {
-  //   const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
+  //   const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
 
   //   try {
   //     const response = await axios.get(apiUrl);
@@ -384,7 +384,7 @@ const RentRollDetail = () => {
   //   }
   // };
   const getGeneralLedgerData = async () => {
-    const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
     try {
       const response = await axios.get(apiUrl);
       setLoader(false);
@@ -418,7 +418,7 @@ const RentRollDetail = () => {
       if (willDelete) {
         axios
           .delete(
-            `http://localhost:4000/api/payment/delete_charge/${chargeId}/${chargeIndex}`
+            `https://propertymanager.cloudpress.host/api/payment/delete_charge/${chargeId}/${chargeIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -479,7 +479,7 @@ const RentRollDetail = () => {
 
     axios
       .put(
-        `http://localhost:4000/api/tenant/moveout/${tenantId}/${entryIndex}`,
+        `https://propertymanager.cloudpress.host/api/tenant/moveout/${tenantId}/${entryIndex}`,
         updatedApplicant
       )
       .then((res) => {

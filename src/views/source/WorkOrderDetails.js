@@ -47,7 +47,7 @@ const WorkOrderDetails = () => {
   const getOutstandData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/workorder/workorder_summary/${workorder_id}`
+        `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${workorder_id}`
       );
       setoutstandDetails(response.data.data);
       setLoading(false);

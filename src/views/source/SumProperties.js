@@ -38,7 +38,7 @@ const SumProperties = () => {
 
   let getRentalsData = async (id) => {
     let responce = await axios.get(
-      "http://localhost:4000/api/rentals/rentals_summary/6502f925be676a11da6ae793"
+      "https://propertymanager.cloudpress.host/api/rentals/rentals_summary/6502f925be676a11da6ae793"
     );
     setRentalsData(responce.data.data);
   };

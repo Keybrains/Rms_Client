@@ -176,7 +176,7 @@ const AddWorkorder = () => {
   };
   const setVendorsName = () => {
     axios
-      .get("http://localhost:4000/api/vendor/vendor_name")
+      .get("https://propertymanager.cloudpress.host/api/vendor/vendor_name")
       .then((res) => {
         // console.log(res, "res of all vendors");
         // console.log(res.data.data, "ressssssss");
@@ -196,7 +196,7 @@ const AddWorkorder = () => {
     if (id) {
       axios
         .get(
-          `http://localhost:4000/api/workorder/workorder_summary/${id}`
+          `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`
         )
         .then((response) => {
           const vendorData = response.data.data;
@@ -275,7 +275,7 @@ const AddWorkorder = () => {
       if (id === undefined) {
         // Create the work order
         const workOrderRes = await axios.post(
-          "http://localhost:4000/api/workorder/workorder",
+          "https://propertymanager.cloudpress.host/api/workorder/workorder",
           values
         );
 
@@ -284,7 +284,7 @@ const AddWorkorder = () => {
           // console.log(workOrderRes.data);
           // Use the work order data from the response to create the notification
           const notificationRes = await axios.post(
-            "http://localhost:4000/api/notification/notification",
+            "https://propertymanager.cloudpress.host/api/notification/notification",
             {
               workorder: {
                 vendor_name: selectedVendor,
@@ -301,7 +301,7 @@ const AddWorkorder = () => {
           console.error("Work Order Error:", workOrderRes.data);
         }
       } else {
-        const editUrl = `http://localhost:4000/api/workorder/workorder/${id}`;
+        const editUrl = `https://propertymanager.cloudpress.host/api/workorder/workorder/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }
@@ -374,7 +374,7 @@ const AddWorkorder = () => {
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/rentals/allproperty")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -395,7 +395,7 @@ const AddWorkorder = () => {
 
     // Make an HTTP GET request to your Express API endpoint
     fetch(
-      "http://localhost:4000/api/addstaffmember/find_staffmember"
+      "https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember"
     )
       .then((response) => response.json())
       .then((data) => {
