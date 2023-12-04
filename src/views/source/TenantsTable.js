@@ -48,7 +48,7 @@ const TenantsTable = ({ tenantDetails }) => {
 
   let navigate = useNavigate();
   let getTenantsDate = async () => {
-    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
+    let responce = await axios.get("http://localhost:4000/api/tenant/tenants");
     //console.log('responce', responce.data.data)
     setLoader(false);
     setTenantsDate(responce.data.data);
@@ -89,7 +89,7 @@ const TenantsTable = ({ tenantDetails }) => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
+            `http://localhost:4000/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -184,7 +184,7 @@ const TenantsTable = ({ tenantDetails }) => {
       let tenantData = tenantDetails;
       if (!tenantData || !tenantData._id) {
         const response = await axios.get(
-          `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+          `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
         );
         tenantData = response.data.data;
         //console.log(tenantData, "tenantData");
@@ -384,12 +384,15 @@ const TenantsTable = ({ tenantDetails }) => {
                       <th scope="col">Phone</th>
                       <th scope="col">Email</th>
                       <th scope="col">Start-End Date</th>
+                      <th scope="col">Created At</th>
+                      <th scope="col">Last Updated</th>
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filterTenantsBySearch().map((tenant) => (
                       <>
+                      {console.log(filterTenantsBySearch(),'filterTenantsBySearch')}
                         <tr
                           key={tenant._id}
                           onClick={() =>
@@ -414,6 +417,8 @@ const TenantsTable = ({ tenantDetails }) => {
                           <td>{tenant.tenant_mobileNumber}</td>
                           <td>{tenant.tenant_email}</td>
                           <td>{tenant.entries.start_date} {tenant.entries.end_date ? " To " + tenant.entries.end_date : null}</td>
+                          <td>{tenant.entries.createdAt } </td>
+                          <td>{tenant.entries.updateAt ? tenant.entries.updateAt : '-'} </td>
                           {/* <td>{tenant.entries.entryIndex}</td>
                           <td>{tenant.entries.rental_adress}</td> */}
                           <td style={{}}>

@@ -74,7 +74,7 @@ const StaffMember = () => {
   const getStaffMemberData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember"
+        "http://localhost:4000/api/addstaffmember/addstaffmember"
       );
       setLoader(false);
       setStaffMemberData(response.data.data);
@@ -86,7 +86,7 @@ const StaffMember = () => {
 
   const editStaffMemberData = async (id, updatedData) => {
     try {
-      const editUrl = `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember/${id}`;
+      const editUrl = `http://localhost:4000/api/addstaffmember/staffmember/${id}`;
       //console.log("Edit URL:", editUrl);
       //console.log("ID:", id);
       //console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -121,7 +121,7 @@ const StaffMember = () => {
       if (willDelete) {
         axios
           .delete(
-            "https://propertymanager.cloudpress.host/api/addstaffmember/delete_staffmember",
+            "http://localhost:4000/api/addstaffmember/delete_staffmember",
             {
               data: { _id: id },
             }
@@ -273,6 +273,7 @@ const StaffMember = () => {
                       <th scope="col">DESIGNATION</th>
                       <th scope="col">Contact</th>
                       <th scope="col">Mail Id</th>
+                      <th scope="col">Created at</th>
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
@@ -283,6 +284,7 @@ const StaffMember = () => {
                         <td>{staff.staffmember_designation}</td>
                         <td>{staff.staffmember_phoneNumber}</td>
                         <td>{staff.staffmember_email}</td>
+                        <td>{staff.createAt}</td>
                         <td>
                           <div style={{ display: "flex" }}>
                             <div

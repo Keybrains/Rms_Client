@@ -101,7 +101,7 @@ const TenantWork = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
+        `http://localhost:4000/api/tenant/tenant_summary/${cookie_id}`
       );
       const entries = response.data.data.entries;
 
@@ -141,7 +141,7 @@ const TenantWork = () => {
   const getRentalData = async (addresses) => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/workorder/workorder/tenant/${addresses}`
+        `http://localhost:4000/api/workorder/workorder/tenant/${addresses}`
       );
       //console.log(response, "abc");
 

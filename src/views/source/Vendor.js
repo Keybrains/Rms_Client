@@ -63,7 +63,7 @@ const Vendor = () => {
   const getVendorData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/vendor/vendor"
+        "http://localhost:4000/api/vendor/vendor"
       );
       setLoader(false);
       setVendorData(response.data.data);
@@ -86,7 +86,7 @@ const Vendor = () => {
       if (willDelete) {
         try {
           const response = await axios.delete(
-            "https://propertymanager.cloudpress.host/api/vendor/delete_vendor",
+            "http://localhost:4000/api/vendor/delete_vendor",
             {
               data: { _id: id },
             }
@@ -201,6 +201,7 @@ const Vendor = () => {
                     </tr>
                   </thead>
                   <tbody>
+                    {console.log(filterTenantsBySearch(),'filterTenantsBySearch')}
                     {filterTenantsBySearch().map((vendor) => (
                       <tr key={vendor._id}>
                         <td>{vendor.vendor_name}</td>

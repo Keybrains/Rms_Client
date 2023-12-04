@@ -35,7 +35,7 @@ const TenantDetailPage = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-  const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
   const getTenantData = async () => {
     try {
       const response = await axios.get(apiUrl);
@@ -80,7 +80,7 @@ const TenantDetailPage = () => {
   };
   const [balance, setBalance] = useState("");
   const getGeneralLedgerData = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+    const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
     try {
       const response = await axios.get(apiUrl);
       if (response.data && response.data.data) {
@@ -102,7 +102,7 @@ const TenantDetailPage = () => {
 
   const [myData, setMyData] = useState([]);
   const doSomething = async () => {
-    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
+    let responce = await axios.get("http://localhost:4000/api/tenant/tenants");
     const data = responce.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
     console.log(filteredData, "yashr");

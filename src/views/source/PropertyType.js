@@ -61,7 +61,7 @@ const PropertyType = () => {
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   // let getPropertyData = async () => {
-  //   let responce = await axios.get("https://propertymanager.cloudpress.host/api/newproparty/newproparty");
+  //   let responce = await axios.get("http://localhost:4000/api/newproparty/newproparty");
   //   setPropertyData(responce.data.data);
   // };
 
@@ -96,7 +96,7 @@ const PropertyType = () => {
   const getPropertyData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/newproparty/newproparty"
+        "http://localhost:4000/api/newproparty/newproparty"
       );
       setLoader(false);
       setPropertyData(response.data.data);
@@ -110,7 +110,7 @@ const PropertyType = () => {
   //   var handleSubmit = async (values) => {
   //    // values["createAt"] = moment(new Date()).format("YYYY-MM-DD, HH:mm:ss");
   //     let response = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty",
+  //       "http://localhost:4000/api/newproparty/newproparty",
   //       values
   //     );
   //     if (response.data.statusCode === 200) {
@@ -125,7 +125,7 @@ const PropertyType = () => {
   //   handleSubmit = async (values) => {
   //     //values["upadateAt"] = moment(new Date()).format("YYYY-MM-DD, HH:mm:ss");
   //     let response = await axios.put(
-  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty" + id,
+  //       "http://localhost:4000/api/newproparty/newproparty" + id,
   //       values
   //     );
   //     if (response.data.statusCode === 200) {
@@ -137,7 +137,7 @@ const PropertyType = () => {
   // }
   const editPropertyData = async (id, updatedData) => {
     try {
-      const editUrl = `https://propertymanager.cloudpress.host/api/newproparty/proparty-type/${id}`;
+      const editUrl = `http://localhost:4000/api/newproparty/proparty-type/${id}`;
       //console.log("Edit URL:", editUrl);
       //console.log("Property ID:", id);
       //console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -172,7 +172,7 @@ const PropertyType = () => {
       if (willDelete) {
         axios
           .delete(
-            "https://propertymanager.cloudpress.host/api/newproparty/newproparty/",
+            "http://localhost:4000/api/newproparty/newproparty/",
             {
               data: { _id: id },
             }
@@ -317,6 +317,8 @@ const PropertyType = () => {
                       {/* <th scope="col">Property_ID</th> */}
                       <th scope="col">Main Type</th>
                       <th scope="col">Sub Type</th>
+                      <th scope="col">Created At</th>
+                      <th scope="col">Updated At</th>
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
@@ -325,6 +327,8 @@ const PropertyType = () => {
                       <tr key={property._id}>
                         <td>{property.property_type}</td>
                         <td>{property.propertysub_type}</td>
+                        <td>{property.createAt}</td>
+                        <td>{property.updateAt ? property.updateAt : '-'}</td>
                         <td>
                           <div style={{ display: "flex" }}>
                             <div
