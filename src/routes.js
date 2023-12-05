@@ -577,7 +577,7 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/AddPayment/:tenantId/:entryIndex",
+    path: "/AddPayment/:tenantId/:entryIndex/:unit/:unitId",
     component: <AddPayment />,
     layout: "/admin",
   },

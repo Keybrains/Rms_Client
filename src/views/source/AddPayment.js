@@ -38,9 +38,10 @@ import Img from "assets/img/theme/team-4-800x800.jpg";
 import "jspdf-autotable";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
+import { format } from "date-fns";
 
 const AddPayment = () => {
-  const { tenantId, entryIndex } = useParams();
+  const { tenantId, entryIndex, unit, unit_id } = useParams();
   const { mainId, paymentIndex } = useParams();
   const [id, setId] = useState("");
   const [index, setIndex] = useState("");
@@ -135,12 +136,13 @@ const AddPayment = () => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
+      `http://localhost:4000/api/tenant/tenant-name/tenant/${rentAddress}`
     )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
           setPropertyData(data.data);
+          console.log(data.data, "yashur");
         } else {
           // Handle error
           console.error("Error:", data.message);
@@ -203,12 +205,13 @@ const AddPayment = () => {
 
   const fetchTenantData = async () => {
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+      `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
     )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
           const tenantData = data.data;
+          console.log(data.data, "yashur");
           const rentalAddress = tenantData.entries.rental_adress;
           setRentAddress(rentalAddress);
           generalledgerFormik.setValues({
@@ -221,7 +224,7 @@ const AddPayment = () => {
 
   useEffect(() => {
     fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+      "http://localhost:4000/api/addaccount/find_accountname"
     )
       .then((response) => response.json())
       .then((data) => {
@@ -277,6 +280,35 @@ const AddPayment = () => {
           total_amount: total_amount,
         })),
       };
+
+      const currentDate = new Date();
+      const formattedDate1 = format(currentDate, 'yyyy-MM-dd');
+      const formattedDate2 = format(currentDate, 'MM-yyyy');
+
+      const prop = {
+        properties: {
+          rental_dress: rentalAddress,
+          property_id: ""
+        },
+        unit:
+        {
+          unit: unit,
+          unit_id: unit_id,
+          paymentAndCharges: generalledgerFormik.values.entries.map((entry) => ({
+            account: entry.account,
+            amount: parseFloat(entry.amount),
+            type: "Charge",
+            rental_adress: rentalAddress,
+            tenant_firstName: selectedRec,
+            tenant_id: tenantid,
+            memo: generalledgerFormik.values.memo,
+            date: formattedDate1,
+            month_year: formattedDate2,
+          }))
+        }
+      }
+      console.log(prop, "yashurj");
+
       //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
         "https://propertymanager.cloudpress.host/api/payment/add_payment", ///http://localhost:4000
@@ -284,6 +316,13 @@ const AddPayment = () => {
       );
 
       if (response.data.statusCode === 200) {
+        const response1 = await axios.post(
+          "http://localhost:4000/api/payment_charge/payment_charge", ///http://localhost:4000
+          prop
+        );
+        if (response1.data.statusCode === 200) {
+          console.log("object1")
+        }
         const id = response.data.data._id;
         if (id) {
           const pdfResponse = await axios.get(
@@ -386,16 +425,16 @@ const AddPayment = () => {
             doc.save(`PaymentReceipt_${id}.pdf`);
           } else {
             if (!printReceipt) {
-              swal("Success!", "Payment added successfully", "success");
+              // swal("Success!", "Payment added successfully", "success");
             } else {
-              swal("Error", "Failed to retrieve PDF summary", "error");
+              // swal("Error", "Failed to retrieve PDF summary", "error");
             }
           }
         } else {
-          swal("Error", "Failed to get 'id' from the response", "error");
+          // swal("Error", "Failed to get 'id' from the response", "error");
         }
 
-        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`); // Navigate to the desired page
+        // navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`); // Navigate to the desired page
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -468,7 +507,7 @@ const AddPayment = () => {
     if (mainId && paymentIndex) {
       axios
         .get(
-          `https://propertymanager.cloudpress.host/api/payment/payment_summary/${mainId}/payment/${paymentIndex}`
+          `http://localhost:4000/api/payment/payment_summary/${mainId}/payment/${paymentIndex}`
         )
         .then((response) => {
           const paymentData = response.data.data;
@@ -561,7 +600,7 @@ const AddPayment = () => {
 
       //console.log(updatedValues, "updatedValues");
 
-      const putUrl = `https://propertymanager.cloudpress.host/api/payment/payments/${mainId}/payment/${paymentIndex}`;
+      const putUrl = `http://localhost:4000/api/payment/payments/${mainId}/payment/${paymentIndex}`;
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
@@ -626,7 +665,7 @@ const AddPayment = () => {
                           value={generalledgerFormik.values.date}
                         />
                         {generalledgerFormik.touched.date &&
-                        generalledgerFormik.errors.date ? (
+                          generalledgerFormik.errors.date ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.date}
                           </div>
@@ -654,7 +693,7 @@ const AddPayment = () => {
                           value={generalledgerFormik.values.amount}
                         />
                         {generalledgerFormik.touched.amount &&
-                        generalledgerFormik.errors.amount ? (
+                          generalledgerFormik.errors.amount ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.amount}
                           </div>
@@ -720,7 +759,7 @@ const AddPayment = () => {
                             value={generalledgerFormik.values.debitcard_number}
                           />
                           {generalledgerFormik.touched.debitcard_number &&
-                          generalledgerFormik.errors.debitcard_number ? (
+                            generalledgerFormik.errors.debitcard_number ? (
                             <div style={{ color: "red" }}>
                               {generalledgerFormik.errors.debitcard_number}
                             </div>
@@ -786,7 +825,7 @@ const AddPayment = () => {
                           value={generalledgerFormik.values.memo}
                         />
                         {generalledgerFormik.touched.memo &&
-                        generalledgerFormik.errors.memo ? (
+                          generalledgerFormik.errors.memo ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.memo}
                           </div>
@@ -923,16 +962,16 @@ const AddPayment = () => {
                                           }}
                                         />
                                         {generalledgerFormik.touched.entries &&
-                                        generalledgerFormik.touched.entries[
+                                          generalledgerFormik.touched.entries[
                                           index
-                                        ] &&
-                                        generalledgerFormik.errors.entries &&
-                                        generalledgerFormik.errors.entries[
+                                          ] &&
+                                          generalledgerFormik.errors.entries &&
+                                          generalledgerFormik.errors.entries[
                                           index
-                                        ] &&
-                                        generalledgerFormik.errors.entries[
-                                          index
-                                        ].balance ? (
+                                          ] &&
+                                          generalledgerFormik.errors.entries[
+                                            index
+                                          ].balance ? (
                                           <div style={{ color: "red" }}>
                                             {
                                               generalledgerFormik.errors
@@ -963,16 +1002,16 @@ const AddPayment = () => {
                                           }}
                                         />
                                         {generalledgerFormik.touched.entries &&
-                                        generalledgerFormik.touched.entries[
+                                          generalledgerFormik.touched.entries[
                                           index
-                                        ] &&
-                                        generalledgerFormik.errors.entries &&
-                                        generalledgerFormik.errors.entries[
+                                          ] &&
+                                          generalledgerFormik.errors.entries &&
+                                          generalledgerFormik.errors.entries[
                                           index
-                                        ] &&
-                                        generalledgerFormik.errors.entries[
-                                          index
-                                        ].amount ? (
+                                          ] &&
+                                          generalledgerFormik.errors.entries[
+                                            index
+                                          ].amount ? (
                                           <div style={{ color: "red" }}>
                                             {
                                               generalledgerFormik.errors
@@ -1048,7 +1087,7 @@ const AddPayment = () => {
                             </label>
 
                             {generalledgerFormik.touched.attachment &&
-                            generalledgerFormik.errors.attachment ? (
+                              generalledgerFormik.errors.attachment ? (
                               <div style={{ color: "red" }}>
                                 {generalledgerFormik.errors.attachment}
                               </div>

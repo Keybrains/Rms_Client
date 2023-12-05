@@ -41,7 +41,7 @@ const Workorder = () => {
   const getWorkData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/workorder/workorder"
+        "http://localhost:4000/api/workorder/workorder"
       );
       setWorkData(response.data.data);
       setLoader(false);
@@ -75,7 +75,7 @@ const Workorder = () => {
       if (willDelete) {
         axios
           .delete(
-            "https://propertymanager.cloudpress.host/api/workorder/delete_workorder",
+            "http://localhost:4000/api/workorder/delete_workorder",
             {
               data: { _id: id },
             }

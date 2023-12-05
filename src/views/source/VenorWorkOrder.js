@@ -46,7 +46,7 @@ const VenorWorkOrder = () => {
       }
 
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`
+        `http://localhost:4000/api/workorder/workorder_summary/${id}`
       );
 
       //console.log("API Response:", response.data.data);
