@@ -265,6 +265,7 @@ const Leaseing = () => {
       console.error("Error handling selected property:", error);
     }
   };
+  console.log(ownerData, "ownerData");
 
   const [selectedLeaseType, setselectedLeaseType] = useState("");
 
@@ -495,7 +496,7 @@ const Leaseing = () => {
       tenant_email: "",
       tenant_password: "",
       alternate_email: "",
-      tenant_residentStatus: "",
+      tenant_residentStatus: false,
 
       // personal information
       birth_date: "",
@@ -557,7 +558,6 @@ const Leaseing = () => {
   // <button type="submit" className="btn btn-primary" onClick={handleDialogClose}>
   //   Add Tenant
   // </button>
-
   const handleRadioChange = (event) => {
     const value = event.target.value;
     setselectedAccountLevel(value);
@@ -848,7 +848,7 @@ const Leaseing = () => {
         tenant_email: tenantInfo.tenant_email,
         tenant_password: tenantInfo.tenant_password,
         alternate_email: tenantInfo.alternate_email,
-        tenant_residentStatus: tenantInfo.tenant_residentStatus,
+        tenant_residentStatus:false,
 
         // personal information
         birth_date: tenantInfo.birth_date,
@@ -881,7 +881,7 @@ const Leaseing = () => {
         tenant_email: "",
         tenant_password: "",
         alternate_email: "",
-        tenant_residentStatus: "",
+        tenant_residentStatus: false,
 
         // personal information
         birth_date: "",
@@ -1238,7 +1238,7 @@ const Leaseing = () => {
       tenant_email: "",
       tenant_password: "",
       alternate_email: "",
-      tenant_residentStatus: "",
+      tenant_residentStatus: false,
 
       // personal information
       birth_date: "",
@@ -1313,6 +1313,7 @@ const Leaseing = () => {
       // console.log(values, "values");
     },
   });
+  console.log(tenantsSchema, "tenantsSchema.values");
 
   useEffect(() => {
     if (id && entryIndex) {
@@ -1724,13 +1725,18 @@ const Leaseing = () => {
 
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
-      tenant_residentStatus: tenantsSchema.values.tenant_residentStatus,
-
-          ownerDetail : ownerData
+      tenant_residentStatus: ownerData.tenant_residentStatus,
+          rentalOwner_firstName: ownerData.rentalOwner_firstName,
+          rentalOwner_lastName: ownerData.rentalOwner_lastName,
+          rentalOwner_primaryemail: ownerData.rentalOwner_email,
+          rentalOwner_phoneNumber: ownerData.rentalOwner_phoneNumber,
+          rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
+          rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
+          rentalOwner_companyName: ownerData.rentalOwner_companyName,
         },
       ],
     };
-
+    debugger
     console.log(tenantObject, "tenantObject");
     try {
       const res = await axios.get(
@@ -1748,6 +1754,7 @@ const Leaseing = () => {
         });
 
         if (filteredData) {
+          debugger
           const putObject = {
             entries: tenantObject.entries,
           };
@@ -1801,7 +1808,7 @@ const Leaseing = () => {
     } else {
       console.error("file is not an array");
 
-      console.log(values, "values");
+      // console.log(values, "values");
     }
     console.log(values, "values to check");
     try {
@@ -4195,7 +4202,10 @@ const Leaseing = () => {
                                   <EditIcon
                                       onClick={() => {
                                         setShowTenantTable(false);
-                                        setOpenTenantsDialog(true);
+                                        setOpenTenantsDialog(true); 
+                                        setSelectedOption('Tenant')
+                                        setAlignment('Tenant');
+
                                       }}
                                     />
 
@@ -4260,7 +4270,13 @@ const Leaseing = () => {
                                   <Col>{cosignerData.mobileNumber}</Col>
                                   <Col>
                                   <EditIcon
-                                        onClick={setOpenTenantsDialog}
+                                        onClick={()=>{
+                                          setOpenTenantsDialog(true)
+                                          setSelectedOption('Cosigner')
+                                          setAlignment('Cosigner')
+                                        }
+                                        }
+
                                       />
                                       <DeleteIcon
                                         onClick={handleCosignerDelete}

@@ -206,6 +206,9 @@ const AddCharge = () => {
         if (data.statusCode === 200) {
           const tenantData = data.data;
           const rentalAddress = tenantData.entries.rental_adress;
+          setSelectedRec(`${tenantData.tenant_firstName} ${tenantData.tenant_lastName}`);
+          // setTenantid(tenantData._id);
+          // setTenantentryindex(tenantData.entryIndex);
           setRentAddress(rentalAddress);
           generalledgerFormik.setValues({
             ...generalledgerFormik.values,
@@ -273,7 +276,7 @@ const AddCharge = () => {
       };
       //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_charges", //http://localhost:4000
+        "https://propertymanager.cloudpress.host/api/payment/add_charges", //https://propertymanager.cloudpress.host
         updatedValues
       );
 

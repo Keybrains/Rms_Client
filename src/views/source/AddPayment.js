@@ -200,7 +200,7 @@ const AddPayment = () => {
       entries: updatedEntries,
     });
   };
-
+  const [tenantData, setTenantData] = useState([]);
   const fetchTenantData = async () => {
     fetch(
       `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
@@ -208,8 +208,13 @@ const AddPayment = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
-          const tenantData = data.data;
-          const rentalAddress = tenantData.entries.rental_adress;
+          const tenantDatas = data.data;
+          setTenantData(tenantDatas);
+          console.log("Tenant data:", tenantDatas);
+          const rentalAddress = tenantDatas.entries.rental_adress;
+          setSelectedRec(`${tenantDatas.tenant_firstName} ${tenantDatas.tenant_lastName}`);
+          // setTenantid(tenantDatas._id); // Set the selected tenant's ID
+          // setTenantentryIndex(tenantDatas.entryIndex); // Set the selected tenant's entry index
           setRentAddress(rentalAddress);
           generalledgerFormik.setValues({
             ...generalledgerFormik.values,
@@ -279,7 +284,7 @@ const AddPayment = () => {
       };
       //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_payment", ///http://localhost:4000
+        "https://propertymanager.cloudpress.host/api/payment/add_payment", ///https://propertymanager.cloudpress.host
         updatedValues
       );
 

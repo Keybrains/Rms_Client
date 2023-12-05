@@ -39,6 +39,7 @@ const TenantDetailPage = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(apiUrl);
+      console.log(response.data.data, "huihui");
       setTenantDetails(response.data.data);
       setLoading(false);
     } catch (error) {
