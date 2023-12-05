@@ -750,7 +750,7 @@ const RentRollLeaseing = () => {
 
   const fetchingAccountNames = async () => {
     console.log("fetching account names");
-    fetch("http://localhost:4000/api/addaccount/find_accountname")
+    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -769,7 +769,7 @@ const RentRollLeaseing = () => {
 
   const fetchingRecAccountNames = async () => {
     console.log("fetching rec accounr names");
-    fetch("http://localhost:4000/api/recurringAcc/find_accountname")
+    fetch("https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -788,7 +788,7 @@ const RentRollLeaseing = () => {
 
   const fetchingOneTimeCharges = async () => {
     // console.log("fetcjhiine pne rime charges");
-    fetch("http://localhost:4000/api/onetimecharge/find_accountname")
+    fetch("https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -1486,8 +1486,9 @@ const RentRollLeaseing = () => {
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
     if (id && entryIndex) {
+      const url = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`;
       axios
-        .get(`http://localhost:4000/api/tenant/tenant_summary/${id}`)
+        .get(url)
         .then((response) => {
           const laesingdata = response.data.data;
           console.log(laesingdata, "laesingdata");
@@ -1904,7 +1905,7 @@ const RentRollLeaseing = () => {
     };
 
     try {
-      const res = await axios.get(`http://localhost:4000/api/tenant/tenant`);
+      const res = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant`);
       if (res.data.statusCode === 200) {
         console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
@@ -5710,21 +5711,23 @@ const RentRollLeaseing = () => {
                       {console.log(file, "file")}
 
                       {file.length > 0 &&
-                        file.map((fileItem, index) => (
+                        file?.map((singleFile, index) => (
                           <div
                             key={index}
                             style={{ position: "relative", marginLeft: "50px" }}
                           >
                             {!id || yourData === "ApplicantSummary" ? (
                               <p
-                                onClick={() => {
-                                  console.log("File clicked:", fileItem); // Check if this logs the correct fileItem
-                                  handleOpenFile(fileItem.upload_file);
-                                }}
+                                onClick={() =>
+                                  handleOpenFile(singleFile.upload_file)
+                                }
                                 style={{ cursor: "pointer" }}
                               >
-                                {fileItem.file_name?.substr(0, 5)}
-                                {fileItem.file_name?.length > 5 ? "..." : null}
+                                {console.log(file, "fromm 5867")}
+                                {singleFile?.file_name?.substr(0, 5)}
+                                {singleFile?.file_name?.length > 5
+                                  ? "..."
+                                  : null}
                               </p>
                             ) : (
                               <p style={{ cursor: "pointer" }}>
