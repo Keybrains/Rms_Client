@@ -244,7 +244,7 @@ const RentRollLeaseing = () => {
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/propertyunit/rentals_property/${propertyType}`
+        `https://propertymanager.cloudpress.host/api/propertyunit/rentals_property/${propertyType}`
       );
       const data = await response.json();
       // Ensure that units are extracted correctly and set as an array
@@ -602,7 +602,7 @@ const RentRollLeaseing = () => {
     try {
       // values["property_type"] = localStorage.getItem("propertyType");
       const res = await axios.post(
-        "http://localhost:4000/api/addaccount/addaccount",
+        "https://propertymanager.cloudpress.host/api/addaccount/addaccount",
         values
       );
       if (res.data.statusCode === 200) {
@@ -731,7 +731,7 @@ const RentRollLeaseing = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/rentals/allproperty")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -824,7 +824,7 @@ const RentRollLeaseing = () => {
 
   // useEffect(() => {
   //   // Make an HTTP GET request to your Express API endpoint
-  //   fetch("http://localhost:4000/api/addaccount/find_accountname")
+  //   fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
   //     .then((response) => response.json())
   //     .then((data) => {
   //       if (data.statusCode === 200) {
@@ -843,7 +843,7 @@ const RentRollLeaseing = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/addagent/find_agentname")
+    fetch("https://propertymanager.cloudpress.host/api/addagent/find_agentname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -937,7 +937,7 @@ const RentRollLeaseing = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/tenant/existing/tenant")
+    fetch("https://propertymanager.cloudpress.host/api/tenant/existing/tenant")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -1268,7 +1268,7 @@ const RentRollLeaseing = () => {
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit) {
       let response = await axios.get(
-        "http://localhost:4000/api/tenant/tenants"
+        "https://propertymanager.cloudpress.host/api/tenant/tenants"
       );
       const data = response.data.data;
 
@@ -1926,7 +1926,7 @@ const RentRollLeaseing = () => {
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
           const res = await axios.put(
-            `http://localhost:4000/api/tenant/tenant/${tenantId}`,
+            `https://propertymanager.cloudpress.host/api/tenant/tenant/${tenantId}`,
             putObject
           );
           if (res.data.statusCode === 200) {
@@ -1941,7 +1941,7 @@ const RentRollLeaseing = () => {
             console.log(tenantObject, "leaseObject");
             // debugger
             const res = await axios.post(
-              "http://localhost:4000/api/tenant/tenant",
+              "https://propertymanager.cloudpress.host/api/tenant/tenant",
               tenantObject
             );
             if (res.data.statusCode === 200) {
@@ -1987,7 +1987,7 @@ const RentRollLeaseing = () => {
   const editLease = async (id) => {
     // const arrayOfNames = file.map((item) => item.name);
 
-    const editUrl = `http://localhost:4000/api/tenant/tenants/${id}/entry/${entryIndex}`;
+    const editUrl = `https://propertymanager.cloudpress.host/api/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
 
     const entriesObject = {
@@ -2122,11 +2122,11 @@ const RentRollLeaseing = () => {
   //   if (entryIndex) {
   //     setAlignment("Signed");
   //     axios
-  //       .get("http://localhost:4000/api/rentals/allproperty")
+  //       .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
   //       .then((propRes) => {
   //         axios
   //           .get(
-  //             `http://localhost:4000/api/applicant/applicant`
+  //             `https://propertymanager.cloudpress.host/api/applicant/applicant`
   //           )
   //           .then((response) => {
   //             console.log(response.data.data);
@@ -5730,9 +5730,13 @@ const RentRollLeaseing = () => {
                                   : null}
                               </p>
                             ) : (
-                              <p style={{ cursor: "pointer" }}>
-                                {fileItem.file_name?.substr(0, 5)}
-                                {fileItem.file_name?.length > 5 ? "..." : null}
+                              <p
+                                // onClick={() => handleOpenFile(file.upload_file)}
+                                style={{ cursor: "pointer" }}
+                              >
+                                {console.log(file, "file 5803")}
+                                {file[0]?.file_name?.substr(0, 5)}
+                                {file[0]?.file_name?.length > 5 ? "..." : null}
                               </p>
                             )}
                             <CloseIcon

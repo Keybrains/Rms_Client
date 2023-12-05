@@ -45,7 +45,7 @@ const TenantProperty = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/tenant/tenant_rental_addresses/${cookie_id}`
+        `https://propertymanager.cloudpress.host/api/tenant/tenant_rental_addresses/${cookie_id}`
       );
 
       if (response.data && response.data.rental_adress) {
@@ -54,7 +54,7 @@ const TenantProperty = () => {
         setRentalAddress(response.data.rental_adress);
 
         const allTenants = await axios.get(
-          `http://localhost:4000/api/tenant/tenant_summary/${cookie_id}`
+          `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
         );
         setPropertyDetails(allTenants.data.data.entries);
         // console.log(allTenants.data.data, "allTenants");
@@ -76,7 +76,7 @@ const TenantProperty = () => {
   useEffect(() => {
     getTenantData();
     // console.log(
-    //   `http://localhost:4000/api/tenant/tenant_rental_addresses/${cookie_id}`
+    //   `https://propertymanager.cloudpress.host/api/tenant/tenant_rental_addresses/${cookie_id}`
     // );
   }, [cookie_id]);
 
@@ -85,7 +85,7 @@ const TenantProperty = () => {
   // const getRentalData = async () => {
   //   try {
   //     const response = await axios.get(
-  //       `http://localhost:4000/api/rentals/rentals_property/${rental_adress}`
+  //       `https://propertymanager.cloudpress.host/api/rentals/rentals_property/${rental_adress}`
   //     );
   //     setpropertyDetails(response.data.data);
   //     setpropertyLoading(false);
@@ -96,7 +96,7 @@ const TenantProperty = () => {
   // };
   // useEffect(() => {
   //   if (rental_adress) {
-  //       console.log(`http://localhost:4000/api/rentals/rentals_property/${rental_adress}`)
+  //       console.log(`https://propertymanager.cloudpress.host/api/rentals/rentals_property/${rental_adress}`)
   //       getRentalData();
   //   }
   //   //console.log(rental_adress)

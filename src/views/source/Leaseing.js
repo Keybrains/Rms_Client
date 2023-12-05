@@ -4268,13 +4268,7 @@ const Leaseing = () => {
                                   <Col>{cosignerData.mobileNumber}</Col>
                                   <Col>
                                   <EditIcon
-                                        onClick={()=>{
-                                          setOpenTenantsDialog(true)
-                                          setSelectedOption('Cosigner')
-                                          setAlignment('Cosigner')
-                                        }
-                                        }
-
+                                        onClick={setOpenTenantsDialog}
                                       />
                                       <DeleteIcon
                                         onClick={handleCosignerDelete}

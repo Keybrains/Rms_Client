@@ -148,7 +148,7 @@ const ApplicantSummary = () => {
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/propertyunit/rentals_property/${propertyType}`
+        `https://propertymanager.cloudpress.host/api/propertyunit/rentals_property/${propertyType}`
       );
       const data = await response.json();
       // Ensure that units are extracted correctly and set as an array
@@ -190,7 +190,7 @@ const ApplicantSummary = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("http://localhost:4000/api/rentals/allproperty")
+    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -250,7 +250,7 @@ const ApplicantSummary = () => {
 
   const tenantsData = async (number, status) => {
     // Construct the API URL
-    const apiUrl = `http://localhost:4000/api/applicant/applicant_get?tenant_mobileNumber=${number}&status=${status}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/applicant/applicant_get?tenant_mobileNumber=${number}&status=${status}`;
 
     try {
       // Fetch tenant data
@@ -299,7 +299,7 @@ const ApplicantSummary = () => {
     console.log(status, "status");
     console.log(id, "id");
     axios
-      .put(`http://localhost:4000/api/applicant/applicant/${id}/status`, status)
+      .put(`https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/status`, status)
       .catch((err) => {
         console.error(err);
       })
@@ -311,7 +311,7 @@ const ApplicantSummary = () => {
 
   const navigateToLease = (tenantID, entryIndex) => {
     axios
-      .get(`http://localhost:4000/api/applicant/applicant_summary/${id}`)
+      .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
       .then((response) => {
         const data = response.data.data;
 
@@ -319,7 +319,7 @@ const ApplicantSummary = () => {
         const rentalAddress = data.rental_adress;
         //console.log(rentalAddress, "Rental Addressss");
         axios
-          .get("http://localhost:4000/api/rentals/allproperty")
+          .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
           .then((response) => {
             const property = response.data.data;
             //console.log(property, "properties");
@@ -341,7 +341,7 @@ const ApplicantSummary = () => {
               });
               //console.log(matchedApplicant, "matchedApplicant");
               // axios
-              // .get("http://localhost:4000/api/tenant/tenant")
+              // .get("https://propertymanager.cloudpress.host/api/tenant/tenant")
               // .then((response) => {
               //   //console.log(response.data.data,'response.data.data');
               //   const tenant = response.data.data;
@@ -369,10 +369,10 @@ const ApplicantSummary = () => {
   };
   // const navigateToLease = () => {
   //   axios
-  //     .get("http://localhost:4000/api/applicant/applicant")
+  //     .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
   //     .then((applicants) => {
   //       axios
-  //         .get("http://localhost:4000/api/rentals/allproperty")
+  //         .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
   //         .then((properties) => {
   //           //console.log(applicants.data.data, "applicants");
   //           //console.log(properties.data.data, "properties");
@@ -404,10 +404,10 @@ const ApplicantSummary = () => {
 
   // useEffect(() => {
   //   axios
-  //     .get(`http://localhost:4000/api/applicant/applicant_summary/${id}`)
+  //     .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
   //     .then((applicants) => {
   //       axios
-  //         .get("http://localhost:4000/api/rentals/property")
+  //         .get("https://propertymanager.cloudpress.host/api/rentals/property")
   //         .then((properties) => {
   //           //console.log(applicants.data.data, "applicants");
   //           //console.log(properties.data.data, "properties");
@@ -439,12 +439,12 @@ const ApplicantSummary = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/api/applicant/applicant_summary/${id}`)
+      .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
       .then((applicants) => {
         console.log(applicants.data.data, "gggg");
 
         axios
-          .get("http://localhost:4000/api/rentals/property")
+          .get("https://propertymanager.cloudpress.host/api/rentals/property")
           .then((properties) => {
             //console.log(applicants.data.data, "applicants");
             //console.log(properties.data.data, "properties");
@@ -481,7 +481,7 @@ const ApplicantSummary = () => {
       //console.log(updatedApplicant, "updatedApplicant");
       axios
         .put(
-          `http://localhost:4000/api/applicant/applicant/${id}/checklist`,
+          `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/checklist`,
           updatedApplicant
         )
         .then((response) => {
@@ -509,7 +509,7 @@ const ApplicantSummary = () => {
 
     axios
       .put(
-        `http://localhost:4000/api/applicant/applicant/${id}/checklist`,
+        `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/checklist`,
         updatedApplicant
       )
       .then((response) => {
@@ -526,7 +526,7 @@ const ApplicantSummary = () => {
     try {
       // Step 1: Fetch data from the API
       const response = await axios.get(
-        `http://localhost:4000/api/applicant/applicant_summary/${id}`
+        `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
       );
 
       // Check if the response contains the data you expect
@@ -591,7 +591,7 @@ const ApplicantSummary = () => {
               account: fetchedData.data.account || "",
               nextDue_date: fetchedData.data.nextDue_date || "",
               memo: fetchedData.data.memo || "",
-              upload_file: fetchedData.data.upload_file || "",
+              // upload_file: fetchedData.data.upload_file || "",
               isrenton: fetchedData.data.isrenton || false,
               rent_paid: fetchedData.data.rent_paid || false,
               propertyOnRent: fetchedData.data.propertyOnRent || false,
@@ -629,8 +629,8 @@ const ApplicantSummary = () => {
               cash_flow: fetchedData.data.cash_flow || "",
               notes: fetchedData.data.notes || "",
     
-              recurring_charges: fetchedData.recurring_charges || {},
-              one_time_charges: fetchedData.one_time_charges || {},
+              // recurring_charges: fetchedData.recurring_charges || {},
+              // one_time_charges: fetchedData.one_time_charges || {},
             },
           ],
         };
@@ -638,7 +638,7 @@ const ApplicantSummary = () => {
         console.log(dataToSend, "hagfjg");
         // Step 3: Make a POST request to send the data to the server
         const postResponse = await axios.post(
-          "http://localhost:4000/api/tenant/tenant",
+          "https://propertymanager.cloudpress.host/api/tenant/tenant",
           dataToSend
         );
           // debugger
@@ -676,7 +676,7 @@ const ApplicantSummary = () => {
 
   const getApplicantData = async () => {
     await axios
-      .get("http://localhost:4000/api/applicant/applicant")
+      .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
       .then((response) => {
         console.log(response.data.data, "response.data.data");
         //console.log(response.data.data);
@@ -747,7 +747,7 @@ const ApplicantSummary = () => {
 
     axios
       .put(
-        `http://localhost:4000/api/applicant/applicant/${id}`,
+        `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}`,
         updatedApplicant
       )
       .catch((err) => {
@@ -964,7 +964,7 @@ const ApplicantSummary = () => {
       applicant_attachment: applicantFormik1.values.applicant_attachment,
     };
 
-    const apiUrl = `http://localhost:4000/api/applicant/applicant/note_attachment/${id}`;
+    const apiUrl = `https://propertymanager.cloudpress.host/api/applicant/applicant/note_attachment/${id}`;
 
     axios
       .put(apiUrl, data)
@@ -988,7 +988,7 @@ const ApplicantSummary = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/applicant/applicant_summary/${id}`
+          `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
         );
 
         if (response.data && response.data.data) {
@@ -1019,7 +1019,7 @@ const ApplicantSummary = () => {
 
     try {
       const apiUrl =
-        "http://localhost:4000/api/applicant/application/6565bbf79cb24516b8e50f95";
+        "https://propertymanager.cloudpress.host/api/applicant/application/6565bbf79cb24516b8e50f95";
 
       const updatedData = {
         // Add other fields as needed
@@ -1106,7 +1106,7 @@ const ApplicantSummary = () => {
   let sendApplicantMailData = async () => {
     setSendApplicantMailLoader(true);
     let responce = await axios.get(
-      `http://localhost:4000/api/applicant/applicant/mail/${id}`
+      `https://propertymanager.cloudpress.host/api/applicant/applicant/mail/${id}`
     );
     setSendApplicantMail(responce.data.data);
 
