@@ -134,9 +134,7 @@ const AddPayment = () => {
   useEffect(() => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
-    )
+    fetch(`http://localhost:4000/api/tenant/tenant-name/tenant/${rentAddress}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -203,7 +201,7 @@ const AddPayment = () => {
 
   const fetchTenantData = async () => {
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+      `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -220,9 +218,7 @@ const AddPayment = () => {
   };
 
   useEffect(() => {
-    fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
-    )
+    fetch("http://localhost:4000/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -269,6 +265,7 @@ const AddPayment = () => {
         rental_adress: rentalAddress,
         tenant_id: tenantid,
         entryIndex: tenantentryIndex,
+        memo: values.memo || "Payment",
 
         entries: generalledgerFormik.values.entries.map((entry) => ({
           account: entry.account,
@@ -279,7 +276,7 @@ const AddPayment = () => {
       };
       //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_payment", ///http://localhost:4000
+        "http://localhost:4000/api/payment/add_payment", ///http://localhost:4000
         updatedValues
       );
 
@@ -287,7 +284,7 @@ const AddPayment = () => {
         const id = response.data.data._id;
         if (id) {
           const pdfResponse = await axios.get(
-            `https://propertymanager.cloudpress.host/api/Payment/Payment_summary/${id}`,
+            `http://localhost:4000/api/Payment/Payment_summary/${id}`,
             { responseType: "blob" }
           );
           if (pdfResponse.status === 200 && printReceipt) {
@@ -468,7 +465,7 @@ const AddPayment = () => {
     if (mainId && paymentIndex) {
       axios
         .get(
-          `https://propertymanager.cloudpress.host/api/payment/payment_summary/${mainId}/payment/${paymentIndex}`
+          `http://localhost:4000/api/payment/payment_summary/${mainId}/payment/${paymentIndex}`
         )
         .then((response) => {
           const paymentData = response.data.data;
@@ -561,7 +558,7 @@ const AddPayment = () => {
 
       //console.log(updatedValues, "updatedValues");
 
-      const putUrl = `https://propertymanager.cloudpress.host/api/payment/payments/${mainId}/payment/${paymentIndex}`;
+      const putUrl = `http://localhost:4000/api/payment/payments/${mainId}/payment/${paymentIndex}`;
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
@@ -783,8 +780,9 @@ const AddPayment = () => {
                           name="memo"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
-                          value={generalledgerFormik.values.memo}
+                          value={generalledgerFormik.values.memo || "Payment"}
                         />
+
                         {generalledgerFormik.touched.memo &&
                         generalledgerFormik.errors.memo ? (
                           <div style={{ color: "red" }}>

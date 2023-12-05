@@ -26,7 +26,7 @@ import { jwtDecode } from "jwt-decode";
   
     const getOutstandData = async () => {
       try {
-        const response = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`);
+        const response = await axios.get(`http://localhost:4000/api/tenant/tenant_summary/${id}`);
         setoutstandDetails(response.data.data);
         setLoading(false);
       } catch (error) {

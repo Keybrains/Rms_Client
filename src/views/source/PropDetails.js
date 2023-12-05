@@ -83,7 +83,7 @@ const PropDetails = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`
+        `http://localhost:4000/api/rentals/rentals_summary/${id}`
       );
       setpropertyDetails(response.data.data);
       console.log(response.data.data, "response frirn simmary");
@@ -98,7 +98,7 @@ const PropDetails = () => {
       setLoading(false);
 
       const resp = await axios.get(`
-        https://propertymanager.cloudpress.host/api/newproparty/propropartytype
+        http://localhost:4000/api/newproparty/propropartytype
         `);
       console.log(resp, "resp");
 
@@ -294,7 +294,7 @@ const PropDetails = () => {
   const getUnitProperty = async (rentalId) => {
     await axios
       .get(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" +
+        "http://localhost:4000/api/propertyunit/propertyunit/" +
           rentalId
       )
       .then((res) => {
@@ -329,7 +329,7 @@ const PropDetails = () => {
     };
     await axios
       .put(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" +
+        "http://localhost:4000/api/propertyunit/propertyunit/" +
           id,
         updatedValues
       )
@@ -355,7 +355,7 @@ const PropDetails = () => {
 
     await axios
       .put(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" +
+        "http://localhost:4000/api/propertyunit/propertyunit/" +
           id,
         updatedValues
       )
@@ -384,7 +384,7 @@ const PropDetails = () => {
       if (willDelete) {
         axios
           .delete(
-            "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" +
+            "http://localhost:4000/api/propertyunit/propertyunit/" +
               id
           )
           .then((response) => {
@@ -422,7 +422,7 @@ const PropDetails = () => {
     console.log("formData", formData);
     try {
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit",
+        "http://localhost:4000/api/propertyunit/propertyunit",
         formData
       );
       if (response.data.statusCode === 200) {
@@ -471,7 +471,7 @@ const PropDetails = () => {
             prop_image:imagePath
           }
           
-          axios.put(`https://propertymanager.cloudpress.host/api/rentals/proparty_image/${id}/${entryIndex}`, image).then((response) => {
+          axios.put(`http://localhost:4000/api/rentals/proparty_image/${id}/${entryIndex}`, image).then((response) => {
             console.log(response.data.data, "updated data");
             getRentalsData();
             // setAddUnitDialogOpen(false);
@@ -564,11 +564,11 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="summary"
                       />
-                      <Tab
+                      {/* <Tab
                         label="Financial"
                         style={{ textTransform: "none" }}
                         value="financial"
-                      />
+                      /> */}
                       <Tab
                         label={`Units (${propertyUnit.length})`}
                         style={{ textTransform: "none" }}
@@ -579,11 +579,11 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="task"
                       />
-                      <Tab
+                      {/* <Tab
                         label="Event history"
                         style={{ textTransform: "none" }}
                         value="eventhistory"
-                      />
+                      /> */}
                       {console.log(propertyUnit, "property unit")}
                     </TabList>
                   </Box>
@@ -1575,7 +1575,7 @@ const PropDetails = () => {
                       </Table>
                     </div>
                   </TabPanel>
-                  <TabPanel value="financial">
+                  {/* <TabPanel value="financial">
                     <>
                       <Col
                         lg="6"
@@ -1856,7 +1856,7 @@ const PropDetails = () => {
                         </>
                       )}
                     </>
-                  </TabPanel>
+                  </TabPanel> */}
                   <TabPanel value="units">
                     {addUnitDialogOpen ? (
                       <>

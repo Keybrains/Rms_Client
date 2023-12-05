@@ -131,7 +131,7 @@ const AddCharge = () => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
+      `http://localhost:4000/api/tenant/tenant-name/tenant/${rentAddress}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -199,7 +199,7 @@ const AddCharge = () => {
 
   const fetchTenantData = async () => {
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+      `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -217,7 +217,7 @@ const AddCharge = () => {
 
   useEffect(() => {
     fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+      "http://localhost:4000/api/addaccount/find_accountname"
     )
       .then((response) => response.json())
       .then((data) => {
@@ -264,7 +264,7 @@ const AddCharge = () => {
         rental_adress: rentalAddress,
         tenant_id: tenantid,
         entryIndex: tenantentryIndex,
-        charges_memo: values.charges_memo,
+        charges_memo: values.charges_memo || "Charge",
         entries: generalledgerFormik.values.entries.map((entry) => ({
           charges_account: entry.charges_account,
           charges_amount: parseFloat(entry.charges_amount),
@@ -273,7 +273,7 @@ const AddCharge = () => {
       };
       //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_charges", //http://localhost:4000
+        "http://localhost:4000/api/payment/add_charges",
         updatedValues
       );
 
@@ -301,7 +301,7 @@ const AddCharge = () => {
       const updatedValues = {
         tenant_id: id,
         entryIndex: index,
-        charges_date: values.charges_date,
+        date: values.date,
         charges_amount: values.charges_amount,
         tenant_firstName: selectedRec,
         charges_attachment: arrayOfNames,
@@ -317,9 +317,9 @@ const AddCharge = () => {
       };
       //console.log(tenantId, "vaibhav");
 
-      //console.log(updatedValues, "updatedValues");
+      console.log(updatedValues, "updatedValues");
 
-      const putUrl = `https://propertymanager.cloudpress.host/api/payment/charges/${mainId}/charge/${chargeIndex}`;
+      const putUrl = `http://localhost:4000/api/payment/charges/${mainId}/charge/${chargeIndex}`;
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
@@ -405,18 +405,18 @@ const AddCharge = () => {
     if (mainId && chargeIndex) {
       axios
         .get(
-          `https://propertymanager.cloudpress.host/api/payment/charge_summary/${mainId}/charge/${chargeIndex}`
+          `http://localhost:4000/api/payment/charge_summary/${mainId}/charge/${chargeIndex}`
         )
         .then((response) => {
           const chargeData = response.data.data;
           setchargeData(chargeData);
-          //console.log(chargeData, "chargedata");
-          //console.log(chargeData.entries, "entries data");
+          console.log(chargeData, "chargedata");
+          console.log(chargeData.entries, "entries data");
           const formattedDate =
-            chargeData && chargeData.charges_date
-              ? new Date(chargeData.charges_date).toISOString().split("T")[0]
+            chargeData && chargeData.date
+              ? new Date(chargeData.date).toISOString().split("T")[0]
               : "";
-          //console.log(formattedDate, "formattedDate");
+          console.log(formattedDate, "formattedDate");
           const id = chargeData.tenant_id;
           setId(id);
           //console.log(id, "abcd");
@@ -431,7 +431,7 @@ const AddCharge = () => {
             // Handling when entriesData is an array
             generalledgerFormik.setValues({
               charges_amount: chargeData.charges_amount || "",
-              charges_date: formattedDate,
+              date: formattedDate,
               charges_memo: chargeData.charges_memo || "",
               entries: entriesData.map((entry) => ({
                 charges_account: entry.charges_account || "",
@@ -444,7 +444,7 @@ const AddCharge = () => {
             console.error("entriesData is not an array:", entriesData);
             generalledgerFormik.setValues({
               charges_amount: chargeData.charges_amount || "",
-              charges_date: formattedDate,
+              date: formattedDate,
               charges_memo: chargeData.charges_memo || "",
               // Assuming you want to use the single object received as the only entry
               entries: [
@@ -508,7 +508,7 @@ const AddCharge = () => {
                           name="date"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
-                          value={generalledgerFormik.values.charges_date}
+                          value={generalledgerFormik.values.date}
                         />
                         {generalledgerFormik.touched.date &&
                         generalledgerFormik.errors.date ? (
@@ -601,7 +601,7 @@ const AddCharge = () => {
                           name="charges_memo"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
-                          value={generalledgerFormik.values.charges_memo}
+                          value={generalledgerFormik.values.charges_memo || "Charge"}
                         />
                         {generalledgerFormik.touched.charges_memo &&
                         generalledgerFormik.errors.charges_memo ? (
@@ -758,7 +758,7 @@ const AddCharge = () => {
                                           id="input-unitadd"
                                           placeholder="$0.00"
                                           style={{ width: "80%" }}
-                                          type="number"
+                                          type="text"
                                           name={`entries[${index}].charges_amount`}
                                           onBlur={
                                             generalledgerFormik.handleBlur
@@ -766,6 +766,12 @@ const AddCharge = () => {
                                           onChange={
                                             generalledgerFormik.handleChange
                                           }
+                                          onInput={(e) => {
+                                            const inputValue = e.target.value;
+                                            const numericValue =
+                                              inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                            e.target.value = numericValue;
+                                          }}
                                           value={entries.charges_amount}
                                         />
                                         {generalledgerFormik.touched.entries &&

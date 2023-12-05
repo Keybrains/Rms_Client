@@ -125,7 +125,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/rentals")
+    fetch("http://localhost:4000/api/rentals/rentals")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -239,9 +239,7 @@ const Rentals = () => {
     const propTypes = [];
     console.log(propertyType, "first");
     axios
-      .get(
-        "https://propertymanager.cloudpress.host/api/newproparty/propropartytype"
-      )
+      .get("http://localhost:4000/api/newproparty/propropartytype")
       .then((data) => {
         // console.log(data.data, "Data from adding the account");
         // setPropertyData(data.data.data);
@@ -583,9 +581,7 @@ const Rentals = () => {
       "selectedPhotoresPreview"
     );
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      "https://propertymanager.cloudpress.host/api/newproparty/propropartytype"
-    )
+    fetch("http://localhost:4000/api/newproparty/propropartytype")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -603,9 +599,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      "https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember"
-    )
+    fetch("http://localhost:4000/api/addstaffmember/find_staffmember")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -628,9 +622,7 @@ const Rentals = () => {
     // console.log(id, entryIndex, "id && entry Id");
     if (id && entryIndex) {
       axios
-        .get(
-          `https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`
-        )
+        .get(`http://localhost:4000/api/rentals/rentals_summary/${id}`)
         .then((response) => {
           const propertysData = response.data.data;
           // setRentalsData(rentalsData); // Update state with the fetched data
@@ -739,10 +731,7 @@ const Rentals = () => {
 
   const getUnitData = async (id) => {
     await axios
-      .get(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" +
-          id
-      )
+      .get("http://localhost:4000/api/propertyunit/propertyunit/" + id)
       .then((res) => {
         // setUnitProperty(res.data.data);
         // console.log(res.data.data, "property unit");
@@ -783,7 +772,7 @@ const Rentals = () => {
         // createdAt:moment().format("YYYY-MM-DD"),
       };
 
-        //COMMERCIAL
+      //COMMERCIAL
 
       entriesArray.push(entriesObject);
 
@@ -805,7 +794,7 @@ const Rentals = () => {
       console.log(leaseObject, "leaseObject");
 
       const res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/rentals/rentals",
+        "http://localhost:4000/api/rentals/rentals",
         leaseObject
       );
       if (res.data.statusCode === 200) {
@@ -851,17 +840,17 @@ const Rentals = () => {
           rentalOwnerFormik.values.rentalOwner_businessNumber,
         entries: entriesArray,
       };
-      debugger
+      debugger;
       console.log(leaseObject, "leaseObject");
 
       const res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/rentals/rentals",
+        "http://localhost:4000/api/rentals/rentals",
         leaseObject
       );
       if (res.data.statusCode === 200) {
         swal("Success!", "Property Added Successfully", "success");
         // navigate("/admin/RentalownerTable");
-        console.log(res.data.data,'form response')
+        console.log(res.data.data, "form response");
         // console.log(res.data.data, "res.data.data after post");
       } else {
         swal("", res.data.message, "error");
@@ -879,12 +868,12 @@ const Rentals = () => {
     //   if (id === undefined) {
     //     console.log(values, "values after submit");
     //     const res = await axios.post(
-    //       "https://propertymanager.cloudpress.host/api/rentals/rentals",
+    //       "http://localhost:4000/api/rentals/rentals",
     //       values
     //     );
     //     handleResponse(res);
     //   } else {
-    //     const editUrl = `https://propertymanager.cloudpress.host/api/rentals/rentals/${id}`;
+    //     const editUrl = `http://localhost:4000/api/rentals/rentals/${id}`;
     //     const res = await axios.put(editUrl, values);
     //     handleResponse(res);
     //   }
@@ -897,7 +886,7 @@ const Rentals = () => {
     // }
   };
   const editProperty = async (id) => {
-    const editUrl = `https://propertymanager.cloudpress.host/api/rentals/rental/${id}/entry/${entryIndex}`;
+    const editUrl = `http://localhost:4000/api/rentals/rental/${id}/entry/${entryIndex}`;
     const entriesArray = [];
     if (propType === "Residential") {
       const entriesObject = {
@@ -907,7 +896,6 @@ const Rentals = () => {
         rental_state: rentalsFormik.values.entries[0].rental_state,
         rental_country: rentalsFormik.values.entries[0].rental_country,
         rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-
 
         rentalOwner_operatingAccount:
           rentalsFormik.values.entries[0].rentalOwner_operatingAccount,
@@ -1162,7 +1150,11 @@ const Rentals = () => {
                           </label>
                           <br />
                           <br />
-                          <Dropdown isOpen={prodropdownOpen} toggle={toggle1} disabled={id && entryIndex}>
+                          <Dropdown
+                            isOpen={prodropdownOpen}
+                            toggle={toggle1}
+                            disabled={id && entryIndex}
+                          >
                             <DropdownToggle caret>
                               {selectedProp && selectedProp.propertysub_type
                                 ? selectedProp.propertysub_type
@@ -1536,7 +1528,12 @@ const Rentals = () => {
                                   <br />
                                 </div>
                                 {showRentalOwnerTable && rentalownerData && (
-                                  <div className="RentalOwnerTable">
+                                  <div
+                                    style={{
+                                      maxHeight: "400px",
+                                      overflow: "hidden",
+                                    }}
+                                  >
                                     <Input
                                       type="text"
                                       placeholder="Search by first and last name"
@@ -1550,121 +1547,150 @@ const Rentals = () => {
                                         borderRadius: "4px",
                                       }}
                                     />
-                                    <table
+                                    <div
                                       style={{
-                                        width: "100%",
-                                        borderCollapse: "collapse",
+                                        maxHeight: "calc(400px - 40px)",
+                                        overflowY: "auto",
                                         border: "1px solid #ddd",
                                       }}
                                     >
-                                      <thead>
-                                        <tr>
-                                          <th>RentalOwner Name</th>
-                                          <th>Select</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {Array.isArray(rentalownerData) &&
-                                          rentalownerData
-                                            .filter((rentalOwner) => {
-                                              const fullName = `${rentalOwner.rentalOwner_firstName} ${rentalOwner.rentalOwner_lastName}`;
-                                              return fullName
-                                                .toLowerCase()
-                                                .includes(
-                                                  searchQuery.toLowerCase()
-                                                );
-                                            })
-                                            .map((rentalOwner, index) => (
-                                              <tr
-                                                key={index}
-                                                style={{
-                                                  border: "1px solid #ddd",
-                                                }}
-                                              >
-                                                {/* {console.log(
+                                      <table
+                                        style={{
+                                          width: "100%",
+                                          borderCollapse: "collapse",
+                                        }}
+                                      >
+                                        <thead>
+                                          <tr>
+                                            <th
+                                              style={{
+                                                padding: "15px",
+                                              }}
+                                            >
+                                              RentalOwner Name
+                                            </th>
+                                            <th
+                                              style={{
+                                                padding: "15px",
+                                              }}
+                                            >
+                                              Select
+                                            </th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {Array.isArray(rentalownerData) &&
+                                            rentalownerData
+                                              .filter((rentalOwner) => {
+                                                const fullName = `${rentalOwner.rentalOwner_firstName} ${rentalOwner.rentalOwner_lastName}`;
+                                                return fullName
+                                                  .toLowerCase()
+                                                  .includes(
+                                                    searchQuery.toLowerCase()
+                                                  );
+                                              })
+                                              .map((rentalOwner, index) => (
+                                                <tr
+                                                  key={index}
+                                                  style={{
+                                                    border: "1px solid #ddd",
+                                                  }}
+                                                >
+                                                  {/* {console.log(
                                                   rentalOwner,
                                                   "revsefw"
                                                 )} */}
-                                                <td>
-                                                  {
-                                                    rentalOwner.rentalOwner_firstName
-                                                  }
-                                                  &nbsp;
-                                                  {
-                                                    rentalOwner.rentalOwner_lastName
-                                                  }
-                                                  {`(${rentalOwner.rentalOwner_phoneNumber})`}
-                                                </td>
-                                                <td>
-                                                  <Checkbox
-                                                    type="checkbox"
-                                                    name="rentalOwner"
-                                                    id={
-                                                      rentalOwner.rentalOwner_phoneNumber
-                                                    }
-                                                    checked={
-                                                      rentalOwner.rentalOwner_phoneNumber ===
-                                                      checkedCheckbox
-                                                    }
-                                                    onChange={(event) => {
-                                                      setCheckedCheckbox(
-                                                        rentalOwner.rentalOwner_phoneNumber
-                                                      );
-                                                      // console.log(rentalOwner, "rentalownerData");
-                                                      rentalOwnerFormik.setValues(
-                                                        {
-                                                          rentalOwner_firstName:
-                                                            rentalOwner.rentalOwner_firstName,
-                                                          rentalOwner_lastName:
-                                                            rentalOwner.rentalOwner_lastName,
-                                                          rentalOwner_companyName:
-                                                            rentalOwner.rentalOwner_companyName,
-                                                          rentalOwner_primaryEmail:
-                                                            rentalOwner.rentalOwner_primaryEmail,
-                                                          rentalOwner_phoneNumber:
-                                                            rentalOwner.rentalOwner_phoneNumber,
-                                                          rentalOwner_homeNumber:
-                                                            rentalOwner.rentalOwner_homeNumber,
-                                                          rentalOwner_businessNumber:
-                                                            rentalOwner.rentalOwner_businessNumber,
-                                                        }
-                                                      );
-
-                                                      const rentalOwnerInfo = `${
-                                                        rentalOwner.rentalOwner_firstName ||
-                                                        ""
-                                                      } ${
-                                                        rentalOwner.rentalOwner_lastName ||
-                                                        ""
-                                                      } ${
-                                                        rentalOwner.rentalOwner_companyName ||
-                                                        ""
-                                                      } ${
-                                                        rentalOwner.rentalOwner_primaryEmail ||
-                                                        ""
-                                                      } ${
-                                                        rentalOwner.rentalOwner_phoneNumber ||
-                                                        ""
-                                                      } ${
-                                                        rentalOwner.rentalOwner_homeNumber ||
-                                                        ""
-                                                      } ${
-                                                        rentalOwner.rentalOwner_businessNumber ||
-                                                        ""
-                                                      }`;
-
-                                                      handleCheckboxChange(
-                                                        event,
-                                                        rentalOwnerInfo,
-                                                        rentalOwner.rentalOwner_phoneNumber
-                                                      );
+                                                  <td
+                                                    style={{
+                                                      paddingLeft: "15px",
+                                                      paddingTop: "15px",
                                                     }}
-                                                  />
-                                                </td>
-                                              </tr>
-                                            ))}
-                                      </tbody>
-                                    </table>
+                                                  >
+                                                    {
+                                                      rentalOwner.rentalOwner_firstName
+                                                    }
+                                                    &nbsp;
+                                                    {
+                                                      rentalOwner.rentalOwner_lastName
+                                                    }
+                                                    {`(${rentalOwner.rentalOwner_phoneNumber})`}
+                                                  </td>
+                                                  <td
+                                                    style={{
+                                                      paddingLeft: "15px",
+                                                      paddingTop: "15px",
+                                                    }}
+                                                  >
+                                                    <Checkbox
+                                                      type="checkbox"
+                                                      name="rentalOwner"
+                                                      id={
+                                                        rentalOwner.rentalOwner_phoneNumber
+                                                      }
+                                                      checked={
+                                                        rentalOwner.rentalOwner_phoneNumber ===
+                                                        checkedCheckbox
+                                                      }
+                                                      onChange={(event) => {
+                                                        setCheckedCheckbox(
+                                                          rentalOwner.rentalOwner_phoneNumber
+                                                        );
+                                                        // console.log(rentalOwner, "rentalownerData");
+                                                        rentalOwnerFormik.setValues(
+                                                          {
+                                                            rentalOwner_firstName:
+                                                              rentalOwner.rentalOwner_firstName,
+                                                            rentalOwner_lastName:
+                                                              rentalOwner.rentalOwner_lastName,
+                                                            rentalOwner_companyName:
+                                                              rentalOwner.rentalOwner_companyName,
+                                                            rentalOwner_primaryEmail:
+                                                              rentalOwner.rentalOwner_primaryEmail,
+                                                            rentalOwner_phoneNumber:
+                                                              rentalOwner.rentalOwner_phoneNumber,
+                                                            rentalOwner_homeNumber:
+                                                              rentalOwner.rentalOwner_homeNumber,
+                                                            rentalOwner_businessNumber:
+                                                              rentalOwner.rentalOwner_businessNumber,
+                                                          }
+                                                        );
+
+                                                        const rentalOwnerInfo = `${
+                                                          rentalOwner.rentalOwner_firstName ||
+                                                          ""
+                                                        } ${
+                                                          rentalOwner.rentalOwner_lastName ||
+                                                          ""
+                                                        } ${
+                                                          rentalOwner.rentalOwner_companyName ||
+                                                          ""
+                                                        } ${
+                                                          rentalOwner.rentalOwner_primaryEmail ||
+                                                          ""
+                                                        } ${
+                                                          rentalOwner.rentalOwner_phoneNumber ||
+                                                          ""
+                                                        } ${
+                                                          rentalOwner.rentalOwner_homeNumber ||
+                                                          ""
+                                                        } ${
+                                                          rentalOwner.rentalOwner_businessNumber ||
+                                                          ""
+                                                        }`;
+
+                                                        handleCheckboxChange(
+                                                          event,
+                                                          rentalOwnerInfo,
+                                                          rentalOwner.rentalOwner_phoneNumber
+                                                        );
+                                                      }}
+                                                    />
+                                                  </td>
+                                                </tr>
+                                              ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
                                     <br />
                                   </div>
                                 )}
@@ -2555,6 +2581,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor={`input-unit-${residentialIndex}`}
+                                        style={{ paddingTop: "25px" }}
                                       >
                                         Units *
                                       </label>
@@ -2616,6 +2643,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
+                                        style={{ paddingTop: "25px" }}
                                       >
                                         Unit Address *
                                       </label>
@@ -2651,12 +2679,13 @@ const Rentals = () => {
                                       </div>
                                     ) : null} */}
                                     </FormGroup>
-                                  </Col>{" "}
+                                  </Col>
                                   <Col lg="3">
                                     <FormGroup>
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
+                                        style={{ paddingTop: "25px" }}
                                       >
                                         SQFT
                                       </label>
@@ -2696,12 +2725,6 @@ const Rentals = () => {
                                   </Col>
                                   <Col lg="8">
                                     <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-country"
-                                      >
-                                        Rooms
-                                      </label>
                                       <br />
                                       {/* <div style={{ display: "flex" }}>
                                       {console.log(baddropdownOpen, "clg")}
@@ -2981,171 +3004,182 @@ const Rentals = () => {
                                             />
                                           </FormGroup>
                                         </Col>
-                                        <Col lg="2">
-                                          <FormGroup>
-                                            <label
-                                              className="form-control-label"
-                                              htmlFor="input-unitadd"
-                                            >
-                                              Photo
-                                            </label>
-                                            <span
-                                              onClick={togglePhotoresDialog}
-                                              style={{
-                                                cursor: "pointer",
-                                                fontSize: "14px",
-                                                fontFamily: "monospace",
-                                                color: "blue",
-                                              }}
-                                            >
-                                              {" "}
-                                              <br />
-                                              <input
-                                                type="file"
-                                                className="form-control-file d-none"
-                                                accept="image/*"
-                                                multiple
-                                                id={`propertyres_image_${residentialIndex}`}
-                                                name={`propertyres_image_${residentialIndex}`}
-                                                onChange={(e) => {
-                                                  const file = [
-                                                    ...e.target.files,
-                                                  ];
-                                                  fileData(
-                                                    file,
-                                                    "propertyres_image",
-                                                    residentialIndex
-                                                  );
-
-                                                  if (file.length > 0) {
-                                                    const allImages = file.map(
-                                                      (file) => {
-                                                        return URL.createObjectURL(
-                                                          file
-                                                        );
-                                                      }
-                                                    );
-                                                    // console.log(
-                                                    //   residentialIndex,
-                                                    //   "indexxxxxx"
-                                                    // );
-                                                    if (
-                                                      residentialImage[
-                                                        residentialIndex
-                                                      ]
-                                                    ) {
-                                                      setResidentialImage([
-                                                        ...residentialImage.slice(
-                                                          0,
-                                                          residentialIndex
-                                                        ),
-                                                        [
-                                                          ...residentialImage[
-                                                            residentialIndex
-                                                          ],
-                                                          ...allImages,
-                                                        ],
-                                                        ...residentialImage.slice(
-                                                          1 + residentialIndex
-                                                        ),
-                                                      ]);
-                                                    } else {
-                                                      setResidentialImage([
-                                                        ...allImages,
-                                                      ]);
-                                                    }
-                                                  } else {
-                                                    setResidentialImage([
-                                                      ...residentialImage,
-                                                    ]);
-                                                    // )
-                                                  }
-                                                }}
-                                              />
-                                              <label
-                                                htmlFor={`propertyres_image_${residentialIndex}`}
-                                              >
-                                                <b style={{ fontSize: "20px" }}>
-                                                  +
-                                                </b>{" "}
-                                                Add
-                                              </label>
-                                              {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
-                                            </span>
-                                          </FormGroup>
-                                        </Col>
                                       </Row>
                                       &nbsp;&nbsp;
                                     </FormGroup>
                                   </Col>
-                                  <Row>
+                                  <Col lg="5">
                                     <div
-                                      className="mt-3 d-flex"
                                       style={{
-                                        justifyContent: "center",
-                                        flexWrap: "wrap", // Allow images to wrap to the next row
+                                        display: "flex",
+                                        flexDirection: "row",
                                       }}
                                     >
-                                      {residentialImage[residentialIndex] &&
-                                        residentialImage[residentialIndex]
-                                          .length > 0 &&
-                                        residentialImage[residentialIndex].map(
-                                          (residentialImage) => (
-                                            <div
-                                              key={residentialImage}
-                                              style={{
-                                                position: "relative",
-                                                width: "100px",
-                                                height: "100px",
-                                                margin: "10px",
-                                                display: "flex",
-                                                flexDirection: "column",
-                                              }}
-                                            >
-                                              <img
-                                                src={residentialImage}
-                                                alt=""
+                                      <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                        }}
+                                      >
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-unitadd"
+                                        >
+                                          Photo
+                                        </label>
+                                        <span
+                                          onClick={togglePhotoresDialog}
+                                          style={{
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontFamily: "monospace",
+                                            color: "blue",
+                                          }}
+                                        >
+                                          {" "}
+                                          <br />
+                                          <input
+                                            type="file"
+                                            className="form-control-file d-none"
+                                            accept="image/*"
+                                            multiple
+                                            id={`propertyres_image_${residentialIndex}`}
+                                            name={`propertyres_image_${residentialIndex}`}
+                                            onChange={(e) => {
+                                              const file = [...e.target.files];
+                                              fileData(
+                                                file,
+                                                "propertyres_image",
+                                                residentialIndex
+                                              );
+
+                                              if (file.length > 0) {
+                                                const allImages = file.map(
+                                                  (file) => {
+                                                    return URL.createObjectURL(
+                                                      file
+                                                    );
+                                                  }
+                                                );
+                                                // console.log(
+                                                //   residentialIndex,
+                                                //   "indexxxxxx"
+                                                // );
+                                                if (
+                                                  residentialImage[
+                                                    residentialIndex
+                                                  ]
+                                                ) {
+                                                  setResidentialImage([
+                                                    ...residentialImage.slice(
+                                                      0,
+                                                      residentialIndex
+                                                    ),
+                                                    [
+                                                      ...residentialImage[
+                                                        residentialIndex
+                                                      ],
+                                                      ...allImages,
+                                                    ],
+                                                    ...residentialImage.slice(
+                                                      1 + residentialIndex
+                                                    ),
+                                                  ]);
+                                                } else {
+                                                  setResidentialImage([
+                                                    ...allImages,
+                                                  ]);
+                                                }
+                                              } else {
+                                                setResidentialImage([
+                                                  ...residentialImage,
+                                                ]);
+                                                // )
+                                              }
+                                            }}
+                                          />
+                                          <label
+                                            htmlFor={`propertyres_image_${residentialIndex}`}
+                                          >
+                                            <b style={{ fontSize: "20px" }}>
+                                              +
+                                            </b>{" "}
+                                            Add
+                                          </label>
+                                          {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                                        </span>
+                                      </FormGroup>
+
+                                      <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexWrap: "wrap",
+                                          paddingLeft: "10px",
+                                        }}
+                                      >
+                                        <div className="d-flex">
+                                          {residentialImage[residentialIndex] &&
+                                            residentialImage[residentialIndex]
+                                              .length > 0 &&
+                                            residentialImage[
+                                              residentialIndex
+                                            ].map((residentialImage) => (
+                                              <div
+                                                key={residentialImage}
                                                 style={{
+                                                  position: "relative",
                                                   width: "100px",
                                                   height: "100px",
-                                                  maxHeight: "100%",
-                                                  maxWidth: "100%",
-                                                  borderRadius: "10px",
-                                                  // objectFit: "cover",
+                                                  margin: "10px",
+                                                  display: "flex",
+                                                  flexDirection: "column",
                                                 }}
-                                                onClick={() => {
-                                                  setSelectedImage(
-                                                    residentialImage
-                                                  );
-                                                  setOpen(true);
-                                                }}
-                                              />
-                                              <ClearIcon
-                                                style={{
-                                                  cursor: "pointer",
-                                                  alignSelf: "flex-start",
-                                                  position: "absolute",
-                                                  top: "-12px",
-                                                  right: "-12px",
-                                                }}
-                                                onClick={() =>
-                                                  clearSelectedPhoto(
-                                                    residentialIndex,
-                                                    residentialImage,
-                                                    "propertyres_image"
-                                                  )
-                                                }
-                                              />
-                                            </div>
-                                          )
-                                        )}
-                                      <OpenImageDialog
-                                        open={open}
-                                        setOpen={setOpen}
-                                        selectedImage={selectedImage}
-                                      />
+                                              >
+                                                <img
+                                                  src={residentialImage}
+                                                  alt=""
+                                                  style={{
+                                                    width: "100px",
+                                                    height: "100px",
+                                                    maxHeight: "100%",
+                                                    maxWidth: "100%",
+                                                    borderRadius: "10px",
+                                                    // objectFit: "cover",
+                                                  }}
+                                                  onClick={() => {
+                                                    setSelectedImage(
+                                                      residentialImage
+                                                    );
+                                                    setOpen(true);
+                                                  }}
+                                                />
+                                                <ClearIcon
+                                                  style={{
+                                                    cursor: "pointer",
+                                                    alignSelf: "flex-start",
+                                                    position: "absolute",
+                                                    top: "-12px",
+                                                    right: "-12px",
+                                                  }}
+                                                  onClick={() =>
+                                                    clearSelectedPhoto(
+                                                      residentialIndex,
+                                                      residentialImage,
+                                                      "propertyres_image"
+                                                    )
+                                                  }
+                                                />
+                                              </div>
+                                            ))}
+                                          <OpenImageDialog
+                                            open={open}
+                                            setOpen={setOpen}
+                                            selectedImage={selectedImage}
+                                          />
+                                        </div>
+                                      </FormGroup>
                                     </div>
-                                  </Row>
+                                  </Col>
                                 </Row>
                               </div>
                             )
@@ -3328,9 +3362,21 @@ const Rentals = () => {
                                       ) : null} */}
                                     </FormGroup>
                                   </Col>
-                                  <Col lg="4"></Col>
-                                  <Col lg="2">
-                                    <FormGroup>
+
+                                  <Col lg="5">
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                      
+                                      }}
+                                    >
+                                      <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                        }}
+                                      >
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
@@ -3407,74 +3453,73 @@ const Rentals = () => {
                                         </label>
                                       </span>
                                     </FormGroup>
-                                  </Col>
+                                    <FormGroup>
+                                      <div
+                                        className="d-flex"
+                                       
+                                      >
+                                        {commercialImage[index] &&
+                                          commercialImage[index].length > 0 &&
+                                          commercialImage[index].map(
+                                            (commercialImage) => (
+                                              <div
+                                                key={commercialImage}
+                                                style={{
+                                                  position: "relative",
+                                                  width: "100px",
+                                                  height: "100px",
+                                                  margin: "10px",
+                                                  display: "flex",
+                                                  flexDirection: "column",
+                                                }}
+                                              >
+                                                <img
+                                                  src={commercialImage}
+                                                  alt=""
+                                                  style={{
+                                                    width: "100px",
+                                                    height: "100px",
+                                                    maxHeight: "100%",
+                                                    maxWidth: "100%",
+                                                    borderRadius: "10px",
 
-                                  <div
-                                    className="mt-3 d-flex"
-                                    style={{
-                                      justifyContent: "center",
-                                      flexWrap: "wrap", // Allow images to wrap to the next row
-                                    }}
-                                  >
-                                    {commercialImage[index] &&
-                                      commercialImage[index].length > 0 &&
-                                      commercialImage[index].map(
-                                        (commercialImage) => (
-                                          <div
-                                            key={commercialImage}
-                                            style={{
-                                              position: "relative",
-                                              width: "100px",
-                                              height: "100px",
-                                              margin: "10px",
-                                              display: "flex",
-                                              flexDirection: "column",
-                                            }}
-                                          >
-                                            <img
-                                              src={commercialImage}
-                                              alt=""
-                                              style={{
-                                                width: "100px",
-                                                height: "100px",
-                                                maxHeight: "100%",
-                                                maxWidth: "100%",
-                                                borderRadius: "10px",
-
-                                                // objectFit: "cover",
-                                              }}
-                                              onClick={() => {
-                                                setSelectedImage(
-                                                  commercialImage
-                                                );
-                                                setOpen(true);
-                                              }}
-                                            />
-                                            <ClearIcon
-                                              style={{
-                                                cursor: "pointer",
-                                                alignSelf: "flex-start",
-                                                position: "absolute",
-                                                top: "-12px",
-                                                right: "-12px",
-                                              }}
-                                              onClick={() =>
-                                                clearSelectedPhoto(
-                                                  index,
-                                                  commercialImage,
-                                                  "property_image"
-                                                )
-                                              }
-                                            />
-                                          </div>
-                                        )
-                                      )}
-                                    <OpenImageDialog
-                                      open={open}
-                                      setOpen={setOpen}
-                                      selectedImage={selectedImage}
-                                    />
+                                                    // objectFit: "cover",
+                                                  }}
+                                                  onClick={() => {
+                                                    setSelectedImage(
+                                                      commercialImage
+                                                    );
+                                                    setOpen(true);
+                                                  }}
+                                                />
+                                                <ClearIcon
+                                                  style={{
+                                                    cursor: "pointer",
+                                                    alignSelf: "flex-start",
+                                                    position: "absolute",
+                                                    top: "-12px",
+                                                    right: "-12px",
+                                                  }}
+                                                  onClick={() =>
+                                                    clearSelectedPhoto(
+                                                      index,
+                                                      commercialImage,
+                                                      "property_image"
+                                                    )
+                                                  }
+                                                />
+                                              </div>
+                                            )
+                                          )}
+                                        <OpenImageDialog
+                                          open={open}
+                                          setOpen={setOpen}
+                                          selectedImage={selectedImage}
+                                        />
+                                      </div>
+                                    </FormGroup>
                                   </div>
+                                  </Col>
                                 </Row>
                               </div>
                             )

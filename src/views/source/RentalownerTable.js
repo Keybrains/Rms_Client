@@ -65,7 +65,7 @@ const RentalownerTable = () => {
   const fetchRentalsData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/rentalowner/rentalowner"
+        "http://localhost:4000/api/rentalowner/rentalowner"
       );
       if (response.data && Array.isArray(response.data.data)) {
         setLoader(false);
@@ -89,7 +89,7 @@ const RentalownerTable = () => {
 
   const editTenantData = async (id, updatedData) => {
     try {
-      const editUrl = `https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`;
+      const editUrl = `http://localhost:4000/api/rentalowner/rentalowner/${id}`;
       //console.log("Edit URL:", editUrl);
       //console.log("Property ID:", id);
       //console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -133,7 +133,7 @@ const RentalownerTable = () => {
       if (willDelete) {
         axios
           .delete(
-            "https://propertymanager.cloudpress.host/api/rentalowner/delete_rentalowner",
+            "http://localhost:4000/api/rentalowner/delete_rentalowner",
             {
               data: { _id: id },
             }

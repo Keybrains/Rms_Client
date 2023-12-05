@@ -13,7 +13,7 @@ const RentalHeader = () => {
         }}
       >
         {/* Mask */}
-        <span className="mask bg-gradient-default opacity-8" />
+        <span className="mask bg-gradient-info opacity-8" />
         {/* Header container */}
         <Container className=" align-items-center" fluid>
           <Row>

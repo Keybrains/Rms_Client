@@ -57,6 +57,9 @@ import { BloodtypeOutlined } from "@mui/icons-material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DoneIcon from "@mui/icons-material/Done";
 import { Modal } from "react-bootstrap";
+import jsPDF from "jspdf";
+import Img from "assets/img/theme/team-4-800x800.jpg";
+
 
 const RentRollDetail = () => {
   const { tenantId, entryIndex } = useParams();
@@ -76,13 +79,31 @@ const RentRollDetail = () => {
   const [balance, setBalance] = useState("");
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
   const [loader, setLoader] = React.useState(true);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const toggle = () => setDropdownOpen((prevState) => !prevState);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick2 = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleOptionClick = (option) => {
+    // Perform actions based on the selected option
+    generatePDF(option);
+    handleClose();
+  };
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
         const response = await fetch(
-          `https://propertymanager.cloudpress.host/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
+          `http://localhost:4000/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -118,7 +139,7 @@ const RentRollDetail = () => {
   //     navigate("/payment-page");
   //   }
   // };
-  const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
   const id = tenantId;
   const entry = entryIndex;
@@ -143,7 +164,7 @@ const RentRollDetail = () => {
 
   const navigateToSummary = async (tenantId, entryIndex) => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -167,7 +188,7 @@ const RentRollDetail = () => {
   };
 
   const navigateToTenant = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -192,7 +213,7 @@ const RentRollDetail = () => {
 
   const navigateToFinancial = async () => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -216,7 +237,7 @@ const RentRollDetail = () => {
 
   // const tenantsData = async () => {
   //   // Construct the API URL
-  //   const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+  //   const apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
 
   //   try {
   //     // Fetch tenant data
@@ -240,9 +261,9 @@ const RentRollDetail = () => {
     let apiUrl;
 
     if (unit === undefined) {
-      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+      apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
     } else {
-      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
+      apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
       console.log(apiUrl, "apiUrl");
     }
 
@@ -337,7 +358,7 @@ const RentRollDetail = () => {
   };
   const doSomething = async () => {
     let responce = await axios.get(
-      "https://propertymanager.cloudpress.host/api/tenant/tenants"
+      "http://localhost:4000/api/tenant/tenants"
     );
     const data = responce.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
@@ -353,17 +374,19 @@ const RentRollDetail = () => {
     const today = new Date();
     const start = new Date(startDate);
     const end = new Date(endDate);
-
+  
     if (today >= start && today <= end) {
-      return "ACTIVE";
+      return 'Active';
     } else if (today < start) {
-      return "FUTURE";
+      return 'FUTURE';
+    } else if (today > end) {
+      return 'EXPIRED';
     } else {
-      return "-"; // Change this to suit your requirement for other cases
+      return '-';
     }
   };
   // const getGeneralLedgerData = async () => {
-  //   const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+  //   const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
 
   //   try {
   //     const response = await axios.get(apiUrl);
@@ -384,7 +407,7 @@ const RentRollDetail = () => {
   //   }
   // };
   const getGeneralLedgerData = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+    const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
     try {
       const response = await axios.get(apiUrl);
       setLoader(false);
@@ -418,7 +441,7 @@ const RentRollDetail = () => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/payment/delete_charge/${chargeId}/${chargeIndex}`
+            `http://localhost:4000/api/payment/delete_charge/${chargeId}/${chargeIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -479,7 +502,7 @@ const RentRollDetail = () => {
 
     axios
       .put(
-        `https://propertymanager.cloudpress.host/api/tenant/moveout/${tenantId}/${entryIndex}`,
+        `http://localhost:4000/api/tenant/moveout/${tenantId}/${entryIndex}`,
         updatedApplicant
       )
       .then((res) => {
@@ -495,6 +518,130 @@ const RentRollDetail = () => {
         swal("Error", "An error occurred while Move-out", "error");
         console.error(err);
       });
+  };
+
+
+   // Function to generate PDF from table data
+   const generatePDF = (selectedOption) => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(20);
+    doc.text("Tenant Statement", 75, 16);
+    doc.addImage(Img, "JPEG", 166, 10, 30, 15);
+    const rentalfirstname =
+      tenantDetails.tenant_firstName + " " + tenantDetails.tenant_lastName;
+    doc.setFontSize(10);
+    doc.text(rentalfirstname, 15, 40);
+    const rentaladress = tenantDetails.entries.rental_adress;
+    doc.setFontSize(10);
+    doc.text(rentaladress, 15, 45);
+    const rentalunit =
+      tenantDetails.entries.rental_adress +
+      " - " +
+      tenantDetails.entries.rental_units;
+    doc.setFontSize(8);
+    doc.text(rentalunit, 15, 65);
+    doc.setFontSize(15);
+    doc.text("Statement", 15, 72);
+    const tableStartY = 75;
+
+    const today = new Date(); // Get current date
+    let startDate;
+
+    // Calculate the start date based on the selected option
+    switch (selectedOption) {
+      case "Last 30 days":
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 30);
+        break;
+      case "Last 3 months":
+        startDate = new Date(today);
+        startDate.setMonth(today.getMonth() - 3);
+        break;
+      case "Last 12 months":
+        startDate = new Date(today);
+        startDate.setFullYear(today.getFullYear() - 1);
+        break;
+      case "All transactions":
+        startDate = null; // If all transactions are needed, set startDate to null
+        break;
+      default:
+        startDate = null;
+        break;
+    }
+
+    let filteredData = GeneralLedgerData;
+
+    if (startDate) {
+      filteredData = GeneralLedgerData.filter((generalledger) => {
+        const ledgerDate = new Date(generalledger.date);
+        return ledgerDate >= startDate && ledgerDate <= today;
+      });
+    }
+
+    const tableData = filteredData
+      .map((generalledger) => {
+        return generalledger.entries.map((entry) => [
+          formatDateWithoutTime(generalledger.date) || "N/A",
+          generalledger.type,
+          generalledger.type === "Charge"
+            ? entry.charges_account
+            : entry.account,
+          generalledger.type === "Charge"
+            ? generalledger.charges_memo
+            : generalledger.memo,
+          generalledger.type === "Charge" ? "$" + entry.charges_amount : "-",
+          generalledger.type === "Payment" ? "$" + entry.amount : "-",
+          entry.balance !== undefined
+            ? entry.balance >= 0
+              ? `$${entry.balance}`
+              : `$(${Math.abs(entry.balance)})`
+            : "0",
+        ]);
+      })
+      .flat();
+
+      const firstBalance = tableData.length > 0 ? tableData[0][6] : "0";
+      tableData.push([
+        {
+          content: "Balance Due",
+          colSpan: 1,
+          styles: { fontStyle: "bold", halign: "left" },
+        },
+        "",
+        "",
+        "",
+        "",
+        "",
+        firstBalance,
+      ]);
+
+    doc.autoTable({
+      startY: tableStartY,
+      head: [
+        ["Date", "Type", "Account", "Memo", "Increase", "Decrease", "Balance"],
+      ],
+      body: tableData,
+      didDrawCell: (data) => {
+        if (data.row.index === tableData.length - 1) {
+          // Draw lines above and below "Balance Due" row
+          doc.setLineWidth(1);
+          doc.line(
+            data.cell.x,
+            data.cell.y,
+            data.cell.x + data.cell.width,
+            data.cell.y
+          );
+          doc.line(
+            data.cell.x,
+            data.cell.y + data.cell.height,
+            data.cell.x + data.cell.width,
+            data.cell.y + data.cell.height
+          );
+        }
+      },
+    });
+    doc.save("general_ledger.pdf");
   };
 
   return (
@@ -1029,6 +1176,40 @@ const RentRollDetail = () => {
                             Enter Charge
                           </Button>
                         </Col>
+                      </Row>
+                      <br />
+                      <Row
+                        style={{ display: "flex", justifyContent: "flex-end" }}
+                      >
+                        <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+                          <DropdownToggle caret>Export</DropdownToggle>
+                          <DropdownMenu>
+                            <DropdownItem
+                              onClick={() => handleOptionClick("Last 30 days")}
+                            >
+                              Last 30 days
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() => handleOptionClick("Last 3 months")}
+                            >
+                              Last 3 months
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() =>
+                                handleOptionClick("Last 12 months")
+                              }
+                            >
+                              Last 12 months
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() =>
+                                handleOptionClick("All transactions")
+                              }
+                            >
+                              All transactions
+                            </DropdownItem>
+                          </DropdownMenu>
+                        </Dropdown>
                       </Row>
                       <br />
                       <Row>
