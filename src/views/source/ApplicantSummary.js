@@ -591,7 +591,7 @@ const ApplicantSummary = () => {
               account: fetchedData.data.account || "",
               nextDue_date: fetchedData.data.nextDue_date || "",
               memo: fetchedData.data.memo || "",
-              upload_file: fetchedData.data.upload_file || "",
+              // upload_file: fetchedData.data.upload_file || "",
               isrenton: fetchedData.data.isrenton || false,
               rent_paid: fetchedData.data.rent_paid || false,
               propertyOnRent: fetchedData.data.propertyOnRent || false,
@@ -629,8 +629,8 @@ const ApplicantSummary = () => {
               cash_flow: fetchedData.data.cash_flow || "",
               notes: fetchedData.data.notes || "",
     
-              recurring_charges: fetchedData.recurring_charges || {},
-              one_time_charges: fetchedData.one_time_charges || {},
+              // recurring_charges: fetchedData.recurring_charges || {},
+              // one_time_charges: fetchedData.one_time_charges || {},
             },
           ],
         };

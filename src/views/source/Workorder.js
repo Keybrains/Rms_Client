@@ -232,8 +232,8 @@ const Workorder = () => {
                       <th scope="col">Category</th>
                       <th scope="col">Assigned</th>
                       <th scope="col">Status</th>
-                      <th scope="col">Created At</th>
-                      <th scope="col">Last Updated</th>
+                      {/* <th scope="col">Created At</th>
+                      <th scope="col">Last Updated</th> */}
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
@@ -249,8 +249,8 @@ const Workorder = () => {
                         <td>{rental.work_category}</td>
                         <td>{rental.staffmember_name}</td>
                         <td>{rental.status}</td>
-                        <td>{rental.createdAt}</td>
-                        <td>{rental.updateAt}</td>
+                        {/* <td>{rental.createdAt}</td>
+                        <td>{rental.updateAt}</td> */}
 
                         <td>
                           <div style={{ display: "flex", gap: "0px" }}>

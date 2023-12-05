@@ -564,11 +564,11 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="summary"
                       />
-                      <Tab
+                      {/* <Tab
                         label="Financial"
                         style={{ textTransform: "none" }}
                         value="financial"
-                      />
+                      /> */}
                       <Tab
                         label={`Units (${propertyUnit.length})`}
                         style={{ textTransform: "none" }}
@@ -579,11 +579,11 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="task"
                       />
-                      <Tab
+                      {/* <Tab
                         label="Event history"
                         style={{ textTransform: "none" }}
                         value="eventhistory"
-                      />
+                      /> */}
                       {console.log(propertyUnit, "property unit")}
                     </TabList>
                   </Box>
@@ -1575,7 +1575,7 @@ const PropDetails = () => {
                       </Table>
                     </div>
                   </TabPanel>
-                  <TabPanel value="financial">
+                  {/* <TabPanel value="financial">
                     <>
                       <Col
                         lg="6"
@@ -1856,7 +1856,7 @@ const PropDetails = () => {
                         </>
                       )}
                     </>
-                  </TabPanel>
+                  </TabPanel> */}
                   <TabPanel value="units">
                     {addUnitDialogOpen ? (
                       <>
