@@ -333,7 +333,12 @@ const ApplicantSummary = () => {
             } else {
               // navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
               //console.log(tenantID, "tenantID");
-              navigate(`/admin/RentRollLeaseing/${tenantID}/${entryIndex}`);
+              navigate(`/admin/RentRollLeaseing/${tenantID}/${entryIndex}`,
+              {
+                state:{
+                  yourComponent:"ApplicantSummary"
+                }
+              });
               //console.log(matchedApplicant, "matchedApplicant");
               // axios
               // .get("https://propertymanager.cloudpress.host/api/tenant/tenant")
@@ -526,36 +531,124 @@ const ApplicantSummary = () => {
 
       // Check if the response contains the data you expect
       const fetchedData = response.data;
+      console.log(fetchedData,'fetched data')
       //console.log(fetchedData, "fetched data");
       if (fetchedData) {
         // Step 2: Create an object with the fetched data
+        // const dataToSend = {
+        //   tenant_firstName: fetchedData.data.tenant_firstName,
+        //   tenant_lastName: fetchedData.data.tenant_lastName,
+        //   tenant_unitNumber: fetchedData.data.tenant_unitNumber,
+        //   tenant_mobileNumber: fetchedData.data.tenant_mobileNumber,
+        //   tenant_workNumber: fetchedData.data.tenant_workNumber,
+        //   tenant_homeNumber: fetchedData.data.tenant_homeNumber,
+        //   tenant_faxPhoneNumber: fetchedData.data.tenant_faxPhoneNumber,
+        //   tenant_email: fetchedData.data.tenant_email,
+        //   entries: [
+        //     {
+        //       rental_adress: fetchedData.data.rental_adress,
+        //       rental_units: fetchedData.data.rental_units,
+        //     },
+        //   ],
+        // };
         const dataToSend = {
-          tenant_firstName: fetchedData.data.tenant_firstName,
-          tenant_lastName: fetchedData.data.tenant_lastName,
-          tenant_unitNumber: fetchedData.data.tenant_unitNumber,
-          tenant_mobileNumber: fetchedData.data.tenant_mobileNumber,
-          tenant_workNumber: fetchedData.data.tenant_workNumber,
-          tenant_homeNumber: fetchedData.data.tenant_homeNumber,
-          tenant_faxPhoneNumber: fetchedData.data.tenant_faxPhoneNumber,
-          tenant_email: fetchedData.data.tenant_email,
+          tenant_firstName: fetchedData.data.tenant_firstName || "",
+          tenant_lastName: fetchedData.data.tenant_lastName || "",
+          tenant_unitNumber: fetchedData.data.tenant_unitNumbe || "",
+    
+          // tenant_phoneNumber: ,
+          tenant_mobileNumber: fetchedData.data.tenant_mobileNumber || "",
+          tenant_workNumber: fetchedData.data.tenant_workNumber || "",
+          tenant_homeNumber: fetchedData.data.tenant_homeNumber || "",
+          tenant_faxPhoneNumber: fetchedData.data.tenant_faxPhoneNumber || "",
+          tenant_email: fetchedData.data.tenant_email || "",
+          tenant_password: fetchedData.data.tenant_password || "",
+          alternate_email: fetchedData.data.alternate_email || "",
+          tenant_residentStatus: fetchedData.data.tenant_residentStatus || "",
+    
+          // personal information
+          birth_date: fetchedData.data.birth_date || "",
+          textpayer_id: fetchedData.data.textpayer_id || "",
+          comments: fetchedData.data.comments || "",
+    
+          //Emergency contact
+    
+          contact_name: fetchedData.data.contact_name || "",
+          relationship_tenants: fetchedData.data.relationship_tenants || "",
+          email: fetchedData.data.email || "",
+          emergency_PhoneNumber: fetchedData.data.emergency_PhoneNumber || "",
           entries: [
             {
-              rental_adress: fetchedData.data.rental_adress,
-              rental_units: fetchedData.data.rental_units,
+              entryIndex: fetchedData.data.entryIndex || "",
+              rental_units: fetchedData.data.rental_units || "",
+              rental_adress: fetchedData.data.rental_adress || "",
+              lease_type: fetchedData.data.lease_type || "",
+              start_date: fetchedData.data.start_date || "",
+              end_date: fetchedData.data.end_date || "",
+              leasing_agent: fetchedData.data.leasing_agent || "",
+              rent_cycle: fetchedData.data.rent_cycle || "",
+              amount: fetchedData.data.amount || "",
+              account: fetchedData.data.account || "",
+              nextDue_date: fetchedData.data.nextDue_date || "",
+              memo: fetchedData.data.memo || "",
+              // upload_file: fetchedData.data.upload_file || "",
+              isrenton: fetchedData.data.isrenton || false,
+              rent_paid: fetchedData.data.rent_paid || false,
+              propertyOnRent: fetchedData.data.propertyOnRent || false,
+    
+              //security deposite
+              Due_date: fetchedData.data.Due_date || "",
+              Security_amount: fetchedData.data.Security_amount || "",
+    
+              // add cosigner
+              cosigner_firstName: fetchedData.data.cosigner_firstName || "",
+              cosigner_lastName: fetchedData.data.cosigner_lastName || "",
+              cosigner_mobileNumber: fetchedData.data.cosigner_mobileNumber || "",
+              cosigner_workNumber: fetchedData.data.cosigner_workNumber || "",
+              cosigner_homeNumber: fetchedData.data.cosigner_homeNumber || "",
+              cosigner_faxPhoneNumber:
+                fetchedData.data.cosigner_faxPhoneNumber || "",
+              cosigner_email: fetchedData.data.cosigner_email || "",
+              cosigner_alternateemail:
+                fetchedData.data.cosigner_alternateemail || "",
+              cosigner_streetAdress: fetchedData.data.cosigner_streetAdress || "",
+              cosigner_city: fetchedData.data.cosigner_city || "",
+              cosigner_state: fetchedData.data.cosigner_state || "",
+              cosigner_zip: fetchedData.data.cosigner_zip || "",
+              cosigner_country: fetchedData.data.cosigner_country || "",
+              cosigner_postalcode: fetchedData.data.cosigner_postalcode || "",
+    
+              // add account
+              account_name: fetchedData.data.account_name || "",
+              account_type: fetchedData.data.account_type || "",
+    
+              //account level (sub account)
+              parent_account: fetchedData.data.parent_account || "",
+              account_number: fetchedData.data.account_number || "",
+              fund_type: fetchedData.data.fund_type || "",
+              cash_flow: fetchedData.data.cash_flow || "",
+              notes: fetchedData.data.notes || "",
+    
+              // recurring_charges: fetchedData.recurring_charges || {},
+              // one_time_charges: fetchedData.one_time_charges || {},
             },
           ],
         };
-
+    
+        console.log(dataToSend, "hagfjg");
         // Step 3: Make a POST request to send the data to the server
         const postResponse = await axios.post(
           "https://propertymanager.cloudpress.host/api/tenant/tenant",
           dataToSend
         );
-
+          // debugger
         //console.log(dataToSend, "hagfjg");
         if (postResponse.status === 200) {
+          console.log(postResponse,'clgbcmnm')
           //console.log("Data posted successfully:", postResponse.data.data);
-          // setTenantID(postResponse.data.data._id)
+          // setTenantID(postResponse.data.data._id)  
+          console.log(postResponse.data.data,'hjsadn')
+          // debugger
           navigateToLease(
             postResponse.data.data._id,
             postResponse.data.data.entries[0].entryIndex
