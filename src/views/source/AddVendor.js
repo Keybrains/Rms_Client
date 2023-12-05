@@ -78,7 +78,7 @@ const AddVendor = () => {
     if (id) {
       axios
         .get(
-          `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${id}`
+          `http://localhost:4000/api/vendor/vendor_summary/${id}`
         )
         .then((response) => {
           const vendorData = response.data.data;
@@ -107,12 +107,12 @@ const AddVendor = () => {
     try {
       if (id === undefined) {
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/vendor/vendor",
+          "http://localhost:4000/api/vendor/vendor",
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `https://propertymanager.cloudpress.host/api/vendor/vendor/${id}`;
+        const editUrl = `http://localhost:4000/api/vendor/vendor/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }

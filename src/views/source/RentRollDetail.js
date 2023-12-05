@@ -82,7 +82,7 @@ const RentRollDetail = () => {
       try {
         // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
         const response = await fetch(
-          `https://propertymanager.cloudpress.host/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
+          `http://localhost:4000/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -118,7 +118,7 @@ const RentRollDetail = () => {
   //     navigate("/payment-page");
   //   }
   // };
-  const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
   const id = tenantId;
   const entry = entryIndex;
@@ -126,6 +126,7 @@ const RentRollDetail = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(apiUrl);
+      console.log(response.data.data, "huihyui");
       setTenantDetails(response.data.data);
       //console.log(response.data.data, "hiiii");
       const rental = response.data.data.entries.rental_adress;
@@ -143,7 +144,7 @@ const RentRollDetail = () => {
 
   const navigateToSummary = async (tenantId, entryIndex) => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -167,7 +168,7 @@ const RentRollDetail = () => {
   };
 
   const navigateToTenant = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -192,7 +193,7 @@ const RentRollDetail = () => {
 
   const navigateToFinancial = async () => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -216,7 +217,7 @@ const RentRollDetail = () => {
 
   // const tenantsData = async () => {
   //   // Construct the API URL
-  //   const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+  //   const apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
 
   //   try {
   //     // Fetch tenant data
@@ -240,9 +241,9 @@ const RentRollDetail = () => {
     let apiUrl;
 
     if (unit === undefined) {
-      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+      apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}`;
     } else {
-      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
+      apiUrl = `http://localhost:4000/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
       console.log(apiUrl, "apiUrl");
     }
 
@@ -337,7 +338,7 @@ const RentRollDetail = () => {
   };
   const doSomething = async () => {
     let responce = await axios.get(
-      "https://propertymanager.cloudpress.host/api/tenant/tenants"
+      "http://localhost:4000/api/tenant/tenants"
     );
     const data = responce.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
@@ -363,7 +364,7 @@ const RentRollDetail = () => {
     }
   };
   // const getGeneralLedgerData = async () => {
-  //   const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+  //   const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
 
   //   try {
   //     const response = await axios.get(apiUrl);
@@ -384,7 +385,7 @@ const RentRollDetail = () => {
   //   }
   // };
   const getGeneralLedgerData = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+    const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
     try {
       const response = await axios.get(apiUrl);
       setLoader(false);
@@ -418,7 +419,7 @@ const RentRollDetail = () => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/payment/delete_charge/${chargeId}/${chargeIndex}`
+            `http://localhost:4000/api/payment/delete_charge/${chargeId}/${chargeIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -479,7 +480,7 @@ const RentRollDetail = () => {
 
     axios
       .put(
-        `https://propertymanager.cloudpress.host/api/tenant/moveout/${tenantId}/${entryIndex}`,
+        `http://localhost:4000/api/tenant/moveout/${tenantId}/${entryIndex}`,
         updatedApplicant
       )
       .then((res) => {
@@ -633,22 +634,11 @@ const RentRollDetail = () => {
                                               .rental_units || "N/A"}
                                         </Col>
                                         <Col>
-                                          <a
-                                            href={`tel:${tenantDetails.tenant_mobileNumber}`}
-                                          >
-                                            <svg
-                                              xmlns="http://www.w3.org/2000/svg"
-                                              width="15"
-                                              height="15"
-                                              fill="currentColor"
-                                              class="bi bi-telephone-outbound"
-                                              viewBox="0 0 16 16"
-                                            >
-                                              <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511zM11 .5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V1.707l-4.146 4.147a.5.5 0 0 1-.708-.708L14.293 1H11.5a.5.5 0 0 1-.5-.5" />
-                                            </svg>{" "}
-                                            {tenantDetails.rental_owner ||
+                                          
+                                           
+                                            {tenantDetails.entries.rentalOwner_firstName ? (tenantDetails.entries.rentalOwner_firstName + " " + tenantDetails.entries.rentalOwner_lastName): 
                                               "N/A"}
-                                          </a>
+                                         
                                         </Col>
                                         <Col>
                                           {tenantDetails?.tenant_firstName +

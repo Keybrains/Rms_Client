@@ -243,7 +243,7 @@ const RentRollLeaseing = () => {
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
-        `https://propertymanager.cloudpress.host/api/propertyunit/rentals_property/${propertyType}`
+        `http://localhost:4000/api/propertyunit/rentals_property/${propertyType}`
       );
       const data = await response.json();
       // Ensure that units are extracted correctly and set as an array
@@ -601,7 +601,7 @@ const RentRollLeaseing = () => {
     try {
       // values["property_type"] = localStorage.getItem("propertyType");
       const res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/addaccount/addaccount",
+        "http://localhost:4000/api/addaccount/addaccount",
         values
       );
       if (res.data.statusCode === 200) {
@@ -730,7 +730,7 @@ const RentRollLeaseing = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+    fetch("http://localhost:4000/api/rentals/allproperty")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -749,9 +749,7 @@ const RentRollLeaseing = () => {
 
   const fetchingAccountNames = async () => {
     console.log("fetching account names");
-    fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
-    )
+    fetch("http://localhost:4000/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -770,9 +768,7 @@ const RentRollLeaseing = () => {
 
   const fetchingRecAccountNames = async () => {
     console.log("fetching rec accounr names");
-    fetch(
-      "https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname"
-    )
+    fetch("http://localhost:4000/api/recurringAcc/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -791,9 +787,7 @@ const RentRollLeaseing = () => {
 
   const fetchingOneTimeCharges = async () => {
     // console.log("fetcjhiine pne rime charges");
-    fetch(
-      "https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname"
-    )
+    fetch("http://localhost:4000/api/onetimecharge/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -829,7 +823,7 @@ const RentRollLeaseing = () => {
 
   // useEffect(() => {
   //   // Make an HTTP GET request to your Express API endpoint
-  //   fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+  //   fetch("http://localhost:4000/api/addaccount/find_accountname")
   //     .then((response) => response.json())
   //     .then((data) => {
   //       if (data.statusCode === 200) {
@@ -848,7 +842,7 @@ const RentRollLeaseing = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/addagent/find_agentname")
+    fetch("http://localhost:4000/api/addagent/find_agentname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -942,7 +936,7 @@ const RentRollLeaseing = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/tenant/existing/tenant")
+    fetch("http://localhost:4000/api/tenant/existing/tenant")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -1273,7 +1267,7 @@ const RentRollLeaseing = () => {
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit) {
       let response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/tenant/tenants"
+        "http://localhost:4000/api/tenant/tenants"
       );
       const data = response.data.data;
 
@@ -1491,10 +1485,9 @@ const RentRollLeaseing = () => {
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
     if (id && entryIndex) {
+      const url = `http://localhost:4000/api/tenant/tenant_summary/${id}`;
       axios
-        .get(
-          `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`
-        )
+        .get(url)
         .then((response) => {
           const laesingdata = response.data.data;
           console.log(laesingdata, "laesingdata");
@@ -1911,9 +1904,7 @@ const RentRollLeaseing = () => {
     };
 
     try {
-      const res = await axios.get(
-        `https://propertymanager.cloudpress.host/api/tenant/tenant`
-      );
+      const res = await axios.get(`http://localhost:4000/api/tenant/tenant`);
       if (res.data.statusCode === 200) {
         console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
@@ -1934,7 +1925,7 @@ const RentRollLeaseing = () => {
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
           const res = await axios.put(
-            `https://propertymanager.cloudpress.host/api/tenant/tenant/${tenantId}`,
+            `http://localhost:4000/api/tenant/tenant/${tenantId}`,
             putObject
           );
           if (res.data.statusCode === 200) {
@@ -1949,7 +1940,7 @@ const RentRollLeaseing = () => {
             console.log(tenantObject, "leaseObject");
             // debugger
             const res = await axios.post(
-              "https://propertymanager.cloudpress.host/api/tenant/tenant",
+              "http://localhost:4000/api/tenant/tenant",
               tenantObject
             );
             if (res.data.statusCode === 200) {
@@ -1995,7 +1986,7 @@ const RentRollLeaseing = () => {
   const editLease = async (id) => {
     // const arrayOfNames = file.map((item) => item.name);
 
-    const editUrl = `https://propertymanager.cloudpress.host/api/tenant/tenants/${id}/entry/${entryIndex}`;
+    const editUrl = `http://localhost:4000/api/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
 
     const entriesObject = {
@@ -2130,11 +2121,11 @@ const RentRollLeaseing = () => {
   //   if (entryIndex) {
   //     setAlignment("Signed");
   //     axios
-  //       .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+  //       .get("http://localhost:4000/api/rentals/allproperty")
   //       .then((propRes) => {
   //         axios
   //           .get(
-  //             `https://propertymanager.cloudpress.host/api/applicant/applicant`
+  //             `http://localhost:4000/api/applicant/applicant`
   //           )
   //           .then((response) => {
   //             console.log(response.data.data);
@@ -2406,11 +2397,7 @@ const RentRollLeaseing = () => {
                                 : "Select Lease"}{" "}
                               &nbsp;&nbsp;&nbsp;&nbsp;
                             </DropdownToggle>
-                            <DropdownMenu
-                              style={{ width: "100%" }}
-                           
-                            >
-                             
+                            <DropdownMenu style={{ width: "100%" }}>
                               <DropdownItem
                                 onClick={() => handleLeaseTypeSelect("Fixed")}
                               >
@@ -4467,74 +4454,70 @@ const RentRollLeaseing = () => {
                                 <Col>Action</Col>
                               </Row>
 
-                          
-                                <Row
-                                  className="w-100 mt-1"
-                                  style={{
-                                    fontSize: "14px",
-                                    textTransform: "capitalize",
-                                    color: "#000",
-                                  }}
-                                  
-                                >
-                                  <Col>{selectedTenantData.firstName}</Col>
-                                  <Col>{selectedTenantData.lastName}</Col>
-                                  <Col>{selectedTenantData.mobileNumber}</Col>
-                                  <Col>
+                              <Row
+                                className="w-100 mt-1"
+                                style={{
+                                  fontSize: "14px",
+                                  textTransform: "capitalize",
+                                  color: "#000",
+                                }}
+                              >
+                                <Col>{selectedTenantData.firstName}</Col>
+                                <Col>{selectedTenantData.lastName}</Col>
+                                <Col>{selectedTenantData.mobileNumber}</Col>
+                                <Col>
                                   <EditIcon
-                                      onClick={() => {
-                                        setShowTenantTable(false);
-                                        setOpenTenantsDialog(true);
-                                      }}
-                                    />
+                                    onClick={() => {
+                                      setShowTenantTable(false);
+                                      setOpenTenantsDialog(true);
+                                    }}
+                                  />
 
-                                    <DeleteIcon
-                                      onClick={() => {
-                                        setShowTenantTable(false);
-                                        handleTenantDelete();
-                                      }}
-                                    />
-                                  </Col>
-                                </Row>
-                            
+                                  <DeleteIcon
+                                    onClick={() => {
+                                      setShowTenantTable(false);
+                                      handleTenantDelete();
+                                    }}
+                                  />
+                                </Col>
+                              </Row>
                             </>
                           ) : null}
                         </div>
 
                         <div>
-                        {cosignerData &&
-                          Object.keys(cosignerData).length > 0 && (
-                            <>
-                              <Row
-                                className="w-100 my-3"
-                                style={{
-                                  fontSize: "18px",
-                                  textTransform: "capitalize",
-                                  color: "#5e72e4",
-                                  fontWeight: "600",
-                                  borderBottom: "1px solid #ddd",
-                                  paddingTop: "15px",
-                                }}
-                              >
-                                <Col>Cosigner</Col>
-                              </Row>
+                          {cosignerData &&
+                            Object.keys(cosignerData).length > 0 && (
+                              <>
+                                <Row
+                                  className="w-100 my-3"
+                                  style={{
+                                    fontSize: "18px",
+                                    textTransform: "capitalize",
+                                    color: "#5e72e4",
+                                    fontWeight: "600",
+                                    borderBottom: "1px solid #ddd",
+                                    paddingTop: "15px",
+                                  }}
+                                >
+                                  <Col>Cosigner</Col>
+                                </Row>
 
-                              <Row
-                                className="w-100 mb-1"
-                                style={{
-                                  fontSize: "17px",
-                                  // textTransform: "uppercase",
-                                  color: "#aaa",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                <Col>First Name</Col>
-                                <Col>Last Name</Col>
-                                <Col>Phone Number</Col>
-                                <Col>Action</Col>
-                              </Row>
+                                <Row
+                                  className="w-100 mb-1"
+                                  style={{
+                                    fontSize: "17px",
+                                    // textTransform: "uppercase",
+                                    color: "#aaa",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  <Col>First Name</Col>
+                                  <Col>Last Name</Col>
+                                  <Col>Phone Number</Col>
+                                  <Col>Action</Col>
+                                </Row>
 
-                          
                                 <Row
                                   className="w-100 mt-1"
                                   style={{
@@ -4542,22 +4525,19 @@ const RentRollLeaseing = () => {
                                     textTransform: "capitalize",
                                     color: "#000",
                                   }}
-                                  
                                 >
                                   <Col>{cosignerData.firstName}</Col>
                                   <Col>{cosignerData.lastName}</Col>
                                   <Col>{cosignerData.mobileNumber}</Col>
                                   <Col>
-                                  <EditIcon
-                                        onClick={setOpenTenantsDialog}
-                                      />
-                                      <DeleteIcon
-                                        onClick={handleCosignerDelete}
-                                      />
+                                    <EditIcon onClick={setOpenTenantsDialog} />
+                                    <DeleteIcon
+                                      onClick={handleCosignerDelete}
+                                    />
                                   </Col>
                                 </Row>
-                            </>
-                          )}
+                              </>
+                            )}
                         </div>
                       </FormGroup>
                     </Col>
@@ -5567,7 +5547,6 @@ const RentRollLeaseing = () => {
                     ) : null}
                   </div>
 
-                
                   <hr />
                   <Row>
                     <Col lg="4">
@@ -5693,19 +5672,23 @@ const RentRollLeaseing = () => {
                       {console.log(file, "file")}
 
                       {file.length > 0 &&
-                        file?.map((file, index) => (
+                        file?.map((singleFile, index) => (
                           <div
                             key={index}
                             style={{ position: "relative", marginLeft: "50px" }}
                           >
                             {!id || yourData === "ApplicantSummary" ? (
                               <p
-                                onClick={() => handleOpenFile(file.upload_file)}
+                                onClick={() =>
+                                  handleOpenFile(singleFile.upload_file)
+                                }
                                 style={{ cursor: "pointer" }}
                               >
                                 {console.log(file, "fromm 5867")}
-                                {file.file_name?.substr(0, 5)}
-                                {file.file_name?.length > 5 ? "..." : null}
+                                {singleFile?.file_name?.substr(0, 5)}
+                                {singleFile?.file_name?.length > 5
+                                  ? "..."
+                                  : null}
                               </p>
                             ) : (
                               <p
