@@ -123,7 +123,7 @@ useEffect(() => {
 const fetchNotification = async () => {
   // Fetch notification data when rental_adress changes
   if (rental_adress) {
-    // fetch(`http://localhost:4000/api/notification/tenantnotification/tenant/${rental_adress}`)
+    // fetch(`https://propertymanager.cloudpress.host/api/notification/tenantnotification/tenant/${rental_adress}`)
     //   .then((response) => {
     //     if (response.status === 200) {
     //       return response.json();
@@ -142,7 +142,7 @@ const fetchNotification = async () => {
     //     console.error("Error:", error);
     //     // Handle the error, display a message to the user, or take other appropriate action.
     //   });
-    axios.get(`http://localhost:4000/api/notification/tenantnotification/tenant/${rental_adress}`).then((response) => {
+    axios.get(`https://propertymanager.cloudpress.host/api/notification/tenantnotification/tenant/${rental_adress}`).then((response) => {
       if (response.status === 200) {
         // console.log(response.data.data,'asfhuiasfjkouhygtyuhij')
         setNotificationData(response.data.data);
@@ -156,7 +156,7 @@ const fetchNotification = async () => {
 
 const getRentalData = async (addresses) => {
   try {
-    const response = await axios.get(`http://localhost:4000/api/notification/tenantnotification/tenant/${addresses}`);
+    const response = await axios.get(`https://propertymanager.cloudpress.host/api/notification/tenantnotification/tenant/${addresses}`);
     // console.log(response, "abc");
 
     if (Array.isArray(response.data.data)) {
@@ -186,7 +186,7 @@ const getRentalData = async (addresses) => {
 
   const getVendorDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/tenant/tenant_summary/${cookie_id}`);
+      const response = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`);
       const entries = response.data.data.entries;
   
       if (entries.length > 0) {
@@ -216,7 +216,7 @@ const getRentalData = async (addresses) => {
 
   const navigateToDetails = (workorder_id) => {
     // Make a DELETE request to delete the notification
-    axios.get(`http://localhost:4000/api/notification/notification/${workorder_id}?role=tenant`)
+    axios.get(`https://propertymanager.cloudpress.host/api/notification/notification/${workorder_id}?role=tenant`)
         .then((response) => {
           if (response.status === 200) {
             const updatedNotificationData = notificationData.map(notification => {

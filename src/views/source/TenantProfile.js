@@ -45,7 +45,7 @@ const TenantProfile = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/tenant/tenant/${cookie_id}/entries`
+        `https://propertymanager.cloudpress.host/api/tenant/tenant/${cookie_id}/entries`
       );
       // console.log(response.data.data);
       setTenantDetails(response.data.data);
@@ -60,14 +60,14 @@ const TenantProfile = () => {
   useEffect(() => {
     getTenantData();
     // console.log(
-    //   `http://localhost:4000/api/tenant/tenant/${cookie_id}/entries`
+    //   `https://propertymanager.cloudpress.host/api/tenant/tenant/${cookie_id}/entries`
     // );
   }, [id]);
 
   const getTenantData1 = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/tenant/tenant_summary/${cookie_id}`
+        `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
       );
       setTenantDetails1([response.data.data]);
       // console.log(response.data.data);
@@ -82,7 +82,7 @@ const TenantProfile = () => {
   useEffect(() => {
     getTenantData1();
     // console.log(
-    //   `http://localhost:4000/api/tenant/tenant_summary/${cookie_id}`
+    //   `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
     // );
   }, [id]);
 
