@@ -194,11 +194,13 @@ const RentRoll = () => {
     const end = new Date(endDate);
   
     if (today >= start && today <= end) {
-      return 'ACTIVE';
+      return 'TENANT';
     } else if (today < start) {
       return 'FUTURE TENANT';
+    } else if (today > end) {
+      return 'PAST TENANT';
     } else {
-      return '-'; // Change this to suit your requirement for other cases
+      return '-';
     }
   };
 

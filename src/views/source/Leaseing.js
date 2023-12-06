@@ -732,9 +732,7 @@ const Leaseing = () => {
   console.log(propertyData,'propertyData')
   const fetchingAccountNames = async () => {
     // console.log("fetching account names");
-    fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
-    )
+    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -753,9 +751,7 @@ const Leaseing = () => {
 
   const fetchingRecAccountNames = async () => {
     // console.log("fetching rec accounr names");
-    fetch(
-      "https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname"
-    )
+    fetch("https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -774,9 +770,7 @@ const Leaseing = () => {
 
   const fetchingOneTimeCharges = async () => {
     // console.log("fetcjhiine pne rime charges");
-    fetch(
-      "https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname"
-    )
+    fetch("https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -1325,9 +1319,7 @@ const Leaseing = () => {
   useEffect(() => {
     if (id && entryIndex) {
       axios
-        .get(
-          `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`
-        )
+        .get(`https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`)
         .then((response) => {
           const laesingdata = response.data.data;
           setTenantData(laesingdata);
@@ -1652,7 +1644,7 @@ const Leaseing = () => {
 
     //   entries: entriesArray,
     // };
-    console.log(tenantsSchema.values,'tenantsSchema.values')
+    console.log(tenantsSchema.values, "tenantsSchema.values");
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -1747,9 +1739,7 @@ const Leaseing = () => {
     debugger
     console.log(tenantObject, "tenantObject");
     try {
-      const res = await axios.get(
-        `https://propertymanager.cloudpress.host/api/tenant/tenant`
-      );
+      const res = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant`);
       if (res.data.statusCode === 200) {
         console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
@@ -1774,7 +1764,7 @@ const Leaseing = () => {
             putObject
           );
           if (res.data.statusCode === 200) {
-            console.log(res.data.data,'clgtttt')
+            console.log(res.data.data, "clgtttt");
             swal("", res.data.message, "success");
 
 
@@ -2482,7 +2472,12 @@ const Leaseing = () => {
 
                                       {showTenantTable &&
                                         tenantData.length > 0 && (
-                                          <div className="TenantTable">
+                                          <div
+                                            style={{
+                                              maxHeight: "400px",
+                                              overflow: "hidden",
+                                            }}
+                                          >
                                             <Input
                                               type="text"
                                               placeholder="Search by first and last name"
@@ -2496,140 +2491,148 @@ const Leaseing = () => {
                                                 borderRadius: "4px",
                                               }}
                                             />
-                                            <table
+                                            <div
                                               style={{
-                                                width: "100%",
-                                                borderCollapse: "collapse",
+                                                maxHeight: "calc(400px - 40px)",
+                                                overflowY: "auto",
                                                 border: "1px solid #ddd",
                                               }}
                                             >
-                                              <thead>
-                                                <tr>
-                                                  <th>Tenant Name</th>
-                                                  <th>Select</th>
-                                                </tr>
-                                              </thead>
-                                              <tbody>
-                                                {Array.isArray(tenantData) &&
-                                                  tenantData
-                                                    .filter((tenant) => {
-                                                      const fullName = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
-                                                      return fullName
-                                                        .toLowerCase()
-                                                        .includes(
-                                                          searchQuery.toLowerCase()
-                                                        );
-                                                    })
-                                                    .map((tenant, index) => (
-                                                      <tr
-                                                        key={index}
-                                                        style={{
-                                                          border:
-                                                            "1px solid #ddd",
-                                                        }}
-                                                      >
-                                                        <td>
-                                                          <pre>
-                                                            {
-                                                              tenant.tenant_firstName
-                                                            }
-                                                            {
-                                                              tenant.tenant_lastName
-                                                            }
-                                                            {`(${tenant.tenant_mobileNumber})`}
-                                                          </pre>
-                                                        </td>
-                                                        <td>
-                                                          {/* <FormControlLabel
+                                              <table
+                                                style={{
+                                                  width: "100%",
+                                                  borderCollapse: "collapse",
+                                                  
+                                                }}
+                                              >
+                                                <thead>
+                                                  <tr>
+                                                    <th style={{padding:"15px"}}>Tenant Name</th>
+                                                    <th style={{padding:"15px"}}>Select</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  {Array.isArray(tenantData) &&
+                                                    tenantData
+                                                      .filter((tenant) => {
+                                                        const fullName = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
+                                                        return fullName
+                                                          .toLowerCase()
+                                                          .includes(
+                                                            searchQuery.toLowerCase()
+                                                          );
+                                                      })
+                                                      .map((tenant, index) => (
+                                                        <tr
+                                                          key={index}
+                                                          style={{
+                                                            border:
+                                                              "1px solid #ddd",
+                                                          }}
+                                                        >
+                                                          <td style={{paddingLeft:"15px",paddingTop:"15px"}}>
+                                                            <pre>
+                                                              {
+                                                                tenant.tenant_firstName
+                                                              }
+                                                              {
+                                                                tenant.tenant_lastName
+                                                              }
+                                                              {`(${tenant.tenant_mobileNumber})`}
+                                                            </pre>
+                                                          </td>
+                                                          <td style={{paddingLeft:"15px",paddingTop:"15px"}}>
+                                                            {/* <FormControlLabel
                                                           control={  */}
-                                                          <Checkbox
-                                                            type="checkbox"
-                                                            name="tenant"
-                                                            id={
-                                                              tenant.tenant_mobileNumber
-                                                            }
-                                                            checked={
-                                                              tenant.tenant_mobileNumber ===
-                                                              checkedCheckbox
-                                                            }
-                                                            onChange={(
-                                                              event
-                                                            ) => {
-                                                              setCheckedCheckbox(
+                                                            <Checkbox
+                                                              type="checkbox"
+                                                              name="tenant"
+                                                              id={
                                                                 tenant.tenant_mobileNumber
-                                                              );
-                                                              // const tenantInfo = `${tenant.tenant_firstName || ""}
-                                                              // ${tenant.tenant_lastName ||
-                                                              //   ""
-                                                              //   } ${tenant.tenant_mobileNumber ||
-                                                              //   ""
-                                                              //   } ${tenant.tenant_email ||
-                                                              //   ""
-                                                              //   } ${tenant.textpayer_id ||
-                                                              //   ""
-                                                              //   } ${tenant.birth_date ||
-                                                              //   ""
-                                                              //   } ${tenant.comments ||
-                                                              //   ""
-                                                              //   } ${tenant.contact_name ||
-                                                              //   ""
-                                                              //   } ${tenant.relationship_tenants ||
-                                                              //   ""
-                                                              //   } ${tenant.email ||
-                                                              //   ""
-                                                              //   } ${tenant.emergency_PhoneNumber ||
-                                                              //   ""
-                                                              //   } ${tenant.tenant_password ||
-                                                              //   ""
-                                                              //   } ${tenant.tenant_workNumber ||
-                                                              //   ""
-                                                              //   } ${tenant.alternate_email ||
-                                                              //   ""
-                                                              //   }`;
-                                                              const tenantInfo1 =
-                                                                {
-                                                                  tenant_firstName:
-                                                                    tenant.tenant_firstName,
-                                                                  tenant_lastName:
-                                                                    tenant.tenant_lastName,
-                                                                  tenant_mobileNumber:
-                                                                    tenant.tenant_mobileNumber,
-                                                                  tenant_email:
-                                                                    tenant.tenant_email,
-                                                                  textpayer_id:
-                                                                    tenant.textpayer_id,
-                                                                  birth_date:
-                                                                    tenant.birth_date,
-                                                                  comments:
-                                                                    tenant.comments,
-                                                                  contact_name:
-                                                                    tenant.contact_name,
-                                                                  relationship_tenants:
-                                                                    tenant.relationship_tenants,
-                                                                  email:
-                                                                    tenant.email,
-                                                                  emergency_PhoneNumber:
-                                                                    tenant.emergency_PhoneNumber,
-                                                                  tenant_password:
-                                                                    tenant.tenant_password,
-                                                                  tenant_workNumber:
-                                                                    tenant.tenant_workNumber,
-                                                                  alternate_email:
-                                                                    tenant.alternate_email,
-                                                                };
-                                                              handleCheckboxChange(
-                                                                event,
-                                                                tenantInfo1,
-                                                                tenant.tenant_mobileNumber
-                                                              );
-                                                              // console.log(tenantInfo1)
-                                                            }}
-                                                          />
-                                                        </td>
-                                                      </tr>
-                                                    ))}
-                                              </tbody>
-                                            </table>
+                                                              }
+                                                              checked={
+                                                                tenant.tenant_mobileNumber ===
+                                                                checkedCheckbox
+                                                              }
+                                                              onChange={(
+                                                                event
+                                                              ) => {
+                                                                setCheckedCheckbox(
+                                                                  tenant.tenant_mobileNumber
+                                                                );
+                                                                // const tenantInfo = `${tenant.tenant_firstName || ""}
+                                                                // ${tenant.tenant_lastName ||
+                                                                //   ""
+                                                                //   } ${tenant.tenant_mobileNumber ||
+                                                                //   ""
+                                                                //   } ${tenant.tenant_email ||
+                                                                //   ""
+                                                                //   } ${tenant.textpayer_id ||
+                                                                //   ""
+                                                                //   } ${tenant.birth_date ||
+                                                                //   ""
+                                                                //   } ${tenant.comments ||
+                                                                //   ""
+                                                                //   } ${tenant.contact_name ||
+                                                                //   ""
+                                                                //   } ${tenant.relationship_tenants ||
+                                                                //   ""
+                                                                //   } ${tenant.email ||
+                                                                //   ""
+                                                                //   } ${tenant.emergency_PhoneNumber ||
+                                                                //   ""
+                                                                //   } ${tenant.tenant_password ||
+                                                                //   ""
+                                                                //   } ${tenant.tenant_workNumber ||
+                                                                //   ""
+                                                                //   } ${tenant.alternate_email ||
+                                                                //   ""
+                                                                //   }`;
+                                                                const tenantInfo1 =
+                                                                  {
+                                                                    tenant_firstName:
+                                                                      tenant.tenant_firstName,
+                                                                    tenant_lastName:
+                                                                      tenant.tenant_lastName,
+                                                                    tenant_mobileNumber:
+                                                                      tenant.tenant_mobileNumber,
+                                                                    tenant_email:
+                                                                      tenant.tenant_email,
+                                                                    textpayer_id:
+                                                                      tenant.textpayer_id,
+                                                                    birth_date:
+                                                                      tenant.birth_date,
+                                                                    comments:
+                                                                      tenant.comments,
+                                                                    contact_name:
+                                                                      tenant.contact_name,
+                                                                    relationship_tenants:
+                                                                      tenant.relationship_tenants,
+                                                                    email:
+                                                                      tenant.email,
+                                                                    emergency_PhoneNumber:
+                                                                      tenant.emergency_PhoneNumber,
+                                                                    tenant_password:
+                                                                      tenant.tenant_password,
+                                                                    tenant_workNumber:
+                                                                      tenant.tenant_workNumber,
+                                                                    alternate_email:
+                                                                      tenant.alternate_email,
+                                                                  };
+                                                                handleCheckboxChange(
+                                                                  event,
+                                                                  tenantInfo1,
+                                                                  tenant.tenant_mobileNumber
+                                                                );
+                                                                // console.log(tenantInfo1)
+                                                              }}
+                                                            />
+                                                          </td>
+                                                        </tr>
+                                                      ))}
+                                                </tbody>
+                                              </table>
+                                            </div>
                                             <br />
                                           </div>
                                         )}
@@ -4259,20 +4262,18 @@ const Leaseing = () => {
                                 <Col>Action</Col>
                               </Row>
 
-                          
-                                <Row
-                                  className="w-100 mt-1"
-                                  style={{
-                                    fontSize: "14px",
-                                    textTransform: "capitalize",
-                                    color: "#000",
-                                  }}
-                                  
-                                >
-                                  <Col>{selectedTenantData.firstName}</Col>
-                                  <Col>{selectedTenantData.lastName}</Col>
-                                  <Col>{selectedTenantData.mobileNumber}</Col>
-                                  <Col>
+                              <Row
+                                className="w-100 mt-1"
+                                style={{
+                                  fontSize: "14px",
+                                  textTransform: "capitalize",
+                                  color: "#000",
+                                }}
+                              >
+                                <Col>{selectedTenantData.firstName}</Col>
+                                <Col>{selectedTenantData.lastName}</Col>
+                                <Col>{selectedTenantData.mobileNumber}</Col>
+                                <Col>
                                   <EditIcon
                                       onClick={() => {
                                         setShowTenantTable(false);
@@ -4283,53 +4284,51 @@ const Leaseing = () => {
                                       }}
                                     />
 
-                                    <DeleteIcon
-                                      onClick={() => {
-                                        setShowTenantTable(false);
-                                        handleTenantDelete();
-                                      }}
-                                    />
-                                  </Col>
-                                </Row>
-                            
+                                  <DeleteIcon
+                                    onClick={() => {
+                                      setShowTenantTable(false);
+                                      handleTenantDelete();
+                                    }}
+                                  />
+                                </Col>
+                              </Row>
                             </>
                           ) : null}
                         </div>
 
                         <div>
-                        {cosignerData &&
-                          Object.keys(cosignerData).length > 0 && (
-                            <>
-                              <Row
-                                className="w-100 my-3"
-                                style={{
-                                  fontSize: "18px",
-                                  textTransform: "capitalize",
-                                  color: "#5e72e4",
-                                  fontWeight: "600",
-                                  borderBottom: "1px solid #ddd",
-                                  paddingTop: "15px",
-                                }}
-                              >
-                                <Col>Cosigner</Col>
-                              </Row>
+                          {cosignerData &&
+                            Object.keys(cosignerData).length > 0 && (
+                              <>
+                                <Row
+                                  className="w-100 my-3"
+                                  style={{
+                                    fontSize: "18px",
+                                    textTransform: "capitalize",
+                                    color: "#5e72e4",
+                                    fontWeight: "600",
+                                    borderBottom: "1px solid #ddd",
+                                    paddingTop: "15px",
+                                  }}
+                                >
+                                  <Col>Cosigner</Col>
+                                </Row>
 
-                              <Row
-                                className="w-100 mb-1"
-                                style={{
-                                  fontSize: "17px",
-                                  // textTransform: "uppercase",
-                                  color: "#aaa",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                <Col>First Name</Col>
-                                <Col>Last Name</Col>
-                                <Col>Phone Number</Col>
-                                <Col>Action</Col>
-                              </Row>
+                                <Row
+                                  className="w-100 mb-1"
+                                  style={{
+                                    fontSize: "17px",
+                                    // textTransform: "uppercase",
+                                    color: "#aaa",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  <Col>First Name</Col>
+                                  <Col>Last Name</Col>
+                                  <Col>Phone Number</Col>
+                                  <Col>Action</Col>
+                                </Row>
 
-                          
                                 <Row
                                   className="w-100 mt-1"
                                   style={{
@@ -4337,28 +4336,21 @@ const Leaseing = () => {
                                     textTransform: "capitalize",
                                     color: "#000",
                                   }}
-                                  
                                 >
                                   <Col>{cosignerData.firstName}</Col>
                                   <Col>{cosignerData.lastName}</Col>
                                   <Col>{cosignerData.mobileNumber}</Col>
                                   <Col>
                                   <EditIcon
-                                        onClick={()=>{
-                                          setOpenTenantsDialog(true)
-                                          setSelectedOption('Cosigner')
-                                          setAlignment('Cosigner')
-                                        }
-                                        }
-
+                                        onClick={setOpenTenantsDialog}
                                       />
                                       <DeleteIcon
                                         onClick={handleCosignerDelete}
                                       />
                                   </Col>
                                 </Row>
-                            </>
-                          )}
+                              </>
+                            )}
                         </div>
                       </FormGroup>
                     </Col>

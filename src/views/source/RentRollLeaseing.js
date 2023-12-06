@@ -172,9 +172,10 @@ const RentRollLeaseing = () => {
 
   const handleChange = (value) => {
     setShowTenantTable(!showTenantTable);
-    console.log(value.target.value, "valuesForm handle change");
+    console.log(value, "valuesForm handle change");
     setAlignment(value);
   };
+
   const [signature, setSignature] = useState("Signed");
   const handleSignatureChange = (event) => {
     setSignature(event.target.value);
@@ -1568,7 +1569,7 @@ console.log(propertyId,'porpeorjinhb')
             amount: matchedLease.amount,
             account: matchedLease.account,
             nextDue_date: matchedLease.nextDue_date,
-            memo: matchedLease.memo,
+            memo: matchedLease.memo || "Rent",
             upload_file: matchedLease.upload_file,
             isrenton: matchedLease.isrenton,
             rent_paid: matchedLease.rent_paid,
@@ -2748,7 +2749,12 @@ console.log(propertyId,'porpeorjinhb')
 
                                       {showTenantTable &&
                                         tenantData.length > 0 && (
-                                          <div className="TenantTable">
+                                          <div
+                                            style={{
+                                              maxHeight: "400px",
+                                              overflow: "hidden",
+                                            }}
+                                          >
                                             <Input
                                               type="text"
                                               placeholder="Search by first and last name"
@@ -2762,140 +2768,173 @@ console.log(propertyId,'porpeorjinhb')
                                                 borderRadius: "4px",
                                               }}
                                             />
-                                            <table
+                                            <div
                                               style={{
-                                                width: "100%",
-                                                borderCollapse: "collapse",
+                                                maxHeight: "calc(400px - 40px)",
+                                                overflowY: "auto",
                                                 border: "1px solid #ddd",
                                               }}
                                             >
-                                              <thead>
-                                                <tr>
-                                                  <th>Tenant Name</th>
-                                                  <th>Select</th>
-                                                </tr>
-                                              </thead>
-                                              <tbody>
-                                                {Array.isArray(tenantData) &&
-                                                  tenantData
-                                                    .filter((tenant) => {
-                                                      const fullName = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
-                                                      return fullName
-                                                        .toLowerCase()
-                                                        .includes(
-                                                          searchQuery.toLowerCase()
-                                                        );
-                                                    })
-                                                    .map((tenant, index) => (
-                                                      <tr
-                                                        key={index}
-                                                        style={{
-                                                          border:
-                                                            "1px solid #ddd",
-                                                        }}
-                                                      >
-                                                        <td>
-                                                          <pre>
-                                                            {
-                                                              tenant.tenant_firstName
-                                                            }
-                                                            {
-                                                              tenant.tenant_lastName
-                                                            }
-                                                            {`(${tenant.tenant_mobileNumber})`}
-                                                          </pre>
-                                                        </td>
-                                                        <td>
-                                                          {/* <FormControlLabel
-                                                          control={  */}
-                                                          <Checkbox
-                                                            type="checkbox"
-                                                            name="tenant"
-                                                            id={
-                                                              tenant.tenant_mobileNumber
-                                                            }
-                                                            checked={
-                                                              tenant.tenant_mobileNumber ===
-                                                              checkedCheckbox
-                                                            }
-                                                            onChange={(
-                                                              event
-                                                            ) => {
-                                                              setCheckedCheckbox(
-                                                                tenant.tenant_mobileNumber
-                                                              );
-                                                              // const tenantInfo = `${tenant.tenant_firstName || ""}
-                                                              // ${tenant.tenant_lastName ||
-                                                              //   ""
-                                                              //   } ${tenant.tenant_mobileNumber ||
-                                                              //   ""
-                                                              //   } ${tenant.tenant_email ||
-                                                              //   ""
-                                                              //   } ${tenant.textpayer_id ||
-                                                              //   ""
-                                                              //   } ${tenant.birth_date ||
-                                                              //   ""
-                                                              //   } ${tenant.comments ||
-                                                              //   ""
-                                                              //   } ${tenant.contact_name ||
-                                                              //   ""
-                                                              //   } ${tenant.relationship_tenants ||
-                                                              //   ""
-                                                              //   } ${tenant.email ||
-                                                              //   ""
-                                                              //   } ${tenant.emergency_PhoneNumber ||
-                                                              //   ""
-                                                              //   } ${tenant.tenant_password ||
-                                                              //   ""
-                                                              //   } ${tenant.tenant_workNumber ||
-                                                              //   ""
-                                                              //   } ${tenant.alternate_email ||
-                                                              //   ""
-                                                              //   }`;
-                                                              const tenantInfo1 =
-                                                                {
-                                                                  tenant_firstName:
-                                                                    tenant.tenant_firstName,
-                                                                  tenant_lastName:
-                                                                    tenant.tenant_lastName,
-                                                                  tenant_mobileNumber:
-                                                                    tenant.tenant_mobileNumber,
-                                                                  tenant_email:
-                                                                    tenant.tenant_email,
-                                                                  textpayer_id:
-                                                                    tenant.textpayer_id,
-                                                                  birth_date:
-                                                                    tenant.birth_date,
-                                                                  comments:
-                                                                    tenant.comments,
-                                                                  contact_name:
-                                                                    tenant.contact_name,
-                                                                  relationship_tenants:
-                                                                    tenant.relationship_tenants,
-                                                                  email:
-                                                                    tenant.email,
-                                                                  emergency_PhoneNumber:
-                                                                    tenant.emergency_PhoneNumber,
-                                                                  tenant_password:
-                                                                    tenant.tenant_password,
-                                                                  tenant_workNumber:
-                                                                    tenant.tenant_workNumber,
-                                                                  alternate_email:
-                                                                    tenant.alternate_email,
-                                                                };
-                                                              handleCheckboxChange(
-                                                                event,
-                                                                tenantInfo1,
-                                                                tenant.tenant_mobileNumber
-                                                              );
-                                                              // console.log(tenantInfo1)
+                                              <table
+                                                style={{
+                                                  width: "100%",
+                                                  borderCollapse: "collapse",
+                                                }}
+                                              >
+                                                <thead>
+                                                  <tr>
+                                                    <th
+                                                      style={{
+                                                        padding: "15px",
+                                                      }}
+                                                    >
+                                                      Tenant Name
+                                                    </th>
+                                                    <th
+                                                      style={{
+                                                        padding: "15px",
+                                                      }}
+                                                    >
+                                                      Select
+                                                    </th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  {Array.isArray(tenantData) &&
+                                                    tenantData
+                                                      .filter((tenant) => {
+                                                        const fullName = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
+                                                        return fullName
+                                                          .toLowerCase()
+                                                          .includes(
+                                                            searchQuery.toLowerCase()
+                                                          );
+                                                      })
+                                                      .map((tenant, index) => (
+                                                        <tr
+                                                          key={index}
+                                                          style={{
+                                                            border:
+                                                              "1px solid #ddd",
+                                                          }}
+                                                        >
+                                                          <td
+                                                            style={{
+                                                              paddingLeft:
+                                                                "15px",
+                                                              paddingTop:
+                                                                "15px",
                                                             }}
-                                                          />
-                                                        </td>
-                                                      </tr>
-                                                    ))}
-                                              </tbody>
-                                            </table>
+                                                          >
+                                                            <pre>
+                                                              {
+                                                                tenant.tenant_firstName
+                                                              }
+                                                              {
+                                                                tenant.tenant_lastName
+                                                              }
+                                                              {`(${tenant.tenant_mobileNumber})`}
+                                                            </pre>
+                                                          </td>
+                                                          <td
+                                                            style={{
+                                                              paddingLeft:
+                                                                "15px",
+                                                              paddingTop:
+                                                                "15px",
+                                                            }}
+                                                          >
+                                                            {/* <FormControlLabel
+                                                          control={  */}
+                                                            <Checkbox
+                                                              type="checkbox"
+                                                              name="tenant"
+                                                              id={
+                                                                tenant.tenant_mobileNumber
+                                                              }
+                                                              checked={
+                                                                tenant.tenant_mobileNumber ===
+                                                                checkedCheckbox
+                                                              }
+                                                              onChange={(
+                                                                event
+                                                              ) => {
+                                                                setCheckedCheckbox(
+                                                                  tenant.tenant_mobileNumber
+                                                                );
+                                                                // const tenantInfo = `${tenant.tenant_firstName || ""}
+                                                                // ${tenant.tenant_lastName ||
+                                                                //   ""
+                                                                //   } ${tenant.tenant_mobileNumber ||
+                                                                //   ""
+                                                                //   } ${tenant.tenant_email ||
+                                                                //   ""
+                                                                //   } ${tenant.textpayer_id ||
+                                                                //   ""
+                                                                //   } ${tenant.birth_date ||
+                                                                //   ""
+                                                                //   } ${tenant.comments ||
+                                                                //   ""
+                                                                //   } ${tenant.contact_name ||
+                                                                //   ""
+                                                                //   } ${tenant.relationship_tenants ||
+                                                                //   ""
+                                                                //   } ${tenant.email ||
+                                                                //   ""
+                                                                //   } ${tenant.emergency_PhoneNumber ||
+                                                                //   ""
+                                                                //   } ${tenant.tenant_password ||
+                                                                //   ""
+                                                                //   } ${tenant.tenant_workNumber ||
+                                                                //   ""
+                                                                //   } ${tenant.alternate_email ||
+                                                                //   ""
+                                                                //   }`;
+                                                                const tenantInfo1 =
+                                                                  {
+                                                                    tenant_firstName:
+                                                                      tenant.tenant_firstName,
+                                                                    tenant_lastName:
+                                                                      tenant.tenant_lastName,
+                                                                    tenant_mobileNumber:
+                                                                      tenant.tenant_mobileNumber,
+                                                                    tenant_email:
+                                                                      tenant.tenant_email,
+                                                                    textpayer_id:
+                                                                      tenant.textpayer_id,
+                                                                    birth_date:
+                                                                      tenant.birth_date,
+                                                                    comments:
+                                                                      tenant.comments,
+                                                                    contact_name:
+                                                                      tenant.contact_name,
+                                                                    relationship_tenants:
+                                                                      tenant.relationship_tenants,
+                                                                    email:
+                                                                      tenant.email,
+                                                                    emergency_PhoneNumber:
+                                                                      tenant.emergency_PhoneNumber,
+                                                                    tenant_password:
+                                                                      tenant.tenant_password,
+                                                                    tenant_workNumber:
+                                                                      tenant.tenant_workNumber,
+                                                                    alternate_email:
+                                                                      tenant.alternate_email,
+                                                                  };
+                                                                handleCheckboxChange(
+                                                                  event,
+                                                                  tenantInfo1,
+                                                                  tenant.tenant_mobileNumber
+                                                                );
+                                                                // console.log(tenantInfo1)
+                                                              }}
+                                                            />
+                                                          </td>
+                                                        </tr>
+                                                      ))}
+                                                </tbody>
+                                              </table>
+                                            </div>
                                             <br />
                                           </div>
                                         )}
@@ -4886,7 +4925,7 @@ console.log(propertyId,'porpeorjinhb')
                                   name="memo"
                                   onBlur={entrySchema.handleBlur}
                                   onChange={entrySchema.handleChange}
-                                  value={entrySchema.values.memo}
+                                  value={entrySchema.values.memo || "Rent"}
                                 />
                                 {/* {leaseFormik.touched.memo &&
                                   leaseFormik.errors.memo ? (

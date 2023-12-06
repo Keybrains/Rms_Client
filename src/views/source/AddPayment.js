@@ -138,9 +138,7 @@ const AddPayment = () => {
   useEffect(() => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
-    )
+    fetch(`https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -230,9 +228,7 @@ const AddPayment = () => {
   };
 
   useEffect(() => {
-    fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
-    )
+    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -279,6 +275,7 @@ const AddPayment = () => {
         rental_adress: rentalAddress,
         tenant_id: tenantid,
         entryIndex: tenantentryIndex,
+        memo: values.memo || "Payment",
 
         entries: generalledgerFormik.values.entries.map((entry) => ({
           account: entry.account,
@@ -836,8 +833,9 @@ const AddPayment = () => {
                           name="memo"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
-                          value={generalledgerFormik.values.memo}
+                          value={generalledgerFormik.values.memo || "Payment"}
                         />
+
                         {generalledgerFormik.touched.memo &&
                         generalledgerFormik.errors.memo ? (
                           <div style={{ color: "red" }}>

@@ -112,18 +112,19 @@ const TenantDetailPage = () => {
   useEffect(() => {
     doSomething();
   }, []);
-
   const getStatus = (startDate, endDate) => {
     const today = new Date();
     const start = new Date(startDate);
     const end = new Date(endDate);
-
+  
     if (today >= start && today <= end) {
-      return "ACTIVE";
+      return 'Active';
     } else if (today < start) {
-      return "FUTURE";
+      return 'FUTURE';
+    } else if (today > end) {
+      return 'EXPIRED';
     } else {
-      return "-"; // Change this to suit your requirement for other cases
+      return '-';
     }
   };
 
