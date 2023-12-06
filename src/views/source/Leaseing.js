@@ -252,9 +252,11 @@ const Leaseing = () => {
 
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [ownerData, setOwnerData] = useState({});
+  const [propertyId, setPropertyId] = useState("");
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress);
     entrySchema.values.rental_adress = property.rental_adress;
+    setPropertyId(property._id);
     setOwnerData(property);
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
@@ -277,14 +279,18 @@ const Leaseing = () => {
     // localStorage.setItem("leasetype", leasetype);
   };
 
-  const handleUnitSelect = (selectedUnit) => {
+  const handleUnitSelect = (selectedUnit,unitId) => {
     setSelectedUnit(selectedUnit);
     entrySchema.values.rental_units = selectedUnit;
+    entrySchema.setFieldValue("unit_id", unitId);
+    // entrySchema.values.unit_id = unitId;
+
   };
 
   const [selectedRentCycle, setselectedRentCycle] = useState("");
   const handleselectedRentCycle = (rentcycle) => {
     setselectedRentCycle(rentcycle);
+    entrySchema.setFieldValue("rent_cycle", rentcycle);
 
     const startDate = entrySchema.values.start_date;
     let nextDue_date;
@@ -723,7 +729,7 @@ const Leaseing = () => {
         console.error("Network error:", error);
       });
   }, []);
-
+  console.log(propertyData,'propertyData')
   const fetchingAccountNames = async () => {
     // console.log("fetching account names");
     fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
@@ -1171,6 +1177,7 @@ const Leaseing = () => {
 
       lease_type: "",
       rental_units: "",
+      unit_id:"",
       start_date: "",
       end_date: "",
       leasing_agent: "",
@@ -1681,7 +1688,8 @@ const Leaseing = () => {
           isrenton: entrySchema.values.isrenton,
           rent_paid: entrySchema.values.rent_paid,
           propertyOnRent: entrySchema.values.propertyOnRent,
-          rentalOwner_name: "",
+          // rentalOwner_name: "",
+          unitId: entrySchema.values.unitId,
           //security deposite
           Due_date: entrySchema.values.Due_date,
           Security_amount: entrySchema.values.Security_amount,
@@ -1717,7 +1725,7 @@ const Leaseing = () => {
 
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
-      tenant_residentStatus: ownerData.tenant_residentStatus,
+          tenant_residentStatus: ownerData.tenant_residentStatus,
           rentalOwner_firstName: ownerData.rentalOwner_firstName,
           rentalOwner_lastName: ownerData.rentalOwner_lastName,
           rentalOwner_primaryemail: ownerData.rentalOwner_email,
@@ -1758,6 +1766,41 @@ const Leaseing = () => {
           if (res.data.statusCode === 200) {
             console.log(res.data.data, "clgtttt");
             swal("", res.data.message, "success");
+
+
+            const chargeObject = {
+              properties:{
+                rental_adress:entrySchema.values.rental_adress,
+                property_id:propertyId
+              },
+              unit:[{
+                unit:entrySchema.values.rental_units,
+                unit_id:entrySchema.values.unit_id,
+                paymentAndCharges:[{
+                    type:"Payment",
+                    account:entrySchema.values.account,
+                    amount:parseFloat(entrySchema.values.amount),
+                    rental_adress:entrySchema.values.rental_adress,
+                    rent_cycle:entrySchema.values.rent_cycle,
+                    month_year:moment().format("MM-YYYY"),
+                    date:moment().format("YYYY-MM-DD"),
+                    memo: values.charges_memo,
+                    tenant_id:tenantId,
+                    tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
+                }]
+                
+              }]
+            }
+
+            const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+            await axios.post(url, chargeObject).then((res) => {
+              console.log(res)
+            }).catch((err) => {
+              console.log(err)
+            })
+
+
+
             navigate("/admin/TenantsTable");
           } else {
             swal("", res.data.message, "error");
@@ -1771,14 +1814,45 @@ const Leaseing = () => {
               tenantObject
             );
             if (res.data.statusCode === 200) {
-              console.log(res.data.data);
+              console.log(res.data.data,'after post');
+
+              debugger
+              const chargeObject = {
+                properties:{
+                  rental_adress:entrySchema.values.rental_adress,
+                  property_id:propertyId
+                },
+                unit:[{
+                  unit:entrySchema.values.rental_units,
+                  unit_id:entrySchema.values.unit_id,
+                  paymentAndCharges:[{
+                      type:"Payment",
+                      account:entrySchema.values.account,
+                      amount:parseFloat(entrySchema.values.amount),
+                      rental_adress:entrySchema.values.rental_adress,
+                      rent_cycle:entrySchema.values.rent_cycle,
+                      month_year:moment().format("MM-YYYY"),
+                      date:moment().format("YYYY-MM-DD"),
+                      memo: values.charges_memo,
+                      tenant_id:res.data.data._id,
+                      tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
+                  }]
+                  
+                }]
+              }
+  
+              const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+              await axios.post(url, chargeObject).then((res) => {
+                console.log(res)
+              }).catch((err) => {
+                console.log(err)
+              })
               swal("", res.data.message, "success");
               navigate("/admin/TenantsTable");
             } else {
               swal("", res.data.message, "error");
             }
             handleResponse(res);
-          } else {
           }
         }
       } else {
@@ -2083,7 +2157,7 @@ const Leaseing = () => {
                                   <DropdownItem
                                     key={unit._id}
                                     onClick={() =>
-                                      handleUnitSelect(unit.rental_units)
+                                      handleUnitSelect(unit.rental_units,unit._id)
                                     }
                                   >
                                     {unit.rental_units}

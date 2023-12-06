@@ -257,10 +257,11 @@ const RentRollLeaseing = () => {
   };
 
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
+  const [propertyId, setPropertyId] = useState("");
   // console.log(selectedPropertyType, "selectedPropertyType")
-  const handlePropertyTypeSelect = async (propertyType) => {
+  const handlePropertyTypeSelect = async (propertyType,property_id) => {
     setSelectedPropertyType(propertyType);
-
+    setPropertyId(property_id);
     entrySchema.values.rental_adress = propertyType;
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
@@ -285,6 +286,10 @@ const RentRollLeaseing = () => {
   const [selectedRentCycle, setselectedRentCycle] = useState("");
   const handleselectedRentCycle = (rentcycle) => {
     setselectedRentCycle(rentcycle);
+    // localStorage.setItem("leasetype", leasetype);
+    // entrySchema.values.rent_cycle = rentcycle;
+    entrySchema.setFieldValue("rent_cycle", rentcycle);
+  // };
     // localStorage.setItem("leasetype", leasetype);
     const startDate = entrySchema.values.start_date;
     let nextDue_date;
@@ -639,7 +644,7 @@ const RentRollLeaseing = () => {
   //       console.log("Error uploading image:", err);
   //     });
   // };
-
+console.log(propertyId,'porpeorjinhb')
   const fileData = (files) => {
     //setImgLoader(true);
     // console.log(files, "file");
@@ -1347,6 +1352,7 @@ const RentRollLeaseing = () => {
       rental_adress: "",
       lease_type: "",
       rental_units: "",
+      unit_id:"",
       start_date: "",
       end_date: "",
       leasing_agent: "",
@@ -1897,12 +1903,14 @@ const RentRollLeaseing = () => {
           fund_type: entrySchema.values.fund_type,
           cash_flow: entrySchema.values.cash_flow,
           notes: entrySchema.values.notes,
-
+          unit_id: entrySchema.values.unit_id,
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
         },
       ],
     };
+    console.log(tenantObject,'sdgvfyfbhjnkml,kjnhbgvfcvhb')
+    debugger
 
     try {
       const res = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant`);
@@ -1930,6 +1938,37 @@ const RentRollLeaseing = () => {
             putObject
           );
           if (res.data.statusCode === 200) {
+
+            const chargeObject = {
+              properties:{
+                rental_adress:entrySchema.values.rental_adress,
+                property_id:propertyId
+              },
+              unit:[{
+                unit:entrySchema.values.rental_units,
+                unit_id:entrySchema.values.unit_id,
+                paymentAndCharges:[{
+                    type:"Payment",
+                    account:entrySchema.values.account,
+                    amount:parseFloat(entrySchema.values.amount),
+                    rental_adress:entrySchema.values.rental_adress,
+                    rent_cycle:entrySchema.values.rent_cycle,
+                    month_year:moment().format("MM-YYYY"),
+                    date:moment().format("YYYY-MM-DD"),
+                    memo: values.charges_memo,
+                    tenant_id:tenantId,
+                    tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
+                }]
+                
+              }]
+            }
+
+            const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+            await axios.post(url, chargeObject).then((res) => {
+              console.log(res)
+            }).catch((err) => {
+              console.log(err)
+            })
             swal("", res.data.message, "success");
             navigate("/admin/TenantsTable");
           } else {
@@ -1946,6 +1985,37 @@ const RentRollLeaseing = () => {
             );
             if (res.data.statusCode === 200) {
               console.log(res.data.data);
+
+              const chargeObject = {
+                properties:{
+                  rental_adress:entrySchema.values.rental_adress,
+                  property_id:propertyId
+                },
+                unit:[{
+                  unit:entrySchema.values.rental_units,
+                  unit_id:entrySchema.values.unit_id,
+                  paymentAndCharges:[{
+                      type:"Payment",
+                      account:entrySchema.values.account,
+                      amount:parseFloat(entrySchema.values.amount),
+                      rental_adress:entrySchema.values.rental_adress,
+                      rent_cycle:entrySchema.values.rent_cycle,
+                      month_year:moment().format("MM-YYYY"),
+                      date:moment().format("YYYY-MM-DD"),
+                      memo: values.charges_memo,
+                      tenant_id:res.data.data._id,
+                      tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
+                  }]
+                  
+                }]
+              }
+  
+              const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+              await axios.post(url, chargeObject).then((res) => {
+                console.log(res)
+              }).catch((err) => {
+                console.log(err)
+              })
               swal("", res.data.message, "success");
               navigate("/admin/TenantsTable");
             } else {
@@ -2212,9 +2282,17 @@ const RentRollLeaseing = () => {
     setcIndex(index);
   };
 
-  const handleUnitSelect = (selectedUnit) => {
+  const handleUnitSelect = (selectedUnit, unitId) => {
     setSelectedUnit(selectedUnit);
-    entrySchema.values.rental_units = selectedUnit;
+    // entrySchema.values.rental_units = selectedUnit;
+
+    // entrySchema.values.unit_idd = unitId;
+    entrySchema.setValues({
+      ...entrySchema.values,
+      rental_units: selectedUnit,
+      unit_id: unitId,
+    });
+
   };
 
   return (
@@ -2314,7 +2392,7 @@ const RentRollLeaseing = () => {
                                   key={index}
                                   onClick={() => {
                                     handlePropertyTypeSelect(
-                                      property.rental_adress
+                                      property.rental_adress,property._id
                                     );
                                   }}
                                 >
@@ -2344,6 +2422,7 @@ const RentRollLeaseing = () => {
                         >
                           Unit *
                         </label>
+                        {console.log(unitData, "unitData")}
                         <FormGroup style={{ marginLeft: "15px" }}>
                           <Dropdown isOpen={unitDropdownOpen} toggle={toggle11}>
                             {console.log(selectedUnit, "sssss")}
@@ -2356,7 +2435,7 @@ const RentRollLeaseing = () => {
                                   <DropdownItem
                                     key={unit._id}
                                     onClick={() =>
-                                      handleUnitSelect(unit.rental_units)
+                                      handleUnitSelect(unit.rental_units,unit._id)
                                     }
                                   >
                                     {unit.rental_units}

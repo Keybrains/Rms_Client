@@ -38,6 +38,7 @@ import Img from "assets/img/theme/team-4-800x800.jpg";
 import "jspdf-autotable";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
+import moment from "moment";
 
 const AddCharge = () => {
   const { tenantId, entryIndex } = useParams();
@@ -207,7 +208,7 @@ const AddCharge = () => {
           const tenantData = data.data;
           const rentalAddress = tenantData.entries.rental_adress;
           setSelectedRec(`${tenantData.tenant_firstName} ${tenantData.tenant_lastName}`);
-          // setTenantid(tenantData._id);
+          setTenantid(tenantData._id);
           // setTenantentryindex(tenantData.entryIndex);
           setRentAddress(rentalAddress);
           generalledgerFormik.setValues({
@@ -251,7 +252,9 @@ const AddCharge = () => {
     if (entries.charges_amount) {
       charges_total_amount += parseFloat(entries.charges_amount);
     }
-  });
+  }); 
+  const location = useLocation();
+  const state =  location.state && location.state;
 
   const handleSubmit = async (values) => {
     const arrayOfNames = file.map((item) => item.name);
@@ -276,7 +279,7 @@ const AddCharge = () => {
       };
       //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_charges", //https://propertymanager.cloudpress.host
+        "https://propertymanager.cloudpress.host/api/payment/add_charges", //http://localhost:4000
         updatedValues
       );
 
@@ -286,6 +289,44 @@ const AddCharge = () => {
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
+      }
+      console.log(state,'state')
+      debugger
+      try{
+        const chargeObject = {
+          properties:{
+            rental_adress:rentalAddress,
+            property_id:state && state.property_id
+          },
+          unit:[{
+            unit:state && state.unit_name,
+            unit_id:state && state.unit_id,
+            paymentAndCharges:generalledgerFormik.values.entries.map((entry) => ({
+                type:"Charge",
+                account:entry.charges_account,
+                amount:parseFloat(entry.charges_amount),
+                rental_adress:rentAddress,
+                rent_cycle:"",
+                month_year:moment().format("MM-YYYY"),
+                date:moment().format("YYYY-MM-DD"),
+                memo: values.charges_memo,
+                tenant_id:tenantid,
+                tenant_firstName:selectedRec,
+            })),
+            
+          }]
+        }
+        console.log(chargeObject,'chargeObject')
+        // debugger
+        const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+        await axios.post(url, chargeObject).then((res) => {
+          console.log(res)
+        }).catch((err) => {
+          console.log(err)
+        })
+      }
+      catch{
+
       }
     } catch (error) {
       console.error("Error:", error);
