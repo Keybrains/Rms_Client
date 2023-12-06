@@ -130,6 +130,10 @@ const RentRollDetail = () => {
     }
   }, [tenantId, entryIndex]);
 
+  const [unitId, setUnitId] = useState(null);
+  const [propertyId, setPropertyId] = useState(null);
+  // const [unitName, setUnitName] = useState(null);
+
   const handleClick = () => {
     navigate(`../AddPayment/${tenantId}/${entryIndex}`);
   };
@@ -147,12 +151,68 @@ const RentRollDetail = () => {
 
   const getTenantData = async () => {
     try {
+      const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
       const response = await axios.get(apiUrl);
       console.log(response.data.data, "huihyui");
       setTenantDetails(response.data.data);
       //console.log(response.data.data, "hiiii");
       const rental = response.data.data.entries.rental_adress;
       const unit = response.data.data.entries.rental_units;
+      const unitId = response.data.data.entries.unit_id;
+      console.log(response.data.data.entries.rental_units, "res.daya dhstab");
+
+      axios
+        .get(
+          `https://propertymanager.cloudpress.host/api/propertyunit/prop_id/${response.data.data.entries.unit_id}`
+        )
+        .then((res) => {
+          // if (res.data) {
+            // setRentaldata(res.data.data);
+            // const matchedUnit = res?.data?.find((item) => {
+            //   if (item.unit_id === unitId) {
+            //     setRentaldata(item);
+            //   }
+            // });
+            setPropertyId(res.data.data[0].propertyId);
+            const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=${rental}&property_id=${res.data.data[0].propertyId}&unit=${unit}&tenant_id=${tenantId}`
+            // const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=Testing&property_id=6568198deb1c48ddf1dbef35&unit=A&tenant_id=656d9e573b2237290eceae1f`
+
+            // const response = await axios.get(url);
+            axios
+            .get(url)
+            .then((response) => {
+              setLoader(false);
+          
+              if (response.data && response.data.data) {
+                const mergedData = response.data.data;
+                // const sortedData = mergedData.map((item) => ({
+                //   ...item,
+                //   unit: item.unit.map((unitItem) => ({
+                //     ...unitItem,
+                //     paymentAndCharges: unitItem.paymentAndCharges.sort((a, b) =>
+                //       new Date(a.date) - new Date(b.date)
+                //     ),
+                //   })),
+                // }));
+          
+                setGeneralLedgerData(mergedData[0]?.unit[0]);
+              } else {
+                console.error("Unexpected response format:", response.data);
+              }
+            })
+            .catch((error) => {
+              console.error("Error fetching data:", error);
+            });
+          
+          // }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      setUnitId(unitId);
+
+      setPropertyId(propertyId);
+
       setRental(rental);
       // console.log(rental, "hell");
       setUnit(unit);
@@ -199,9 +259,7 @@ const RentRollDetail = () => {
 
       // Access the rental_adress within the entries object
       const rentalAddress = tenantData.entries.rental_adress;
-      // Set the tenantDetails state and loading state
       setTenantDetails(tenantData);
-      // console.log(rentalAddress, "rentalAddress");
       setLoading(false);
       // Set the active tab to "Tenant" and navigate to the appropriate path using rentalAddress
       setValue("Tenant");
@@ -438,23 +496,26 @@ const RentRollDetail = () => {
   //   }
   // };
   const getGeneralLedgerData = async () => {
-    const apiUrl = `${baseUrl}/payment/merge_payment_charge/${tenantId}`;
-    try {
-      const response = await axios.get(apiUrl);
-      setLoader(false);
-      if (response.data && response.data.data) {
-        const mergedData = response.data.data;
-        // console.log(mergedData)
-        mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
-        const dataWithBalance = calculateBalance(mergedData);
-        setGeneralLedgerData(dataWithBalance);
-        setBalance(dataWithBalance[0].entries[0].balance);
-      } else {
-        console.error("Unexpected response format:", response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+
+
+    // const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+    // try {
+    //   const response = await axios.get(apiUrl);
+    //   setLoader(false);
+    //   if (response.data && response.data.data) {
+    //     const mergedData = response.data.data;
+    //     // console.log(mergedData)
+    //     mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
+    //     const dataWithBalance = calculateBalance(mergedData);
+    //     setGeneralLedgerData(dataWithBalance);
+    //     setBalance(dataWithBalance[0].entries[0].balance);
+    //   } else {
+    //     console.error("Unexpected response format:", response.data);
+    //   }
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
+    // getTenantData();
   };
 
   useEffect(() => {
@@ -844,11 +905,14 @@ const RentRollDetail = () => {
                                               .rental_units || "N/A"}
                                         </Col>
                                         <Col>
-                                          
-                                           
-                                            {tenantDetails.entries.rentalOwner_firstName ? (tenantDetails.entries.rentalOwner_firstName + " " + tenantDetails.entries.rentalOwner_lastName): 
-                                              "N/A"}
-                                         
+                                          {tenantDetails.entries
+                                            .rentalOwner_firstName
+                                            ? tenantDetails.entries
+                                                .rentalOwner_firstName +
+                                              " " +
+                                              tenantDetails.entries
+                                                .rentalOwner_lastName
+                                            : "N/A"}
                                         </Col>
                                         <Col>
                                           {tenantDetails?.tenant_firstName +
@@ -1202,10 +1266,17 @@ const RentRollDetail = () => {
                         >
                           <Button
                             color="primary"
-                            href="#rms"
+                            // href="#rms"
                             onClick={() =>
                               navigate(
-                                `/admin/AddPayment/${tenantId}/${entryIndex}`
+                                `/admin/AddPayment/${tenantId}/${entryIndex}`,
+                                {
+                                  state: {
+                                    unit_name: unit,
+                                    unit_id: unitId,
+                                    property_id: propertyId,
+                                  },
+                                }
                               )
                             }
                             style={{
@@ -1218,10 +1289,17 @@ const RentRollDetail = () => {
                           </Button>
                           <Button
                             color="primary"
-                            href="#rms"
+                            // href="#rms"
                             onClick={() =>
                               navigate(
-                                `/admin/AddCharge/${tenantId}/${entryIndex}`
+                                `/admin/AddCharge/${tenantId}/${entryIndex}`,
+                                {
+                                  state: {
+                                    unit_name: unit,
+                                    unit_id: unitId,
+                                    property_id: propertyId,
+                                  },
+                                }
                               )
                             }
                             style={{ background: "white", color: "blue" }}
@@ -1297,142 +1375,118 @@ const RentRollDetail = () => {
                                     <th scope="col">Action</th>
                                   </tr>
                                 </thead>
-                                {/* {console.log(GeneralLedgerData)} */}
                                 <tbody>
-                                  {Array.isArray(GeneralLedgerData) ? (
-                                    GeneralLedgerData.map((generalledger) => (
-                                      <>
-                                        {generalledger.entries.map(
-                                          (entry, index) => (
-                                            <tr
-                                              key={`${generalledger._id}_${index}`}
-                                            >
-                                              <td>
-                                                {formatDateWithoutTime(
-                                                  generalledger.type ===
-                                                    "Charge"
-                                                    ? generalledger.date
-                                                    : generalledger.date
-                                                ) || "N/A"}
-                                              </td>
-                                              <td>{generalledger.type}</td>
-                                              <td>
-                                                {generalledger.type === "Charge"
-                                                  ? entry.charges_account
-                                                  : entry.account}
-                                              </td>
-                                              <td>
-                                                {generalledger.type === "Charge"
-                                                  ? generalledger.charges_memo
-                                                  : generalledger.memo}
-                                              </td>
-                                              <td>
-                                                {generalledger.type === "Charge"
-                                                  ? "$" + entry.charges_amount
-                                                  : "-"}
-                                              </td>
-                                              <td>
-                                                {generalledger.type ===
-                                                "Payment"
-                                                  ? "$" + entry.amount
-                                                  : "-"}
-                                              </td>
-                                              <td>
-                                                {entry.balance !== undefined
-                                                  ? entry.balance >= 0
-                                                    ? `$${entry.balance}`
-                                                    : `$(${Math.abs(
-                                                        entry.balance
-                                                      )})`
-                                                  : "0"}
-                                                {/* {calculateBalance(
+                                  {GeneralLedgerData &&
+                                    GeneralLedgerData?.paymentAndCharges?.map(
+                                      (generalledger) => (
+                                        <>
+                                          <tr key={`${generalledger._id}`}>
+                                            <td>{generalledger.date}</td>
+                                            <td>{generalledger.type}</td>
+                                            <td>{generalledger.account}</td>
+                                            <td>{generalledger.memo}</td>
+                                            <td>
+                                              {generalledger.type === "Charge"
+                                                ? "$" + generalledger.amount
+                                                : "-"}
+                                            </td>
+                                            <td>
+                                              {generalledger.type === "Payment"
+                                                ? "$" + generalledger.amount
+                                                : "-"}
+                                            </td>
+                                            <td>
+                                              {generalledger.Total !== undefined
+                                                ? generalledger.Total >= 0
+                                                  ? `$${generalledger.Total}`
+                                                  : `$(${Math.abs(
+                                                    generalledger.Total
+                                                    )})`
+                                                : "0"}
+                                              {/* {calculateBalance(
                                                   generalledger.type,
                                                   entry,
                                                   index
                                                 )} */}
-                                              </td>
-                                              <td>
-                                                <div
-                                                  style={{
-                                                    display: "flex",
-                                                    gap: "5px",
-                                                  }}
-                                                >
-                                                  {generalledger.type ===
-                                                    "Charge" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        // console.log(
-                                                        //   "Entry Object:",
-                                                        //   entry
-                                                        // );
-                                                        deleteCharge(
-                                                          generalledger._id,
-                                                          entry.chargeIndex
-                                                        );
-                                                        // console.log(
-                                                        //   generalledger._id,
-                                                        //   "dsgdg"
-                                                        // );
-                                                        // console.log(
-                                                        //   entry.chargeIndex,
-                                                        //   "dsgdg"
-                                                        // );
-                                                      }}
-                                                    >
-                                                      <DeleteIcon />
-                                                    </div>
-                                                  )}
+                                            </td>
+                                            <td>
+                                              <div
+                                                style={{
+                                                  display: "flex",
+                                                  gap: "5px",
+                                                }}
+                                              >
+                                                {generalledger.type ===
+                                                  "Charge" && (
+                                                  <div
+                                                    style={{
+                                                      cursor: "pointer",
+                                                    }}
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      // console.log(
+                                                      //   "Entry Object:",
+                                                      //   entry
+                                                      // );
+                                                      deleteCharge(
+                                                        generalledger._id,
+                                                        entry.chargeIndex
+                                                      );
+                                                      // console.log(
+                                                      //   generalledger._id,
+                                                      //   "dsgdg"
+                                                      // );
+                                                      // console.log(
+                                                      //   entry.chargeIndex,
+                                                      //   "dsgdg"
+                                                      // );
+                                                    }}
+                                                  >
+                                                    <DeleteIcon />
+                                                  </div>
+                                                )}
 
-                                                  {generalledger.type ===
-                                                    "Charge" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        editcharge(
-                                                          generalledger._id,
-                                                          entry.chargeIndex
-                                                        );
-                                                      }}
-                                                    >
-                                                      <EditIcon />
-                                                    </div>
-                                                  )}
+                                                {generalledger.type ===
+                                                  "Charge" && (
+                                                  <div
+                                                    style={{
+                                                      cursor: "pointer",
+                                                    }}
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      editcharge(
+                                                        generalledger._id,
+                                                        entry.chargeIndex
+                                                      );
+                                                    }}
+                                                  >
+                                                    <EditIcon />
+                                                  </div>
+                                                )}
 
-                                                  {generalledger.type ===
-                                                    "Payment" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        editpayment(
-                                                          generalledger._id,
-                                                          entry.paymentIndex
-                                                        );
-                                                      }}
-                                                    >
-                                                      <EditIcon />
-                                                    </div>
-                                                  )}
-                                                </div>
-                                              </td>
-                                            </tr>
-                                          )
-                                        )}
-                                      </>
-                                    ))
-                                  ) : (
-                                    <p>GeneralLedgerData is not an array</p>
-                                  )}
+                                                {generalledger.type ===
+                                                  "Payment" && (
+                                                  <div
+                                                    style={{
+                                                      cursor: "pointer",
+                                                    }}
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      editpayment(
+                                                        generalledger._id,
+                                                        entry.paymentIndex
+                                                      );
+                                                    }}
+                                                  >
+                                                    <EditIcon />
+                                                  </div>
+                                                )}
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        </>
+                                      )
+                                    )}
                                 </tbody>
                               </Table>
                             </Card>
@@ -1719,7 +1773,6 @@ const RentRollDetail = () => {
                                             flexDirection: "row",
                                             marginTop: "10px",
                                           }}
-                                          
                                         >
                                           <Typography
                                             style={{
@@ -1734,15 +1787,17 @@ const RentRollDetail = () => {
                                         </div>
                                         <div
                                           style={
-                                          entry.moveout_notice_given_date ? {
-                                            // display:"block",
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }:{
-                                            display:"none"
+                                            entry.moveout_notice_given_date
+                                              ? {
+                                                  // display:"block",
+                                                  display: "flex",
+                                                  flexDirection: "row",
+                                                  marginTop: "10px",
+                                                }
+                                              : {
+                                                  display: "none",
+                                                }
                                           }
-                                        }
                                         >
                                           <Typography
                                             style={{
@@ -1753,18 +1808,22 @@ const RentRollDetail = () => {
                                           >
                                             Notice date:
                                           </Typography>
-                                          {entry.moveout_notice_given_date  || "N/A"}
+                                          {entry.moveout_notice_given_date ||
+                                            "N/A"}
                                         </div>
                                         <div
                                           style={
-                                          entry.moveout_date ? {
-                                            // display:"block",
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }:{
-                                            display:"none"
-                                          }}
+                                            entry.moveout_date
+                                              ? {
+                                                  // display:"block",
+                                                  display: "flex",
+                                                  flexDirection: "row",
+                                                  marginTop: "10px",
+                                                }
+                                              : {
+                                                  display: "none",
+                                                }
+                                          }
                                         >
                                           <Typography
                                             style={{
@@ -1777,8 +1836,6 @@ const RentRollDetail = () => {
                                           </Typography>
                                           {entry.moveout_date || "N/A"}
                                         </div>
-                                        
-                                        
                                       </Col>
                                     </Row>
                                   </Box>
@@ -2006,8 +2063,7 @@ const RentRollDetail = () => {
                         </Card>
                       </Col>
                     </Row>
-                    <Row>
-    </Row>
+                    <Row></Row>
                   </TabPanel>
                 </TabContext>
               </Col>

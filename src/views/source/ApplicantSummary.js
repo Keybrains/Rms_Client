@@ -601,11 +601,11 @@ const ApplicantSummary = () => {
               isrenton: fetchedData.data.isrenton || false,
               rent_paid: fetchedData.data.rent_paid || false,
               propertyOnRent: fetchedData.data.propertyOnRent || false,
-    
+              
               //security deposite
               Due_date: fetchedData.data.Due_date || "",
               Security_amount: fetchedData.data.Security_amount || "",
-    
+              
               // add cosigner
               cosigner_firstName: fetchedData.data.cosigner_firstName || "",
               cosigner_lastName: fetchedData.data.cosigner_lastName || "",
