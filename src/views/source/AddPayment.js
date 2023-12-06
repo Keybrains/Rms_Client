@@ -38,6 +38,7 @@ import Img from "assets/img/theme/team-4-800x800.jpg";
 import "jspdf-autotable";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
+import moment from "moment";
 
 const AddPayment = () => {
   const { tenantId, entryIndex } = useParams();
@@ -60,6 +61,9 @@ const AddPayment = () => {
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
+
+  const location = useLocation();
+  const state =  location.state && location.state;
 
   React.useEffect(() => {
     if (cookies.get("token")) {
@@ -135,7 +139,7 @@ const AddPayment = () => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
+      `http://localhost:4000/api/tenant/tenant-name/tenant/${rentAddress}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -203,7 +207,7 @@ const AddPayment = () => {
   const [tenantData, setTenantData] = useState([]);
   const fetchTenantData = async () => {
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+      `http://localhost:4000/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -213,6 +217,7 @@ const AddPayment = () => {
           console.log("Tenant data:", tenantDatas);
           const rentalAddress = tenantDatas.entries.rental_adress;
           setSelectedRec(`${tenantDatas.tenant_firstName} ${tenantDatas.tenant_lastName}`);
+          setTenantid(tenantDatas._id)
           // setTenantid(tenantDatas._id); // Set the selected tenant's ID
           // setTenantentryIndex(tenantDatas.entryIndex); // Set the selected tenant's entry index
           setRentAddress(rentalAddress);
@@ -226,7 +231,7 @@ const AddPayment = () => {
 
   useEffect(() => {
     fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+      "http://localhost:4000/api/addaccount/find_accountname"
     )
       .then((response) => response.json())
       .then((data) => {
@@ -284,15 +289,17 @@ const AddPayment = () => {
       };
       //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_payment", ///https://propertymanager.cloudpress.host
+        "http://localhost:4000/api/payment/add_payment", ///http://localhost:4000
         updatedValues
       );
 
       if (response.data.statusCode === 200) {
+        console.log(response.data.data,'resdadadadad')
+        debugger
         const id = response.data.data._id;
         if (id) {
           const pdfResponse = await axios.get(
-            `https://propertymanager.cloudpress.host/api/Payment/Payment_summary/${id}`,
+            `http://localhost:4000/api/Payment/Payment_summary/${id}`,
             { responseType: "blob" }
           );
           if (pdfResponse.status === 200 && printReceipt) {
@@ -405,6 +412,47 @@ const AddPayment = () => {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
       }
+      try{
+        const paymentObject = {
+          properties:{
+            rental_adress:rentalAddress,
+            property_id:state && state.property_id
+          },
+          unit:[{
+            unit:state && state.unit_name,
+            unit_id:state && state.unit_id,
+            paymentAndCharges:generalledgerFormik.values.entries.map((entry) => ({
+                type:"Payment",
+                account:entry.charges_account,
+                amount:parseFloat(entry.charges_amount),
+                rental_adress:rentAddress,
+                rent_cycle:"",
+                month_year:moment().format("MM-YYYY"),
+                date:moment().format("YYYY-MM-DD"),
+                memo: values.charges_memo,
+                tenant_id:tenantid,
+                tenant_firstName:selectedRec,
+            })),
+            
+          }]
+        }
+        console.log(paymentObject,'chargeObject')
+        // debugger
+        const url = "http://localhost:4000/api/payment_charge/payment_charge"
+        await axios.post(url, paymentObject).then((res) => {
+          console.log(res)
+        }).catch((err) => {
+          console.log(err)
+        })
+      }
+      catch (error) {
+        console.error("Error:", error);
+        if (error.response) {
+          console.error("Response Data:", error.response.data);
+        }
+
+      }
+
     } catch (error) {
       console.error("Error:", error);
       if (error.response) {
@@ -473,7 +521,7 @@ const AddPayment = () => {
     if (mainId && paymentIndex) {
       axios
         .get(
-          `https://propertymanager.cloudpress.host/api/payment/payment_summary/${mainId}/payment/${paymentIndex}`
+          `http://localhost:4000/api/payment/payment_summary/${mainId}/payment/${paymentIndex}`
         )
         .then((response) => {
           const paymentData = response.data.data;
@@ -566,7 +614,7 @@ const AddPayment = () => {
 
       //console.log(updatedValues, "updatedValues");
 
-      const putUrl = `https://propertymanager.cloudpress.host/api/payment/payments/${mainId}/payment/${paymentIndex}`;
+      const putUrl = `http://localhost:4000/api/payment/payments/${mainId}/payment/${paymentIndex}`;
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
