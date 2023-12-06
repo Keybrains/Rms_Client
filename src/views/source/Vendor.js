@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 
 const Vendor = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [vendorData, setVendorData] = useState([]);
   const [loader, setLoader] = useState(true);
@@ -63,7 +64,7 @@ const Vendor = () => {
   const getVendorData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/vendor/vendor"
+        `${baseUrl}/vendor/vendor`
       );
       setLoader(false);
       setVendorData(response.data.data);
@@ -86,7 +87,7 @@ const Vendor = () => {
       if (willDelete) {
         try {
           const response = await axios.delete(
-            "https://propertymanager.cloudpress.host/api/vendor/delete_vendor",
+            `${baseUrl}/vendor/delete_vendor`,
             {
               data: { _id: id },
             }

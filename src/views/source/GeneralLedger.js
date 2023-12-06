@@ -28,6 +28,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const GeneralLedger = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
   const [propertyData, setPropertyData] = React.useState([]);
@@ -56,7 +57,7 @@ const GeneralLedger = () => {
   };
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
+    fetch(`${baseUrl}/rentals/property_onrent`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -74,7 +75,7 @@ const GeneralLedger = () => {
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(`${baseUrl}/addaccount/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -103,7 +104,7 @@ const GeneralLedger = () => {
   }, [navigate]);
   const getGeneralLedgerData = async () => {
     try {
-      const response = await axios.get("https://propertymanager.cloudpress.host/api/ledger/ledger");
+      const response = await axios.get(`${baseUrl}/ledger/ledger`);
       setLoader(false);
       setGeneralLedgerData(response.data.data);
       //console.log(response.data.data);

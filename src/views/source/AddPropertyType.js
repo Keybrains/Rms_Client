@@ -36,6 +36,7 @@ import { jwtDecode } from "jwt-decode";
 import Checkbox from "@mui/material/Checkbox";
 
 const AddPropertyType = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
   const [isMultiUnit, setIsMultiUnit] = React.useState(false);
@@ -151,7 +152,7 @@ const AddPropertyType = () => {
   React.useEffect(() => {
     if (id) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/newproparty/newproperty_summary/${id}`)
+        .get(`${baseUrl}/newproparty/newproperty_summary/${id}`)
         .then((response) => {
           const propertyData = response.data.data;
           setpropertyType(propertyType);
@@ -178,12 +179,12 @@ const AddPropertyType = () => {
       // values["property_type"] = selectedProperty;
       if (id === undefined) {
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/newproparty/newproparty",
+          `${baseUrl}/newproparty/newproparty`,
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `https://propertymanager.cloudpress.host/api/newproparty/proparty-type/${id}`;
+        const editUrl = `${baseUrl}/newproparty/proparty-type/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }

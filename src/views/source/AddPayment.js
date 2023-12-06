@@ -40,6 +40,7 @@ import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 
 const AddPayment = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, entryIndex } = useParams();
   const { mainId, paymentIndex } = useParams();
   const [id, setId] = useState("");
@@ -134,7 +135,7 @@ const AddPayment = () => {
   useEffect(() => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
-    fetch(`https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`)
+    fetch(`${baseUrl}/tenant/tenant-name/tenant/${rentAddress}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -201,7 +202,7 @@ const AddPayment = () => {
   const [tenantData, setTenantData] = useState([]);
   const fetchTenantData = async () => {
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+      `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -223,7 +224,7 @@ const AddPayment = () => {
   };
 
   useEffect(() => {
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(`${baseUrl}/addaccount/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -281,7 +282,7 @@ const AddPayment = () => {
       };
       //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_payment", ///https://propertymanager.cloudpress.host
+        `${baseUrl}/payment/add_payment`,
         updatedValues
       );
 
@@ -289,7 +290,7 @@ const AddPayment = () => {
         const id = response.data.data._id;
         if (id) {
           const pdfResponse = await axios.get(
-            `https://propertymanager.cloudpress.host/api/Payment/Payment_summary/${id}`,
+            `${baseUrl}/Payment/Payment_summary/${id}`,
             { responseType: "blob" }
           );
           if (pdfResponse.status === 200 && printReceipt) {
@@ -470,7 +471,7 @@ const AddPayment = () => {
     if (mainId && paymentIndex) {
       axios
         .get(
-          `https://propertymanager.cloudpress.host/api/payment/payment_summary/${mainId}/payment/${paymentIndex}`
+          `${baseUrl}/payment/payment_summary/${mainId}/payment/${paymentIndex}`
         )
         .then((response) => {
           const paymentData = response.data.data;
@@ -563,7 +564,7 @@ const AddPayment = () => {
 
       //console.log(updatedValues, "updatedValues");
 
-      const putUrl = `https://propertymanager.cloudpress.host/api/payment/payments/${mainId}/payment/${paymentIndex}`;
+      const putUrl = `${baseUrl}/payment/payments/${mainId}/payment/${paymentIndex}`;
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {

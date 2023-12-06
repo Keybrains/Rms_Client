@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "components/Headers/Header";
 
 const SumProperties = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
 
   const [selectedProp, setSelectedProp] = useState("Select");
@@ -38,7 +39,7 @@ const SumProperties = () => {
 
   let getRentalsData = async (id) => {
     let responce = await axios.get(
-      "https://propertymanager.cloudpress.host/api/rentals/rentals_summary/6502f925be676a11da6ae793"
+      `${baseUrl}/rentals/rentals_summary/6502f925be676a11da6ae793`
     );
     setRentalsData(responce.data.data);
   };

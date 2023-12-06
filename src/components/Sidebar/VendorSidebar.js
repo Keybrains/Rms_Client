@@ -43,6 +43,7 @@ import {
 } from "reactstrap";
 
 const VendorSidebar = (props) => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [collapseOpen, setCollapseOpen] = useState();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
@@ -106,7 +107,7 @@ const VendorSidebar = (props) => {
   const getVendorDetails = async () => {
       try {
         const response = await axios.get(
-          `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${cookie_id}`
+          `${baseUrl}/vendor/vendor_summary/${cookie_id}`
         );
         //console.log(response.data.data)
         setVendorDetails(response.data.data);
@@ -124,7 +125,7 @@ const VendorSidebar = (props) => {
     }, [vendor_name]);
 
     const fetchNotification = async () => {
-      fetch(`https://propertymanager.cloudpress.host/api/notification/vendornotification/${vendor_name}`)
+      fetch(`${baseUrl}/notification/vendornotification/${vendor_name}`)
         .then((response) => response.json())
         .then((data) => {
           if (data.statusCode === 200) {
@@ -152,7 +153,7 @@ const VendorSidebar = (props) => {
   
     const navigateToDetails = (workorder_id) => {
       // Make a GET request to mark the notification as read
-      axios.get(`https://propertymanager.cloudpress.host/api/notification/notification/${workorder_id}?role=vendor`)
+      axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=vendor`)
         .then((response) => {
           if (response.status === 200) {
             const updatedNotificationData = notificationData.map(notification => {

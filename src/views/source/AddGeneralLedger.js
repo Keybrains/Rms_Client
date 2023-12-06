@@ -33,6 +33,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { jwtDecode } from "jwt-decode";
 
 const AddGeneralLedger = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [selectedProp, setSelectedProp] = useState("Select");
   const handlePropSelection = (propertyType) => {
     setSelectedProp(propertyType);
@@ -138,7 +139,7 @@ const AddGeneralLedger = () => {
   };
 
   useEffect(() => {
-    fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
+    fetch(`${baseUrl}/rentals/property_onrent`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -154,9 +155,7 @@ const AddGeneralLedger = () => {
   }, []);
 
   useEffect(() => {
-    fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
-    )
+    fetch(`${baseUrl}/addaccount/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -200,7 +199,7 @@ const AddGeneralLedger = () => {
       };
 
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/ledger/ledger",
+        `${baseUrl}/ledger/ledger`,
         updatedValues
       );
 

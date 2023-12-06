@@ -65,6 +65,8 @@ const style = {
   p: 4,
 };
 const PropDetails = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+
   const { id, entryIndex } = useParams();
   console.log(id);
   const [propertyDetails, setpropertyDetails] = useState({});
@@ -83,7 +85,7 @@ const PropDetails = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`
+        `${baseUrl}/rentals/rentals_summary/${id}`
       );
       setpropertyDetails(response.data.data);
       console.log(response.data.data, "response frirn simmary");
@@ -97,9 +99,11 @@ const PropDetails = () => {
       console.log(matchedProperty, `matched property`);
       setLoading(false);
 
-      const resp = await axios.get(`
-        https://propertymanager.cloudpress.host/api/newproparty/propropartytype
-        `);
+      const resp = await axios.get(
+        `
+        ${baseUrl}/newproparty/propropartytype
+        `
+      );
       console.log(resp, "resp");
 
       const selectedType = Object.keys(resp.data.data).find((item) => {
@@ -293,10 +297,7 @@ const PropDetails = () => {
 
   const getUnitProperty = async (rentalId) => {
     await axios
-      .get(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" +
-          rentalId
-      )
+      .get(`${baseUrl}/propertyunit/propertyunit/` + rentalId)
       .then((res) => {
         // setUnitProperty(res.data.data);
         console.log(res.data.data, "property unit");
@@ -328,11 +329,7 @@ const PropDetails = () => {
       rental_country: addUnitFormik.values.country,
     };
     await axios
-      .put(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" +
-          id,
-        updatedValues
-      )
+      .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
       .then((response) => {
         console.log(response.data.data, "updated data");
         getUnitProperty(rentalId);
@@ -354,11 +351,7 @@ const PropDetails = () => {
     };
 
     await axios
-      .put(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" +
-          id,
-        updatedValues
-      )
+      .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
       .then((response) => {
         console.log(response.data.data, "updated data");
         getUnitProperty(rentalId);
@@ -383,10 +376,7 @@ const PropDetails = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(
-            "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" +
-              id
-          )
+          .delete(`${baseUrl}/propertyunit/propertyunit/` + id)
           .then((response) => {
             console.log(response.data.data, "deleted data");
             getRentalsData();
@@ -422,7 +412,7 @@ const PropDetails = () => {
     console.log("formData", formData);
     try {
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/propertyunit/propertyunit",
+        `${baseUrl}/propertyunit/propertyunit`,
         formData
       );
       if (response.data.statusCode === 200) {
@@ -439,8 +429,6 @@ const PropDetails = () => {
   // =============================================================================================================
   // const [showModal, setShowModal] = useState(false);
 
-
-
   const [uploadedImage, setUploadedImage] = useState(null);
   console.log(uploadedImage, "uploadedImage");
 
@@ -448,7 +436,6 @@ const PropDetails = () => {
     const file = event.target.files[0];
     const axiosRequests = [];
 
-    
     const dataArray = new FormData();
     dataArray.append("b_video", file);
     let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
@@ -468,17 +455,20 @@ const PropDetails = () => {
 
           setUploadedImage(imagePath);
           const image = {
-            prop_image:imagePath
-          }
-          
-          axios.put(`https://propertymanager.cloudpress.host/api/rentals/proparty_image/${id}/${entryIndex}`, image).then((response) => {
-            console.log(response.data.data, "updated data");
-            getRentalsData();
-            // setAddUnitDialogOpen(false);
-            // setAddUnitDialogOpen(false);
-          }).catch((err) => {
-            console.log(err);
-          });
+            prop_image: imagePath,
+          };
+
+          axios
+            .put(`${baseUrl}/rentals/proparty_image/${id}/${entryIndex}`, image)
+            .then((response) => {
+              console.log(response.data.data, "updated data");
+              getRentalsData();
+              // setAddUnitDialogOpen(false);
+              // setAddUnitDialogOpen(false);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
           // allData.push(imagePath);
         })
         .catch((err) => {
@@ -486,23 +476,21 @@ const PropDetails = () => {
           // console.log("Error uploading image:", err);
         })
     );
-    
 
     // Wait for all Axios requests to complete before logging the data
     await Promise.all(axiosRequests);
-     }
-  
-          // await Promise.all(axiosRequests);
+  };
+
+  // await Promise.all(axiosRequests);
   // Wait for all Axios requests to complete before logging the data
-  
-    // if (file) {
-    //   const reader = new FileReader();
-    //   reader.onloadend = () => {
-    //     setUploadedImage(reader.result);
-    //   };
-    //   reader.readAsDataURL(file);
-    // }
-  
+
+  // if (file) {
+  //   const reader = new FileReader();
+  //   reader.onloadend = () => {
+  //     setUploadedImage(reader.result);
+  //   };
+  //   reader.readAsDataURL(file);
+  // }
 
   return (
     <>
@@ -602,7 +590,13 @@ const PropDetails = () => {
                             <label htmlFor="prop_image">
                               <img
                                 // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
-                                src={matchedProperty.prop_image? matchedProperty.prop_image : uploadedImage ? uploadedImage : fone}
+                                src={
+                                  matchedProperty.prop_image
+                                    ? matchedProperty.prop_image
+                                    : uploadedImage
+                                    ? uploadedImage
+                                    : fone
+                                }
                                 className="img-fluid rounded-start card-image"
                                 alt="..."
                                 // width='260px'
@@ -615,9 +609,10 @@ const PropDetails = () => {
                               id="prop_image"
                               name="prop_image"
                               type="file"
-                              inputProps={{ accept: "image/*", multiple: false, 
-                            
-                            }}
+                              inputProps={{
+                                accept: "image/*",
+                                multiple: false,
+                              }}
                               onChange={handleImageChange}
                               style={{ display: "none" }}
                             />
@@ -1296,10 +1291,7 @@ const PropDetails = () => {
                                                       <td>
                                                         {/* <Link to=""> */}
                                                         {`${
-                                                          propertyDetails.rentalOwner_firstName ||
-                                                          "N/A"
-                                                        } ${
-                                                          propertyDetails.rentalOwner_lastName ||
+                                                          matchedProperty.staffMember ||
                                                           "N/A"
                                                         }`}
 

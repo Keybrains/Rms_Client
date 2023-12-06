@@ -17,6 +17,7 @@
 
 
 // const AgentProfile = () => {
+    // const baseUrl = process.env.REACT_APP_BASE_URL;
 //   const { id } = useParams();
 //   //console.log(id);
 //   const [agentDetails, setagentDetails] = useState({});
@@ -45,7 +46,7 @@
 //         }
 
 //         const response = await axios.get(
-//           `https://propertymanager.cloudpress.host/api/addagent/agent_summary/${cookie_id}`
+//           `${baseUrl}/addagent/agent_summary/${cookie_id}`
 //         );
 //         //console.log(response.data.data);
 //         setagentDetails(response.data.data);

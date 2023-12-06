@@ -23,6 +23,7 @@ import VendorHeader from "components/Headers/VendorHeader";
 import Cookies from "universal-cookie";
 
 const VendorWorkTable = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
   const [loader, setLoader] = useState(true);
@@ -36,7 +37,7 @@ const VendorWorkTable = () => {
   const getWorkData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/workorder/workorder"
+        `${baseUrl}/workorder/workorder`
       );
       setLoader(false);
       setWorkData(response.data.data);

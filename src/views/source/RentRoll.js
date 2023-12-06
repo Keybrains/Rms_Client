@@ -36,6 +36,7 @@ import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
 
 const RentRoll = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [tenantsData, setTenantsData] = useState([]);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,7 +72,7 @@ const RentRoll = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/tenant/tenants"
+        `${baseUrl}/tenant/tenants`
       );
       setLoader(false);
       setTenantsData(response.data.data);
@@ -161,7 +162,7 @@ const RentRoll = () => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
+            `${baseUrl}/tenant/tenant/${tenantId}/entry/${entryIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {

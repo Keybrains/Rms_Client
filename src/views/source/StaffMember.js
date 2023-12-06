@@ -33,6 +33,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
 
 const StaffMember = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   let [StaffMemberData, setStaffMemberData] = useState();
   const [open, setOpen] = React.useState(false);
@@ -74,7 +75,7 @@ const StaffMember = () => {
   const getStaffMemberData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember"
+        `${baseUrl}/addstaffmember/addstaffmember`
       );
       setLoader(false);
       setStaffMemberData(response.data.data);
@@ -86,7 +87,7 @@ const StaffMember = () => {
 
   const editStaffMemberData = async (id, updatedData) => {
     try {
-      const editUrl = `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember/${id}`;
+      const editUrl = `${baseUrl}/addstaffmember/staffmember/${id}`;
       //console.log("Edit URL:", editUrl);
       //console.log("ID:", id);
       //console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -121,7 +122,7 @@ const StaffMember = () => {
       if (willDelete) {
         axios
           .delete(
-            "https://propertymanager.cloudpress.host/api/addstaffmember/delete_staffmember",
+            `${baseUrl}/addstaffmember/delete_staffmember`,
             {
               data: { _id: id },
             }

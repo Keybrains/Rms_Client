@@ -29,6 +29,7 @@ import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 
 const AddAgent = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -101,7 +102,9 @@ const AddAgent = () => {
   React.useEffect(() => {
     if (id) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/addagent/agent_summary/${id}`)
+        .get(
+          `${baseUrl}/addagent/agent_summary/${id}`
+        )
         .then((response) => {
           const agentdata = response.data.data;
           setagentData(agentData);
@@ -123,12 +126,12 @@ const AddAgent = () => {
     try {
       if (id === undefined) {
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/addagent/addagent",
+          `${baseUrl}/addagent/addagent`,
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `https://propertymanager.cloudpress.host/api/addagent/agent/${id}`;
+        const editUrl = `${baseUrl}/addagent/agent/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }
@@ -233,15 +236,13 @@ const AddAgent = () => {
                             onChange={AgentFormik.handleChange}
                             value={AgentFormik.values.agent_phoneNumber}
                             onInput={(e) => {
-                                                  const inputValue =
-                                                    e.target.value;
-                                                  const numericValue =
-                                                    inputValue.replace(
-                                                      /\D/g,
-                                                      ""
-                                                    ); // Remove non-numeric characters
-                                                  e.target.value = numericValue;
-                                                }}
+                              const inputValue = e.target.value;
+                              const numericValue = inputValue.replace(
+                                /\D/g,
+                                ""
+                              ); // Remove non-numeric characters
+                              e.target.value = numericValue;
+                            }}
                           />
                           {AgentFormik.touched.agent_phoneNumber &&
                           AgentFormik.errors.agent_phoneNumber ? (

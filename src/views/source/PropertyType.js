@@ -38,6 +38,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
 
 const PropertyType = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   let [propertyData, setPropertyData] = useState([]);
   const [open, setOpen] = React.useState(false);
@@ -96,7 +97,7 @@ const PropertyType = () => {
   const getPropertyData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/newproparty/newproparty"
+        `${baseUrl}/newproparty/newproparty`
       );
       setLoader(false);
       setPropertyData(response.data.data);
@@ -137,7 +138,7 @@ const PropertyType = () => {
   // }
   const editPropertyData = async (id, updatedData) => {
     try {
-      const editUrl = `https://propertymanager.cloudpress.host/api/newproparty/proparty-type/${id}`;
+      const editUrl = `${baseUrl}/newproparty/proparty-type/${id}`;
       //console.log("Edit URL:", editUrl);
       //console.log("Property ID:", id);
       //console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -172,7 +173,7 @@ const PropertyType = () => {
       if (willDelete) {
         axios
           .delete(
-            "https://propertymanager.cloudpress.host/api/newproparty/newproparty/",
+            `${baseUrl}/newproparty/newproparty/`,
             {
               data: { _id: id },
             }

@@ -34,6 +34,7 @@ import { jwtDecode } from "jwt-decode";
 
 
 const Agent = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   let [AgentData, setAgentData] = useState();
   let [loader, setLoader] = React.useState(true);
@@ -62,7 +63,7 @@ const Agent = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/addagent/delete_agent", {
+          .delete(`${baseUrl}/addagent/delete_agent`, {
             data: { _id: id },
           })
           .then((response) => {
@@ -90,7 +91,7 @@ const Agent = () => {
   const getAgentData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/addagent/addagent"
+        `${baseUrl}/addagent/addagent`
       );
       setLoader(false);
       setAgentData(response.data.data);
@@ -106,6 +107,7 @@ const Agent = () => {
     navigate(`/admin/AddAgent/${id}`);
     //console.log(id);
   };
+  
   return (
     <>
       <Header />

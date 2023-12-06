@@ -23,6 +23,7 @@ import Cookies from "universal-cookie";
 
   
   const TWorkOrderDetails = () => {
+    const baseUrl = process.env.REACT_APP_BASE_URL;
     const { id } = useParams();
     //console.log(id);
     const [outstandDetails, setoutstandDetails] = useState({});
@@ -47,7 +48,7 @@ import Cookies from "universal-cookie";
   
     const getOutstandData = async () => {
       try {
-        const response = await axios.get(`https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`);
+        const response = await axios.get(`${baseUrl}/workorder/workorder_summary/${id}`);
         setoutstandDetails(response.data.data);
         setLoading(false);
       } catch (error) {

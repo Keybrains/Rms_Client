@@ -23,6 +23,7 @@ import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 
 const AddVendor = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   // Initialize variables and state
   const navigate = useNavigate();
   const { id } = useParams();
@@ -78,7 +79,7 @@ const AddVendor = () => {
     if (id) {
       axios
         .get(
-          `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${id}`
+          `${baseUrl}/vendor/vendor_summary/${id}`
         )
         .then((response) => {
           const vendorData = response.data.data;
@@ -107,12 +108,12 @@ const AddVendor = () => {
     try {
       if (id === undefined) {
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/vendor/vendor",
+          `${baseUrl}/vendor/vendor`,
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `https://propertymanager.cloudpress.host/api/vendor/vendor/${id}`;
+        const editUrl = `${baseUrl}/vendor/vendor/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }
