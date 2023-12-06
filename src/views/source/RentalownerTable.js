@@ -34,6 +34,7 @@ import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 
 const RentalownerTable = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [rentalsData, setRentalsData] = useState([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editedRentalOwner, setEditedRentalOwner] = useState({
@@ -65,7 +66,7 @@ const RentalownerTable = () => {
   const fetchRentalsData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/rentalowner/rentalowner"
+        `${baseUrl}/rentalowner/rentalowner`
       );
       if (response.data && Array.isArray(response.data.data)) {
         setLoader(false);
@@ -89,7 +90,7 @@ const RentalownerTable = () => {
 
   const editTenantData = async (id, updatedData) => {
     try {
-      const editUrl = `https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`;
+      const editUrl = `${baseUrl}/rentalowner/rentalowner/${id}`;
       //console.log("Edit URL:", editUrl);
       //console.log("Property ID:", id);
       //console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -133,7 +134,7 @@ const RentalownerTable = () => {
       if (willDelete) {
         axios
           .delete(
-            "https://propertymanager.cloudpress.host/api/rentalowner/delete_rentalowner",
+            `${baseUrl}/rentalowner/delete_rentalowner`,
             {
               data: { _id: id },
             }

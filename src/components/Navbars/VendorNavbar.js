@@ -33,8 +33,8 @@ import { makeStyles } from "@mui/styles";
 // import socketIOClient from 'socket.io-client';
 
 const VendorNavbar = (props) => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   let cookies = new Cookies();
   let Logout = () => {
     cookies.remove("token");
@@ -61,7 +61,7 @@ const VendorNavbar = (props) => {
   const getVendorDetails = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${cookie_id}`
+        `${baseUrl}/vendor/vendor_summary/${cookie_id}`
       );
       // console.log(response.data.data);
       setVendorDetails(response.data.data);
@@ -92,7 +92,7 @@ const VendorNavbar = (props) => {
 
   const fetchNotification = async () => {
     fetch(
-      `https://propertymanager.cloudpress.host/api/notification/vendornotification/${vendor_name}`
+      `${baseUrl}/notification/vendornotification/${vendor_name}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -124,7 +124,7 @@ const VendorNavbar = (props) => {
     // Make a GET request to mark the notification as read
     axios
       .get(
-        `https://propertymanager.cloudpress.host/api/notification/notification/${workorder_id}?role=vendor`
+        `${baseUrl}/notification/notification/${workorder_id}?role=vendor`
       )
       .then((response) => {
         if (response.status === 200) {

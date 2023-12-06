@@ -29,6 +29,7 @@ import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
 
 const Payment = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
   const [propertyData, setPropertyData] = React.useState([]);
@@ -57,7 +58,7 @@ const Payment = () => {
   };
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
+    fetch(`${baseUrl}/rentals/property_onrent`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -75,7 +76,7 @@ const Payment = () => {
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(`${baseUrl}/addaccount/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -105,7 +106,7 @@ const Payment = () => {
 
   const getGeneralLedgerData = async () => {
     try {
-      const response = await axios.get("https://propertymanager.cloudpress.host/api/payment/payment");
+      const response = await axios.get(`${baseUrl}/payment/payment`);
       setLoader(false);
       setGeneralLedgerData(response.data.data);
       //console.log(response.data.data);

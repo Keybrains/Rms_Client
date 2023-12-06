@@ -65,14 +65,20 @@ import MailIcon from "@mui/icons-material/Mail";
 import FileOpen from "@mui/icons-material/FileOpen";
 import { CheckBox } from "@mui/icons-material";
 import * as yup from "yup";
-
+import { RotatingLines } from "react-loader-spinner";
 const ApplicantSummary = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const id = useParams().id;
   //console.log(id, "id");
   // const [file, setFile] = useState("");
 
   let cookies = new Cookies();
+  const [applicantLoader, setApplicantLoader] = useState(true);
+  const [loader, setLoader] = React.useState(true);
+  const handleOpen = () => {
+    setIsOpen(true);
+  }; 
   const [accessType, setAccessType] = useState(null);
   const [manager, setManager] = useState(null);
 
@@ -148,7 +154,7 @@ const ApplicantSummary = () => {
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
-        `https://propertymanager.cloudpress.host/api/propertyunit/rentals_property/${propertyType}`
+        `${baseUrl}/propertyunit/rentals_property/${propertyType}`
       );
       const data = await response.json();
       // Ensure that units are extracted correctly and set as an array
@@ -190,7 +196,7 @@ const ApplicantSummary = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+    fetch(`${baseUrl}/rentals/allproperty`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -250,7 +256,7 @@ const ApplicantSummary = () => {
 
   const tenantsData = async (number, status) => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/applicant/applicant_get?tenant_mobileNumber=${number}&status=${status}`;
+    const apiUrl = `${baseUrl}/applicant/applicant_get?tenant_mobileNumber=${number}&status=${status}`;
 
     try {
       // Fetch tenant data
@@ -299,7 +305,7 @@ const ApplicantSummary = () => {
     console.log(status, "status");
     console.log(id, "id");
     axios
-      .put(`https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/status`, status)
+      .put(`${baseUrl}/applicant/applicant/${id}/status`, status)
       .catch((err) => {
         console.error(err);
       })
@@ -311,7 +317,7 @@ const ApplicantSummary = () => {
 
   const navigateToLease = (tenantID, entryIndex) => {
     axios
-      .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
+      .get(`${baseUrl}/applicant/applicant_summary/${id}`)
       .then((response) => {
         const data = response.data.data;
 
@@ -319,7 +325,7 @@ const ApplicantSummary = () => {
         const rentalAddress = data.rental_adress;
         //console.log(rentalAddress, "Rental Addressss");
         axios
-          .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+          .get(`${baseUrl}/rentals/allproperty`)
           .then((response) => {
             const property = response.data.data;
             //console.log(property, "properties");
@@ -404,7 +410,7 @@ const ApplicantSummary = () => {
 
   // useEffect(() => {
   //   axios
-  //     .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
+  //     .get(`${baseUrl}/applicant/applicant_summary/${id}`)
   //     .then((applicants) => {
   //       axios
   //         .get("https://propertymanager.cloudpress.host/api/rentals/property")
@@ -439,12 +445,12 @@ const ApplicantSummary = () => {
 
   useEffect(() => {
     axios
-      .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
+      .get(`${baseUrl}/applicant/applicant_summary/${id}`)
       .then((applicants) => {
         console.log(applicants.data.data, "gggg");
 
         axios
-          .get("https://propertymanager.cloudpress.host/api/rentals/property")
+          .get(`${baseUrl}/rentals/property`)
           .then((properties) => {
             //console.log(applicants.data.data, "applicants");
             //console.log(properties.data.data, "properties");
@@ -481,7 +487,7 @@ const ApplicantSummary = () => {
       //console.log(updatedApplicant, "updatedApplicant");
       axios
         .put(
-          `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/checklist`,
+          `${baseUrl}/applicant/applicant/${id}/checklist`,
           updatedApplicant
         )
         .then((response) => {
@@ -509,7 +515,7 @@ const ApplicantSummary = () => {
 
     axios
       .put(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/checklist`,
+        `${baseUrl}/applicant/applicant/${id}/checklist`,
         updatedApplicant
       )
       .then((response) => {
@@ -526,7 +532,7 @@ const ApplicantSummary = () => {
     try {
       // Step 1: Fetch data from the API
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
+        `${baseUrl}/applicant/applicant_summary/${id}`
       );
 
       // Check if the response contains the data you expect
@@ -595,11 +601,11 @@ const ApplicantSummary = () => {
               isrenton: fetchedData.data.isrenton || false,
               rent_paid: fetchedData.data.rent_paid || false,
               propertyOnRent: fetchedData.data.propertyOnRent || false,
-    
+              
               //security deposite
               Due_date: fetchedData.data.Due_date || "",
               Security_amount: fetchedData.data.Security_amount || "",
-    
+              
               // add cosigner
               cosigner_firstName: fetchedData.data.cosigner_firstName || "",
               cosigner_lastName: fetchedData.data.cosigner_lastName || "",
@@ -638,7 +644,7 @@ const ApplicantSummary = () => {
         console.log(dataToSend, "hagfjg");
         // Step 3: Make a POST request to send the data to the server
         const postResponse = await axios.post(
-          "https://propertymanager.cloudpress.host/api/tenant/tenant",
+          `${baseUrl}/tenant/tenant`,
           dataToSend
         );
           // debugger
@@ -676,7 +682,7 @@ const ApplicantSummary = () => {
 
   const getApplicantData = async () => {
     await axios
-      .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
+      .get(`${baseUrl}/applicant/applicant`)
       .then((response) => {
         console.log(response.data.data, "response.data.data");
         //console.log(response.data.data);
@@ -687,6 +693,7 @@ const ApplicantSummary = () => {
           });
           //console.log(matchedApplicant, "matchedApplicant");
           setMatchedApplicant(matchedApplicant);
+          setApplicantLoader(false);
         }
       })
       .catch((err) => {
@@ -747,7 +754,7 @@ const ApplicantSummary = () => {
 
     axios
       .put(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}`,
+        `${baseUrl}/applicant/applicant/${id}`,
         updatedApplicant
       )
       .catch((err) => {
@@ -964,7 +971,7 @@ const ApplicantSummary = () => {
       applicant_attachment: applicantFormik1.values.applicant_attachment,
     };
 
-    const apiUrl = `https://propertymanager.cloudpress.host/api/applicant/applicant/note_attachment/${id}`;
+    const apiUrl = `${baseUrl}/applicant/applicant/note_attachment/${id}`;
 
     axios
       .put(apiUrl, data)
@@ -988,7 +995,7 @@ const ApplicantSummary = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
+          `${baseUrl}/applicant/applicant_summary/${id}`
         );
 
         if (response.data && response.data.data) {
@@ -1019,7 +1026,7 @@ const ApplicantSummary = () => {
 
     try {
       const apiUrl =
-        "https://propertymanager.cloudpress.host/api/applicant/application/6565bbf79cb24516b8e50f95";
+        `${baseUrl}/applicant/application/6565bbf79cb24516b8e50f95`;
 
       const updatedData = {
         // Add other fields as needed
@@ -1106,7 +1113,7 @@ const ApplicantSummary = () => {
   let sendApplicantMailData = async () => {
     setSendApplicantMailLoader(true);
     let responce = await axios.get(
-      `https://propertymanager.cloudpress.host/api/applicant/applicant/mail/${id}`
+      `${baseUrl}/applicant/applicant/mail/${id}`
     );
     setSendApplicantMail(responce.data.data);
 
@@ -1135,6 +1142,19 @@ const ApplicantSummary = () => {
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
+            {applicantLoader ? (
+          <tbody className="d-flex flex-direction-column justify-content-left align-items-left">
+            <tr>
+              <div className="p-5 m-5">
+                {/* <RotatingLines
+                  strokeColor="grey"
+                  strokeWidth="5"
+                  animationDuration="0.75"
+                  width="50"
+                  visible={loader}/> */}
+                </div>
+            </tr>
+          </tbody>) :(<>
               <h1 style={{ color: "white" }}>
                 Applicant :
                 {" " +
@@ -1148,7 +1168,7 @@ const ApplicantSummary = () => {
                 {matchedApplicant.rental_units
                   ? " - " + matchedApplicant.rental_units
                   : " "}
-              </h4>
+              </h4></>)}
             </FormGroup>
           </Col>
           <Col className="text-right" xs="12" sm="6">
@@ -1211,6 +1231,20 @@ const ApplicantSummary = () => {
                 matchedApplicant.rental_units}
             </Typography>
           </div> */}
+          {applicantLoader ? (
+          <tbody className="d-flex flex-direction-column justify-content-center align-items-center">
+            <tr>
+              <div className="p-5 m-5">
+                <RotatingLines
+                  strokeColor="grey"
+                  strokeWidth="5"
+                  animationDuration="0.75"
+                  width="50"
+                  visible={loader}/>
+                </div>
+            </tr>
+          </tbody>) :(
+          <>
           <div
             className="formInput d-flex flex-direction-row"
             style={{ margin: "30px 30px" }}
@@ -2867,7 +2901,7 @@ const ApplicantSummary = () => {
                 </TabPanel>
               </TabContext>
             </Col>
-          </Row>
+          </Row></>)}
         </Card>
       </Container>
     </>

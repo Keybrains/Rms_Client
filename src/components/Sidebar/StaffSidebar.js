@@ -43,6 +43,7 @@ import {
 } from "reactstrap";
 
 const StaffSidebar = (props) => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [collapseOpen, setCollapseOpen] = useState();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
@@ -110,7 +111,7 @@ const StaffSidebar = (props) => {
   const getVendorDetails = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
+        `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
       );
       //console.log(response.data.data)
       setVendorDetails(response.data.data);
@@ -128,7 +129,7 @@ const StaffSidebar = (props) => {
   }, [staffmember_name]);
 
   const fetchNotification = async () => {
-    fetch(`https://propertymanager.cloudpress.host/api/notification/staffnotification/${staffmember_name}`)
+    fetch(`${baseUrl}/notification/staffnotification/${staffmember_name}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -154,7 +155,7 @@ const StaffSidebar = (props) => {
 
   
   const navigateToDetails = (workorder_id) => {
-    axios.get(`https://propertymanager.cloudpress.host/api/notification/notification/${workorder_id}?role=staff`)
+    axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=staff`)
       .then((response) => {
           if (response.status === 200) {
             const updatedNotificationData = notificationData.map(notification => {

@@ -28,6 +28,7 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const PropertiesTables = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [rentalsData, setRentalsData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,7 +64,7 @@ const PropertiesTables = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/rentals/rental"
+        `${baseUrl}/rentals/rental`
       );
       console.log(response.data.data);
 
@@ -87,7 +88,7 @@ const PropertiesTables = () => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/rentals/rental/${id}/entry/${entryIndex}`
+            `${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {

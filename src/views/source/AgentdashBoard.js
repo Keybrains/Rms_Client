@@ -13,6 +13,7 @@ import AgentHeader from "components/Headers/AgentHeader";
 import { jwtDecode } from "jwt-decode";
 
 const AgentdashBoard = (props) => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   let navigate = useNavigate();

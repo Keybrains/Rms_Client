@@ -29,6 +29,7 @@ import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 
 const AddStaffMember = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
 
@@ -125,7 +126,7 @@ const AddStaffMember = () => {
   React.useEffect(() => {
     if (id) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${id}`)
+        .get(`${baseUrl}/addstaffmember/staffmember_summary/${id}`)
         .then((response) => {
           const staffMamberdata = response.data.data;
           setstaffMamberData(staffMamberData);
@@ -151,12 +152,12 @@ const AddStaffMember = () => {
     try {
       if (id === undefined) {
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember",
+          `${baseUrl}/addstaffmember/addstaffmember`,
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember/${id}`;
+        const editUrl = `${baseUrl}/addstaffmember/staffmember/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }

@@ -47,6 +47,7 @@ import { Autocomplete } from "@mui/material";
 import moment from "moment/moment";
 
 const Rentals = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [prodropdownOpen, setproDropdownOpen] = React.useState(null);
   const [bankdropdownOpen, setbankDropdownOpen] = React.useState(false);
   const [userdropdownOpen, setuserDropdownOpen] = React.useState(false);
@@ -125,7 +126,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/rentals")
+    fetch(`${baseUrl}/rentals/rentals`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -239,7 +240,7 @@ const Rentals = () => {
     const propTypes = [];
     console.log(propertyType, "first");
     axios
-      .get("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
+      .get(`${baseUrl}/newproparty/propropartytype`)
       .then((data) => {
         // console.log(data.data, "Data from adding the account");
         // setPropertyData(data.data.data);
@@ -581,7 +582,7 @@ const Rentals = () => {
       "selectedPhotoresPreview"
     );
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/newproparty/propropartytype")
+    fetch(`${baseUrl}/newproparty/propropartytype`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -599,7 +600,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember")
+    fetch(`${baseUrl}/addstaffmember/find_staffmember`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -622,7 +623,7 @@ const Rentals = () => {
     // console.log(id, entryIndex, "id && entry Id");
     if (id && entryIndex) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/rentals/rentals_summary/${id}`)
+        .get(`${baseUrl}/rentals/rentals_summary/${id}`)
         .then((response) => {
           const propertysData = response.data.data;
           // setRentalsData(rentalsData); // Update state with the fetched data
@@ -731,7 +732,7 @@ const Rentals = () => {
 
   const getUnitData = async (id) => {
     await axios
-      .get("https://propertymanager.cloudpress.host/api/propertyunit/propertyunit/" + id)
+      .get(`${baseUrl}/propertyunit/propertyunit/` + id)
       .then((res) => {
         // setUnitProperty(res.data.data);
         // console.log(res.data.data, "property unit");
@@ -793,10 +794,7 @@ const Rentals = () => {
       };
       console.log(leaseObject, "leaseObject");
 
-      const res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/rentals/rentals",
-        leaseObject
-      );
+      const res = await axios.post(`${baseUrl}/rentals/rentals`, leaseObject);
       if (res.data.statusCode === 200) {
         swal("Success!", "Property Added Successfully", "success");
         navigate("/admin/RentalownerTable");
@@ -843,10 +841,7 @@ const Rentals = () => {
       debugger;
       console.log(leaseObject, "leaseObject");
 
-      const res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/rentals/rentals",
-        leaseObject
-      );
+      const res = await axios.post(`${baseUrl}/rentals/rentals`, leaseObject);
       if (res.data.statusCode === 200) {
         swal("Success!", "Property Added Successfully", "success");
         // navigate("/admin/RentalownerTable");
@@ -873,7 +868,7 @@ const Rentals = () => {
     //     );
     //     handleResponse(res);
     //   } else {
-    //     const editUrl = `https://propertymanager.cloudpress.host/api/rentals/rentals/${id}`;
+    //     const editUrl = `${baseUrl}/rentals/rentals/${id}`;
     //     const res = await axios.put(editUrl, values);
     //     handleResponse(res);
     //   }
@@ -886,7 +881,7 @@ const Rentals = () => {
     // }
   };
   const editProperty = async (id) => {
-    const editUrl = `https://propertymanager.cloudpress.host/api/rentals/rental/${id}/entry/${entryIndex}`;
+    const editUrl = `${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`;
     const entriesArray = [];
     if (propType === "Residential") {
       const entriesObject = {
@@ -1424,7 +1419,7 @@ const Rentals = () => {
                             onChange={(e) =>
                               rentalsFormik.setFieldValue(
                                 "entries[0].rental_postcode",
-                                e.target.value
+                                e.target.value.toUpperCase()
                               )
                             }
                             value={
@@ -1432,11 +1427,11 @@ const Rentals = () => {
                             }
                             onInput={(e) => {
                               const inputValue = e.target.value;
-                              const numericValue = inputValue.replace(
-                                /\D/g,
+                              const sanitizedValue = inputValue.replace(
+                                /[^A-Za-z0-9-]/g,
                                 ""
-                              ); // Remove non-numeric characters
-                              e.target.value = numericValue;
+                              ); // Allow only alphanumeric characters and hyphen
+                              e.target.value = sanitizedValue.toUpperCase();
                             }}
                           />
                           {
@@ -2594,15 +2589,17 @@ const Rentals = () => {
                                         name={`entries[0].residential[${residentialIndex}].rental_units`}
                                         onBlur={rentalsFormik.handleBlur}
                                         onChange={(e) => {
-                                          const value = e.target.value.replace(
-                                            /\D/g,
-                                            ""
-                                          ); // Remove non-numeric characters
-                                          rentalsFormik.setFieldValue(
-                                            `entries[0].residential[${residentialIndex}].rental_units`,
-                                            value
-                                          );
-                                        }}
+    const value = e.target.value; // Get the entered value
+
+    // Allow only alphabetic and numeric characters
+    const newValue = value.replace(/[^A-Za-z0-9]/g, "");
+
+    rentalsFormik.setFieldValue(
+      `entries[0].residential[${residentialIndex}].rental_units`,
+      newValue
+    );
+  }}
+                                        
                                         value={
                                           rentalsFormik.values.entries[0]
                                             .residential[residentialIndex]
@@ -3258,12 +3255,7 @@ const Rentals = () => {
                                           rentalsFormik.values.entries[0]
                                             .commercial[index].rentalcom_units
                                         }
-                                        onInput={(e) => {
-                                          const inputValue = e.target.value;
-                                          const numericValue =
-                                            inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-                                          e.target.value = numericValue;
-                                        }}
+                                       
                                       />
                                       {/* {rentalsFormik.touched.rentalcom_units &&
                                       rentalsFormik.errors.rentalcom_units ? (
@@ -3368,7 +3360,6 @@ const Rentals = () => {
                                       style={{
                                         display: "flex",
                                         flexDirection: "row",
-                                      
                                       }}
                                     >
                                       <FormGroup
@@ -3377,148 +3368,147 @@ const Rentals = () => {
                                           flexDirection: "column",
                                         }}
                                       >
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-unitadd"
-                                      >
-                                        Photo
-                                      </label>
-                                      <span
-                                        onClick={togglePhotoDialog}
-                                        style={{
-                                          cursor: "pointer",
-                                          fontSize: "14px",
-                                          fontFamily: "monospace",
-                                          color: "blue",
-                                        }}
-                                      >
-                                        {" "}
-                                        <br />
-                                        <input
-                                          type="file"
-                                          className="form-control-file d-none"
-                                          accept="image/*"
-                                          // name="property_image"
-                                          multiple
-                                          id={`property_image${index}`}
-                                          name={`property_image${index}`}
-                                          onChange={(e) => {
-                                            const file = [...e.target.files];
-                                            fileData(
-                                              file,
-                                              "property_image",
-                                              index
-                                            );
-
-                                            if (file) {
-                                              const allImages = file.map(
-                                                (file) => {
-                                                  return URL.createObjectURL(
-                                                    file
-                                                  );
-                                                }
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-unitadd"
+                                        >
+                                          Photo
+                                        </label>
+                                        <span
+                                          onClick={togglePhotoDialog}
+                                          style={{
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontFamily: "monospace",
+                                            color: "blue",
+                                          }}
+                                        >
+                                          {" "}
+                                          <br />
+                                          <input
+                                            type="file"
+                                            className="form-control-file d-none"
+                                            accept="image/*"
+                                            // name="property_image"
+                                            multiple
+                                            id={`property_image${index}`}
+                                            name={`property_image${index}`}
+                                            onChange={(e) => {
+                                              const file = [...e.target.files];
+                                              fileData(
+                                                file,
+                                                "property_image",
+                                                index
                                               );
 
-                                              if (commercialImage[index]) {
-                                                setCommercialImage([
-                                                  ...commercialImage.slice(
-                                                    0,
-                                                    index
-                                                  ),
-                                                  [
-                                                    ...commercialImage[index],
+                                              if (file) {
+                                                const allImages = file.map(
+                                                  (file) => {
+                                                    return URL.createObjectURL(
+                                                      file
+                                                    );
+                                                  }
+                                                );
+
+                                                if (commercialImage[index]) {
+                                                  setCommercialImage([
+                                                    ...commercialImage.slice(
+                                                      0,
+                                                      index
+                                                    ),
+                                                    [
+                                                      ...commercialImage[index],
+                                                      ...allImages,
+                                                    ],
+                                                    ...commercialImage.slice(
+                                                      index + 1
+                                                    ),
+                                                  ]);
+                                                } else {
+                                                  setCommercialImage([
                                                     ...allImages,
-                                                  ],
-                                                  ...commercialImage.slice(
-                                                    index + 1
-                                                  ),
-                                                ]);
+                                                  ]);
+                                                }
                                               } else {
                                                 setCommercialImage([
-                                                  ...allImages,
+                                                  ...commercialImage,
                                                 ]);
                                               }
-                                            } else {
-                                              setCommercialImage([
-                                                ...commercialImage,
-                                              ]);
-                                            }
-                                          }}
-                                        />
-                                        <label
-                                          htmlFor={`property_image${index}`}
-                                        >
-                                          <b style={{ fontSize: "20px" }}>+</b>{" "}
-                                          Add
-                                        </label>
-                                      </span>
-                                    </FormGroup>
-                                    <FormGroup>
-                                      <div
-                                        className="d-flex"
-                                       
-                                      >
-                                        {commercialImage[index] &&
-                                          commercialImage[index].length > 0 &&
-                                          commercialImage[index].map(
-                                            (commercialImage) => (
-                                              <div
-                                                key={commercialImage}
-                                                style={{
-                                                  position: "relative",
-                                                  width: "100px",
-                                                  height: "100px",
-                                                  margin: "10px",
-                                                  display: "flex",
-                                                  flexDirection: "column",
-                                                }}
-                                              >
-                                                <img
-                                                  src={commercialImage}
-                                                  alt=""
+                                            }}
+                                          />
+                                          <label
+                                            htmlFor={`property_image${index}`}
+                                          >
+                                            <b style={{ fontSize: "20px" }}>
+                                              +
+                                            </b>{" "}
+                                            Add
+                                          </label>
+                                        </span>
+                                      </FormGroup>
+                                      <FormGroup>
+                                        <div className="d-flex">
+                                          {commercialImage[index] &&
+                                            commercialImage[index].length > 0 &&
+                                            commercialImage[index].map(
+                                              (commercialImage) => (
+                                                <div
+                                                  key={commercialImage}
                                                   style={{
+                                                    position: "relative",
                                                     width: "100px",
                                                     height: "100px",
-                                                    maxHeight: "100%",
-                                                    maxWidth: "100%",
-                                                    borderRadius: "10px",
+                                                    margin: "10px",
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                  }}
+                                                >
+                                                  <img
+                                                    src={commercialImage}
+                                                    alt=""
+                                                    style={{
+                                                      width: "100px",
+                                                      height: "100px",
+                                                      maxHeight: "100%",
+                                                      maxWidth: "100%",
+                                                      borderRadius: "10px",
 
-                                                    // objectFit: "cover",
-                                                  }}
-                                                  onClick={() => {
-                                                    setSelectedImage(
-                                                      commercialImage
-                                                    );
-                                                    setOpen(true);
-                                                  }}
-                                                />
-                                                <ClearIcon
-                                                  style={{
-                                                    cursor: "pointer",
-                                                    alignSelf: "flex-start",
-                                                    position: "absolute",
-                                                    top: "-12px",
-                                                    right: "-12px",
-                                                  }}
-                                                  onClick={() =>
-                                                    clearSelectedPhoto(
-                                                      index,
-                                                      commercialImage,
-                                                      "property_image"
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                            )
-                                          )}
-                                        <OpenImageDialog
-                                          open={open}
-                                          setOpen={setOpen}
-                                          selectedImage={selectedImage}
-                                        />
-                                      </div>
-                                    </FormGroup>
-                                  </div>
+                                                      // objectFit: "cover",
+                                                    }}
+                                                    onClick={() => {
+                                                      setSelectedImage(
+                                                        commercialImage
+                                                      );
+                                                      setOpen(true);
+                                                    }}
+                                                  />
+                                                  <ClearIcon
+                                                    style={{
+                                                      cursor: "pointer",
+                                                      alignSelf: "flex-start",
+                                                      position: "absolute",
+                                                      top: "-12px",
+                                                      right: "-12px",
+                                                    }}
+                                                    onClick={() =>
+                                                      clearSelectedPhoto(
+                                                        index,
+                                                        commercialImage,
+                                                        "property_image"
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
+                                              )
+                                            )}
+                                          <OpenImageDialog
+                                            open={open}
+                                            setOpen={setOpen}
+                                            selectedImage={selectedImage}
+                                          />
+                                        </div>
+                                      </FormGroup>
+                                    </div>
                                   </Col>
                                 </Row>
                               </div>

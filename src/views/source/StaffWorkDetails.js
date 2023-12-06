@@ -22,6 +22,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
 
 const StaffWorkDetails = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { workorder_id } = useParams();
   //console.log(workorder_id);
   const [outstandDetails, setoutstandDetails] = useState({});
@@ -35,7 +36,7 @@ const StaffWorkDetails = () => {
   const getOutstandData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${workorder_id}`
+        `${baseUrl}/workorder/workorder_summary/${workorder_id}`
       );
       setoutstandDetails(response.data.data);
       setLoading(false);

@@ -35,6 +35,7 @@ import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
 
 const TenantWork = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   let navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
 
@@ -101,7 +102,7 @@ const TenantWork = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
+        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
       );
       const entries = response.data.data.entries;
 
@@ -141,7 +142,7 @@ const TenantWork = () => {
   const getRentalData = async (addresses) => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/workorder/workorder/tenant/${addresses}`
+        `${baseUrl}/workorder/workorder/tenant/${addresses}`
       );
       //console.log(response, "abc");
 

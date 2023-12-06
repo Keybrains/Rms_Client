@@ -57,6 +57,7 @@ import Cookies from "universal-cookie";
 import MailIcon from "@mui/icons-material/Mail";
 
 const ApplicantForm = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   useEffect(() => {
     // Add styles to hide the sidebar and header
     const sidenavMain = document.getElementById("sidenav-main");
@@ -458,7 +459,7 @@ const ApplicantForm = () => {
 
   const tenantsData = async (number, status) => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/applicant/applicant_get?tenant_mobileNumber=${number}&status=${status}`;
+    const apiUrl = `${baseUrl}/applicant/applicant_get?tenant_mobileNumber=${number}&status=${status}`;
 
     try {
       // Fetch tenant data
@@ -485,7 +486,7 @@ const ApplicantForm = () => {
     };
     axios
       .put(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/status`,
+        `${baseUrl}/applicant/applicant/${id}/status`,
         status
       )
       .catch((err) => {
@@ -500,7 +501,7 @@ const ApplicantForm = () => {
   const navigateToLease = (tenantID, entryIndex) => {
     axios
       .get(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
+        `${baseUrl}/applicant/applicant_summary/${id}`
       )
       .then((response) => {
         const data = response.data.data;
@@ -511,7 +512,7 @@ const ApplicantForm = () => {
         console.log(rentalAddress, "Rental Addressss");
         axios
           .get(
-            "https://propertymanager.cloudpress.host/api/rentals/allproperty"
+            `${baseUrl}/rentals/allproperty`
           )
           .then((response) => {
             const property = response.data.data;
@@ -592,7 +593,7 @@ const ApplicantForm = () => {
 
   // useEffect(() => {
   //   axios
-  //     .get(`https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`)
+  //     .get(`${baseUrl}/applicant/applicant_summary/${id}`)
   //     .then((applicants) => {
   //       axios
   //         .get("https://propertymanager.cloudpress.host/api/rentals/property")
@@ -628,11 +629,11 @@ const ApplicantForm = () => {
   useEffect(() => {
     axios
       .get(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
+        `${baseUrl}/applicant/applicant_summary/${id}`
       )
       .then((applicants) => {
         axios
-          .get("https://propertymanager.cloudpress.host/api/rentals/property")
+          .get(`${baseUrl}/rentals/property`)
           .then((properties) => {
             setApplicantData(applicants.data.data);
             const allProperties = properties.data.data;
@@ -675,7 +676,7 @@ const ApplicantForm = () => {
       console.log(updatedApplicant, "updatedApplicant");
       axios
         .put(
-          `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}/checklist`,
+          `${baseUrl}/applicant/applicant/${id}/checklist`,
           updatedApplicant
         )
         .then((response) => {
@@ -693,7 +694,7 @@ const ApplicantForm = () => {
     try {
       // Step 1: Fetch data from the API
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
+        `${baseUrl}/applicant/applicant_summary/${id}`
       );
 
       // Check if the response contains the data you expect
@@ -720,7 +721,7 @@ const ApplicantForm = () => {
 
         // Step 3: Make a POST request to send the data to the server
         const postResponse = await axios.post(
-          "https://propertymanager.cloudpress.host/api/tenant/tenant",
+          `${baseUrl}/tenant/tenant`,
           dataToSend
         );
 
@@ -754,7 +755,7 @@ const ApplicantForm = () => {
   const [matchedApplicant, setMatchedApplicant] = useState([]);
   const getApplicantData = async () => {
     await axios
-      .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
+      .get(`${baseUrl}/applicant/applicant`)
       .then((response) => {
         console.log(response.data.data);
         if (response.data.data) {
@@ -804,7 +805,7 @@ const ApplicantForm = () => {
 
     axios
       .put(
-        `https://propertymanager.cloudpress.host/api/applicant/applicant/${id}`,
+        `${baseUrl}/applicant/applicant/${id}`,
         updatedApplicant
       )
       .catch((err) => {
@@ -905,7 +906,7 @@ const ApplicantForm = () => {
     e.preventDefault();
 
     try {
-      const apiUrl = `https://propertymanager.cloudpress.host/api/applicant/application/${id}`;
+      const apiUrl = `${baseUrl}/applicant/application/${id}`;
 
       const updatedData = {
         // Add other fields as needed
@@ -993,7 +994,7 @@ const ApplicantForm = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://propertymanager.cloudpress.host/api/applicant/applicant_summary/${id}`
+          `${baseUrl}/applicant/applicant_summary/${id}`
         );
         // const { applicant } = response.data.data;
         const { applicant, tenant_firstName } = response.data.data;

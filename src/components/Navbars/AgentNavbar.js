@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from "react";
 
 const AgentNavbar = (props) => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   let cookies = new Cookies();
   let cookie_id = cookies.get("Agent ID");
   //console.log(cookie_id);
@@ -28,7 +29,7 @@ const AgentNavbar = (props) => {
   const getVendorDetails = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/addagent/agent_summary/${cookie_id}`
+        `${baseUrl}/addagent/agent_summary/${cookie_id}`
       );
       setVendorDetails(response.data.data);
       setLoading(false);

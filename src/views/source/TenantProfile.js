@@ -19,6 +19,7 @@ import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
 
 const TenantProfile = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   // console.log(id);
   const [tenantDetails, setTenantDetails] = useState({});
@@ -45,7 +46,7 @@ const TenantProfile = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/tenant/tenant/${cookie_id}/entries`
+        `${baseUrl}/tenant/tenant/${cookie_id}/entries`
       );
       // console.log(response.data.data);
       setTenantDetails(response.data.data);
@@ -60,14 +61,14 @@ const TenantProfile = () => {
   useEffect(() => {
     getTenantData();
     // console.log(
-    //   `https://propertymanager.cloudpress.host/api/tenant/tenant/${cookie_id}/entries`
+    //   `${baseUrl}/tenant/tenant/${cookie_id}/entries`
     // );
   }, [id]);
 
   const getTenantData1 = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
+        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
       );
       setTenantDetails1([response.data.data]);
       // console.log(response.data.data);
@@ -82,7 +83,7 @@ const TenantProfile = () => {
   useEffect(() => {
     getTenantData1();
     // console.log(
-    //   `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
+    //   `${baseUrl}/tenant/tenant_summary/${cookie_id}`
     // );
   }, [id]);
 
