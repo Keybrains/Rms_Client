@@ -71,7 +71,7 @@ const RentRoll = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/api/tenant/tenants"
+        "https://propertymanager.cloudpress.host/api/tenant/tenants"
       );
       setLoader(false);
       setTenantsData(response.data.data);
@@ -161,7 +161,7 @@ const RentRoll = () => {
       if (willDelete) {
         axios
           .delete(
-            `http://localhost:4000/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
+            `https://propertymanager.cloudpress.host/api/tenant/tenant/${tenantId}/entry/${entryIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {

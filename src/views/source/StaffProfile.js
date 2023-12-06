@@ -43,7 +43,7 @@ const StaffProfile = () => {
         }
 
         const response = await axios.get(
-          `http://localhost:4000/api/addstaffmember/staffmember_summary/${cookie_id}`
+          `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
         );
         //console.log(response.data.data);
         setStaffDetails(response.data.data);
