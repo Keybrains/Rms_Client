@@ -30,6 +30,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
 
 const VendorAddWork = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { workorder_id } = useParams();
   //console.log(workorder_id, "workorder_id");
   const { id } = useParams();
@@ -174,7 +175,7 @@ const VendorAddWork = () => {
   const [workOrderData, setWorkOrderData] = useState(null);
 
   useEffect(() => {
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(`${baseUrl}/addaccount/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -192,7 +193,7 @@ const VendorAddWork = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`)
+        .get(`${baseUrl}/workorder/workorder_summary/${id}`)
         .then((response) => {
           const vendorData = response.data.data;
           setWorkOrderData(vendorData);
@@ -271,14 +272,14 @@ const VendorAddWork = () => {
       if (id === undefined) {
         // Create the work order
         const workOrderRes = await axios.post(
-          "https://propertymanager.cloudpress.host/api/workorder/workorder",
+          `${baseUrl}/workorder/workorder`,
           values
         );
 
         // Check if the work order was created successfully
         if (workOrderRes.status === 200) {
           const notificationRes = await axios.post(
-            "https://propertymanager.cloudpress.host/api/notification/notification",
+            `${baseUrl}/notification/notification`,
             {
               workorder: {
                 vendor_name: selectedVendor,
@@ -297,11 +298,11 @@ const VendorAddWork = () => {
           console.error("Work Order Error:", workOrderRes.data);
         }
       } else {
-        const editUrl = `https://propertymanager.cloudpress.host/api/workorder/workorder/${id}`;
+        const editUrl = `${baseUrl}/workorder/workorder/${id}`;
         const res = await axios.put(editUrl, values);
         if (res.status === 200) {
           const notification = await axios.post(
-            "https://propertymanager.cloudpress.host/api/notification/notification/vendor",
+            `${baseUrl}/notification/notification/vendor`,
             {
               workorder: {
                 vendor_name: selectedVendor,
@@ -381,7 +382,7 @@ const VendorAddWork = () => {
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+    fetch(`${baseUrl}/rentals/allproperty`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -399,7 +400,7 @@ const VendorAddWork = () => {
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/addstaffmember/find_staffmember")
+    fetch(`${baseUrl}/addstaffmember/find_staffmember`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -451,7 +452,7 @@ const VendorAddWork = () => {
     const fetchVendorNames = async () => {
       try {
         const response = await axios.get(
-          `https://propertymanager.cloudpress.host/api/workorder/workorder/vendor/${id}`
+          `${baseUrl}/workorder/workorder/vendor/${id}`
         );
         const data = response.data;
         setSelectedVendor(data.vendor_name);

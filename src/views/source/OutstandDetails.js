@@ -17,6 +17,7 @@ import {
 import { jwtDecode } from "jwt-decode";
   
   const PropDetails = () => {
+    const baseUrl = process.env.REACT_APP_BASE_URL;
     const { id } = useParams();
     //console.log(id);
     const [outstandDetails, setoutstandDetails] = useState({});
@@ -26,7 +27,7 @@ import { jwtDecode } from "jwt-decode";
   
     const getOutstandData = async () => {
       try {
-        const response = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`);
+        const response = await axios.get(`${baseUrl}/tenant/tenant_summary/${id}`);
         setoutstandDetails(response.data.data);
         setLoading(false);
       } catch (error) {

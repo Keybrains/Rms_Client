@@ -16,6 +16,7 @@ import {
 import { jwtDecode } from "jwt-decode";
 
 const RentalOwnerDetail = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   //console.log(id);
   const [rentalOwnerDetails, setRentalOwnerDetails] = useState({});
@@ -38,7 +39,7 @@ const RentalOwnerDetail = () => {
   const getRentalOwnerData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`
+        `${baseUrl}/rentalowner/rentalowner/${id}`
       );
       //console.log(response.data.data);
       setRentalOwnerDetails(response.data.data);

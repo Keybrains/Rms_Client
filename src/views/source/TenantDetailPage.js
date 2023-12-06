@@ -15,8 +15,10 @@ import {
 } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
 import { CardContent, Typography } from "@mui/material";
-
+import { RotatingLines } from "react-loader-spinner";
 const TenantDetailPage = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const [loader, setLoader] = React.useState(true);
   const { tenantId, entryIndex } = useParams();
   const { id } = useParams();
   const [tenantDetails, setTenantDetails] = useState({});
@@ -35,7 +37,7 @@ const TenantDetailPage = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-  const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
   const getTenantData = async () => {
     try {
       const response = await axios.get(apiUrl);
@@ -81,7 +83,7 @@ const TenantDetailPage = () => {
   };
   const [balance, setBalance] = useState("");
   const getGeneralLedgerData = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+    const apiUrl = `${baseUrl}/payment/merge_payment_charge/${tenantId}`;
     try {
       const response = await axios.get(apiUrl);
       if (response.data && response.data.data) {
@@ -102,16 +104,45 @@ const TenantDetailPage = () => {
   }, [tenantId]);
 
   const [myData, setMyData] = useState([]);
+
   const doSomething = async () => {
-    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
+    let responce = await axios.get(
+      `${baseUrl}/tenant/tenants`
+    );
     const data = responce.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
     console.log(filteredData, "yashr");
     setMyData(filteredData);
   };
+
   useEffect(() => {
     doSomething();
   }, []);
+
+  const [myData1, setMyData1] = useState([]);
+  console.log("myData1:", myData1);
+  const doSomething1 = async () => {
+   try {
+     let response = await axios.get(`${baseUrl}/tenant/tenants`);
+     const data = response.data.data;
+ 
+     const filteredData = data.filter((item, index) => {
+       // Replace 'tenantId' with the specific ID you're looking for
+       return item._id === tenantId && item.entries.entryIndex === entryIndex;
+     });
+ 
+     console.log(filteredData, "yashr");
+     setMyData1(filteredData);
+   } catch (error) {
+     // Handle errors here
+     console.error('Error fetching data:', error);
+   }
+ };
+ 
+   useEffect(() => {
+     doSomething1();
+   }, []);
+
   const getStatus = (startDate, endDate) => {
     const today = new Date();
     const start = new Date(startDate);
@@ -128,6 +159,36 @@ const TenantDetailPage = () => {
     }
   };
 
+
+  //sahil20231206
+  const getStatus1 = (startDate, endDate) => {
+    const today = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (today >= start && today <= end) {
+      return "TENANT";
+    } else if (today < start) {
+      return "FUTURE TENANT";
+    } else if (today > end) {
+      return "PAST TENANT";
+    } else {
+      return "-";
+    }
+  };
+    //sahil20231206
+    // Filter the specific entry based on entryIndex from URL parameters
+    const selectedEntry = myData.find(
+      (item) => item.entries.entryIndex === entryIndex
+    );
+    // Check if the entry exists and then display the status
+    const status = selectedEntry
+      ? getStatus1(
+          selectedEntry.entries.start_date,
+          selectedEntry.entries.end_date
+        )
+      : "-";
+
   return (
     <div>
       <Header />
@@ -136,14 +197,26 @@ const TenantDetailPage = () => {
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
+            {loading ? (
+                        <tbody>
+                          <tr>
+                            <td></td>
+                          </tr>
+                        </tbody>
+                      ) : (
               <h1 style={{ color: "white" }}>
                 {tenantDetails.tenant_firstName +
                   " " +
                   tenantDetails.tenant_lastName}
-              </h1>
+              </h1>)}
               <h5 style={{ color: "white" }}>
-                Tenant |{" "}
+                {status} |{" "}
                 {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
+                {tenantDetails._id &&
+                tenantDetails.entries.rental_units !== undefined &&
+                tenantDetails.entries.rental_units !== ""
+                  ? ` - ${tenantDetails.entries.rental_units}`
+                  : ""}
               </h5>
             </FormGroup>
           </Col>
@@ -174,9 +247,17 @@ const TenantDetailPage = () => {
                       style={{ width: "100%" }}
                     >
                       {loading ? (
-                        <tbody>
-                          <tr>
-                            <td>Loading tenant details...</td>
+                        <tbody className="d-flex flex-direction-column justify-content-center align-items-center">
+                         <tr>
+                           <div className="p-5 m-5">
+                             <RotatingLines
+                               strokeColor="grey"
+                               strokeWidth="5"
+                               animationDuration="0.75"
+                               width="50"
+                               visible={loader}
+                             />
+                         </div>
                           </tr>
                         </tbody>
                       ) : error ? (
@@ -452,12 +533,27 @@ const TenantDetailPage = () => {
                     </div>
                   </div>
                   <div className="col-3 mt-3">
+                  {loading ? (
+                        <tbody className="d-flex flex-direction-column justify-content-center align-items-center">
+                         <tr>
+                           {/* <div className="p-5 m-5">
+                             <RotatingLines
+                               strokeColor="grey"
+                               strokeWidth="5"
+                               animationDuration="0.75"
+                               width="50"
+                               visible={loader}
+                             />
+                         </div> */}
+                          </tr>
+                        </tbody>
+                      ) : ( 
                     <Card style={{ background: "#F4F6FF" }}>
                       <CardContent>
                         <div
                           style={{ display: "flex", flexDirection: "column" }}
                         >
-                          {myData.map((item, index) => (
+                          {myData1.map((item, index) => (
                             <div key={index} style={{ marginBottom: "10px" }}>
                               <Typography
                                 sx={{
@@ -502,7 +598,7 @@ const TenantDetailPage = () => {
                         <div
                           style={{ display: "flex", flexDirection: "column" }}
                         >
-                          {myData.map((item, index) => (
+                          {myData1.map((item, index) => (
                             <div key={index}>
                               <Typography
                                 sx={{
@@ -662,7 +758,7 @@ const TenantDetailPage = () => {
                                 >
                                   Rent:
                                 </Typography>
-                                {myData.map((item) => (
+                                {myData1.map((item) => (
                                   <>
                                     <Typography
                                       sx={{
@@ -699,7 +795,7 @@ const TenantDetailPage = () => {
                             >
                               Due date :
                             </Typography>
-                            {myData.map((item) => (
+                            {myData1.map((item) => (
                               <>
                                 <Typography
                                   sx={{
@@ -741,7 +837,7 @@ const TenantDetailPage = () => {
                               Receive Payment
                             </Link>
                           </Button>
-                          {myData.map((item) => (
+                          {myData1.map((item) => (
                             <>
                               <Typography
                                 sx={{
@@ -765,6 +861,7 @@ const TenantDetailPage = () => {
                         </div>
                       </CardContent>
                     </Card>
+                    )}
                   </div>
                 </div>
               </div>

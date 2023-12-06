@@ -59,6 +59,7 @@ import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import { useLocation } from "react-router-dom";
 const RentRollLeaseing = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id, entryIndex } = useParams();
   const location = useLocation();
   const { state } = location;
@@ -244,7 +245,7 @@ const RentRollLeaseing = () => {
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
-        `https://propertymanager.cloudpress.host/api/propertyunit/rentals_property/${propertyType}`
+        `${baseUrl}/propertyunit/rentals_property/${propertyType}`
       );
       const data = await response.json();
       // Ensure that units are extracted correctly and set as an array
@@ -265,14 +266,12 @@ const RentRollLeaseing = () => {
     entrySchema.values.rental_adress = propertyType;
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
-      // console.log(propertyType)
       const units = await fetchUnitsByProperty(propertyType);
       console.log(units, "units"); // Check the received units in the console
       setUnitData(units); // Set the received units in the unitData state
     } catch (error) {
       console.error("Error handling selected property:", error);
     }
-    // console.log(propertyType)
   };
 
   const [selectedLeaseType, setselectedLeaseType] = useState("");
@@ -607,7 +606,7 @@ const RentRollLeaseing = () => {
     try {
       // values["property_type"] = localStorage.getItem("propertyType");
       const res = await axios.post(
-        "https://propertymanager.cloudpress.host/api/addaccount/addaccount",
+        `${baseUrl}/addaccount/addaccount`,
         values
       );
       if (res.data.statusCode === 200) {
@@ -736,7 +735,7 @@ console.log(propertyId,'porpeorjinhb')
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+    fetch(`${baseUrl}/rentals/allproperty`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -755,7 +754,7 @@ console.log(propertyId,'porpeorjinhb')
 
   const fetchingAccountNames = async () => {
     console.log("fetching account names");
-    fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
+    fetch(`${baseUrl}/addaccount/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -774,7 +773,7 @@ console.log(propertyId,'porpeorjinhb')
 
   const fetchingRecAccountNames = async () => {
     console.log("fetching rec accounr names");
-    fetch("https://propertymanager.cloudpress.host/api/recurringAcc/find_accountname")
+    fetch(`${baseUrl}/recurringAcc/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -793,7 +792,7 @@ console.log(propertyId,'porpeorjinhb')
 
   const fetchingOneTimeCharges = async () => {
     // console.log("fetcjhiine pne rime charges");
-    fetch("https://propertymanager.cloudpress.host/api/onetimecharge/find_accountname")
+    fetch(`${baseUrl}/onetimecharge/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -848,7 +847,7 @@ console.log(propertyId,'porpeorjinhb')
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/addagent/find_agentname")
+    fetch(`${baseUrl}/addagent/find_agentname`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -942,7 +941,7 @@ console.log(propertyId,'porpeorjinhb')
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/tenant/existing/tenant")
+    fetch(`${baseUrl}/tenant/existing/tenant`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -1273,7 +1272,7 @@ console.log(propertyId,'porpeorjinhb')
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit) {
       let response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/tenant/tenants"
+        `${baseUrl}/tenant/tenants`
       );
       const data = response.data.data;
 
@@ -1492,7 +1491,7 @@ console.log(propertyId,'porpeorjinhb')
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
     if (id && entryIndex) {
-      const url = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${id}`;
+      const url = `${baseUrl}/tenant/tenant_summary/${id}`;
       axios
         .get(url)
         .then((response) => {
@@ -1906,6 +1905,15 @@ console.log(propertyId,'porpeorjinhb')
           unit_id: entrySchema.values.unit_id,
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
+
+          // tenant_residentStatus: ownerData.tenant_residentStatus,
+          // rentalOwner_firstName: ownerData.rentalOwner_firstName,
+          // rentalOwner_lastName: ownerData.rentalOwner_lastName,
+          // rentalOwner_primaryemail: ownerData.rentalOwner_email,
+          // rentalOwner_phoneNumber: ownerData.rentalOwner_phoneNumber,
+          // rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
+          // rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
+          // rentalOwner_companyName: ownerData.rentalOwner_companyName,
         },
       ],
     };
@@ -1913,7 +1921,7 @@ console.log(propertyId,'porpeorjinhb')
     debugger
 
     try {
-      const res = await axios.get(`https://propertymanager.cloudpress.host/api/tenant/tenant`);
+      const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
         console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
@@ -1934,7 +1942,7 @@ console.log(propertyId,'porpeorjinhb')
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
           const res = await axios.put(
-            `https://propertymanager.cloudpress.host/api/tenant/tenant/${tenantId}`,
+            `${baseUrl}/tenant/tenant/${tenantId}`,
             putObject
           );
           if (res.data.statusCode === 200) {
@@ -1980,7 +1988,7 @@ console.log(propertyId,'porpeorjinhb')
             console.log(tenantObject, "leaseObject");
             // debugger
             const res = await axios.post(
-              "https://propertymanager.cloudpress.host/api/tenant/tenant",
+              `${baseUrl}/tenant/tenant`,
               tenantObject
             );
             if (res.data.statusCode === 200) {
@@ -2057,7 +2065,7 @@ console.log(propertyId,'porpeorjinhb')
   const editLease = async (id) => {
     // const arrayOfNames = file.map((item) => item.name);
 
-    const editUrl = `https://propertymanager.cloudpress.host/api/tenant/tenants/${id}/entry/${entryIndex}`;
+    const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
 
     const entriesObject = {
@@ -2196,7 +2204,7 @@ console.log(propertyId,'porpeorjinhb')
   //       .then((propRes) => {
   //         axios
   //           .get(
-  //             `https://propertymanager.cloudpress.host/api/applicant/applicant`
+  //             `${baseUrl}/applicant/applicant`
   //           )
   //           .then((response) => {
   //             console.log(response.data.data);
@@ -2296,6 +2304,7 @@ console.log(propertyId,'porpeorjinhb')
   };
 
   return (
+    
     <>
       <LeaseHeader />
       {/* Page content */}
@@ -2387,7 +2396,7 @@ console.log(propertyId,'porpeorjinhb')
                                 overflowY: "auto",
                               }}
                             >
-                              {propertyData.map((property, index) => (
+                               {propertyData.map((property, index) => (
                                 <DropdownItem
                                   key={index}
                                   onClick={() => {

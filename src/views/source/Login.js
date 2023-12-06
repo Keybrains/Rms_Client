@@ -27,6 +27,7 @@ import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const Login = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   let navigate = useNavigate();
   let cookies = new Cookies();
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +48,7 @@ const Login = () => {
 
       // Admin login
       const adminRes = await axios.post(
-        "https://propertymanager.cloudpress.host/api/register/login",
+        `${baseUrl}/register/login`,
         
         values
       );
@@ -64,7 +65,7 @@ const Login = () => {
       } else {
         // Admin login failed, try tenant login
         const tenantRes = await axios.post(
-          "https://propertymanager.cloudpress.host/api/tenant/login",
+          `${baseUrl}/tenant/login`,
           {
             tenant_email: values.email,
             tenant_password: values.password,
@@ -95,7 +96,7 @@ const Login = () => {
         } else {
           // Admin and tenant login failed, try agent login
           const agentRes = await axios.post(
-            "https://propertymanager.cloudpress.host/api/addagent/login",
+            `${baseUrl}/addagent/login`,
             {
               agent_email: values.email,
               agent_password: values.password,
@@ -127,7 +128,7 @@ const Login = () => {
           } else {
             // All login attempts failed, try staff login
             const staffRes = await axios.post(
-              "https://propertymanager.cloudpress.host/api/addstaffmember/login",
+              `${baseUrl}/addstaffmember/login`,
               {
                 staffmember_email: values.email,
                 staffmember_password: values.password,
@@ -159,7 +160,7 @@ const Login = () => {
             } else {
               // All login attempts failed, try vendor login
               const vendorRes = await axios.post(
-                "https://propertymanager.cloudpress.host/api/vendor/login",
+                `${baseUrl}/vendor/login`,
                 {
                   vendor_email: values.email,
                   vendor_password: values.password,

@@ -20,6 +20,7 @@ import { jwtDecode } from "jwt-decode";
 import VendorHeader from "components/Headers/VendorHeader";
 
 const VendorProfile = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   //console.log(id);
   const [vendorDetails, setVendorDetails] = useState({});
@@ -32,7 +33,7 @@ const VendorProfile = () => {
   const getVendorData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/vendor/vendor_summary/${cookie_id}`
+        `${baseUrl}/vendor/vendor_summary/${cookie_id}`
       );
       //console.log(response.data.data);
       setVendorDetails(response.data.data);

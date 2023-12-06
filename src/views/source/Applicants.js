@@ -40,6 +40,7 @@ import Edit from "@mui/icons-material/Edit";
 import { jwtDecode } from "jwt-decode";
 
 const Applicants = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [rentalsData, setRentalsData] = useState([]);
   const [loader, setLoader] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -76,7 +77,7 @@ const Applicants = () => {
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
-        `https://propertymanager.cloudpress.host/api/propertyunit/rentals_property/${propertyType}`
+        `${baseUrl}/propertyunit/rentals_property/${propertyType}`
       );
       const data = await response.json();
       // Ensure that units are extracted correctly and set as an array
@@ -120,7 +121,7 @@ const Applicants = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/applicant/applicant"
+        `${baseUrl}/applicant/applicant`
       );
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setRentalsData(response.data.data);
@@ -265,7 +266,7 @@ const Applicants = () => {
 
   const handleFormSubmit = (values, action) => {
     axios
-      .post("https://propertymanager.cloudpress.host/api/applicant/applicant", {
+      .post(`${baseUrl}/applicant/applicant`, {
         ...values,
         statusUpdatedBy: manager,
       })
@@ -286,7 +287,7 @@ const Applicants = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+    fetch(`${baseUrl}/rentals/allproperty`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -304,7 +305,7 @@ const Applicants = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch("https://propertymanager.cloudpress.host/api/applicant/existing/applicant")
+    fetch(`${baseUrl}/applicant/existing/applicant`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -323,7 +324,7 @@ const Applicants = () => {
 
   const getApplicantData = () => {
     axios
-      .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
+      .get(`${baseUrl}/applicant/applicant`)
       .then((response) => {
         console.log(response.data.data, "respones.data");
         setRentalsData(response.data.data);
@@ -349,7 +350,7 @@ const Applicants = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/applicant/applicant", {
+          .delete(`${baseUrl}/applicant/applicant`, {
             data: { _id: id },
           })
           .then((response) => {
@@ -396,6 +397,7 @@ const Applicants = () => {
       return isRentalAddressMatch || isFirstNameMatch || isEmailMatch;
     });
   };
+
 
   return (
     <>

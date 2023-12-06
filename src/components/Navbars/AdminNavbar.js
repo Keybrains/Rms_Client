@@ -32,6 +32,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { makeStyles } from '@mui/styles';
 
 const AdminNavbar = (props) => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   let navigate = useNavigate();
   const [notificationCount, setNotificationCount] = useState(0);
@@ -74,7 +75,7 @@ const AdminNavbar = (props) => {
   }, []);
 
   const fetchNotification = async () => {
-    fetch(`https://propertymanager.cloudpress.host/api/notification/notification`)
+    fetch(`${baseUrl}/notification/notification`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -94,7 +95,7 @@ const AdminNavbar = (props) => {
 
   const navigateToDetails = (workorder_id) => {
     // Make a DELETE request to delete the notification
-    axios.get(`https://propertymanager.cloudpress.host/api/notification/notification/${workorder_id}?role=admin `)
+    axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=admin `)
     .then((response) => {
       if (response.status === 200) {
         const updatedNotificationData = notificationData.map(notification => {

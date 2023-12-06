@@ -41,6 +41,7 @@ import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 
 const AddCharge = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, entryIndex } = useParams();
   const { mainId, chargeIndex } = useParams();
   const [id, setId] = useState("");
@@ -132,7 +133,7 @@ const AddCharge = () => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant-name/tenant/${rentAddress}`
+      `${baseUrl}/tenant/tenant-name/tenant/${rentAddress}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -200,7 +201,7 @@ const AddCharge = () => {
 
   const fetchTenantData = async () => {
     fetch(
-      `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
+      `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -221,7 +222,7 @@ const AddCharge = () => {
 
   useEffect(() => {
     fetch(
-      "https://propertymanager.cloudpress.host/api/addaccount/find_accountname"
+      `${baseUrl}/addaccount/find_accountname`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -279,7 +280,7 @@ const AddCharge = () => {
       };
       //console.log(updatedValues, "updatedValues");
       const response = await axios.post(
-        "https://propertymanager.cloudpress.host/api/payment/add_charges", //http://localhost:4000
+        `${baseUrl}/payment/add_charges`,
         updatedValues
       );
 
@@ -363,7 +364,7 @@ const AddCharge = () => {
 
       console.log(updatedValues, "updatedValues");
 
-      const putUrl = `https://propertymanager.cloudpress.host/api/payment/charges/${mainId}/charge/${chargeIndex}`;
+      const putUrl = `${baseUrl}/payment/charges/${mainId}/charge/${chargeIndex}`;
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
@@ -449,7 +450,7 @@ const AddCharge = () => {
     if (mainId && chargeIndex) {
       axios
         .get(
-          `https://propertymanager.cloudpress.host/api/payment/charge_summary/${mainId}/charge/${chargeIndex}`
+          `${baseUrl}/payment/charge_summary/${mainId}/charge/${chargeIndex}`
         )
         .then((response) => {
           const chargeData = response.data.data;

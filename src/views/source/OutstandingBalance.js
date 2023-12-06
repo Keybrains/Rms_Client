@@ -37,6 +37,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useNavigate } from "react-router-dom";
 
 const OutstandingBalance = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   let [tentalsData, setTenantsDate] = React.useState();
   const [open, setOpen] = React.useState(false);
   let [loader, setLoader] = React.useState(true);
@@ -72,7 +73,7 @@ const OutstandingBalance = () => {
   }
 
   let getTenantsDate = async () => {
-    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenant");
+    let responce = await axios.get(`${baseUrl}/tenant/tenant`);
     setLoader(false);
     setTenantsDate(responce.data.data);
   };
@@ -82,7 +83,7 @@ const OutstandingBalance = () => {
 
   const editPropertyData = async (id, updatedData) => {
     try {
-      const editUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant/${id}`;
+      const editUrl = `${baseUrl}/tenant/tenant/${id}`;
       //console.log("Edit URL:", editUrl);
       //console.log("Property ID:", id);
       //console.log("Updated Data:", updatedData); // Log the updated data for debugging
@@ -112,7 +113,7 @@ const OutstandingBalance = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete("https://propertymanager.cloudpress.host/api/tenant/tenant", {
+          .delete(`${baseUrl}/tenant/tenant`, {
             data: { _id: id },
           })
           .then((response) => {

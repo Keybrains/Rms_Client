@@ -19,6 +19,7 @@ import VendorHeader from "components/Headers/VendorHeader";
 import { jwtDecode } from "jwt-decode";
 
 const StaffWorkOrder = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [workOrderDetails, setWorkOrderDetails] = useState({});
   const { id } = useParams();
   //console.log(id, workOrderDetails);
@@ -46,7 +47,7 @@ const StaffWorkOrder = () => {
       }
 
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/workorder/workorder_summary/${id}`
+        `${baseUrl}/workorder/workorder_summary/${id}`
       );
 
       //console.log("API Response:", response.data.data);

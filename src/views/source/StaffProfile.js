@@ -15,6 +15,7 @@ import {
 import { jwtDecode } from "jwt-decode";
 
 const StaffProfile = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   //console.log(id);
   const [staffDetails, setStaffDetails] = useState({});
@@ -43,7 +44,7 @@ const StaffProfile = () => {
         }
 
         const response = await axios.get(
-          `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
+          `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
         );
         //console.log(response.data.data);
         setStaffDetails(response.data.data);

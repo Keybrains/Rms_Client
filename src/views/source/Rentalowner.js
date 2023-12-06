@@ -59,6 +59,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 // };
 
 const Rentals = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
   const [statedropdownOpen, setstateDropdownOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -162,12 +163,12 @@ const Rentals = () => {
 
       if (id === undefined) {
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/rentalowner/rentalowner",
+          `${baseUrl}/rentalowner/rentalowner`,
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`;
+        const editUrl = `${baseUrl}/rentalowner/rentalowner/${id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }
@@ -273,7 +274,7 @@ const Rentals = () => {
 
   React.useEffect(() => {
     // Fetch data from your API
-    fetch("https://propertymanager.cloudpress.host/api/rentals/property_onrent")
+    fetch(`${baseUrl}/rentals/property_onrent`)
       .then((response) => response.json())
       .then((data) => {
         //console.log("Data from API:", data); // Log the response data
@@ -297,7 +298,7 @@ const Rentals = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://propertymanager.cloudpress.host/api/rentalowner/rentalowner/${id}`)
+        .get(`${baseUrl}/rentalowner/rentalowner/${id}`)
         .then((response) => {
           const rentalOwnerdata = response.data.data;
           setRentalOwnerData(rentalOwnerData);

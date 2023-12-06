@@ -20,6 +20,7 @@ import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
 
 const TenantProperty = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [rental_adress, setRentalAddress] = useState([]);
   let [loader, setLoader] = React.useState(true);
   const [propertyDetails, setPropertyDetails] = useState([]);
@@ -45,7 +46,7 @@ const TenantProperty = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/tenant/tenant_rental_addresses/${cookie_id}`
+        `${baseUrl}/tenant/tenant_rental_addresses/${cookie_id}`
       );
 
       if (response.data && response.data.rental_adress) {
@@ -54,7 +55,7 @@ const TenantProperty = () => {
         setRentalAddress(response.data.rental_adress);
 
         const allTenants = await axios.get(
-          `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${cookie_id}`
+          `${baseUrl}/tenant/tenant_summary/${cookie_id}`
         );
         setPropertyDetails(allTenants.data.data.entries);
         // console.log(allTenants.data.data, "allTenants");
@@ -76,7 +77,7 @@ const TenantProperty = () => {
   useEffect(() => {
     getTenantData();
     // console.log(
-    //   `https://propertymanager.cloudpress.host/api/tenant/tenant_rental_addresses/${cookie_id}`
+    //   `${baseUrl}/tenant/tenant_rental_addresses/${cookie_id}`
     // );
   }, [cookie_id]);
 
@@ -85,7 +86,7 @@ const TenantProperty = () => {
   // const getRentalData = async () => {
   //   try {
   //     const response = await axios.get(
-  //       `https://propertymanager.cloudpress.host/api/rentals/rentals_property/${rental_adress}`
+  //       `${baseUrl}/rentals/rentals_property/${rental_adress}`
   //     );
   //     setpropertyDetails(response.data.data);
   //     setpropertyLoading(false);
@@ -96,7 +97,7 @@ const TenantProperty = () => {
   // };
   // useEffect(() => {
   //   if (rental_adress) {
-  //       console.log(`https://propertymanager.cloudpress.host/api/rentals/rentals_property/${rental_adress}`)
+  //       console.log(`${baseUrl}/rentals/rentals_property/${rental_adress}`)
   //       getRentalData();
   //   }
   //   //console.log(rental_adress)

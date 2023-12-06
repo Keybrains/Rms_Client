@@ -29,12 +29,14 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 
 const PropertiesTables = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+
   const [rentalsData, setRentalsData] = useState([]);
 
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/rentals/listings"
+        `${baseUrl}/rentals/listings`
       );
       setRentalsData(response.data.data);
     } catch (error) {

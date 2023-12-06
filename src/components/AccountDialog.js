@@ -22,6 +22,7 @@ import swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
 
 function AccountDialog(props) {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [selectedAccountType, setselectedAccountType] = useState("");
   const [selectedAccountLevel, setselectedAccountLevel] = useState("");
   const [selectedFundType, setselectedFundType] = useState("");
@@ -80,7 +81,7 @@ function AccountDialog(props) {
     if (props.accountTypeName === "rentAccountName") {
       try {
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/addaccount/addaccount",
+          `${baseUrl}/addaccount/addaccount`,
           values
         );
         if (res.status === 200) {
@@ -118,7 +119,7 @@ function AccountDialog(props) {
       try {
         // values["property_type"] = localStorage.getItem("propertyType");
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/recurringAcc/addRecuringAcc",
+          `${baseUrl}/recurringAcc/addRecuringAcc`,
           values
         );
         if (res.data.statusCode === 200) {
@@ -144,7 +145,7 @@ function AccountDialog(props) {
       try {
         // values["property_type"] = localStorage.getItem("propertyType");
         const res = await axios.post(
-          "https://propertymanager.cloudpress.host/api/onetimecharge/addOneTimeAcc",
+          `${baseUrl}/onetimecharge/addOneTimeAcc`,
           values
         );
         if (res.data.statusCode === 200) {

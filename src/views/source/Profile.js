@@ -33,6 +33,7 @@ import {
 import UserHeader from "components/Headers/UserHeader.js";
 
 const Profile = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   return (
     <>
       <UserHeader />

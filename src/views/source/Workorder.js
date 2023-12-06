@@ -28,6 +28,7 @@ import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
 
 const Workorder = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   let navigate = useNavigate();
   let [workData, setWorkData] = useState();
   let [loader, setLoader] = React.useState(true);
@@ -41,7 +42,7 @@ const Workorder = () => {
   const getWorkData = async () => {
     try {
       const response = await axios.get(
-        "https://propertymanager.cloudpress.host/api/workorder/workorder"
+        `${baseUrl}/workorder/workorder`
       );
       setWorkData(response.data.data);
       setLoader(false);
@@ -75,7 +76,7 @@ const Workorder = () => {
       if (willDelete) {
         axios
           .delete(
-            "https://propertymanager.cloudpress.host/api/workorder/delete_workorder",
+            `${baseUrl}/workorder/delete_workorder`,
             {
               data: { _id: id },
             }

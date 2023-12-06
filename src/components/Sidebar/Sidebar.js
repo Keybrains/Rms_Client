@@ -42,6 +42,7 @@ import {
 } from "reactstrap";
 
 const Sidebar = (props) => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
   const [notificationData, setNotificationData] = useState([]);
@@ -111,7 +112,7 @@ const Sidebar = (props) => {
   }, []);
 
   const fetchNotification = async () => {
-    fetch(`https://propertymanager.cloudpress.host/api/notification/notification`)
+    fetch(`${baseUrl}/notification/notification`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -131,7 +132,7 @@ const Sidebar = (props) => {
 
   const navigateToDetails = (workorder_id) => {
     // Make a DELETE request to delete the notification
-    axios.get(`https://propertymanager.cloudpress.host/api/notification/notification/${workorder_id}?role=admin `)
+    axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=admin `)
     .then((response) => {
       if (response.status === 200) {
         const updatedNotificationData = notificationData.map(notification => {

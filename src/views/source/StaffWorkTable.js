@@ -23,6 +23,7 @@ import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 
 const StaffWorkTable = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,7 +56,7 @@ const StaffWorkTable = () => {
   const getWorkData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/addstaffmember/staffmember_summary/${cookie_id}`
+        `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
       );
       if (response.data && response.data.data) {
         //console.log(response.data.data);
@@ -85,7 +86,7 @@ const StaffWorkTable = () => {
   const getRentalData = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanager.cloudpress.host/api/workorder/workorder/by-staff-member/${staffmember_name}`
+        `${baseUrl}/workorder/workorder/by-staff-member/${staffmember_name}`
       );
       setWorkData(response.data.data);
       //console.log(response.data);

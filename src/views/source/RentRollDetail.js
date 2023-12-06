@@ -62,9 +62,10 @@ import Img from "assets/img/theme/team-4-800x800.jpg";
 
 
 const RentRollDetail = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, entryIndex } = useParams();
   //console.log(tenant_firstName, "tenant_firstName");
-  //console.log(tenantId, entryIndex, "tenantId, entryIndex");
+  console.log(tenantId, entryIndex, "tenantId, entryIndex");
   const { tenant_firstName } = useParams();
   const [tenantDetails, setTenantDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,7 +76,7 @@ const RentRollDetail = () => {
   const [unit, setUnit] = useState("");
   const [rentaldata, setRentaldata] = useState([]);
   const [paymentData, setPaymentData] = useState(null);
-  const [myData, setMyData] = useState([]);
+
   const [balance, setBalance] = useState("");
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
   const [loader, setLoader] = React.useState(true);
@@ -103,7 +104,7 @@ const RentRollDetail = () => {
       try {
         // Replace 'YOUR_API_ENDPOINT' with your actual API endpoint
         const response = await fetch(
-          `https://propertymanager.cloudpress.host/api/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
+          `${baseUrl}/payment/Payment_summary/tenant/${tenantId}/${entryIndex}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
@@ -143,13 +144,14 @@ const RentRollDetail = () => {
   //     navigate("/payment-page");
   //   }
   // };
+  const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
   const id = tenantId;
   const entry = entryIndex;
 
   const getTenantData = async () => {
     try {
-      const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+      const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
       const response = await axios.get(apiUrl);
       console.log(response.data.data, "huihyui");
       setTenantDetails(response.data.data);
@@ -161,7 +163,7 @@ const RentRollDetail = () => {
 
       axios
         .get(
-          `https://propertymanager.cloudpress.host/api/propertyunit/prop_id/${response.data.data.entries.unit_id}`
+          `${baseUrl}/propertyunit/prop_id/${response.data.data.entries.unit_id}`
         )
         .then((res) => {
           // if (res.data) {
@@ -172,7 +174,7 @@ const RentRollDetail = () => {
             //   }
             // });
             setPropertyId(res.data.data[0].propertyId);
-            const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=${rental}&property_id=${res.data.data[0].propertyId}&unit=${unit}&tenant_id=${tenantId}`
+            const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${res.data.data[0].propertyId}&unit=${unit}&tenant_id=${tenantId}`
             // const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=Testing&property_id=6568198deb1c48ddf1dbef35&unit=A&tenant_id=656d9e573b2237290eceae1f`
 
             // const response = await axios.get(url);
@@ -224,7 +226,7 @@ const RentRollDetail = () => {
 
   const navigateToSummary = async (tenantId, entryIndex) => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -248,7 +250,7 @@ const RentRollDetail = () => {
   };
 
   const navigateToTenant = async () => {
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -271,7 +273,7 @@ const RentRollDetail = () => {
 
   const navigateToFinancial = async () => {
     // Construct the API URL
-    const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+    const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
     try {
       // Fetch tenant data
@@ -295,7 +297,7 @@ const RentRollDetail = () => {
 
   // const tenantsData = async () => {
   //   // Construct the API URL
-  //   const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+  //   const apiUrl = `${baseUrl}/tenant/tenant-detail/tenants/${rental}`;
 
   //   try {
   //     // Fetch tenant data
@@ -319,9 +321,9 @@ const RentRollDetail = () => {
     let apiUrl;
 
     if (unit === undefined) {
-      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}`;
+      apiUrl = `${baseUrl}/tenant/tenant-detail/tenants/${rental}`;
     } else {
-      apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant-detail/tenants/${rental}/${unit}`;
+      apiUrl = `${baseUrl}/tenant/tenant-detail/tenants/${rental}/${unit}`;
       console.log(apiUrl, "apiUrl");
     }
 
@@ -414,17 +416,48 @@ const RentRollDetail = () => {
     //console.log("data",data)
     return data;
   };
+  const [myData, setMyData] = useState([]);
+
   const doSomething = async () => {
-    let responce = await axios.get("https://propertymanager.cloudpress.host/api/tenant/tenants");
-    const data = responce.data.data;
+    let response = await axios.get(
+      `${baseUrl}/tenant/tenants`
+    );
+    const data = response.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
-    console.log(filteredData, "yashr");
+    filteredData.forEach((item) => {
+      console.log(item._id,"vaibhav");
+    });
     setMyData(filteredData);
   };
 
   useEffect(() => {
     doSomething();
   }, []);
+
+  const [myData1, setMyData1] = useState([]);
+  console.log("myData1:", myData1);
+  const doSomething1 = async () => {
+   try {
+     let response = await axios.get(`${baseUrl}/tenant/tenants`);
+     const data = response.data.data;
+ 
+     const filteredData = data.filter((item, index) => {
+       // Replace 'tenantId' with the specific ID you're looking for
+       return item._id === tenantId && item.entries.entryIndex === entryIndex;
+     });
+ 
+     console.log(filteredData, "yashr");
+     setMyData1(filteredData);
+   } catch (error) {
+     // Handle errors here
+     console.error('Error fetching data:', error);
+   }
+ };
+ 
+   useEffect(() => {
+     doSomething1();
+   }, []);
+  
 
   const getStatus = (startDate, endDate) => {
     const today = new Date();
@@ -442,7 +475,7 @@ const RentRollDetail = () => {
     }
   };
   // const getGeneralLedgerData = async () => {
-  //   const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+  //   const apiUrl = `${baseUrl}/payment/merge_payment_charge/${tenantId}`;
 
   //   try {
   //     const response = await axios.get(apiUrl);
@@ -500,7 +533,7 @@ const RentRollDetail = () => {
       if (willDelete) {
         axios
           .delete(
-            `https://propertymanager.cloudpress.host/api/payment/delete_charge/${chargeId}/${chargeIndex}`
+            `${baseUrl}/payment/delete_charge/${chargeId}/${chargeIndex}`
           )
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -561,7 +594,7 @@ const RentRollDetail = () => {
 
     axios
       .put(
-        `https://propertymanager.cloudpress.host/api/tenant/moveout/${tenantId}/${entryIndex}`,
+        `${baseUrl}/tenant/moveout/${tenantId}/${entryIndex}`,
         updatedApplicant
       )
       .then((res) => {
@@ -703,6 +736,34 @@ const RentRollDetail = () => {
     doc.save("general_ledger.pdf");
   };
 
+  const getStatus1 = (startDate, endDate) => {
+    const today = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (today >= start && today <= end) {
+      return "TENANT";
+    } else if (today < start) {
+      return "FUTURE TENANT";
+    } else if (today > end) {
+      return "PAST TENANT";
+    } else {
+      return "-";
+    }
+  };
+  //sahil20231206
+  // Filter the specific entry based on entryIndex from URL parameters
+  const selectedEntry = myData.find(
+    (item) => item.entries.entryIndex === entryIndex
+  );
+  // Check if the entry exists and then display the status
+  const status = selectedEntry
+    ? getStatus1(
+        selectedEntry.entries.start_date,
+        selectedEntry.entries.end_date
+      )
+    : "-";
+
   return (
     <div>
       <Header />
@@ -716,8 +777,13 @@ const RentRollDetail = () => {
                   tenantDetails.tenant_lastName}
               </h1>
               <h5 style={{ color: "white" }}>
-                Tenant |{" "}
-                {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
+              {status} |{" "}
+              {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
+                {tenantDetails._id &&
+                tenantDetails.entries.rental_units !== undefined &&
+                tenantDetails.entries.rental_units !== ""
+                  ? ` - ${tenantDetails.entries.rental_units}`
+                  : ""}
               </h5>
             </FormGroup>
           </Col>
@@ -1621,7 +1687,7 @@ const RentRollDetail = () => {
                                       </Col>
 
                                       <Col lg="7">
-                                        <div
+                                      <div
                                           style={{
                                             color: "blue",
                                             fontWeight: "bold",
@@ -1630,8 +1696,11 @@ const RentRollDetail = () => {
                                           {tenant.tenant_firstName || "N/A"}{" "}
                                           {tenant.tenant_lastName || "N/A"}
                                           <br></br>
-                                          {entry.rental_adress}-
-                                          {entry.rental_units}
+                                          {entry.rental_adress}
+                                          {entry.rental_units !== "" &&
+                                          entry.rental_units !== undefined
+                                            ? ` - ${entry.rental_units}`
+                                            : null}
                                         </div>
 
                                         <div>
@@ -1883,7 +1952,7 @@ const RentRollDetail = () => {
                                     >
                                       Rent:
                                     </Typography>
-                                    {myData.map((item) => (
+                                    {myData1.map((item) => (
                                       <>
                                         <Typography
                                           sx={{
@@ -1920,7 +1989,7 @@ const RentRollDetail = () => {
                                 >
                                   Due date :
                                 </Typography>
-                                {myData.map((item) => (
+                                {myData1.map((item) => (
                                   <>
                                     <Typography
                                       sx={{
@@ -1965,10 +2034,13 @@ const RentRollDetail = () => {
                                   Receive Payment
                                 </Link>
                               </Button>
-                              {myData.map((item) => (
+                              
+                              {myData1.map((item) => (
                                 <>
+                                
                                   <Typography
                                     sx={{
+                                      
                                       fontSize: 14,
                                       marginLeft: "10px",
                                       paddingTop: "10px",
