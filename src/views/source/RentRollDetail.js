@@ -151,7 +151,7 @@ const RentRollDetail = () => {
 
   const getTenantData = async () => {
     try {
-      const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+      const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
       const response = await axios.get(apiUrl);
       console.log(response.data.data, "huihyui");
       setTenantDetails(response.data.data);
@@ -163,7 +163,7 @@ const RentRollDetail = () => {
 
       axios
         .get(
-          `https://propertymanager.cloudpress.host/api/propertyunit/prop_id/${response.data.data.entries.unit_id}`
+          `${baseUrl}/propertyunit/prop_id/${response.data.data.entries.unit_id}`
         )
         .then((res) => {
           // if (res.data) {
@@ -174,7 +174,7 @@ const RentRollDetail = () => {
             //   }
             // });
             setPropertyId(res.data.data[0].propertyId);
-            const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=${rental}&property_id=${res.data.data[0].propertyId}&unit=${unit}&tenant_id=${tenantId}`
+            const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${res.data.data[0].propertyId}&unit=${unit}&tenant_id=${tenantId}`
             // const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=Testing&property_id=6568198deb1c48ddf1dbef35&unit=A&tenant_id=656d9e573b2237290eceae1f`
 
             // const response = await axios.get(url);

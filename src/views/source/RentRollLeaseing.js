@@ -266,7 +266,7 @@ const RentRollLeaseing = () => {
     entrySchema.values.rental_adress = propertyType;
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
-      const units = await fetchUnitsByProperty(property.rental_adress);
+      const units = await fetchUnitsByProperty(propertyType);
       console.log(units, "units"); // Check the received units in the console
       setUnitData(units); // Set the received units in the unitData state
     } catch (error) {
@@ -1906,14 +1906,14 @@ console.log(propertyId,'porpeorjinhb')
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
 
-          tenant_residentStatus: ownerData.tenant_residentStatus,
-          rentalOwner_firstName: ownerData.rentalOwner_firstName,
-          rentalOwner_lastName: ownerData.rentalOwner_lastName,
-          rentalOwner_primaryemail: ownerData.rentalOwner_email,
-          rentalOwner_phoneNumber: ownerData.rentalOwner_phoneNumber,
-          rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
-          rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
-          rentalOwner_companyName: ownerData.rentalOwner_companyName,
+          // tenant_residentStatus: ownerData.tenant_residentStatus,
+          // rentalOwner_firstName: ownerData.rentalOwner_firstName,
+          // rentalOwner_lastName: ownerData.rentalOwner_lastName,
+          // rentalOwner_primaryemail: ownerData.rentalOwner_email,
+          // rentalOwner_phoneNumber: ownerData.rentalOwner_phoneNumber,
+          // rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
+          // rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
+          // rentalOwner_companyName: ownerData.rentalOwner_companyName,
         },
       ],
     };
