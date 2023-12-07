@@ -5,6 +5,10 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
   CardHeader,
   CardBody,
   FormGroup,
@@ -527,7 +531,9 @@ const TenantFinancial = () => {
                                   applicantFormik.handleChange(e);
                                 }}
                                 required
-                              />  
+                              />
+
+
                             </InputGroup>
                           </FormGroup>
                           <Row>
