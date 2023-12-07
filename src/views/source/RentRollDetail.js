@@ -221,7 +221,8 @@ const RentRollDetail = () => {
       setLoading(false);
     }
   };
-
+//sahil
+//ajmeri
   const navigateToSummary = async (tenantId, entryIndex) => {
     // Construct the API URL
     const apiUrl = `https://propertymanager.cloudpress.host/api/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
