@@ -160,6 +160,7 @@ const RentRollDetail = () => {
       const unit = response.data.data.entries.rental_units;
       const unitId = response.data.data.entries.unit_id;
       const propertysId = response.data.data.entries.property_id;
+      console.log(propertysId, "propertysId")
       
       // setRental(rental);
       // setUnit(unit);
