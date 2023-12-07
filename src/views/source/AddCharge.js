@@ -286,7 +286,7 @@ const AddCharge = () => {
 
       if (response.data.statusCode === 200) {
         swal("Success", "Charges Added Successfully", "success");
-        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
+        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`);
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -319,7 +319,7 @@ const AddCharge = () => {
         }
         console.log(chargeObject,'chargeObject')
         // debugger
-        const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+        const url = `${baseUrl}/payment_charge/payment_charge`
         await axios.post(url, chargeObject).then((res) => {
           console.log(res)
         }).catch((err) => {

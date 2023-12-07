@@ -259,12 +259,14 @@ const RentRollLeaseing = () => {
 
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [propertyId, setPropertyId] = useState("");
+  const [ownerData, setOwnerData] = useState({});
   // console.log(selectedPropertyType, "selectedPropertyType")
   const handlePropertyTypeSelect = async (propertyType,property_id) => {
     setSelectedPropertyType(propertyType);
     setPropertyId(property_id);
     entrySchema.values.rental_adress = propertyType;
     setSelectedUnit(""); // Reset selected unit when a new property is selected
+    setOwnerData(propertyType);
     try {
       const units = await fetchUnitsByProperty(propertyType);
       console.log(units, "units"); // Check the received units in the console
@@ -1490,11 +1492,11 @@ console.log(propertyId,'porpeorjinhb')
 
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
-    if (id && entryIndex) {
-      const url = `${baseUrl}/tenant/tenant_summary/${id}`;
-      axios
-        .get(url)
-        .then((response) => {
+    const fetchData = async () => {
+      if (id && entryIndex) {
+        const url = `${baseUrl}/tenant/tenant_summary/${id}`;
+        try {
+          const response = await axios.get(url);
           const laesingdata = response.data.data;
           console.log(laesingdata, "laesingdata");
           setTenantData(laesingdata);
@@ -1503,9 +1505,21 @@ console.log(propertyId,'porpeorjinhb')
             lastName: laesingdata.tenant_lastName || "",
             mobileNumber: laesingdata.tenant_mobileNumber || "",
           });
-          const matchedLease = laesingdata.entries.find((entry) => {
-            return entry.entryIndex === entryIndex;
-          });
+  
+          const matchedLease = laesingdata.entries.find(
+            (entry) => entry.entryIndex === entryIndex
+          );
+          try{
+            const units = await fetchUnitsByProperty(matchedLease.rental_adress);
+            console.log(units, "unitssssssssssssss"); // Check the received units in the console
+            
+            setUnitData(units);
+            
+          }catch (error){
+            console.log(error,'error')
+          }
+          
+          // handleAddTenant();
 
           // const formattedStartDate = matchedLease.start_date
           //   ? new Date(matchedLease.start_date).toISOString().split("T")[0]
@@ -1712,12 +1726,14 @@ console.log(propertyId,'porpeorjinhb')
           //     },
           //   ],
           // });
-        })
-        .catch((error) => {
-          console.error("Error fetching vendor data:", error);
-        });
-      handleAddTenant();
-    }
+    
+
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+    fetchData();
   }, [id, entryIndex]);
 
   const handleSubmit = async (values) => {
@@ -1906,14 +1922,14 @@ console.log(propertyId,'porpeorjinhb')
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
 
-          // tenant_residentStatus: ownerData.tenant_residentStatus,
-          // rentalOwner_firstName: ownerData.rentalOwner_firstName,
-          // rentalOwner_lastName: ownerData.rentalOwner_lastName,
-          // rentalOwner_primaryemail: ownerData.rentalOwner_email,
-          // rentalOwner_phoneNumber: ownerData.rentalOwner_phoneNumber,
-          // rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
-          // rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
-          // rentalOwner_companyName: ownerData.rentalOwner_companyName,
+          tenant_residentStatus: ownerData.tenant_residentStatus,
+          rentalOwner_firstName: ownerData.rentalOwner_firstName,
+          rentalOwner_lastName: ownerData.rentalOwner_lastName,
+          rentalOwner_primaryemail: ownerData.rentalOwner_email,
+          rentalOwner_phoneNumber: ownerData.rentalOwner_phoneNumber,
+          rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
+          rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
+          rentalOwner_companyName: ownerData.rentalOwner_companyName,
         },
       ],
     };
@@ -1971,7 +1987,7 @@ console.log(propertyId,'porpeorjinhb')
               }]
             }
 
-            const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+            const url = `${baseUrl}/payment_charge/payment_charge`
             await axios.post(url, chargeObject).then((res) => {
               console.log(res)
             }).catch((err) => {
@@ -2018,7 +2034,7 @@ console.log(propertyId,'porpeorjinhb')
                 }]
               }
   
-              const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+              const url = `${baseUrl}/payment_charge/payment_charge`
               await axios.post(url, chargeObject).then((res) => {
                 console.log(res)
               }).catch((err) => {
@@ -2067,7 +2083,13 @@ console.log(propertyId,'porpeorjinhb')
 
     const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
-
+    try{
+      const units = await fetchUnitsByProperty(entrySchema.values.rental_units);
+      //console.log(units, "units"); // Check the received units in the console
+      setUnitData(units);
+    }catch (error){
+      console.log(error,'error')
+    }
     const entriesObject = {
       entryIndex: entrySchema.values.entryIndex,
       rental_adress: entrySchema.values.rental_adress,
@@ -2423,6 +2445,8 @@ console.log(propertyId,'porpeorjinhb')
                       </Col>
                     </Row>
                     <Row>
+                    {console.log(unitData,'ubnitFsttvb')}
+                    {entrySchema.values.rental_adress && unitData && unitData[0] && unitData[0].rental_units && ( 
                       <FormGroup>
                         <label
                           className="form-control-label"
@@ -2431,10 +2455,8 @@ console.log(propertyId,'porpeorjinhb')
                         >
                           Unit *
                         </label>
-                        {console.log(unitData, "unitData")}
                         <FormGroup style={{ marginLeft: "15px" }}>
                           <Dropdown isOpen={unitDropdownOpen} toggle={toggle11}>
-                            {console.log(selectedUnit, "sssss")}
                             <DropdownToggle caret>
                               {selectedUnit ? selectedUnit : "Select Unit"}
                             </DropdownToggle>
@@ -2444,7 +2466,7 @@ console.log(propertyId,'porpeorjinhb')
                                   <DropdownItem
                                     key={unit._id}
                                     onClick={() =>
-                                      handleUnitSelect(unit.rental_units,unit._id)
+                                      handleUnitSelect(unit.rental_units)
                                     }
                                   >
                                     {unit.rental_units}
@@ -2468,6 +2490,7 @@ console.log(propertyId,'porpeorjinhb')
                           </Dropdown>
                         </FormGroup>
                       </FormGroup>
+                    )}
                     </Row>
                     <Row>
                       <Col lg="3">
@@ -3592,7 +3615,7 @@ console.log(propertyId,'porpeorjinhb')
                                                           className="form-control-label"
                                                           htmlFor="input-unitadd4"
                                                         >
-                                                          TextPayer ID
+                                                          TaxPayer ID
                                                         </label>
                                                         <Input
                                                           className="form-control-alternative"

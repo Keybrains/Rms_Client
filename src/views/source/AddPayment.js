@@ -405,7 +405,7 @@ const AddPayment = () => {
           swal("Error", "Failed to get 'id' from the response", "error");
         }
 
-        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`); // Navigate to the desired page
+        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`); // Navigate to the desired page
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -436,7 +436,7 @@ const AddPayment = () => {
         }
         console.log(paymentObject,'chargeObject')
         // debugger
-        const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+        const url = `${baseUrl}/payment_charge/payment_charge`
         await axios.post(url, paymentObject).then((res) => {
           console.log(res)
         }).catch((err) => {
