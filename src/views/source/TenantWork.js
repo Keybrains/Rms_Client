@@ -194,7 +194,39 @@ const TenantWork = () => {
       );
     });
   };
-
+  const deleteRentals = (id) => {
+    // Show a confirmation dialog to the user
+    swal({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this work order!",
+      icon: "warning",
+      buttons: ["Cancel", "Delete"],
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        axios
+          .delete(
+            `${baseUrl}/workorder/delete_workorder`,
+            {
+              data: { _id: id },
+            }
+          )
+          .then((response) => {
+            if (response.data.statusCode === 200) {
+              swal("Success!", "Work Order deleted successfully", "success");
+          
+            } else {
+              swal("", response.data.message, "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error deleting work order:", error);
+          });
+      } else {
+        swal("Cancelled", "Work Order is safe :)", "info");
+      }
+    });
+  };
   return (
     <>
       <TenantsHeader />
@@ -287,7 +319,7 @@ const TenantWork = () => {
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // deleteRentals(rental._id);
+                                deleteRentals(rental._id);
                               }}
                             >
                               <DeleteIcon />

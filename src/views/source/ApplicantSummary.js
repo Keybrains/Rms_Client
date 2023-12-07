@@ -243,6 +243,8 @@ const ApplicantSummary = () => {
       tenant_faxPhoneNumber: "",
       tenant_email: "",
       attachment: "",
+      rental_units:"",
+      rental_adress:""
       // applicant_notes: notes,
       // applicant_attachment: files,
     },
@@ -701,10 +703,20 @@ const ApplicantSummary = () => {
       });
   };
 
-  const onClickEditButton = () => {
+  const onClickEditButton = async () => {
     setIsEdit(true);
     //console.log(matchedApplicant, "matchedApplicant from edit ");
     setSelectedPropertyType(matchedApplicant.rental_adress || "Select");
+    try{
+      const units = await fetchUnitsByProperty(matchedApplicant.rental_adress);
+      //console.log(units, "units"); // Check the received units in the console
+
+      setUnitData(units);
+    }catch (error){
+      console.log(error,'error')
+    }
+
+
     setSelectedUnit(matchedApplicant.rental_units || "Select");
     applicantFormik.setValues({
       tenant_firstName: matchedApplicant.tenant_firstName,
@@ -2023,7 +2035,8 @@ const ApplicantSummary = () => {
                                       </Dropdown>
                                     </FormGroup>
                                   </div>
-
+                                  {console.log(unitData,'ubnitFsttvb')}
+                                  {applicantFormik.values.rental_adress && unitData && unitData[0] && unitData[0].rental_units && ( 
                                   <div>
                                     <label
                                       className="form-control-label"
@@ -2077,6 +2090,7 @@ const ApplicantSummary = () => {
                                       </Dropdown>
                                     </FormGroup>
                                   </div>
+                                  )}
                                   <div style={{ marginTop: "10px" }}>
                                     <Button
                                       color="success"

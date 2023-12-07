@@ -59,13 +59,16 @@ import DoneIcon from "@mui/icons-material/Done";
 import { Modal } from "react-bootstrap";
 import jsPDF from "jspdf";
 import Img from "assets/img/theme/team-4-800x800.jpg";
-
+import { useLocation } from 'react-router-dom';
 
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, entryIndex } = useParams();
-  //console.log(tenant_firstName, "tenant_firstName");
   console.log(tenantId, entryIndex, "tenantId, entryIndex");
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const source = queryParams.get('source');
+  //console.log(tenant_firstName, "tenant_firstName");
   const { tenant_firstName } = useParams();
   const [tenantDetails, setTenantDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -159,13 +162,67 @@ const RentRollDetail = () => {
       const rental = response.data.data.entries.rental_adress;
       const unit = response.data.data.entries.rental_units;
       const unitId = response.data.data.entries.unit_id;
+      const propertysId = response.data.data.entries.property_id;
+      console.log(propertysId, "propertysId")
+      
+      // setRental(rental);
+      // setUnit(unit);
+      // setUnitId(unitId);
+      // setPropertyId(propertyId);
       console.log(response.data.data.entries.rental_units, "res.daya dhstab");
+      if(unitId && unit){
+        console.log("1")
+        const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${propertysId}&unit=${unit}&tenant_id=${tenantId}`
+        console.log(url,'huewfjnmk')
+        axios
+        .get(url)
+        .then((response) => {
+        setLoader(false);
+        
+        if (response.data && response.data.data) {
+          const mergedData = response.data.data;
+          console.log(mergedData, "mergedData");
+    
+          setGeneralLedgerData(mergedData[0]?.unit[0]);
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+    }else{
+      console.log("2")
 
-      axios
-        .get(
-          `${baseUrl}/propertyunit/prop_id/${response.data.data.entries.unit_id}`
-        )
-        .then((res) => {
+      const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${tenantId}`
+        console.log(url,'huewfjnmk')
+
+        axios
+        .get(url)
+        .then((response) => {
+        setLoader(false);
+        
+        if (response.data && response.data.data) {
+          const mergedData = response.data.data;
+          console.log(mergedData, "mergedData");
+    
+          setGeneralLedgerData(mergedData[0]?.unit[0]);
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+      
+    }
+      
+      
+      // axios
+      //   .get(
+      //     `${baseUrl}/propertyunit/prop_id/${response.data.data.entries.unit_id}`
+      //   )
+      //   .then((res) => {
           // if (res.data) {
             // setRentaldata(res.data.data);
             // const matchedUnit = res?.data?.find((item) => {
@@ -173,42 +230,16 @@ const RentRollDetail = () => {
             //     setRentaldata(item);
             //   }
             // });
-            setPropertyId(res.data.data[0].propertyId);
-            const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${res.data.data[0].propertyId}&unit=${unit}&tenant_id=${tenantId}`
+            // setPropertyId(res.data.data[0].propertyId);
             // const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=Testing&property_id=6568198deb1c48ddf1dbef35&unit=A&tenant_id=656d9e573b2237290eceae1f`
 
             // const response = await axios.get(url);
-            axios
-            .get(url)
-            .then((response) => {
-              setLoader(false);
-          
-              if (response.data && response.data.data) {
-                const mergedData = response.data.data;
-                // const sortedData = mergedData.map((item) => ({
-                //   ...item,
-                //   unit: item.unit.map((unitItem) => ({
-                //     ...unitItem,
-                //     paymentAndCharges: unitItem.paymentAndCharges.sort((a, b) =>
-                //       new Date(a.date) - new Date(b.date)
-                //     ),
-                //   })),
-                // }));
-          
-                setGeneralLedgerData(mergedData[0]?.unit[0]);
-              } else {
-                console.error("Unexpected response format:", response.data);
-              }
-            })
-            .catch((error) => {
-              console.error("Error fetching data:", error);
-            });
-          
+
           // }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+        // })
+        // .catch((error) => {
+        //   console.error(error);
+        // });
       setUnitId(unitId);
 
       setPropertyId(propertyId);
@@ -334,7 +365,7 @@ const RentRollDetail = () => {
       //console.log(tenantData.tenant_firstName, "abcd");
       setTenantDetails(tenantData);
       setRentaldata(tenantData);
-      //console.log(tenantData, "mansi");
+      console.log(tenantData, "tenantsdata");
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -351,7 +382,11 @@ const RentRollDetail = () => {
       getTenantData();
       // getTenantData();
       // console.log(rental, "rental");
-      setValue("Summary");
+      if (source == 'payment') {
+        setValue('Financial')
+      }else{
+        setValue('Summary')
+      }
       // tenantsData();
 
       if (rental) {
@@ -604,6 +639,7 @@ const RentRollDetail = () => {
           // Close the modal if the status code is 200
           handleModalClose();
           getTenantData();
+          tenantsData();
         }
       })
       .catch((err) => {
@@ -990,7 +1026,7 @@ const RentRollDetail = () => {
                                                             item.entries
                                                               .start_date
                                                           ) +
-                                                            "-" +
+                                                            " To " +
                                                             formatDateWithoutTime(
                                                               item.entries
                                                                 .end_date
@@ -1137,7 +1173,7 @@ const RentRollDetail = () => {
                                             >
                                               Rent:
                                             </Typography>
-                                            {myData.map((item) => (
+                                            {myData1.map((item) => (
                                               <>
                                                 <Typography
                                                   sx={{
@@ -1174,7 +1210,7 @@ const RentRollDetail = () => {
                                         >
                                           Due date :
                                         </Typography>
-                                        {myData.map((item) => (
+                                        {myData1.map((item) => (
                                           <>
                                             <Typography
                                               sx={{
@@ -1219,7 +1255,7 @@ const RentRollDetail = () => {
                                           Receive Payment
                                         </Link>
                                       </Button>
-                                      {myData.map((item) => (
+                                      {myData1.map((item) => (
                                         <>
                                           <Typography
                                             sx={{
@@ -1232,7 +1268,7 @@ const RentRollDetail = () => {
                                             // onClick={() => handleChange("Financial")}
                                           >
                                             <Link
-                                              to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                              to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
                                               onClick={(e) => {}}
                                             >
                                               Lease Ledger
@@ -1512,6 +1548,7 @@ const RentRollDetail = () => {
                       <Col>
                         {Array.isArray(rentaldata) ? (
                           <Grid container spacing={2}>
+                            {console.log(rentaldata,"rentalsdat")}
                             {rentaldata.map((tenant, index) => (
                               <Grid item xs={12} sm={6} key={index}>
                                 {tenant.entries.map((entry) => (
@@ -1727,44 +1764,6 @@ const RentRollDetail = () => {
                                             <PhoneAndroidIcon />
                                           </Typography>
                                           {tenant.tenant_mobileNumber || "N/A"}
-                                        </div>
-
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }}
-                                        >
-                                          <Typography
-                                            style={{
-                                              paddingRight: "3px",
-                                              fontSize: "7px",
-                                              color: "black",
-                                            }}
-                                          >
-                                            <HomeIcon />
-                                          </Typography>
-                                          {tenant.tenant_homeNumber || "N/A"}
-                                        </div>
-
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }}
-                                        >
-                                          <Typography
-                                            style={{
-                                              paddingRight: "3px",
-                                              fontSize: "7px",
-                                              color: "black",
-                                            }}
-                                          >
-                                            <BusinessCenterIcon />
-                                          </Typography>
-                                          {tenant.tenant_workNumber || "N/A"}
                                         </div>
 
                                         <div
@@ -2050,7 +2049,7 @@ const RentRollDetail = () => {
                                     // onClick={() => handleChange("Financial")}
                                   >
                                     <Link
-                                      to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                      to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
                                       onClick={(e) => {}}
                                     >
                                       Lease Ledger
