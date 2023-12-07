@@ -973,7 +973,7 @@ const Applicants = () => {
                       </Dropdown>
                     </FormGroup>
                   </FormGroup>
-
+                  {selectedPropertyType && unitData && unitData[0] && unitData[0].rental_units && (
                   <FormGroup>
                     <label className="form-control-label" htmlFor="input-unit">
                       Unit *
@@ -1013,6 +1013,7 @@ const Applicants = () => {
                       </Dropdown>
                     </FormGroup>
                   </FormGroup>
+                  )}
                 </div>
               )}
             </ModalBody>

@@ -496,10 +496,16 @@ const PropDetails = () => {
     <>
       <Header />
       {/* Page content */}
-      <Container className="mt--7" fluid>
+      <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
-            <h1 style={{ color: "white" }}>Property Details</h1>
+          <h1 style={{ color: "white" }}>
+                
+                {matchedProperty.rental_adress}
+              </h1>
+              <h4 style={{ color: "white" }}>
+              {matchedProperty.property_type}
+              </h4>
           </Col>
           <Col className="text-right" xs="12" sm="6">
             <Button
@@ -517,28 +523,7 @@ const PropDetails = () => {
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                {console.log(matchedProperty, "matchedProperty 402")}
-                {console.log(propType, "proptype")}
-                <Row>
-                  <Col md="4">
-                    <div>
-                      <div>
-                        <h1 className="mb-0">
-                          {matchedProperty.rental_adress}
-                        </h1>
-                      </div>
-                      <div>
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                        >
-                          {matchedProperty.property_type} | {propType}
-                        </Typography>
-                      </div>
-                    </div>
-                  </Col>
-                </Row>
+              
               </CardHeader>
               <Col>
                 <TabContext value={value}>

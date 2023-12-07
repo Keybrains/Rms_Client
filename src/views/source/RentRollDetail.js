@@ -59,13 +59,16 @@ import DoneIcon from "@mui/icons-material/Done";
 import { Modal } from "react-bootstrap";
 import jsPDF from "jspdf";
 import Img from "assets/img/theme/team-4-800x800.jpg";
-
+import { useLocation } from 'react-router-dom';
 
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, entryIndex } = useParams();
-  //console.log(tenant_firstName, "tenant_firstName");
   console.log(tenantId, entryIndex, "tenantId, entryIndex");
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const source = queryParams.get('source');
+  //console.log(tenant_firstName, "tenant_firstName");
   const { tenant_firstName } = useParams();
   const [tenantDetails, setTenantDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -362,7 +365,7 @@ const RentRollDetail = () => {
       //console.log(tenantData.tenant_firstName, "abcd");
       setTenantDetails(tenantData);
       setRentaldata(tenantData);
-      //console.log(tenantData, "mansi");
+      console.log(tenantData, "tenantsdata");
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -379,7 +382,11 @@ const RentRollDetail = () => {
       getTenantData();
       // getTenantData();
       // console.log(rental, "rental");
-      setValue("Summary");
+      if (source == 'payment') {
+        setValue('Financial')
+      }else{
+        setValue('Summary')
+      }
       // tenantsData();
 
       if (rental) {
@@ -632,6 +639,7 @@ const RentRollDetail = () => {
           // Close the modal if the status code is 200
           handleModalClose();
           getTenantData();
+          tenantsData();
         }
       })
       .catch((err) => {
@@ -1018,7 +1026,7 @@ const RentRollDetail = () => {
                                                             item.entries
                                                               .start_date
                                                           ) +
-                                                            "-" +
+                                                            " To " +
                                                             formatDateWithoutTime(
                                                               item.entries
                                                                 .end_date
@@ -1165,7 +1173,7 @@ const RentRollDetail = () => {
                                             >
                                               Rent:
                                             </Typography>
-                                            {myData.map((item) => (
+                                            {myData1.map((item) => (
                                               <>
                                                 <Typography
                                                   sx={{
@@ -1202,7 +1210,7 @@ const RentRollDetail = () => {
                                         >
                                           Due date :
                                         </Typography>
-                                        {myData.map((item) => (
+                                        {myData1.map((item) => (
                                           <>
                                             <Typography
                                               sx={{
@@ -1247,7 +1255,7 @@ const RentRollDetail = () => {
                                           Receive Payment
                                         </Link>
                                       </Button>
-                                      {myData.map((item) => (
+                                      {myData1.map((item) => (
                                         <>
                                           <Typography
                                             sx={{
@@ -1260,7 +1268,7 @@ const RentRollDetail = () => {
                                             // onClick={() => handleChange("Financial")}
                                           >
                                             <Link
-                                              to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                              to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
                                               onClick={(e) => {}}
                                             >
                                               Lease Ledger
@@ -1540,6 +1548,7 @@ const RentRollDetail = () => {
                       <Col>
                         {Array.isArray(rentaldata) ? (
                           <Grid container spacing={2}>
+                            {console.log(rentaldata,"rentalsdat")}
                             {rentaldata.map((tenant, index) => (
                               <Grid item xs={12} sm={6} key={index}>
                                 {tenant.entries.map((entry) => (
@@ -1755,44 +1764,6 @@ const RentRollDetail = () => {
                                             <PhoneAndroidIcon />
                                           </Typography>
                                           {tenant.tenant_mobileNumber || "N/A"}
-                                        </div>
-
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }}
-                                        >
-                                          <Typography
-                                            style={{
-                                              paddingRight: "3px",
-                                              fontSize: "7px",
-                                              color: "black",
-                                            }}
-                                          >
-                                            <HomeIcon />
-                                          </Typography>
-                                          {tenant.tenant_homeNumber || "N/A"}
-                                        </div>
-
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
-                                          }}
-                                        >
-                                          <Typography
-                                            style={{
-                                              paddingRight: "3px",
-                                              fontSize: "7px",
-                                              color: "black",
-                                            }}
-                                          >
-                                            <BusinessCenterIcon />
-                                          </Typography>
-                                          {tenant.tenant_workNumber || "N/A"}
                                         </div>
 
                                         <div
@@ -2078,7 +2049,7 @@ const RentRollDetail = () => {
                                     // onClick={() => handleChange("Financial")}
                                   >
                                     <Link
-                                      to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                      to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
                                       onClick={(e) => {}}
                                     >
                                       Lease Ledger

@@ -2142,7 +2142,8 @@ const Leaseing = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                    <Row>
+                     <Row>
+                    {selectedPropertyType && unitData && unitData[0] && unitData[0].rental_units && ( 
                       <FormGroup>
                         <label
                           className="form-control-label"
@@ -2162,7 +2163,7 @@ const Leaseing = () => {
                                   <DropdownItem
                                     key={unit._id}
                                     onClick={() =>
-                                      handleUnitSelect(unit.rental_units,unit._id)
+                                      handleUnitSelect(unit.rental_units)
                                     }
                                   >
                                     {unit.rental_units}
@@ -2186,6 +2187,7 @@ const Leaseing = () => {
                           </Dropdown>
                         </FormGroup>
                       </FormGroup>
+                    )}
                     </Row>
                     <Row>
                       <Col lg="3">
@@ -3283,7 +3285,7 @@ const Leaseing = () => {
                                                           className="form-control-label"
                                                           htmlFor="input-unitadd4"
                                                         >
-                                                          TextPayer ID
+                                                          TaxPayer ID
                                                         </label>
                                                         <Input
                                                           className="form-control-alternative"
