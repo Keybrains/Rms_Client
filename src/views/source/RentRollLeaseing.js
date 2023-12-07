@@ -1719,6 +1719,7 @@ console.log(propertyId,'porpeorjinhb')
       handleAddTenant();
     }
   }, [id, entryIndex]);
+  console.log(baseUrl,'baseurl')
 
   const handleSubmit = async (values) => {
     // debugger
@@ -1864,6 +1865,7 @@ console.log(propertyId,'porpeorjinhb')
           amount: entrySchema.values.amount,
           account: entrySchema.values.account,
           nextDue_date: entrySchema.values.nextDue_date,
+          property_id:propertyId,
           memo: entrySchema.values.memo,
           upload_file: entrySchema.values.upload_file,
           isrenton: entrySchema.values.isrenton,
@@ -1918,7 +1920,7 @@ console.log(propertyId,'porpeorjinhb')
       ],
     };
     console.log(tenantObject,'sdgvfyfbhjnkml,kjnhbgvfcvhb')
-    debugger
+    // debugger
 
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
@@ -1941,15 +1943,20 @@ console.log(propertyId,'porpeorjinhb')
 
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
+          
           const res = await axios.put(
             `${baseUrl}/tenant/tenant/${tenantId}`,
             putObject
           );
           if (res.data.statusCode === 200) {
+            console.log(res.data.data, "allTenants22");
 
-            const chargeObject = {
-              properties:{
-                rental_adress:entrySchema.values.rental_adress,
+            debugger
+            if(entrySchema.values.unit_id){
+
+              const chargeObject = {
+                properties:{
+                  rental_adress:entrySchema.values.rental_adress,
                 property_id:propertyId
               },
               unit:[{
@@ -1977,6 +1984,39 @@ console.log(propertyId,'porpeorjinhb')
             }).catch((err) => {
               console.log(err)
             })
+          }else{
+            const chargeObject = {
+              properties:{
+                rental_adress:entrySchema.values.rental_adress,
+              property_id:propertyId
+            },
+            unit:[{
+              unit:"",
+              unit_id:"",
+              paymentAndCharges:[{
+                  type:"Payment",
+                  account:entrySchema.values.account,
+                  amount:parseFloat(entrySchema.values.amount),
+                  rental_adress:entrySchema.values.rental_adress,
+                  rent_cycle:entrySchema.values.rent_cycle,
+                  month_year:moment().format("MM-YYYY"),
+                  date:moment().format("YYYY-MM-DD"),
+                  memo: values.charges_memo,
+                  tenant_id:tenantId,
+                  tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
+              }]
+              
+            }]
+          }
+
+          const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+          await axios.post(url, chargeObject).then((res) => {
+            console.log(res)
+          }).catch((err) => {
+            console.log(err)
+          })
+
+          }
             swal("", res.data.message, "success");
             navigate("/admin/TenantsTable");
           } else {

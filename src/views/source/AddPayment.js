@@ -204,6 +204,9 @@ const AddPayment = () => {
     });
   };
   const [tenantData, setTenantData] = useState([]);
+  const [propertyId, setPropertyId] = useState("");
+  console.log()
+  // const [propertyData, setPropertyData] = useState([]);
   const fetchTenantData = async () => {
     fetch(
       `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
@@ -215,8 +218,10 @@ const AddPayment = () => {
           setTenantData(tenantDatas);
           console.log("Tenant data:", tenantDatas);
           const rentalAddress = tenantDatas.entries.rental_adress;
+          console.log(tenantDatas.entries.property_id, "propertyId");
           setSelectedRec(`${tenantDatas.tenant_firstName} ${tenantDatas.tenant_lastName}`);
           setTenantid(tenantDatas._id)
+          setPropertyId(tenantDatas.entries.property_id);
           // setTenantid(tenantDatas._id); // Set the selected tenant's ID
           // setTenantentryIndex(tenantDatas.entryIndex); // Set the selected tenant's entry index
           setRentAddress(rentalAddress);
@@ -260,6 +265,11 @@ const AddPayment = () => {
       total_amount += parseFloat(entries.amount);
     }
   });
+  console.log(generalledgerFormik.values, "enasdtries");
+  if(generalledgerFormik.values.values){
+
+  }
+  console.log(generalledgerFormik?.values?.date?.slice(5,7)+"-"+generalledgerFormik?.values?.date?.slice(0,4),'clasujdnasdasd')
   const handleSubmit = async (values) => {
     const arrayOfNames = file.map((item) => item.name);
     const rentalAddress = generalledgerFormik.values.rental_adress;
@@ -414,19 +424,19 @@ const AddPayment = () => {
         const paymentObject = {
           properties:{
             rental_adress:rentalAddress,
-            property_id:state && state.property_id
+            property_id:propertyId
           },
           unit:[{
-            unit:state && state.unit_name,
-            unit_id:state && state.unit_id,
+            unit:(state && state.unit_name) || "",
+            unit_id:(state && state.unit_id) || "",
             paymentAndCharges:generalledgerFormik.values.entries.map((entry) => ({
                 type:"Payment",
-                account:entry.charges_account,
-                amount:parseFloat(entry.charges_amount),
+                account:entry.account,
+                amount:parseFloat(entry.amount),
                 rental_adress:rentAddress,
                 rent_cycle:"",
-                month_year:moment().format("MM-YYYY"),
-                date:moment().format("YYYY-MM-DD"),
+                month_year:values.date.slice(5,7)+"-"+values.date.slice(0,4),
+                date:values.date,
                 memo: values.charges_memo,
                 tenant_id:tenantid,
                 tenant_firstName:selectedRec,
@@ -435,7 +445,7 @@ const AddPayment = () => {
           }]
         }
         console.log(paymentObject,'chargeObject')
-        // debugger
+        debugger 
         const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
         await axios.post(url, paymentObject).then((res) => {
           console.log(res)

@@ -159,13 +159,67 @@ const RentRollDetail = () => {
       const rental = response.data.data.entries.rental_adress;
       const unit = response.data.data.entries.rental_units;
       const unitId = response.data.data.entries.unit_id;
+      const propertysId = response.data.data.entries.property_id;
+      console.log(propertysId, "propertysId")
+      
+      // setRental(rental);
+      // setUnit(unit);
+      // setUnitId(unitId);
+      // setPropertyId(propertyId);
       console.log(response.data.data.entries.rental_units, "res.daya dhstab");
+      if(unitId && unit){
+        console.log("1")
+        const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${propertysId}&unit=${unit}&tenant_id=${tenantId}`
+        console.log(url,'huewfjnmk')
+        axios
+        .get(url)
+        .then((response) => {
+        setLoader(false);
+        
+        if (response.data && response.data.data) {
+          const mergedData = response.data.data;
+          console.log(mergedData, "mergedData");
+    
+          setGeneralLedgerData(mergedData[0]?.unit[0]);
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+    }else{
+      console.log("2")
 
-      axios
-        .get(
-          `${baseUrl}/propertyunit/prop_id/${response.data.data.entries.unit_id}`
-        )
-        .then((res) => {
+      const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${tenantId}`
+        console.log(url,'huewfjnmk')
+
+        axios
+        .get(url)
+        .then((response) => {
+        setLoader(false);
+        
+        if (response.data && response.data.data) {
+          const mergedData = response.data.data;
+          console.log(mergedData, "mergedData");
+    
+          setGeneralLedgerData(mergedData[0]?.unit[0]);
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+      
+    }
+      
+      
+      // axios
+      //   .get(
+      //     `${baseUrl}/propertyunit/prop_id/${response.data.data.entries.unit_id}`
+      //   )
+      //   .then((res) => {
           // if (res.data) {
             // setRentaldata(res.data.data);
             // const matchedUnit = res?.data?.find((item) => {
@@ -173,42 +227,16 @@ const RentRollDetail = () => {
             //     setRentaldata(item);
             //   }
             // });
-            setPropertyId(res.data.data[0].propertyId);
-            const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${res.data.data[0].propertyId}&unit=${unit}&tenant_id=${tenantId}`
+            // setPropertyId(res.data.data[0].propertyId);
             // const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=Testing&property_id=6568198deb1c48ddf1dbef35&unit=A&tenant_id=656d9e573b2237290eceae1f`
 
             // const response = await axios.get(url);
-            axios
-            .get(url)
-            .then((response) => {
-              setLoader(false);
-          
-              if (response.data && response.data.data) {
-                const mergedData = response.data.data;
-                // const sortedData = mergedData.map((item) => ({
-                //   ...item,
-                //   unit: item.unit.map((unitItem) => ({
-                //     ...unitItem,
-                //     paymentAndCharges: unitItem.paymentAndCharges.sort((a, b) =>
-                //       new Date(a.date) - new Date(b.date)
-                //     ),
-                //   })),
-                // }));
-          
-                setGeneralLedgerData(mergedData[0]?.unit[0]);
-              } else {
-                console.error("Unexpected response format:", response.data);
-              }
-            })
-            .catch((error) => {
-              console.error("Error fetching data:", error);
-            });
-          
+
           // }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+        // })
+        // .catch((error) => {
+        //   console.error(error);
+        // });
       setUnitId(unitId);
 
       setPropertyId(propertyId);
