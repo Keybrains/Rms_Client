@@ -7,6 +7,7 @@ import { FormGroup, Col, Button } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
 import { OpenImageDialog } from "components/OpenImageDialog";
 import Cookies from "universal-cookie";
+import card from "../../assets/img/theme/angular.jpg";
 
 const TenantPropertyDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -81,329 +82,250 @@ const TenantPropertyDetail = () => {
                 <h3 className="mb-0">Summary</h3>
               </CardHeader>
               <div className="table-responsive">
-                <Table
-                  className="align-items-center table-flush"
-                  responsive
-                  style={{ width: "100%" }}
-                >
-                  {propertyDetails.map((propertyDetails) => (
-                    <>
-                      {propertyDetails.entries.map((entry) => (
-                        <>
-                          <tbody>
-                            <tr>
-                              <th
-                                colSpan="2"
-                                className="text-lg"
-                                style={{ color: "#3B2F2F" }}
-                              >
-                                Property Details
-                              </th>
-                            </tr>
-                            {/* <tr>
-                              <td className="font-weight-bold text-md">
-                                Image
-                              </td>
-                              <td>
-                                <img
-                                  src={
-                                    entry.propertyres_image ||
-                                    entry.property_image
-                                  }
-                                  alt="Property Details"
-                                  style={{ maxWidth: "8rem" }}
-                                />
-                              </td>
-                            </tr> */}
-                          <tr>
-  <td className="font-weight-bold text-md">Image</td>
-  <td>
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-      }}
-    >
-      {entry.propertyres_image &&
-        entry.propertyres_image.length > 0 && (
-          <div
-            style={{
-              width: "100%", // Expands to full width by default
-            }}
-          >
-            Residential:
-            {entry.propertyres_image.map((propertyres_image, index) => (
-              <img
-                key={index}
-                src={propertyres_image}
-                alt="Property Details"
-                onClick={() => {
-                  setSelectedImage(propertyres_image);
-                  setOpen(true);
-                }}
-                style={{
-                  width: "100px",
-                  height: "100px",
-                  // objectFit: "cover",
-                  margin: "10px",
-                  borderRadius: "10px",
-                  "@media (max-width: 768px)": {
-                    width: "100%", // Full-width on smaller screens
-                  },
-                }}
-              />
-            ))}
-          </div>
-        )}
-      {entry.property_image && entry.property_image.length > 0 && !entry.propertyres_image && (
-        <div
-          style={{
-            width: "100%", // Expands to full width by default
-          }}
-        >
-          Commercial:
-          {entry.property_image.map((property_image, index) => (
-            <img
-              key={index}
-              src={property_image}
-              alt="Property Details"
-              style={{
-                width: "100px",
-                height: "100px",
-                // objectFit: "cover",
-                margin: "10px",
-                borderRadius: "10px",
-                "@media (max-width: 768px)": {
-                  width: "100%", // Full-width on smaller screens
-                },
-              }}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  </td>
-</tr>
+                <div className="row m-3">
+                  <div className="col-12">
+                    <div
+                      className="align-items-center table-flush"
+                      responsive
+                      style={{ width: "100%" }}
+                    >
+                      <div className="w-100">
+                        <div className="card mb-3 col-6">
+                          <div className="row g-0">
+                            <div className="col-md-4">
+                              <img
+                                src={card}
+                                className="img-fluid rounded-start"
+                                alt="..."
+                              />
+                            </div>
+                            <div className="col-md-8">
+                              <div className="card-body">
+                                <h5 className="card-title">Property details</h5>
+                                <p className="card-text">
+                                  <small className="text-muted">Address</small>
+                                </p>
+                                <p className="card-text">
+                                  flat Vijatraj Nagar canada canada 12345
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <Row
+                          className="w-100 my-3 "
+                          style={{
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#022d60",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          <Col>Property Details</Col>
+                        </Row>
+                        <Row
+                          className="mb-1 m-0 p-0"
+                          style={{ fontSize: "12px", color: "#000" }}
+                        >
+                          <Table>
+                            <tbody
+                              className="tbbody p-0 m-0"
+                              style={{
+                                borderTopRightRadius: "5px",
+                                borderTopLeftRadius: "5px",
+                                borderBottomLeftRadius: "5px",
+                                borderBottomRightRadius: "5px",
+                              }}
+                            >
+                              <tr className="header">
+                                <th>Property Details</th>
+                                <th>Address</th>
+                                <th>City</th>
+                                <th>Country</th>
+                                <th>Post code</th>
+                              </tr>
 
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Property Type
-                              </td>
-                              <td>
-                                {entry.property_type || "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Address
-                              </td>
-                              <td>
-                                {entry.rental_adress || "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">City</td>
-                              <td>
-                                {entry.rental_city || "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Country
-                              </td>
-                              <td>
-                                {entry.rental_country ||
-                                  "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Postcode
-                              </td>
-                              <td>
-                                {entry.rental_postcode ||
-                                  "N/A"}
-                              </td>
-                            </tr>
-                          </tbody>
+                              <tr className="body">
+                                <td>home</td>
+                                <td>Bhavnagar</td>
+                                <td>Bhavnagar</td>
+                                <td>India</td>
+                                <td>364003</td>
+                              </tr>
+                            </tbody>
+                          </Table>
+                        </Row>
+                        <Row
+                          className="w-100 my-3 "
+                          style={{
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#022d60",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          <Col>Rental owner detail</Col>
+                        </Row>
+                        <Row
+                          className="mb-1 m-0 p-0"
+                          style={{ fontSize: "12px", color: "#000" }}
+                        >
+                          <Table>
+                            <tbody
+                              className="tbbody p-0 m-0"
+                              style={{
+                                borderTopRightRadius: "5px",
+                                borderTopLeftRadius: "5px",
+                                borderBottomLeftRadius: "5px",
+                                borderBottomRightRadius: "5px",
+                              }}
+                            >
+                              <tr className="header">
+                                <th>First name</th>
+                                <th>Last name</th>
+                                <th>Compnay name</th>
+                                <th>Email</th>
+                                <th>Phone no</th>
+                                <th>Home no</th>
+                                <th>Business no</th>
+                              </tr>
 
-                          <tbody>
-                            <tr>
-                              <th
-                                colSpan="2"
-                                className="text-lg"
-                                style={{ color: "#3B2F2F" }}
-                              >
-                                Rental Owner Details
-                              </th>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                First Name
-                              </td>
-                              <td>
-                                {propertyDetails.rentalOwner_firstName || "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Last Name
-                              </td>
-                              <td>
-                                {propertyDetails.rentalOwner_lastName || "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Company Name
-                              </td>
-                              <td>
-                                {propertyDetails.rentalOwner_companyName ||
-                                  "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                E-Mail
-                              </td>
-                              <td>
-                                {propertyDetails.rentalOwner_primaryEmail ||
-                                  "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Phone Number
-                              </td>
-                              <td>
-                                {propertyDetails.rentalOwner_phoneNumber ||
-                                  "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Home Number
-                              </td>
-                              <td>
-                                {propertyDetails.rentalOwner_homeNumber ||
-                                  "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Business Number
-                              </td>
-                              <td>
-                                {propertyDetails.rentalOwner_businessNumber ||
-                                  "N/A"}
-                              </td>
-                            </tr>
-                          </tbody>
+                              <tr className="body">
+                                <td>Shivam</td>
+                                <td>Shukla</td>
+                                <td>Sparrow</td>
+                                <td>shiv@gmail.com</td>
+                                <td>7878987856</td>
+                                <td>45/B</td>
+                                <td>9913943467</td>
+                              </tr>
+                            </tbody>
+                          </Table>
+                        </Row>
+                        <Row
+                          className="w-100 my-3 "
+                          style={{
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#022d60",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          <Col>Account detail</Col>
+                        </Row>
+                        <Row
+                          className="mb-1 m-0 p-0"
+                          style={{ fontSize: "12px", color: "#000" }}
+                        >
+                          <Table>
+                            <tbody
+                              className="tbbody p-0 m-0"
+                              style={{
+                                borderTopRightRadius: "5px",
+                                borderTopLeftRadius: "5px",
+                                borderBottomLeftRadius: "5px",
+                                borderBottomRightRadius: "5px",
+                              }}
+                            >
+                              <tr className="header">
+                                <th>Operating account</th>
+                                <th>Profit reserve</th>
+                              </tr>
 
-                          <tbody>
-                            <tr>
-                              <th
-                                colSpan="2"
-                                className="text-lg"
-                                style={{ color: "#3B2F2F" }}
-                              >
-                                Account Details
-                              </th>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Operating Account
-                              </td>
-                              <td>
-                                {entry
-                                  .rentalOwner_operatingAccount || "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Property Reserve
-                              </td>
-                              <td>
-                                {entry
-                                  .rentalOwner_propertyReserve || "N/A"}
-                              </td>
-                            </tr>
-                          </tbody>
+                              <tr className="body">
+                                <td>Testing</td>
+                                <td>Hello</td>
+                              </tr>
+                            </tbody>
+                          </Table>
+                        </Row>
+                        <Row
+                          className="w-100 my-3 "
+                          style={{
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#022d60",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          <Col>Staff detail</Col>
+                        </Row>
+                        <Row
+                          className="mb-1 m-0 p-0"
+                          style={{ fontSize: "12px", color: "#000" }}
+                        >
+                          <Table>
+                            <tbody
+                              className="tbbody p-0 m-0"
+                              style={{
+                                borderTopRightRadius: "5px",
+                                borderTopLeftRadius: "5px",
+                                borderBottomLeftRadius: "5px",
+                                borderBottomRightRadius: "5px",
+                              }}
+                            >
+                              <tr className="header">
+                                <th>Staff member</th>
+                              </tr>
 
-                          <tbody>
-                            <tr>
-                              <th
-                                colSpan="2"
-                                className="text-lg"
-                                style={{ color: "#3B2F2F" }}
-                              >
-                                Staff Details
-                              </th>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Staff Member
-                              </td>
-                              <td>
-                                {entry.staffMember || "N/A"}
-                              </td>
-                            </tr>
-                          </tbody>
+                              <tr className="body">
+                                <td>Shivam</td>
+                              </tr>
+                            </tbody>
+                          </Table>
+                        </Row>
+                        <Row
+                          className="w-100 my-3 "
+                          style={{
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#022d60",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          <Col>Unit detail</Col>
+                        </Row>
+                        <Row
+                          className="mb-1 m-0 p-0"
+                          style={{ fontSize: "12px", color: "#000" }}
+                        >
+                          <Table>
+                            <tbody
+                              className="tbbody p-0 m-0"
+                              style={{
+                                borderTopRightRadius: "5px",
+                                borderTopLeftRadius: "5px",
+                                borderBottomLeftRadius: "5px",
+                                borderBottomRightRadius: "5px",
+                              }}
+                            >
+                              <tr className="header">
+                                <th>Unit</th>
+                                <th>Unit address</th>
+                                <th>Bed</th>
+                                <th>Bath</th>
+                                <th>Squrefit</th>
+                              </tr>
 
-                          <tbody>
-                            <tr>
-                              <th
-                                colSpan="2"
-                                className="text-lg"
-                                style={{ color: "#3B2F2F" }}
-                              >
-                                Unit Details
-                              </th>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">Unit</td>
-                              <td>
-                                {entry.rental_units ||
-                                  entry.rentalcom_units ||
-                                  "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">
-                                Unit Address
-                              </td>
-                              <td>
-                                {entry.rental_unitsAdress ||
-                                  entry.rentalcom_unitsAdress ||
-                                  "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">Bed</td>
-                              <td>
-                                {entry.rental_bed || "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">Bath</td>
-                              <td>
-                                {entry.rental_bath || "N/A"}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="font-weight-bold text-md">SQFT</td>
-                              <td>
-                                {entry.rental_soft ||
-                                  entry.rentalcom_soft ||
-                                  "N/A"}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </>
-                      ))}
-                    </>
-                  ))}
-                </Table>
+                              <tr className="body">
+                                <td>1</td>
+                                <td>Bhavnagar</td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td>1000</td>
+                              </tr>
+                            </tbody>
+                          </Table>
+                        </Row>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </Card>
           </div>

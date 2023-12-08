@@ -1,6 +1,10 @@
 import {
   Button,
   Card,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Modal,
   CardHeader,
   CardBody,
   FormGroup,
@@ -10,6 +14,13 @@ import {
   Row,
   Col,
   Table,
+  Label,
+  InputGroupAddon,
+  InputGroup,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
@@ -20,7 +31,11 @@ import Cookies from "universal-cookie";
 import { RotatingLines } from "react-loader-spinner";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-
+import * as yup from "yup";
+import swal from "sweetalert";
+import Header from "components/Headers/Header";
+import { useFormik } from "formik";
+import Edit from "@mui/icons-material/Edit";
 const TenantFinancial = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [rental_adress, setRentalAddress] = useState([]);
@@ -31,6 +46,54 @@ const TenantFinancial = () => {
   const { id } = useParams();
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
   // console.log(id, tenantDetails);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [propertyData, setPropertyData] = useState([]);
+  const [unitData, setUnitData] = useState([]);
+  const [selectedUnit, setSelectedUnit] = useState("");
+  const [userdropdownOpen, setuserDropdownOpen] = React.useState(false);
+  const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
+  const [selectedPropertyType, setSelectedPropertyType] = useState("");
+  const [searchQueryy, setSearchQueryy] = useState("");
+
+  const handleSearch = (e) => {
+    setSearchQueryy(e.target.value);
+  };
+  const toggle9 = () => {
+    setuserDropdownOpen((prevState) => !prevState);
+  };
+
+  const toggle10 = () => {
+    setUnitDropdownOpen((prevState) => !prevState);
+  };
+  const handleUnitSelect = (selectedUnit) => {
+    setSelectedUnit(selectedUnit);
+    applicantFormik.setFieldValue("rental_units", selectedUnit); // Update the formik state here
+  };
+
+  const fetchUnitsByProperty = async (propertyType) => {
+    try {
+      const response = await fetch(
+        `${baseUrl}/propertyunit/rentals_property/${propertyType}`
+      );
+      const data = await response.json();
+      // Ensure that units are extracted correctly and set as an array
+      const units = data?.data || [];
+      return units;
+    } catch (error) {
+      console.error("Error fetching units:", error);
+      return [];
+    }
+  };
+  // Step 2: Event handler to open the modal
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Event handler to close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   const [loader, setLoader] = React.useState(true);
 
   function formatDateWithoutTime(dateString) {
@@ -60,7 +123,43 @@ const TenantFinancial = () => {
     //console.log("data",data)
     return data;
   };
-
+  const applicantFormik = useFormik({
+    initialValues: {
+      tenant_firstName: "",
+      tenant_lastName: "",
+      tenant_email: "",
+      tenant_mobileNumber: "",
+      tenant_homeNumber: "",
+      tenant_workNumber: "",
+      tenant_faxPhoneNumber: "",
+      rental_adress: "",
+      rental_units: "",
+      statusUpdatedBy: "",
+    },
+    validationSchema: yup.object({
+      tenant_firstName: yup.string().required("Required"),
+      tenant_lastName: yup.string().required("Required"),
+      tenant_email: yup.string().required("Required"),
+      tenant_mobileNumber: yup.string().required("Required"),
+      rental_adress: yup.string().required("Required"),
+    }),
+    onSubmit: (values, action) => {
+      // handleFormSubmit(values, action);
+      //console.log(values, "values");
+    },
+  });
+  const handlePropertyTypeSelect = async (propertyType) => {
+    setSelectedPropertyType(propertyType);
+    applicantFormik.setFieldValue("rental_adress", propertyType);
+    setSelectedUnit(""); // Reset selected unit when a new property is selected
+    try {
+      const units = await fetchUnitsByProperty(propertyType);
+      //console.log(units, "units"); // Check the received units in the console
+      setUnitData(units); // Set the received units in the unitData state
+    } catch (error) {
+      console.error("Error handling selected property:", error);
+    }
+  };
   const getGeneralLedgerData = async () => {
     const apiUrl = `${baseUrl}/payment/merge_payment_charge/${cookie_id}`;
 
@@ -162,6 +261,19 @@ const TenantFinancial = () => {
     window.location.href = tenantsDetailsURL;
     // console.log("Rental Address", rental_adress);
   }
+  const formatCardNumber = (inputValue) => {
+    if (typeof inputValue !== 'string') {
+      return ''; // Return an empty string if inputValue is not a string
+    }
+
+    const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+    const formattedValue = numericValue
+      .replace(/(\d{4})/g, '$1 ') // Add a space after every four digits
+      .trim(); // Remove any trailing space
+
+    return formattedValue;
+  };
+
   return (
     <>
       <TenantsHeader />
@@ -184,6 +296,15 @@ const TenantFinancial = () => {
                     >
                       Payment
                     </Button> */}
+            <Button
+              color="primary"
+              href="#rms"
+              onClick={openModal}
+              size="sm"
+              style={{ background: "white", color: "blue" }}
+            >
+              Make Payment
+            </Button>
           </Col>
         </Row>
         <br />
@@ -245,8 +366,7 @@ const TenantFinancial = () => {
                                         >
                                           <td>
                                             {formatDateWithoutTime(
-                                              generalledger.type ===
-                                                "Charge"
+                                              generalledger.type === "Charge"
                                                 ? generalledger.date
                                                 : generalledger.date
                                             ) || "N/A"}
@@ -268,8 +388,7 @@ const TenantFinancial = () => {
                                               : "-"}
                                           </td>
                                           <td>
-                                            {generalledger.type ===
-                                              "Payment"
+                                            {generalledger.type === "Payment"
                                               ? "$" + entry.amount
                                               : "-"}
                                           </td>
@@ -304,6 +423,201 @@ const TenantFinancial = () => {
                   </Row>
                   <br />
                   <br />
+                  <Modal isOpen={isModalOpen} toggle={closeModal}>
+                    <Form onSubmit={applicantFormik.handleSubmit}>
+                      <ModalHeader
+                        toggle={closeModal}
+                        className="bg-secondary text-white"
+                      >
+                        <strong style={{ fontSize: 18 }}>Make Payment</strong>
+                      </ModalHeader>
+
+                      <ModalBody>
+                        <div>
+                          <Row>
+                            <Col>
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  First Name *
+                                </label>
+                                <Input
+                                  type="text"
+                                  id="tenant_firstName"
+                                  placeholder="First Name"
+                                  name="tenant_firstName"
+                                  onBlur={applicantFormik.handleBlur}
+                                  onChange={applicantFormik.handleChange}
+                                  value={
+                                    applicantFormik.values.tenant_firstName
+                                  }
+                                  required
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col>
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Last Name *
+                                </label>
+                                <Input
+                                  type="text"
+                                  id="tenant_lastName"
+                                  placeholder="Enter last name"
+                                  name="tenant_lastName"
+                                  onBlur={applicantFormik.handleBlur}
+                                  onChange={applicantFormik.handleChange}
+                                  value={applicantFormik.values.tenant_lastName}
+                                  required
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-property"
+                            >
+                              Email *
+                            </label>
+                            <InputGroup>
+                              <InputGroupAddon addonType="prepend">
+                                <span className="input-group-text">
+                                  <i className="fas fa-envelope"></i>
+                                </span>
+                              </InputGroupAddon>
+                              <Input
+                                type="text"
+                                id="tenant_email"
+                                placeholder="Enter Email"
+                                name="tenant_email"
+                                value={applicantFormik.values.tenant_email}
+                                onBlur={applicantFormik.handleBlur}
+                                onChange={applicantFormik.handleChange}
+                                required
+                              />
+                            </InputGroup>
+                          </FormGroup>
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-property"
+                            >
+                              Card Number *
+                            </label>
+                            <InputGroup>
+                              <Input
+                                type="text"
+                                id="tenant_cardnumber"
+                                placeholder="0000 0000 0000"
+                                name="tenant_cardnumber"
+                                value={formatCardNumber(applicantFormik.values.tenant_cardnumber)}
+                                onBlur={applicantFormik.handleBlur}
+                                onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                                  const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
+                                  const formattedValue = formatCardNumber(limitedValue);
+                                  e.target.value = formattedValue;
+                                  applicantFormik.handleChange(e);
+                                }}
+                                required
+                              />
+
+
+                            </InputGroup>
+                          </FormGroup>
+                          <Row>
+                            <Col>
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Expiration Date *
+                                </label>
+                                <Input
+                                  type="text"
+                                  id="tenant_Expirationdate"
+                                  name="tenant_Expirationdate"
+                                  onBlur={applicantFormik.handleBlur}
+                                  onChange={applicantFormik.handleChange}
+                                  value={applicantFormik.values.tenant_Expirationdate}
+                                  placeholder="MM/YY"
+                                  required
+                                  onInput={(e) => {
+                                    let inputValue = e.target.value;
+
+                                    // Remove non-numeric characters
+                                    const numericValue = inputValue.replace(/\D/g, '');
+
+                                    // Set the input value to the sanitized value (numeric only)
+                                    e.target.value = numericValue;
+
+                                    // Format the date as "MM/YY"
+                                    if (numericValue.length > 2) {
+                                      const month = numericValue.substring(0, 2);
+                                      const year = numericValue.substring(2, 6);
+                                      e.target.value = `${month}/${year}`;
+                                    }
+
+                                    // Restrict the year to be 4 digits starting from the current year
+                                    const currentYear = new Date().getFullYear().toString();
+                                    if (numericValue.length > 5) {
+                                      const enteredYear = numericValue.substring(3, 7);
+                                      if (enteredYear < currentYear) {
+                                        e.target.value = `${numericValue.substring(0, 2)}/${currentYear.substring(2, 4)}`;
+                                      }
+                                    }
+                                  }}
+                                />
+
+
+
+
+                              </FormGroup>
+                            </Col>
+                            <Col>
+                              <FormGroup>
+                                <label className="form-control-label" htmlFor="input-property">
+                                  Cvv *
+                                </label>
+                                <Input
+                                  type="text"
+                                  id="tenant_cvv"
+                                  placeholder="123"
+                                  name="tenant_cvv"
+                                  onBlur={applicantFormik.handleBlur}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    if (/^\d{0,3}$/.test(inputValue)) {
+                                      // Only allow up to 3 digits
+                                      applicantFormik.handleChange(e);
+                                    }
+                                  }}
+                                  value={applicantFormik.values.tenant_Cvv}
+                                  maxLength={3}
+                                  required
+                                />
+                              </FormGroup>
+
+                            </Col>
+                          </Row>
+                        </div>
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button color="success" type="submit">
+                          Make Payment
+                        </Button>
+                        <Button onClick={closeModal}>Cancel</Button>
+                      </ModalFooter>
+                    </Form>
+                  </Modal>
                 </Container>
               </Card>
             )}

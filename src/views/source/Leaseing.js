@@ -254,10 +254,12 @@ const Leaseing = () => {
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [ownerData, setOwnerData] = useState({});
   const [propertyId, setPropertyId] = useState("");
+  console.log(propertyId, "propertyId")
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress);
     entrySchema.values.rental_adress = property.rental_adress;
     setPropertyId(property._id);
+    console.log(property._id, "------------------------------------")
     setOwnerData(property);
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
@@ -283,9 +285,10 @@ const Leaseing = () => {
   const handleUnitSelect = (selectedUnit,unitId) => {
     setSelectedUnit(selectedUnit);
     entrySchema.values.rental_units = selectedUnit;
+    console.log(selectedUnit, "selectedUnit")
     entrySchema.setFieldValue("unit_id", unitId);
-    // entrySchema.values.unit_id = unitId;
 
+    // entrySchema.values.unit_id = unitId;
   };
 
   const [selectedRentCycle, setselectedRentCycle] = useState("");
@@ -1690,7 +1693,7 @@ const Leaseing = () => {
           rent_paid: entrySchema.values.rent_paid,
           propertyOnRent: entrySchema.values.propertyOnRent,
           // rentalOwner_name: "",
-          unitId: entrySchema.values.unitId,
+          unit_id: entrySchema.values.unit_id,
           //security deposite
           Due_date: entrySchema.values.Due_date,
           Security_amount: entrySchema.values.Security_amount,
@@ -1723,6 +1726,7 @@ const Leaseing = () => {
           fund_type: entrySchema.values.fund_type,
           cash_flow: entrySchema.values.cash_flow,
           notes: entrySchema.values.notes,
+          property_id: propertyId,
 
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
@@ -1793,9 +1797,9 @@ const Leaseing = () => {
               }]
             }
 
-            const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+            const url = `${baseUrl}/payment_charge/payment_charge`
             await axios.post(url, chargeObject).then((res) => {
-              console.log(res)
+              console.log(res, "-----------------res")
             }).catch((err) => {
               console.log(err)
             })
@@ -1842,7 +1846,7 @@ const Leaseing = () => {
                 }]
               }
   
-              const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+              const url = `${baseUrl}/payment_charge/payment_charge`
               await axios.post(url, chargeObject).then((res) => {
                 console.log(res)
               }).catch((err) => {
@@ -2138,7 +2142,8 @@ const Leaseing = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                    <Row>
+                     <Row>
+                    {selectedPropertyType && unitData && unitData[0] && unitData[0].rental_units && ( 
                       <FormGroup>
                         <label
                           className="form-control-label"
@@ -2158,7 +2163,7 @@ const Leaseing = () => {
                                   <DropdownItem
                                     key={unit._id}
                                     onClick={() =>
-                                      handleUnitSelect(unit.rental_units,unit._id)
+                                      handleUnitSelect(unit.rental_units)
                                     }
                                   >
                                     {unit.rental_units}
@@ -2182,6 +2187,7 @@ const Leaseing = () => {
                           </Dropdown>
                         </FormGroup>
                       </FormGroup>
+                    )}
                     </Row>
                     <Row>
                       <Col lg="3">
@@ -3279,7 +3285,7 @@ const Leaseing = () => {
                                                           className="form-control-label"
                                                           htmlFor="input-unitadd4"
                                                         >
-                                                          TextPayer ID
+                                                          TaxPayer ID
                                                         </label>
                                                         <Input
                                                           className="form-control-alternative"

@@ -16,6 +16,7 @@ import {
 import { jwtDecode } from "jwt-decode";
 import { CardContent, Typography } from "@mui/material";
 import { RotatingLines } from "react-loader-spinner";
+
 const TenantDetailPage = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [loader, setLoader] = React.useState(true);
@@ -359,7 +360,7 @@ const TenantDetailPage = () => {
                             }}
                           >
                             <Col>Birth Date</Col>
-                            <Col>TextPayer Id</Col>
+                            <Col>TaxPayer Id</Col>
                             <Col>Comments</Col>
                           </Row>
                           <Row
@@ -850,7 +851,7 @@ const TenantDetailPage = () => {
                                 // onClick={() => handleChange("Financial")}
                               >
                                 <Link
-                                  to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                  to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
                                   onClick={(e) => {}}
                                 >
                                   Lease Ledger

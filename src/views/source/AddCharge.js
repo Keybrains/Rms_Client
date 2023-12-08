@@ -198,7 +198,7 @@ const AddCharge = () => {
       entries: updatedEntries,
     });
   };
-
+  const [propertyId, setPropertyId] = useState("");
   const fetchTenantData = async () => {
     fetch(
       `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
@@ -210,6 +210,7 @@ const AddCharge = () => {
           const rentalAddress = tenantData.entries.rental_adress;
           setSelectedRec(`${tenantData.tenant_firstName} ${tenantData.tenant_lastName}`);
           setTenantid(tenantData._id);
+          setPropertyId(tenantData.entries.propertyId);
           // setTenantentryindex(tenantData.entryIndex);
           setRentAddress(rentalAddress);
           generalledgerFormik.setValues({
@@ -286,7 +287,7 @@ const AddCharge = () => {
 
       if (response.data.statusCode === 200) {
         swal("Success", "Charges Added Successfully", "success");
-        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
+        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`);
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -296,8 +297,8 @@ const AddCharge = () => {
       try{
         const chargeObject = {
           properties:{
-            rental_adress:rentalAddress,
-            property_id:state && state.property_id
+            rental_adress:rentalAddress || "",
+            property_id:propertyId
           },
           unit:[{
             unit:state && state.unit_name,
@@ -308,8 +309,8 @@ const AddCharge = () => {
                 amount:parseFloat(entry.charges_amount),
                 rental_adress:rentAddress,
                 rent_cycle:"",
-                month_year:moment().format("MM-YYYY"),
-                date:moment().format("YYYY-MM-DD"),
+                month_year:values.date.slice(5,7)+"-"+values.date.slice(0,4),
+                date:values.date,
                 memo: values.charges_memo,
                 tenant_id:tenantid,
                 tenant_firstName:selectedRec,
@@ -319,7 +320,7 @@ const AddCharge = () => {
         }
         console.log(chargeObject,'chargeObject')
         // debugger
-        const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
+        const url = `${baseUrl}/payment_charge/payment_charge`
         await axios.post(url, chargeObject).then((res) => {
           console.log(res)
         }).catch((err) => {
