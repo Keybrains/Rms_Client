@@ -107,139 +107,162 @@ const TenantProfile = () => {
                 {/* <h3 className="mb-0">Summary </h3> */}
               </CardHeader>
               <div className="table-responsive">
-                <Table
-                  className="align-items-center table-flush"
-                  responsive
-                  style={{ width: "100%" }}
-                >
-                  {Array.isArray(tenantDetails1) ? (
-                    tenantDetails1.map((tenantDetails) => (
-                      <tbody key={tenantDetails.id}>
-                        <tr>
-                          <th
-                            colSpan="2"
-                            className="text-lg"
-                            style={{ color: "#3B2F2F" }}
-                          >
-                            Personal Details
-                          </th>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">
-                            First Name:
-                          </td>
-                          <td>{tenantDetails.tenant_firstName || "N/A"}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">
-                            Last Name:
-                          </td>
-                          <td>{tenantDetails.tenant_lastName || "N/A"}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Phone:</td>
-                          <td>{tenantDetails.tenant_mobileNumber || "N/A"}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Email:</td>
-                          <td>{tenantDetails.tenant_email || "N/A"}</td>
-                        </tr>
-                      </tbody>
-                    ))
-                  ) : (
-                    <tr>
-                      <td>Loading vendor details...</td>
-                    </tr>
-                  )}
+                <div className="row m-3">
+                  <div className="col-12">
+                    <div
+                      className="align-items-center table-flush"
+                      responsive
+                      style={{ width: "100%" }}
+                    >
+                      <div className="w-100">
+                        {Array.isArray(tenantDetails1) ? (
+                          tenantDetails1.map((tenantDetails, index) => (
+                            <div key={index}>
+                              <Row
+                                className="w-100 my-3 "
+                                style={{
+                                  fontSize: "18px",
+                                  textTransform: "capitalize",
+                                  color: "#022d60",
+                                  fontWeight: "600",
+                                  borderBottom: "1px solid #ddd",
+                                }}
+                              >
+                                <Col>Personal Details</Col>
+                              </Row>
+                              <Row
+                                className="mb-1 m-0 p-0"
+                                style={{ fontSize: "12px", color: "#000" }}
+                              >
+                                <Table>
+                                  <tbody
+                                    className="tbbody p-0 m-0"
+                                    style={{
+                                      borderTopRightRadius: "5px",
+                                      borderTopLeftRadius: "5px",
+                                      borderBottomLeftRadius: "5px",
+                                      borderBottomRightRadius: "5px",
+                                    }}
+                                  >
+                                    <tr className="header">
+                                      <th>First Name</th>
+                                      <th>Last Name</th>
+                                      <th>Phone</th>
+                                      <th>Email</th>
+                                    </tr>
 
-                  {Array.isArray(tenantDetails) ? (
-                    tenantDetails.map((tenantDetails) => (
-                      <>
-                        <tbody>
+                                    <tr className="body">
+                                      <td>
+                                        {tenantDetails.tenant_firstName ||
+                                          "N/A"}
+                                      </td>
+                                      <td>
+                                        {tenantDetails.tenant_lastName || "N/A"}
+                                      </td>
+                                      <td>
+                                        {tenantDetails.tenant_mobileNumber ||
+                                          "N/A"}
+                                      </td>
+                                      <td>
+                                        {tenantDetails.tenant_email || "N/A"}
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </Table>
+                              </Row>
+                            </div>
+                          ))
+                        ) : (
                           <tr>
-                            <th
-                              colSpan="2"
-                              className="text-lg"
-                              style={{ color: "#3B2F2F" }}
-                            >
-                              Lease Details
-                            </th>
+                            <td>Loading Tenant details...</td>
                           </tr>
+                        )}
+                        {Array.isArray(tenantDetails) ? (
+                          tenantDetails.map((tenantDetails, index) => (
+                            <div key={index}>
+                              <Row
+                                className="w-100 my-3 "
+                                style={{
+                                  fontSize: "18px",
+                                  textTransform: "capitalize",
+                                  color: "#022d60",
+                                  fontWeight: "600",
+                                  borderBottom: "1px solid #ddd",
+                                }}
+                              >
+                                <Col>Lease Details</Col>
+                              </Row>
+                              <Row
+                                className="mb-1 m-0 p-0"
+                                style={{ fontSize: "12px", color: "#000" }}
+                              >
+                                <Table>
+                                  <tbody
+                                    className="tbbody p-0 m-0"
+                                    style={{
+                                      borderTopRightRadius: "5px",
+                                      borderTopLeftRadius: "5px",
+                                      borderBottomLeftRadius: "5px",
+                                      borderBottomRightRadius: "5px",
+                                    }}
+                                  >
+                                    <tr className="header">
+                                      <th>Property</th>
+                                      <th>Lease Type</th>
+                                      <th>Start Date</th>
+                                      <th>End Date</th>
+                                      <th>Rent Cycle</th>
+                                      <th>Rent Amount</th>
+                                      <th>Next Due Date</th>
+                                    </tr>
+
+                                    <tr className="body">
+                                      <td>
+                                        {tenantDetails.entries.rental_adress ||
+                                          "N/A"}
+                                      </td>
+                                      <td>{tenantDetails.entries.lease_type || "N/A"}</td>
+                                    
+                                        <td>
+                                          {formatDateWithoutTime(
+                                            tenantDetails.entries.start_date
+                                          ) || "N/A"}
+                                        </td>
+                                    
+                                      <td>
+                                        {formatDateWithoutTime(
+                                          tenantDetails.entries.end_date
+                                        ) || "N/A"}
+                                      </td>
+                                      <td>
+                                        {tenantDetails.entries.rent_cycle ||
+                                          "N/A"}
+                                      </td>
+                                      <td>
+                                        {tenantDetails.entries.amount || "N/A"}
+                                      </td>
+                                  
+                                      <td>
+                                        {formatDateWithoutTime(
+                                          tenantDetails.entries.nextDue_date
+                                        ) || "N/A"}
+                                      </td>
+                                 
+                                    </tr>
+                                  </tbody>
+                                </Table>
+                              </Row>
+                            </div>
+                          ))
+                        ) : (
                           <tr>
-                            <td class="font-weight-bold text-md">
-                              Property Type:
-                            </td>
-                            <td>
-                              {tenantDetails.entries.rental_adress || "N/A"}
-                            </td>
+                            <td>Loading vendor details...</td>
                           </tr>
-                          <tr>
-                            <td class="font-weight-bold text-md">
-                              Lease Type:
-                            </td>
-                            <td>{tenantDetails.entries.lease_type || "N/A"}</td>
-                          </tr>
-                          <tr>
-                            <td class="font-weight-bold text-md">
-                              Start Date:
-                            </td>
-                            <td>
-                              {formatDateWithoutTime(
-                                tenantDetails.entries.start_date
-                              ) || "N/A"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="font-weight-bold text-md">End Date:</td>
-                            <td>
-                              {formatDateWithoutTime(
-                                tenantDetails.entries.end_date
-                              ) || "N/A"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="font-weight-bold text-md">
-                              Rent Cycle:
-                            </td>
-                            <td>{tenantDetails.entries.rent_cycle || "N/A"}</td>
-                          </tr>
-                          <tr>
-                            <td class="font-weight-bold text-md">
-                              Rent Amount:
-                            </td>
-                            <td>{tenantDetails.entries.amount || "N/A"}</td>
-                          </tr>
-                          <tr>
-                            <td class="font-weight-bold text-md">Account:</td>
-                            <td>{tenantDetails.entries.account || "N/A"}</td>
-                          </tr>
-                          <tr>
-                            <td class="font-weight-bold text-md">
-                              Next Due Date:
-                            </td>
-                            <td>
-                              {formatDateWithoutTime(
-                                tenantDetails.entries.nextDue_date
-                              ) || "N/A"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td class="font-weight-bold text-md">
-                              Uploaded Files:
-                            </td>
-                            <td>
-                              {tenantDetails.entries.upload_file || "N/A"}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </>
-                    ))
-                  ) : (
-                    <tr>
-                      <td>Loading vendor details...</td>
-                    </tr>
-                  )}
-                </Table>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </Card>
           </div>

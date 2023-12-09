@@ -117,7 +117,7 @@ const TenantProperty = () => {
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                <h1 className="mb-0">Ledger</h1>
+                <h1 className="mb-0">Property</h1>
               </CardHeader>
               {!loader || rental_adress.length > 0 ? (
                 <div className="table-responsive">

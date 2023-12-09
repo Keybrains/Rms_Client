@@ -49,12 +49,24 @@ const TenantsTable = ({ tenantDetails }) => {
 
   let navigate = useNavigate();
   let getTenantsDate = async () => {
-    let responce = await axios.get(`${baseUrl}/tenant/tenants`);
-    //console.log('responce', responce.data.data)
-    setLoader(false);
-    setTenantsDate(responce.data.data);
-    setTotalPages(Math.ceil(responce.data.data.length / pageItem));
+    try {
+      let response = await axios.get(`${baseUrl}/tenant/tenants`);
+      let data = response.data.data;
+  
+      // Reverse the data order
+      let reversedData = data.reverse();
+  
+      setLoader(false);
+      setTenantsDate(reversedData);
+      setTotalPages(Math.ceil(reversedData.length / pageItem));
+      // setCurrentPage(1); // Reset to the first page when new data is fetched
+    } catch (error) {
+      // Handle errors here
+      console.error('Error fetching tenants data:', error);
+    }
   };
+  
+   
 
   React.useEffect(() => {
     getTenantsDate();

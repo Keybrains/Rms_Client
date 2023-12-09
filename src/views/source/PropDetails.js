@@ -82,6 +82,104 @@ const PropDetails = () => {
   const [propType, setPropType] = useState("");
   const [balance, setBalance] = useState("");
 
+  const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
+  const [unitImage, setUnitImage] = useState([]);
+  // const [unitImage, setUnitImage] = useState(initialValue);
+  const togglePhotoresDialog = () => {
+    setPhotoresDialogOpen((prevState) => !prevState);
+  };
+console.log(propType,'proeptype')
+const fileData = async (file, name, index) => {
+  //setImgLoader(true);
+  const allData = [];
+  const axiosRequests = [];
+  for (let i = 0; i < file.length; i++) {
+    const dataArray = new FormData();
+    dataArray.append("b_video", file[i]);
+    let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
+    // Push the Axios request promises into an array
+    axiosRequests.push(
+      axios
+        .post(url, dataArray, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          //setImgLoader(false);
+          const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
+          console.log(imagePath, "imagePath");
+          allData.push(imagePath);
+        })
+        .catch((err) => {
+          //setImgLoader(false);
+          // console.log("Error uploading image:", err);
+        })
+    );
+  }
+  // Wait for all Axios requests to complete before logging the data
+  await Promise.all(axiosRequests);
+  if (name === "propertyres_image") {
+    // rentalsFormik.setFieldValue(
+    //   `entries[0].residential[${index}].propertyres_image`,
+    //   ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
+    //   allData
+    // );
+    if (unitImage[index]) {
+      setUnitImage([
+        ...unitImage.slice(0, index),
+        [...unitImage[index], ...allData],
+        ...unitImage.slice(index + 1),
+      ]);
+    } else {
+      setUnitImage([...allData]);
+    }
+  } else {
+    // rentalsFormik.setFieldValue(
+    //   `entries[0].commercial[${index}].property_image`,
+    //   ...rentalsFormik.values.entries[0].commercial[index].property_image,
+    //   allData
+    // );
+    // if (commercialImage[index]) {
+    //   setCommercialImage([
+    //     ...commercialImage.slice(0, index),
+    //     [...commercialImage[index], ...allData],
+    //     ...commercialImage.slice(index + 1),
+    //   ]);
+    // } else {
+    //   setCommercialImage([...allData]);
+    // }
+  }
+  // console.log(allData, "allData");
+  // console.log(unitImage, "unitImage");
+  // console.log(commercialImage, "commercialImage");
+};
+const clearSelectedPhoto = (index, image, name) => {
+  if (name === "propertyres_image") {
+    const filteredImage = unitImage[index].filter((item) => {
+      return item !== image;
+    });
+    // console.log(filteredImage, "filteredImage");
+    // setResidentialImage(filteredImage);
+    setUnitImage([
+      ...unitImage.slice(0, index),
+      [...filteredImage],
+      ...unitImage.slice(index + 1),
+    ]);
+  }
+  //  else {
+  //   // const filteredImage = commercialImage[index].filter((item) => {
+  //     // return item !== image;
+  //   });
+    // console.log(filteredImage, "filteredImage");
+    // setCommercialImage(filteredImage);
+    // setCommercialImage([
+    //   ...commercialImage.slice(0, index),
+    //   [...filteredImage],
+    //   ...commercialImage.slice(index + 1),
+    // ]);
+  }
+
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
@@ -320,15 +418,17 @@ const PropDetails = () => {
   }
 
   const handleUnitDetailsEdit = async (id, rentalId) => {
-    const updatedValues = {
-      rental_adress: addUnitFormik.values.address,
-      rental_units: addUnitFormik.values.unit_number,
-      rental_city: addUnitFormik.values.city,
-      rental_state: addUnitFormik.values.state,
-      rental_postcode: addUnitFormik.values.zip,
-      rental_country: addUnitFormik.values.country,
-    };
-    await axios
+    if(propType==="Residential"){
+      const updatedValues = {
+        rental_adress: addUnitFormik.values.rental_adress,
+        rental_units: addUnitFormik.values.unit_number,
+        rental_city: addUnitFormik.values.city,
+        rental_state: addUnitFormik.values.state,
+        rental_postcode: addUnitFormik.values.zip,
+        rental_country: addUnitFormik.values.country,
+        propertyres_image:unitImage,
+      };
+      await axios
       .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
       .then((response) => {
         console.log(response.data.data, "updated data");
@@ -340,9 +440,33 @@ const PropDetails = () => {
       .catch((err) => {
         console.log(err);
       });
-
-    console.log(clickedObject, "clickedObject after update");
-  };
+      console.log(clickedObject, "clickedObject after update");
+    }
+    else{
+      const updatedValues = {
+        rental_adress: addUnitFormik.values.address,
+        rental_units: addUnitFormik.values.unit_number,
+        rental_city: addUnitFormik.values.city,
+        rental_state: addUnitFormik.values.state,
+        rental_postcode: addUnitFormik.values.zip,
+        rental_country: addUnitFormik.values.country,
+        property_image:unitImage,
+      };
+      await axios
+      .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+      .then((response) => {
+        console.log(response.data.data, "updated data");
+        getUnitProperty(rentalId);
+        getRentalsData();
+        // setAddUnitDialogOpen(false);
+        // setAddUnitDialogOpen(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+      console.log(clickedObject, "clickedObject after update");
+    }
+  }
 
   const handleListingEdit = async (id, rentalId) => {
     const updatedValues = {
@@ -2307,7 +2431,7 @@ const PropDetails = () => {
 
                         <Grid container>
                           <Grid container md={9} style={{ display: "flex" }}>
-                            <Grid item md={3}>
+                            {/* <Grid item md={3}>
                               <div
                                 style={{
                                   display: "flex",
@@ -2383,90 +2507,122 @@ const PropDetails = () => {
                                     </div>
                                   )}
                               </div>
-                            </Grid>
-                            <Grid
-                              item
-                              md={8}
-                              style={{
-                                width: "100%",
-                                marginLeft: "20px",
-                              }}
-                            >
-                              <div>
-                                {console.log(clickedObject, "clickedObject")}
-                                <Typography
-                                  variant="h6"
-                                  sx={{
-                                    fontSize: "18px",
-                                    textTransform: "capitalize",
-                                    color: "#5e72e4",
-                                    fontWeight: "600",
+                            </Grid> */}
+                            <div className="din d-flex">
+                              <div className="col-md-4 mt-2">
+                                <label htmlFor="unit_image">
+                                  <img
+                                    // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
+                                    src={
+                                      clickedObject
+                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0] : clickedObject.propertyres_image[0]
+                                        : fone
+                                    }
+                                    className="img-fluid rounded-start card-image"
+                                    alt="..."
+                                    // width='260px'
+                                    // height='18px'
+                                    // onClick={handleModalOpen}
+                                  />
+                                </label>
+                                <TextField
+                                  id="unit_image"
+                                  name="unit_image"
+                                  type="file"
+                                  inputProps={{
+                                    accept: "image/*",
+                                    multiple: true,
                                   }}
-                                >
-                                  {clickedObject.rental_unitsAdress}
-                                  <span
-                                    className="text-sm"
-                                    style={{
-                                      cursor: "pointer",
-                                      color: "black",
-                                      marginLeft: "10px",
-                                    }}
-                                    onClick={() => {
-                                      setEditUnitDialogOpen(
-                                        !editUnitDialogOpen
-                                      );
-                                      console.log(
-                                        clickedObject,
-                                        "clicked object 1438"
-                                      );
-                                      addUnitFormik.setValues({
-                                        unit_number: clickedObject.rental_units,
-                                        address: clickedObject.rental_adress,
-                                        city: clickedObject.rental_city,
-                                        state: clickedObject.rental_state,
-                                        zip: clickedObject.rental_postcode,
-                                        country: clickedObject.rental_country,
-                                      });
+                                  onChange={handleImageChange}
+                                  style={{ display: "none" }}
+                                />
+                              </div>
+                              <Grid
+                                item
+                                md={8}
+                                style={{
+                                  width: "100%",
+                                  marginLeft: "20px",
+                                }}
+                              >
+                                <div>
+                                  {console.log(clickedObject, "clickedObject")}
+                                  <Typography
+                                    variant="h6"
+                                    sx={{
+                                      fontSize: "18px",
+                                      textTransform: "capitalize",
+                                      color: "#5E72E4",
+                                      fontWeight: "600",
                                     }}
                                   >
-                                    {" "}
-                                    <Button
-                                      size="sm"
+                                    {clickedObject.rental_unitsAdress}
+                                    <span
+                                      className="text-sm"
                                       style={{
-                                        background: "white",
-                                        color: "blue",
-                                        // marginRight: "10px",
+                                        cursor: "pointer",
+                                        color: "black",
+                                        marginLeft: "10px",
                                       }}
                                       onClick={() => {
                                         setEditUnitDialogOpen(
                                           !editUnitDialogOpen
                                         );
+                                        console.log(
+                                          clickedObject,
+                                          "clicked object 1438"
+                                        );
+                                        addUnitFormik.setValues({
+                                          unit_number:
+                                            clickedObject.rental_units,
+                                          address: clickedObject.rental_adress,
+                                          city: clickedObject.rental_city,
+                                          state: clickedObject.rental_state,
+                                          zip: clickedObject.rental_postcode,
+                                          country: clickedObject.rental_country,
+                                        });
                                       }}
                                     >
-                                      Edit
-                                    </Button>
-                                  </span>
-                                  <hr style={{ marginTop: "10px" }} />
-                                </Typography>
-                              </div>
-                              <span style={{ marginTop: "0px" }}>
-                                ADDRESS
-                                <br />
-                                {clickedObject?.rental_units +
-                                  ", " +
-                                  clickedObject?.rental_adress +
-                                  ", " +
-                                  clickedObject?.rental_city || "N/A"}
-                                <br />
-                                {clickedObject?.rental_state +
-                                  ", " +
-                                  clickedObject?.rental_postcode +
-                                  ", " +
-                                  clickedObject?.rental_country || "N/A"}
-                              </span>
-
-                              {/* i want to put this div to the extreme rigth of main div */}
-                            </Grid>
+                                      {" "}
+                                      <Button
+                                        size="sm"
+                                        style={{
+                                          background: "white",
+                                          color: "blue",
+                                          // marginRight: "10px",
+                                        }}
+                                        onClick={() => {
+                                          setEditUnitDialogOpen(
+                                            !editUnitDialogOpen
+                                          );
+                                        }}
+                                      >
+                                        Edit
+                                      </Button>
+                                    </span>
+                                    <hr style={{ marginTop: "10px" }} />
+                                  </Typography>
+                                </div>
+                                <span style={{ marginTop: "0px" }}>
+                                  ADDRESS
+                                  <br />
+                                  {clickedObject?.rental_units +
+                                    ", " +
+                                    clickedObject?.rental_adress +
+                                    ", " +
+                                    clickedObject?.rental_city || "N/A"}
+                                  <br />
+                                  {clickedObject?.rental_state +
+                                    ", " +
+                                    clickedObject?.rental_postcode +
+                                    ", " +
+                                    clickedObject?.rental_country || "N/A"}
+                                </span>
+                                {/* i want to put this div to the extreme rigth of main div */}
+                              </Grid>
+                            </div>
+                          
+                            
                             <Grid item xs={3}></Grid>
                             <Grid item xs={9}>
                               {editUnitDialogOpen ? (
@@ -2645,6 +2801,176 @@ const PropDetails = () => {
                                                   addUnitFormik.handleBlur
                                                 }
                                               />
+                                              <Col lg="5">
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                      }}
+                                    >
+                                      <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                        }}
+                                      >
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-unitadd"
+                                        >
+                                          Photo
+                                        </label>
+                                        <span
+                                          onClick={togglePhotoresDialog}
+                                          style={{
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontFamily: "monospace",
+                                            color: "blue",
+                                          }}
+                                        >
+                                          {" "}
+                                          <br />
+                                          <input
+                                            type="file"
+                                            className="form-control-file d-none"
+                                            accept="image/*"
+                                            multiple
+                                            id={`unit_img`}
+                                            name={`unit_img`}
+                                            onChange={(e) => {
+                                              const file = [...e.target.files];
+                                              fileData(
+                                                file,
+                                                "propertyres_image",
+                                                 ""
+                                              );
+                                              if (file.length > 0) {
+                                                const allImages = file.map(
+                                                  (file) => {
+                                                    return URL.createObjectURL(
+                                                      file
+                                                    );
+                                                  }
+                                                );
+                                                // console.log(
+                                                //    "",
+                                                //   "indexxxxxx"
+                                                // );
+                                                if (
+                                                  unitImage[
+                                                     ""
+                                                  ]
+                                                ) {
+                                                  setUnitImage([
+                                                    ...unitImage.slice(
+                                                      0,
+                                                       ""
+                                                    ),
+                                                    [
+                                                      ...unitImage[
+                                                         ""
+                                                      ],
+                                                      ...allImages,
+                                                    ],
+                                                    ...unitImage.slice(
+                                                      1 +  ""
+                                                    ),
+                                                  ]);
+                                                } else {
+                                                  setUnitImage([
+                                                    ...allImages,
+                                                  ]);
+                                                }
+                                              } else {
+                                                setUnitImage([
+                                                  ...unitImage,
+                                                ]);
+                                                // )
+                                              }
+                                            }}
+                                          />
+                                          {console.log(unitImage,'unitImage')}
+                                          <label
+                                            htmlFor={`unit_img`}
+                                          >
+                                            <b style={{ fontSize: "20px" }}>
+                                              +
+                                            </b>{" "}
+                                            Add
+                                          </label>
+                                          {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                                        </span>
+                                      </FormGroup>
+                                      <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexWrap: "wrap",
+                                          paddingLeft: "10px",
+                                        }}
+                                      >
+                                        <div className="d-flex">
+                                          {unitImage &&
+                                            unitImage
+                                              .length > 0 &&
+                                            unitImage
+                                               .map((unitImg) => (
+                                              <div
+                                                key={unitImg}
+                                                style={{
+                                                  position: "relative",
+                                                  width: "100px",
+                                                  height: "100px",
+                                                  margin: "10px",
+                                                  display: "flex",
+                                                  flexDirection: "column",
+                                                }}
+                                              >
+                                                <img
+                                                  src={unitImg}
+                                                  alt=""
+                                                  style={{
+                                                    width: "100px",
+                                                    height: "100px",
+                                                    maxHeight: "100%",
+                                                    maxWidth: "100%",
+                                                    borderRadius: "10px",
+                                                    // objectFit: "cover",
+                                                  }}
+                                                  onClick={() => {
+                                                    setSelectedImage(
+                                                      unitImg
+                                                    );
+                                                    setOpen(true);
+                                                  }}
+                                                />
+                                                <ClearIcon
+                                                  style={{
+                                                    cursor: "pointer",
+                                                    alignSelf: "flex-start",
+                                                    position: "absolute",
+                                                    top: "-12px",
+                                                    right: "-12px",
+                                                  }}
+                                                  onClick={() =>
+                                                    clearSelectedPhoto(
+                                                       "",
+                                                      unitImage,
+                                                      "propertyres_image"
+                                                    )
+                                                  }
+                                                />
+                                              </div>
+                                            ))}
+                                          <OpenImageDialog
+                                            open={open}
+                                            setOpen={setOpen}
+                                            selectedImage={selectedImage}
+                                          />
+                                        </div>
+                                      </FormGroup>
+                                    </div>
+                                  </Col>
                                             </div>
 
                                             <div style={{ marginTop: "10px" }}>

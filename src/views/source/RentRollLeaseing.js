@@ -447,7 +447,7 @@ const RentRollLeaseing = () => {
       recuring_amount: recurringChargeSchema.values.recuring_amount,
       recuring_account: recurringChargeSchema.values.recuring_account,
       // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-      recuringmemo: recurringChargeSchema.values.recuringmemo,
+      recuringmemo: recurringChargeSchema.values.recuringmemo || "Recurring Charge",
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
@@ -479,7 +479,7 @@ const RentRollLeaseing = () => {
       onetime_amount: oneTimeChargeSchema.values.onetime_amount,
       onetime_account: oneTimeChargeSchema.values.onetime_account,
       // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-      onetime_memo: oneTimeChargeSchema.values.onetime_memo,
+      onetime_memo: oneTimeChargeSchema.values.onetime_memo || "One Time Charge",
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
@@ -1578,7 +1578,7 @@ const RentRollLeaseing = () => {
             amount: matchedLease.amount,
             account: matchedLease.account,
             nextDue_date: matchedLease.nextDue_date,
-            memo: matchedLease.memo || "Rent",
+            memo: matchedLease.memo,
             upload_file: matchedLease.upload_file,
             isrenton: matchedLease.isrenton,
             rent_paid: matchedLease.rent_paid,
@@ -1878,7 +1878,7 @@ const RentRollLeaseing = () => {
           account: entrySchema.values.account,
           nextDue_date: entrySchema.values.nextDue_date,
           property_id: propertyId,
-          memo: entrySchema.values.memo,
+          memo: entrySchema.values.memo || "Rent",
           upload_file: entrySchema.values.upload_file,
           isrenton: entrySchema.values.isrenton,
           rent_paid: entrySchema.values.rent_paid,
@@ -1972,6 +1972,12 @@ const RentRollLeaseing = () => {
                 entrySchema.values.unit_id,
                 tenantId
               );
+              await postDeposit(
+                entrySchema.values.rental_units,
+                entrySchema.values.unit_id,
+                tenantId,
+                entrySchema.values.Security_amount
+              );
 
               for (const item of recurringData) {
                 await postRecOneCharge(
@@ -1996,6 +2002,12 @@ const RentRollLeaseing = () => {
               }
             } else {
               await postCharge("", "", tenantId);
+
+              await postDeposit(
+                "","",
+                tenantId,
+                entrySchema.values.Security_amount
+              );
 
               for (const item of recurringData) {
                 await postRecOneCharge("", "", tenantId, item, "Recurring");
@@ -2030,15 +2042,22 @@ const RentRollLeaseing = () => {
             // debugger;
             if (entrySchema.values.unit_id) {
               await postCharge(
-                entrySchema.values.rental_units,
-                entrySchema.values.unit_id,
+                res.data.data.rental_units,
+                res.data.data.unit_id,
                 res.data.data._id
+              );
+
+              await postDeposit(
+                res.data.data.rental_units,
+                res.data.data.unit_id,
+                res.data.data._id,
+                res.data.data.Security_amount
               );
 
               for (const item of recurringData) {
                 await postRecOneCharge(
-                  entrySchema.values.rental_units,
-                  entrySchema.values.unit_id,
+                  res.data.data.rental_units,
+                  res.data.data.unit_id,
                    res.data.data._id,
                   item,
                   "Recurring"
@@ -2048,8 +2067,8 @@ const RentRollLeaseing = () => {
 
               for (const item of oneTimeData) {
                 await postRecOneCharge(
-                  entrySchema.values.rental_units,
-                  entrySchema.values.unit_id,
+                  res.data.data.rental_units,
+                  res.data.data.unit_id,
                    res.data.data._id,
                   item,
                   "OneTime"
@@ -2058,7 +2077,11 @@ const RentRollLeaseing = () => {
               }
             } else {
               await postCharge("", "",  res.data.data._id);
-
+              await postDeposit(
+                "","",
+                res.data.data._id,
+                res.data.data.Security_amount
+              );
               for (const item of recurringData) {
                 await postRecOneCharge("", "",  res.data.data._id, item, "Recurring");
                 await delay(1000); // Delay for 3 seconds
@@ -2128,7 +2151,7 @@ const RentRollLeaseing = () => {
       ],
     };
 
-    const url = "http://localhost:4000/api/payment_charge/payment_charge";
+    const url = `${baseUrl}/payment_charge/payment_charge`;
     await axios
       .post(url, chargeObject)
       .then((res) => {
@@ -2138,6 +2161,48 @@ const RentRollLeaseing = () => {
         console.log(err);
       });
   };
+  const postDeposit = async (unit, unitId, tenantId, Security_amount) =>{
+    const chargeObject = {
+      properties: {
+        rental_adress: entrySchema.values.rental_adress,
+        property_id: propertyId,
+      },
+      unit: [
+        {
+          unit: unit ? unit : "",
+          unit_id: unitId ? unitId : "",
+          paymentAndCharges: [
+            {
+              type: "Charge",
+              charge_type: "Security Deposit",
+              account: "" ,
+              amount: parseFloat(Security_amount),
+              rental_adress: entrySchema.values.rental_adress,
+              rent_cycle: "",
+              month_year: moment().format("MM-YYYY"),
+              date: moment().format("YYYY-MM-DD"),
+              memo: "",
+              tenant_id: tenantId,
+              tenant_firstName:
+                tenantsSchema.values.tenant_firstName +
+                " " +
+                tenantsSchema.values.tenant_lastName,
+            },
+          ],
+        },
+      ],
+    };
+
+    const url = `${baseUrl}/payment_charge/payment_charge`;
+    await axios
+      .post(url, chargeObject)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   const postRecOneCharge = async (unit, unitId, tenantId, item, chargeType) => {
     console.log(
@@ -2190,7 +2255,7 @@ const RentRollLeaseing = () => {
       ],
     };
 
-    const url = "http://localhost:4000/api/payment_charge/payment_charge";
+    const url = `${baseUrl}/payment_charge/payment_charge`;
     try {
       const res = await axios.post(url, chargeObject);
       console.log(res);
@@ -2435,8 +2500,9 @@ const RentRollLeaseing = () => {
 
   const handleUnitSelect = (selectedUnit, unitId) => {
     setSelectedUnit(selectedUnit);
-    // entrySchema.values.rental_units = selectedUnit;
+    entrySchema.values.rental_units = selectedUnit;
 
+    entrySchema.setFieldValue("unit_id", unitId);
     // entrySchema.values.unit_idd = unitId;
     entrySchema.setValues({
       ...entrySchema.values,
@@ -5083,7 +5149,7 @@ const RentRollLeaseing = () => {
                                   name="memo"
                                   onBlur={entrySchema.handleBlur}
                                   onChange={entrySchema.handleChange}
-                                  value={entrySchema.values.memo || "Rent"}
+                                  value={entrySchema.values.memo}
                                 />
                                 {/* {leaseFormik.touched.memo &&
                                   leaseFormik.errors.memo ? (
@@ -5114,7 +5180,7 @@ const RentRollLeaseing = () => {
                       </label> */}
                       <br />
                       <Row>
-                        <Col lg="2">
+                        {/* <Col lg="2">
                           <FormGroup>
                             <label
                               className="form-control-label"
@@ -5140,7 +5206,7 @@ const RentRollLeaseing = () => {
                               </div>
                             ) : null}
                           </FormGroup>
-                        </Col>
+                        </Col> */}
                         <Col lg="2">
                           <FormGroup>
                             <label
