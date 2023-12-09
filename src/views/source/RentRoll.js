@@ -71,16 +71,20 @@ const RentRoll = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        `${baseUrl}/tenant/tenants`
-      );
+      const response = await axios.get(`${baseUrl}/tenant/tenants`);
+      const data = response.data.data;
+  
+      // Reverse the data order
+      const reversedData = data.slice().reverse();
+  
       setLoader(false);
-      setTenantsData(response.data.data);
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
+      setTenantsData(reversedData);
+      setTotalPages(Math.ceil(reversedData.length / pageItem));
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+  
 
   React.useEffect(() => {
     fetchData();

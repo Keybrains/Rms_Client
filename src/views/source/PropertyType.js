@@ -61,11 +61,7 @@ const PropertyType = () => {
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
-  // let getPropertyData = async () => {
-  //   let responce = await axios.get("https://propertymanager.cloudpress.host/api/newproparty/newproparty");
-  //   setPropertyData(responce.data.data);
-  // };
-
+  
   const handlePropertyTypeChange = (value) => {
     setEditingProperty((prev) => ({
       ...prev,
@@ -111,7 +107,7 @@ const PropertyType = () => {
   //   var handleSubmit = async (values) => {
   //    // values["createAt"] = moment(new Date()).format("YYYY-MM-DD, HH:mm:ss");
   //     let response = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty",
+  //       "http://localhost:4000/api/newproparty/newproparty",
   //       values
   //     );
   //     if (response.data.statusCode === 200) {
@@ -126,7 +122,7 @@ const PropertyType = () => {
   //   handleSubmit = async (values) => {
   //     //values["upadateAt"] = moment(new Date()).format("YYYY-MM-DD, HH:mm:ss");
   //     let response = await axios.put(
-  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty" + id,
+  //       "http://localhost:4000/api/newproparty/newproparty" + id,
   //       values
   //     );
   //     if (response.data.statusCode === 200) {

@@ -255,6 +255,7 @@ const Leaseing = () => {
   const [ownerData, setOwnerData] = useState({});
   const [propertyId, setPropertyId] = useState("");
   console.log(propertyId, "propertyId")
+
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress);
     entrySchema.values.rental_adress = property.rental_adress;
@@ -433,7 +434,7 @@ const Leaseing = () => {
       recuring_amount: recurringChargeSchema.values.recuring_amount,
       recuring_account: recurringChargeSchema.values.recuring_account,
       // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-      recuringmemo: recurringChargeSchema.values.recuringmemo,
+      recuringmemo: recurringChargeSchema.values.recuringmemo || "Recurring Charge",
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
@@ -465,7 +466,7 @@ const Leaseing = () => {
       onetime_amount: oneTimeChargeSchema.values.onetime_amount,
       onetime_account: oneTimeChargeSchema.values.onetime_account,
       // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-      onetime_memo: oneTimeChargeSchema.values.onetime_memo,
+      onetime_memo: oneTimeChargeSchema.values.onetime_memo || "One Time Charge",
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
@@ -1687,7 +1688,7 @@ const Leaseing = () => {
           amount: entrySchema.values.amount,
           account: entrySchema.values.account,
           nextDue_date: entrySchema.values.nextDue_date,
-          memo: entrySchema.values.memo,
+          memo: entrySchema.values.memo || "Rent",
           upload_file: entrySchema.values.upload_file,
           isrenton: entrySchema.values.isrenton,
           rent_paid: entrySchema.values.rent_paid,
@@ -1772,36 +1773,92 @@ const Leaseing = () => {
             swal("", res.data.message, "success");
 
 
-            const chargeObject = {
-              properties:{
-                rental_adress:entrySchema.values.rental_adress,
-                property_id:propertyId
-              },
-              unit:[{
-                unit:entrySchema.values.rental_units,
-                unit_id:entrySchema.values.unit_id,
-                paymentAndCharges:[{
-                    type:"Payment",
-                    account:entrySchema.values.account,
-                    amount:parseFloat(entrySchema.values.amount),
-                    rental_adress:entrySchema.values.rental_adress,
-                    rent_cycle:entrySchema.values.rent_cycle,
-                    month_year:moment().format("MM-YYYY"),
-                    date:moment().format("YYYY-MM-DD"),
-                    memo: values.charges_memo,
-                    tenant_id:tenantId,
-                    tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
-                }]
+            // const chargeObject = {
+            //   properties:{
+            //     rental_adress:entrySchema.values.rental_adress,
+            //     property_id:propertyId
+            //   },
+            //   unit:[{
+            //     unit:entrySchema.values.rental_units,
+            //     unit_id:entrySchema.values.unit_id,
+            //     paymentAndCharges:[{
+            //         type:"Charge",
+            //         account:entrySchema.values.account,
+            //         amount:parseFloat(entrySchema.values.amount),
+            //         rental_adress:entrySchema.values.rental_adress,
+            //         rent_cycle:entrySchema.values.rent_cycle,
+            //         month_year:moment().format("MM-YYYY"),
+            //         date:moment().format("YYYY-MM-DD"),
+            //         memo: values.charges_memo,
+            //         tenant_id:tenantId,
+            //         tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
+            //     }]
                 
-              }]
-            }
+            //   }]
+            // }
 
-            const url = `${baseUrl}/payment_charge/payment_charge`
-            await axios.post(url, chargeObject).then((res) => {
-              console.log(res, "-----------------res")
-            }).catch((err) => {
-              console.log(err)
-            })
+            // const url = `${baseUrl}/payment_charge/payment_charge`
+            // await axios.post(url, chargeObject).then((res) => {
+            //   console.log(res, "-----------------res")
+            // }).catch((err) => {
+            //   console.log(err)
+            // })
+            const delay = (ms) =>
+              new Promise((resolve) => setTimeout(resolve, ms));
+
+            // debugger;
+            if (entrySchema.values.unit_id) {
+              await postCharge(
+                entrySchema.values.rental_units,
+                entrySchema.values.unit_id,
+                tenantId
+              );
+              await postDeposit(
+                entrySchema.values.rental_units,
+                entrySchema.values.unit_id,
+                tenantId,
+                entrySchema.values.Security_amount
+              );
+
+              for (const item of recurringData) {
+                await postRecOneCharge(
+                  entrySchema.values.rental_units,
+                  entrySchema.values.unit_id,
+                  tenantId,
+                  item,
+                  "Recurring"
+                );
+                await delay(1000); // Delay for 3 seconds
+              }
+
+              for (const item of oneTimeData) {
+                await postRecOneCharge(
+                  entrySchema.values.rental_units,
+                  entrySchema.values.unit_id,
+                  tenantId,
+                  item,
+                  "OneTime"
+                );
+                await delay(1000); // Delay for 3 seconds
+              }
+            } else {
+              await postCharge("", "", tenantId);
+              await postDeposit(
+                "","",
+                tenantId,
+                entrySchema.values.Security_amount
+              );
+
+              for (const item of recurringData) {
+                await postRecOneCharge("", "", tenantId, item, "Recurring");
+                await delay(1000); // Delay for 3 seconds
+              }
+
+              for (const item of oneTimeData) {
+                await postRecOneCharge("", "", tenantId, item, "OneTime");
+                await delay(1000); // Delay for 3 seconds
+              }
+            }
 
 
 
@@ -1820,37 +1877,65 @@ const Leaseing = () => {
             if (res.data.statusCode === 200) {
               // console.log(res.data.data,'after post');
 
-       
-              const chargeObject = {
-                properties:{
-                  rental_adress:entrySchema.values.rental_adress,
-                  property_id:propertyId
-                },
-                unit:[{
-                  unit:entrySchema.values.rental_units,
-                  unit_id:entrySchema.values.unit_id,
-                  paymentAndCharges:[{
-                      type:"Payment",
-                      account:entrySchema.values.account,
-                      amount:parseFloat(entrySchema.values.amount),
-                      rental_adress:entrySchema.values.rental_adress,
-                      rent_cycle:entrySchema.values.rent_cycle,
-                      month_year:moment().format("MM-YYYY"),
-                      date:moment().format("YYYY-MM-DD"),
-                      memo: values.charges_memo,
-                      tenant_id:res.data.data._id,
-                      tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
-                  }]
-                  
-                }]
+              // debugger
+              const delay = (ms) =>
+              new Promise((resolve) => setTimeout(resolve, ms));
+
+            // debugger;
+            if (entrySchema.values.unit_id) {
+              await postCharge(
+                res.data.data.rental_units,
+                res.data.data.unit_id,
+                res.data.data._id
+              );
+
+              await postDeposit(
+                res.data.data.rental_units,
+                res.data.data.unit_id,
+                res.data.data._id,
+                res.data.data.Security_amount
+              );
+
+              for (const item of recurringData) {
+                await postRecOneCharge(
+                  res.data.data.rental_units,
+                  res.data.data.unit_id,
+                   res.data.data._id,
+                  item,
+                  "Recurring"
+                );
+                await delay(1000); // Delay for 3 seconds
               }
-  
-              const url = `${baseUrl}/payment_charge/payment_charge`
-              await axios.post(url, chargeObject).then((res) => {
-                console.log(res)
-              }).catch((err) => {
-                console.log(err)
-              })
+
+              for (const item of oneTimeData) {
+                await postRecOneCharge(
+                  res.data.data.rental_units,
+                  res.data.data.unit_id,
+                   res.data.data._id,
+                  item,
+                  "OneTime"
+                );
+                await delay(1000); // Delay for 3 seconds
+              }
+            } else {
+              await postCharge("", "",  res.data.data._id);
+              await postDeposit(
+                "","",
+                res.data.data._id,
+                res.data.data.Security_amount
+              );
+
+              for (const item of recurringData) {
+                await postRecOneCharge("", "",  res.data.data._id, item, "Recurring");
+                await delay(1000); // Delay for 3 seconds
+              }
+
+
+              for (const item of oneTimeData) {
+                await postRecOneCharge("", "",  res.data.data._id, item, "OneTime");
+                await delay(1000); // Delay for 3 seconds
+              }
+            }
               swal("", res.data.message, "success");
               navigate("/admin/TenantsTable");
             } else {
@@ -1885,6 +1970,149 @@ const Leaseing = () => {
       // values["property_type"] = localStorage.getItem("propertyType");
     } catch (error) {
       console.log(error);
+    }
+  };
+  const postCharge = async (unit, unitId, tenantId) => {
+    const chargeObject = {
+      properties: {
+        rental_adress: entrySchema.values.rental_adress,
+        property_id: propertyId,
+      },
+      unit: [
+        {
+          unit: unit ? unit : "",
+          unit_id: unitId ? unitId : "",
+          paymentAndCharges: [
+            {
+              type: "Charge",
+              charge_type: "",
+              account: entrySchema.values.account,
+              amount: parseFloat(entrySchema.values.amount),
+              rental_adress: entrySchema.values.rental_adress,
+              rent_cycle: entrySchema.values.rent_cycle,
+              month_year: moment().format("MM-YYYY"),
+              date: moment().format("YYYY-MM-DD"),
+              memo: entrySchema.values.charges_memo,
+              tenant_id: tenantId,
+              tenant_firstName:
+                tenantsSchema.values.tenant_firstName +
+                " " +
+                tenantsSchema.values.tenant_lastName,
+            },
+          ],
+        },
+      ],
+    };
+
+    const url = `${baseUrl}/payment_charge/payment_charge`;
+    await axios
+      .post(url, chargeObject)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const postDeposit = async (unit, unitId, tenantId, Security_amount) =>{
+    const chargeObject = {
+      properties: {
+        rental_adress: entrySchema.values.rental_adress,
+        property_id: propertyId,
+      },
+      unit: [
+        {
+          unit: unit ? unit : "",
+          unit_id: unitId ? unitId : "",
+          paymentAndCharges: [
+            {
+              type: "Charge",
+              charge_type: "Security Deposit",
+              account: "" ,
+              amount: parseFloat(Security_amount),
+              rental_adress: entrySchema.values.rental_adress,
+              rent_cycle: "",
+              month_year: moment().format("MM-YYYY"),
+              date: moment().format("YYYY-MM-DD"),
+              memo: "",
+              tenant_id: tenantId,
+              tenant_firstName:
+                tenantsSchema.values.tenant_firstName +
+                " " +
+                tenantsSchema.values.tenant_lastName,
+            },
+          ],
+        },
+      ],
+    };
+
+    const url = `${baseUrl}/payment_charge/payment_charge`;
+    await axios
+      .post(url, chargeObject)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  const postRecOneCharge = async (unit, unitId, tenantId, item, chargeType) => {
+    console.log(
+      unit,
+      unitId,
+      tenantId,
+      item,
+      chargeType,
+      "unit, unitId, tenantId, item, chargeType"
+    );
+    // debugger;
+
+    const chargeObject = {
+      properties: {
+        rental_adress: entrySchema.values.rental_adress,
+        property_id: propertyId,
+      },
+      unit: [
+        {
+          unit: unit || "",
+          unit_id: unitId || "",
+          paymentAndCharges: [
+            {
+              type: "Charge",
+              charge_type: chargeType,
+              account:
+                chargeType === "Recurring"
+                  ? item?.recuring_account || ""
+                  : item?.onetime_account || "",
+              amount:
+                chargeType === "Recurring"
+                  ? parseFloat(item?.recuring_amount) || ""
+                  : item?.onetime_amount || "",
+              rental_adress: entrySchema.values.rental_adress,
+              rent_cycle: "",
+              month_year: moment().format("MM-YYYY"),
+              date: moment().format("YYYY-MM-DD"),
+              memo:
+                chargeType === "Recurring"
+                  ? item?.recuringmemo || ""
+                  : item?.onetime_memo || "",
+              tenant_id: tenantId,
+              tenant_firstName:
+                tenantsSchema.values.tenant_firstName +
+                " " +
+                tenantsSchema.values.tenant_lastName,
+            },
+          ],
+        },
+      ],
+    };
+
+    const url = `${baseUrl}/payment_charge/payment_charge`;
+    try {
+      const res = await axios.post(url, chargeObject);
+      console.log(res);
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -4691,7 +4919,7 @@ const Leaseing = () => {
                       </label> */}
                       <br />
                       <Row>
-                        <Col lg="2">
+                        {/* <Col lg="2">
                           <FormGroup>
                             <label
                               className="form-control-label"
@@ -4717,7 +4945,7 @@ const Leaseing = () => {
                               </div>
                             ) : null}
                           </FormGroup>
-                        </Col>
+                        </Col> */}
                         <Col lg="2">
                           <FormGroup>
                             <label
