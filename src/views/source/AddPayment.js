@@ -844,7 +844,7 @@ const AddPayment = () => {
                           name="memo"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
-                          value={generalledgerFormik.values.memo || "Payment"}
+                          value={generalledgerFormik.values.memo}
                         />
 
                         {generalledgerFormik.touched.memo &&

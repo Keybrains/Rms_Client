@@ -171,7 +171,7 @@ const TenantFinancial = () => {
         const mergedData = response.data.data;
         mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
         const dataWithBalance = calculateBalance(mergedData);
-
+        console.log('first', response.data.data)
         setGeneralLedgerData(dataWithBalance);
       } else {
         console.error("Unexpected response format:", response.data);

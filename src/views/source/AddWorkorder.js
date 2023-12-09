@@ -42,13 +42,21 @@ const AddWorkorder = () => {
   const [statusdropdownOpen, setstatusdropdownOpen] = React.useState(false);
 
   const [selectedProp, setSelectedProp] = useState("Select");
+  const [selectedUnit, setSelectedUnit] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Select");
   const [selectedVendor, setSelectedVendor] = useState("Select");
   const [selectedEntry, setSelectedEntry] = useState("Select");
   const [selecteduser, setSelecteduser] = useState("Select");
   const [selectedStatus, setSelectedStatus] = useState("Select");
+  const [unitData, setUnitData] = useState([]);
+
 
   const [selectedAccount, setSelectedAccount] = useState("");
+
+  const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
+  const toggle11 = () => {
+    setUnitDropdownOpen((prevState) => !prevState);
+  };
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -96,10 +104,59 @@ const AddWorkorder = () => {
   const [selectedSub, setSelectedSub] = useState("");
   const [allVendors, setAllVendors] = useState([]);
 
-  const handlePropertyTypeSelect = (property) => {
-    setSelectedProp(property);
-    WorkFormik.values.rental_adress = property;
-    // WorkFormik.errors.rental_adress = property
+  const fetchUnitsByProperty = async (propertyType) => {
+    try {
+      console.log(propertyType, "propertyType");
+      const response = await fetch(
+        `${baseUrl}/propertyunit/rentals_property/${propertyType}`
+      );
+      const data = await response.json();
+      // Ensure that units are extracted correctly and set as an array
+      const units = data?.data || [];
+
+      console.log(units, "units246");
+      return units;
+    } catch (error) {
+      console.error("Error fetching units:", error);
+      return [];
+    }
+  };
+
+  // const handlePropertyTypeSelect = async (property) => {
+  //   setSelectedProp(property);
+  //   WorkFormik.values.rental_adress = property;
+  //   setSelectedUnit(""); // Reset selected unit when a new property is selected
+  //   try {
+  //     const units = await fetchUnitsByProperty(property.rental_adress);
+  //     console.log(units, "units"); // Check the received units in the console
+  //     setUnitData(units); // Set the received units in the unitData state
+  //   } catch (error) {
+  //     console.error("Error handling selected property:", error);
+  //   }
+  //   // WorkFormik.errors.rental_adress = property
+  // };
+
+  const handlePropertyTypeSelect = async (property) => {
+    setSelectedProp(property.rental_adress);
+    WorkFormik.values.rental_adress = property.rental_adress;
+  
+    setSelectedUnit(""); // Reset selected unit when a new property is selected
+    try {
+      const units = await fetchUnitsByProperty(property.rental_adress);
+      console.log(units, "units"); // Check the received units in the console
+      setUnitData(units); // Set the received units in the unitData state
+    } catch (error) {
+      console.error("Error handling selected property:", error);
+    }
+  };
+
+  const handleUnitSelect = (selectedUnit,unitId) => {
+    setSelectedUnit(selectedUnit);
+    WorkFormik.values.rental_units = selectedUnit;
+    console.log(selectedUnit, "selectedUnit")
+    WorkFormik.setFieldValue("unit_id", unitId);
+
+    // entrySchema.values.unit_id = unitId;
   };
 
   const handleCategorySelection = (value) => {
@@ -194,33 +251,42 @@ const AddWorkorder = () => {
   const [workOrderData, setWorkOrderData] = useState(null);
 
   useEffect(() => {
-    if (id) {
-      axios
-        .get(
-          `${baseUrl}/workorder/workorder_summary/${id}`
-        )
-        .then((response) => {
+    const fetchData = async () => {
+      if (id) {
+        try {
+          const response = await axios.get(
+            `${baseUrl}/workorder/workorder_summary/${id}`
+          );
+  
           const vendorData = response.data.data;
-          setWorkOrderData(vendorData); // Use vendorData here
-          // console.log(vendorData);
-
+          setWorkOrderData(vendorData);
+  
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
             : "";
+  
+          try {
+            const units = await fetchUnitsByProperty(vendorData.rental_adress);
+            console.log(units, "unitssssssssssssss");
+            setUnitData(units);
+          } catch (error) {
+            console.log(error, 'error');
+          }
 
+          setSelectedUnit(vendorData.rental_units || "Select")
           setSelectedProp(vendorData.rental_adress || "Select");
           setSelectedCategory(vendorData.work_category || "Select");
           setSelectedVendor(vendorData.vendor_name || "Select");
           setSelectedEntry(vendorData.entry_allowed || "Select");
           setSelecteduser(vendorData.staffmember_name || "Select");
-          setSelectedStatus(vendorData.status);
+          setSelectedStatus(vendorData.status || "Select");
           setSelectedPriority(vendorData.priority || "Select");
           setSelectedAccount(vendorData.account_type || "Select");
 
           const entriesData = vendorData.entries || []; // Make sure entries is an array
           WorkFormik.setValues({
             work_subject: vendorData.work_subject || "",
-            unit_no: vendorData.unit_no || "",
+            rental_units: vendorData.rental_units || "",
             invoice_number: vendorData.invoice_number || "",
             work_charge: vendorData.work_charge || "",
             detail: vendorData.detail || "",
@@ -238,13 +304,15 @@ const AddWorkorder = () => {
               dropdownOpen: false,
             })),
           });
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Error fetching vendor data:", error);
-        });
-    }
+        }
+      }
+    };
+  
+    fetchData();
   }, [id]);
-
+  
   const { v4: uuidv4 } = require("uuid");
 
   async function handleSubmit(values, work) {
@@ -258,6 +326,7 @@ const AddWorkorder = () => {
       values["priority"] = selectedPriority;
       values["account_type"] = selectedAccount;
       values["final_total_amount"] = final_total_amount;
+      values["rental_units"] =selectedUnit;
       const entries = WorkFormik.values.entries.map((entry) => ({
         part_qty: entry.part_qty,
         account_type: entry.account_type,
@@ -331,7 +400,7 @@ const AddWorkorder = () => {
     initialValues: {
       work_subject: "",
       rental_adress: "",
-      unit_no: "",
+      rental_units: "",
       work_category: "",
       vendor_name: "",
       invoice_number: "",
@@ -541,16 +610,15 @@ console.log(WorkFormik.values,'workForjnik')
                                   overflowX: "hidden",
                                 }}
                               >
-                                 {propertyData.map((property) => (
+                               {propertyData.map((property, index) => (
                                 <DropdownItem
-                                  key={property._id}
-                                  onClick={() =>
-                                    handlePropertyTypeSelect(
-                                      property.rental_adress
-                                    )
-                                  }
+                                  key={index}
+                                  onClick={() => {
+                                    handlePropertyTypeSelect(property);
+                                  }}
                                 >
                                   {property.rental_adress}
+                               
 
                                     {/* {console.log(selectedProp, "abcd")} */}
                                 </DropdownItem>
@@ -568,43 +636,66 @@ console.log(WorkFormik.values,'workForjnik')
                           </FormGroup>
                         </FormGroup>
                       </Col>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Unit
-                          </label>
-                          <br />
-                          <br />
-                          <Input
-                            className="form-control-alternative"
-                            id="input-name"
-                            placeholder="Flat Number"
-                            type="text"
-                            name="unit_no"
-                            //name="nput-staffmember-name"
-                            onBlur={WorkFormik.handleBlur}
-                            onChange={(e) => {
-                              // Update the state or Formik values with the new input value
-                              WorkFormik.handleChange(e);
-                            }}
-                            value={WorkFormik.values.unit_no}
-                            required
-                          />
-                          {/* {WorkFormik.touched.unit_no &&
-                          WorkFormik.errors.unit_no ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.unit_no}
-                            </div>
-                          ) : null} */}
-                        </FormGroup>
-                      </Col>
+                     
                     </Row>
                     <br />
                   </div>
 
+                  <div className="pl-lg-4">
+                    <Row>
+                    <Col lg="4">
+                      <Row>
+                    {selectedProp && unitData && unitData[0] && unitData[0].rental_units && ( 
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-unit"
+                          style={{ marginLeft: "15px" }}
+                        >
+                          Unit *
+                        </label>
+                        <FormGroup style={{ marginLeft: "15px" }}>
+                          <Dropdown isOpen={unitDropdownOpen} toggle={toggle11}>
+                            <DropdownToggle caret>
+                              {selectedUnit ? selectedUnit : "Select Unit"}
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              {unitData.length > 0 ? (
+                                unitData.map((unit) => (
+                                  <DropdownItem
+                                    key={unit._id}
+                                    onClick={() =>
+                                      handleUnitSelect(unit.rental_units,unit._id)
+                                    }
+                                  >
+                                    {unit.rental_units}
+                                  </DropdownItem>
+                                ))
+                              ) : (
+                                <DropdownItem disabled>
+                                  No units available
+                                </DropdownItem>
+                              )}
+                            </DropdownMenu>
+                            {WorkFormik.errors &&
+                              WorkFormik.errors?.rental_units &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.rental_units &&
+                              WorkFormik.values.rental_units === "" ? (
+                              <div style={{ color: "red" }}>
+                                {WorkFormik.errors.rental_units}
+                              </div>
+                            ) : null}
+                          </Dropdown>
+                        </FormGroup>
+                      </FormGroup>
+                    )}
+                    </Row>
+                      </Col>
+                      </Row>
+                      
+                    <br />
+                  </div>
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">

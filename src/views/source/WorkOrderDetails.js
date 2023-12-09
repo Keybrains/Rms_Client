@@ -51,6 +51,7 @@ const WorkOrderDetails = () => {
         `${baseUrl}/workorder/workorder_summary/${workorder_id}`
       );
       setoutstandDetails(response.data.data);
+      console.log('first', response.data.data)
       setLoading(false);
       //console.log("Data", response.data.data);
     } catch (error) {
@@ -59,6 +60,8 @@ const WorkOrderDetails = () => {
       setLoading(false);
     }
   };
+
+  
 
   const handleMouseEnter = (buttonValue) => {
     setHoveredButton(buttonValue);

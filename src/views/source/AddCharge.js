@@ -647,7 +647,7 @@ const AddCharge = () => {
                           name="charges_memo"
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
-                          value={generalledgerFormik.values.charges_memo || "Charge"}
+                          value={generalledgerFormik.values.charges_memo}
                         />
                         {generalledgerFormik.touched.charges_memo &&
                         generalledgerFormik.errors.charges_memo ? (

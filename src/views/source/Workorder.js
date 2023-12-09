@@ -142,7 +142,7 @@ const Workorder = () => {
     return paginatedData.filter((rental) => {
       const lowerCaseQuery = searchQuery.toLowerCase();
 
-      const isUnitAddress = (rental.unit_no + " " + rental.rental_adress)
+      const isUnitAddress = (rental.rental_units + " " + rental.rental_adress)
         .toLowerCase()
         .includes(lowerCaseQuery);
       return (
@@ -246,7 +246,7 @@ const Workorder = () => {
                         style={{ cursor: "pointer" }}
                       >
                         <td>{rental.work_subject}</td>
-                        <td>{`${rental.unit_no} ${rental.rental_adress}`}</td>
+                        <td>{rental.rental_adress}</td>
                         <td>{rental.work_category}</td>
                         <td>{rental.staffmember_name}</td>
                         <td>{rental.status}</td>

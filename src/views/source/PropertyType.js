@@ -61,11 +61,7 @@ const PropertyType = () => {
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
-  // let getPropertyData = async () => {
-  //   let responce = await axios.get("http://localhost:4000/api/newproparty/newproparty");
-  //   setPropertyData(responce.data.data);
-  // };
-
+  
   const handlePropertyTypeChange = (value) => {
     setEditingProperty((prev) => ({
       ...prev,
