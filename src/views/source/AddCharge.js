@@ -890,8 +890,8 @@ const AddCharge = () => {
                           Upload Files (Maximum of 10)
                         </label>
 
-                        <div class="d-flex">
-                          <div class="file-upload-wrapper">
+                        <div className="d-flex">
+                          <div className="file-upload-wrapper">
                             <input
                               type="file"
                               className="form-control-file d-none"
@@ -901,7 +901,7 @@ const AddCharge = () => {
                               multiple
                               onChange={(e) => fileData(e.target.files)}
                             />
-                            <label for="upload_file" class="btn">
+                            <label for="upload_file" className="btn">
                               Choose Files
                             </label>
 

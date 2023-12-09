@@ -316,15 +316,16 @@ const ApplicantSummary = () => {
         getApplicantData();
       });
   };
+  
 
-  const navigateToLease = (tenantID, entryIndex) => {
+  const navigateToLease = () => {
     axios
       .get(`${baseUrl}/applicant/applicant_summary/${id}`)
       .then((response) => {
-        const data = response.data.data;
-
+        const applicantsData = response.data.data;
+        console.log(applicantsData,'data frpm 325')
         // Extract the rental address from the response
-        const rentalAddress = data.rental_adress;
+        const rentalAddress = applicantsData.rental_adress;
         //console.log(rentalAddress, "Rental Addressss");
         axios
           .get(`${baseUrl}/rentals/allproperty`)
@@ -340,11 +341,11 @@ const ApplicantSummary = () => {
               return;
             } else {
               // navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
+              navigate(`/admin/RentRollLeaseing/`,
               //console.log(tenantID, "tenantID");
-              navigate(`/admin/RentRollLeaseing/${tenantID}/${entryIndex}`,
               {
                 state:{
-                  yourComponent:"ApplicantSummary"
+                  applicantData: applicantsData,
                 }
               });
               //console.log(matchedApplicant, "matchedApplicant");
@@ -636,7 +637,16 @@ const ApplicantSummary = () => {
               fund_type: fetchedData.data.fund_type || "",
               cash_flow: fetchedData.data.cash_flow || "",
               notes: fetchedData.data.notes || "",
-    
+
+              tenant_residentStatus: fetchedData.data.tenant_residentStatus || false,
+              rentalOwner_firstName: fetchedData.data.rentalOwner_firstName || "",
+              rentalOwner_lastName: fetchedData.data.rentalOwner_lastName || "",
+              rentalOwner_primaryemail: fetchedData.data.rentalOwner_email || "",
+              rentalOwner_phoneNumber: fetchedData.data.rentalOwner_phoneNumber || "",
+              rentalOwner_businessNumber: fetchedData.data.rentalOwner_businessNumber || "",
+              rentalOwner_homeNumber: fetchedData.data.rentalOwner_homeNumber || "",
+              rentalOwner_companyName: fetchedData.data.rentalOwner_companyName || "",
+
               // recurring_charges: fetchedData.recurring_charges || {},
               // one_time_charges: fetchedData.one_time_charges || {},
             },
@@ -645,32 +655,33 @@ const ApplicantSummary = () => {
     
         console.log(dataToSend, "hagfjg");
         // Step 3: Make a POST request to send the data to the server
-        const postResponse = await axios.post(
-          `${baseUrl}/tenant/tenant`,
-          dataToSend
-        );
+        // const postResponse = await axios.post(
+        //   `${baseUrl}/tenant/tenant`,
+        //   dataToSend
+        // );
           // debugger
         //console.log(dataToSend, "hagfjg");
-        if (postResponse.status === 200) {
-          console.log(postResponse,'clgbcmnm')
-          //console.log("Data posted successfully:", postResponse.data.data);
-          // setTenantID(postResponse.data.data._id)  
-          console.log(postResponse.data.data,'hjsadn')
-          // debugger
-          navigateToLease(
-            postResponse.data.data._id,
-            postResponse.data.data.entries[0].entryIndex
-          );
-        } else {
-          console.error(
-            "Data post request failed. Status code:",
-            postResponse.status
-          );
-          console.error(
-            "Error message from the server:",
-            postResponse.data.message
-          );
-        }
+        // if (postResponse.status === 200) {
+        //   console.log(postResponse,'clgbcmnm')
+        //   //console.log("Data posted successfully:", postResponse.data.data);
+        //   // setTenantID(postResponse.data.data._id)  
+        //   console.log(postResponse.data.data,'hjsadn')
+        //   // debugger
+        //   
+        // } else {
+        //   console.error(
+        //     "Data post request failed. Status code:",
+        //     postResponse.status
+        //   );
+        //   console.error(
+        //     "Error message from the server:",
+        //     postResponse.data.message
+        //   );
+        // }
+        navigateToLease(
+          dataToSend
+            );
+
       } else {
         // Handle the case where the fetched data is not as expected
         console.error("Invalid data format received from the API");

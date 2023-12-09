@@ -88,24 +88,28 @@ const Applicants = () => {
       return [];
     }
   };
-
+  const [ownerData, setOwnerData] = useState([]);
+  // const [selectedOwner, setSelectedOwner] = useState(null);
   // Function to handle property selection
-  const handlePropertyTypeSelect = async (propertyType) => {
-    setSelectedPropertyType(propertyType);
-    applicantFormik.setFieldValue("rental_adress", propertyType);
+  const handlePropertyTypeSelect = async (property) => {
+    setSelectedPropertyType(property.rental_adress);
+    applicantFormik.setFieldValue("rental_adress", property.rental_adress);
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
-      const units = await fetchUnitsByProperty(propertyType);
+      const units = await fetchUnitsByProperty(property.rental_adress);
+      setOwnerData(property);
       //console.log(units, "units"); // Check the received units in the console
       setUnitData(units); // Set the received units in the unitData state
     } catch (error) {
       console.error("Error handling selected property:", error);
     }
   };
-
+  const [unitId, setUnitId] = useState(null);
   const handleUnitSelect = (selectedUnit) => {
-    setSelectedUnit(selectedUnit);
-    applicantFormik.setFieldValue("rental_units", selectedUnit); // Update the formik state here
+    console.log(selectedUnit,'sekected wint')
+    setSelectedUnit(selectedUnit.rental_units);
+    setUnitId(selectedUnit._id);
+    applicantFormik.setFieldValue("rental_units", selectedUnit.rental_units); // Update the formik state here
   };
 
   // Step 2: Event handler to open the modal
@@ -269,6 +273,15 @@ const Applicants = () => {
       .post(`${baseUrl}/applicant/applicant`, {
         ...values,
         statusUpdatedBy: manager,
+        rentalOwner_firstName: ownerData.rentalOwner_firstName,
+        rentalOwner_lastName: ownerData.rentalOwner_lastName,
+        rentalOwner_primaryemail: ownerData.rentalOwner_email,
+        rentalOwner_phoneNumber: ownerData.rentalOwner_phoneNumber,
+        rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
+        rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
+        rentalOwner_companyName: ownerData.rentalOwner_companyName,
+        property_id:ownerData._id,
+        unit_id:unitId
       })
       .then((response) => {
         //console.log("Applicant created successfully:", response.data.data._id);
@@ -556,7 +569,7 @@ const Applicants = () => {
                           width="20"
                           height="20"
                           fill="currentColor"
-                          class="bi bi-caret-left"
+                          className="bi bi-caret-left"
                           viewBox="0 0 16 16"
                         >
                           <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
@@ -576,7 +589,7 @@ const Applicants = () => {
                           width="20"
                           height="20"
                           fill="currentColor"
-                          class="bi bi-caret-right"
+                          className="bi bi-caret-right"
                           viewBox="0 0 16 16"
                         >
                           <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
@@ -950,11 +963,11 @@ const Applicants = () => {
                           }}
                         >
                           <DropdownItem value="">Select</DropdownItem>
-                          {propertyData.map((property) => (
+                          {propertyData.map((property,index) => (
                             <DropdownItem
-                              key={property._id}
+                              key={index}
                               onClick={() =>
-                                handlePropertyTypeSelect(property.rental_adress)
+                                handlePropertyTypeSelect(property)
                               }
                             >
                               {property.rental_adress}
@@ -985,11 +998,11 @@ const Applicants = () => {
                         </DropdownToggle>
                         <DropdownMenu>
                           {unitData.length > 0 ? (
-                            unitData.map((unit) => (
+                            unitData.map((unit,index) => (
                               <DropdownItem
-                                key={unit._id}
+                                key={index}
                                 onClick={() =>
-                                  handleUnitSelect(unit.rental_units)
+                                  handleUnitSelect(unit)
                                 }
                               >
                                 {unit.rental_units}

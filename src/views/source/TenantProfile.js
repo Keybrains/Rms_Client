@@ -166,7 +166,7 @@ const TenantProfile = () => {
                             </th>
                           </tr>
                           <tr>
-                            <td class="font-weight-bold text-md">
+                            <td className="font-weight-bold text-md">
                               Property Type:
                             </td>
                             <td>
@@ -174,13 +174,13 @@ const TenantProfile = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td class="font-weight-bold text-md">
+                            <td className="font-weight-bold text-md">
                               Lease Type:
                             </td>
                             <td>{tenantDetails.entries.lease_type || "N/A"}</td>
                           </tr>
                           <tr>
-                            <td class="font-weight-bold text-md">
+                            <td className="font-weight-bold text-md">
                               Start Date:
                             </td>
                             <td>
@@ -190,7 +190,7 @@ const TenantProfile = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td class="font-weight-bold text-md">End Date:</td>
+                            <td className="font-weight-bold text-md">End Date:</td>
                             <td>
                               {formatDateWithoutTime(
                                 tenantDetails.entries.end_date
@@ -198,23 +198,23 @@ const TenantProfile = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td class="font-weight-bold text-md">
+                            <td className="font-weight-bold text-md">
                               Rent Cycle:
                             </td>
                             <td>{tenantDetails.entries.rent_cycle || "N/A"}</td>
                           </tr>
                           <tr>
-                            <td class="font-weight-bold text-md">
+                            <td className="font-weight-bold text-md">
                               Rent Amount:
                             </td>
                             <td>{tenantDetails.entries.amount || "N/A"}</td>
                           </tr>
                           <tr>
-                            <td class="font-weight-bold text-md">Account:</td>
+                            <td className="font-weight-bold text-md">Account:</td>
                             <td>{tenantDetails.entries.account || "N/A"}</td>
                           </tr>
                           <tr>
-                            <td class="font-weight-bold text-md">
+                            <td className="font-weight-bold text-md">
                               Next Due Date:
                             </td>
                             <td>
@@ -224,7 +224,7 @@ const TenantProfile = () => {
                             </td>
                           </tr>
                           <tr>
-                            <td class="font-weight-bold text-md">
+                            <td className="font-weight-bold text-md">
                               Uploaded Files:
                             </td>
                             <td>

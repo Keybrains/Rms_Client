@@ -1552,6 +1552,7 @@ const Leaseing = () => {
   console.log(entrySchema.values, "entrySchema");
   console.log(ownerData, "ownerData");
   console.log(unitData, "unitData");
+  console.log(ownerData,'ownerData')
   const handleSubmit = async (values) => {
     // console.log(file, "values");
     // const arrayOfNames = Array.isArray(file)
@@ -5571,7 +5572,7 @@ const Leaseing = () => {
                     </Col>
                   </Row>
 
-                  {/* <div class="file-upload-wrapper">
+                  {/* <div className="file-upload-wrapper">
                     <input
                       type="file"
                       className="form-control-file d-block"
@@ -5588,8 +5589,8 @@ const Leaseing = () => {
                       </div>
                     ) : null}
                   </div> */}
-                  <div class="d-flex">
-                    <div class="file-upload-wrapper">
+                  <div className="d-flex">
+                    <div className="file-upload-wrapper">
                       <TextField
                         type="file"
                         className="form-control-file d-none"
@@ -5608,7 +5609,7 @@ const Leaseing = () => {
                         // onChange={rentalsFormik.handleChange}
                         // value={entrySchema.values.upload_file[0]}
                       />
-                      <label for="upload_file" class="btn">
+                      <label for="upload_file" className="btn">
                         Upload
                       </label>
                     </div>

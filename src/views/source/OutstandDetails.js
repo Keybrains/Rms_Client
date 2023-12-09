@@ -103,11 +103,11 @@ import { jwtDecode } from "jwt-decode";
                                                     <th colSpan="2" className="text-primary text-lg">Lease Details</th>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Lease </td>
+                                                    <td className="font-weight-bold text-md">Lease </td>
                                                     <td>{outstandDetails.rental_adress || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Past due mail </td>
+                                                    <td className="font-weight-bold text-md">Past due mail </td>
                                                     <td>{outstandDetails.tenant_email || "N/A"}</td>
                                                 </tr>
                                               
@@ -118,11 +118,11 @@ import { jwtDecode } from "jwt-decode";
                                                     <th colSpan="2" className="text-primary text-lg">Amount Details</th>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Amount</td>
+                                                    <td className="font-weight-bold text-md">Amount</td>
                                                     <td>{outstandDetails.amount || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Balance</td>
+                                                    <td className="font-weight-bold text-md">Balance</td>
                                                     <td>{outstandDetails.amount || "N/A"}</td>
                                                 </tr>
                                                

@@ -179,49 +179,49 @@ import Cookies from "universal-cookie";
                                                     <th colSpan="2" className="text-lg" style={{color:'#3B2F2F'}}>{outstandDetails.work_subject}</th>
                                                 </tr>  
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Property </td>
+                                                    <td className="font-weight-bold text-md">Property </td>
                                                     <td>{outstandDetails.rental_adress || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Category </td>
+                                                    <td className="font-weight-bold text-md">Category </td>
                                                     <td>{outstandDetails.work_category || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Vendor Notes </td>
+                                                    <td className="font-weight-bold text-md">Vendor Notes </td>
                                                     <td>{outstandDetails.vendor_note || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Vendor </td>
+                                                    <td className="font-weight-bold text-md">Vendor </td>
                                                     <td>{outstandDetails.vendor_name || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Entry Allowed</td>
+                                                    <td className="font-weight-bold text-md">Entry Allowed</td>
                                                     <td>{outstandDetails.entry_allowed || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Work Performed </td>
+                                                    <td className="font-weight-bold text-md">Work Performed </td>
                                                     <td>{outstandDetails.work_performed || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Work Assigned</td>
+                                                    <td className="font-weight-bold text-md">Work Assigned</td>
                                                     <td>{outstandDetails.staffmember_name || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Status </td>
+                                                    <td className="font-weight-bold text-md">Status </td>
                                                     <td>{outstandDetails.status || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Due Date</td>
+                                                    <td className="font-weight-bold text-md">Due Date</td>
                                                     <td>{formatDateWithoutTime(
                                                         outstandDetails.due_date
                                                         ) || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Priority </td>
+                                                    <td className="font-weight-bold text-md">Priority </td>
                                                     <td>{outstandDetails.priority || "N/A"}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="font-weight-bold text-md">Entry Allowed</td>
+                                                    <td className="font-weight-bold text-md">Entry Allowed</td>
                                                     <td>{outstandDetails.entry_allowed || "N/A"}</td>
                                                 </tr>
                                                
