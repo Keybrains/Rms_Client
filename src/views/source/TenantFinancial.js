@@ -189,6 +189,7 @@ const TenantFinancial = () => {
   const handleUnitSelect = (property) => {
     setSelectedUnit(property.rental_units);
     financialFormik.setFieldValue("unitId", property.unit_id || "");
+    financialFormik.setFieldValue("unit", property.rental_units || "");
     // financialFormik.setFieldValue("rental_units", selectedUnit); // Update the formik state here
   };
 
@@ -277,6 +278,7 @@ const TenantFinancial = () => {
           const unit = data?.rental_units;
           if (rental && property_id && unit) {
             const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${property_id}&unit=${unit}&tenant_id=${cookie_id}`;
+            console.log(url, "==================")
             try {
               const response = await axios.get(url);
               if (response.data && response.data.data) {
@@ -292,6 +294,7 @@ const TenantFinancial = () => {
           }
           if (rental && property_id) {
             const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${property_id}&tenant_id=${cookie_id}`;
+            
             try {
               const response = await axios.get(url);
               if (response.data && response.data.data) {
@@ -311,7 +314,7 @@ const TenantFinancial = () => {
         const results = await Promise.all(promises);
         const validResults = results.filter((result) => result !== null);
         setLoader(false);
-        setGeneralLedgerData((prevData) => [...prevData, ...validResults]);
+        setGeneralLedgerData((prevData) => [ ...validResults]);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -366,41 +369,43 @@ const TenantFinancial = () => {
 
   // console.log(financialFormik.values,'financialFormik.values')
 
+  const [paymentLoader, setPaymentLoader] = useState(false);
+
   const handleFinancialSubmit = async (values, action) => {
-    const url = `${baseUrl}/nmipayment/purchase`
-    console.log( {
-      paymentDetails: values
-    }, 'paymentDetails')
-    try{
-      console.log(values,'val;euhaisjicnhwd')
+    const url = `${baseUrl}/nmipayment/purchase`;
+
+    try {
+      setPaymentLoader(true);
       const response = await axios.post(url, {
-        paymentDetails: values
+        paymentDetails: values,
       });
-      console.log(response.data, 'response.data')
-      if (response.data && response.data.data) {
-        console.log('second', response.data.data)
+
+      console.log(response.data, "response.data");
+
+      if (response.data && response.data.statusCode === 100) {
+        swal("Success", response.data.message, "success"); // Adjust the swal parameters as needed
+        window.location.reload()
+        console.log("Payment successful");
         closeModal();
 
-        if(financialFormik.values.unitId){
-          
+        if (financialFormik.values.unitId) {
           await postCharge(unit, financialFormik.values.unitId);
+        } else {
+          await postCharge("", "");
         }
-        else{
-          await postCharge('','');
-        }
-          
-          
-        // getGeneralLedgerData();
-        // setGeneralLedgerData(response.data.data);
       } else {
         console.error("Unexpected response format:", response.data);
-      } 
-    }catch(error){
-
+        swal("", response.data.message, "error");
+        // Handle other status codes or show an error message
+      }
+    } catch (error) {
       console.error("Error fetching data:", error);
+      swal("", error, "error");
+      // Handle the error (e.g., show an error message)
+    } finally {
+      setPaymentLoader(false); // Reset loader when the request completes (whether success or failure)
     }
-
-  }
+  };
 
   const postCharge = async (unitName,unit_id) => {
     const chargeObject = {
@@ -410,7 +415,7 @@ const TenantFinancial = () => {
       },
       unit: [
         {
-          unit:unitName,
+          unit:selectedUnit,
           unit_id: unit_id,
           paymentAndCharges: [
             {
@@ -560,15 +565,15 @@ const TenantFinancial = () => {
                                             : "-"}
                                         </td>
                                         <td>
-                                          {generalledger.Balance !==
+                                          {generalledger.Total !==
                                           undefined ? (
-                                            generalledger.Balance === null ? (
+                                            generalledger.Total === null ? (
                                               <>0</>
-                                            ) : generalledger.Balance >= 0 ? (
-                                              `$${generalledger.Balance}`
+                                            ) : generalledger.Total >= 0 ? (
+                                              `$${generalledger.Total}`
                                             ) : (
                                               `$(${Math.abs(
-                                                generalledger.Balance
+                                                generalledger.Total
                                               )})`
                                             )
                                           ) : (
@@ -794,18 +799,18 @@ const TenantFinancial = () => {
                             </label>
                             <InputGroup>
                               <Input
-                                type="text"
+                                type="number"
                                 id="card_number"
                                 placeholder="0000 0000 0000"
                                 name="card_number"
                                 value={financialFormik.values.card_number}
                                 onBlur={financialFormik.handleBlur}
                                 onChange={(e) => {
-                                  const inputValue = e.target.value;
-                                  const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-                                  const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits 
-                                  // const formattedValue = formatCardNumber(limitedValue);
-                                  e.target.value = limitedValue;
+                                  // const inputValue = e.target.value;
+                                  // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                                  // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits 
+                                  // // const formattedValue = formatCardNumber(limitedValue);
+                                  // e.target.value = limitedValue;
                                   financialFormik.handleChange(e);
                                 }}
                                 required
@@ -879,7 +884,7 @@ const TenantFinancial = () => {
                                   Cvv *
                                 </label>
                                 <Input
-                                  type="text"
+                                  type="number"
                                   id="cvv"
                                   placeholder="123"
                                   name="cvv"
