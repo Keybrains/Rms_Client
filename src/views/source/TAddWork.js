@@ -29,7 +29,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import "react-datepicker/dist/react-datepicker.css";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const TAddWork = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -146,6 +146,45 @@ const TAddWork = () => {
   //       });
   //   }
   // }, [id]);
+  // Use URLSearchParams to extract parameters from the query string
+  var [getData, setGetData] = useState()
+  const [vid, setVid] = useState('')
+  const location = useLocation();
+  const { search } = location;
+  const queryParams = new URLSearchParams(search);
+  const id1 = queryParams.get("id");
+  console.log("workorder_id", id1);
+  var [getData, setGetData] = useState();
+
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/workorder/findworkorderbyId/${id1}`
+        );
+        let getWorkData = response.data.data;
+        setGetData(getWorkData);
+        setVid(getWorkData[0]._id)
+        console.log("empty", response.data.data);
+        WorkFormik.setValues({
+          work_subject: getWorkData[0].work_subject || "",
+          rental_adress: getWorkData[0].rental_adress || "",
+          unit_no: getWorkData[0].unit_no || "",
+          work_category: getWorkData[0].work_category || "",
+          entry_allowed: getWorkData[0].entry_allowed || "",
+          work_performed: getWorkData[0].work_performed || "",
+        });
+        // setFormData(response.data.data);
+        setSelectedProp(getWorkData[0].rental_adress);
+        setSelectedEntry(getWorkData[0].entry_allowed);
+        setSelectedCategory(getWorkData[0].work_category);
+      } catch (error) {
+        console.log(error, "aaa");
+      }
+    };
+    fetchData();
+  }, [baseUrl, id]);
 
   const { v4: uuidv4 } = require("uuid");
 
@@ -221,7 +260,7 @@ const TAddWork = () => {
 
   const WorkFormik = useFormik({
     initialValues: {
-      work_subject: "",
+      work_subject: getData?.work_subject ? getData.work_subject :"",
       rental_adress: "",
       unit_no: "",
       work_category: "",
@@ -229,7 +268,6 @@ const TAddWork = () => {
       staffmember_name: "",
       work_performed: "",
     },
-
     onSubmit: (values) => {
       handleSubmit(values);
       //console.log(values, "values");
@@ -238,7 +276,7 @@ const TAddWork = () => {
 
   // let cookies = new Cookies();
   // Check Authe(token)
- 
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
   let cookie_id = cookies.get("Tenant ID");
@@ -254,9 +292,7 @@ const TAddWork = () => {
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      `${baseUrl}/tenant/rental-address/${cookie_id}`
-    )
+    fetch(`${baseUrl}/tenant/rental-address/${cookie_id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -273,9 +309,7 @@ const TAddWork = () => {
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      `${baseUrl}/addstaffmember/find_staffmember`
-    )
+    fetch(`${baseUrl}/addstaffmember/find_staffmember`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -290,6 +324,31 @@ const TAddWork = () => {
         console.error("Network error:", error);
       });
   }, []);
+
+  const editworkorder = async (vid) => {
+    console.log("gggggggg:", vid);
+    try {
+  console.log(baseUrl)
+      const response = await axios.put(`${baseUrl}/workorder/updateworkorder/${vid}`, {
+        // work_subject: response.data.data[0].work_subject,
+        // rental_adress: selectedProp,
+        // work_performed: response.data.data[0].work_performed ,
+        // entry_allowed: selectedEntry,
+        // work_category: selectedCategory,
+        work_subject: WorkFormik.values.work_subject,
+        rental_adress: selectedProp,
+        unit_no: WorkFormik.values.unit_no ,
+        work_category: selectedCategory,
+        entry_allowed: selectedEntry,
+        work_performed: WorkFormik.values.work_performed,
+        // Add other fields as needed
+      });
+      handleResponse(response);
+      console.log("Workorder updated successfully", response.data);
+    } catch (error) {
+      console.error("Error updating workorder:", error);
+    }
+  };
 
   return (
     <>
@@ -658,13 +717,26 @@ const TAddWork = () => {
                       
                         <br/>
                         </div> */}
+                        {id1 ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        editworkorder(vid);
+                      }}
+                    >
+                      Update Lease
+                    </button>
+                  ) : (
                   <button
                     type="submit"
                     className="btn btn-primary ml-4"
                     style={{ background: "green" }}
                   >
                     Add Work Order
-                  </button>
+                  </button>)}
                   <button
                     color="primary"
                     href="#rms"

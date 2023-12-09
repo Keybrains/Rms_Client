@@ -199,6 +199,7 @@ const AddCharge = () => {
     });
   };
   const [propertyId, setPropertyId] = useState("");
+  console.log('sahill', propertyId)
   const fetchTenantData = async () => {
     fetch(
       `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
@@ -210,7 +211,7 @@ const AddCharge = () => {
           const rentalAddress = tenantData.entries.rental_adress;
           setSelectedRec(`${tenantData.tenant_firstName} ${tenantData.tenant_lastName}`);
           setTenantid(tenantData._id);
-          setPropertyId(tenantData.entries.propertyId);
+          setPropertyId(tenantData.entries.property_id);
           // setTenantentryindex(tenantData.entryIndex);
           setRentAddress(rentalAddress);
           generalledgerFormik.setValues({
@@ -293,7 +294,7 @@ const AddCharge = () => {
         console.error("Server Error:", response.data.message);
       }
       console.log(state,'state')
-      debugger
+      
       try{
         const chargeObject = {
           properties:{

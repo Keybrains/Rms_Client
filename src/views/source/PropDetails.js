@@ -671,11 +671,11 @@ const clearSelectedPhoto = (index, image, name) => {
                         style={{ textTransform: "none" }}
                         value="units"
                       />
-                      <Tab
+                      {/* <Tab
                         label="Task"
                         style={{ textTransform: "none" }}
                         value="task"
-                      />
+                      /> */}
                       {/* <Tab
                         label="Event history"
                         style={{ textTransform: "none" }}
@@ -2525,7 +2525,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                     // onClick={handleModalOpen}
                                   />
                                 </label>
-                                <TextField
+                                {/* <TextField
                                   id="unit_image"
                                   name="unit_image"
                                   type="file"
@@ -2535,7 +2535,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                   }}
                                   onChange={handleImageChange}
                                   style={{ display: "none" }}
-                                />
+                                /> */}
                               </div>
                               <Grid
                                 item

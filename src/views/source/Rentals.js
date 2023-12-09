@@ -126,7 +126,7 @@ const Rentals = () => {
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch(`${baseUrl}/rentals/rentals`)
+    fetch(`${baseUrl}/rentals/existing/rentals`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {

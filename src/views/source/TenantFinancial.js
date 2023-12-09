@@ -178,37 +178,45 @@ const TenantFinancial = () => {
     setUnit(property.rental_unit)
     setPropertyId(property.property_id)
     setSelectedUnit(""); // Reset selected unit when a new property is selected
-  
+    try {
+      const units = await fetchUnitsByProperty(property);
+      //console.log(units, "units"); // Check the received units in the console
+      setUnitData(units); // Set the received units in the unitData state
+    } catch (error) {
+      console.error("Error handling selected property:", error);
+    }
   };
   const handleUnitSelect = (property) => {
     setSelectedUnit(property.rental_units);
     financialFormik.setFieldValue("unitId", property.unit_id || "");
+    financialFormik.setFieldValue("unit", property.rental_units || "");
     // financialFormik.setFieldValue("rental_units", selectedUnit); // Update the formik state here
   };
-  const getGeneralLedgerData = async () => {
-    const apiUrl = `${baseUrl}/payment/merge_payment_charge/${cookie_id}`;
 
-    try {
-      const response = await axios.get(apiUrl);
-      setLoader(false);
+  // const getGeneralLedgerData = async () => {
+  //   const apiUrl = `${baseUrl}/payment/merge_payment_charge/${cookie_id}`;
 
-      if (response.data && response.data.data) {
-        const mergedData = response.data.data;
-        mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
-        const dataWithBalance = calculateBalance(mergedData);
-        console.log('first', response.data.data)
-        setGeneralLedgerData(dataWithBalance);
-      } else {
-        console.error("Unexpected response format:", response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  //   try {
+  //     const response = await axios.get(apiUrl);
+  //     setLoader(false);
 
-  useEffect(() => {
-    getGeneralLedgerData();
-  }, [cookie_id]);
+  //     if (response.data && response.data.data) {
+  //       const mergedData = response.data.data;
+  //       mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
+  //       const dataWithBalance = calculateBalance(mergedData);
+  //       console.log('first', response.data.data)
+  //       setGeneralLedgerData(dataWithBalance);
+  //     } else {
+  //       console.error("Unexpected response format:", response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getGeneralLedgerData();
+  // }, [cookie_id]);
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -239,6 +247,7 @@ const TenantFinancial = () => {
           `${baseUrl}/tenant/tenant_summary/${cookie_id}`
         );
         setPropertyDetails(allTenants.data.data.entries);
+        setTenantDetails(allTenants.data.data);
         // console.log(allTenants.data.data, "allTenants");
       } else {
         console.error("Data structure is not as expected:", response.data);
@@ -259,6 +268,62 @@ const TenantFinancial = () => {
     //   `${baseUrl}/tenant/tenant_rental_addresses/${cookie_id}`
     // );
   }, [cookie_id]);
+
+  const getGeneralLedgerData = async () => {
+    if (tenantDetails) {
+      try {
+        const promises = tenantDetails?.entries?.map(async (data, index) => {
+          const rental = data?.rental_adress;
+          const property_id = data?.property_id;
+          const unit = data?.rental_units;
+          if (rental && property_id && unit) {
+            const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${property_id}&unit=${unit}&tenant_id=${cookie_id}`;
+            console.log(url, "==================")
+            try {
+              const response = await axios.get(url);
+              if (response.data && response.data.data) {
+                const mergedData = response.data.data;
+                console.log(response.data.data, "yashu");
+                return mergedData[0]?.unit[0];
+              } else {
+                console.error("Unexpected response format:", response.data);
+              }
+            } catch (error) {
+              console.error("Error fetching data:", error);
+            }
+          }
+          if (rental && property_id) {
+            const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${property_id}&tenant_id=${cookie_id}`;
+            
+            try {
+              const response = await axios.get(url);
+              if (response.data && response.data.data) {
+                const mergedData = response.data.data;
+                console.log(response.data.data, "yashu");
+                return mergedData[0]?.unit[0];
+              } else {
+                console.error("Unexpected response format:", response.data);
+              }
+            } catch (error) {
+              console.error("Error fetching data:", error);
+            }
+          }
+          return null;
+        });
+
+        const results = await Promise.all(promises);
+        const validResults = results.filter((result) => result !== null);
+        setLoader(false);
+        setGeneralLedgerData((prevData) => [ ...validResults]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getGeneralLedgerData();
+  }, [tenantDetails]);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -290,13 +355,13 @@ const TenantFinancial = () => {
     // console.log("Rental Address", rental_adress);
   }
   const formatCardNumber = (inputValue) => {
-    if (typeof inputValue !== 'string') {
-      return ''; // Return an empty string if inputValue is not a string
+    if (typeof inputValue !== "string") {
+      return ""; // Return an empty string if inputValue is not a string
     }
 
-    const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+    const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
     const formattedValue = numericValue
-      .replace(/(\d{4})/g, '$1 ') // Add a space after every four digits
+      .replace(/(\d{4})/g, "$1 ") // Add a space after every four digits
       .trim(); // Remove any trailing space
 
     return formattedValue;
@@ -304,41 +369,43 @@ const TenantFinancial = () => {
 
   // console.log(financialFormik.values,'financialFormik.values')
 
+  const [paymentLoader, setPaymentLoader] = useState(false);
+
   const handleFinancialSubmit = async (values, action) => {
-    const url = `${baseUrl}/nmipayment/purchase`
-    console.log( {
-      paymentDetails: values
-    }, 'paymentDetails')
-    try{
-      console.log(values,'val;euhaisjicnhwd')
+    const url = `${baseUrl}/nmipayment/purchase`;
+
+    try {
+      setPaymentLoader(true);
       const response = await axios.post(url, {
-        paymentDetails: values
+        paymentDetails: values,
       });
-      console.log(response.data, 'response.data')
-      if (response.data && response.data.data) {
-        console.log('second', response.data.data)
+
+      console.log(response.data, "response.data");
+
+      if (response.data && response.data.statusCode === 100) {
+        swal("Success", response.data.message, "success"); // Adjust the swal parameters as needed
+        window.location.reload()
+        console.log("Payment successful");
         closeModal();
 
-        if(financialFormik.values.unitId){
-          
+        if (financialFormik.values.unitId) {
           await postCharge(unit, financialFormik.values.unitId);
+        } else {
+          await postCharge("", "");
         }
-        else{
-          await postCharge('','');
-        }
-          
-          
-        // getGeneralLedgerData();
-        // setGeneralLedgerData(response.data.data);
       } else {
         console.error("Unexpected response format:", response.data);
-      } 
-    }catch(error){
-
+        swal("", response.data.message, "error");
+        // Handle other status codes or show an error message
+      }
+    } catch (error) {
       console.error("Error fetching data:", error);
+      swal("", error, "error");
+      // Handle the error (e.g., show an error message)
+    } finally {
+      setPaymentLoader(false); // Reset loader when the request completes (whether success or failure)
     }
-
-  }
+  };
 
   const postCharge = async (unitName,unit_id) => {
     const chargeObject = {
@@ -348,7 +415,7 @@ const TenantFinancial = () => {
       },
       unit: [
         {
-          unit:unitName,
+          unit:selectedUnit,
           unit_id: unit_id,
           paymentAndCharges: [
             {
@@ -463,67 +530,61 @@ const TenantFinancial = () => {
                                 <th scope="col">Balance</th>
                               </tr>
                             </thead>
-                            {/* {console.log(GeneralLedgerData)} */}
                             <tbody>
-                              {Array.isArray(GeneralLedgerData) ? (
-                                GeneralLedgerData.map((generalledger) => (
-                                  <>
-                                    {generalledger.entries.map(
-                                      (entry, index) => (
-                                        <tr
-                                          key={`${generalledger._id}_${index}`}
-                                        >
-                                          <td>
-                                            {formatDateWithoutTime(
-                                              generalledger.type === "Charge"
-                                                ? generalledger.date
-                                                : generalledger.date
-                                            ) || "N/A"}
-                                          </td>
-                                          <td>{generalledger.type}</td>
-                                          <td>
-                                            {generalledger.type === "Charge"
-                                              ? entry.charges_account
-                                              : entry.account}
-                                          </td>
-                                          <td>
-                                            {generalledger.type === "Charge"
-                                              ? generalledger.charges_memo
-                                              : generalledger.memo}
-                                          </td>
-                                          <td>
-                                            {generalledger.type === "Charge"
-                                              ? "$" + entry.charges_amount
-                                              : "-"}
-                                          </td>
-                                          <td>
-                                            {generalledger.type === "Payment"
-                                              ? "$" + entry.amount
-                                              : "-"}
-                                          </td>
-                                          <td>
-                                            {entry.balance !== undefined
-                                              ? entry.balance >= 0
-                                                ? `$${entry.balance}`
-                                                : `$(${Math.abs(
-                                                  entry.balance
-                                                )})`
-                                              : "0"}
-                                            {/* {console.log(entry.balance)} */}
-                                            {/* {calculateBalance(
-                                                  generalledger.type,
-                                                  entry,
-                                                  index
-                                                )} */}
-                                          </td>
-                                        </tr>
-                                      )
-                                    )}
-                                  </>
-                                ))
-                              ) : (
-                                <p>GeneralLedgerData is not an array</p>
-                              )}
+                              {GeneralLedgerData.map((data, dataIndex) => (
+                                <React.Fragment key={dataIndex}>
+                                  {data?.paymentAndCharges?.map(
+                                    (generalledger, index) => (
+                                      <tr key={`${generalledger._id}_${index}`}>
+                                        <td>
+                                          {formatDateWithoutTime(
+                                            generalledger.type === "Charge"
+                                              ? generalledger.date
+                                              : generalledger.date
+                                          ) || "N/A"}
+                                        </td>
+                                        <td>{generalledger.type}</td>
+                                        <td>
+                                          {generalledger.type === "Charge"
+                                            ? generalledger.charges_account
+                                            : generalledger.account}
+                                        </td>
+                                        <td>
+                                          {generalledger.type === "Charge"
+                                            ? generalledger.charges_memo
+                                            : generalledger.memo}
+                                        </td>
+                                        <td>
+                                          {generalledger.type === "Charge"
+                                            ? `$${generalledger.amount}`
+                                            : "-"}
+                                        </td>
+                                        <td>
+                                          {generalledger.type === "Payment"
+                                            ? `$${generalledger.amount}`
+                                            : "-"}
+                                        </td>
+                                        <td>
+                                          {generalledger.Total !==
+                                          undefined ? (
+                                            generalledger.Total === null ? (
+                                              <>0</>
+                                            ) : generalledger.Total >= 0 ? (
+                                              `$${generalledger.Total}`
+                                            ) : (
+                                              `$(${Math.abs(
+                                                generalledger.Total
+                                              )})`
+                                            )
+                                          ) : (
+                                            "0"
+                                          )}
+                                        </td>
+                                      </tr>
+                                    )
+                                  )}
+                                </React.Fragment>
+                              ))}
                             </tbody>
                           </Table>
                         </Card>
@@ -738,24 +799,22 @@ const TenantFinancial = () => {
                             </label>
                             <InputGroup>
                               <Input
-                                type="text"
+                                type="number"
                                 id="card_number"
                                 placeholder="0000 0000 0000"
                                 name="card_number"
                                 value={financialFormik.values.card_number}
                                 onBlur={financialFormik.handleBlur}
                                 onChange={(e) => {
-                                  const inputValue = e.target.value;
-                                  const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-                                  const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits 
-                                  // const formattedValue = formatCardNumber(limitedValue);
-                                  e.target.value = limitedValue;
+                                  // const inputValue = e.target.value;
+                                  // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                                  // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits 
+                                  // // const formattedValue = formatCardNumber(limitedValue);
+                                  // e.target.value = limitedValue;
                                   financialFormik.handleChange(e);
                                 }}
                                 required
                               />
-
-
                             </InputGroup>
                           </FormGroup>
                           <Row>
@@ -780,41 +839,52 @@ const TenantFinancial = () => {
                                     let inputValue = e.target.value;
 
                                     // Remove non-numeric characters
-                                    const numericValue = inputValue.replace(/\D/g, '');
+                                    const numericValue = inputValue.replace(
+                                      /\D/g,
+                                      ""
+                                    );
 
                                     // Set the input value to the sanitized value (numeric only)
                                     e.target.value = numericValue;
 
                                     // Format the date as "MM/YY"
                                     if (numericValue.length > 2) {
-                                      const month = numericValue.substring(0, 2);
+                                      const month = numericValue.substring(
+                                        0,
+                                        2
+                                      );
                                       const year = numericValue.substring(2, 6);
                                       e.target.value = `${month}${year}`;
                                     }
 
                                     // Restrict the year to be 4 digits starting from the current year
-                                    const currentYear = new Date().getFullYear().toString();
+                                    const currentYear = new Date()
+                                      .getFullYear()
+                                      .toString();
                                     if (numericValue.length > 5) {
-                                      const enteredYear = numericValue.substring(3, 7);
+                                      const enteredYear =
+                                        numericValue.substring(3, 7);
                                       if (enteredYear < currentYear) {
-                                        e.target.value = `${numericValue.substring(0, 2)}${currentYear.substring(2, 4)}`;
+                                        e.target.value = `${numericValue.substring(
+                                          0,
+                                          2
+                                        )}/${currentYear.substring(2, 4)}`;
                                       }
                                     }
                                   }}
                                 />
-
-
-
-
                               </FormGroup>
                             </Col>
                             <Col>
                               <FormGroup>
-                                <label className="form-control-label" htmlFor="input-property">
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
                                   Cvv *
                                 </label>
                                 <Input
-                                  type="text"
+                                  type="number"
                                   id="cvv"
                                   placeholder="123"
                                   name="cvv"
@@ -831,7 +901,6 @@ const TenantFinancial = () => {
                                   required
                                 />
                               </FormGroup>
-
                             </Col>
                           </Row>
                         </div>

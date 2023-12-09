@@ -303,7 +303,7 @@ const AddPayment = () => {
 
       if (response.data.statusCode === 200) {
         console.log(response.data.data,'resdadadadad')
-        debugger
+        
         const id = response.data.data._id;
         if (id) {
           const pdfResponse = await axios.get(
