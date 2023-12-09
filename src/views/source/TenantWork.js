@@ -194,27 +194,73 @@ const TenantWork = () => {
       );
     });
   };
-  const deleteRentals = (id) => {
+  const getRentalDataAfterDelete = async (addresses) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/workorder/workorder/tenant/${addresses}`
+      );
+      //console.log(response, "abc");
+      if (Array.isArray(response.data.data)) {
+        // Response is an array of work orders
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+        setWorkData(response.data.data);
+      } else if (typeof response.data.data === "object") {
+        // Response is a single work order object
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+        setWorkData(response.data.data);
+      } else {
+        console.error(
+          "Response data is not an array or object:",
+          response.data.data
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching work order data:", error);
+    }
+  };
+  const getTenantDataAfterDelete = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
+      );
+      const entries = response.data.data.entries;
+      if (entries.length > 0) {
+        const rentalAddresses = entries
+          .map((entry) => entry.rental_adress)
+          .join("-");
+        ////console.log(rentalAddresses, "mansi");
+        setTenantDetails(response.data.data);
+        getRentalDataAfterDelete(rentalAddresses);
+        //getVendorDetails(rentalAddresses);
+      } else {
+        console.error("No rental addresses found.");
+      }
+      setLoader(false);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+      setLoader(false);
+    }
+  };
+  const deleteworkorder = (workorder_id) => {
     // Show a confirmation dialog to the user
     swal({
-      title: "Are you sure?",
+      title: "Are you sure",
       text: "Once deleted, you will not be able to recover this work order!",
       icon: "warning",
       buttons: ["Cancel", "Delete"],
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
+        console.log("Deleting work order with ID:", workorder_id);
         axios
-          .delete(
-            `${baseUrl}/workorder/delete_workorder`,
-            {
-              data: { _id: id },
-            }
-          )
+          .delete(`${baseUrl}/workorder/deleteworkorderbyId/${workorder_id}`)
           .then((response) => {
+            console.log("Response from delete API:", response);
             if (response.data.statusCode === 200) {
               swal("Success!", "Work Order deleted successfully", "success");
-          
+              setTimeout(() => {
+                getTenantDataAfterDelete();
+              }, 200);
             } else {
               swal("", response.data.message, "error");
             }
@@ -226,6 +272,11 @@ const TenantWork = () => {
         swal("Cancelled", "Work Order is safe :)", "info");
       }
     });
+  };
+  
+  const editworkorder = (id) => {
+    navigate(`/tenant/taddwork/?id=${id}`);
+    console.log(id, "workorder_id");
   };
   return (
     <>
@@ -314,27 +365,29 @@ const TenantWork = () => {
                         <td>{rental.status}</td>
 
                         <td>
-                          <div style={{ display: "flex", gap: "5px" }}>
-                            <div
+                        <div style={{ display: "flex", gap: "5px" }}>
+                              <div
+                                 style={{ cursor: "pointer" }}
+                                 onClick={(e) => {
+                                   e.stopPropagation();
+                                   editworkorder(
+                                    rental.workorder_id,
+                                    //rental.entries.entryIndex
+                                   );
+                                 }}
+                              >
+                                <EditIcon/>
+                              </div>
+                              <div
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                deleteRentals(rental._id);
+                                deleteworkorder(rental.workorder_id);
                               }}
                             >
                               <DeleteIcon />
+                              </div>
                             </div>
-                            &nbsp; &nbsp; &nbsp;
-                            {/* <div
-                            style={{ cursor: 'pointer' }}
-                            onClick={(e) => {
-                              e.stopPropagation(); 
-                              openEditDialog(rental);
-                            }}
-                          >
-                            <EditIcon />
-                          </div> */}
-                          </div>
                         </td>
                       </tr>
                     ))}
