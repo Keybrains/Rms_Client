@@ -101,7 +101,7 @@ const AddPropertyType = () => {
   //   try {
   //     values["property_type"] = selectedProperty;
   //     const res = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty",
+  //       "http://localhost:4000/api/newproparty/newproparty",
   //       values
   //     );
 
