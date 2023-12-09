@@ -36,6 +36,7 @@ import swal from "sweetalert";
 import Header from "components/Headers/Header";
 import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
+import moment from "moment";
 const TenantFinancial = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [rental_adress, setRentalAddress] = useState([]);
@@ -55,6 +56,9 @@ const TenantFinancial = () => {
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [searchQueryy, setSearchQueryy] = useState("");
+  const [unit,setUnit]=useState("")
+  const [propertyId,setPropertyId]= useState("")
+  // const [cookie_id, setCookieId] = useState("");
 
   const handleSearch = (e) => {
     setSearchQueryy(e.target.value);
@@ -66,10 +70,7 @@ const TenantFinancial = () => {
   const toggle10 = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
-  const handleUnitSelect = (selectedUnit) => {
-    setSelectedUnit(selectedUnit);
-    applicantFormik.setFieldValue("rental_units", selectedUnit); // Update the formik state here
-  };
+  
 
   const fetchUnitsByProperty = async (propertyType) => {
     try {
@@ -88,6 +89,7 @@ const TenantFinancial = () => {
   // Step 2: Event handler to open the modal
   const openModal = () => {
     setIsModalOpen(true);
+    financialFormik.setFieldValue("tenantId", cookie_id);
   };
 
   // Event handler to close the modal
@@ -123,42 +125,65 @@ const TenantFinancial = () => {
     //console.log("data",data)
     return data;
   };
-  const applicantFormik = useFormik({
+  const financialFormik = useFormik({
     initialValues: {
-      tenant_firstName: "",
-      tenant_lastName: "",
-      tenant_email: "",
-      tenant_mobileNumber: "",
-      tenant_homeNumber: "",
-      tenant_workNumber: "",
-      tenant_faxPhoneNumber: "",
-      rental_adress: "",
-      rental_units: "",
-      statusUpdatedBy: "",
+      
+            first_name: "",
+            last_name: "",
+            email_name: "",
+            card_number:"" ,
+            amount: "",
+            expiration_date: "",
+            cvv: "",
+            tenantId: "",
+            propertyId:"",
+            unitId:""
+
     },
     validationSchema: yup.object({
-      tenant_firstName: yup.string().required("Required"),
-      tenant_lastName: yup.string().required("Required"),
-      tenant_email: yup.string().required("Required"),
-      tenant_mobileNumber: yup.string().required("Required"),
-      rental_adress: yup.string().required("Required"),
+      first_name: yup
+        .string()
+        .required("First name is required"),
+      last_name: yup
+        .string()
+        .required("Last name is required"),
+      email_name: yup
+        .string()
+        .required("Email is required"),
+      card_number: yup
+        .number()
+        .required("Card number is required"),
+      amount: yup
+        .number()
+        .required("Amount is required"),
+      expiration_date: yup
+        .string()
+        .required("Expiration date is required"),
+      cvv: yup
+        .number()
+        .required("CVV is required"),
     }),
     onSubmit: (values, action) => {
       // handleFormSubmit(values, action);
       //console.log(values, "values");
+      handleFinancialSubmit(values, action);
     },
   });
-  const handlePropertyTypeSelect = async (propertyType) => {
-    setSelectedPropertyType(propertyType);
-    applicantFormik.setFieldValue("rental_adress", propertyType);
+  const handlePropertyTypeSelect = async (property) => {
+    console.log(property,'peropjihbjmn.................')
+    setSelectedPropertyType(property.rental_adress);
+    financialFormik.setFieldValue("propertyId", property.property_id || "");
+    financialFormik.setFieldValue("unitId", property.unit_id || "");
     setSelectedUnit(""); // Reset selected unit when a new property is selected
-    try {
-      const units = await fetchUnitsByProperty(propertyType);
-      //console.log(units, "units"); // Check the received units in the console
-      setUnitData(units); // Set the received units in the unitData state
-    } catch (error) {
-      console.error("Error handling selected property:", error);
-    }
+    setUnit(property.rental_unit)
+    setPropertyId(property.property_id)
+    setSelectedUnit(""); // Reset selected unit when a new property is selected
+  
+  };
+  const handleUnitSelect = (property) => {
+    setSelectedUnit(property.rental_units);
+    financialFormik.setFieldValue("unitId", property.unit_id || "");
+    // financialFormik.setFieldValue("rental_units", selectedUnit); // Update the formik state here
   };
   const getGeneralLedgerData = async () => {
     const apiUrl = `${baseUrl}/payment/merge_payment_charge/${cookie_id}`;
@@ -200,13 +225,14 @@ const TenantFinancial = () => {
 
   const getTenantData = async () => {
     try {
+      console.log(cookie_id, "cookie_id");
       const response = await axios.get(
-        `${baseUrl}/tenant/tenant_rental_addresses/${cookie_id}`
+        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
       );
 
-      if (response.data && response.data.rental_adress) {
-        // console.log("Data fetched successfully:", response.data);
-        // setTenantDetails(response.data.data);
+      if (response.data ) {
+        console.log("Data fetched successfully:", response.data);
+        setTenantDetails(response.data.data);
         setRentalAddress(response.data.rental_adress);
 
         const allTenants = await axios.get(
@@ -226,7 +252,7 @@ const TenantFinancial = () => {
       setPropertyLoading(false);
     }
   };
-
+  // console.log(tenantDetails, "tenantDetails");
   useEffect(() => {
     getTenantData();
     // console.log(
@@ -235,7 +261,9 @@ const TenantFinancial = () => {
   }, [cookie_id]);
 
   const navigate = useNavigate();
-
+  useEffect(() => {
+    getTenantData();
+  }, []);
   // const getRentalData = async () => {
   //   try {
   //     const response = await axios.get(
@@ -272,6 +300,87 @@ const TenantFinancial = () => {
       .trim(); // Remove any trailing space
 
     return formattedValue;
+  };
+
+  // console.log(financialFormik.values,'financialFormik.values')
+
+  const handleFinancialSubmit = async (values, action) => {
+    const url = `${baseUrl}/nmipayment/purchase`
+    console.log( {
+      paymentDetails: values
+    }, 'paymentDetails')
+    try{
+      console.log(values,'val;euhaisjicnhwd')
+      const response = await axios.post(url, {
+        paymentDetails: values
+      });
+      console.log(response.data, 'response.data')
+      if (response.data && response.data.data) {
+        console.log('second', response.data.data)
+        closeModal();
+
+        if(financialFormik.values.unitId){
+          
+          await postCharge(unit, financialFormik.values.unitId);
+        }
+        else{
+          await postCharge('','');
+        }
+          
+          
+        // getGeneralLedgerData();
+        // setGeneralLedgerData(response.data.data);
+      } else {
+        console.error("Unexpected response format:", response.data);
+      } 
+    }catch(error){
+
+      console.error("Error fetching data:", error);
+    }
+
+  }
+
+  const postCharge = async (unitName,unit_id) => {
+    const chargeObject = {
+      properties: {
+        rental_adress: selectedPropertyType,
+        property_id: financialFormik.values.propertyId,
+      },
+      unit: [
+        {
+          unit:unitName,
+          unit_id: unit_id,
+          paymentAndCharges: [
+            {
+              type: "Payment",
+              charge_type: "",
+              account: "",
+              amount: financialFormik.values.amount,
+              rental_adress: selectedPropertyType,
+              rent_cycle: "",
+              month_year: moment().format("MM-YYYY"),
+              date: moment().format("YYYY-MM-DD"),
+              memo: "",
+              tenant_id: cookie_id,
+              tenant_firstName:
+                tenantDetails.tenant_firstName +
+                " " +
+                tenantDetails.tenant_lastName,
+            },
+          ],
+        },
+      ],
+    };
+
+    const url = `${baseUrl}/payment_charge/payment_charge`;
+    await axios
+      .post(url, chargeObject)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -424,7 +533,7 @@ const TenantFinancial = () => {
                   <br />
                   <br />
                   <Modal isOpen={isModalOpen} toggle={closeModal}>
-                    <Form onSubmit={applicantFormik.handleSubmit}>
+                    <Form onSubmit={financialFormik.handleSubmit}>
                       <ModalHeader
                         toggle={closeModal}
                         className="bg-secondary text-white"
@@ -434,8 +543,123 @@ const TenantFinancial = () => {
 
                       <ModalBody>
                         <div>
+                  
                           <Row>
-                            <Col>
+                            <Col md="6">
+                       
+                      
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Property*
+                        </label>
+                        <FormGroup>
+                          <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
+                            <DropdownToggle caret style={{ width: "100%" }}>
+                              {selectedPropertyType
+                                ? selectedPropertyType
+                                : "Select Property"}
+                            </DropdownToggle>
+                            <DropdownMenu
+                              style={{
+                                width: "100%",
+                                maxHeight: "200px",
+                                overflowY: "auto",
+                              }}
+                            >
+                              {tenantDetails?.entries?.map((property, index) => (
+                                <DropdownItem
+                                key={index}
+                                onClick={() => {
+                                  handlePropertyTypeSelect(property);
+                                  financialFormik.setFieldValue(
+                                    "propertyId",
+                                    property.property_id
+                                  );
+                                  
+                                }}
+                                >
+                                
+                                  {property.rental_adress}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
+                          </Dropdown>
+                        </FormGroup>
+                     
+                    
+                            </Col>
+                            <Col md="6">
+                       
+                      
+                       <label
+                         className="form-control-label"
+                         htmlFor="input-property"
+                       >
+                         Unit *
+                       </label>
+                       <FormGroup>
+                         <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
+                           <DropdownToggle caret style={{ width: "100%" }}>
+                             {selectedUnit
+                               ? selectedUnit
+                               : "Select Unit"}
+                           </DropdownToggle>
+                           <DropdownMenu
+                             style={{
+                               width: "100%",
+                               maxHeight: "200px",
+                               overflowY: "auto",
+                             }}
+                           >
+                             {tenantDetails?.entries?.map((property, index) => (
+                              selectedPropertyType === property.rental_adress &&
+                               <DropdownItem
+                               key={index}
+                               onClick={() => {
+                                 handleUnitSelect(property);
+                               }}
+                               >
+                                 {/* {console.log(property,'properjhwejk')} */}
+                                 {property.rental_units}
+                               </DropdownItem>
+                             ))}
+                           </DropdownMenu>
+                         </Dropdown>
+                       </FormGroup>
+                    
+                   
+                           </Col>
+                      
+                            <Col md="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Amount *
+                                </label>
+                                <Input
+                                  type="text"
+                                  id="amount"
+                                  placeholder="Enter amount"
+                                  name="amount"
+                                  onBlur={financialFormik.handleBlur}
+                                  // only input number
+                                  onKeyDown={(event) => {
+                                    if (!/[0-9]/.test(event.key)) {
+                                      event.preventDefault();
+                                    }
+                                  }}
+                                  onChange={financialFormik.handleChange}
+                                  value={financialFormik.values.amount}
+                                  required
+                                />
+                              </FormGroup>
+                            </Col>
+                          
+                            <Col md="6">
                               <FormGroup>
                                 <label
                                   className="form-control-label"
@@ -445,19 +669,19 @@ const TenantFinancial = () => {
                                 </label>
                                 <Input
                                   type="text"
-                                  id="tenant_firstName"
+                                  id="first_name"
                                   placeholder="First Name"
-                                  name="tenant_firstName"
-                                  onBlur={applicantFormik.handleBlur}
-                                  onChange={applicantFormik.handleChange}
+                                  name="first_name"
+                                  onBlur={financialFormik.handleBlur}
+                                  onChange={financialFormik.handleChange}
                                   value={
-                                    applicantFormik.values.tenant_firstName
+                                    financialFormik.values.first_name
                                   }
                                   required
                                 />
                               </FormGroup>
                             </Col>
-                            <Col>
+                            <Col md="6">
                               <FormGroup>
                                 <label
                                   className="form-control-label"
@@ -467,17 +691,18 @@ const TenantFinancial = () => {
                                 </label>
                                 <Input
                                   type="text"
-                                  id="tenant_lastName"
+                                  id="last_name"
                                   placeholder="Enter last name"
-                                  name="tenant_lastName"
-                                  onBlur={applicantFormik.handleBlur}
-                                  onChange={applicantFormik.handleChange}
-                                  value={applicantFormik.values.tenant_lastName}
+                                  name="last_name"
+                                  onBlur={financialFormik.handleBlur}
+                                  onChange={financialFormik.handleChange}
+                                  value={financialFormik.values.last_name}
                                   required
                                 />
                               </FormGroup>
                             </Col>
                           </Row>
+                          
                           <FormGroup>
                             <label
                               className="form-control-label"
@@ -493,16 +718,17 @@ const TenantFinancial = () => {
                               </InputGroupAddon>
                               <Input
                                 type="text"
-                                id="tenant_email"
+                                id="email_name"
                                 placeholder="Enter Email"
-                                name="tenant_email"
-                                value={applicantFormik.values.tenant_email}
-                                onBlur={applicantFormik.handleBlur}
-                                onChange={applicantFormik.handleChange}
+                                name="email_name"
+                                value={financialFormik.values.email_name}
+                                onBlur={financialFormik.handleBlur}
+                                onChange={financialFormik.handleChange}
                                 required
                               />
                             </InputGroup>
                           </FormGroup>
+                          
                           <FormGroup>
                             <label
                               className="form-control-label"
@@ -513,18 +739,18 @@ const TenantFinancial = () => {
                             <InputGroup>
                               <Input
                                 type="text"
-                                id="tenant_cardnumber"
+                                id="card_number"
                                 placeholder="0000 0000 0000"
-                                name="tenant_cardnumber"
-                                value={formatCardNumber(applicantFormik.values.tenant_cardnumber)}
-                                onBlur={applicantFormik.handleBlur}
+                                name="card_number"
+                                value={financialFormik.values.card_number}
+                                onBlur={financialFormik.handleBlur}
                                 onChange={(e) => {
                                   const inputValue = e.target.value;
                                   const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-                                  const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
-                                  const formattedValue = formatCardNumber(limitedValue);
-                                  e.target.value = formattedValue;
-                                  applicantFormik.handleChange(e);
+                                  const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits 
+                                  // const formattedValue = formatCardNumber(limitedValue);
+                                  e.target.value = limitedValue;
+                                  financialFormik.handleChange(e);
                                 }}
                                 required
                               />
@@ -543,11 +769,11 @@ const TenantFinancial = () => {
                                 </label>
                                 <Input
                                   type="text"
-                                  id="tenant_Expirationdate"
-                                  name="tenant_Expirationdate"
-                                  onBlur={applicantFormik.handleBlur}
-                                  onChange={applicantFormik.handleChange}
-                                  value={applicantFormik.values.tenant_Expirationdate}
+                                  id="expiration_date"
+                                  name="expiration_date"
+                                  onBlur={financialFormik.handleBlur}
+                                  onChange={financialFormik.handleChange}
+                                  value={financialFormik.values.expiration_date}
                                   placeholder="MM/YY"
                                   required
                                   onInput={(e) => {
@@ -563,7 +789,7 @@ const TenantFinancial = () => {
                                     if (numericValue.length > 2) {
                                       const month = numericValue.substring(0, 2);
                                       const year = numericValue.substring(2, 6);
-                                      e.target.value = `${month}/${year}`;
+                                      e.target.value = `${month}${year}`;
                                     }
 
                                     // Restrict the year to be 4 digits starting from the current year
@@ -571,7 +797,7 @@ const TenantFinancial = () => {
                                     if (numericValue.length > 5) {
                                       const enteredYear = numericValue.substring(3, 7);
                                       if (enteredYear < currentYear) {
-                                        e.target.value = `${numericValue.substring(0, 2)}/${currentYear.substring(2, 4)}`;
+                                        e.target.value = `${numericValue.substring(0, 2)}${currentYear.substring(2, 4)}`;
                                       }
                                     }
                                   }}
@@ -589,18 +815,18 @@ const TenantFinancial = () => {
                                 </label>
                                 <Input
                                   type="text"
-                                  id="tenant_cvv"
+                                  id="cvv"
                                   placeholder="123"
-                                  name="tenant_cvv"
-                                  onBlur={applicantFormik.handleBlur}
+                                  name="cvv"
+                                  onBlur={financialFormik.handleBlur}
                                   onChange={(e) => {
                                     const inputValue = e.target.value;
                                     if (/^\d{0,3}$/.test(inputValue)) {
                                       // Only allow up to 3 digits
-                                      applicantFormik.handleChange(e);
+                                      financialFormik.handleChange(e);
                                     }
                                   }}
-                                  value={applicantFormik.values.tenant_Cvv}
+                                  value={financialFormik.values.cvv}
                                   maxLength={3}
                                   required
                                 />

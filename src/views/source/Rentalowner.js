@@ -136,7 +136,7 @@ const Rentals = () => {
   //   try {
   //     // values["property_type"] = localStorage.getItem("propertyType");
   //     const res = await axios.post(
-  //       "http://localhost:4000/api/rentalowner/rentalowner",
+  //       "https://propertymanager.cloudpress.host/api/rentalowner/rentalowner",
   //       values
   //     );
   //     if (res.data.statusCode === 200) {
