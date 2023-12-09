@@ -411,6 +411,7 @@ const RentRollLeaseing = () => {
         firstName: tenantParts[0],
         lastName: tenantParts[1],
         mobileNumber: tenantParts[2],
+        
         // textpayerid: tenantParts[3],
         // birthdate: tenantParts[4],
         // comments: tenantParts[5],
@@ -1361,6 +1362,7 @@ const RentRollLeaseing = () => {
       isrenton: false,
       rent_paid: false,
       propertyOnRent: false,
+      property_id:'',
 
       //security deposite
       Due_date: "",
@@ -1486,8 +1488,30 @@ const RentRollLeaseing = () => {
   });
 
   const applicantData = state && state.applicantData
+  console.log(applicantData, "applicantData")
+  console.log(propertyId, "propertyId")
   useEffect(() => {
+    const setData = async () =>{
+    
     if(state && state.applicantData) {
+      try {
+        const units = await fetchUnitsByProperty(
+          applicantData.rental_adress
+        );
+        console.log(units, "unitssssssssssssss"); // Check the received units in the console
+
+        setUnitData(units);
+      } catch (error) {
+        console.log(error, "error");
+      }
+
+      setSelectedTenantData({
+        firstName: applicantData.tenant_firstName || "",
+        lastName: applicantData.tenant_lastName || "",
+        mobileNumber: applicantData.tenant_mobileNumber || "",
+      });
+      setPropertyId(applicantData.property_id);
+      
       setSelectedPropertyType(applicantData.rental_adress || "Select");
       setselectedLeaseType(applicantData.lease_type || "Select");
       setselectedRentCycle(applicantData.rent_cycle || "Select");
@@ -1550,6 +1574,9 @@ const RentRollLeaseing = () => {
         fund_type: applicantData.fund_type,
         cash_flow: applicantData.cash_flow,
         notes: applicantData.notes,
+        unit_id:applicantData.unit_id,
+        property_id:applicantData.property_id,
+        // rental_units: applicantData.rental_units
       });
 
       tenantsSchema.setValues({
@@ -1590,11 +1617,12 @@ const RentRollLeaseing = () => {
       rentalOwner_homeNumber: applicantData.rentalOwner_homeNumber,
       rentalOwner_companyName: applicantData.rentalOwner_companyName,
       });
-
-
-
     }
+  }
+setData();
+
   }, []);
+  console.log(tenantsSchema.values,entrySchema.values, "tenantsSchema.values");
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
     const fetchData = async () => {
@@ -1987,16 +2015,11 @@ const RentRollLeaseing = () => {
 
             // debugger;
             if (entrySchema.values.unit_id) {
+
               await postCharge(
                 entrySchema.values.rental_units,
                 entrySchema.values.unit_id,
                 tenantId
-              );
-              await postDeposit(
-                entrySchema.values.rental_units,
-                entrySchema.values.unit_id,
-                tenantId,
-                entrySchema.values.Security_amount
               );
 
               await postDeposit(
@@ -2005,6 +2028,7 @@ const RentRollLeaseing = () => {
                 tenantId,
                 entrySchema.values.Security_amount
               );
+
               // await delay(1000); // Delay for 3 seconds
 
               for (const item of recurringData) {
@@ -2067,36 +2091,29 @@ const RentRollLeaseing = () => {
               tenantObject
             );
             if (res.data.statusCode === 200) {
-              console.log(res.data.data);
-
+              console.log(res.data.data,'response after adding data');
+              debugger
               const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
 
             // debugger;
             if (entrySchema.values.unit_id) {
               await postCharge(
-                res.data.data.rental_units,
-                res.data.data.unit_id,
+                res.data.data.entries[0].rental_units,
+                res.data.data.entries[0].unit_id,
                 res.data.data._id
               );
               await postDeposit(
-                res.data.data.rental_units,
-                res.data.data.unit_id,
+                res.data.data.entries[0].rental_units,
+                res.data.data.entries[0].unit_id,
                 res.data.data._id,
-                res.data.data.Security_amount
-              );
-
-              await postDeposit(
-                res.data.data.rental_units,
-                res.data.data.unit_id,
-                res.data.data._id,
-                res.data.data.Security_amount
+                res.data.data.entries[0].Security_amount
               );
 
               for (const item of recurringData) {
                 await postRecOneCharge(
-                  res.data.data.rental_units,
-                  res.data.data.unit_id,
+                  res.data.data.entries[0].rental_units,
+                  res.data.data.entries[0].unit_id,
                    res.data.data._id,
                   item,
                   "Recurring"
@@ -2106,8 +2123,8 @@ const RentRollLeaseing = () => {
 
               for (const item of oneTimeData) {
                 await postRecOneCharge(
-                  res.data.data.rental_units,
-                  res.data.data.unit_id,
+                  res.data.data.entries[0].rental_units,
+                  res.data.data.entries[0].unit_id,
                    res.data.data._id,
                   item,
                   "OneTime"
@@ -2119,7 +2136,7 @@ const RentRollLeaseing = () => {
               await postDeposit(
                 "","",
                 res.data.data._id,
-                res.data.data.Security_amount
+                res.data.data.entries[0].Security_amount
               );
               for (const item of recurringData) {
                 await postRecOneCharge("", "",  res.data.data._id, item, "Recurring");
@@ -2157,48 +2174,6 @@ const RentRollLeaseing = () => {
       console.log(error);
     }
   };
-  const postDeposit = async (unit, unitId, tenantId, Security_amount) =>{
-    const chargeObject = {
-      properties: {
-        rental_adress: entrySchema.values.rental_adress,
-        property_id: propertyId,
-      },
-      unit: [
-        {
-          unit: unit ? unit : "",
-          unit_id: unitId ? unitId : "",
-          paymentAndCharges: [
-            {
-              type: "Charge",
-              charge_type: "Security Deposit",
-              account: "" ,
-              amount: parseFloat(Security_amount),
-              rental_adress: entrySchema.values.rental_adress,
-              rent_cycle: "",
-              month_year: moment().format("MM-YYYY"),
-              date: moment().format("YYYY-MM-DD"),
-              memo: "",
-              tenant_id: tenantId,
-              tenant_firstName:
-                tenantsSchema.values.tenant_firstName +
-                " " +
-                tenantsSchema.values.tenant_lastName,
-            },
-          ],
-        },
-      ],
-    };
-
-    const url = "http://localhost:4000/api/payment_charge/payment_charge";
-    await axios
-      .post(url, chargeObject)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
 
   const postCharge = async (unit, unitId, tenantId) => {
     const chargeObject = {
@@ -2208,8 +2183,8 @@ const RentRollLeaseing = () => {
       },
       unit: [
         {
-          unit: unit ? unit : "",
-          unit_id: unitId ? unitId : "",
+          unit: unit ,
+          unit_id: unitId ,
           paymentAndCharges: [
             {
               type: "Charge",
@@ -2250,8 +2225,8 @@ const RentRollLeaseing = () => {
       },
       unit: [
         {
-          unit: unit ? unit : "",
-          unit_id: unitId ? unitId : "",
+          unit: unit ,
+          unit_id: unitId ,
           paymentAndCharges: [
             {
               type: "Charge",
@@ -2303,8 +2278,8 @@ const RentRollLeaseing = () => {
       },
       unit: [
         {
-          unit: unit || "",
-          unit_id: unitId || "",
+          unit: unit ,
+          unit_id: unitId ,
           paymentAndCharges: [
             {
               type: "Charge",
