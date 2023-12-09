@@ -349,7 +349,7 @@ const ApplicantSummary = () => {
               });
               //console.log(matchedApplicant, "matchedApplicant");
               // axios
-              // .get("https://propertymanager.cloudpress.host/api/tenant/tenant")
+              // .get("http://localhost:4000/api/tenant/tenant")
               // .then((response) => {
               //   //console.log(response.data.data,'response.data.data');
               //   const tenant = response.data.data;
@@ -377,10 +377,10 @@ const ApplicantSummary = () => {
   };
   // const navigateToLease = () => {
   //   axios
-  //     .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
+  //     .get("http://localhost:4000/api/applicant/applicant")
   //     .then((applicants) => {
   //       axios
-  //         .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
+  //         .get("http://localhost:4000/api/rentals/allproperty")
   //         .then((properties) => {
   //           //console.log(applicants.data.data, "applicants");
   //           //console.log(properties.data.data, "properties");
@@ -415,7 +415,7 @@ const ApplicantSummary = () => {
   //     .get(`${baseUrl}/applicant/applicant_summary/${id}`)
   //     .then((applicants) => {
   //       axios
-  //         .get("https://propertymanager.cloudpress.host/api/rentals/property")
+  //         .get("http://localhost:4000/api/rentals/property")
   //         .then((properties) => {
   //           //console.log(applicants.data.data, "applicants");
   //           //console.log(properties.data.data, "properties");

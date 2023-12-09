@@ -42,7 +42,7 @@ const AddAgent = () => {
   //   //console.log(values, "values");
   //   try {
   //     const res = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/addagent/addagent",
+  //       "http://localhost:4000/api/addagent/addagent",
   //       values
   //     );
 

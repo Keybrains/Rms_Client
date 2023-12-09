@@ -231,7 +231,7 @@ const RentRollDetail = () => {
             //   }
             // });
             // setPropertyId(res.data.data[0].propertyId);
-            // const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=Testing&property_id=6568198deb1c48ddf1dbef35&unit=A&tenant_id=656d9e573b2237290eceae1f`
+            // const url = `http://localhost:4000/api/payment_charge/financial_unit?rental_adress=Testing&property_id=6568198deb1c48ddf1dbef35&unit=A&tenant_id=656d9e573b2237290eceae1f`
 
             // const response = await axios.get(url);
 
@@ -533,7 +533,7 @@ const RentRollDetail = () => {
   const getGeneralLedgerData = async () => {
 
 
-    // const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
+    // const apiUrl = `http://localhost:4000/api/payment/merge_payment_charge/${tenantId}`;
     // try {
     //   const response = await axios.get(apiUrl);
     //   setLoader(false);

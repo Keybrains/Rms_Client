@@ -59,7 +59,7 @@ const AddStaffMember = () => {
   //   try {
   //     // values["property_type"] = selectedProperty;
   //     const res = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember",
+  //       "http://localhost:4000/api/addstaffmember/addstaffmember",
   //       values
   //     );
 
