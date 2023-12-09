@@ -261,7 +261,7 @@ const RentRollLeaseing = () => {
   const [propertyId, setPropertyId] = useState("");
   const [ownerData, setOwnerData] = useState({});
   // console.log(selectedPropertyType, "selectedPropertyType")
-  const handlePropertyTypeSelect = async (propertyType,property_id) => {
+  const handlePropertyTypeSelect = async (propertyType, property_id) => {
     setSelectedPropertyType(propertyType);
     setPropertyId(property_id);
     entrySchema.values.rental_adress = propertyType;
@@ -290,7 +290,7 @@ const RentRollLeaseing = () => {
     // localStorage.setItem("leasetype", leasetype);
     // entrySchema.values.rent_cycle = rentcycle;
     entrySchema.setFieldValue("rent_cycle", rentcycle);
-  // };
+    // };
     // localStorage.setItem("leasetype", leasetype);
     const startDate = entrySchema.values.start_date;
     let nextDue_date;
@@ -607,10 +607,7 @@ const RentRollLeaseing = () => {
     // console.log(values, "values");
     try {
       // values["property_type"] = localStorage.getItem("propertyType");
-      const res = await axios.post(
-        `${baseUrl}/addaccount/addaccount`,
-        values
-      );
+      const res = await axios.post(`${baseUrl}/addaccount/addaccount`, values);
       if (res.data.statusCode === 200) {
         swal("", res.data.message, "success");
         navigate("/admin/Leaseing");
@@ -645,7 +642,7 @@ const RentRollLeaseing = () => {
   //       console.log("Error uploading image:", err);
   //     });
   // };
-console.log(propertyId,'porpeorjinhb')
+  console.log(propertyId, "porpeorjinhb");
   const fileData = (files) => {
     //setImgLoader(true);
     // console.log(files, "file");
@@ -1273,9 +1270,7 @@ console.log(propertyId,'porpeorjinhb')
 
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit) {
-      let response = await axios.get(
-        `${baseUrl}/tenant/tenants`
-      );
+      let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
 
       let isUnavailable = false;
@@ -1353,7 +1348,7 @@ console.log(propertyId,'porpeorjinhb')
       rental_adress: "",
       lease_type: "",
       rental_units: "",
-      unit_id:"",
+      unit_id: "",
       start_date: "",
       end_date: "",
       leasing_agent: "",
@@ -1505,20 +1500,21 @@ console.log(propertyId,'porpeorjinhb')
             lastName: laesingdata.tenant_lastName || "",
             mobileNumber: laesingdata.tenant_mobileNumber || "",
           });
-  
+
           const matchedLease = laesingdata.entries.find(
             (entry) => entry.entryIndex === entryIndex
           );
-          try{
-            const units = await fetchUnitsByProperty(matchedLease.rental_adress);
+          try {
+            const units = await fetchUnitsByProperty(
+              matchedLease.rental_adress
+            );
             console.log(units, "unitssssssssssssss"); // Check the received units in the console
-            
+
             setUnitData(units);
-            
-          }catch (error){
-            console.log(error,'error')
+          } catch (error) {
+            console.log(error, "error");
           }
-          
+
           // handleAddTenant();
 
           // const formattedStartDate = matchedLease.start_date
@@ -1726,8 +1722,6 @@ console.log(propertyId,'porpeorjinhb')
           //     },
           //   ],
           // });
-    
-
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -1735,7 +1729,7 @@ console.log(propertyId,'porpeorjinhb')
     };
     fetchData();
   }, [id, entryIndex]);
-  console.log(baseUrl,'baseurl')
+  console.log(baseUrl, "baseurl");
 
   const handleSubmit = async (values) => {
     // debugger
@@ -1881,7 +1875,7 @@ console.log(propertyId,'porpeorjinhb')
           amount: entrySchema.values.amount,
           account: entrySchema.values.account,
           nextDue_date: entrySchema.values.nextDue_date,
-          property_id:propertyId,
+          property_id: propertyId,
           memo: entrySchema.values.memo,
           upload_file: entrySchema.values.upload_file,
           isrenton: entrySchema.values.isrenton,
@@ -1935,7 +1929,7 @@ console.log(propertyId,'porpeorjinhb')
         },
       ],
     };
-    console.log(tenantObject,'sdgvfyfbhjnkml,kjnhbgvfcvhb')
+    console.log(tenantObject, "sdgvfyfbhjnkml,kjnhbgvfcvhb");
     // debugger
 
     try {
@@ -1959,7 +1953,7 @@ console.log(propertyId,'porpeorjinhb')
 
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
-          
+
           const res = await axios.put(
             `${baseUrl}/tenant/tenant/${tenantId}`,
             putObject
@@ -1967,72 +1961,89 @@ console.log(propertyId,'porpeorjinhb')
           if (res.data.statusCode === 200) {
             console.log(res.data.data, "allTenants22");
 
-            debugger
-            if(entrySchema.values.unit_id){
-
+            debugger;
+            if (entrySchema.values.unit_id) {
               const chargeObject = {
-                properties:{
-                  rental_adress:entrySchema.values.rental_adress,
-                property_id:propertyId
-              },
-              unit:[{
-                unit:entrySchema.values.rental_units,
-                unit_id:entrySchema.values.unit_id,
-                paymentAndCharges:[{
-                    type:"Payment",
-                    account:entrySchema.values.account,
-                    amount:parseFloat(entrySchema.values.amount),
-                    rental_adress:entrySchema.values.rental_adress,
-                    rent_cycle:entrySchema.values.rent_cycle,
-                    month_year:moment().format("MM-YYYY"),
-                    date:moment().format("YYYY-MM-DD"),
-                    memo: values.charges_memo,
-                    tenant_id:tenantId,
-                    tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
-                }]
-                
-              }]
+                properties: {
+                  rental_adress: entrySchema.values.rental_adress,
+                  property_id: propertyId,
+                },
+                unit: [
+                  {
+                    unit: entrySchema.values.rental_units,
+                    unit_id: entrySchema.values.unit_id,
+                    paymentAndCharges: [
+                      {
+                        type: "Payment",
+                        account: entrySchema.values.account,
+                        amount: parseFloat(entrySchema.values.amount),
+                        rental_adress: entrySchema.values.rental_adress,
+                        rent_cycle: entrySchema.values.rent_cycle,
+                        month_year: moment().format("MM-YYYY"),
+                        date: moment().format("YYYY-MM-DD"),
+                        memo: values.charges_memo,
+                        tenant_id: tenantId,
+                        tenant_firstName:
+                          tenantsSchema.values.tenant_firstName +
+                          " " +
+                          tenantsSchema.values.tenant_lastName,
+                      },
+                    ],
+                  },
+                ],
+              };
+
+              const url = `${baseUrl}/payment_charge/payment_charge`;
+              await axios
+                .post(url, chargeObject)
+                .then((res) => {
+                  console.log(res);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            } else {
+              const chargeObject = {
+                properties: {
+                  rental_adress: entrySchema.values.rental_adress,
+                  property_id: propertyId,
+                },
+                unit: [
+                  {
+                    unit: "",
+                    unit_id: "",
+                    paymentAndCharges: [
+                      {
+                        type: "Payment",
+                        account: entrySchema.values.account,
+                        amount: parseFloat(entrySchema.values.amount),
+                        rental_adress: entrySchema.values.rental_adress,
+                        rent_cycle: entrySchema.values.rent_cycle,
+                        month_year: moment().format("MM-YYYY"),
+                        date: moment().format("YYYY-MM-DD"),
+                        memo: values.charges_memo,
+                        tenant_id: tenantId,
+                        tenant_firstName:
+                          tenantsSchema.values.tenant_firstName +
+                          " " +
+                          tenantsSchema.values.tenant_lastName,
+                      },
+                    ],
+                  },
+                ],
+              };
+
+              const url =
+                "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge";
+              await axios
+                .post(url, chargeObject)
+                .then((res) => {
+                  console.log(res);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
             }
-
-            const url = `${baseUrl}/payment_charge/payment_charge`
-            await axios.post(url, chargeObject).then((res) => {
-              console.log(res)
-            }).catch((err) => {
-              console.log(err)
-            })
-          }else{
-            const chargeObject = {
-              properties:{
-                rental_adress:entrySchema.values.rental_adress,
-              property_id:propertyId
-            },
-            unit:[{
-              unit:"",
-              unit_id:"",
-              paymentAndCharges:[{
-                  type:"Payment",
-                  account:entrySchema.values.account,
-                  amount:parseFloat(entrySchema.values.amount),
-                  rental_adress:entrySchema.values.rental_adress,
-                  rent_cycle:entrySchema.values.rent_cycle,
-                  month_year:moment().format("MM-YYYY"),
-                  date:moment().format("YYYY-MM-DD"),
-                  memo: values.charges_memo,
-                  tenant_id:tenantId,
-                  tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
-              }]
-              
-            }]
-          }
-
-          const url = "https://propertymanager.cloudpress.host/api/payment_charge/payment_charge"
-          await axios.post(url, chargeObject).then((res) => {
-            console.log(res)
-          }).catch((err) => {
-            console.log(err)
-          })
-
-          }
             swal("", res.data.message, "success");
             navigate("/admin/TenantsTable");
           } else {
@@ -2051,35 +2062,44 @@ console.log(propertyId,'porpeorjinhb')
               console.log(res.data.data);
 
               const chargeObject = {
-                properties:{
-                  rental_adress:entrySchema.values.rental_adress,
-                  property_id:propertyId
+                properties: {
+                  rental_adress: entrySchema.values.rental_adress,
+                  property_id: propertyId,
                 },
-                unit:[{
-                  unit:entrySchema.values.rental_units,
-                  unit_id:entrySchema.values.unit_id,
-                  paymentAndCharges:[{
-                      type:"Payment",
-                      account:entrySchema.values.account,
-                      amount:parseFloat(entrySchema.values.amount),
-                      rental_adress:entrySchema.values.rental_adress,
-                      rent_cycle:entrySchema.values.rent_cycle,
-                      month_year:moment().format("MM-YYYY"),
-                      date:moment().format("YYYY-MM-DD"),
-                      memo: values.charges_memo,
-                      tenant_id:res.data.data._id,
-                      tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
-                  }]
-                  
-                }]
-              }
-  
-              const url = `${baseUrl}/payment_charge/payment_charge`
-              await axios.post(url, chargeObject).then((res) => {
-                console.log(res)
-              }).catch((err) => {
-                console.log(err)
-              })
+                unit: [
+                  {
+                    unit: entrySchema.values.rental_units,
+                    unit_id: entrySchema.values.unit_id,
+                    paymentAndCharges: [
+                      {
+                        type: "Payment",
+                        account: entrySchema.values.account,
+                        amount: parseFloat(entrySchema.values.amount),
+                        rental_adress: entrySchema.values.rental_adress,
+                        rent_cycle: entrySchema.values.rent_cycle,
+                        month_year: moment().format("MM-YYYY"),
+                        date: moment().format("YYYY-MM-DD"),
+                        memo: values.charges_memo,
+                        tenant_id: res.data.data._id,
+                        tenant_firstName:
+                          tenantsSchema.values.tenant_firstName +
+                          " " +
+                          tenantsSchema.values.tenant_lastName,
+                      },
+                    ],
+                  },
+                ],
+              };
+
+              const url = `${baseUrl}/payment_charge/payment_charge`;
+              await axios
+                .post(url, chargeObject)
+                .then((res) => {
+                  console.log(res);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
               swal("", res.data.message, "success");
               navigate("/admin/TenantsTable");
             } else {
@@ -2123,12 +2143,12 @@ console.log(propertyId,'porpeorjinhb')
 
     const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
-    try{
+    try {
       const units = await fetchUnitsByProperty(entrySchema.values.rental_units);
       //console.log(units, "units"); // Check the received units in the console
       setUnitData(units);
-    }catch (error){
-      console.log(error,'error')
+    } catch (error) {
+      console.log(error, "error");
     }
     const entriesObject = {
       entryIndex: entrySchema.values.entryIndex,
@@ -2354,19 +2374,18 @@ console.log(propertyId,'porpeorjinhb')
 
   const handleUnitSelect = (selectedUnit, unitId) => {
     setSelectedUnit(selectedUnit);
-    // entrySchema.values.rental_units = selectedUnit;
+    entrySchema.values.rental_units = selectedUnit;
 
+    entrySchema.setFieldValue("unit_id", unitId);
     // entrySchema.values.unit_idd = unitId;
-    entrySchema.setValues({
-      ...entrySchema.values,
-      rental_units: selectedUnit,
-      unit_id: unitId,
-    });
-
+    // entrySchema.setValues({
+    //   ...entrySchema.values,
+    //   rental_units: selectedUnit,
+    //   unit_id: unitId,
+    // });
   };
 
   return (
-    
     <>
       <LeaseHeader />
       {/* Page content */}
@@ -2458,12 +2477,13 @@ console.log(propertyId,'porpeorjinhb')
                                 overflowY: "auto",
                               }}
                             >
-                               {propertyData.map((property, index) => (
+                              {propertyData.map((property, index) => (
                                 <DropdownItem
                                   key={index}
                                   onClick={() => {
                                     handlePropertyTypeSelect(
-                                      property.rental_adress,property._id
+                                      property.rental_adress,
+                                      property._id
                                     );
                                   }}
                                 >
@@ -2485,52 +2505,61 @@ console.log(propertyId,'porpeorjinhb')
                       </Col>
                     </Row>
                     <Row>
-                    {console.log(unitData,'ubnitFsttvb')}
-                    {entrySchema.values.rental_adress && unitData && unitData[0] && unitData[0].rental_units && ( 
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-unit"
-                          style={{ marginLeft: "15px" }}
-                        >
-                          Unit *
-                        </label>
-                        <FormGroup style={{ marginLeft: "15px" }}>
-                          <Dropdown isOpen={unitDropdownOpen} toggle={toggle11}>
-                            <DropdownToggle caret>
-                              {selectedUnit ? selectedUnit : "Select Unit"}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              {unitData.length > 0 ? (
-                                unitData.map((unit) => (
-                                  <DropdownItem
-                                    key={unit._id}
-                                    onClick={() =>
-                                      handleUnitSelect(unit.rental_units)
-                                    }
-                                  >
-                                    {unit.rental_units}
-                                  </DropdownItem>
-                                ))
-                              ) : (
-                                <DropdownItem disabled>
-                                  No units available
-                                </DropdownItem>
-                              )}
-                            </DropdownMenu>
-                            {entrySchema.errors &&
-                            entrySchema.errors?.rental_units &&
-                            entrySchema.touched &&
-                            entrySchema.touched?.rental_units &&
-                            entrySchema.values.rental_units === "" ? (
-                              <div style={{ color: "red" }}>
-                                {entrySchema.errors.rental_units}
-                              </div>
-                            ) : null}
-                          </Dropdown>
-                        </FormGroup>
-                      </FormGroup>
-                    )}
+                      {console.log(unitData, "ubnitFsttvb")}
+                      {entrySchema.values.rental_adress &&
+                        unitData &&
+                        unitData[0] &&
+                        unitData[0].rental_units && (
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-unit"
+                              style={{ marginLeft: "15px" }}
+                            >
+                              Unit *
+                            </label>
+                            <FormGroup style={{ marginLeft: "15px" }}>
+                              <Dropdown
+                                isOpen={unitDropdownOpen}
+                                toggle={toggle11}
+                              >
+                                <DropdownToggle caret>
+                                  {selectedUnit ? selectedUnit : "Select Unit"}
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  {unitData.length > 0 ? (
+                                    unitData.map((unit) => (
+                                      <DropdownItem
+                                        key={unit._id}
+                                        onClick={() =>
+                                          handleUnitSelect(
+                                            unit.rental_units,
+                                            unit._id
+                                          )
+                                        }
+                                      >
+                                        {unit.rental_units}
+                                      </DropdownItem>
+                                    ))
+                                  ) : (
+                                    <DropdownItem disabled>
+                                      No units available
+                                    </DropdownItem>
+                                  )}
+                                </DropdownMenu>
+                                {entrySchema.errors &&
+                                entrySchema.errors?.rental_units &&
+                                entrySchema.touched &&
+                                entrySchema.touched?.rental_units &&
+                                entrySchema.values.rental_units === "" ? (
+                                  <div style={{ color: "red" }}>
+                                    {entrySchema.errors.rental_units}
+                                  </div>
+                                ) : null}
+                              </Dropdown>
+                            </FormGroup>
+                          </FormGroup>
+                        )}
                     </Row>
                     <Row>
                       <Col lg="3">

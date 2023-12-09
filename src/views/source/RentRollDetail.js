@@ -181,7 +181,7 @@ const RentRollDetail = () => {
         
         if (response.data && response.data.data) {
           const mergedData = response.data.data;
-          console.log(mergedData, "mergedData");
+          console.log(mergedData, "mergedData1");
     
           setGeneralLedgerData(mergedData[0]?.unit[0]);
         } else {
@@ -204,7 +204,7 @@ const RentRollDetail = () => {
         
         if (response.data && response.data.data) {
           const mergedData = response.data.data;
-          console.log(mergedData, "mergedData");
+          console.log(mergedData, "mergedData2");
     
           setGeneralLedgerData(mergedData[0]?.unit[0]);
         } else {
@@ -1267,10 +1267,11 @@ const RentRollDetail = () => {
                                             }}
                                             // onClick={() => handleChange("Financial")}
                                           >
-                                            <Link
-                                              to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
-                                              onClick={(e) => {}}
-                                            >
+                                          <Link
+                                  to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
+                                  onClick={() => {
+                                    setValue(`Financial`);
+                                  }}>
                                               Lease Ledger
                                             </Link>
                                           </Typography>
@@ -1510,7 +1511,7 @@ const RentRollDetail = () => {
                                                       e.stopPropagation();
                                                       editpayment(
                                                         generalledger._id,
-                                                        entry.paymentIndex
+                                                        entry
                                                       );
                                                     }}
                                                   >
@@ -2048,10 +2049,11 @@ const RentRollDetail = () => {
                                     }}
                                     // onClick={() => handleChange("Financial")}
                                   >
-                                    <Link
-                                      to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
-                                      onClick={(e) => {}}
-                                    >
+                                   <Link
+                                  to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
+                                  onClick={() => {
+                                    setValue(`Financial`);
+                                  }}>
                                       Lease Ledger
                                     </Link>
                                   </Typography>

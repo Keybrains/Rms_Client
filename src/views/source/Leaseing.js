@@ -255,6 +255,7 @@ const Leaseing = () => {
   const [ownerData, setOwnerData] = useState({});
   const [propertyId, setPropertyId] = useState("");
   console.log(propertyId, "propertyId")
+
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress);
     entrySchema.values.rental_adress = property.rental_adress;
@@ -1741,7 +1742,6 @@ const Leaseing = () => {
         },
       ],
     };
-    debugger
     console.log(tenantObject, "tenantObject");
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
@@ -1757,7 +1757,7 @@ const Leaseing = () => {
         });
 
         if (filteredData) {
-          debugger
+        
           const putObject = {
             entries: tenantObject.entries,
           };
@@ -1821,7 +1821,6 @@ const Leaseing = () => {
             if (res.data.statusCode === 200) {
               console.log(res.data.data,'after post');
 
-              debugger
               const chargeObject = {
                 properties:{
                   rental_adress:entrySchema.values.rental_adress,
@@ -2163,7 +2162,7 @@ const Leaseing = () => {
                                   <DropdownItem
                                     key={unit._id}
                                     onClick={() =>
-                                      handleUnitSelect(unit.rental_units)
+                                      handleUnitSelect(unit.rental_units,unit._id)
                                     }
                                   >
                                     {unit.rental_units}
