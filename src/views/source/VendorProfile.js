@@ -104,17 +104,17 @@ const VendorProfile = () => {
                           </th>
                         </tr>
                         <tr>
-                          <td class="font-weight-bold text-md">First Name:</td>
+                          <td className="font-weight-bold text-md">First Name:</td>
                           <td>{vendorDetails.vendor_name}</td>
                         </tr>
                         <tr>
-                          <td class="font-weight-bold text-md">
+                          <td className="font-weight-bold text-md">
                             Phone Number:
                           </td>
                           <td>{vendorDetails.vendor_phoneNumber}</td>
                         </tr>
                         <tr>
-                          <td class="font-weight-bold text-md">Email:</td>
+                          <td className="font-weight-bold text-md">Email:</td>
                           <td>{vendorDetails.vendor_email}</td>
                         </tr>
                       </tbody>

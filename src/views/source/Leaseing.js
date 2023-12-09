@@ -1553,6 +1553,8 @@ const Leaseing = () => {
   console.log(entrySchema.values, "entrySchema");
   console.log(ownerData, "ownerData");
   console.log(unitData, "unitData");
+  console.log(ownerData,'ownerData')
+  console.log(entrySchema.values,'entryushasfdnjisdgvfhjkhgvbjn')
   const handleSubmit = async (values) => {
     // console.log(file, "values");
     // const arrayOfNames = Array.isArray(file)
@@ -1768,47 +1770,16 @@ const Leaseing = () => {
           const res = await axios.put(
             `${baseUrl}/tenant/tenant/${tenantId}`,
             putObject
-          );
-          if (res.data.statusCode === 200) {
-            console.log(res.data.data, "clgtttt");
-            swal("", res.data.message, "success");
-
-
-            // const chargeObject = {
-            //   properties:{
-            //     rental_adress:entrySchema.values.rental_adress,
-            //     property_id:propertyId
-            //   },
-            //   unit:[{
-            //     unit:entrySchema.values.rental_units,
-            //     unit_id:entrySchema.values.unit_id,
-            //     paymentAndCharges:[{
-            //         type:"Charge",
-            //         account:entrySchema.values.account,
-            //         amount:parseFloat(entrySchema.values.amount),
-            //         rental_adress:entrySchema.values.rental_adress,
-            //         rent_cycle:entrySchema.values.rent_cycle,
-            //         month_year:moment().format("MM-YYYY"),
-            //         date:moment().format("YYYY-MM-DD"),
-            //         memo: values.charges_memo,
-            //         tenant_id:tenantId,
-            //         tenant_firstName:tenantsSchema.values.tenant_firstName + " " + tenantsSchema.values.tenant_lastName,
-            //     }]
-                
-            //   }]
-            // }
-
-            // const url = `${baseUrl}/payment_charge/payment_charge`
-            // await axios.post(url, chargeObject).then((res) => {
-            //   console.log(res, "-----------------res")
-            // }).catch((err) => {
-            //   console.log(err)
-            // })
+            );
+            if (res.data.statusCode === 200) {
+              console.log(res.data.data, "clgtttt");
+              swal("", res.data.message, "success");
+              console.log(entrySchema.values,'hello')
             const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
-
             // debugger;
             if (entrySchema.values.unit_id) {
+              // debugger
               await postCharge(
                 entrySchema.values.rental_units,
                 entrySchema.values.unit_id,
@@ -1981,8 +1952,8 @@ const Leaseing = () => {
       },
       unit: [
         {
-          unit: unit ? unit : "",
-          unit_id: unitId ? unitId : "",
+          unit: unit,
+          unit_id: unitId,
           paymentAndCharges: [
             {
               type: "Charge",
@@ -2023,8 +1994,8 @@ const Leaseing = () => {
       },
       unit: [
         {
-          unit: unit ? unit : "",
-          unit_id: unitId ? unitId : "",
+          unit: unit,
+          unit_id: unitId,
           paymentAndCharges: [
             {
               type: "Charge",
@@ -5637,7 +5608,7 @@ const Leaseing = () => {
                     </Col>
                   </Row>
 
-                  {/* <div class="file-upload-wrapper">
+                  {/* <div className="file-upload-wrapper">
                     <input
                       type="file"
                       className="form-control-file d-block"
@@ -5654,8 +5625,8 @@ const Leaseing = () => {
                       </div>
                     ) : null}
                   </div> */}
-                  <div class="d-flex">
-                    <div class="file-upload-wrapper">
+                  <div className="d-flex">
+                    <div className="file-upload-wrapper">
                       <TextField
                         type="file"
                         className="form-control-file d-none"
@@ -5674,7 +5645,7 @@ const Leaseing = () => {
                         // onChange={rentalsFormik.handleChange}
                         // value={entrySchema.values.upload_file[0]}
                       />
-                      <label for="upload_file" class="btn">
+                      <label for="upload_file" className="btn">
                         Upload
                       </label>
                     </div>

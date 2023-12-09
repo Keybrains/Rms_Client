@@ -530,7 +530,7 @@ const ApplicantForm = () => {
               navigate(`/admin/RentRollLeaseing/${tenantID}/${entryIndex}`);
               console.log(matchedApplicant, "matchedApplicant");
               // axios
-              // .get("http://localhost:4000/api/tenant/tenant")
+              // .get("https://propertymanager.cloudpress.host/api/tenant/tenant")
               // .then((response) => {
               //   console.log(response.data.data,'response.data.data');
               //   const tenant = response.data.data;
@@ -558,10 +558,10 @@ const ApplicantForm = () => {
   };
   // const navigateToLease = () => {
   //   axios
-  //     .get("http://localhost:4000/api/applicant/applicant")
+  //     .get("https://propertymanager.cloudpress.host/api/applicant/applicant")
   //     .then((applicants) => {
   //       axios
-  //         .get("http://localhost:4000/api/rentals/allproperty")
+  //         .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
   //         .then((properties) => {
   //           console.log(applicants.data.data, "applicants");
   //           console.log(properties.data.data, "properties");
@@ -596,7 +596,7 @@ const ApplicantForm = () => {
   //     .get(`${baseUrl}/applicant/applicant_summary/${id}`)
   //     .then((applicants) => {
   //       axios
-  //         .get("http://localhost:4000/api/rentals/property")
+  //         .get("https://propertymanager.cloudpress.host/api/rentals/property")
   //         .then((properties) => {
   //           console.log(applicants.data.data, "applicants");
   //           console.log(properties.data.data, "properties");
@@ -1110,8 +1110,8 @@ const ApplicantForm = () => {
                   {/* Main Title */}
                   <h2>Applicant information</h2>
                   {/* 1 */}
-                  <div class="form-row">
-                    <div class="col">
+                  <div className="form-row">
+                    <div className="col">
                       <input
                         type="text"
                         className="form-control"
@@ -1134,11 +1134,11 @@ const ApplicantForm = () => {
                     </div>
                   </div>
                   {/* 2 */}
-                  <div class="form-row mt-4">
-                    <div class="col">
+                  <div className="form-row mt-4">
+                    <div className="col">
                       <input
                         type="number"
-                        class="form-control"
+                        className="form-control"
                         placeholder="Applicant social security number"
                         name="applicant_socialSecurityNumber"
                         value={formData.applicant_socialSecurityNumber}
@@ -1154,7 +1154,7 @@ const ApplicantForm = () => {
                       </label>
                       <input
                         type="date"
-                        class="form-control"
+                        className="form-control"
                         placeholder="First name"
                         name="applicant_dob"
                         value={formData.applicant_dob}
@@ -1223,11 +1223,11 @@ const ApplicantForm = () => {
                     </Dropdown>
                   </div>
                   {/* 5 */}
-                  <div class="form-row mt-4">
-                    <div class="col">
+                  <div className="form-row mt-4">
+                    <div className="col">
                       <input
                         type="text"
-                        class="form-control"
+                        className="form-control"
                         placeholder="Street Adress"
                         name="applicant_adress"
                         value={formData.applicant_adress}
@@ -1236,31 +1236,31 @@ const ApplicantForm = () => {
                     </div>
                   </div>
                   {/* 6 */}
-                  <div class="form-row mt-4">
-                    <div class="col-7">
+                  <div className="form-row mt-4">
+                    <div className="col-7">
                       <input
                         type="text"
-                        class="form-control"
+                        className="form-control"
                         placeholder="City"
                         name="applicant_city"
                         value={formData.applicant_city}
                         onChange={handleApplicantChange}
                       />
                     </div>
-                    <div class="col">
+                    <div className="col">
                       <input
                         type="text"
-                        class="form-control"
+                        className="form-control"
                         placeholder="State"
                         name="applicant_state"
                         value={formData.applicant_state}
                         onChange={handleApplicantChange}
                       />
                     </div>
-                    <div class="col">
+                    <div className="col">
                       <input
                         type="text"
-                        class="form-control"
+                        className="form-control"
                         placeholder="Zip"
                         name="applicant_zipcode"
                         value={formData.applicant_zipcode}
@@ -1269,11 +1269,11 @@ const ApplicantForm = () => {
                     </div>
                   </div>
                   {/*7 */}
-                  <div class="form-row mt-4">
-                    <div class="col">
+                  <div className="form-row mt-4">
+                    <div className="col">
                       <input
                         type="text"
-                        class="form-control"
+                        className="form-control"
                         placeholder="Applicant email"
                         name="applicant_email"
                         value={formData.applicant_email}
@@ -1282,11 +1282,11 @@ const ApplicantForm = () => {
                     </div>
                   </div>
                   {/* 8 */}
-                  <div class="form-row mt-4">
-                    <div class="col">
+                  <div className="form-row mt-4">
+                    <div className="col">
                       <input
                         type="Number"
-                        class="form-control"
+                        className="form-control"
                         placeholder="Applicant cell phone"
                         name="applicant_cellPhone"
                         value={formData.applicant_cellPhone}
@@ -1295,15 +1295,15 @@ const ApplicantForm = () => {
                     </div>
                   </div>
                   {/* 9 */}
-                  <div class="form-row mt-4 pl-4">
-                    <div class="col-md-12">
+                  <div className="form-row mt-4 pl-4">
+                    <div className="col-md-12">
                       <input
-                        class="form-check-input"
+                        className="form-check-input"
                         type="checkbox"
                         value=""
                         id="defaultCheck1"
                       />
-                      <label class="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" for="defaultCheck1">
                         Opt-in to receive text messages from
                         gecbhavnagar.managebuilding.com.{" "}
                         <span style={{ color: "green", fontWeight: "bold" }}>
@@ -1473,11 +1473,11 @@ const ApplicantForm = () => {
                                         </div> */}
 
                     {/* 16 */}
-                    <div class="form-row mt-4">
-                      <div class="col">
+                    <div className="form-row mt-4">
+                      <div className="col">
                         <input
                           type="text"
-                          class="form-control"
+                          className="form-control"
                           placeholder="Street Adress"
                           name="rental_adress"
                           value={formData.rental_adress}
@@ -1487,31 +1487,31 @@ const ApplicantForm = () => {
                     </div>
 
                     {/* 17 */}
-                    <div class="form-row mt-4">
-                      <div class="col-7">
+                    <div className="form-row mt-4">
+                      <div className="col-7">
                         <input
                           type="text"
-                          class="form-control"
+                          className="form-control"
                           placeholder="City"
                           name="rental_city"
                           value={formData.rental_city}
                           onChange={handleApplicantChange}
                         />
                       </div>
-                      <div class="col">
+                      <div className="col">
                         <input
                           type="text"
-                          class="form-control"
+                          className="form-control"
                           placeholder="State"
                           name="rental_state"
                           value={formData.rental_state}
                           onChange={handleApplicantChange}
                         />
                       </div>
-                      <div class="col">
+                      <div className="col">
                         <input
                           type="text"
-                          class="form-control"
+                          className="form-control"
                           placeholder="Zip"
                           name="rental_zipcode"
                           value={formData.rental_zipcode}
@@ -1719,11 +1719,11 @@ const ApplicantForm = () => {
 
 
                     {/* 16 */}
-                    <div class="form-row mt-4">
-                      <div class="col">
+                    <div className="form-row mt-4">
+                      <div className="col">
                         <input
                           type="text"
-                          class="form-control"
+                          className="form-control"
                           placeholder="Street Adress"
                           name="employment_adress"
                           value={formData.employment_adress}
@@ -1733,31 +1733,31 @@ const ApplicantForm = () => {
                     </div>
 
                     {/* 17 */}
-                    <div class="form-row mt-4">
-                      <div class="col-7">
+                    <div className="form-row mt-4">
+                      <div className="col-7">
                         <input
                           type="text"
-                          class="form-control"
+                          className="form-control"
                           placeholder="City"
                           name="employment_city"
                           value={formData.employment_city}
                           onChange={handleApplicantChange}
                         />
                       </div>
-                      <div class="col">
+                      <div className="col">
                         <input
                           type="text"
-                          class="form-control"
+                          className="form-control"
                           placeholder="State"
                           name="employment_state"
                           value={formData.employment_state}
                           onChange={handleApplicantChange}
                         />
                       </div>
-                      <div class="col">
+                      <div className="col">
                         <input
                           type="text"
-                          class="form-control"
+                          className="form-control"
                           placeholder="Zip"
                           name="employment_zipcode"
                           value={formData.employment_zipcode}
@@ -1939,15 +1939,15 @@ const ApplicantForm = () => {
                         </p>
                       </div>
 
-                      <div class="form-row mt-4 pl-4">
-                        <div class="col-md-12">
+                      <div className="form-row mt-4 pl-4">
+                        <div className="col-md-12">
                           <input
-                            class="form-check-input"
+                            className="form-check-input"
                             type="checkbox"
                             value=""
                             id="defaultCheck1"
                           />
-                          <label class="form-check-label" for="defaultCheck1">
+                          <label className="form-check-label" for="defaultCheck1">
                             Agreed to*
                           </label>
                         </div>
@@ -2006,10 +2006,10 @@ const ApplicantForm = () => {
                   </div>
                   {/* ------------------------------------------------------------------------------------------------------------- */}
                 </div>
-                <div class="mt-4 d-flex flex-column flex-sm-row">
+                <div className="mt-4 d-flex flex-column flex-sm-row">
                   <button
                     type="button"
-                    class="btn btn-primary mb-3 mb-sm-0 mr-sm-3"
+                    className="btn btn-primary mb-3 mb-sm-0 mr-sm-3"
                     style={{ borderRadius: "10px" }}
                     onClick={handleSubmit}
                   >
@@ -2017,7 +2017,7 @@ const ApplicantForm = () => {
                   </button>
                   <button
                     type="button"
-                    class="btn btn-secondary"
+                    className="btn btn-secondary"
                     style={{ borderRadius: "10px" }}
                   >
                     Cancel

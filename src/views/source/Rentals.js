@@ -863,7 +863,7 @@ const Rentals = () => {
     //   if (id === undefined) {
     //     console.log(values, "values after submit");
     //     const res = await axios.post(
-    //       "http://localhost:4000/api/rentals/rentals",
+    //       "https://propertymanager.cloudpress.host/api/rentals/rentals",
     //       values
     //     );
     //     handleResponse(res);
