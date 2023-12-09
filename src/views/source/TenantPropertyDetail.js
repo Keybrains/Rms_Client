@@ -8,6 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import { OpenImageDialog } from "components/OpenImageDialog";
 import Cookies from "universal-cookie";
 import card from "../../assets/img/theme/angular.jpg";
+import PropImage from "../../assets/img/icons/common/pexels-binyamin-mellish-186077.jpg"
 
 const TenantPropertyDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -113,7 +114,8 @@ useEffect(() => {
                                   <div className="row g-0">
                                     <div className="col-md-4">
                                       <img
-                                        src={entry.prop_image}
+                                        // src={entry.prop_image}
+                                        src={PropImage}
                                         alt="Property Details"
                                         style={{ maxWidth: "8rem" }}
                                       />

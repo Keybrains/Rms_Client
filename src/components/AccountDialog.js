@@ -170,7 +170,7 @@ function AccountDialog(props) {
     // try {
     //   // values["property_type"] = localStorage.getItem("propertyType");
     //   const res = await axios.post(
-    //     "http://localhost:4000/api/addaccount/addaccount",
+    //     "https://propertymanager.cloudpress.host/api/addaccount/addaccount",
     //     values
     //   );
     //   if (res.data.statusCode === 200) {
