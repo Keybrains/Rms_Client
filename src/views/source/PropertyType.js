@@ -107,7 +107,7 @@ const PropertyType = () => {
   //   var handleSubmit = async (values) => {
   //    // values["createAt"] = moment(new Date()).format("YYYY-MM-DD, HH:mm:ss");
   //     let response = await axios.post(
-  //       "http://localhost:4000/api/newproparty/newproparty",
+  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty",
   //       values
   //     );
   //     if (response.data.statusCode === 200) {
@@ -122,7 +122,7 @@ const PropertyType = () => {
   //   handleSubmit = async (values) => {
   //     //values["upadateAt"] = moment(new Date()).format("YYYY-MM-DD, HH:mm:ss");
   //     let response = await axios.put(
-  //       "http://localhost:4000/api/newproparty/newproparty" + id,
+  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty" + id,
   //       values
   //     );
   //     if (response.data.statusCode === 200) {

@@ -828,7 +828,7 @@ const RentRollLeaseing = () => {
 
   // useEffect(() => {
   //   // Make an HTTP GET request to your Express API endpoint
-  //   fetch("http://localhost:4000/api/addaccount/find_accountname")
+  //   fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
   //     .then((response) => response.json())
   //     .then((data) => {
   //       if (data.statusCode === 200) {
@@ -2472,7 +2472,7 @@ setData();
   //   if (entryIndex) {
   //     setAlignment("Signed");
   //     axios
-  //       .get("http://localhost:4000/api/rentals/allproperty")
+  //       .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
   //       .then((propRes) => {
   //         axios
   //           .get(
