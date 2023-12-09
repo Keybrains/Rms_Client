@@ -227,9 +227,9 @@ const TenantProfile = () => {
                             <td class="font-weight-bold text-md">
                               Uploaded Files:
                             </td>
-                            <td>
+                            {/* <td>
                               {tenantDetails.entries.upload_file || "N/A"}
-                            </td>
+                            </td> */}
                           </tr>
                         </tbody>
                       </>
