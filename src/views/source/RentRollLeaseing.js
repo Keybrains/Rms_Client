@@ -104,7 +104,8 @@ const RentRollLeaseing = () => {
 
   const [apiData, setApiData] = useState([]);
   const [isDateRangeUsed, setIsDateRangeUsed] = useState(false);
-
+  const [paymentOptionDropdawnOpen, setPaymentOptionDropdawnOpen] =
+  useState(false);
   const [showTenantTable, setShowTenantTable] = useState(false);
 
   const [selectedAgent, setSelectedAgent] = useState("");
@@ -148,6 +149,7 @@ const RentRollLeaseing = () => {
     "Quarterly",
     "Yearly",
   ];
+  const selectPaymentMethod = ["Manually", "AutoPayment"];
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -166,7 +168,8 @@ const RentRollLeaseing = () => {
   const toggle11 = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
-
+  const paymentMethodtoggle = () =>
+  setPaymentOptionDropdawnOpen((prevState) => !prevState);
   const handleClick = (event) => {
     setrentincDropdownOpen1((current) => !current);
   };
@@ -259,7 +262,7 @@ const RentRollLeaseing = () => {
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [propertyId, setPropertyId] = useState("");
   const [ownerData, setOwnerData] = useState({});
-  // console.log(ownerData, "ownerData");
+  console.log(ownerData, "ownerData");
   // console.log(selectedPropertyType, "selectedPropertyType")
   const handlePropertyTypeSelect = async (propertyType, property) => {
     setSelectedPropertyType(propertyType);
@@ -283,6 +286,19 @@ const RentRollLeaseing = () => {
     // localStorage.setItem("leasetype", leasetype);
     entrySchema.values.lease_type = leasetype;
   };
+
+    
+
+    const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] =
+    useState("");
+
+  const handleselectedPaymetMethod = (paymentMethod) => {
+    setSelectPaymentMethodDropdawn(paymentMethod);
+    // localStorage.setItem("leasetype", leasetype);
+    entrySchema.setFieldValue("paymentMethod", paymentMethod);
+    setSelectPaymentMethodDropdawn(paymentMethod);
+  };
+
 
   const [selectedRentCycle, setselectedRentCycle] = useState("");
   const handleselectedRentCycle = (rentcycle) => {
@@ -1486,12 +1502,14 @@ const RentRollLeaseing = () => {
   });
 
   const applicantData = state && state.applicantData;
+  console.log(applicantData, "applicantData");
+  console.log(propertyId, "propertyId");
   useEffect(() => {
     const setData = async () => {
       if (state && state.applicantData) {
         try {
           const units = await fetchUnitsByProperty(applicantData.rental_adress);
-          // console.log(units, "unitssssssssssssss"); // Check the received units in the console
+          console.log(units, "unitssssssssssssss"); // Check the received units in the console
 
           setUnitData(units);
         } catch (error) {
@@ -1504,7 +1522,8 @@ const RentRollLeaseing = () => {
           mobileNumber: applicantData.tenant_mobileNumber || "",
         });
         setPropertyId(applicantData.property_id);
-
+        setSelectPaymentMethodDropdawn(applicantData.paymentMethod || "Select");
+        
         setSelectedPropertyType(applicantData.rental_adress || "Select");
         setselectedLeaseType(applicantData.lease_type || "Select");
         setselectedRentCycle(applicantData.rent_cycle || "Select");
@@ -1536,6 +1555,7 @@ const RentRollLeaseing = () => {
           isrenton: applicantData.isrenton,
           rent_paid: applicantData.rent_paid,
           propertyOnRent: applicantData.propertyOnRent,
+          paymentMethod: applicantData.paymentMethod,
 
           //security deposite
           Due_date: applicantData.Due_date,
@@ -1614,7 +1634,7 @@ const RentRollLeaseing = () => {
     };
     setData();
   }, []);
-  // console.log(tenantsSchema.values, entrySchema.values, "tenantsSchema.values");
+  console.log(tenantsSchema.values, entrySchema.values, "tenantsSchema.values");
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
     const fetchData = async () => {
@@ -1691,6 +1711,9 @@ const RentRollLeaseing = () => {
           setselectedFundType(matchedLease.fund_type || "Select");
           setSelectedAgent(matchedLease.leasing_agent || "Select");
           setSelectedUnit(matchedLease.rental_units || "");
+          setSelectPaymentMethodDropdawn(
+            matchedLease.paymentMethod || "Select"
+          );
           // setSelectedUnit(matchedLease.rental_units || "Select");
           // console.log(laesingdata, "yashraj")
           // setFile(arrayOfObjects || "Select");
@@ -1947,6 +1970,7 @@ const RentRollLeaseing = () => {
       entries: [
         {
           entryIndex: entrySchema.values.entryIndex,
+          paymentMethod: entrySchema.values.paymentMethod,
           rental_units: entrySchema.values.rental_units,
           rental_adress: entrySchema.values.rental_adress,
           lease_type: entrySchema.values.lease_type,
@@ -6218,6 +6242,52 @@ const RentRollLeaseing = () => {
                       />
                     </FormGroup>
                   </Row>
+
+               
+                    <Row>
+                      <Col md="12">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            Select Payment Method
+                          </label>
+                          <FormGroup>
+                            <Dropdown
+                              isOpen={paymentOptionDropdawnOpen}
+                              toggle={paymentMethodtoggle}
+                            >
+                              <DropdownToggle caret style={{ width: "100%" }}>
+                                {selectPaymentMethodDropdawn
+                                  ? selectPaymentMethodDropdawn
+                                  : "Select"}
+                              </DropdownToggle>
+                              <DropdownMenu
+                                style={{ width: "100%" }}
+                                name="paymentMethod"
+                                onBlur={entrySchema.handleBlur}
+                                onChange={(e) => entrySchema.handleChange(e)}
+                                value={entrySchema.values.paymentMethod}
+                              >
+                                {selectPaymentMethod.map((option) => (
+                                  <DropdownItem
+                                    key={option}
+                                    onClick={() =>
+                                      handleselectedPaymetMethod(option)
+                                    }
+                                  >
+                                    {option}
+                                  </DropdownItem>
+                                ))}
+                              </DropdownMenu>
+                            </Dropdown>
+                          </FormGroup>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+           
+
                   {/* <Button
                   color="primary"
                   href="#rms"

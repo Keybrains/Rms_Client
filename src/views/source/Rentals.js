@@ -45,6 +45,7 @@ import Cookies from "universal-cookie";
 import { OpenImageDialog } from "components/OpenImageDialog";
 import { Autocomplete } from "@mui/material";
 import moment from "moment/moment";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Rentals = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -67,6 +68,7 @@ const Rentals = () => {
   const [selectedBank, setSelectedBank] = useState("");
   const [selectedBad, setSelectedBad] = useState("");
   const [open, setOpen] = React.useState(false);
+  // const [open, setOpen] = useState(false);
   // const [uploadedImage, setUploadedImage] = useState(null);
   // const [selectedPhoto, setSelectedPhoto] = useState(null);
 
@@ -473,13 +475,15 @@ const Rentals = () => {
   // console.log(entryIndex, "entryIndex");
   const [residentialImage, setResidentialImage] = useState([[]]);
   const [commercialImage, setCommercialImage] = useState([[]]);
-
+  const [imgLoader, setImgLoader] = useState(false); // Use camelCase for variable names
+  const [loadingImages, setLoadingImages] = useState([]);
   const fileData = async (file, name, index) => {
     //setImgLoader(true);
     const allData = [];
     const axiosRequests = [];
 
     for (let i = 0; i < file.length; i++) {
+      setImgLoader(true);
       const dataArray = new FormData();
       dataArray.append("b_video", file[i]);
       let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
@@ -493,13 +497,13 @@ const Rentals = () => {
             },
           })
           .then((res) => {
-            //setImgLoader(false);
+            setImgLoader(false);
             const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
             console.log(imagePath, "imagePath");
             allData.push(imagePath);
           })
           .catch((err) => {
-            //setImgLoader(false);
+            setImgLoader(false);
             // console.log("Error uploading image:", err);
           })
       );
@@ -3114,66 +3118,55 @@ const Rentals = () => {
                                           paddingLeft: "10px",
                                         }}
                                       >
-                                        <div className="d-flex">
-                                          {residentialImage[residentialIndex] &&
-                                            residentialImage[residentialIndex]
-                                              .length > 0 &&
-                                            residentialImage[
-                                              residentialIndex
-                                            ].map((residentialImage) => (
-                                              <div
-                                                key={residentialImage}
-                                                style={{
-                                                  position: "relative",
-                                                  width: "100px",
-                                                  height: "100px",
-                                                  margin: "10px",
-                                                  display: "flex",
-                                                  flexDirection: "column",
-                                                }}
-                                              >
-                                                <img
-                                                  src={residentialImage}
-                                                  alt=""
-                                                  style={{
-                                                    width: "100px",
-                                                    height: "100px",
-                                                    maxHeight: "100%",
-                                                    maxWidth: "100%",
-                                                    borderRadius: "10px",
-                                                    // objectFit: "cover",
-                                                  }}
-                                                  onClick={() => {
-                                                    setSelectedImage(
-                                                      residentialImage
-                                                    );
-                                                    setOpen(true);
-                                                  }}
-                                                />
-                                                <ClearIcon
-                                                  style={{
-                                                    cursor: "pointer",
-                                                    alignSelf: "flex-start",
-                                                    position: "absolute",
-                                                    top: "-12px",
-                                                    right: "-12px",
-                                                  }}
-                                                  onClick={() =>
-                                                    clearSelectedPhoto(
-                                                      residentialIndex,
-                                                      residentialImage,
-                                                      "propertyres_image"
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                            ))}
-                                          <OpenImageDialog
-                                            open={open}
-                                            setOpen={setOpen}
-                                            selectedImage={selectedImage}
-                                          />
-                                        </div>
+                                        <div className="mt-3 d-flex" style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
+                        {residentialImage &&
+  Array.isArray(residentialImage[residentialIndex]) &&
+  residentialImage[residentialIndex].map((image, index) => (
+          <div
+            key={index}
+            style={{
+              position: 'relative',
+              width: '100px',
+              height: '100px',
+              margin: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <img
+              src={image}
+              alt=""
+              style={{
+                width: '100px',
+                height: '100px',
+                maxHeight: '100%',
+                maxWidth: '100%',
+                borderRadius: '10px',
+              }}
+              onClick={() => {
+                setSelectedImage(image);
+                setOpen(true);
+              }}
+            />
+            <ClearIcon
+              style={{
+                cursor: 'pointer',
+                alignSelf: 'flex-start',
+                position: 'absolute',
+                top: '-12px',
+                right: '-12px',
+              }}
+              onClick={() => clearSelectedPhoto(residentialIndex, image, 'propertyres_image')}
+            />
+            {imgLoader && index === residentialImage[residentialIndex].length - 1 && (
+              <div className="loader">
+                {/* Your loader component goes here */}
+              </div>
+            )}
+          </div>
+        ))}
+      <OpenImageDialog open={open} setOpen={setOpen} selectedImage={selectedImage} />
+    </div>
                                       </FormGroup>
                                     </div>
                                   </Col>
@@ -3447,66 +3440,55 @@ const Rentals = () => {
                                         </span>
                                       </FormGroup>
                                       <FormGroup>
-                                        <div className="d-flex">
-                                          {commercialImage[index] &&
-                                            commercialImage[index].length > 0 &&
-                                            commercialImage[index].map(
-                                              (commercialImage) => (
-                                                <div
-                                                  key={commercialImage}
-                                                  style={{
-                                                    position: "relative",
-                                                    width: "100px",
-                                                    height: "100px",
-                                                    margin: "10px",
-                                                    display: "flex",
-                                                    flexDirection: "column",
-                                                  }}
-                                                >
-                                                  <img
-                                                    src={commercialImage}
-                                                    alt=""
-                                                    style={{
-                                                      width: "100px",
-                                                      height: "100px",
-                                                      maxHeight: "100%",
-                                                      maxWidth: "100%",
-                                                      borderRadius: "10px",
-
-                                                      // objectFit: "cover",
-                                                    }}
-                                                    onClick={() => {
-                                                      setSelectedImage(
-                                                        commercialImage
-                                                      );
-                                                      setOpen(true);
-                                                    }}
-                                                  />
-                                                  <ClearIcon
-                                                    style={{
-                                                      cursor: "pointer",
-                                                      alignSelf: "flex-start",
-                                                      position: "absolute",
-                                                      top: "-12px",
-                                                      right: "-12px",
-                                                    }}
-                                                    onClick={() =>
-                                                      clearSelectedPhoto(
-                                                        index,
-                                                        commercialImage,
-                                                        "property_image"
-                                                      )
-                                                    }
-                                                  />
-                                                </div>
-                                              )
-                                            )}
-                                          <OpenImageDialog
-                                            open={open}
-                                            setOpen={setOpen}
-                                            selectedImage={selectedImage}
-                                          />
-                                        </div>
+                                      <div className="mt-3 d-flex" style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
+                                      {commercialImage &&
+  Array.isArray(commercialImage[index]) &&
+  commercialImage[index].map((image, index) => (
+          <div
+            key={index}
+            style={{
+              position: 'relative',
+              width: '100px',
+              height: '100px',
+              margin: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <img
+              src={image}
+              alt=""
+              style={{
+                width: '100px',
+                height: '100px',
+                maxHeight: '100%',
+                maxWidth: '100%',
+                borderRadius: '10px',
+              }}
+              onClick={() => {
+                setSelectedImage(image);
+                setOpen(true);
+              }}
+            />
+            <ClearIcon
+              style={{
+                cursor: 'pointer',
+                alignSelf: 'flex-start',
+                position: 'absolute',
+                top: '-12px',
+                right: '-12px',
+              }}
+              onClick={() => clearSelectedPhoto(index, image, 'propertyres_image')}
+            />
+            {imgLoader && index === commercialImage[index].length - 1 && (
+              <div className="loader">
+                {/* Your loader component goes here */}
+              </div>
+            )}
+          </div>
+        ))}
+      <OpenImageDialog open={open} setOpen={setOpen} selectedImage={selectedImage} />
+    </div>
                                       </FormGroup>
                                     </div>
                                   </Col>

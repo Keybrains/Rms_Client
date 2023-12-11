@@ -249,6 +249,8 @@ const AddWorkorder = () => {
   };
 
   const [workOrderData, setWorkOrderData] = useState(null);
+  const [vid, setVid] = useState('')
+  const [entriesID, setentriesID] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -264,6 +266,11 @@ const AddWorkorder = () => {
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
             : "";
+
+            setVid(vendorData._id)
+          console.log("vid",vendorData._id)
+          setentriesID(vendorData.entries._id)
+          console.log("vid",vendorData.entries[0]._id)
   
           try {
             const units = await fetchUnitsByProperty(vendorData.rental_adress);
@@ -516,6 +523,42 @@ const AddWorkorder = () => {
     }
   });
 console.log(WorkFormik.values,'workForjnik')
+
+const editworkorder = async (vid) => {
+  console.log("Updating:", vid);
+  const formattedDueDate = WorkFormik.values.due_date
+  ? new Date(WorkFormik.values.due_date).toISOString().split("T")[0]
+  : "";
+  try {
+console.log(baseUrl)
+const entriesData = WorkFormik.entries || [];
+    const response = await axios.put(`${baseUrl}/workorder/updateworkorder/${vid}`, {
+      work_subject: WorkFormik.values.work_subject,
+      rental_adress: selectedProp,
+      unit_no: WorkFormik.values.unit_no ,
+      work_category: selectedCategory,
+      vendor_name:selectedVendor,
+      invoice_number: WorkFormik.values.invoice_number,
+      work_charge: WorkFormik.values.work_charge,
+      entry_allowed: selectedEntry,
+      staffmember_name: WorkFormik.values.staffmember_name,
+      work_performed: WorkFormik.values.work_performed,
+      vendor_note: WorkFormik.values.vendor_note,
+      priority: selectedPriority,
+      status: selectedStatus,
+      due_date: formattedDueDate,
+        // part_qty: entry.part_qty,
+        // account_type: entry.account_type,
+        // description: entry.description,
+        // part_price: entry.part_price,
+        // total_amount: entry.total_amount,
+    });
+    handleResponse(response);
+    console.log("Workorder updated successfully", response.data);
+  } catch (error) {
+    console.error("Error updating workorder:", error);
+  }
+};
   return (
     <>
       <AddWorkorderHeader />
@@ -1646,14 +1689,26 @@ console.log(WorkFormik.values,'workForjnik')
 
                     <br />
                   </div>
+                  {id ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        editworkorder(vid);
+                      }}
+                    >
+                      Update Work Order
+                    </button>
+                  ) : (
                   <button
                     type="submit"
-                    onSubmit={{ handleSubmit }}
                     className="btn btn-primary ml-4"
                     style={{ background: "green" }}
                   >
-                    {id ? "Update Work Order" : "Add Work Order"}
-                  </button>
+                    Add Work Order
+                  </button>)}
                   <button
                     color="primary"
                     href="#rms"
