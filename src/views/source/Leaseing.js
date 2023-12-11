@@ -584,7 +584,50 @@ const Leaseing = () => {
 
   const [file, setFile] = useState("");
   let navigate = useNavigate();
+  const [isStartDateUnavailable, setIsStartDateUnavailable] = useState(false);
+  const [overlapStartDateLease, setOverlapStartDateLease] = useState(null);
 
+  const checkStartDate = async (date) => {
+    if (selectedPropertyType && selectedUnit) {
+      let response = await axios.get(`${baseUrl}/tenant/tenants`);
+      const data = response.data.data;
+
+      let isStartDateUnavailable = false;
+      let overlappingLease = null;
+
+      data.forEach((entry) => {
+        if (
+          selectedPropertyType === entry.entries.rental_adress &&
+          selectedUnit === entry.entries.rental_units
+        ) {
+          const sDate = new Date(entry.entries.start_date);
+          const eDate = new Date(entry.entries.end_date);
+          const inputDate = new Date(date);
+
+          if (
+            sDate.getTime() < inputDate.getTime() &&
+            inputDate.getTime() < eDate.getTime()
+          ) {
+            isStartDateUnavailable = true;
+            overlappingLease = entry.entries;
+          }
+        }
+      });
+
+      setIsStartDateUnavailable(isStartDateUnavailable);
+      setOverlapStartDateLease(overlappingLease);
+
+      // Additional validation logic can be added here
+      if (isStartDateUnavailable) {
+        entrySchema.setFieldError(
+          "start_date",
+          "Start date overlaps with an existing lease"
+        );
+      } else {
+        entrySchema.setFieldError("start_date", null);
+      }
+    }
+  };
   const handleAdd = async (values) => {
     values["account_name "] = selectedAccount;
     values["account_type"] = selectedAccountType;
@@ -2459,20 +2502,29 @@ const Leaseing = () => {
                             onChange={(e) => {
                               handleDateChange(e.target.value);
                               entrySchema.handleChange(e);
+                              checkStartDate(e.target.value); // Check for start date
+                              console.log(
+                                "isStartDateUnavailable:",
+                                isDateUnavailable
+                              );
                             }}
                             value={moment(entrySchema.values.start_date).format(
                               "YYYY-MM-DD"
                             )}
                           />
-                          {entrySchema.errors &&
-                          entrySchema.errors?.start_date &&
-                          entrySchema.touched &&
-                          entrySchema.touched?.start_date &&
-                          entrySchema.values.start_date === "" ? (
-                            <div style={{ color: "red" }}>
-                              {entrySchema.errors.start_date}
+                          {isStartDateUnavailable && (
+                            <div style={{ color: "red", marginTop: "8px" }}>
+                              This start date overlaps with an existing lease:{" "}
+                              {overlapStartDateLease?.rental_adress} | -{" "}
+                              {moment(overlapStartDateLease?.start_date).format(
+                                "DD-MM-YYYY"
+                              )}{" "}
+                              {moment(overlapStartDateLease?.end_date).format(
+                                "DD-MM-YYYY"
+                              )}
+                              . Please adjust your start date and try again.
                             </div>
-                          ) : null}
+                          )}
                         </FormGroup>
                       </Col>
                       &nbsp; &nbsp; &nbsp;
