@@ -114,6 +114,7 @@ const Leaseing = () => {
   const [selectedOption, setSelectedOption] = useState("Tenant");
   // const [selectedValue, setSelectedValue] = useState(null);
   const [showForm, setShowForm] = useState("Tenant");
+  const [paymentOptionDropdawnOpen, setPaymentOptionDropdawnOpen] = useState(false)
 
   const [accountNames, setAccountNames] = useState([]);
   const [RecAccountNames, setRecAccountNames] = useState([]);
@@ -141,6 +142,10 @@ const Leaseing = () => {
     "Quarterly",
     "Yearly",
   ];
+  const selectPaymentMethod = [
+    "Manually",
+    "AutoPayment",
+  ];
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -159,6 +164,7 @@ const Leaseing = () => {
   const toggle11 = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
+  const paymentMethodtoggle = () => setPaymentOptionDropdawnOpen((prevState) => !prevState);
 
   const handleClick = (event) => {
     setrentincDropdownOpen1((current) => !current);
@@ -272,6 +278,14 @@ const Leaseing = () => {
     }
   };
   console.log(ownerData, "ownerData");
+
+  const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] = useState("")
+  const handleselectedPaymetMethod = (paymentMethod) => {
+    setSelectPaymentMethodDropdawn(paymentMethod);
+    // localStorage.setItem("leasetype", leasetype);
+    entrySchema.setFieldValue("paymentMethod", paymentMethod);
+    setSelectPaymentMethodDropdawn(paymentMethod);
+  };
 
   const [selectedLeaseType, setselectedLeaseType] = useState("");
 
@@ -1179,7 +1193,7 @@ const Leaseing = () => {
   let entrySchema = useFormik({
     initialValues: {
       rental_adress: "",
-
+      tenant_residentStatus:false,
       lease_type: "",
       rental_units: "",
       unit_id:"",
@@ -1680,6 +1694,7 @@ const Leaseing = () => {
       emergency_PhoneNumber: tenantsSchema.values.emergency_PhoneNumber,
       entries: [
         {
+          paymentMethod: entrySchema.values.paymentMethod,
           rental_units: entrySchema.values.rental_units,
           entryIndex: entrySchema.values.entryIndex,
           rental_adress: entrySchema.values.rental_adress,
@@ -1734,7 +1749,7 @@ const Leaseing = () => {
 
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
-          tenant_residentStatus: ownerData.tenant_residentStatus,
+          tenant_residentStatus: entrySchema.values.tenant_residentStatus || false,
           rentalOwner_firstName: ownerData.rentalOwner_firstName,
           rentalOwner_lastName: ownerData.rentalOwner_lastName,
           rentalOwner_primaryemail: ownerData.rentalOwner_email,
@@ -1957,8 +1972,8 @@ const Leaseing = () => {
           paymentAndCharges: [
             {
               type: "Charge",
-              charge_type: "",
-              account: entrySchema.values.account,
+              charge_type: "Rent",
+              //account: entrySchema.values.account,
               amount: parseFloat(entrySchema.values.amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: entrySchema.values.rent_cycle,
@@ -2000,7 +2015,7 @@ const Leaseing = () => {
             {
               type: "Charge",
               charge_type: "Security Deposit",
-              account: "" ,
+              //account: "" ,
               amount: parseFloat(Security_amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",
@@ -5770,17 +5785,24 @@ const Leaseing = () => {
                     </Col>
 
                     <FormGroup>
+                    
                       <FormControlLabel
+                      
                         control={
                           <Switch
                             color="primary"
-                            value={tenantsSchema.values.tenant_residentStatus}
+                            
+                            value={entrySchema.values.tenant_residentStatus}
                             onChange={(e) => {
-                              tenantsSchema.setFieldValue(
+                              entrySchema.setFieldValue(
                                 "tenant_residentStatus",
                                 e.target.checked
                               );
-                              console.log(e.target.checked);
+                              console.log( entrySchema.setFieldValue(
+                                "tenant_residentStatus",
+                                e.target.checked),"setFieldValue");
+                              console.log(entrySchema.values.tenant_residentStatus,"value");
+                              console.log(e.target.checked,"e.target.checked");
                             }}
                           />
                         }
@@ -5789,6 +5811,50 @@ const Leaseing = () => {
                       />
                     </FormGroup>
                   </Row>
+                 
+                    <Row>
+                      <Col md="12">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            Select Payment Method
+                          </label>
+                          <FormGroup>
+                            <Dropdown
+                              isOpen={paymentOptionDropdawnOpen}
+                              toggle={paymentMethodtoggle}
+                            >
+                              <DropdownToggle caret style={{ width: "100%" }}>
+                                {selectPaymentMethodDropdawn
+                                  ? selectPaymentMethodDropdawn
+                                  : "Select"}
+                              </DropdownToggle>
+                              <DropdownMenu
+                                style={{ width: "100%" }}
+                                name="paymentMethod"
+                                onBlur={entrySchema.handleBlur}
+                                onChange={(e) => entrySchema.handleChange(e)}
+                                value={entrySchema.values.paymentMethod}
+                              >
+                                {selectPaymentMethod.map((option) => (
+                                  <DropdownItem
+                                    key={option}
+                                    onClick={() =>
+                                      handleselectedPaymetMethod(option)
+                                    }
+                                  >
+                                    {option}
+                                  </DropdownItem>
+                                ))}
+                              </DropdownMenu>
+                            </Dropdown>
+                          </FormGroup>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                
                   {/* <Button
                   color="primary"
                   href="#rms"
