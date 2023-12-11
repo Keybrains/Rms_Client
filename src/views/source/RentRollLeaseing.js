@@ -256,17 +256,17 @@ const RentRollLeaseing = () => {
       return [];
     }
   };
-
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [propertyId, setPropertyId] = useState("");
   const [ownerData, setOwnerData] = useState({});
+  console.log(ownerData,'ownerData')
   // console.log(selectedPropertyType, "selectedPropertyType")
-  const handlePropertyTypeSelect = async (propertyType, property_id) => {
+  const handlePropertyTypeSelect = async (propertyType, property) => {
     setSelectedPropertyType(propertyType);
-    setPropertyId(property_id);
+    setPropertyId(property._id);
     entrySchema.values.rental_adress = propertyType;
     setSelectedUnit(""); // Reset selected unit when a new property is selected
-    setOwnerData(propertyType);
+    setOwnerData(property);
     try {
       const units = await fetchUnitsByProperty(propertyType);
       console.log(units, "units"); // Check the received units in the console
@@ -411,6 +411,7 @@ const RentRollLeaseing = () => {
         firstName: tenantParts[0],
         lastName: tenantParts[1],
         mobileNumber: tenantParts[2],
+        
         // textpayerid: tenantParts[3],
         // birthdate: tenantParts[4],
         // comments: tenantParts[5],
@@ -827,7 +828,7 @@ const RentRollLeaseing = () => {
 
   // useEffect(() => {
   //   // Make an HTTP GET request to your Express API endpoint
-  //   fetch("http://localhost:4000/api/addaccount/find_accountname")
+  //   fetch("https://propertymanager.cloudpress.host/api/addaccount/find_accountname")
   //     .then((response) => response.json())
   //     .then((data) => {
   //       if (data.statusCode === 200) {
@@ -1361,6 +1362,7 @@ const RentRollLeaseing = () => {
       isrenton: false,
       rent_paid: false,
       propertyOnRent: false,
+      property_id:'',
 
       //security deposite
       Due_date: "",
@@ -1485,6 +1487,142 @@ const RentRollLeaseing = () => {
     },
   });
 
+  const applicantData = state && state.applicantData
+  console.log(applicantData, "applicantData")
+  console.log(propertyId, "propertyId")
+  useEffect(() => {
+    const setData = async () =>{
+    
+    if(state && state.applicantData) {
+      try {
+        const units = await fetchUnitsByProperty(
+          applicantData.rental_adress
+        );
+        console.log(units, "unitssssssssssssss"); // Check the received units in the console
+
+        setUnitData(units);
+      } catch (error) {
+        console.log(error, "error");
+      }
+
+      setSelectedTenantData({
+        firstName: applicantData.tenant_firstName || "",
+        lastName: applicantData.tenant_lastName || "",
+        mobileNumber: applicantData.tenant_mobileNumber || "",
+      });
+      setPropertyId(applicantData.property_id);
+      
+      setSelectedPropertyType(applicantData.rental_adress || "Select");
+      setselectedLeaseType(applicantData.lease_type || "Select");
+      setselectedRentCycle(applicantData.rent_cycle || "Select");
+      setselectedAccount(applicantData.account || "Select");
+      setselectedAccount(applicantData.account_name || "Select");
+      setselectedOneTimeAccount(applicantData.onetime_account || "Select");
+      setselectedRecuringAccount(applicantData.recuring_account);
+      setselectedFrequency(applicantData.recuringfrequency || "Select");
+      setselectedAccountType(applicantData.account_type || "Select");
+      setselectedAccountLevel(applicantData.parent_account || "Select");
+      setselectedFundType(applicantData.fund_type || "Select");
+      setSelectedAgent(applicantData.leasing_agent || "Select");
+      setSelectedUnit(applicantData.rental_units || "");
+
+      entrySchema.setValues({
+        entryIndex: applicantData.entryIndex,
+        rental_adress: applicantData.rental_adress,
+        rental_units: applicantData.rental_units,
+        lease_type: applicantData.lease_type,
+        start_date: applicantData.start_date,
+        end_date: applicantData.end_date,
+        leasing_agent: applicantData.leasing_agent,
+        rent_cycle: applicantData.rent_cycle,
+        amount: applicantData.amount,
+        account: applicantData.account,
+        nextDue_date: applicantData.nextDue_date,
+        memo: applicantData.memo || "Rent",
+        upload_file: applicantData.upload_file,
+        isrenton: applicantData.isrenton,
+        rent_paid: applicantData.rent_paid,
+        propertyOnRent: applicantData.propertyOnRent,
+
+        //security deposite
+        Due_date: applicantData.Due_date,
+        Security_amount: applicantData.Security_amount,
+
+        // add cosigner
+        cosigner_firstName: applicantData.cosigner_firstName,
+        cosigner_lastName: applicantData.cosigner_lastName,
+        cosigner_mobileNumber: applicantData.cosigner_mobileNumber,
+        cosigner_workNumber: applicantData.cosigner_workNumber,
+        cosigner_homeNumber: applicantData.cosigner_homeNumber,
+        cosigner_faxPhoneNumber: applicantData.cosigner_faxPhoneNumber,
+        cosigner_email: applicantData.cosigner_email,
+        cosigner_alternateemail: applicantData.cosigner_alternateemail,
+        cosigner_streetAdress: applicantData.cosigner_streetAdress,
+        cosigner_city: applicantData.cosigner_city,
+        cosigner_state: applicantData.cosigner_state,
+        cosigner_zip: applicantData.cosigner_zip,
+        cosigner_country: applicantData.cosigner_country,
+        cosigner_postalcode: applicantData.cosigner_postalcode,
+
+        // add account
+        account_name: applicantData.account_name,
+        account_type: applicantData.account_type,
+
+        //account level (sub account)
+        parent_account: applicantData.parent_account,
+        account_number: applicantData.account_number,
+        fund_type: applicantData.fund_type,
+        cash_flow: applicantData.cash_flow,
+        notes: applicantData.notes,
+        unit_id:applicantData.unit_id,
+        property_id:applicantData.property_id,
+        // rental_units: applicantData.rental_units
+      });
+
+      tenantsSchema.setValues({
+        tenant_id: applicantData.tenant_id,
+
+        //   Add tenants
+        tenant_firstName: applicantData.tenant_firstName,
+        tenant_lastName: applicantData.tenant_lastName,
+        tenant_unitNumber: applicantData.tenant_unitNumber,
+        // tenant_phoneNumber: { type: Number },
+        tenant_mobileNumber: applicantData.tenant_mobileNumber,
+        tenant_workNumber: applicantData.tenant_workNumber,
+        tenant_homeNumber: applicantData.tenant_homeNumber,
+        tenant_faxPhoneNumber: applicantData.tenant_faxPhoneNumber,
+        tenant_email: applicantData.tenant_email,
+        tenant_password: applicantData.tenant_password,
+        alternate_email: applicantData.alternate_email,
+        tenant_residentStatus: applicantData.tenant_residentStatus,
+
+        // personal information
+        birth_date: applicantData.birth_date,
+        textpayer_id: applicantData.textpayer_id,
+        comments: applicantData.comments,
+
+        //Emergency contact
+
+        contact_name: applicantData.contact_name,
+        relationship_tenants: applicantData.relationship_tenants,
+        email: applicantData.email,
+        emergency_PhoneNumber: applicantData.emergency_PhoneNumber,
+      }); 
+      setOwnerData({
+      rentalOwner_firstName: applicantData.rentalOwner_firstName,
+      rentalOwner_lastName: applicantData.rentalOwner_lastName,
+      rentalOwner_primaryemail: applicantData.rentalOwner_email,
+      rentalOwner_phoneNumber: applicantData.rentalOwner_phoneNumber,
+      rentalOwner_businessNumber: applicantData.rentalOwner_businessNumber,
+      rentalOwner_homeNumber: applicantData.rentalOwner_homeNumber,
+      rentalOwner_companyName: applicantData.rentalOwner_companyName,
+      });
+    }
+  }
+setData();
+
+  }, []);
+  console.log(tenantsSchema.values,entrySchema.values, "tenantsSchema.values");
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
     const fetchData = async () => {
@@ -1504,6 +1642,7 @@ const RentRollLeaseing = () => {
           const matchedLease = laesingdata.entries.find(
             (entry) => entry.entryIndex === entryIndex
           );
+          console.log(matchedLease, "matchedLease");
           try {
             const units = await fetchUnitsByProperty(
               matchedLease.rental_adress
@@ -1560,6 +1699,7 @@ const RentRollLeaseing = () => {
           setselectedFundType(matchedLease.fund_type || "Select");
           setSelectedAgent(matchedLease.leasing_agent || "Select");
           setSelectedUnit(matchedLease.rental_units || "");
+          // setSelectedUnit(matchedLease.rental_units || "Select");
           // console.log(laesingdata, "yashraj")
           // setFile(arrayOfObjects || "Select");
           // console.log(matchedLease.upload_file, "upload_fileeee");
@@ -1644,7 +1784,18 @@ const RentRollLeaseing = () => {
             relationship_tenants: laesingdata.relationship_tenants,
             email: laesingdata.email,
             emergency_PhoneNumber: laesingdata.emergency_PhoneNumber,
+          }); 
+          setOwnerData({
+          rentalOwner_firstName: matchedLease.rentalOwner_firstName,
+          rentalOwner_lastName: matchedLease.rentalOwner_lastName,
+          rentalOwner_primaryemail: matchedLease.rentalOwner_email,
+          rentalOwner_phoneNumber: matchedLease.rentalOwner_phoneNumber,
+          rentalOwner_businessNumber: matchedLease.rentalOwner_businessNumber,
+          rentalOwner_homeNumber: matchedLease.rentalOwner_homeNumber,
+          rentalOwner_companyName: matchedLease.rentalOwner_companyName,
           });
+          // setPropertyId(matchedLease.property_id);
+        
 
           setRecurringData(matchedLease.recurring_charges);
           setOneTimeData(matchedLease.one_time_charges);
@@ -1734,109 +1885,6 @@ const RentRollLeaseing = () => {
   console.log(oneTimeData, "oneTimeData");
   console.log(unitData, "unitData");
   const handleSubmit = async (values) => {
-    // debugger
-    // console.log(file, "values");
-    // const arrayOfNames = Array.isArray(file)
-    //   ? file.map((item) => item.name)
-    //   : [];
-
-    // const entriesArray = [];
-
-    // const entriesObject = {
-    //   rental_adress: leaseFormik.values.entries[0].rental_adress,
-    //   lease_type: leaseFormik.values.entries[0].lease_type,
-    //   start_date: leaseFormik.values.entries[0].start_date,
-    //   end_date: leaseFormik.values.entries[0].end_date,
-    //   leasing_agent: selectedAgent,
-    //   rent_cycle: selectedRentCycle,
-    //   amount: leaseFormik.values.entries[0].amount,
-    //   // account: selectedAccount,
-    //   nextDue_date: leaseFormik.values.nextDue_date,
-    //   memo: leaseFormik.values.memo,
-    //   isrenton: leaseFormik.values.isrenton,
-    //   propertyOnRent: leaseFormik.values.propertyOnRent,
-    //   Due_date: leaseFormik.values.Due_date,
-    //   Security_amount: leaseFormik.values.Security_amount,
-
-    //   //add consigner
-    //   cosigner_firstName: consignerFormik.values.entries[0].cosigner_firstName,
-    //   cosigner_lastName: consignerFormik.values.entries[0].cosigner_lastName,
-    //   cosigner_mobileNumber:
-    //     consignerFormik.values.entries[0].cosigner_mobileNumber,
-    //   cosigner_workNumber:
-    //     consignerFormik.values.entries[0].cosigner_workNumber,
-    //   cosigner_homeNumber:
-    //     consignerFormik.values.entries[0].cosigner_homeNumber,
-    //   cosigner_faxPhoneNumber:
-    //     consignerFormik.values.entries[0].cosigner_faxPhoneNumber,
-    //   cosigner_email: consignerFormik.values.entries[0].cosigner_email,
-    //   cosigner_alternateemail:
-    //     consignerFormik.values.entries[0].cosigner_alternateemail,
-    //   cosigner_streetAdress:
-    //     consignerFormik.values.entries[0].cosigner_streetAdress,
-    //   cosigner_city: consignerFormik.values.entries[0].cosigner_city,
-    //   cosigner_state: consignerFormik.values.entries[0].cosigner_state,
-    //   cosigner_zip: consignerFormik.values.entries[0].cosigner_zip,
-    //   cosigner_country: consignerFormik.values.entries[0].cosigner_country,
-    //   cosigner_postalcode:
-    //     consignerFormik.values.entries[0].cosigner_postalcode,
-
-    //   // add recuring charge
-
-    //   recuring_amount: leaseFormik.values.entries[0].recuring_amount,
-    //   recuring_account: leaseFormik.values.entries[0].recuring_account,
-    //   // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-    //   recuringmemo: leaseFormik.values.entries[0].recuringmemo,
-    //   // recuringfrequency: selectedFrequency,
-
-    //   //add one time charge
-
-    //   // recuring_amount: leaseFormik.values.entries[0].recuring_amount,
-    //   // recuring_account: leaseFormik.values.entries[0].recuring_account,
-    //   // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-    //   // recuringmemo: leaseFormik.values.entries[0].recuringmemo,
-    //   // recuringfrequency: selectedFrequency,
-
-    //   // add account
-    //   account_name: selectedAccount,
-    //   account_type: leaseFormik.values.account_type,
-
-    //   //upload File
-    //   upload_file: arrayOfNames,
-
-    //   parent_account: leaseFormik.values.parent_account,
-    //   account_number: leaseFormik.values.account_number,
-    //   fund_type: leaseFormik.values.fund_type,
-    //   cash_flow: leaseFormik.values.cash_flow,
-    //   notes: leaseFormik.values.notes,
-    // };
-
-    // entriesArray.push(entriesObject);
-
-    // const leaseObject = {
-    //   tenant_firstName: tenantsFormik.values.tenant_firstName,
-    //   tenant_lastName: tenantsFormik.values.tenant_lastName,
-    //   tenant_mobileNumber: tenantsFormik.values.tenant_mobileNumber,
-    //   tenant_email: tenantsFormik.values.tenant_email,
-    //   tenant_password: tenantsFormik.values.tenant_password,
-    //   tenant_workNumber: tenantsFormik.values.tenant_workNumber,
-    //   tenant_unitNumber: tenantsFormik.values.tenant_unitNumber,
-    //   tenant_homeNumber: tenantsFormik.values.tenant_homeNumber,
-    //   tenant_faxPhoneNumber: tenantsFormik.values.tenant_faxPhoneNumber,
-    //   alternate_email: tenantsFormik.values.alternate_email,
-    //   tenant_residentStatus: tenantsFormik.values.tenant_residentStatus,
-
-    //   birth_date: tenantsFormik.values.birth_date,
-    //   textpayer_id: tenantsFormik.values.textpayer_id,
-    //   comments: tenantsFormik.values.comments,
-
-    //   contact_name: tenantsFormik.values.contact_name,
-    //   relationship_tenants: tenantsFormik.values.relationship_tenants,
-    //   email: tenantsFormik.values.email,
-    //   emergency_PhoneNumber: tenantsFormik.values.emergency_PhoneNumber,
-
-    //   entries: entriesArray,
-    // };
 
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
@@ -1967,17 +2015,21 @@ const RentRollLeaseing = () => {
 
             // debugger;
             if (entrySchema.values.unit_id) {
+
               await postCharge(
                 entrySchema.values.rental_units,
                 entrySchema.values.unit_id,
                 tenantId
               );
+
               await postDeposit(
                 entrySchema.values.rental_units,
                 entrySchema.values.unit_id,
                 tenantId,
                 entrySchema.values.Security_amount
               );
+
+              // await delay(1000); // Delay for 3 seconds
 
               for (const item of recurringData) {
                 await postRecOneCharge(
@@ -2002,6 +2054,11 @@ const RentRollLeaseing = () => {
               }
             } else {
               await postCharge("", "", tenantId);
+              await postDeposit(
+                "","",
+                tenantId,
+                entrySchema.values.Security_amount
+              );
 
               await postDeposit(
                 "","",
@@ -2034,30 +2091,29 @@ const RentRollLeaseing = () => {
               tenantObject
             );
             if (res.data.statusCode === 200) {
-              console.log(res.data.data);
-
+              console.log(res.data.data,'response after adding data');
+              debugger
               const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
 
             // debugger;
             if (entrySchema.values.unit_id) {
               await postCharge(
-                res.data.data.rental_units,
-                res.data.data.unit_id,
+                res.data.data.entries[0].rental_units,
+                res.data.data.entries[0].unit_id,
                 res.data.data._id
               );
-
               await postDeposit(
-                res.data.data.rental_units,
-                res.data.data.unit_id,
+                res.data.data.entries[0].rental_units,
+                res.data.data.entries[0].unit_id,
                 res.data.data._id,
-                res.data.data.Security_amount
+                res.data.data.entries[0].Security_amount
               );
 
               for (const item of recurringData) {
                 await postRecOneCharge(
-                  res.data.data.rental_units,
-                  res.data.data.unit_id,
+                  res.data.data.entries[0].rental_units,
+                  res.data.data.entries[0].unit_id,
                    res.data.data._id,
                   item,
                   "Recurring"
@@ -2067,8 +2123,8 @@ const RentRollLeaseing = () => {
 
               for (const item of oneTimeData) {
                 await postRecOneCharge(
-                  res.data.data.rental_units,
-                  res.data.data.unit_id,
+                  res.data.data.entries[0].rental_units,
+                  res.data.data.entries[0].unit_id,
                    res.data.data._id,
                   item,
                   "OneTime"
@@ -2080,7 +2136,7 @@ const RentRollLeaseing = () => {
               await postDeposit(
                 "","",
                 res.data.data._id,
-                res.data.data.Security_amount
+                res.data.data.entries[0].Security_amount
               );
               for (const item of recurringData) {
                 await postRecOneCharge("", "",  res.data.data._id, item, "Recurring");
@@ -2127,8 +2183,8 @@ const RentRollLeaseing = () => {
       },
       unit: [
         {
-          unit: unit ? unit : "",
-          unit_id: unitId ? unitId : "",
+          unit: unit ,
+          unit_id: unitId ,
           paymentAndCharges: [
             {
               type: "Charge",
@@ -2169,8 +2225,8 @@ const RentRollLeaseing = () => {
       },
       unit: [
         {
-          unit: unit ? unit : "",
-          unit_id: unitId ? unitId : "",
+          unit: unit ,
+          unit_id: unitId ,
           paymentAndCharges: [
             {
               type: "Charge",
@@ -2222,8 +2278,8 @@ const RentRollLeaseing = () => {
       },
       unit: [
         {
-          unit: unit || "",
-          unit_id: unitId || "",
+          unit: unit ,
+          unit_id: unitId ,
           paymentAndCharges: [
             {
               type: "Charge",
@@ -2326,6 +2382,15 @@ const RentRollLeaseing = () => {
 
       recurring_charges: recurringData,
       one_time_charges: oneTimeData,
+
+      tenant_residentStatus: ownerData.tenant_residentStatus,
+      rentalOwner_firstName: ownerData.rentalOwner_firstName,
+      rentalOwner_lastName: ownerData.rentalOwner_lastName,
+      rentalOwner_primaryemail: ownerData.rentalOwner_email,
+      rentalOwner_phoneNumber: ownerData.rentalOwner_phoneNumber,
+      rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
+      rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
+      rentalOwner_companyName: ownerData.rentalOwner_companyName,
     };
     entriesArray.push(entriesObject);
 
@@ -2407,7 +2472,7 @@ const RentRollLeaseing = () => {
   //   if (entryIndex) {
   //     setAlignment("Signed");
   //     axios
-  //       .get("http://localhost:4000/api/rentals/allproperty")
+  //       .get("https://propertymanager.cloudpress.host/api/rentals/allproperty")
   //       .then((propRes) => {
   //         axios
   //           .get(
@@ -2609,7 +2674,8 @@ const RentRollLeaseing = () => {
                                   onClick={() => {
                                     handlePropertyTypeSelect(
                                       property.rental_adress,
-                                      property._id
+                                      property,
+
                                     );
                                   }}
                                 >
@@ -5903,7 +5969,7 @@ const RentRollLeaseing = () => {
                     </Col>
                   </Row>
 
-                  {/* <div class="file-upload-wrapper">
+                  {/* <div className="file-upload-wrapper">
                     <input
                       type="file"
                       className="form-control-file d-block"
@@ -5920,8 +5986,8 @@ const RentRollLeaseing = () => {
                       </div>
                     ) : null}
                   </div> */}
-                  <div class="d-flex">
-                    <div class="file-upload-wrapper">
+                  <div className="d-flex">
+                    <div className="file-upload-wrapper">
                       {console.log(
                         entrySchema.values,
                         "entrySchema.values 5662"
@@ -5947,7 +6013,7 @@ const RentRollLeaseing = () => {
                         // onChange={rentalsFormik.handleChange}
                         // value={entrySchema.values.upload_file}
                       />
-                      <label for="upload_file" class="btn">
+                      <label for="upload_file" className="btn">
                         Upload
                       </label>
                     </div>

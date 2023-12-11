@@ -303,7 +303,7 @@ const AddPayment = () => {
 
       if (response.data.statusCode === 200) {
         console.log(response.data.data,'resdadadadad')
-        debugger
+        
         const id = response.data.data._id;
         if (id) {
           const pdfResponse = await axios.get(
@@ -1094,8 +1094,8 @@ const AddPayment = () => {
                           Upload Files (Maximum of 10)
                         </label>
 
-                        <div class="d-flex">
-                          <div class="file-upload-wrapper">
+                        <div className="d-flex">
+                          <div className="file-upload-wrapper">
                             <input
                               type="file"
                               className="form-control-file d-none"
@@ -1105,7 +1105,7 @@ const AddPayment = () => {
                               multiple
                               onChange={(e) => fileData(e.target.files)}
                             />
-                            <label for="upload_file" class="btn">
+                            <label for="upload_file" className="btn">
                               Choose Files
                             </label>
 
