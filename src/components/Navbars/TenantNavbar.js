@@ -299,12 +299,12 @@ const navigateToDetails = (workorder_id) => {
             <UncontrolledDropdown nav>
               <DropdownToggle className="pr-0" nav>
                 <Media className="align-items-center">
-                  <span className="avatar avatar-sm rounded-circle">
+                  {/* <span className="avatar avatar-sm rounded-circle">
                     <img
                       alt="..."
                       src={require("../../assets/img/theme/profile-cover.jpg")}
                     />
-                  </span>
+                  </span> */}
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
                     {vendorDetails.tenant_firstName} { vendorDetails.tenant_lastName }
