@@ -384,7 +384,8 @@ const TenantFinancial = () => {
 
       if (response.data && response.data.statusCode === 100) {
         swal("Success", response.data.message, "success"); // Adjust the swal parameters as needed
-        window.location.reload()
+        // window.location.reload()
+        await getGeneralLedgerData();
         console.log("Payment successful");
         closeModal();
 

@@ -64,7 +64,7 @@ const RentRollLeaseing = () => {
   const location = useLocation();
   const { state } = location;
   const yourData = state && state.fromComponent;
-  console.log(yourData, "yourData");
+  // console.log(yourData, "yourData");
   // console.log(id, propertyId, "propertyId");
   const [tenantData, setTenantData] = useState([]);
   const [selectedTenantData, setSelectedTenantData] = useState([]);
@@ -661,7 +661,7 @@ const RentRollLeaseing = () => {
   //       console.log("Error uploading image:", err);
   //     });
   // };
-  console.log(propertyId, "porpeorjinhb");
+  // console.log(propertyId, "porpeorjinhb");
   const fileData = (files) => {
     //setImgLoader(true);
     // console.log(files, "file");
@@ -1319,10 +1319,6 @@ const RentRollLeaseing = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
-  }, [isDateUnavailable]);
-
   let recurringChargeSchema = useFormik({
     initialValues: {
       recuring_amount: "",
@@ -1898,10 +1894,52 @@ const RentRollLeaseing = () => {
     };
     fetchData();
   }, [id, entryIndex]);
-  console.log(baseUrl, "baseurl");
-  console.log(recurringData, "recurringData");
-  console.log(oneTimeData, "oneTimeData");
-  console.log(unitData, "unitData");
+
+  const [isStartDateUnavailable, setIsStartDateUnavailable] = useState(false);
+  const [overlapStartDateLease, setOverlapStartDateLease] = useState(null);
+
+  const checkStartDate = async (date) => {
+    if (selectedPropertyType && selectedUnit) {
+      let response = await axios.get(`${baseUrl}/tenant/tenants`);
+      const data = response.data.data;
+
+      let isStartDateUnavailable = false;
+      let overlappingLease = null;
+
+      data.forEach((entry) => {
+        if (
+          selectedPropertyType === entry.entries.rental_adress &&
+          selectedUnit === entry.entries.rental_units
+        ) {
+          const sDate = new Date(entry.entries.start_date);
+          const eDate = new Date(entry.entries.end_date);
+          const inputDate = new Date(date);
+
+          if (
+            sDate.getTime() < inputDate.getTime() &&
+            inputDate.getTime() < eDate.getTime()
+          ) {
+            isStartDateUnavailable = true;
+            overlappingLease = entry.entries;
+          }
+        }
+      });
+
+      setIsStartDateUnavailable(isStartDateUnavailable);
+      setOverlapStartDateLease(overlappingLease);
+
+      // Additional validation logic can be added here
+      if (isStartDateUnavailable) {
+        entrySchema.setFieldError(
+          "start_date",
+          "Start date overlaps with an existing lease"
+        );
+      } else {
+        entrySchema.setFieldError("start_date", null);
+      }
+    }
+  };
+
   const handleSubmit = async (values) => {
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
@@ -2728,7 +2766,6 @@ const RentRollLeaseing = () => {
                       </Col>
                     </Row>
                     <Row>
-                      {console.log(unitData, "ubnitFsttvb")}
                       {entrySchema.values.rental_adress &&
                         unitData &&
                         unitData[0] &&
@@ -2855,20 +2892,29 @@ const RentRollLeaseing = () => {
                             onChange={(e) => {
                               handleDateChange(e.target.value);
                               entrySchema.handleChange(e);
+                              checkStartDate(e.target.value); // Check for start date
+                              console.log(
+                                "isStartDateUnavailable:",
+                                isDateUnavailable
+                              );
                             }}
                             value={moment(entrySchema.values.start_date).format(
                               "YYYY-MM-DD"
                             )}
                           />
-                          {entrySchema.errors &&
-                          entrySchema.errors?.start_date &&
-                          entrySchema.touched &&
-                          entrySchema.touched?.start_date &&
-                          entrySchema.values.start_date === "" ? (
-                            <div style={{ color: "red" }}>
-                              {entrySchema.errors.start_date}
+                          {isStartDateUnavailable && (
+                            <div style={{ color: "red", marginTop: "8px" }}>
+                              This start date overlaps with an existing lease:{" "}
+                              {overlapStartDateLease?.rental_adress} | -{" "}
+                              {moment(overlapStartDateLease?.start_date).format(
+                                "DD-MM-YYYY"
+                              )}{" "}
+                              {moment(overlapStartDateLease?.end_date).format(
+                                "DD-MM-YYYY"
+                              )}
+                              . Please adjust your start date and try again.
                             </div>
-                          ) : null}
+                          )}
                         </FormGroup>
                       </Col>
                       &nbsp; &nbsp; &nbsp;
@@ -5569,10 +5615,10 @@ const RentRollLeaseing = () => {
                                     ) : null}
                                   </FormGroup>
                                 </FormGroup>
-                                {console.log(
+                                {/* {console.log(
                                   entrySchema.values,
                                   "entrySchema.values"
-                                )}
+                                )} */}
                                 <FormGroup>
                                   <label
                                     className="form-control-label"
@@ -6022,10 +6068,10 @@ const RentRollLeaseing = () => {
                   </div> */}
                   <div className="d-flex">
                     <div className="file-upload-wrapper">
-                      {console.log(
+                      {/* {console.log(
                         entrySchema.values,
                         "entrySchema.values 5662"
-                      )}
+                      )} */}
                       <TextField
                         type="file"
                         className="form-control-file d-none"
@@ -6040,7 +6086,7 @@ const RentRollLeaseing = () => {
                         }}
                         // inputProps={{ multiple: true }}
                         onChange={(e) => {
-                          console.log(e.target.files, "target.files");
+                          // console.log(e.target.files, "target.files");
                           // entrySchema.setFieldValue("upload_file", [...e.target.files]);
                           fileData(e.target.files);
                         }}
@@ -6111,7 +6157,7 @@ const RentRollLeaseing = () => {
                               />
                             </div>
                           ))} */}
-                      {console.log(file, "file")}
+                      {/* {console.log(file, "file")} */}
 
                       {file.length > 0 &&
                         file?.map((singleFile, index) => (
@@ -6126,7 +6172,7 @@ const RentRollLeaseing = () => {
                                 }
                                 style={{ cursor: "pointer" }}
                               >
-                                {console.log(file, "fromm 5867")}
+                                {/* {console.log(file, "fromm 5867")} */}
                                 {singleFile?.file_name?.substr(0, 5)}
                                 {singleFile?.file_name?.length > 5
                                   ? "..."
@@ -6137,7 +6183,7 @@ const RentRollLeaseing = () => {
                                 // onClick={() => handleOpenFile(file.upload_file)}
                                 style={{ cursor: "pointer" }}
                               >
-                                {console.log(file, "file 5803")}
+                                {/* {console.log(file, "file 5803")} */}
                                 {file[0]?.file_name?.substr(0, 5)}
                                 {file[0]?.file_name?.length > 5 ? "..." : null}
                               </p>
@@ -6187,7 +6233,7 @@ const RentRollLeaseing = () => {
                                 "tenant_residentStatus",
                                 e.target.checked
                               );
-                              console.log(e.target.checked);
+                              // console.log(e.target.checked);
                             }}
                           />
                         }
@@ -6267,7 +6313,7 @@ const RentRollLeaseing = () => {
                   >
                     {id ? "Update Lease" : "Add Lease"}
                   </Button> */}
-                  {console.log(tenantsSchema.values, "tenantsSchema.values")}
+                  {/* {console.log(tenantsSchema.values, "tenantsSchema.values")} */}
                   {id && yourData !== "ApplicantSummary" ? (
                     <button
                       type="submit"
