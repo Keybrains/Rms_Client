@@ -1361,6 +1361,7 @@ const RentRollLeaseing = () => {
   let entrySchema = useFormik({
     initialValues: {
       rental_adress: "",
+      tenant_residentStatus:false,
       lease_type: "",
       rental_units: "",
       unit_id: "",
@@ -2024,7 +2025,7 @@ const RentRollLeaseing = () => {
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
 
-          tenant_residentStatus: ownerData.tenant_residentStatus,
+          tenant_residentStatus: entrySchema.values.tenant_residentStatus || false,
           rentalOwner_firstName: ownerData.rentalOwner_firstName,
           rentalOwner_lastName: ownerData.rentalOwner_lastName,
           rentalOwner_primaryemail: ownerData.rentalOwner_email,
@@ -2265,7 +2266,7 @@ const RentRollLeaseing = () => {
               rent_cycle: entrySchema.values.rent_cycle,
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
-              memo: entrySchema.values.charges_memo,
+              memo: entrySchema.values.memo ? entrySchema.values.memo: "Rent" ,
               tenant_id: tenantId,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
@@ -2307,7 +2308,7 @@ const RentRollLeaseing = () => {
               rent_cycle: "",
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
-              memo: "",
+              memo: "Security Deposit",
               tenant_id: tenantId,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
@@ -6223,24 +6224,30 @@ const RentRollLeaseing = () => {
                     </Col>
 
                     <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            color="primary"
-                            value={tenantsSchema.values.tenant_residentStatus}
-                            onChange={(e) => {
-                              tenantsSchema.setFieldValue(
-                                "tenant_residentStatus",
-                                e.target.checked
-                              );
-                              // console.log(e.target.checked);
-                            }}
-                          />
-                        }
-                        // label="End"
-                        labelPlacement="end"
-                      />
-                    </FormGroup>
+                    
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          color="primary"
+                          
+                          value={entrySchema.values.tenant_residentStatus}
+                          onChange={(e) => {
+                            entrySchema.setFieldValue(
+                              "tenant_residentStatus",
+                              e.target.checked
+                            );
+                            console.log( entrySchema.setFieldValue(
+                              "tenant_residentStatus",
+                              e.target.checked),"setFieldValue");
+                            console.log(entrySchema.values.tenant_residentStatus,"value");
+                            console.log(e.target.checked,"e.target.checked");
+                          }}
+                        />
+                      }
+                      // label="End"
+                      labelPlacement="end"
+                    />
+                  </FormGroup>
                   </Row>
 
                

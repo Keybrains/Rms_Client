@@ -401,7 +401,7 @@ const clearSelectedPhoto = (index, image, name) => {
         console.log(res.data.data, "property unit");
         setPropertyUnit(res.data.data);
         const matchedUnit = res.data.data.filter((item) => item._id === propId);
-        // console.log(matchedUnit, "matchedUnit");
+        console.log(matchedUnit, "matchedUnit");
         setClickedObject(matchedUnit[0]);
       })
       .catch((err) => {
@@ -3200,7 +3200,9 @@ const clearSelectedPhoto = (index, image, name) => {
                                 className="mb-1 m-0 p-0"
                                 style={{ fontSize: "12px", color: "#000" }}
                               >
+                               
                                 <Table responsive>
+                                
                                   <tbody
                                     className="tbbody p-0 m-0"
                                     style={{
@@ -3217,6 +3219,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
+                                    {console.log("clickedObject",clickedObject)}
                                     {clickedObject &&
                                     clickedObject.tenant_firstName &&
                                     clickedObject.tenant_lastName ? (
