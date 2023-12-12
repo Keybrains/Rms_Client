@@ -114,6 +114,7 @@ const Leaseing = () => {
   const [selectedOption, setSelectedOption] = useState("Tenant");
   // const [selectedValue, setSelectedValue] = useState(null);
   const [showForm, setShowForm] = useState("Tenant");
+  const [paymentOptionDropdawnOpen, setPaymentOptionDropdawnOpen] = useState(false)
 
   const [accountNames, setAccountNames] = useState([]);
   const [RecAccountNames, setRecAccountNames] = useState([]);
@@ -141,6 +142,10 @@ const Leaseing = () => {
     "Quarterly",
     "Yearly",
   ];
+  const selectPaymentMethod = [
+    "Manually",
+    "AutoPayment",
+  ];
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -159,6 +164,7 @@ const Leaseing = () => {
   const toggle11 = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
+  const paymentMethodtoggle = () => setPaymentOptionDropdawnOpen((prevState) => !prevState);
 
   const handleClick = (event) => {
     setrentincDropdownOpen1((current) => !current);
@@ -272,6 +278,14 @@ const Leaseing = () => {
     }
   };
   console.log(ownerData, "ownerData");
+
+  const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] = useState("")
+  const handleselectedPaymetMethod = (paymentMethod) => {
+    setSelectPaymentMethodDropdawn(paymentMethod);
+    // localStorage.setItem("leasetype", leasetype);
+    entrySchema.setFieldValue("paymentMethod", paymentMethod);
+    setSelectPaymentMethodDropdawn(paymentMethod);
+  };
 
   const [selectedLeaseType, setselectedLeaseType] = useState("");
 
@@ -584,7 +598,50 @@ const Leaseing = () => {
 
   const [file, setFile] = useState("");
   let navigate = useNavigate();
+  const [isStartDateUnavailable, setIsStartDateUnavailable] = useState(false);
+  const [overlapStartDateLease, setOverlapStartDateLease] = useState(null);
 
+  const checkStartDate = async (date) => {
+    if (selectedPropertyType && selectedUnit) {
+      let response = await axios.get(`${baseUrl}/tenant/tenants`);
+      const data = response.data.data;
+
+      let isStartDateUnavailable = false;
+      let overlappingLease = null;
+
+      data.forEach((entry) => {
+        if (
+          selectedPropertyType === entry.entries.rental_adress &&
+          selectedUnit === entry.entries.rental_units
+        ) {
+          const sDate = new Date(entry.entries.start_date);
+          const eDate = new Date(entry.entries.end_date);
+          const inputDate = new Date(date);
+
+          if (
+            sDate.getTime() < inputDate.getTime() &&
+            inputDate.getTime() < eDate.getTime()
+          ) {
+            isStartDateUnavailable = true;
+            overlappingLease = entry.entries;
+          }
+        }
+      });
+
+      setIsStartDateUnavailable(isStartDateUnavailable);
+      setOverlapStartDateLease(overlappingLease);
+
+      // Additional validation logic can be added here
+      if (isStartDateUnavailable) {
+        entrySchema.setFieldError(
+          "start_date",
+          "Start date overlaps with an existing lease"
+        );
+      } else {
+        entrySchema.setFieldError("start_date", null);
+      }
+    }
+  };
   const handleAdd = async (values) => {
     values["account_name "] = selectedAccount;
     values["account_type"] = selectedAccountType;
@@ -1179,7 +1236,7 @@ const Leaseing = () => {
   let entrySchema = useFormik({
     initialValues: {
       rental_adress: "",
-
+      tenant_residentStatus:false,
       lease_type: "",
       rental_units: "",
       unit_id:"",
@@ -1680,6 +1737,7 @@ const Leaseing = () => {
       emergency_PhoneNumber: tenantsSchema.values.emergency_PhoneNumber,
       entries: [
         {
+          paymentMethod: entrySchema.values.paymentMethod,
           rental_units: entrySchema.values.rental_units,
           entryIndex: entrySchema.values.entryIndex,
           rental_adress: entrySchema.values.rental_adress,
@@ -1734,7 +1792,7 @@ const Leaseing = () => {
 
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
-          tenant_residentStatus: ownerData.tenant_residentStatus,
+          tenant_residentStatus: entrySchema.values.tenant_residentStatus || false,
           rentalOwner_firstName: ownerData.rentalOwner_firstName,
           rentalOwner_lastName: ownerData.rentalOwner_lastName,
           rentalOwner_primaryemail: ownerData.rentalOwner_email,
@@ -2459,20 +2517,29 @@ const Leaseing = () => {
                             onChange={(e) => {
                               handleDateChange(e.target.value);
                               entrySchema.handleChange(e);
+                              checkStartDate(e.target.value); // Check for start date
+                              console.log(
+                                "isStartDateUnavailable:",
+                                isDateUnavailable
+                              );
                             }}
                             value={moment(entrySchema.values.start_date).format(
                               "YYYY-MM-DD"
                             )}
                           />
-                          {entrySchema.errors &&
-                          entrySchema.errors?.start_date &&
-                          entrySchema.touched &&
-                          entrySchema.touched?.start_date &&
-                          entrySchema.values.start_date === "" ? (
-                            <div style={{ color: "red" }}>
-                              {entrySchema.errors.start_date}
+                          {isStartDateUnavailable && (
+                            <div style={{ color: "red", marginTop: "8px" }}>
+                              This start date overlaps with an existing lease:{" "}
+                              {overlapStartDateLease?.rental_adress} | -{" "}
+                              {moment(overlapStartDateLease?.start_date).format(
+                                "DD-MM-YYYY"
+                              )}{" "}
+                              {moment(overlapStartDateLease?.end_date).format(
+                                "DD-MM-YYYY"
+                              )}
+                              . Please adjust your start date and try again.
                             </div>
-                          ) : null}
+                          )}
                         </FormGroup>
                       </Col>
                       &nbsp; &nbsp; &nbsp;
@@ -5770,17 +5837,24 @@ const Leaseing = () => {
                     </Col>
 
                     <FormGroup>
+                    
                       <FormControlLabel
+                      
                         control={
                           <Switch
                             color="primary"
-                            value={tenantsSchema.values.tenant_residentStatus}
+                            
+                            value={entrySchema.values.tenant_residentStatus}
                             onChange={(e) => {
-                              tenantsSchema.setFieldValue(
+                              entrySchema.setFieldValue(
                                 "tenant_residentStatus",
                                 e.target.checked
                               );
-                              console.log(e.target.checked);
+                              console.log( entrySchema.setFieldValue(
+                                "tenant_residentStatus",
+                                e.target.checked),"setFieldValue");
+                              console.log(entrySchema.values.tenant_residentStatus,"value");
+                              console.log(e.target.checked,"e.target.checked");
                             }}
                           />
                         }
@@ -5789,6 +5863,50 @@ const Leaseing = () => {
                       />
                     </FormGroup>
                   </Row>
+                 
+                    <Row>
+                      <Col md="12">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            Select Payment Method
+                          </label>
+                          <FormGroup>
+                            <Dropdown
+                              isOpen={paymentOptionDropdawnOpen}
+                              toggle={paymentMethodtoggle}
+                            >
+                              <DropdownToggle caret style={{ width: "100%" }}>
+                                {selectPaymentMethodDropdawn
+                                  ? selectPaymentMethodDropdawn
+                                  : "Select"}
+                              </DropdownToggle>
+                              <DropdownMenu
+                                style={{ width: "100%" }}
+                                name="paymentMethod"
+                                onBlur={entrySchema.handleBlur}
+                                onChange={(e) => entrySchema.handleChange(e)}
+                                value={entrySchema.values.paymentMethod}
+                              >
+                                {selectPaymentMethod.map((option) => (
+                                  <DropdownItem
+                                    key={option}
+                                    onClick={() =>
+                                      handleselectedPaymetMethod(option)
+                                    }
+                                  >
+                                    {option}
+                                  </DropdownItem>
+                                ))}
+                              </DropdownMenu>
+                            </Dropdown>
+                          </FormGroup>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                
                   {/* <Button
                   color="primary"
                   href="#rms"

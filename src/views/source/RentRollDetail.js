@@ -195,6 +195,7 @@ const RentRollDetail = () => {
       console.log("2")
 
       const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${tenantId}`
+      
         console.log(url,'huewfjnmk')
 
         axios

@@ -56,6 +56,7 @@ const AddPayment = () => {
   const [tenantid, setTenantid] = useState(""); // Add this line
   const [tenantentryIndex, setTenantentryindex] = useState(""); // Add this line
   const [printReceipt, setPrintReceipt] = useState(false);
+  // const [limitedValue,setLimitedValue]=useState(null);
 
   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
   const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
@@ -81,7 +82,12 @@ const AddPayment = () => {
   };
 
   const [selectedRec, setSelectedRec] = useState("Select Resident");
+  const [property,setProperty]=useState(null);
+
+  // console.log(generalledgerFormik.values,'sdfyggvbhjnkml')
   const handleRecieverSelection = (property) => {
+    // setProperty(property);
+    console.log(property, "property");
     setSelectedRec(`${property.tenant_firstName} ${property.tenant_lastName}`);
     setTenantid(property._id); // Set the selected tenant's ID
     setTenantentryindex(property.entryIndex); // Set the selected tenant's entry index
@@ -95,7 +101,9 @@ const AddPayment = () => {
       entryIndex: "",
       amount: "",
       payment_method: "",
-      debitcard_number: "",
+      creditcard_number: "",
+      expiration_date:"",
+      cvv:"",
       tenant_firstName: "",
       memo: "",
       entries: [
@@ -270,6 +278,7 @@ const AddPayment = () => {
 
   }
   console.log(generalledgerFormik?.values?.date?.slice(5,7)+"-"+generalledgerFormik?.values?.date?.slice(0,4),'clasujdnasdasd')
+  // console.log(property,'proeprty')
   const handleSubmit = async (values) => {
     const arrayOfNames = file.map((item) => item.name);
     const rentalAddress = generalledgerFormik.values.rental_adress;
@@ -280,7 +289,9 @@ const AddPayment = () => {
         date: values.date,
         amount: values.amount,
         payment_method: selectedProp,
-        debitcard_number: values.debitcard_number,
+        cvv:values.cvv,
+        expiration_date:values.expiration_date,
+        creditcard_number: values.creditcard_number,
         tenant_firstName: selectedRec,
         attachment: arrayOfNames,
         rental_adress: rentalAddress,
@@ -303,6 +314,45 @@ const AddPayment = () => {
 
       if (response.data.statusCode === 200) {
         console.log(response.data.data,'resdadadadad')
+        if(selectedProp==="Credit Card"){
+
+        try {
+
+    const url = `${baseUrl}/nmipayment/purchase`;
+
+            const postObject = {
+            first_name: tenantData.tenant_firstName,
+            last_name: tenantData.tenant_lastName,
+            email_name: tenantData.tenant_email,
+            card_number: generalledgerFormik.values.creditcard_number,
+            amount: values.amount,
+            expiration_date: values.expiration_date,
+            cvv: values.cvv,
+            tenantId: tenantData._id,
+            propertyId:tenantData?.entries?.property_id,
+            unitId:tenantData?.entries?.unit_id,
+            }
+
+            console.log(postObject,'postObjectg')
+
+            const response = await axios.post(url, {
+              paymentDetails: postObject,
+            });
+            if (response.data && response.data.statusCode === 100) {
+              console.log(response.data, "response.data");
+
+            } else {
+              console.error("Unexpected response format:", response.data);
+              swal("", response.data.message, "error");
+              // Handle other status codes or show an error message
+            }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+
+
         
         const id = response.data.data._id;
         if (id) {
@@ -640,6 +690,21 @@ const AddPayment = () => {
     }
   };
 
+  console.log(generalledgerFormik.values,'sdfyggvbhjnkml')
+
+
+  const formatCardNumber = (inputValue) => {
+    if (typeof inputValue !== "string") {
+      return ""; // Return an empty string if inputValue is not a string
+    }
+
+    const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+    const formattedValue = numericValue
+      .replace(/(\d{4})/g, "$1 ") // Add a space after every four digits
+      .trim(); // Remove any trailing space
+
+    return formattedValue;
+  };
   return (
     <>
       <PaymentHeader />
@@ -696,34 +761,6 @@ const AddPayment = () => {
                     </Col>
                   </Row>
                   <Row>
-                    <Col lg="3">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-unitadd"
-                        >
-                          Amount
-                        </label>
-                        <Input
-                          className="form-control-alternative"
-                          id="input-unitadd"
-                          placeholder="$0.00"
-                          type="text"
-                          name="amount"
-                          onBlur={generalledgerFormik.handleBlur}
-                          onChange={generalledgerFormik.handleChange}
-                          value={generalledgerFormik.values.amount}
-                        />
-                        {generalledgerFormik.touched.amount &&
-                        generalledgerFormik.errors.amount ? (
-                          <div style={{ color: "red" }}>
-                            {generalledgerFormik.errors.amount}
-                          </div>
-                        ) : null}
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
                     <Col lg="2">
                       <FormGroup>
                         <label
@@ -748,9 +785,9 @@ const AddPayment = () => {
                             }}
                           >
                             <DropdownItem
-                              onClick={() => handlePropSelection("Debit Card")}
+                              onClick={() => handlePropSelection("Credit Card")}
                             >
-                              Debit Card
+                              Credit Card
                             </DropdownItem>
                             <DropdownItem
                               onClick={() => handlePropSelection("Cash")}
@@ -761,32 +798,159 @@ const AddPayment = () => {
                         </Dropdown>
                       </FormGroup>
                     </Col>
-                    <Col sm="4">
-                      {selectedProp === "Debit Card" && (
+                    <Col sm="12">
+                      {selectedProp === "Credit Card" && (
+                        <>
+                       <Row>
+                        <Col sm="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-property"
                           >
-                            Debit Card Number
+                            Amount *
                           </label>
                           <Input
-                            className="form-control-alternative"
-                            id="input-unitadd"
-                            placeholder="Enter Number"
                             type="text"
-                            name="debitcard_number"
+                            id="amount"
+                            placeholder="Enter amount"
+                            name="amount"
                             onBlur={generalledgerFormik.handleBlur}
+                            // only input number
+                            onKeyDown={(event) => {
+                              if (!/[0-9]/.test(event.key)) {
+                                event.preventDefault();
+                              }
+                            }}
                             onChange={generalledgerFormik.handleChange}
-                            value={generalledgerFormik.values.debitcard_number}
+                            value={generalledgerFormik.values.amount}
+                            required
                           />
-                          {generalledgerFormik.touched.debitcard_number &&
-                          generalledgerFormik.errors.debitcard_number ? (
-                            <div style={{ color: "red" }}>
-                              {generalledgerFormik.errors.debitcard_number}
-                            </div>
-                          ) : null}
                         </FormGroup>
+                        </Col>
+                       </Row>
+                       <Row>
+                        <Col sm="4">
+                        <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-property"
+                      >
+                        Card Number *
+                      </label>
+                      <InputGroup>
+                        <Input
+                          type="number"
+                          id="creditcard_number"
+                          placeholder="0000 0000 0000"
+                          name="creditcard_number"
+                          value={generalledgerFormik.values.creditcard_number}
+                          onBlur={generalledgerFormik.handleBlur}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                            const limitValue = numericValue.slice(0, 12); // Limit to 12 digits 
+                            // setLimitedValue(limitValue);
+                            // const formattedValue = formatCardNumber(limitValue);
+                            // e.target.value = formattedValue;
+                            // generalledgerFormik.handleChange(e);
+                            generalledgerFormik.setFieldValue('creditcard_number', limitValue);
+                          }}
+                          required
+                        />
+                      </InputGroup>
+                    </FormGroup>
+                        </Col>
+                       </Row>
+                      
+                     
+                    <Row>
+                    <Col sm="2">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Expiration Date *
+                        </label>
+                        <Input
+                          type="text"
+                          id="expiration_date"
+                          name="expiration_date"
+                          onBlur={generalledgerFormik.handleBlur}
+                          onChange={generalledgerFormik.handleChange}
+                          value={generalledgerFormik.values.expiration_date}
+                          placeholder="MM/YY"
+                          required
+                          onInput={(e) => {
+                            let inputValue = e.target.value;
+
+                            // Remove non-numeric characters
+                            const numericValue = inputValue.replace(
+                              /\D/g,
+                              ""
+                            );
+
+                            // Set the input value to the sanitized value (numeric only)
+                            e.target.value = numericValue;
+
+                            // Format the date as "MM/YY"
+                            if (numericValue.length > 2) {
+                              const month = numericValue.substring(
+                                0,
+                                2
+                              );
+                              const year = numericValue.substring(2, 6);
+                              e.target.value = `${month}${year}`;
+                            }
+
+                            // Restrict the year to be 4 digits starting from the current year
+                            const currentYear = new Date()
+                              .getFullYear()
+                              .toString();
+                            if (numericValue.length > 5) {
+                              const enteredYear =
+                                numericValue.substring(3, 7);
+                              if (enteredYear < currentYear) {
+                                e.target.value = `${numericValue.substring(
+                                  0,
+                                  2
+                                )}/${currentYear.substring(2, 4)}`;
+                              }
+                            }
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm="2">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Cvv *
+                        </label>
+                        <Input
+                          type="number"
+                          id="cvv"
+                          placeholder="123"
+                          name="cvv"
+                          onBlur={generalledgerFormik.handleBlur}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            if (/^\d{0,3}$/.test(inputValue)) {
+                              // Only allow up to 3 digits
+                              generalledgerFormik.handleChange(e);
+                            }
+                          }}
+                          value={generalledgerFormik.values.cvv}
+                          maxLength={3}
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  </>
                       )}
                     </Col>
                   </Row>
