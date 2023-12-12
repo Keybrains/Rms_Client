@@ -147,7 +147,7 @@ const Vendor = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              href="#rms"
+             //  href="#rms"
               onClick={() => navigate("/admin/addvendor")}
               size="sm"
               style={{ background: "white", color: "blue" }}

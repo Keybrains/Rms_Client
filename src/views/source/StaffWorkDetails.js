@@ -97,7 +97,7 @@ const StaffWorkDetails = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              href="#rms"
+             //  href="#rms"
               onClick={() => navigate("/staff/staffworktable")}
               size="sm"
               style={{ background: "white", color: "black" }}

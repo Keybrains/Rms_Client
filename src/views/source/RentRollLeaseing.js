@@ -105,7 +105,7 @@ const RentRollLeaseing = () => {
   const [apiData, setApiData] = useState([]);
   const [isDateRangeUsed, setIsDateRangeUsed] = useState(false);
   const [paymentOptionDropdawnOpen, setPaymentOptionDropdawnOpen] =
-  useState(false);
+    useState(false);
   const [showTenantTable, setShowTenantTable] = useState(false);
 
   const [selectedAgent, setSelectedAgent] = useState("");
@@ -169,7 +169,7 @@ const RentRollLeaseing = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
   const paymentMethodtoggle = () =>
-  setPaymentOptionDropdawnOpen((prevState) => !prevState);
+    setPaymentOptionDropdawnOpen((prevState) => !prevState);
   const handleClick = (event) => {
     setrentincDropdownOpen1((current) => !current);
   };
@@ -287,9 +287,7 @@ const RentRollLeaseing = () => {
     entrySchema.values.lease_type = leasetype;
   };
 
-    
-
-    const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] =
+  const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] =
     useState("");
 
   const handleselectedPaymetMethod = (paymentMethod) => {
@@ -298,7 +296,6 @@ const RentRollLeaseing = () => {
     entrySchema.setFieldValue("paymentMethod", paymentMethod);
     setSelectPaymentMethodDropdawn(paymentMethod);
   };
-
 
   const [selectedRentCycle, setselectedRentCycle] = useState("");
   const handleselectedRentCycle = (rentcycle) => {
@@ -398,6 +395,8 @@ const RentRollLeaseing = () => {
         firstName: tenantsSchema.values.tenant_firstName,
         lastName: tenantsSchema.values.tenant_lastName,
         mobileNumber: tenantsSchema.values.tenant_mobileNumber,
+        email: tenantsSchema.values.tenant_email,
+        tenant_password: tenantsSchema.values.tenant_password,
       };
       setSelectedTenantData(newTenantDetails);
       if (!id) {
@@ -427,6 +426,7 @@ const RentRollLeaseing = () => {
         firstName: tenantParts[0],
         lastName: tenantParts[1],
         mobileNumber: tenantParts[2],
+        tenant_password:tenantParts[11],
 
         // textpayerid: tenantParts[3],
         // birthdate: tenantParts[4],
@@ -1444,7 +1444,7 @@ const RentRollLeaseing = () => {
       tenant_firstName: yup.string().required("Required"),
       tenant_lastName: yup.string().required("Required"),
       tenant_mobileNumber: yup.string().required("Required"),
-      tenant_email: yup.string().required("Required"),
+      tenant_email: yup.string().required("Email is required"),
       tenant_password: yup
         .string()
         .min(8, "Password is too short")
@@ -1452,7 +1452,7 @@ const RentRollLeaseing = () => {
           /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
           "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
         )
-        .required("Required"),
+        .required("Password is required"),
     }),
 
     onSubmit: () => {
@@ -1523,7 +1523,7 @@ const RentRollLeaseing = () => {
         });
         setPropertyId(applicantData.property_id);
         setSelectPaymentMethodDropdawn(applicantData.paymentMethod || "Select");
-        
+
         setSelectedPropertyType(applicantData.rental_adress || "Select");
         setselectedLeaseType(applicantData.lease_type || "Select");
         setselectedRentCycle(applicantData.rent_cycle || "Select");
@@ -2244,6 +2244,7 @@ const RentRollLeaseing = () => {
       console.log(error);
     }
   };
+  console.log(entrySchema.values, "entry cahsdkajl;");
 
   const postCharge = async (unit, unitId, tenantId) => {
     const chargeObject = {
@@ -2265,7 +2266,7 @@ const RentRollLeaseing = () => {
               rent_cycle: entrySchema.values.rent_cycle,
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
-              memo: entrySchema.values.charges_memo,
+              memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
@@ -2276,6 +2277,7 @@ const RentRollLeaseing = () => {
         },
       ],
     };
+    console.log(chargeObject, "from post charge");
 
     const url = `${baseUrl}/payment_charge/payment_charge`;
     await axios
@@ -2307,7 +2309,7 @@ const RentRollLeaseing = () => {
               rent_cycle: "",
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
-              memo: "",
+              memo: "Security Deposit",
               tenant_id: tenantId,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
@@ -4972,6 +4974,14 @@ const RentRollLeaseing = () => {
                             </>
                           ) : null}
                         </div>
+                        {tenantsSchema.errors &&
+                        tenantsSchema.errors?.tenant_password && entrySchema.submitCount>0 
+                        ? (
+                          <div style={{ color: "red" }}>
+                            {tenantsSchema.errors.tenant_password}
+                            {/* {console.log(tenantsFormik.errors.tenant_password)} */}
+                          </div>
+                        ) : null}
 
                         <div>
                           {cosignerData &&
@@ -6243,54 +6253,52 @@ const RentRollLeaseing = () => {
                     </FormGroup>
                   </Row>
 
-               
-                    <Row>
-                      <Col md="12">
+                  <Row>
+                    <Col md="12">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Select Payment Method
+                        </label>
                         <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
+                          <Dropdown
+                            isOpen={paymentOptionDropdawnOpen}
+                            toggle={paymentMethodtoggle}
                           >
-                            Select Payment Method
-                          </label>
-                          <FormGroup>
-                            <Dropdown
-                              isOpen={paymentOptionDropdawnOpen}
-                              toggle={paymentMethodtoggle}
+                            <DropdownToggle caret style={{ width: "100%" }}>
+                              {selectPaymentMethodDropdawn
+                                ? selectPaymentMethodDropdawn
+                                : "Select"}
+                            </DropdownToggle>
+                            <DropdownMenu
+                              style={{ width: "100%" }}
+                              name="paymentMethod"
+                              onBlur={entrySchema.handleBlur}
+                              onChange={(e) => entrySchema.handleChange(e)}
+                              value={entrySchema.values.paymentMethod}
                             >
-                              <DropdownToggle caret style={{ width: "100%" }}>
-                                {selectPaymentMethodDropdawn
-                                  ? selectPaymentMethodDropdawn
-                                  : "Select"}
-                              </DropdownToggle>
-                              <DropdownMenu
-                                style={{ width: "100%" }}
-                                name="paymentMethod"
-                                onBlur={entrySchema.handleBlur}
-                                onChange={(e) => entrySchema.handleChange(e)}
-                                value={entrySchema.values.paymentMethod}
-                              >
-                                {selectPaymentMethod.map((option) => (
-                                  <DropdownItem
-                                    key={option}
-                                    onClick={() =>
-                                      handleselectedPaymetMethod(option)
-                                    }
-                                  >
-                                    {option}
-                                  </DropdownItem>
-                                ))}
-                              </DropdownMenu>
-                            </Dropdown>
-                          </FormGroup>
+                              {selectPaymentMethod.map((option) => (
+                                <DropdownItem
+                                  key={option}
+                                  onClick={() =>
+                                    handleselectedPaymetMethod(option)
+                                  }
+                                >
+                                  {option}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
+                          </Dropdown>
                         </FormGroup>
-                      </Col>
-                    </Row>
-           
+                      </FormGroup>
+                    </Col>
+                  </Row>
 
                   {/* <Button
                   color="primary"
-                  href="#rms"
+                 //  href="#rms"
                   onClick={(e) => e.preventDefault()}
                   size="sm"
                   style={{ background: "green" }}
@@ -6327,31 +6335,21 @@ const RentRollLeaseing = () => {
                       Update Lease
                     </button>
                   ) : (
+                    <>
+
                     <button
                       type="submit"
                       className="btn btn-primary"
                       style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        // console.log("object");
-                        // console.log(leaseFormik.errors)
-                        // console.log(tenantsFormik.values)
-                        // console.log(leaseFormik.values)
-                        // debugger
-                        if (selectedTenantData.length !== 0) {
-                          handleSubmit(entrySchema.values);
-                        } else {
-                          // console.log("data not ok")
-                          setDisplay(true);
-                        }
-                      }}
                     >
                       Create Lease
                     </button>
+                    
+                      </>
                   )}
                   <Button
                     color="primary"
-                    // href="#rms"
+                    ////  href="#rms"
                     onClick={handleCloseButtonClick}
                     // size="sm"
                     className="btn btn-primary"
@@ -6363,6 +6361,14 @@ const RentRollLeaseing = () => {
                   >
                     Cancel
                   </Button>
+                  {tenantsSchema.errors &&
+                      tenantsSchema.errors?.tenant_password && entrySchema.submitCount>0 
+                      ? (
+                        <div style={{ color: "red" }}>
+                          {/* {console.log(tenantsFormik.errors.tenant_password)} */}
+                          Tenant Password is missing
+                        </div>
+                      ) : null}
                 </Form>
               </CardBody>
             </Card>

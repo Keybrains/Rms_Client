@@ -122,6 +122,7 @@ const AddPropertyType = () => {
     initialValues: {
       property_type: "",
       propertysub_type: "",
+      isMultiUnit: false,
     },
     validationSchema: yup.object({
       property_type: yup.string().required("Required"),
@@ -156,14 +157,15 @@ const AddPropertyType = () => {
         .then((response) => {
           const propertyData = response.data.data;
           setpropertyType(propertyType);
-          //console.log(propertyData);
+          setIsMultiUnit(propertyData.ismultiunit);
+          // console.log(propertyData);
 
           setSelectedProperty(propertyData.property_type || "Select");
 
           propertyFormik.setValues({
             property_type: propertyData.property_type || "",
             propertysub_type: propertyData.propertysub_type || "",
-
+            isMultiUnit: propertyData.ismultiunit,
           });
         })
         .catch((error) => {
@@ -337,7 +339,7 @@ const AddPropertyType = () => {
                   </button>
                   <button
                     color="primary"
-                    href="#rms"
+                   //  href="#rms"
                     className="btn btn-primary"
                     onClick={handleCloseButtonClick}
                     size="sm"
