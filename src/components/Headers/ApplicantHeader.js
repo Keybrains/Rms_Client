@@ -97,7 +97,7 @@ const Header = () => {
             {/* Step 2: Add a click event to open the modal */}
             <Button
               color="primary"
-              href="#rms"
+              ////  href="#rms"
               onClick={openModal}
               size="sm"
               style={{ background: "white", color: "blue" }}

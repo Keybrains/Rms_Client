@@ -3224,10 +3224,8 @@ const clearSelectedPhoto = (index, image, name) => {
                                         <tr className="body">
                                           <td>
                                             {clickedObject.start_date
-                                              ? clickedObject.start_date +
-                                                " " +
-                                                clickedObject.end_date
-                                              : "Inctive"}
+                                              ? "Active"
+                                              : "Inactive"}
                                           </td>
                                           <td>
                                             {clickedObject.start_date &&
@@ -3272,7 +3270,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                             {clickedObject.lease_type || "N/A"}
                                           </td>
                                           <td>
-                                            {clickedObject.property_rent ||
+                                            {clickedObject.amount ||
                                               "N/A"}
                                           </td>
                                         </tr>
@@ -3479,9 +3477,9 @@ const clearSelectedPhoto = (index, image, name) => {
                                     >
                                       Listing
                                     </span>
-                                    <span>1/12/2023</span>
+                                    <span>{clickedObject.unitCreatedAt}</span>
                                     <span style={{ margin: "5px 0" }}>
-                                      $900 available 1/12/2023
+                                      $900 available {moment().format("DD/MM/YYYY ")}
                                     </span>
                                     <span
                                       style={{

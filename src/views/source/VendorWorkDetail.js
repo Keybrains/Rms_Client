@@ -97,7 +97,7 @@ const VendorWorkDetail = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              href="#rms"
+             //  href="#rms"
               onClick={() => navigate("/vendor/vendorworktable")}
               size="sm"
               style={{ background: "white", color: "black" }}
@@ -159,7 +159,7 @@ const VendorWorkDetail = () => {
                   {/* This will push the "Add Details" button to the right */}
                   <Button
                     color="primary"
-                    href="#rms"
+                   //  href="#rms"
                     onClick={() => navigate(`/vendor/vendoraddwork/${id}`)}
                     size="sm"
                     style={{ background: "#3B2F2F", color: "white" }}

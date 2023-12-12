@@ -138,7 +138,7 @@ const SumProperties = () => {
 
                   <button
                     color="primary"
-                    href="#rms"
+                   //  href="#rms"
                     className="btn btn-primary"
                     onClick={handleClose}
                     size="sm"
