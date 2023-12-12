@@ -2036,7 +2036,7 @@ const Leaseing = () => {
               rent_cycle: entrySchema.values.rent_cycle,
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
-              memo: entrySchema.values.memo ? entrySchema.values.memo: "Rent" ,
+              memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
@@ -5931,7 +5931,7 @@ const Leaseing = () => {
                 
                   {/* <Button
                   color="primary"
-                  href="#rms"
+                 //  href="#rms"
                   onClick={(e) => e.preventDefault()}
                   size="sm"
                   style={{ background: "green" }}
@@ -5986,7 +5986,7 @@ const Leaseing = () => {
                   )}
                   <Button
                     color="primary"
-                    // href="#rms"
+                    ////  href="#rms"
                     onClick={handleCloseButtonClick}
                     className="btn btn-primary"
                     style={{

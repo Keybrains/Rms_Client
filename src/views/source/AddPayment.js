@@ -799,7 +799,7 @@ const AddPayment = () => {
                       </FormGroup>
                     </Col>
                     <Col sm="12">
-                      {selectedProp === "Credit Card" && (
+                      {selectedProp === "Credit Card" ? (
                         <>
                        <Row>
                         <Col sm="4">
@@ -951,7 +951,36 @@ const AddPayment = () => {
                     </Col>
                   </Row>
                   </>
-                      )}
+                      ):<>
+                       <Row>
+                        <Col sm="4">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            Amount *
+                          </label>
+                          <Input
+                            type="text"
+                            id="amount"
+                            placeholder="Enter amount"
+                            name="amount"
+                            onBlur={generalledgerFormik.handleBlur}
+                            // only input number
+                            onKeyDown={(event) => {
+                              if (!/[0-9]/.test(event.key)) {
+                                event.preventDefault();
+                              }
+                            }}
+                            onChange={generalledgerFormik.handleChange}
+                            value={generalledgerFormik.values.amount}
+                            required
+                          />
+                        </FormGroup>
+                        </Col>
+                       </Row>
+                      </>}
                     </Col>
                   </Row>
                   <Row>
@@ -1375,7 +1404,7 @@ const AddPayment = () => {
                         )}
                         <Button
                           color="primary"
-                          href="#rms"
+                         //  href="#rms"
                           className="btn btn-primary"
                           onClick={handleCloseButtonClick}
                           style={{ background: "white", color: "black" }}

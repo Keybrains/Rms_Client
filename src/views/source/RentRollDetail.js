@@ -1,4 +1,4 @@
- import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "components/Headers/Header";
@@ -59,7 +59,8 @@ import DoneIcon from "@mui/icons-material/Done";
 import { Modal } from "react-bootstrap";
 import jsPDF from "jspdf";
 import Img from "assets/img/theme/team-4-800x800.jpg";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
+import moment from "moment";
 
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -67,7 +68,7 @@ const RentRollDetail = () => {
   console.log(tenantId, entryIndex, "tenantId, entryIndex");
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const source = queryParams.get('source');
+  const source = queryParams.get("source");
   //console.log(tenant_firstName, "tenant_firstName");
   const { tenant_firstName } = useParams();
   const [tenantDetails, setTenantDetails] = useState([]);
@@ -101,7 +102,7 @@ const RentRollDetail = () => {
     generatePDF(option);
     handleClose();
   };
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -163,84 +164,82 @@ const RentRollDetail = () => {
       const unit = response.data.data.entries.rental_units;
       const unitId = response.data.data.entries.unit_id;
       const propertysId = response.data.data.entries.property_id;
-      console.log(propertysId, "propertysId")
-      
+      console.log(propertysId, "propertysId");
+
       // setRental(rental);
       // setUnit(unit);
       // setUnitId(unitId);
       // setPropertyId(propertyId);
       console.log(response.data.data.entries.rental_units, "res.daya dhstab");
-      if(unitId && unit){
-        console.log("1")
-        const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${propertysId}&unit=${unit}&tenant_id=${tenantId}`
-        console.log(url,'huewfjnmk')
+      if (unitId && unit) {
+        console.log("1");
+        const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${propertysId}&unit=${unit}&tenant_id=${tenantId}`;
+        console.log(url, "huewfjnmk");
         axios
-        .get(url)
-        .then((response) => {
-        setLoader(false);
-        
-        if (response.data && response.data.data) {
-          const mergedData = response.data.data;
-          console.log(mergedData, "mergedData1");
-    
-          setGeneralLedgerData(mergedData[0]?.unit[0]);
-        } else {
-          console.error("Unexpected response format:", response.data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-    }else{
-      console.log("2")
+          .get(url)
+          .then((response) => {
+            setLoader(false);
 
-      const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${tenantId}`
-      
-        console.log(url,'huewfjnmk')
+            if (response.data && response.data.data) {
+              const mergedData = response.data.data;
+              console.log(mergedData, "mergedData1");
+
+              setGeneralLedgerData(mergedData[0]?.unit[0]);
+            } else {
+              console.error("Unexpected response format:", response.data);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
+      } else {
+        console.log("2");
+
+        const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${tenantId}`;
+
+        console.log(url, "huewfjnmk");
 
         axios
-        .get(url)
-        .then((response) => {
-        setLoader(false);
-        
-        if (response.data && response.data.data) {
-          const mergedData = response.data.data;
-          console.log(mergedData, "mergedData2");
-    
-          setGeneralLedgerData(mergedData[0]?.unit[0]);
-        } else {
-          console.error("Unexpected response format:", response.data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-      
-    }
-      
-      
+          .get(url)
+          .then((response) => {
+            setLoader(false);
+
+            if (response.data && response.data.data) {
+              const mergedData = response.data.data;
+              console.log(mergedData, "mergedData2");
+
+              setGeneralLedgerData(mergedData[0]?.unit[0]);
+            } else {
+              console.error("Unexpected response format:", response.data);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
+      }
+
       // axios
       //   .get(
       //     `${baseUrl}/propertyunit/prop_id/${response.data.data.entries.unit_id}`
       //   )
       //   .then((res) => {
-          // if (res.data) {
-            // setRentaldata(res.data.data);
-            // const matchedUnit = res?.data?.find((item) => {
-            //   if (item.unit_id === unitId) {
-            //     setRentaldata(item);
-            //   }
-            // });
-            // setPropertyId(res.data.data[0].propertyId);
-            // const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=Testing&property_id=6568198deb1c48ddf1dbef35&unit=A&tenant_id=656d9e573b2237290eceae1f`
+      // if (res.data) {
+      // setRentaldata(res.data.data);
+      // const matchedUnit = res?.data?.find((item) => {
+      //   if (item.unit_id === unitId) {
+      //     setRentaldata(item);
+      //   }
+      // });
+      // setPropertyId(res.data.data[0].propertyId);
+      // const url = `https://propertymanager.cloudpress.host/api/payment_charge/financial_unit?rental_adress=Testing&property_id=6568198deb1c48ddf1dbef35&unit=A&tenant_id=656d9e573b2237290eceae1f`
 
-            // const response = await axios.get(url);
+      // const response = await axios.get(url);
 
-          // }
-        // })
-        // .catch((error) => {
-        //   console.error(error);
-        // });
+      // }
+      // })
+      // .catch((error) => {
+      //   console.error(error);
+      // });
       setUnitId(unitId);
 
       setPropertyId(propertyId);
@@ -383,10 +382,10 @@ const RentRollDetail = () => {
       getTenantData();
       // getTenantData();
       // console.log(rental, "rental");
-      if (source == 'payment') {
-        setValue('Financial')
-      }else{
-        setValue('Summary')
+      if (source == "payment") {
+        setValue("Financial");
+      } else {
+        setValue("Summary");
       }
       // tenantsData();
 
@@ -455,13 +454,11 @@ const RentRollDetail = () => {
   const [myData, setMyData] = useState([]);
 
   const doSomething = async () => {
-    let response = await axios.get(
-      `${baseUrl}/tenant/tenants`
-    );
+    let response = await axios.get(`${baseUrl}/tenant/tenants`);
     const data = response.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
     filteredData.forEach((item) => {
-      console.log(item._id,"vaibhav");
+      console.log(item._id, "vaibhav");
     });
     setMyData(filteredData);
   };
@@ -473,41 +470,40 @@ const RentRollDetail = () => {
   const [myData1, setMyData1] = useState([]);
   console.log("myData1:", myData1);
   const doSomething1 = async () => {
-   try {
-     let response = await axios.get(`${baseUrl}/tenant/tenants`);
-     const data = response.data.data;
- 
-     const filteredData = data.filter((item, index) => {
-       // Replace 'tenantId' with the specific ID you're looking for
-       return item._id === tenantId && item.entries.entryIndex === entryIndex;
-     });
- 
-     console.log(filteredData, "yashr");
-     setMyData1(filteredData);
-   } catch (error) {
-     // Handle errors here
-     console.error('Error fetching data:', error);
-   }
- };
- 
-   useEffect(() => {
-     doSomething1();
-   }, []);
-  
+    try {
+      let response = await axios.get(`${baseUrl}/tenant/tenants`);
+      const data = response.data.data;
+
+      const filteredData = data.filter((item, index) => {
+        // Replace 'tenantId' with the specific ID you're looking for
+        return item._id === tenantId && item.entries.entryIndex === entryIndex;
+      });
+
+      console.log(filteredData, "yashr");
+      setMyData1(filteredData);
+    } catch (error) {
+      // Handle errors here
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    doSomething1();
+  }, []);
 
   const getStatus = (startDate, endDate) => {
     const today = new Date();
     const start = new Date(startDate);
     const end = new Date(endDate);
-  
+
     if (today >= start && today <= end) {
-      return 'Active';
+      return "Active";
     } else if (today < start) {
-      return 'FUTURE';
+      return "FUTURE";
     } else if (today > end) {
-      return 'EXPIRED';
+      return "EXPIRED";
     } else {
-      return '-';
+      return "-";
     }
   };
   // const getGeneralLedgerData = async () => {
@@ -532,8 +528,6 @@ const RentRollDetail = () => {
   //   }
   // };
   const getGeneralLedgerData = async () => {
-
-
     // const apiUrl = `https://propertymanager.cloudpress.host/api/payment/merge_payment_charge/${tenantId}`;
     // try {
     //   const response = await axios.get(apiUrl);
@@ -558,37 +552,36 @@ const RentRollDetail = () => {
     getGeneralLedgerData();
   }, [tenantId]);
 
-  const deleteCharge = (chargeId, chargeIndex) => {
+  const deleteCharge = async (Id) => {
+    console.log(Id, 'chargeId');
+  
     swal({
       title: "Are you sure?",
       text: "Once deleted, you will not be able to recover this entry!",
       icon: "warning",
       buttons: ["Cancel", "Delete"],
       dangerMode: true,
-    }).then((willDelete) => {
+    }).then(async (willDelete) => { // Make the callback function async
       if (willDelete) {
-        axios
-          .delete(
-            `${baseUrl}/payment/delete_charge/${chargeId}/${chargeIndex}`
-          )
-          .then((response) => {
-            if (response.data.statusCode === 200) {
-              swal("Success!", "Entry deleted successfully!", "success");
-              getGeneralLedgerData();
-              // Optionally, you can refresh your data here.
-            } else {
-              swal("", response.data.message, "error");
-            }
-          })
-          .catch((error) => {
-            console.error("Error deleting entry:", error);
-            swal("", "Failed to delete entry", "error");
-          });
+        try {
+          const response = await axios.delete(`${baseUrl}/payment_charge/delete_entry/${Id}`);
+          if (response.data.statusCode === 200) {
+            swal("Success!", "Entry deleted successfully!", "success");
+            getGeneralLedgerData();
+            // Optionally, you can refresh your data here.
+          } else {
+            swal("", response.data.message, "error");
+          }
+        } catch (error) {
+          console.error("Error deleting entry:", error);
+          swal("", "Failed to delete entry", "error");
+        }
       } else {
         swal("Cancelled", "Entry is safe :)", "info");
       }
     });
   };
+  
   const editcharge = (id, chargeIndex) => {
     navigate(`/admin/AddCharge/${id}/charge/${chargeIndex}`);
     // console.log(id);
@@ -649,13 +642,43 @@ const RentRollDetail = () => {
       });
   };
 
-
-   // Function to generate PDF from table data
-   const generatePDF = (selectedOption) => {
+  // Function to generate PDF from table data
+  const generatePDF = (selectedOption) => {
     const doc = new jsPDF();
 
     doc.setFontSize(20);
     doc.text("Tenant Statement", 75, 16);
+    //set moment based on selected option
+    let dateBasedOnOption;
+
+    switch (selectedOption) {
+      case "Last 30 days":
+        dateBasedOnOption =
+          moment().subtract(30, "days").format("MM/DD/YYYY") +
+          "-" +
+          moment().format("MM/DD/YYYY");
+        break;
+      case "Last 3 months":
+        dateBasedOnOption =
+          moment().subtract(3, "months").format("MM/DD/YYYY") +
+          "-" +
+          moment().format("MM/DD/YYYY");
+        break;
+      case "Last 12 months":
+        dateBasedOnOption =
+          moment().subtract(12, "months").format("MM/DD/YYYY") +
+          "-" +
+          moment().format("MM/DD/YYYY");
+        break;
+      case "All transactions":
+        dateBasedOnOption = "";
+        break;
+      default:
+        // Handle default case here
+        break;
+    }
+    doc.setFontSize(11);
+    doc.text(`${dateBasedOnOption}`, 83, 22);
     doc.addImage(Img, "JPEG", 166, 10, 30, 15);
     const rentalfirstname =
       tenantDetails.tenant_firstName + " " + tenantDetails.tenant_lastName;
@@ -700,50 +723,48 @@ const RentRollDetail = () => {
     }
 
     let filteredData = GeneralLedgerData;
+    console.log(filteredData, "vaibhav");
 
     if (startDate) {
-      filteredData = GeneralLedgerData.filter((generalledger) => {
-        const ledgerDate = new Date(generalledger.date);
-        return ledgerDate >= startDate && ledgerDate <= today;
-      });
+      filteredData = GeneralLedgerData.paymentAndCharges.filter(
+        (generalledger) => {
+          const ledgerDate = new Date(generalledger.date);
+          return ledgerDate >= startDate && ledgerDate <= today;
+        }
+      );
     }
 
-    const tableData = filteredData
-      .map((generalledger) => {
-        return generalledger.entries.map((entry) => [
-          formatDateWithoutTime(generalledger.date) || "N/A",
-          generalledger.type,
-          generalledger.type === "Charge"
-            ? entry.charges_account
-            : entry.account,
-          generalledger.type === "Charge"
-            ? generalledger.charges_memo
-            : generalledger.memo,
-          generalledger.type === "Charge" ? "$" + entry.charges_amount : "-",
-          generalledger.type === "Payment" ? "$" + entry.amount : "-",
-          entry.balance !== undefined
-            ? entry.balance >= 0
-              ? `$${entry.balance}`
-              : `$(${Math.abs(entry.balance)})`
-            : "0",
-        ]);
-      })
-      .flat();
+    const tableData = GeneralLedgerData &&
+      GeneralLedgerData.paymentAndCharges &&
+      GeneralLedgerData.paymentAndCharges.length > 0 && [
+        ...GeneralLedgerData?.paymentAndCharges.reverse().map((entry) => {
+          return [
+            entry.date || "N/A",
+            entry.type || "N/A",
+            entry.account
+              ? entry.account
+              : entry.charge_type
+              ? entry.charge_type
+              : "N/A",
+            entry.memo || "N/A",
+            entry.type === "Charge" ? "$" + entry.amount : "-",
+            entry.type === "Payment" ? "$" + entry.amount : "-",
+            entry.Total ? "$" + entry.Total : "-",
+          ];
+        }),
+        [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Total Balance:",
+          "$" + GeneralLedgerData?.paymentAndCharges.reverse()[0]?.Total,
+        ],
+      ];
 
-      const firstBalance = tableData.length > 0 ? tableData[0][6] : "0";
-      tableData.push([
-        {
-          content: "Balance Due",
-          colSpan: 1,
-          styles: { fontStyle: "bold", halign: "left" },
-        },
-        "",
-        "",
-        "",
-        "",
-        "",
-        firstBalance,
-      ]);
+    // .flat();
+    console.log(tableData, "tableData");
 
     doc.autoTable({
       startY: tableStartY,
@@ -821,8 +842,8 @@ const RentRollDetail = () => {
                   tenantDetails.tenant_lastName}
               </h1>
               <h5 style={{ color: "white" }}>
-              {status} |{" "}
-              {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
+                {status} |{" "}
+                {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
                 {tenantDetails._id &&
                 tenantDetails.entries.rental_units !== undefined &&
                 tenantDetails.entries.rental_units !== ""
@@ -842,7 +863,7 @@ const RentRollDetail = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/admin/RentRoll")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -1071,7 +1092,7 @@ const RentRollDetail = () => {
                                       </Row>
                                       <Row className="w-100 my-3 text-left">
                                         <Col>
-                                          <a href="#">Reset Pasword</a>
+                                          <Link>Reset Pasword</Link>
                                         </Col>
                                       </Row>
                                     </div>
@@ -1110,7 +1131,15 @@ const RentRollDetail = () => {
                                           fontWeight: "bold",
                                         }}
                                       >
-                                        {"$" + Math.abs(balance)}
+                                        {GeneralLedgerData &&
+                                          GeneralLedgerData.paymentAndCharges &&
+                                          GeneralLedgerData.paymentAndCharges
+                                            .length > 0 &&
+                                          "$" +
+                                            Math.abs(
+                                              GeneralLedgerData
+                                                .paymentAndCharges[0].Total
+                                            )}
                                       </Typography>
                                     </div>
                                     <hr
@@ -1283,11 +1312,12 @@ const RentRollDetail = () => {
                                             }}
                                             // onClick={() => handleChange("Financial")}
                                           >
-                                          <Link
-                                  to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
-                                  onClick={() => {
-                                    setValue(`Financial`);
-                                  }}>
+                                            <Link
+                                              to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
+                                              onClick={() => {
+                                                setValue(`Financial`);
+                                              }}
+                                            >
                                               Lease Ledger
                                             </Link>
                                           </Typography>
@@ -1319,7 +1349,7 @@ const RentRollDetail = () => {
                         >
                           <Button
                             color="primary"
-                            // href="#rms"
+                            ////  href="#rms"
                             onClick={() =>
                               navigate(
                                 `/admin/AddPayment/${tenantId}/${entryIndex}`,
@@ -1342,7 +1372,7 @@ const RentRollDetail = () => {
                           </Button>
                           <Button
                             color="primary"
-                            // href="#rms"
+                            ////  href="#rms"
                             onClick={() =>
                               navigate(
                                 `/admin/AddCharge/${tenantId}/${entryIndex}`,
@@ -1436,10 +1466,12 @@ const RentRollDetail = () => {
                                         <>
                                         {console.log(GeneralLedgerData,"GeneralLedgerData")}
                                           <tr key={`${generalledger._id}`}>
-                                            <td>{generalledger.date}</td>
-                                            <td>{generalledger.type}</td>
-                                            <td>{generalledger.account}</td>
-                                            <td>{generalledger.memo}</td>
+                                            <td>{generalledger.date || "-"}</td>
+                                            <td>{generalledger.type || "-"}</td>
+                                            <td>
+                                              {generalledger.account || "-"}
+                                            </td>
+                                            <td>{generalledger.memo || "-"}</td>
                                             <td>
                                               {generalledger.type === "Charge"
                                                 ? "$" + generalledger.amount
@@ -1455,7 +1487,7 @@ const RentRollDetail = () => {
                                                 ? generalledger.Total >= 0
                                                   ? `$${generalledger.Total}`
                                                   : `$(${Math.abs(
-                                                    generalledger.Total
+                                                      generalledger.Total
                                                     )})`
                                                 : "0"}
                                               {/* {calculateBalance(
@@ -1477,16 +1509,16 @@ const RentRollDetail = () => {
                                                     style={{
                                                       cursor: "pointer",
                                                     }}
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
+                                                    // onClick={(e) => {
+                                                      // e.stopPropagation();
                                                       // console.log(
                                                       //   "Entry Object:",
                                                       //   entry
                                                       // );
-                                                      deleteCharge(
-                                                        generalledger._id,
-                                                        entry.chargeIndex
-                                                      );
+                                                      // deleteCharge(
+                                                      //   generalledger._id,
+                                                      //   entry.chargeIndex
+                                                      // );
                                                       // console.log(
                                                       //   generalledger._id,
                                                       //   "dsgdg"
@@ -1495,9 +1527,11 @@ const RentRollDetail = () => {
                                                       //   entry.chargeIndex,
                                                       //   "dsgdg"
                                                       // );
-                                                    }}
+                                                    // }}
                                                   >
-                                                    <DeleteIcon />
+                                                    <DeleteIcon onClick={() => {
+                                                      console.log(generalledger,'geennennene')
+                                                      deleteCharge(generalledger._id)}}  />
                                                   </div>
                                                 )}
 
@@ -1567,7 +1601,7 @@ const RentRollDetail = () => {
                       <Col>
                         {Array.isArray(rentaldata) ? (
                           <Grid container spacing={2}>
-                            {console.log(rentaldata,"rentalsdat")}
+                            {console.log(rentaldata, "rentalsdat")}
                             {rentaldata.map((tenant, index) => (
                               <Grid item xs={12} sm={6} key={index}>
                                 {tenant.entries.map((entry) => (
@@ -1743,7 +1777,7 @@ const RentRollDetail = () => {
                                       </Col>
 
                                       <Col lg="7">
-                                      <div
+                                        <div
                                           style={{
                                             color: "blue",
                                             fontWeight: "bold",
@@ -1891,7 +1925,19 @@ const RentRollDetail = () => {
                                   fontWeight: "bold",
                                 }}
                               >
-                                {"$" + Math.abs(balance)}
+                                {console.log(
+                                  GeneralLedgerData,
+                                  "GeneralLeder Data"
+                                )}
+                                {GeneralLedgerData &&
+                                  GeneralLedgerData.paymentAndCharges &&
+                                  GeneralLedgerData.paymentAndCharges.length >
+                                    0 &&
+                                  "$" +
+                                    Math.abs(
+                                      GeneralLedgerData.paymentAndCharges[0]
+                                        .Total
+                                    )}
                               </Typography>
                             </div>
                             <hr
@@ -2052,13 +2098,11 @@ const RentRollDetail = () => {
                                   Receive Payment
                                 </Link>
                               </Button>
-                              
+
                               {myData1.map((item) => (
                                 <>
-                                
                                   <Typography
                                     sx={{
-                                      
                                       fontSize: 14,
                                       marginLeft: "10px",
                                       paddingTop: "10px",
@@ -2067,11 +2111,12 @@ const RentRollDetail = () => {
                                     }}
                                     // onClick={() => handleChange("Financial")}
                                   >
-                                   <Link
-                                  to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
-                                  onClick={() => {
-                                    setValue(`Financial`);
-                                  }}>
+                                    <Link
+                                      to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
+                                      onClick={() => {
+                                        setValue(`Financial`);
+                                      }}
+                                    >
                                       Lease Ledger
                                     </Link>
                                   </Typography>
