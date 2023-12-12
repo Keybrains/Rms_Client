@@ -2188,8 +2188,8 @@ setData();
           paymentAndCharges: [
             {
               type: "Charge",
-              charge_type: "",
-              account: entrySchema.values.account,
+              charge_type: "Rent",
+              //account: entrySchema.values.account,
               amount: parseFloat(entrySchema.values.amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: entrySchema.values.rent_cycle,
@@ -2231,7 +2231,7 @@ setData();
             {
               type: "Charge",
               charge_type: "Security Deposit",
-              account: "" ,
+              //account: "" ,
               amount: parseFloat(Security_amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",
