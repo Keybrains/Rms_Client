@@ -348,31 +348,31 @@ const RentRollDetail = () => {
   //console.log(rentaldata, "rentalData");
   const tenantsData = async () => {
     // Construct the API URL
-
     let apiUrl;
-
     if (unit === undefined) {
       apiUrl = `${baseUrl}/tenant/tenant-detail/tenants/${rental}`;
     } else {
       apiUrl = `${baseUrl}/tenant/tenant-detail/tenants/${rental}/${unit}`;
       console.log(apiUrl, "apiUrl");
     }
-
     try {
       // Fetch tenant data
       const response = await axios.get(apiUrl);
       const tenantData = response.data.data;
-      //console.log(tenantData.tenant_firstName, "abcd");
-      setTenantDetails(tenantData);
-      setRentaldata(tenantData);
+      setTimeout(() => {
+        //console.log(tenantData.tenant_firstName, "abcd");
+      // setTenantDetails(tenantData);
+      // setRentaldata(tenantData);
       console.log(tenantData, "tenantsdata");
       setLoading(false);
+      }, 3000);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
       setLoading(false);
     }
   };
+  
   useEffect(() => {
     getTenantData();
   }, []);
@@ -828,7 +828,14 @@ const RentRollDetail = () => {
       <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
-            <FormGroup className="">
+          <FormGroup className="">
+            {loading ? (
+                        <tbody>
+                          <tr>
+                            <td></td>
+                          </tr>
+                        </tbody>
+                      ) : (<>
               <h1 style={{ color: "white" }}>
                 {tenantDetails.tenant_firstName +
                   " " +
@@ -842,8 +849,16 @@ const RentRollDetail = () => {
                 tenantDetails.entries.rental_units !== ""
                   ? ` - ${tenantDetails.entries.rental_units}`
                   : ""}
-              </h5>
+              </h5></>)}
             </FormGroup>
+
+
+
+
+
+
+
+
           </Col>
           <Col className="text-right" xs="12" sm="6">
             <Button
@@ -1444,10 +1459,12 @@ const RentRollDetail = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
+                                
                                   {GeneralLedgerData &&
                                     GeneralLedgerData?.paymentAndCharges?.map(
                                       (generalledger) => (
                                         <>
+                                        {console.log(GeneralLedgerData,"GeneralLedgerData")}
                                           <tr key={`${generalledger._id}`}>
                                             <td>{generalledger.date || "-"}</td>
                                             <td>{generalledger.type || "-"}</td>
