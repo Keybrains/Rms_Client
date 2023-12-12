@@ -1379,20 +1379,34 @@ const Leaseing = () => {
   console.log(tenantsSchema, "tenantsSchema.values");
 
   useEffect(() => {
-    if (id && entryIndex) {
-      axios
-        .get(`${baseUrl}/tenant/tenant_summary/${id}`)
-        .then((response) => {
+    const fetchData = async () => {
+      if (id && entryIndex) {
+        const url = `${baseUrl}/tenant/tenant_summary/${id}`;
+        try {
+          const response = await axios.get(url);
           const laesingdata = response.data.data;
+          console.log(laesingdata, "laesingdata");
           setTenantData(laesingdata);
           setSelectedTenantData({
             firstName: laesingdata.tenant_firstName || "",
             lastName: laesingdata.tenant_lastName || "",
             mobileNumber: laesingdata.tenant_mobileNumber || "",
           });
-          const matchedLease = laesingdata.entries.find((entry) => {
-            return entry.entryIndex === entryIndex;
-          });
+
+          const matchedLease = laesingdata.entries.find(
+            (entry) => entry.entryIndex === entryIndex
+          );
+          console.log(matchedLease, "matchedLease");
+          try {
+            const units = await fetchUnitsByProperty(
+              matchedLease.rental_adress
+            );
+            console.log(units, "unitssssssssssssss"); // Check the received units in the console
+
+            setUnitData(units);
+          } catch (error) {
+            console.log(error, "error");
+          }
 
           // const formattedStartDate = matchedLease.start_date
           //   ? new Date(matchedLease.start_date).toISOString().split("T")[0]
@@ -1600,12 +1614,12 @@ const Leaseing = () => {
           //     },
           //   ],
           // });
-        })
-        .catch((error) => {
-          console.error("Error fetching vendor data:", error);
-        });
-      handleAddTenant();
-    }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+    fetchData();
   }, [id, entryIndex]);
   console.log(entrySchema.values, "entrySchema");
   console.log(ownerData, "ownerData");
@@ -2022,7 +2036,7 @@ const Leaseing = () => {
               rent_cycle: entrySchema.values.rent_cycle,
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
-              memo: entrySchema.values.charges_memo,
+              memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
@@ -2064,7 +2078,7 @@ const Leaseing = () => {
               rent_cycle: "",
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
-              memo: "",
+              memo: "Security Deposit",
               tenant_id: tenantId,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
@@ -2147,10 +2161,18 @@ const Leaseing = () => {
   };
 
   const editLease = async (id) => {
-    const arrayOfNames = file.map((item) => item.name);
+    // const arrayOfNames = file.map((item) => item.name);
 
     const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
+
+    try {
+      const units = await fetchUnitsByProperty(entrySchema.values.rental_units);
+      //console.log(units, "units"); // Check the received units in the console
+      setUnitData(units);
+    } catch (error) {
+      console.log(error, "error");
+    }
 
     const entriesObject = {
       rental_units: entrySchema.values.rental_units,
@@ -5909,7 +5931,7 @@ const Leaseing = () => {
                 
                   {/* <Button
                   color="primary"
-                  href="#rms"
+                 //  href="#rms"
                   onClick={(e) => e.preventDefault()}
                   size="sm"
                   style={{ background: "green" }}
@@ -5964,7 +5986,7 @@ const Leaseing = () => {
                   )}
                   <Button
                     color="primary"
-                    // href="#rms"
+                    ////  href="#rms"
                     onClick={handleCloseButtonClick}
                     className="btn btn-primary"
                     style={{

@@ -18,7 +18,6 @@ import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import VendorHeader from "components/Headers/VendorHeader";
-
 const VendorProfile = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
@@ -26,7 +25,6 @@ const VendorProfile = () => {
   const [vendorDetails, setVendorDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const navigate = useNavigate();
   // let rentalId = localStorage.getItem("ID")
   // Inside your useEffect, update the axios.get call as follows:
@@ -44,19 +42,15 @@ const VendorProfile = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     getVendorData();
     //console.log(id);
   }, [id]);
-
   // let cookies = new Cookies();
   // Check Authe(token)
-
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
   let cookie_id = cookies.get("Vendor ID");
-
   React.useEffect(() => {
     if (cookies.get("token")) {
       const jwt = jwtDecode(cookies.get("token"));
@@ -65,7 +59,6 @@ const VendorProfile = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-
   return (
     <>
       <VendorHeader />
@@ -75,58 +68,59 @@ const VendorProfile = () => {
           <div className="col">
             <Card className="shadow" style={{ backgroundColor: "#FFFEFA" }}>
               <CardHeader className="border-0">
-                {/* <h3 className="mb-0">Summary </h3> */}
+                <h3 className="mb-0">Personal detail </h3>
               </CardHeader>
-              <div className="table-responsive">
-                <Table
-                  className="align-items-center table-flush"
-                  responsive
-                  style={{ width: "100%" }}
-                >
-                  {loading ? (
-                    <tr>
-                      <td>Loading vendor details...</td>
-                    </tr>
-                  ) : error ? (
-                    <tr>
-                      <td>Error: {error.message}</td>
-                    </tr>
-                  ) : vendorDetails._id ? (
-                    <>
+              <div className="table-responsive" style={{padding:"15px"}}>
+              
+                  <Table
+                    className="align-items-center table-flush"
+                    responsive
+                    style={{ width: "100%" }}
+                  >
+                    {loading ? (
+                      <tr>
+                        <td>Loading vendor details...</td>
+                      </tr>
+                    ) : error ? (
+                      <tr>
+                        <td>Error: {error.message}</td>
+                      </tr>
+                    ) : vendorDetails._id ? (
+                      <>
+                        <tbody
+                          className="tbbody p-0 m-0"
+                          style={{
+                            borderTopRightRadius: "5px",
+                            borderTopLeftRadius: "5px",
+                            borderBottomLeftRadius: "5px",
+                            borderBottomRightRadius: "5px",
+                          }}
+                        >
+                          <tr className="header">
+                            <th>First name</th>
+                            <th>Last name</th>
+                            <th>Email</th>
+                          </tr>
+                          <>
+                            <>
+                              <tr className="body">
+                              <td>{vendorDetails.vendor_name}</td>
+                              <td>{vendorDetails.vendor_phoneNumber}</td>
+                               <td>{vendorDetails.vendor_email}</td>
+                              </tr>
+                            </>
+                          </>
+                        </tbody>
+                      </>
+                    ) : (
                       <tbody>
                         <tr>
-                          <th
-                            colSpan="2"
-                            className="text-lg"
-                            style={{ color: "#3B2F2F" }}
-                          >
-                            Personal Details
-                          </th>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">First Name:</td>
-                          <td>{vendorDetails.vendor_name}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">
-                            Phone Number:
-                          </td>
-                          <td>{vendorDetails.vendor_phoneNumber}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Email:</td>
-                          <td>{vendorDetails.vendor_email}</td>
+                          <td>No vendor details found.</td>
                         </tr>
                       </tbody>
-                    </>
-                  ) : (
-                    <tbody>
-                      <tr>
-                        <td>No vendor details found.</td>
-                      </tr>
-                    </tbody>
-                  )}
-                </Table>
+                    )}
+                  </Table>
+             
               </div>
             </Card>
           </div>
@@ -135,5 +129,4 @@ const VendorProfile = () => {
     </>
   );
 };
-
 export default VendorProfile;

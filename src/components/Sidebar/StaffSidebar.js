@@ -373,7 +373,10 @@ const StaffSidebar = (props) => {
                 <span>Support</span>
               </DropdownItem> */}
               <DropdownItem divider />
-              <DropdownItem href="#rms" to="/auth/login"  onClick={() => {
+              <DropdownItem
+              //  href="#rms" 
+              to="/auth/login"  
+              onClick={() => {
               Logout();
             }} tag={Link} >
                 <i className="ni ni-user-run" />

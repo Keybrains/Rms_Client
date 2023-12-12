@@ -31,6 +31,7 @@ import {
 } from "reactstrap";
 // core components
 import UserHeader from "components/Headers/UserHeader.js";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -45,13 +46,15 @@ const Profile = () => {
               <Row className="justify-content-center">
                 <Col className="order-lg-2" lg="3">
                   <div className="card-profile-image">
-                    <a href="#rms" onClick={(e) => e.preventDefault()}>
+                    <Link
+                    //  href="#rms" 
+                    onClick={(e) => e.preventDefault()}>
                       <img
                         alt="..."
                         className="rounded-circle"
                         src={require("../../assets/img/theme/team-4-800x800.jpg")}
                       />
-                    </a>
+                    </Link>
                   </div>
                 </Col>
               </Row>
@@ -60,7 +63,7 @@ const Profile = () => {
                   <Button
                     className="mr-4"
                     color="info"
-                    href="#rms"
+                   //  href="#rms"
                     onClick={(e) => e.preventDefault()}
                     size="sm"
                   >
@@ -69,7 +72,7 @@ const Profile = () => {
                   <Button
                     className="float-right"
                     color="default"
-                    href="#rms"
+                   //  href="#rms"
                     onClick={(e) => e.preventDefault()}
                     size="sm"
                   >
@@ -119,7 +122,7 @@ const Profile = () => {
                     Nick Murphy — writes, performs and records all of his own
                     music.
                   </p>
-                  {/* <a href="#rms" onClick={(e) => e.preventDefault()}>
+                  {/* <a//  href="#rms" onClick={(e) => e.preventDefault()}>
                     Show more
                   </a> */}
                 </div>
@@ -136,7 +139,7 @@ const Profile = () => {
                   <Col className="text-right" xs="4">
                     <Button
                       color="primary"
-                      href="#rms"
+                     //  href="#rms"
                       onClick={(e) => e.preventDefault()}
                       size="sm"
                     >

@@ -98,7 +98,7 @@ const Applicants = () => {
     try {
       const units = await fetchUnitsByProperty(property.rental_adress);
       setOwnerData(property);
-      //console.log(units, "units"); // Check the received units in the console
+      console.log(units, "units"); // Check the received units in the console
       setUnitData(units); // Set the received units in the unitData state
     } catch (error) {
       console.error("Error handling selected property:", error);
@@ -426,7 +426,7 @@ const Applicants = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              href="#rms"
+             //  href="#rms"
               onClick={openModal}
               size="sm"
               style={{ background: "white", color: "blue" }}
