@@ -2038,6 +2038,8 @@ const Leaseing = () => {
               date: moment().format("YYYY-MM-DD"),
               memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
+              isPaid: false,
+              // tenant_lastName: tenantsSchema.values.tenant_lastName,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
                 " " +
@@ -2072,8 +2074,9 @@ const Leaseing = () => {
             {
               type: "Charge",
               charge_type: "Security Deposit",
-              //account: "" ,
+              account: "Security Deposit",
               amount: parseFloat(Security_amount),
+              isPaid: false,
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",
               month_year: moment().format("MM-YYYY"),
@@ -2134,6 +2137,7 @@ const Leaseing = () => {
                   : item?.onetime_amount || "",
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",
+              isPaid:false,
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
               memo:
