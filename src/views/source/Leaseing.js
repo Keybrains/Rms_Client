@@ -1841,9 +1841,9 @@ const Leaseing = () => {
             putObject
             );
             if (res.data.statusCode === 200) {
-              console.log(res.data.data, "clgtttt");
+              // console.log(res.data.data, "clgtttt");
               swal("", res.data.message, "success");
-              console.log(entrySchema.values,'hello')
+              // console.log(entrySchema.values,'hello')
             const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
             // debugger;
