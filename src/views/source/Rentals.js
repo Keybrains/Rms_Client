@@ -93,6 +93,7 @@ const Rentals = () => {
   const [showRentalOwnerTable, setshowRentalOwnerTable] = useState(false);
   const [checkedCheckbox, setCheckedCheckbox] = useState();
   const [searchQuery, setSearchQuery] = useState("");
+  
   const bathArray = [
     "1 Bath",
     "1.5 Bath",
@@ -105,6 +106,7 @@ const Rentals = () => {
     "5 Bath",
     "5+ Bath",
   ];
+
   const roomsArray = [
     "1 Bed",
     "2 Bed",
@@ -200,17 +202,18 @@ const Rentals = () => {
         rentalOwnerParts[1] || ""
       );
       rentalsFormik.setFieldValue(
-        "rentalOwner_companyName",
+        "rentalOwner_phoneNumber",
         rentalOwnerParts[2] || ""
       );
       rentalsFormik.setFieldValue(
-        "rentalOwner_primaryEmail",
+        "rentalOwner_companyName",
         rentalOwnerParts[3] || ""
       );
       rentalsFormik.setFieldValue(
-        "rentalOwner_phoneNumber",
+        "rentalOwner_primaryEmail",
         rentalOwnerParts[4] || ""
       );
+     
       rentalsFormik.setFieldValue(
         "rentalOwner_homeNumber",
         rentalOwnerParts[5] || ""
@@ -222,7 +225,11 @@ const Rentals = () => {
       const rentalOwnerDetails = {
         firstName: rentalOwnerParts[0],
         lastName: rentalOwnerParts[1],
-        phoneNumber: rentalOwnerParts[4],
+        phoneNumber: rentalOwnerParts[2],
+        companyName: rentalOwnerParts.slice(3, -3).join(" "), 
+        primaryEmail: rentalOwnerParts[4],
+        homeNumber: rentalOwnerParts[5],
+        businessNumber: rentalOwnerParts[6],
       };
       setSelectedRentalOwnerData(rentalOwnerDetails);
       // console.log(rentalOwnerParts);
