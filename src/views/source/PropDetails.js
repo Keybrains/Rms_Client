@@ -3227,7 +3227,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                               ? clickedObject.start_date +
                                                 " " +
                                                 clickedObject.end_date
-                                              : "Inctive"}
+                                              : "Inactive"}
                                           </td>
                                           <td>
                                             {clickedObject.start_date &&
