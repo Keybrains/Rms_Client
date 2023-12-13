@@ -1656,7 +1656,7 @@ const RentRollDetail = () => {
                                           <Table striped bordered responsive>
                                             <thead>
                                               <tr>
-                                                <th>Adress / Unit</th>
+                                                <th>Address / Unit</th>
                                                 <th>LEASE TYPE</th>
                                                 <th>START - END</th>
                                               </tr>
