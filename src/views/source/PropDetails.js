@@ -401,7 +401,7 @@ const clearSelectedPhoto = (index, image, name) => {
         console.log(res.data.data, "property unit");
         setPropertyUnit(res.data.data);
         const matchedUnit = res.data.data.filter((item) => item._id === propId);
-        // console.log(matchedUnit, "matchedUnit");
+        console.log(matchedUnit, "matchedUnit");
         setClickedObject(matchedUnit[0]);
       })
       .catch((err) => {
@@ -3200,7 +3200,9 @@ const clearSelectedPhoto = (index, image, name) => {
                                 className="mb-1 m-0 p-0"
                                 style={{ fontSize: "12px", color: "#000" }}
                               >
+                               
                                 <Table responsive>
+                                
                                   <tbody
                                     className="tbbody p-0 m-0"
                                     style={{
@@ -3217,6 +3219,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
+                                    {console.log("clickedObject",clickedObject)}
                                     {clickedObject &&
                                     clickedObject.tenant_firstName &&
                                     clickedObject.tenant_lastName ? (
@@ -3224,9 +3227,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                         <tr className="body">
                                           <td>
                                             {clickedObject.start_date
-                                              ? clickedObject.start_date +
-                                                " " +
-                                                clickedObject.end_date
+                                              ? "Active"
                                               : "Inactive"}
                                           </td>
                                           <td>
@@ -3272,7 +3273,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                             {clickedObject.lease_type || "N/A"}
                                           </td>
                                           <td>
-                                            {clickedObject.property_rent ||
+                                            {clickedObject.amount ||
                                               "N/A"}
                                           </td>
                                         </tr>
@@ -3479,9 +3480,9 @@ const clearSelectedPhoto = (index, image, name) => {
                                     >
                                       Listing
                                     </span>
-                                    <span>1/12/2023</span>
+                                    <span>{clickedObject.unitCreatedAt}</span>
                                     <span style={{ margin: "5px 0" }}>
-                                      $900 available 1/12/2023
+                                      $900 available {moment().format("DD/MM/YYYY ")}
                                     </span>
                                     <span
                                       style={{

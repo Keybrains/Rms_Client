@@ -323,7 +323,7 @@ const AddVendor = () => {
 
                   <button
                     color="primary"
-                    href="#rms"
+                   //  href="#rms"
                     className="btn btn-primary"
                     onClick={handleCloseButtonClick}
                     size="sm"

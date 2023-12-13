@@ -46,7 +46,7 @@ const Register = () => {
               <Button
                 className="btn-neutral btn-icon mr-4"
                 color="default"
-                href="#rms"
+               //  href="#rms"
                 onClick={(e) => e.preventDefault()}
               >
                 <span className="btn-inner--icon">
@@ -63,7 +63,7 @@ const Register = () => {
               <Button
                 className="btn-neutral btn-icon"
                 color="default"
-                href="#rms"
+               //  href="#rms"
                 onClick={(e) => e.preventDefault()}
               >
                 <span className="btn-inner--icon">
@@ -142,7 +142,7 @@ const Register = () => {
                     >
                       <span className="text-muted">
                         I agree with the{" "}
-                        <a href="#rms" onClick={(e) => e.preventDefault()}>
+                        <a//  href="#rms" onClick={(e) => e.preventDefault()}>
                           Privacy Policy
                         </a>
                       </span>

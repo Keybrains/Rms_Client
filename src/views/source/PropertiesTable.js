@@ -333,7 +333,7 @@ const PropertiesTables = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              href="#rms"
+             //  href="#rms"
               onClick={() => navigate("/admin/rentals")}
               size="sm"
               style={{ background: "white", color: "blue" }}

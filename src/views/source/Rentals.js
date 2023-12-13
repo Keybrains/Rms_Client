@@ -127,23 +127,25 @@ const Rentals = () => {
   const [file, setFile] = useState("");
 
   useEffect(() => {
-    // Make an HTTP GET request to your Express API endpoint
-    fetch(`${baseUrl}/rentals/existing/rentals`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setRentalownerData(data.data);
-          // console.log("here is my data", data.data);
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/rentals/existing/rentals`);
+        const data = await response.json();
+  
+        if (response.ok) {
+          setRentalownerData(data.data || []); // Ensure data is an array or handle empty data
+          console.log("Here is the fetched data:", data.data);
         } else {
-          // Handle error
-          // console.error("Error:", data.message);
+          console.error("Error:", data.message || "Failed to fetch data");
         }
-      })
-      .catch((error) => {
-        // Handle network error
+      } catch (error) {
         console.error("Network error:", error);
-      });
-  }, []);
+      }
+    };
+  
+    fetchData();
+  }, [baseUrl, setRentalownerData]); // Add dependencies that trigger a refetch if changed
+  
 
   const handleCheckboxChange = (event, rentalOwnerInfo, phoneNumber) => {
     if (checkedCheckbox === phoneNumber) {
@@ -189,8 +191,8 @@ const Rentals = () => {
     } else {
       setSelectedrentalOwners([]);
       const selectedrentalOwner = selectedrentalOwners[0];
-      // console.log(selectedrentalOwners, "selectedrentalOwners");
-      const rentalOwnerParts = selectedrentalOwner.split(" ");
+      console.log(selectedrentalOwners, "selectedrentalOwners");
+      const rentalOwnerParts = selectedrentalOwner.split(" ").map(part => part.trim());
       rentalsFormik.setFieldValue(
         "rentalOwner_firstName",
         rentalOwnerParts[0] || ""
@@ -231,6 +233,7 @@ const Rentals = () => {
       }
     }
   };
+
   const dialogPaperStyles = {
     maxWidth: "lg",
     width: "100%",
@@ -516,7 +519,7 @@ const Rentals = () => {
         `entries[0].residential[${index}].propertyres_image`,
         ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
         allData
-      );
+        );
       if (residentialImage[index]) {
         setResidentialImage([
           ...residentialImage.slice(0, index),
