@@ -39,6 +39,8 @@ import "jspdf-autotable";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import moment from "moment";
+import { DIALOG_WIDTH } from "@mui/x-date-pickers/internals";
+import GeneralLedger from "./GeneralLedger";
 
 const AddCharge = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -89,7 +91,7 @@ const AddCharge = () => {
           charges_total_amount: "",
         },
       ],
-      charges_attachment: "",
+      charges_attachment: [],
     },
     validationSchema: yup.object({
       date: yup.string().required("Required"),
@@ -107,8 +109,8 @@ const AddCharge = () => {
       //console.log(values, "values");
     },
   });
-
   let navigate = useNavigate();
+
   const handleCloseButtonClick = () => {
     navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
   };
@@ -132,9 +134,7 @@ const AddCharge = () => {
   useEffect(() => {
     fetchTenantData();
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      `${baseUrl}/tenant/tenant-name/tenant/${rentAddress}`
-    )
+    fetch(`${baseUrl}/tenant/tenant-name/tenant/${rentAddress}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -199,17 +199,17 @@ const AddCharge = () => {
     });
   };
   const [propertyId, setPropertyId] = useState("");
-  console.log('sahill', propertyId)
+  console.log("sahill", propertyId);
   const fetchTenantData = async () => {
-    fetch(
-      `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
-    )
+    fetch(`${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
           const tenantData = data.data;
           const rentalAddress = tenantData.entries.rental_adress;
-          setSelectedRec(`${tenantData.tenant_firstName} ${tenantData.tenant_lastName}`);
+          setSelectedRec(
+            `${tenantData.tenant_firstName} ${tenantData.tenant_lastName}`
+          );
           setTenantid(tenantData._id);
           setPropertyId(tenantData.entries.property_id);
           // setTenantentryindex(tenantData.entryIndex);
@@ -223,9 +223,7 @@ const AddCharge = () => {
   };
 
   useEffect(() => {
-    fetch(
-      `${baseUrl}/addaccount/find_accountname`
-    )
+    fetch(`${baseUrl}/addaccount/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -238,6 +236,8 @@ const AddCharge = () => {
         console.error("Network error:", error);
       });
   }, []);
+  // const location = useLocation();
+  // const state =  location.state && location.state;
 
   // Calculate the total debit and credit
   // let totalDebit = 0;
@@ -255,12 +255,17 @@ const AddCharge = () => {
     if (entries.charges_amount) {
       charges_total_amount += parseFloat(entries.charges_amount);
     }
-  }); 
+  });
   const location = useLocation();
-  const state =  location.state && location.state;
+  const state = location.state && location.state;
+  const tenantDetails = state ? state.tenantDetails : "";
 
+  const { chargeId } = useParams();
+
+  console.log(file, "file");
   const handleSubmit = async (values) => {
     const arrayOfNames = file.map((item) => item.name);
+    console.log(arrayOfNames, "arrayOfNames");
     const rentalAddress = generalledgerFormik.values.rental_adress;
     values["charges_total_amount"] = charges_total_amount;
 
@@ -274,6 +279,7 @@ const AddCharge = () => {
         tenant_id: tenantid,
         entryIndex: tenantentryIndex,
         charges_memo: values.charges_memo || "Charge",
+        // charges_attachment: file,
         entries: generalledgerFormik.values.entries.map((entry) => ({
           charges_account: entry.charges_account,
           charges_amount: parseFloat(entry.charges_amount),
@@ -288,49 +294,59 @@ const AddCharge = () => {
 
       if (response.data.statusCode === 200) {
         swal("Success", "Charges Added Successfully", "success");
-        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`);
+        console.log(response, "response of object");
+        navigate(
+          `/admin/rentrolldetail/${tenantId}/${tenantDetails}?source=payment`
+        );
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
       }
-      console.log(state,'state')
-      
-      try{
-        const chargeObject = {
-          properties:{
-            rental_adress:rentalAddress || "",
-            property_id:propertyId
-          },
-          unit:[{
-            unit:state && state.unit_name,
-            unit_id:state && state.unit_id,
-            paymentAndCharges:generalledgerFormik.values.entries.map((entry) => ({
-                type:"Charge",
-                account:entry.charges_account,
-                amount:parseFloat(entry.charges_amount),
-                rental_adress:rentAddress,
-                rent_cycle:"",
-                month_year:values.date.slice(5,7)+"-"+values.date.slice(0,4),
-                date:values.date,
-                memo: values.charges_memo,
-                tenant_id:tenantid,
-                tenant_firstName:selectedRec,
-            })),
-            
-          }]
-        }
-        console.log(chargeObject,'chargeObject')
-        // debugger
-        const url = `${baseUrl}/payment_charge/payment_charge`
-        await axios.post(url, chargeObject).then((res) => {
-          console.log(res)
-        }).catch((err) => {
-          console.log(err)
-        })
-      }
-      catch{
+      console.log(state, "state");
 
-      }
+      try {
+        const chargeObject = {
+          properties: {
+            rental_adress: rentalAddress || "",
+            property_id: propertyId,
+          },
+          unit: [
+            {
+              unit: state && state.unit_name,
+              unit_id: state && state.unit_id,
+              paymentAndCharges: generalledgerFormik.values.entries.map(
+                (entry) => ({
+                  type: "Charge",
+                  account: entry.charges_account,
+                  amount: parseFloat(entry.charges_amount),
+                  rental_adress: rentAddress,
+                  rent_cycle: "",
+                  month_year:
+                    values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                  date: values.date,
+                  memo: values.charges_memo,
+                  tenant_id: tenantid,
+                  tenant_firstName: selectedRec,
+                  charges_attachment: arrayOfNames,
+                  isPaid: false,
+                  // charges_total_amount:charges_total_amount
+                })
+              ),
+            },
+          ],
+        };
+        console.log(chargeObject, "chargeObject");
+        // debugger
+        const url = `${baseUrl}/payment_charge/payment_charge`;
+        await axios
+          .post(url, chargeObject)
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch {}
     } catch (error) {
       console.error("Error:", error);
       if (error.response) {
@@ -338,40 +354,42 @@ const AddCharge = () => {
       }
     }
   };
-
-  const editCharge = async (mainId, chargeIndex, values) => {
+  console.log(tenantDetails,'tenantDetails')
+  const editCharge = async () => {
     try {
       const arrayOfNames = file.map((item) => item.name);
       const rentalAddress = generalledgerFormik.values.rental_adress;
       values["charges_total_amount"] = charges_total_amount;
 
       const updatedValues = {
-        tenant_id: id,
-        entryIndex: index,
-        date: values.date,
-        charges_amount: values.charges_amount,
+        tenant_id: tenantDetails._id,
+        type:"Charge",
+        charge_type:"",
+        account: generalledgerFormik.values.entries[0].charges_account,
+        amount: generalledgerFormik.values.entries[0].charges_amount,
+        // entryIndex: tenantDetails.entries.entryIndex,
+        date: generalledgerFormik.values.date,
+        month_year:
+          generalledgerFormik.values.date.slice(5, 7) +
+          "-" +
+          generalledgerFormik.values.date.slice(0, 4),
+        // charges_amount: generalledgerFormik.values.charges_amount,
         tenant_firstName: selectedRec,
         charges_attachment: arrayOfNames,
-        rental_adress: rentalAddress,
-        tenant_id: tenantid,
-        entryIndex: tenantentryIndex,
-        charges_memo: values.charges_memo,
-        entries: generalledgerFormik.values.entries.map((entry) => ({
-          charges_account: entry.charges_account,
-          charges_amount: parseFloat(entry.charges_amount),
-          charges_total_amount: charges_total_amount,
-        })),
+        rental_adress: tenantDetails.entries.rental_adress,
+        memo: generalledgerFormik.values.charges_memo,
       };
       //console.log(tenantId, "vaibhav");
 
       console.log(updatedValues, "updatedValues");
 
-      const putUrl = `${baseUrl}/payment/charges/${mainId}/charge/${chargeIndex}`;
+      const putUrl = `${baseUrl}/payment_charge/edit_entry/${chargeId}`;
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
         swal("Success", "Charges Update Successfully", "success");
-        navigate(`/admin/rentrolldetail/${id}/${index}`);
+        navigate(`/admin/rentrolldetail/${tenantDetails._id}/${tenantDetails.entries.entryIndex}`);
+        console.log(response, "response of object");
         // navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
         // if (tenantId && entryIndex) {
         //   //console.log(tenantId,'mm')
@@ -447,68 +465,124 @@ const AddCharge = () => {
 
   const [chargeData, setchargeData] = useState(null);
 
+  // useEffect(() => {
+  //   //console.log(mainId, chargeIndex, "mainid && charge Id");
+  //   if (mainId && chargeIndex) {
+  //     axios
+  //       .get(
+  //         `${baseUrl}/payment/charge_summary/${mainId}/charge/${chargeIndex}`
+  //       )
+  //       .then((response) => {
+  //         const chargeData = response.data.data;
+  //         setchargeData(chargeData);
+  //         console.log(chargeData, "chargedata");
+  //         console.log(chargeData.entries, "entries data");
+  //         const formattedDate =
+  //           chargeData && chargeData.date
+  //             ? new Date(chargeData.date).toISOString().split("T")[0]
+  //             : "";
+  //         console.log(formattedDate, "formattedDate");
+  //         const id = chargeData.tenant_id;
+  //         setId(id);
+  //         //console.log(id, "abcd");
+  //         const index = chargeData.entryIndex;
+  //         setIndex(index);
+  //         //console.log(index, "xyz");
+  //         setSelectedRec(chargeData.tenant_firstName || "Select");
+
+  //         const entriesData = chargeData.entries || [];
+
+  //         if (Array.isArray(entriesData)) {
+  //           // Handling when entriesData is an array
+  //           generalledgerFormik.setValues({
+  //             charges_amount: chargeData.charges_amount || "",
+  //             date: formattedDate,
+  //             charges_memo: chargeData.charges_memo || "",
+  //             entries: entriesData.map((entry) => ({
+  //               charges_account: entry.charges_account || "",
+  //               charges_amount: entry.charges_amount || "",
+  //               charges_total_amount: entry.charges_total_amount || "",
+  //             })),
+  //           });
+  //         } else {
+  //           // Handling when entriesData is an object
+  //           console.error("entriesData is not an array:", entriesData);
+  //           generalledgerFormik.setValues({
+  //             charges_amount: chargeData.charges_amount || "",
+  //             date: formattedDate,
+  //             charges_memo: chargeData.charges_memo || "",
+  //             // Assuming you want to use the single object received as the only entry
+  //             entries: [
+  //               {
+  //                 charges_account: entriesData.charges_account || "",
+  //                 charges_amount: entriesData.charges_amount || "",
+  //                 charges_total_amount: entriesData.charges_total_amount || "",
+  //               },
+  //             ],
+  //           });
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching vendor data:", error);
+  //       });
+  //   }
+  // }, [mainId, chargeIndex]);
+
+  const fetchPaymentAndCharges = async () => {
+    // /get_entry/:entryId for this
+    await axios
+      .get(`${baseUrl}/payment_charge/get_entry/${chargeId}`)
+      .then((response) => {
+        if (response.data.statusCode === 200) {
+          setchargeData(response.data.data);
+          setFile(
+            response.data.data.charges_attachment.flat().map((item) => {
+              return { name: item };
+            })
+          );
+          generalledgerFormik.setValues({
+            date: response.data.data.date,
+            charges_amount: response.data.data.amount,
+            charges_attachment: response.data.data.charges_attachment
+              .flat()
+              .map((item) => {
+                return { name: item };
+              }),
+            charges_memo: response.data.data.memo,
+            entries: [
+              {
+                charges_account: response.data.data.account || "",
+                charges_amount: response.data.data.amount || "",
+                charges_total_amount: response.data.data.amount || "",
+              },
+            ],
+          });
+          console.log(response.data.data, "response.data.data");
+        } else {
+          console.error("Error:", response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Network error:", error);
+      });
+  };
+
   useEffect(() => {
-    //console.log(mainId, chargeIndex, "mainid && charge Id");
-    if (mainId && chargeIndex) {
-      axios
-        .get(
-          `${baseUrl}/payment/charge_summary/${mainId}/charge/${chargeIndex}`
-        )
-        .then((response) => {
-          const chargeData = response.data.data;
-          setchargeData(chargeData);
-          console.log(chargeData, "chargedata");
-          console.log(chargeData.entries, "entries data");
-          const formattedDate =
-            chargeData && chargeData.date
-              ? new Date(chargeData.date).toISOString().split("T")[0]
-              : "";
-          console.log(formattedDate, "formattedDate");
-          const id = chargeData.tenant_id;
-          setId(id);
-          //console.log(id, "abcd");
-          const index = chargeData.entryIndex;
-          setIndex(index);
-          //console.log(index, "xyz");
-          setSelectedRec(chargeData.tenant_firstName || "Select");
-
-          const entriesData = chargeData.entries || [];
-
-          if (Array.isArray(entriesData)) {
-            // Handling when entriesData is an array
-            generalledgerFormik.setValues({
-              charges_amount: chargeData.charges_amount || "",
-              date: formattedDate,
-              charges_memo: chargeData.charges_memo || "",
-              entries: entriesData.map((entry) => ({
-                charges_account: entry.charges_account || "",
-                charges_amount: entry.charges_amount || "",
-                charges_total_amount: entry.charges_total_amount || "",
-              })),
-            });
-          } else {
-            // Handling when entriesData is an object
-            console.error("entriesData is not an array:", entriesData);
-            generalledgerFormik.setValues({
-              charges_amount: chargeData.charges_amount || "",
-              date: formattedDate,
-              charges_memo: chargeData.charges_memo || "",
-              // Assuming you want to use the single object received as the only entry
-              entries: [
-                {
-                  charges_account: entriesData.charges_account || "",
-                  charges_amount: entriesData.charges_amount || "",
-                  charges_total_amount: entriesData.charges_total_amount || "",
-                },
-              ],
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching vendor data:", error);
-        });
+    // fetchTenantData();
+    if (tenantDetails) {
+      fetchPaymentAndCharges();
+      setSelectedRec(
+        `${tenantDetails.tenant_firstName} ${tenantDetails.tenant_lastName}`
+      );
+      setTenantid(tenantDetails._id);
+      setPropertyId(tenantDetails.entries.property_id);
+      setRentAddress(tenantDetails.entries.rental_adress);
+      generalledgerFormik.setValues({
+        ...generalledgerFormik.values,
+        rental_adress: tenantDetails.entries.rental_adress,
+      });
     }
-  }, [mainId, chargeIndex]);
+  }, []);
 
   return (
     <>
@@ -604,7 +678,7 @@ const AddCharge = () => {
                           Recieved From
                         </label>
                         <br />
-                        <Dropdown isOpen={recdropdownOpen} toggle={toggle2}>
+                        <Dropdown isOpen={recdropdownOpen} toggle={toggle2} disabled={chargeId}>
                           <DropdownToggle caret style={{ width: "100%" }}>
                             {selectedRec ? selectedRec : "Select Resident"}
                           </DropdownToggle>
@@ -843,10 +917,19 @@ const AddCharge = () => {
                                       <td style={{ border: "none" }}>
                                         <ClearIcon
                                           type="button"
-                                          style={{
-                                            cursor: "pointer",
-                                            padding: 0,
-                                          }}
+                                          style={
+                                            ({
+                                              cursor: "pointer",
+                                              padding: 0,
+                                            },
+                                            tenantDetails
+                                              ? {
+                                                  display: "none",
+                                                }
+                                              : {
+                                                  display: "block",
+                                                })
+                                          }
                                           onClick={() => handleRemoveRow(index)}
                                         >
                                           Remove
@@ -870,6 +953,15 @@ const AddCharge = () => {
                                     type="button"
                                     className="btn btn-primary"
                                     onClick={handleAddRow}
+                                    style={
+                                      tenantDetails
+                                        ? {
+                                            display: "none",
+                                          }
+                                        : {
+                                            display: "block",
+                                          }
+                                    }
                                   >
                                     Add Row
                                   </Button>
@@ -978,18 +1070,14 @@ const AddCharge = () => {
                         >
                           {mainId ? "Edit Charge" : "New Charge"}
                         </button> */}
-                        {mainId && chargeIndex ? (
+                        {chargeId ? (
                           <button
                             type="submit"
                             className="btn btn-primary"
                             style={{ background: "green", cursor: "pointer" }}
                             onClick={(e) => {
                               e.preventDefault();
-                              editCharge(
-                                mainId,
-                                chargeIndex,
-                                generalledgerFormik.values
-                              );
+                              editCharge();
                               // handleSaveButtonClick();
                             }}
                           >
@@ -1012,7 +1100,7 @@ const AddCharge = () => {
 
                         <Button
                           color="primary"
-                         //  href="#rms"
+                          //  href="#rms"
                           className="btn btn-primary"
                           onClick={handleCloseButtonClick}
                           style={{ background: "white", color: "black" }}

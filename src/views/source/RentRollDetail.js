@@ -582,12 +582,13 @@ const RentRollDetail = () => {
     });
   };
   
-  const editcharge = (id, chargeIndex) => {
-    navigate(`/admin/AddCharge/${id}/charge/${chargeIndex}`);
+  const editcharge = (chargeId) => {
+    // console.log(tenantDetails,'tenant_firstName')
+    navigate(`/admin/AddCharge/${chargeId}`,{state:{tenantDetails:tenantDetails}});
     // console.log(id);
   };
-  const editpayment = (id, paymentIndex) => {
-    navigate(`/admin/AddPayment/${id}/payment/${paymentIndex}`);
+  const editpayment = (paymentId) => {
+    navigate(`/admin/AddPayment/${paymentId}`,{state:{tenantDetails:tenantDetails}});
     // console.log(id);
   };
 
@@ -1545,7 +1546,7 @@ const RentRollDetail = () => {
                                                       e.stopPropagation();
                                                       editcharge(
                                                         generalledger._id,
-                                                        entry.chargeIndex
+                                                        
                                                       );
                                                     }}
                                                   >
