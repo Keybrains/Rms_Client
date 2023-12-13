@@ -1673,13 +1673,14 @@ const Rentals = () => {
                                                           rentalOwner.rentalOwner_lastName ||
                                                           ""
                                                         }-${
+                                                         
+                                                          rentalOwner.rentalOwner_phoneNumber ||
+                                                          ""
+                                                        }-${
                                                           rentalOwner.rentalOwner_companyName ||
                                                           ""
                                                         }-${
                                                           rentalOwner.rentalOwner_primaryEmail ||
-                                                          ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_phoneNumber ||
                                                           ""
                                                         }-${
                                                           rentalOwner.rentalOwner_homeNumber ||
