@@ -248,7 +248,7 @@ const StaffNavbar = (props) => {
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem
-                  href="#rms"
+                 //  href="#rms"
                   to="/auth/login"
                   onClick={() => {
                     Logout();

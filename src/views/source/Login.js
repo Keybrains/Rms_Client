@@ -21,7 +21,7 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { colors } from "@mui/material";
+import { Typography, colors } from "@mui/material";
 import swal from "sweetalert";
 import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -253,12 +253,15 @@ const Login = () => {
                     onChange={loginFormik.handleChange}
                     value={loginFormik.values.email}
                   />
-                  {loginFormik.touched.email && loginFormik.errors.email ? (
-                    <div style={{ color: "red" }}>
-                      {loginFormik.errors.email}
-                    </div>
-                  ) : null}
                 </InputGroup>
+                  {loginFormik.touched.email && loginFormik.errors.email ? (
+                    <Typography
+                      variant="caption"
+                      style={{ color: "red" }}
+                    >
+                      {loginFormik.errors.email}
+                    </Typography>
+                  ): null}
               </FormGroup>
               <FormGroup>
                 <InputGroup className="input-group-alternative">
@@ -289,9 +292,12 @@ const Login = () => {
                 </InputGroup>
                   {loginFormik.touched.password &&
                   loginFormik.errors.password ? (
-                    <div style={{ color: "red" }}>
+                    <Typography
+                      variant="caption"
+                      style={{ color: "red" }}
+                    >
                       {loginFormik.errors.password}
-                    </div>
+                    </Typography>
                   ) : null}
               </FormGroup>
 
@@ -308,8 +314,6 @@ const Login = () => {
                   <span className="text-muted">Remember me</span>
                 </label> */}
               </div>
-              <br />
-              <br />
               <div className="text-center">
                 {/* <Button className="my-4" color="primary" type="button">
                     Sign in
