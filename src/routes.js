@@ -587,12 +587,12 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/AddPayment/:mainId/payment/:paymentIndex",
+    path: "/AddPayment/:paymentId",
     component: <AddPayment />,
     layout: "/admin",
   },
   {
-    path: "/AddCharge/:mainId/charge/:chargeIndex",
+    path: "/AddCharge/:chargeId",
     component: <AddCharge />,
     layout: "/admin",
   },

@@ -2260,8 +2260,8 @@ const RentRollLeaseing = () => {
           paymentAndCharges: [
             {
               type: "Charge",
-              charge_type: "",
-              account: entrySchema.values.account,
+              charge_type: "Rent",
+              //account: entrySchema.values.account,
               amount: parseFloat(entrySchema.values.amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: entrySchema.values.rent_cycle,
@@ -2269,6 +2269,7 @@ const RentRollLeaseing = () => {
               date: moment().format("YYYY-MM-DD"),
               memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
+              isPaid:false,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
                 " " +
@@ -2304,7 +2305,7 @@ const RentRollLeaseing = () => {
             {
               type: "Charge",
               charge_type: "Security Deposit",
-              account: "",
+              account: "Security Deposit",
               amount: parseFloat(Security_amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",
@@ -2312,6 +2313,7 @@ const RentRollLeaseing = () => {
               date: moment().format("YYYY-MM-DD"),
               memo: "Security Deposit",
               tenant_id: tenantId,
+              isPaid:false,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
                 " " +
@@ -2369,6 +2371,7 @@ const RentRollLeaseing = () => {
               rent_cycle: "",
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
+              isPaid:false,
               memo:
                 chargeType === "Recurring"
                   ? item?.recuringmemo || ""

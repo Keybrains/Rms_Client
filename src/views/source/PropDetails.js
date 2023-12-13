@@ -314,8 +314,8 @@ const clearSelectedPhoto = (index, image, name) => {
       market_rent: "",
       size: "",
       address1: "",
-      address2: "",
-      address3: "",
+      // address2: "",
+      // address3: "",
       city: "",
       state: "",
       zip: "",
@@ -2060,7 +2060,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                   onBlur={addUnitFormik.handleBlur}
                                   style={{ marginBottom: "10px" }}
                                 />
-                                <Input
+                                {/* <Input
                                   className="form-control-alternative"
                                   id="address2"
                                   placeholder="Address"
@@ -2081,7 +2081,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                   onChange={addUnitFormik.handleChange}
                                   onBlur={addUnitFormik.handleBlur}
                                   style={{ marginBottom: "10px" }}
-                                />
+                                /> */}
                               </FormGroup>
                             </Col>
                           </Row>
@@ -2184,10 +2184,11 @@ const clearSelectedPhoto = (index, image, name) => {
                           <label
                             className="form-control-label"
                             htmlFor="input-city"
+                            style={ propType!=="Residential" ? { display: "none" } : { display: "block" }}
                           >
                             Rooms (optional)
                           </label>
-                          <Row style={{ marginTop: "10px" }}>
+                          <Row style={ propType!=="Residential" ? { display: "none",marginTop: "10px" } : { marginTop: "10px" }} >
                             <Col lg="2">
                               <FormGroup>
                                 <Dropdown
@@ -2300,7 +2301,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                 <Button
                                   className="btn-icon btn-2"
                                   name="input-add"
-                                >
+                                  >
                                   Add
                                 </Button>
                               </FormGroup>
@@ -2340,8 +2341,19 @@ const clearSelectedPhoto = (index, image, name) => {
                               // marginRight: "10px",
                             }}
                             size="l"
-                            onClick={() => setAddUnitDialogOpen(true)}
+                            onClick={() => {
+                              addUnitFormik.setValues({
+                                address1: propertyDetails.entries[0].rental_adress,
+                                city: propertyDetails.entries[0].rental_city,
+                                state: propertyDetails.entries[0].rental_state,
+                                zip: propertyDetails.entries[0].rental_postcode,
+                                country: propertyDetails.entries[0].rental_country,
+                              });
+                              
+                              // setAddUnitDialogOpen(true);
+                              setAddUnitDialogOpen(true)}}
                           >
+                            
                             <span className="btn-inner--text">Add Unit</span>
                           </Button>
                         </div>
