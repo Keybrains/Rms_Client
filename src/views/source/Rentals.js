@@ -167,6 +167,7 @@ const Rentals = () => {
 
     // Toggle the selected rentalOwners in the state when their checkboxes are clicked
     if (event.target.checked) {
+      console.log([rentalOwnerInfo, ...selectedrentalOwners],'[rentalOwnerInfo, ...selectedrentalOwners]')
       setSelectedrentalOwners([rentalOwnerInfo, ...selectedrentalOwners]);
     } else {
       setSelectedrentalOwners(
@@ -189,10 +190,11 @@ const Rentals = () => {
         swal("Success!", "New rentalOwner added successfully", "success");
       }
     } else {
+      console.log(selectedrentalOwner,'selectedrentalOwner')
       setSelectedrentalOwners([]);
       const selectedrentalOwner = selectedrentalOwners[0];
       console.log(selectedrentalOwners, "selectedrentalOwners");
-      const rentalOwnerParts = selectedrentalOwner.split(" ").map(part => part.trim());
+      const rentalOwnerParts = selectedrentalOwner.split("-").map(part => part.trim());
       rentalsFormik.setFieldValue(
         "rentalOwner_firstName",
         rentalOwnerParts[0] || ""
@@ -1660,22 +1662,22 @@ const Rentals = () => {
                                                         const rentalOwnerInfo = `${
                                                           rentalOwner.rentalOwner_firstName ||
                                                           ""
-                                                        } ${
+                                                        }-${
                                                           rentalOwner.rentalOwner_lastName ||
                                                           ""
-                                                        } ${
+                                                        }-${
                                                           rentalOwner.rentalOwner_companyName ||
                                                           ""
-                                                        } ${
+                                                        }-${
                                                           rentalOwner.rentalOwner_primaryEmail ||
                                                           ""
-                                                        } ${
+                                                        }-${
                                                           rentalOwner.rentalOwner_phoneNumber ||
                                                           ""
-                                                        } ${
+                                                        }-${
                                                           rentalOwner.rentalOwner_homeNumber ||
                                                           ""
-                                                        } ${
+                                                        }-${
                                                           rentalOwner.rentalOwner_businessNumber ||
                                                           ""
                                                         }`;
