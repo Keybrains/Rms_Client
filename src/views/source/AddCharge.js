@@ -259,6 +259,8 @@ const AddCharge = () => {
   const location = useLocation();
   const state = location.state && location.state;
   const tenantDetails = state ? state.tenantDetails : "";
+  console.log(state,'state')
+  console.log(tenantDetails,'tenantDetails')
 
   const { chargeId } = useParams();
 
@@ -295,9 +297,7 @@ const AddCharge = () => {
       if (response.data.statusCode === 200) {
         swal("Success", "Charges Added Successfully", "success");
         console.log(response, "response of object");
-        navigate(
-          `/admin/rentrolldetail/${tenantId}/${tenantDetails}?source=payment`
-        );
+        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`);
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -1091,6 +1091,7 @@ const AddCharge = () => {
                             onClick={(e) => {
                               e.preventDefault();
                               generalledgerFormik.handleSubmit();
+
                               //console.log(generalledgerFormik.values);
                             }}
                           >
