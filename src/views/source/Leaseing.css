@@ -1,9 +1,9 @@
-.grid-container{
+.grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   grid-auto-rows: minmax(100px, auto);
- 
+
 }
 
 @media only screen and (max-width: 1150px) {
@@ -13,7 +13,7 @@
     /* justify-content: center;
     align-items: center;
     text-align: center; */
-} 
+  }
 }
 
 .no-spinner::-webkit-inner-spin-button,
@@ -21,6 +21,7 @@
   -webkit-appearance: none;
   margin: 0;
 }
+
 .no-spinner {
   -moz-appearance: textfield;
 }
@@ -30,21 +31,43 @@
   border: 1px solid #ddd;
   overflow: hidden;
 }
+
 .tbbody .header {
   background: #EFEFEF;
   text-transform: uppercase;
 }
+
 .tbbody .body {
   text-transform: capitalize;
 }
+
 .tbbody .header th {
   border: 1px solid #ddd;
   text-align: left;
 }
+
 .tbbody .body td {
   border: 1px solid #ddd;
 }
+
 .tbbody .body:hover {
   background: #EFEFEF;
 }
-  
+
+/* Apply styles to number input */
+input[type="number"] {
+  -moz-appearance: textfield;
+  /* Firefox */
+}
+
+/* Remove spin buttons in Webkit browsers (Chrome, Safari) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide the number input arrows in IE 10 and IE 11 */
+input[type="number"] {
+  -ms-inner-background: white;
+}

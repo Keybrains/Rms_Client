@@ -138,9 +138,9 @@ const RentRollDetail = () => {
   const [propertyId, setPropertyId] = useState(null);
   // const [unitName, setUnitName] = useState(null);
 
-  const handleClick = () => {
-    navigate(`../AddPayment/${tenantId}/${entryIndex}`);
-  };
+  // const handleClick = () => {
+  //   navigate(`../AddPayment/${tenantId}/${entryIndex}`);
+  // };
   // const handleClick1 = () => {
   //   if (type === "charge") {
   //     navigate(`../AddPayment/${mainId}/charge/${chargeIndex}`);
@@ -166,10 +166,10 @@ const RentRollDetail = () => {
       const propertysId = response.data.data.entries.property_id;
       console.log(propertysId, "propertysId");
 
-      // setRental(rental);
+      setRental(rental);
       // setUnit(unit);
       // setUnitId(unitId);
-      // setPropertyId(propertyId);
+      setPropertyId(propertysId);
       console.log(response.data.data.entries.rental_units, "res.daya dhstab");
       if (unitId && unit) {
         console.log("1");
@@ -242,7 +242,7 @@ const RentRollDetail = () => {
       // });
       setUnitId(unitId);
 
-      setPropertyId(propertyId);
+      // setPropertyId(propertyId);
 
       setRental(rental);
       // console.log(rental, "hell");
@@ -585,6 +585,7 @@ const RentRollDetail = () => {
   const editcharge = (chargeId) => {
     // console.log(tenantDetails,'tenant_firstName')
     navigate(`/admin/AddCharge/${chargeId}`,{state:{tenantDetails:tenantDetails}});
+
     // console.log(id);
   };
   const editpayment = (paymentId) => {
@@ -1294,9 +1295,14 @@ const RentRollDetail = () => {
                                           },
                                         }}
                                       >
+                                        {console.log(tenantDetails,'tenantDetails')}
                                         <Link
-                                          to={`/admin/AddPayment/${tenantId}/${entryIndex}`}
-                                          onClick={(e) => {}}
+                                          variant="contained"
+                                          onClick={(e) => {
+                                            navigate(`/admin/AddPayment/${tenantId}/${entryIndex}`, {
+                                              state: { tenantDetails: tenantDetails },
+                                            })
+                                          }}
                                         >
                                           Receive Payment
                                         </Link>
@@ -1359,6 +1365,7 @@ const RentRollDetail = () => {
                                     unit_name: unit,
                                     unit_id: unitId,
                                     property_id: propertyId,
+                                    rental_adress: rental,
                                   },
                                 }
                               )
@@ -1382,6 +1389,7 @@ const RentRollDetail = () => {
                                     unit_name: unit,
                                     unit_id: unitId,
                                     property_id: propertyId,
+                                    rental_adress: rental,
                                   },
                                 }
                               )

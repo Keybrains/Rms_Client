@@ -2942,7 +2942,7 @@ const RentRollLeaseing = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-unitadd2"
-                            placeholder="3000"
+                            // placeholder="3000"
                             type="date"
                             name="end_date"
                             onBlur={entrySchema.handleBlur}
