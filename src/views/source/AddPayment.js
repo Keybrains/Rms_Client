@@ -110,10 +110,8 @@ const AddPayment = () => {
         {
           paymentIndex: "",
           account: "",
-          description: "",
-          debit: "",
-          credit: "",
-          dropdownOpen: false,
+          amount: "",
+          balance: ""
         },
       ],
       attachment: "",
