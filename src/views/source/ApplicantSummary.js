@@ -26,7 +26,6 @@ import {
 } from "reactstrap";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
-// import CloseIcon from "@mui/icons-material/Close";
 import Box from "@mui/material/Box";
 import { jwtDecode } from "jwt-decode";
 import Tab from "@mui/material/Tab";
@@ -52,7 +51,6 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  // IconButton,
   InputAdornment,
   Paper,
   TextField,
@@ -66,13 +64,11 @@ import FileOpen from "@mui/icons-material/FileOpen";
 import { CheckBox } from "@mui/icons-material";
 import * as yup from "yup";
 import { RotatingLines } from "react-loader-spinner";
+
 const ApplicantSummary = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const id = useParams().id;
-  //console.log(id, "id");
-  // const [file, setFile] = useState("");
-
   let cookies = new Cookies();
   const [applicantLoader, setApplicantLoader] = useState(true);
   const [loader, setLoader] = React.useState(true);
@@ -244,9 +240,9 @@ const ApplicantSummary = () => {
       tenant_email: "",
       attachment: "",
       rental_units:"",
-      rental_adress:""
-      // applicant_notes: notes,
-      // applicant_attachment: files,
+      rental_adress:"",
+      applicant_notes: notes,
+      applicant_file: files,
     },
     onSubmit: (values) => {
       handleEdit(values);
@@ -691,6 +687,10 @@ const ApplicantSummary = () => {
       console.error("Data fetch or post failed", error);
     }
   };
+
+  const [moveIn, setMoveIn] = useState([]);
+  
+
   const [matchedApplicant, setMatchedApplicant] = useState([]);
 
   const getApplicantData = async () => {
@@ -706,6 +706,7 @@ const ApplicantSummary = () => {
           });
           //console.log(matchedApplicant, "matchedApplicant");
           setMatchedApplicant(matchedApplicant);
+          setMoveIn(matchedApplicant.applicant_status[0]);
           setApplicantLoader(false);
         }
       })
@@ -788,28 +789,80 @@ const ApplicantSummary = () => {
       });
   };
 
+
   useEffect(() => {
     getApplicantData();
   }, []);
 
   useEffect(() => {
-    const storageKey = `applicant_${id}_checkedChecklist`;
-    const storedCheckedItems = JSON.parse(localStorage.getItem(storageKey));
-    if (storedCheckedItems) {
-      setCheckedItems(storedCheckedItems);
-    }
+    // const storageKey = `applicant_${id}_checkedChecklist`;
+    // const storedCheckedItems = JSON.parse(localStorage.getItem(storageKey));
+     handleChecklistChange();
   }, [id]);
 
-  const handleChecklistChange = (event, item) => {
-    const updatedItems = event.target.checked
-      ? [...checkedItems, item]
-      : checkedItems.filter((checkedItem) => checkedItem !== item);
-
-    setCheckedItems(updatedItems);
-
-    const storageKey = `applicant_${id}_checkedChecklist`;
-    localStorage.setItem(storageKey, JSON.stringify(updatedItems));
+  const handleChecklistChange = async (event, item) => {
+    try {
+      const updatedItems = event.target.checked
+        ? [...checkedItems, item]
+        : checkedItems.filter((checkedItem) => checkedItem !== item);
+  
+      setCheckedItems(updatedItems);
+  
+      // const storageKey = `applicant_${id}_checkedChecklist`;
+      // localStorage.setItem(storageKey, JSON.stringify(updatedItems));
+  
+      // Make a PUT request to update the checked checklist on the server
+      const apiUrl = `${baseUrl}/applicant/applicant/${id}/checked-checklist`;
+      const response = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ applicant_checkedChecklist: updatedItems }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Server error: ${errorData.message}`);
+      }
+  
+      const responseData = await response.json();
+      console.log(responseData); // You can handle the response data as needed
+  
+    } catch (error) {
+      console.error(error.message); // Handle the error appropriately
+    }
   };
+  
+
+  
+  // const handleCheckItem = () => {
+  //   if (newItem.trim() !== "") {
+  //     setCheckedItems([...checkedItems, newItem]);
+  //     const allCheckbox = [...checkedItems, newItem];
+  //     //console.log(allCheckbox, "allCheckbox");
+  //     //console.log(matchedApplicant, "matchedApplicant");
+  //     const updatedApplicant = {
+  //       ...matchedApplicant,
+  //       applicant_checkedChecklist: [...matchedApplicant.applicant_checkedChecklist, newItem],
+  //     };
+      
+  //     //console.log(updatedApplicant, "updatedApplicant");
+  //     axios
+  //       .put(
+  //         `${baseUrl}/applicant/applicant/${id}/checked-checklist`,
+  //         updatedApplicant
+  //       )
+  //       .then((response) => {
+  //         //console.log(response.data.data, "response.data.data");
+  //         getApplicantData();
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //     setNewItem(""); // Clear the input field
+  //   }
+  // };
 
   // const deleteColumn = (index) => {
   //   const updatedData = [...combinedData];
@@ -837,7 +890,7 @@ const ApplicantSummary = () => {
   //       })
   //       .then((res) => {
   //         const imagePath = res?.data?.image_path; // Correct the key to "image_path"
-  //         applicantFormik1.values.applicant_attachment = imagePath;
+  //         applicantFormik1.values.applicant_file = imagePath;
   //       })
   //       .catch((err) => {
   //         // Handle error if needed
@@ -909,7 +962,7 @@ const ApplicantSummary = () => {
         })
         .then((res) => {
           const imagePath = res?.data?.image_path;
-          applicantFormik1.values.applicant_attachment = imagePath;
+          applicantFormik1.values.applicant_file = imagePath;
         })
         .catch((err) => {
           console.error("Error uploading file:", err); // Log error here
@@ -968,47 +1021,56 @@ const ApplicantSummary = () => {
   const applicantFormik1 = useFormik({
     initialValues: {
       applicant_notes: notes,
-      applicant_attachment: files,
+      applicant_file: files,
     },
     validationSchema: yup.object({
       applicant_notes: yup.string().required("Required"),
     }),
-    onSubmit: (values) => {
-      handleSubmit(values);
+    onSubmit: () => {
+      // Remove this onSubmit logic if you only want to submit the form on button click
+      // hadlenotesandfile(); // Call handleEdit function to make PUT request
     },
   });
+  
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values={}) => {
     // Handle form submission
     hadlenotesandfile(values); // Call handleEdit function to make PUT request
   };
   console.log(typeof applicantFormik1.values.applicant_notes);
-  console.log(typeof applicantFormik1.values.applicant_attachment);
+  console.log(typeof applicantFormik1.values.applicant_file);
 
-  const hadlenotesandfile = (values) => {
-    // Make a PUT request to update the data in the backend
-    console.log(values);
+  // const [newNote, setNewNote] = useState('');
+  // const [newFile, setNewFile] = useState(null);
+  // const [fileName, setFileName] = useState('');
+  // const [isAttachFile, setIsAttachFile] = useState(false);
 
-    const data = {
-      applicant_notes: applicantFormik1.values.applicant_notes,
-      applicant_attachment: applicantFormik1.values.applicant_attachment,
-    };
-
-    const apiUrl = `${baseUrl}/applicant/applicant/note_attachment/${id}`;
-
-    axios
-      .put(apiUrl, data)
-      .then((response) => {
-        // Handle successful response from the API
-        console.log("Data updated successfully:", response.data);
-        // You might perform additional actions upon successful submission
-      })
-      .catch((error) => {
-        // Handle errors if the PUT request fails
-        console.error("Error updating data:", error);
-        // You might display an error message to the user or perform other actions
+  const hadlenotesandfile = async() => { 
+    try {
+      const formData = {
+        applicant_notes: newNote,
+        applicant_file: newFile,
+      };
+      // formData.append('applicant_notes', newNote);
+      // formData.append('applicant_file', newFile);
+      console.log((formData.applicant_file), "yash")
+      const response = await axios.put(`${baseUrl}/applicant/applicant/note_attachment/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
+
+      console.log('Response:', response.data);
+      // Handle success, update state, show a success message, etc.
+    } catch (error) {
+      console.error('Error:', error.response ? error.response.data : error.message);
+      // Handle error, show an error message, etc.
+    }
   };
+  
+  
+
+  
 
   // ----------------------------------------------Applicant Put----------------------------------------------------------------------------
 
@@ -1049,7 +1111,7 @@ const ApplicantSummary = () => {
 
     try {
       const apiUrl =
-        `${baseUrl}/applicant/application/6565bbf79cb24516b8e50f95`;
+        `${baseUrl}/applicant/application/${id}`;
 
       const updatedData = {
         // Add other fields as needed
@@ -1314,7 +1376,7 @@ const ApplicantSummary = () => {
               variant="contained"
               loading={loading}
               style={
-                selectedDropdownItem === "Approved"
+                moveIn && moveIn.status === "Approved"
                   ? { display: "block", marginLeft: "10px" }
                   : { display: "none" }
               }
@@ -1399,30 +1461,30 @@ const ApplicantSummary = () => {
 
                                     {/* Notes */}
                                     <div>
-                                      <div>
-                                        <TextField
-                                          type="text"
-                                          size="small"
-                                          fullWidth
-                                          value={newNote}
-                                          onChange={(e) => {
-                                            setNewNote(e.target.value);
-                                            applicantFormik1.values.applicant_notes =
-                                              e.target.value;
-                                          }}
-                                        />
-                                      </div>
+                                           <div>
+                                              <TextField
+                                                type="text"
+                                                size="small"
+                                                fullWidth
+                                                value={newNote}
+                                                onChange={(e) => {
+                                                  setNewNote(e.target.value);
+                                                }}
+                                              />
+                                            </div>
+
+                                            <label
+                                              htmlFor="upload_file"
+                                              className="form-control-label"
+                                              style={{
+                                                display: "block",
+                                                marginBottom: "15px",
+                                                marginTop: "20px",
+                                              }}
+                                            >
+                                              Upload Files (Maximum of 10)
+                                            </label>
                                     </div>
-                                    <label
-                                      htmlFor="upload_file"
-                                      className="form-control-label"
-                                      style={{
-                                        display: "block",
-                                        marginBottom: "8px",
-                                      }}
-                                    >
-                                      Upload Files (Maximum of 10)
-                                    </label>
                                     <div className="d-flex align-items-center">
                                       <input
                                         type="file"
@@ -1434,9 +1496,7 @@ const ApplicantSummary = () => {
                                         onChange={(e) => {
                                           setNewFile(e.target.files[0]);
                                           // Display the file name
-                                          setFileName(
-                                            e.target.files[0]?.name || ""
-                                          ); // Store the file name in state
+                                          setFileName(e.target.files[0]?.name || "");
                                         }}
                                       />
                                       <label
@@ -1449,30 +1509,23 @@ const ApplicantSummary = () => {
                                       >
                                         Choose Files
                                       </label>
+
                                       {newFile && (
                                         <p
                                           style={{
                                             cursor: "pointer",
                                             color: "blue",
                                           }}
-                                          onClick={() =>
-                                            openFileInBrowser(newFile)
-                                          }
+                                          onClick={() => openFileInBrowser(newFile)}
                                         >
                                           {fileName}
                                         </p>
                                       )}
 
-                                      {/* <button onClick={addNoteAndFile}>Add Note and File</button> */}
-                                      {applicantFormik1.touched
-                                        .applicant_attachment &&
-                                      applicantFormik1.errors
-                                        .applicant_attachment ? (
+                                      {applicantFormik1.touched.applicant_file &&
+                                      applicantFormik1.errors.applicant_file ? (
                                         <div style={{ color: "red" }}>
-                                          {
-                                            applicantFormik1.errors
-                                              .applicant_attachment
-                                          }
+                                          {applicantFormik1.errors.applicant_file}
                                         </div>
                                       ) : null}
                                     </div>
@@ -1480,15 +1533,13 @@ const ApplicantSummary = () => {
                                     <div className="mt-3">
                                       <Button
                                         color="success"
-                                        onClick={handleSave}
+                                        onClick={hadlenotesandfile}
                                         style={{ marginRight: "10px" }}
                                       >
                                         Save
                                       </Button>
 
-                                      <Button
-                                        onClick={() => setIsAttachFile(false)}
-                                      >
+                                      <Button onClick={() => setIsAttachFile(false)}>
                                         Cancel
                                       </Button>
                                     </div>

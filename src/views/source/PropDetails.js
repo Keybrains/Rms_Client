@@ -81,11 +81,12 @@ const PropDetails = () => {
   const [editListingData, setEditListingData] = useState(false);
   const [RentAdd, setRentAdd] = useState({});
   const [propType, setPropType] = useState("");
+  const [selectedProp, setSelectedProp] = useState("");
   const [balance, setBalance] = useState("");
 
   const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
   const [unitImage, setUnitImage] = useState([]);
-  // const [unitImage, setUnitImage] = useState(initialValue);
+
   const togglePhotoresDialog = () => {
     setPhotoresDialogOpen((prevState) => !prevState);
   };
@@ -181,7 +182,7 @@ const clearSelectedPhoto = (index, image, name) => {
     // ]);
   }
 
-  const getRentalsData = async () => {
+  const getRentalsData = async (propertyType) => {
     try {
       const response = await axios.get(
         `${baseUrl}/rentals/rentals_summary/${id}`
@@ -207,13 +208,15 @@ const clearSelectedPhoto = (index, image, name) => {
         `
       );
       console.log(resp, "resp");
-
+      
       const selectedType = Object.keys(resp.data.data).find((item) => {
         return resp.data.data[item].some(
-          (data) => data.propertysub_type === matchedProperty.property_type
+          (data) => data.propertysub_type === matchedProperty.property_type,
+          setSelectedProp
         );
       });
-
+      setSelectedProp(matchedProperty.property_type)
+      console.log(resp.matchedProperty,"mansi") 
       setPropType(selectedType);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -226,6 +229,7 @@ const clearSelectedPhoto = (index, image, name) => {
     getRentalsData();
     console.log(id);
   }, [id, clickedObject]);
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -318,8 +322,6 @@ const clearSelectedPhoto = (index, image, name) => {
       market_rent: "",
       size: "",
       address1: "",
-      // address2: "",
-      // address3: "",
       city: "",
       state: "",
       zip: "",
@@ -327,7 +329,8 @@ const clearSelectedPhoto = (index, image, name) => {
       bed: "",
       baths: "",
       description: "",
-      aminities: [],
+      propertyres_image:[],
+      property_image: [],
     },
 
     onSubmit: (values) => {
@@ -338,6 +341,7 @@ const clearSelectedPhoto = (index, image, name) => {
   const [month, setMonth] = useState([]);
   const [threeMonths, setThreeMonths] = useState([]);
   const [propSummary, setPropSummary] = useState(false);
+  const [rentalId, setRentalId] = useState("");
   const [propId, setPropId] = useState("");
   const [addAppliances, setAddAppliances] = useState(false);
 
@@ -378,9 +382,6 @@ const clearSelectedPhoto = (index, image, name) => {
     setThreeMonths(lastThreeMonths);
   };
 
-  // useEffect(() => {
-  //   getUnitProperty();
-  // }, []);
   const [tenantDetails, setTenantDetails] = useState(true);
   const [myData, setMyData] = useState([]);
   const getStatus = (startDate, endDate) => {
@@ -397,6 +398,10 @@ const clearSelectedPhoto = (index, image, name) => {
     }
   };
 
+ useEffect(() => {
+    getUnitProperty(rentalId, propId);
+  }, [rentalId, propId]);
+
   const getUnitProperty = async (rentalId) => {
     await axios
       .get(`${baseUrl}/propertyunit/propertyunit/` + rentalId)
@@ -412,6 +417,7 @@ const clearSelectedPhoto = (index, image, name) => {
         console.log(err);
       });
   };
+
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -435,7 +441,7 @@ const clearSelectedPhoto = (index, image, name) => {
       await axios
       .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
       .then((response) => {
-        console.log(response.data.data, "updated data");
+        console.log(response.data, "updated data");
         getUnitProperty(rentalId);
         getRentalsData();
         // setAddUnitDialogOpen(false);
@@ -519,7 +525,7 @@ const clearSelectedPhoto = (index, image, name) => {
       }
     });
   };
-
+console.log(addUnitFormik.values, "yash")
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = {
@@ -529,7 +535,7 @@ const clearSelectedPhoto = (index, image, name) => {
       market_rent: addUnitFormik.values.market_rent,
       rental_bed: addUnitFormik.values.rooms,
       rental_bath: addUnitFormik.values.baths,
-      // propertyres_image: addUnitFormik.values.propertyres_image,
+      propertyres_image: addUnitFormik.values.propertyres_image,
       rental_sqft: addUnitFormik.values.size,
       rental_units: addUnitFormik.values.unit_number,
       rental_unitsAdress: addUnitFormik.values.address1,
@@ -541,6 +547,7 @@ const clearSelectedPhoto = (index, image, name) => {
       rental_city: addUnitFormik.values.city,
       rental_postcode: addUnitFormik.values.zip,
       // property_image: addUnitFormik.values.property_image,
+      property_image: addUnitFormik.values.property_image,
     };
     console.log("formData", formData);
     try {
@@ -549,7 +556,9 @@ const clearSelectedPhoto = (index, image, name) => {
         formData
       );
       if (response.data.statusCode === 200) {
-        swal("", response.data.message, "success");
+        swal("Success!","Unit Added Successfully", "success");
+        setAddUnitDialogOpen(false);
+        setPropertyUnit([...propertyUnit,response.data.data]);
       } else {
         swal("", response.data.message, "error");
       }
@@ -559,8 +568,6 @@ const clearSelectedPhoto = (index, image, name) => {
     }
   };
 
-  // =============================================================================================================
-  // const [showModal, setShowModal] = useState(false);
 
   const [uploadedImage, setUploadedImage] = useState(null);
   const [propImageLoader, setPropImageLoader] = useState(false);
@@ -1336,8 +1343,8 @@ const clearSelectedPhoto = (index, image, name) => {
                                                 <th>Home Number</th>
                                                 <th>Business Numberr</th>
                                                 {/* <th>Property</th>
-                                  <th>Type</th>
-                                  <th>Rent</th> */}
+                                                    <th>Type</th>
+                                                    <th>Rent</th> */}
                                               </tr>
                                               {myData ? (
                                                 <>
@@ -1421,11 +1428,9 @@ const clearSelectedPhoto = (index, image, name) => {
                                               }}
                                             >
                                               <tr className="header">
-                                                <th>Staff Member</th>
-                                                {/* <th>Property</th>
-                                  <th>Type</th>
-                                  <th>Rent</th> */}
-                                              </tr>
+                                                <th>Staff Member</th>                                         
+                                                
+                                                </tr>
                                               {myData ? (
                                                 <>
                                                   <>
@@ -2319,25 +2324,167 @@ const clearSelectedPhoto = (index, image, name) => {
                           </Row>
                           <Row style={{ marginTop: "10px" }}>
                             <Col lg="2">
-                              <FormGroup
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                }}
-                              >
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-add"
-                                >
-                                  Amenities (optional)
-                                </label>
-                                <Button
-                                  className="btn-icon btn-2"
-                                  name="input-add"
-                                  >
-                                  Add
-                                </Button>
-                              </FormGroup>
+                            <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                        }}
+                                      >
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-unitadd"
+                                        >
+                                          Photo
+                                        </label>
+                                        <span
+                                          onClick={togglePhotoresDialog}
+                                          style={{
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontFamily: "monospace",
+                                            color: "blue",
+                                          }}
+                                        >
+                                          {" "}
+                                          <br />
+                                          <input
+                                            type="file"
+                                            className="form-control-file d-none"
+                                            accept="image/*"
+                                            multiple
+                                            id={`unit_img`}
+                                            name={`unit_img`}
+                                            onChange={(e) => {
+                                              const file = [...e.target.files];
+                                              fileData(
+                                                file,
+                                                "propertyres_image",
+                                                 ""
+                                              );
+                                              if (file.length > 0) {
+                                                const allImages = file.map(
+                                                  (file) => {
+                                                    return URL.createObjectURL(
+                                                      file
+                                                    );
+                                                  }
+                                                );
+                                                // console.log(
+                                                //    "",
+                                                //   "indexxxxxx"
+                                                // );
+                                                if (
+                                                  unitImage[
+                                                     ""
+                                                  ]
+                                                ) {
+                                                  setUnitImage([
+                                                    ...unitImage.slice(
+                                                      0,
+                                                       ""
+                                                    ),
+                                                    [
+                                                      ...unitImage[
+                                                         ""
+                                                      ],
+                                                      ...allImages,
+                                                    ],
+                                                    ...unitImage.slice(
+                                                      1 +  ""
+                                                    ),
+                                                  ]);
+                                                } else {
+                                                  setUnitImage([
+                                                    ...allImages,
+                                                  ]);
+                                                }
+                                              } else {
+                                                setUnitImage([
+                                                  ...unitImage,
+                                                ]);
+                                                // )
+                                              }
+                                            }}
+                                          />
+                                          {console.log(unitImage,'unitImage')}
+                                          <label
+                                            htmlFor={`unit_img`}
+                                          >
+                                            <b style={{ fontSize: "20px" }}>
+                                              +
+                                            </b>{" "}
+                                            Add
+                                          </label>
+                                          {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                                        </span>
+                                      </FormGroup>
+                                      <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexWrap: "wrap",
+                                          paddingLeft: "10px",
+                                        }}
+                                      >
+                                        <div className="d-flex">
+                                          {unitImage &&
+                                            unitImage
+                                              .length > 0 &&
+                                            unitImage
+                                               .map((unitImg) => (
+                                              <div
+                                                key={unitImg}
+                                                style={{
+                                                  position: "relative",
+                                                  width: "100px",
+                                                  height: "100px",
+                                                  margin: "10px",
+                                                  display: "flex",
+                                                  flexDirection: "column",
+                                                }}
+                                              >
+                                                <img
+                                                  src={unitImg}
+                                                  alt=""
+                                                  style={{
+                                                    width: "100px",
+                                                    height: "100px",
+                                                    maxHeight: "100%",
+                                                    maxWidth: "100%",
+                                                    borderRadius: "10px",
+                                                    // objectFit: "cover",
+                                                  }}
+                                                  onClick={() => {
+                                                    setSelectedImage(
+                                                      unitImg
+                                                    );
+                                                    setOpen(true);
+                                                  }}
+                                                />
+                                                <ClearIcon
+                                                  style={{
+                                                    cursor: "pointer",
+                                                    alignSelf: "flex-start",
+                                                    position: "absolute",
+                                                    top: "-12px",
+                                                    right: "-12px",
+                                                  }}
+                                                  onClick={() =>
+                                                    clearSelectedPhoto(
+                                                       "",
+                                                      unitImage,
+                                                      "propertyres_image"
+                                                    )
+                                                  }
+                                                />
+                                              </div>
+                                            ))}
+                                          <OpenImageDialog
+                                            open={open}
+                                            setOpen={setOpen}
+                                            selectedImage={selectedImage}
+                                          />
+                                        </div>
+                                      </FormGroup>
                             </Col>
                           </Row>
                           <Row style={{ marginTop: "10px" }}>
@@ -2345,6 +2492,7 @@ const clearSelectedPhoto = (index, image, name) => {
                               className="btn-icon btn-2"
                               color="success"
                               type="submit"
+                              
                             >
                               Create Unit
                             </Button>
@@ -2371,7 +2519,7 @@ const clearSelectedPhoto = (index, image, name) => {
                             style={{
                               background: "white",
                               color: "blue",
-                              // marginRight: "10px",
+                              //display: selectedProp.ismultiunit ? "block" : "none"
                             }}
                             size="l"
                             onClick={() => {
@@ -2399,7 +2547,7 @@ const clearSelectedPhoto = (index, image, name) => {
                               <th scope="col">Unit</th>
                               <th scope="col">Address</th>
                               <th scope="col">Tenants</th>
-                              <th scope="col">Most Recent Events</th>
+                              {/* <th scope="col">Most Recent Events</th> */}
                             </tr>
                           </thead>
                           <tbody>
@@ -2427,7 +2575,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                     " " +
                                     unit.tenant_lastName} */}
                                 </td>
-                                <td>{"N/A"}</td>
+                                {/* <td>{"N/A"}</td> */}
                               </tr>
                             ))}
                           </tbody>

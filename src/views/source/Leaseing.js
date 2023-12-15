@@ -2075,7 +2075,7 @@ const Leaseing = () => {
               type: "Charge",
               charge_type: "Security Deposit",
               account: "Security Deposit",
-              amount: parseFloat(Security_amount),
+              amount: Security_amount,
               isPaid: false,
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",
