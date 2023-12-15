@@ -43,6 +43,7 @@ import { Grid, Paper, TextField, Typography } from "@mui/material";
 import { getUnit } from "@mui/material/styles/cssUtils";
 import swal from "sweetalert";
 import { Modal } from "react-bootstrap";
+import { RotatingLines } from "react-loader-spinner";
 // import "bootstrap/dist/css/bootstrap.min.css";
 // import CardActions from "@mui/material/CardActions";
 
@@ -185,6 +186,7 @@ const clearSelectedPhoto = (index, image, name) => {
       const response = await axios.get(
         `${baseUrl}/rentals/rentals_summary/${id}`
       );
+        
       setpropertyDetails(response.data.data);
       console.log(response.data.data, "response frirn simmary");
       const rentalId = response.data.data._id;
@@ -196,6 +198,8 @@ const clearSelectedPhoto = (index, image, name) => {
       setRentAdd(matchedProperty.rental_adress);
       console.log(matchedProperty, `matched property`);
       setLoading(false);
+      setPropImageLoader(false)
+
 
       const resp = await axios.get(
         `
@@ -472,6 +476,7 @@ const clearSelectedPhoto = (index, image, name) => {
     const updatedValues = {
       description: addUnitFormik.values.description,
       market_rent: addUnitFormik.values.market_rent,
+      rental_sqft: addUnitFormik.values.size,
     };
 
     await axios
@@ -531,6 +536,10 @@ const clearSelectedPhoto = (index, image, name) => {
       rentalcom_unitsAdress: addUnitFormik.values.address1,
       rentalcom_sqft: addUnitFormik.values.rentalcom_sqft,
       rentalcom_units: addUnitFormik.values.rentalcom_units,
+      rental_country: addUnitFormik.values.country,
+      rental_state: addUnitFormik.values.state,
+      rental_city: addUnitFormik.values.city,
+      rental_postcode: addUnitFormik.values.zip,
       // property_image: addUnitFormik.values.property_image,
     };
     console.log("formData", formData);
@@ -554,9 +563,11 @@ const clearSelectedPhoto = (index, image, name) => {
   // const [showModal, setShowModal] = useState(false);
 
   const [uploadedImage, setUploadedImage] = useState(null);
+  const [propImageLoader, setPropImageLoader] = useState(false);
   console.log(uploadedImage, "uploadedImage");
 
   const handleImageChange = async (event) => {
+    setPropImageLoader(true)
     const file = event.target.files[0];
     const axiosRequests = [];
 
@@ -585,6 +596,7 @@ const clearSelectedPhoto = (index, image, name) => {
           axios
             .put(`${baseUrl}/rentals/proparty_image/${id}/${entryIndex}`, image)
             .then((response) => {
+              
               console.log(response.data.data, "updated data");
               getRentalsData();
               // setAddUnitDialogOpen(false);
@@ -686,7 +698,7 @@ const clearSelectedPhoto = (index, image, name) => {
                   </Box>
                   <TabPanel value="summary">
                     <div className="main d-flex justify-content-between">
-                      <div className="card mb-3 col-6">
+                      <div className="card mb-3 col-8">
                         <div className="row g-0 border-none">
                           {/* <div className="col-md-4">
                             <img
@@ -695,37 +707,57 @@ const clearSelectedPhoto = (index, image, name) => {
                               alt="..."
                             />
                           </div> */}
-                          <div className="col-md-4 mt-2">
-                            <label htmlFor="prop_image">
-                              <img
-                                // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
-                                src={
-                                  matchedProperty.prop_image
-                                    ? matchedProperty.prop_image
-                                    : uploadedImage
-                                    ? uploadedImage
-                                    : fone
-                                }
-                                className="img-fluid rounded-start card-image"
-                                alt="..."
-                                // width='260px'
-                                // height='18px'
-                                // onClick={handleModalOpen}
-                              />
-                            </label>
+                            {
+                              !propImageLoader ? (
+                                <>
+                                <div className="col-md-4 mt-2">
+                                <label htmlFor="prop_image">
 
-                            <TextField
-                              id="prop_image"
-                              name="prop_image"
-                              type="file"
-                              inputProps={{
-                                accept: "image/*",
-                                multiple: false,
-                              }}
-                              onChange={handleImageChange}
-                              style={{ display: "none" }}
-                            />
-                          </div>
+                                <img
+                                  // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
+                                  src={
+                                    matchedProperty.prop_image
+                                      ? matchedProperty.prop_image
+                                      : uploadedImage
+                                      ? uploadedImage
+                                      : fone
+                                  }
+                                  className="img-fluid rounded-start card-image"
+                                  alt="..."
+                                  // width='260px'
+                                  // height='18px'
+                                  // onClick={handleModalOpen}
+                                />
+                              </label>
+  
+                              <TextField
+                                id="prop_image"
+                                name="prop_image"
+                                type="file"
+                                inputProps={{
+                                  accept: "image/*",
+                                  multiple: false,
+                                }}
+                                onChange={handleImageChange}
+                                style={{ display: "none" }}
+                              />
+                              </div>
+                                </>
+                              ) : (
+                                <div className="col-md-4 mt-2 d-flex justify-content-center">
+
+                                <RotatingLines
+                                strokeColor="grey"
+                                strokeWidth="5"
+                                animationDuration="0.75"
+                                width="50"
+                                visible={propImageLoader}
+                              />
+                              </div>
+                              )
+                              
+                            }
+                           
 
                           <div className="col-md-8">
                             <div
@@ -786,9 +818,10 @@ const clearSelectedPhoto = (index, image, name) => {
           <p>$200.00</p>
         </div>
         </div> */}
-                            </div>
+                         
                           </div>
                         </div>
+                      </div>
                       </div>
 
                       {/* <div className="col-4 mt-4">
@@ -3040,6 +3073,12 @@ const clearSelectedPhoto = (index, image, name) => {
                                         marginBottom: "5px",
                                       }}
                                       onClick={() => {
+                                        console.log(clickedObject, "clickedObject");
+                                        addUnitFormik.setValues({
+                                          market_rent: clickedObject.market_rent,
+                                          size: clickedObject.rental_sqft,
+                                          description: clickedObject.description,
+                                        })
                                         setEditListingData(!editListingData);
                                       }}
                                     >
@@ -3104,11 +3143,13 @@ const clearSelectedPhoto = (index, image, name) => {
                                             style={{
                                               display: "flex",
                                               flexDirection: "column",
+                                              width: "50%",
                                             }}
                                           >
                                             <div>
                                               <h5>Market Rent</h5>
                                             </div>
+                                            
                                             <TextField
                                               type="number"
                                               size="small"
@@ -3116,6 +3157,32 @@ const clearSelectedPhoto = (index, image, name) => {
                                               name="market_rent"
                                               value={
                                                 addUnitFormik.values.market_rent
+                                              }
+                                              onChange={
+                                                addUnitFormik.handleChange
+                                              }
+                                              onBlur={addUnitFormik.handleBlur}
+                                            />
+                                            </div>
+                                            <div style={{
+                                              display: "flex",
+                                              flexDirection: "column",
+                                              width: "50%",
+                                              marginTop: "10px",
+
+                                            }}>
+                                              <div>
+
+                                              <h5>Size</h5>
+                                              </div>
+                                            
+                                            <TextField
+                                              type="number"
+                                              size="small"
+                                              id="size"
+                                              name="size"
+                                              value={
+                                                addUnitFormik.values.size
                                               }
                                               onChange={
                                                 addUnitFormik.handleChange

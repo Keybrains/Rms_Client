@@ -1648,25 +1648,24 @@ const Rentals = () => {
                                                           rentalOwner.rentalOwner_phoneNumber
                                                         );
                                                         // console.log(rentalOwner, "rentalownerData");
-                                                        rentalOwnerFormik.setValues(
+                                                         rentalOwnerFormik.setValues(
                                                           {
                                                             rentalOwner_firstName:
                                                               rentalOwner.rentalOwner_firstName,
                                                             rentalOwner_lastName:
                                                               rentalOwner.rentalOwner_lastName,
+                                                            rentalOwner_phoneNumber:
+                                                              rentalOwner.rentalOwner_phoneNumber,
                                                             rentalOwner_companyName:
                                                               rentalOwner.rentalOwner_companyName,
                                                             rentalOwner_primaryEmail:
                                                               rentalOwner.rentalOwner_primaryEmail,
-                                                            rentalOwner_phoneNumber:
-                                                              rentalOwner.rentalOwner_phoneNumber,
                                                             rentalOwner_homeNumber:
                                                               rentalOwner.rentalOwner_homeNumber,
                                                             rentalOwner_businessNumber:
                                                               rentalOwner.rentalOwner_businessNumber,
                                                           }
                                                         );
-
                                                         const rentalOwnerInfo = `${
                                                           rentalOwner.rentalOwner_firstName ||
                                                           ""
@@ -1674,13 +1673,14 @@ const Rentals = () => {
                                                           rentalOwner.rentalOwner_lastName ||
                                                           ""
                                                         }-${
+                                                         
+                                                          rentalOwner.rentalOwner_phoneNumber ||
+                                                          ""
+                                                        }-${
                                                           rentalOwner.rentalOwner_companyName ||
                                                           ""
                                                         }-${
                                                           rentalOwner.rentalOwner_primaryEmail ||
-                                                          ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_phoneNumber ||
                                                           ""
                                                         }-${
                                                           rentalOwner.rentalOwner_homeNumber ||

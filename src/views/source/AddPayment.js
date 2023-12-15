@@ -66,6 +66,8 @@ const AddPayment = () => {
 
   const location = useLocation();
   const state =  location.state && location.state;
+  const paymentState = state;
+
 
   React.useEffect(() => {
     if (cookies.get("token")) {
@@ -229,6 +231,7 @@ const AddPayment = () => {
           console.log(tenantDatas.entries.property_id, "propertyId");
           setSelectedRec(`${tenantDatas.tenant_firstName} ${tenantDatas.tenant_lastName}`);
           setTenantid(tenantDatas._id)
+          getAllCharges(tenantDatas._id);
           setPropertyId(tenantDatas.entries.property_id);
           // setTenantid(tenantDatas._id); // Set the selected tenant's ID
           // setTenantentryIndex(tenantDatas.entryIndex); // Set the selected tenant's entry index
@@ -705,6 +708,29 @@ const AddPayment = () => {
 
     return formattedValue;
   };
+  const [pendingCharge, setPendingCharge] = useState([]);
+  console.log(tenantid,'tenantid')
+  const getAllCharges= async (tenantID)=>{
+    try {
+      const response = await axios.get(`${baseUrl}/payment_charge/unit_charge?rental_adress=${state.rental_adress}&property_id=${state.property_id}&unit=${state.unit_name}&tenant_id=${tenantId}`);
+      if (response.data.statusCode === 200) {
+        console.log(`${baseUrl}/payment_charge/unit_charge?rental_adress=${state.rental_adress}&property_id=${state.property_id}&unit=${state.unit_name}&tenant_id=${tenantID}`,"url")
+        console.log(response, "response.data.data");
+        setPendingCharge(response.data.data);
+      } else {
+        console.error("Server Error:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+      }
+    }
+  }
+
+  // useEffect(() => {
+  //   getAllCharges();
+  // },[])
   return (
     <>
       <PaymentHeader />
@@ -1077,7 +1103,7 @@ const AddPayment = () => {
                             </thead>
                             <tbody>
                               <>
-                                {generalledgerFormik.values.entries.map(
+                                {pendingCharge.map(
                                   (entries, index) => (
                                     <tr key={index}>
                                       <td>
