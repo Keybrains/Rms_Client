@@ -1649,7 +1649,7 @@ const Rentals = () => {
                                                           rentalOwner.rentalOwner_phoneNumber
                                                         );
                                                         // console.log(rentalOwner, "rentalownerData");
-                                                        rentalOwnerFormik.setValues(
+                                                         rentalOwnerFormik.setValues(
                                                           {
                                                             rentalOwner_firstName:
                                                               rentalOwner.rentalOwner_firstName,
@@ -1668,7 +1668,6 @@ const Rentals = () => {
                                                               rentalOwner.rentalOwner_businessNumber,
                                                           }
                                                         );
-
                                                         const rentalOwnerInfo = `${
                                                           rentalOwner.rentalOwner_firstName ||
                                                           ""

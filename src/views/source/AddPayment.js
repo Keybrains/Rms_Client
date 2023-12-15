@@ -65,7 +65,9 @@ const AddPayment = () => {
   const [accessType, setAccessType] = useState(null);
 
   const location = useLocation();
-  const state =  location.state && location.state;
+  const state = location.state && location.state;
+  const paymentState = state;
+
 
   React.useEffect(() => {
     if (cookies.get("token")) {
@@ -82,7 +84,7 @@ const AddPayment = () => {
   };
 
   const [selectedRec, setSelectedRec] = useState("Select Resident");
-  const [property,setProperty]=useState(null);
+  const [property, setProperty] = useState(null);
 
   // console.log(generalledgerFormik.values,'sdfyggvbhjnkml')
   const handleRecieverSelection = (property) => {
@@ -102,8 +104,8 @@ const AddPayment = () => {
       amount: "",
       payment_method: "",
       creditcard_number: "",
-      expiration_date:"",
-      cvv:"",
+      expiration_date: "",
+      cvv: "",
       tenant_firstName: "",
       memo: "",
       entries: [
@@ -122,8 +124,8 @@ const AddPayment = () => {
       amount: yup.string().required("Required"),
       entries: yup.array().of(
         yup.object().shape({
-          account: yup.string().required("Required"),
-          balance: yup.number().required("Required"),
+          // account: yup.string().required("Required"),
+          // balance: yup.number().required("Required"),
           amount: yup.number().required("Required"),
         })
       ),
@@ -201,6 +203,13 @@ const AddPayment = () => {
     });
   };
 
+  const toggleDropdown2 = (index) => {
+    const updatedEntries = [...pendingCharge];
+    updatedEntries[index].dropdownOpen = !updatedEntries[index].dropdownOpen;
+    setPendingCharge(updatedEntries); // Assuming you have a state or setter function to update the allPaymentAndCharges array
+  };
+
+
   const handleRemoveRow = (index) => {
     const updatedEntries = [...generalledgerFormik.values.entries];
     updatedEntries.splice(index, 1); // Remove the entry at the specified index
@@ -209,6 +218,17 @@ const AddPayment = () => {
       entries: updatedEntries,
     });
   };
+
+  const handleRemoveRow2 = (index) => {
+    const updatedEntries = [...formikForAnotherData.values.entries];
+    updatedEntries.splice(index, 1); // Remove the entry at the specified index
+    formikForAnotherData.setValues({
+      ...formikForAnotherData.values,
+      entries: updatedEntries,
+    });
+  };
+
+
   const [tenantData, setTenantData] = useState([]);
   const [propertyId, setPropertyId] = useState("");
   console.log()
@@ -227,6 +247,7 @@ const AddPayment = () => {
           console.log(tenantDatas.entries.property_id, "propertyId");
           setSelectedRec(`${tenantDatas.tenant_firstName} ${tenantDatas.tenant_lastName}`);
           setTenantid(tenantDatas._id)
+          getAllCharges(tenantDatas._id);
           setPropertyId(tenantDatas.entries.property_id);
           // setTenantid(tenantDatas._id); // Set the selected tenant's ID
           // setTenantentryIndex(tenantDatas.entryIndex); // Set the selected tenant's entry index
@@ -254,84 +275,74 @@ const AddPayment = () => {
       });
   }, []);
 
-  // Calculate the total debit and credit
-  // let totalDebit = 0;
-  // let totalCredit = 0;
-  // generalledgerFormik.values.entries.forEach((entries) => {
-  //   if (entries.balance) {
-  //     totalDebit += parseFloat(entries.balance);
-  //   }
-  //   if (entries.amount) {
-  //     totalCredit += parseFloat(entries.amount);
-  //   }
-  // });
-  let total_amount = 0;
-  generalledgerFormik.values.entries.forEach((entries) => {
-    if (entries.amount) {
-      total_amount += parseFloat(entries.amount);
-    }
-  });
   console.log(generalledgerFormik.values, "enasdtries");
-  if(generalledgerFormik.values.values){
+  if (generalledgerFormik.values.values) {
 
   }
-  console.log(generalledgerFormik?.values?.date?.slice(5,7)+"-"+generalledgerFormik?.values?.date?.slice(0,4),'clasujdnasdasd')
+  console.log(generalledgerFormik?.values?.date?.slice(5, 7) + "-" + generalledgerFormik?.values?.date?.slice(0, 4), 'clasujdnasdasd')
   // console.log(property,'proeprty')
   const handleSubmit = async (values) => {
     const arrayOfNames = file.map((item) => item.name);
     const rentalAddress = generalledgerFormik.values.rental_adress;
     values["total_amount"] = total_amount;
 
-    try {
-      const updatedValues = {
-        date: values.date,
-        amount: values.amount,
-        payment_method: selectedProp,
-        cvv:values.cvv,
-        expiration_date:values.expiration_date,
-        creditcard_number: values.creditcard_number,
-        tenant_firstName: selectedRec,
-        attachment: arrayOfNames,
-        rental_adress: rentalAddress,
-        tenant_id: tenantid,
-        entryIndex: tenantentryIndex,
-        memo: values.memo || "Payment",
+    const updatedValues = {
+      date: values.date,
+      amount: values.amount,
+      payment_method: selectedProp,
+      cvv: values.cvv,
+      expiration_date: values.expiration_date,
+      creditcard_number: values.creditcard_number,
+      tenant_firstName: selectedRec,
+      attachment: arrayOfNames,
+      rental_adress: rentalAddress,
+      tenant_id: tenantid,
+      entryIndex: tenantentryIndex,
+      memo: values.memo || "Payment",
 
-        entries: generalledgerFormik.values.entries.map((entry) => ({
+      entries: [
+        ...generalledgerFormik.values.entries.map((entry) => ({
           account: entry.account,
-          balance: parseFloat(entry.balance),
           amount: parseFloat(entry.amount),
           total_amount: total_amount,
         })),
-      };
-      //console.log(updatedValues, "updatedValues");
+        ...formikForAnotherData.values.entries.map((entry) => ({
+          account: entry.account,
+          amount: parseFloat(entry.amount),
+          total_amount: total_amount,
+        })),
+      ],
+    };
+    console.log(updatedValues, "yashu")
+    try {
+      console.log(updatedValues, "updatedValues");
       const response = await axios.post(
         `${baseUrl}/payment/add_payment`,
         updatedValues
       );
 
       if (response.data.statusCode === 200) {
-        console.log(response.data.data,'resdadadadad')
-        if(selectedProp==="Credit Card"){
+        console.log(response.data.data, 'resdadadadad')
+        if (selectedProp === "Credit Card") {
 
-        try {
+          try {
 
-    const url = `${baseUrl}/nmipayment/purchase`;
+            const url = `${baseUrl}/nmipayment/purchase`;
 
             const postObject = {
-            first_name: tenantData.tenant_firstName,
-            last_name: tenantData.tenant_lastName,
-            email_name: tenantData.tenant_email,
-            card_number: generalledgerFormik.values.creditcard_number,
-            amount: values.amount,
-            expiration_date: values.expiration_date,
-            cvv: values.cvv,
-            tenantId: tenantData._id,
-            propertyId:tenantData?.entries?.property_id,
-            unitId:tenantData?.entries?.unit_id,
+              first_name: tenantData.tenant_firstName,
+              last_name: tenantData.tenant_lastName,
+              email_name: tenantData.tenant_email,
+              card_number: generalledgerFormik.values.creditcard_number,
+              amount: values.amount,
+              expiration_date: values.expiration_date,
+              cvv: values.cvv,
+              tenantId: tenantData._id,
+              propertyId: tenantData?.entries?.property_id,
+              unitId: tenantData?.entries?.unit_id,
             }
 
-            console.log(postObject,'postObjectg')
+            console.log(postObject, 'postObjectg')
 
             const response = await axios.post(url, {
               paymentDetails: postObject,
@@ -344,14 +355,14 @@ const AddPayment = () => {
               swal("", response.data.message, "error");
               // Handle other status codes or show an error message
             }
-        } catch (error) {
-          console.log(error);
+          } catch (error) {
+            console.log(error);
+          }
         }
-      }
 
 
 
-        
+
         const id = response.data.data._id;
         if (id) {
           const pdfResponse = await axios.get(
@@ -468,31 +479,31 @@ const AddPayment = () => {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
       }
-      try{
+      try {
         const paymentObject = {
-          properties:{
-            rental_adress:rentalAddress,
-            property_id:propertyId
+          properties: {
+            rental_adress: rentalAddress,
+            property_id: propertyId
           },
-          unit:[{
-            unit:(state && state.unit_name) || "",
-            unit_id:(state && state.unit_id) || "",
-            paymentAndCharges:generalledgerFormik.values.entries.map((entry) => ({
-                type:"Payment",
-                account:entry.account,
-                amount:parseFloat(entry.amount),
-                rental_adress:rentAddress,
-                rent_cycle:"",
-                month_year:values.date.slice(5,7)+"-"+values.date.slice(0,4),
-                date:values.date,
-                memo: values.charges_memo,
-                tenant_id:tenantid,
-                tenant_firstName:selectedRec,
+          unit: [{
+            unit: (state && state.unit_name) || "",
+            unit_id: (state && state.unit_id) || "",
+            paymentAndCharges: generalledgerFormik.values.entries.map((entry) => ({
+              type: "Payment",
+              account: entry.account,
+              amount: parseFloat(entry.amount),
+              rental_adress: rentAddress,
+              rent_cycle: "",
+              month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+              date: values.date,
+              memo: values.charges_memo,
+              tenant_id: tenantid,
+              tenant_firstName: selectedRec,
             })),
-            
+
           }]
         }
-        console.log(paymentObject,'chargeObject')
+        console.log(paymentObject, 'chargeObject')
         // debugger
         const url = `${baseUrl}/payment_charge/payment_charge`
         await axios.post(url, paymentObject).then((res) => {
@@ -688,7 +699,7 @@ const AddPayment = () => {
     }
   };
 
-  console.log(generalledgerFormik.values,'sdfyggvbhjnkml')
+  console.log(generalledgerFormik.values, 'sdfyggvbhjnkml')
 
 
   const formatCardNumber = (inputValue) => {
@@ -703,6 +714,89 @@ const AddPayment = () => {
 
     return formattedValue;
   };
+
+  const formikForAnotherData = useFormik({
+    initialValues: {
+      entries: {
+        account: '',
+        amount: 0,
+        balance: ''
+      }, // Assuming entries is the name of your array
+    },
+    // Other Formik configurations and validation functions as needed
+  });
+
+  const [pendingCharge, setPendingCharge] = useState([]);
+  console.log(tenantid, 'tenantid')
+  const getAllCharges = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/payment_charge/unit_charge?rental_adress=${state.rental_adress}&property_id=${state.property_id}&unit=${state.unit_name}&tenant_id=${tenantId}`);
+      if (response.data.statusCode === 200) {
+        const allPaymentAndCharges = response.data.data.flatMap(item =>
+          item.unit.map(innerItem => innerItem.paymentAndCharges)
+        );
+        setPendingCharge(allPaymentAndCharges);
+        const updatedEntries = allPaymentAndCharges.map(data => ({
+          account: data.account || "", // Replace with your actual property name if needed
+          balance: data.amount || "", // Replace with your actual property name if needed
+          amount: 0, // Assuming you want 'amount' to be an empty string
+        }));
+        formikForAnotherData.setValues({
+          ...formikForAnotherData.values,
+          entries: updatedEntries,
+        });
+      } else {
+        console.error("Server Error:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getAllCharges();
+  }, [])
+
+  // const allPaymentAndCharges = [
+  //   {
+  //     amount: 490,
+  //     type: "Charge",
+  //     _id: "657bf81aa94f2fdb5c7c98a4",
+  //   },
+  //   {
+  //     amount: 490,
+  //     type: "Charge",
+  //     _id: "657bf81aa94f2fdb5c7c98a4",
+  //   },
+  //   {
+  //     amount: 490,
+  //     type: "Charge",
+  //     _id: "657bf81aa94f2fdb5c7c98a4",
+  //   },
+  // ]
+
+  const totalamount = () => {
+    let amount = 0; // Initialize amount to 0
+    generalledgerFormik.values.entries.forEach((entries) => {
+      if (entries.amount) {
+        amount += parseFloat(entries.amount);
+      }
+    });
+    if (formikForAnotherData.values.entries.length > 0) {
+      formikForAnotherData.values.entries.forEach((entries) => {
+        if (entries.amount) {
+          amount += parseFloat(entries.amount);
+        }
+      });
+    }
+    return amount;
+  };
+
+  let total_amount = totalamount();
+
   return (
     <>
       <PaymentHeader />
@@ -713,7 +807,6 @@ const AddPayment = () => {
             }
         `}
       </style>
-
       <Container className="mt--7" fluid>
         <Row>
           <Col className="order-xl-1" xl="12">
@@ -750,7 +843,7 @@ const AddPayment = () => {
                           value={generalledgerFormik.values.date}
                         />
                         {generalledgerFormik.touched.date &&
-                        generalledgerFormik.errors.date ? (
+                          generalledgerFormik.errors.date ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.date}
                           </div>
@@ -799,185 +892,183 @@ const AddPayment = () => {
                     <Col sm="12">
                       {selectedProp === "Credit Card" ? (
                         <>
-                       <Row>
-                        <Col sm="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
-                          >
-                            Amount *
-                          </label>
-                          <Input
-                            type="text"
-                            id="amount"
-                            placeholder="Enter amount"
-                            name="amount"
-                            onBlur={generalledgerFormik.handleBlur}
-                            // only input number
-                            onKeyDown={(event) => {
-                              if (!/[0-9]/.test(event.key)) {
-                                event.preventDefault();
-                              }
-                            }}
-                            onChange={generalledgerFormik.handleChange}
-                            value={generalledgerFormik.values.amount}
-                            required
-                          />
-                        </FormGroup>
-                        </Col>
-                       </Row>
-                       <Row>
-                        <Col sm="4">
-                        <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-property"
-                      >
-                        Card Number *
-                      </label>
-                      <InputGroup>
-                        <Input
-                          type="number"
-                          id="creditcard_number"
-                          placeholder="0000 0000 0000"
-                          name="creditcard_number"
-                          value={generalledgerFormik.values.creditcard_number}
-                          onBlur={generalledgerFormik.handleBlur}
-                          onChange={(e) => {
-                            const inputValue = e.target.value;
-                            const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-                            const limitValue = numericValue.slice(0, 12); // Limit to 12 digits 
-                            // setLimitedValue(limitValue);
-                            // const formattedValue = formatCardNumber(limitValue);
-                            // e.target.value = formattedValue;
-                            // generalledgerFormik.handleChange(e);
-                            generalledgerFormik.setFieldValue('creditcard_number', limitValue);
-                          }}
-                          required
-                        />
-                      </InputGroup>
-                    </FormGroup>
-                        </Col>
-                       </Row>
-                      
-                     
-                    <Row>
-                    <Col sm="2">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Expiration Date *
-                        </label>
-                        <Input
-                          type="text"
-                          id="expiration_date"
-                          name="expiration_date"
-                          onBlur={generalledgerFormik.handleBlur}
-                          onChange={generalledgerFormik.handleChange}
-                          value={generalledgerFormik.values.expiration_date}
-                          placeholder="MM/YY"
-                          required
-                          onInput={(e) => {
-                            let inputValue = e.target.value;
+                          <Row>
+                            <Col sm="4">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Amount *
+                                </label>
+                                <Input
+                                  type="text"
+                                  id="amount"
+                                  placeholder="Enter amount"
+                                  name="amount"
+                                  onBlur={generalledgerFormik.handleBlur}
+                                  // only input number
+                                  onKeyDown={(event) => {
+                                    if (!/[0-9]/.test(event.key)) {
+                                      event.preventDefault();
+                                    }
+                                  }}
+                                  onChange={generalledgerFormik.handleChange}
+                                  value={generalledgerFormik.values.amount}
+                                  required
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col sm="4">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Card Number *
+                                </label>
+                                <InputGroup>
+                                  <Input
+                                    type="number"
+                                    id="creditcard_number"
+                                    placeholder="0000 0000 0000"
+                                    name="creditcard_number"
+                                    value={generalledgerFormik.values.creditcard_number}
+                                    onBlur={generalledgerFormik.handleBlur}
+                                    onChange={(e) => {
+                                      const inputValue = e.target.value;
+                                      const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                                      const limitValue = numericValue.slice(0, 12); // Limit to 12 digits 
+                                      // setLimitedValue(limitValue);
+                                      // const formattedValue = formatCardNumber(limitValue);
+                                      // e.target.value = formattedValue;
+                                      // generalledgerFormik.handleChange(e);
+                                      generalledgerFormik.setFieldValue('creditcard_number', limitValue);
+                                    }}
+                                    required
+                                  />
+                                </InputGroup>
+                              </FormGroup>
+                            </Col>
+                          </Row>
 
-                            // Remove non-numeric characters
-                            const numericValue = inputValue.replace(
-                              /\D/g,
-                              ""
-                            );
 
-                            // Set the input value to the sanitized value (numeric only)
-                            e.target.value = numericValue;
+                          <Row>
+                            <Col sm="2">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Expiration Date *
+                                </label>
+                                <Input
+                                  type="text"
+                                  id="expiration_date"
+                                  name="expiration_date"
+                                  onBlur={generalledgerFormik.handleBlur}
+                                  onChange={generalledgerFormik.handleChange}
+                                  value={generalledgerFormik.values.expiration_date}
+                                  placeholder="MM/YY"
+                                  required
+                                  onInput={(e) => {
+                                    let inputValue = e.target.value;
 
-                            // Format the date as "MM/YY"
-                            if (numericValue.length > 2) {
-                              const month = numericValue.substring(
-                                0,
-                                2
-                              );
-                              const year = numericValue.substring(2, 6);
-                              e.target.value = `${month}${year}`;
-                            }
+                                    // Remove non-numeric characters
+                                    const numericValue = inputValue.replace(
+                                      /\D/g,
+                                      ""
+                                    );
 
-                            // Restrict the year to be 4 digits starting from the current year
-                            const currentYear = new Date()
-                              .getFullYear()
-                              .toString();
-                            if (numericValue.length > 5) {
-                              const enteredYear =
-                                numericValue.substring(3, 7);
-                              if (enteredYear < currentYear) {
-                                e.target.value = `${numericValue.substring(
-                                  0,
-                                  2
-                                )}/${currentYear.substring(2, 4)}`;
-                              }
-                            }
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col sm="2">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Cvv *
-                        </label>
-                        <Input
-                          type="number"
-                          id="cvv"
-                          placeholder="123"
-                          name="cvv"
-                          onBlur={generalledgerFormik.handleBlur}
-                          onChange={(e) => {
-                            const inputValue = e.target.value;
-                            if (/^\d{0,3}$/.test(inputValue)) {
-                              // Only allow up to 3 digits
-                              generalledgerFormik.handleChange(e);
-                            }
-                          }}
-                          value={generalledgerFormik.values.cvv}
-                          maxLength={3}
-                          required
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  </>
-                      ):<>
-                       <Row>
-                        <Col sm="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
-                          >
-                            Amount *
-                          </label>
-                          <Input
-                            type="text"
-                            id="amount"
-                            placeholder="Enter amount"
-                            name="amount"
-                            onBlur={generalledgerFormik.handleBlur}
-                            // only input number
-                            onKeyDown={(event) => {
-                              if (!/[0-9]/.test(event.key)) {
-                                event.preventDefault();
-                              }
-                            }}
-                            onChange={generalledgerFormik.handleChange}
-                            value={generalledgerFormik.values.amount}
-                            required
-                          />
-                        </FormGroup>
-                        </Col>
-                       </Row>
+                                    // Set the input value to the sanitized value (numeric only)
+                                    e.target.value = numericValue;
+
+                                    // Format the date as "MM/YY"
+                                    if (numericValue.length > 2) {
+                                      const month = numericValue.substring(
+                                        0,
+                                        2
+                                      );
+                                      const year = numericValue.substring(2, 6);
+                                      e.target.value = `${month}${year}`;
+                                    }
+
+                                    // Restrict the year to be 4 digits starting from the current year
+                                    const currentYear = new Date()
+                                      .getFullYear()
+                                      .toString();
+                                    if (numericValue.length > 5) {
+                                      const enteredYear =
+                                        numericValue.substring(3, 7);
+                                      if (enteredYear < currentYear) {
+                                        e.target.value = `${numericValue.substring(
+                                          0,
+                                          2
+                                        )}/${currentYear.substring(2, 4)}`;
+                                      }
+                                    }
+                                  }}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col sm="2">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Cvv *
+                                </label>
+                                <Input
+                                  type="number"
+                                  id="cvv"
+                                  placeholder="123"
+                                  name="cvv"
+                                  onBlur={generalledgerFormik.handleBlur}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    if (/^\d{0,3}$/.test(inputValue)) {
+                                      // Only allow up to 3 digits
+                                      generalledgerFormik.handleChange(e);
+                                    }
+                                  }}
+                                  value={generalledgerFormik.values.cvv}
+                                  maxLength={3}
+                                  required
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                        </>
+                      ) : <>
+                        <Row>
+                          <Col sm="4">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                              >
+                                Amount *
+                              </label>
+                              <Input
+                                type="number"
+                                id="amount"
+                                placeholder="Enter amount"
+                                name="amount"
+                                onBlur={generalledgerFormik.handleBlur}
+                                // only input number
+
+                                onChange={generalledgerFormik.handleChange}
+                                value={generalledgerFormik.values.amount}
+                                onWheel={(e) => e.preventDefault()} // Disable scroll wheel
+                                inputMode="numeric"
+                                required
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Row>
                       </>}
                     </Col>
                   </Row>
@@ -1039,7 +1130,7 @@ const AddPayment = () => {
                         />
 
                         {generalledgerFormik.touched.memo &&
-                        generalledgerFormik.errors.memo ? (
+                          generalledgerFormik.errors.memo ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.memo}
                           </div>
@@ -1074,6 +1165,79 @@ const AddPayment = () => {
                               </tr>
                             </thead>
                             <tbody>
+                              {formikForAnotherData.values.entries.length > 0 ? formikForAnotherData.values.entries.map((entries, index) => (
+                                <>
+                                  <tr key={index}>
+                                    <td>
+                                      <Dropdown
+                                        isOpen={false}
+                                        toggle={() => toggleDropdown2(index)}
+                                      >
+                                        <DropdownToggle caret>
+                                          {entries.account
+                                            ? entries.account
+                                            : "Select"}
+                                        </DropdownToggle>
+                                      </Dropdown>
+                                    </td>
+                                    <td>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-unitadd"
+                                        placeholder="$0.00"
+                                        type="text"
+                                        name={`entries[${index}].balance`}
+                                        value={entries.balance - entries.amount}
+                                        onInput={(e) => {
+                                          const inputValue = e.target.value;
+                                          const numericValue =
+                                            inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                          e.target.value = numericValue;
+                                        }}
+                                        onWheel={(e) => e.preventDefault()} // Disable scroll wheel
+                                        inputMode="numeric"
+                                      />
+                                    </td>
+                                    <td>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-unitadd"
+                                        placeholder="$0.00"
+                                        type="number"
+                                        name={`entries[${index}].amount`}
+                                        onBlur={
+                                          formikForAnotherData.handleBlur
+                                        }
+                                        onChange={
+                                          formikForAnotherData.handleChange
+                                        }
+                                        value={entries.amount}
+                                        onInput={(e) => {
+                                          const inputValue = e.target.value;
+                                          const numericValue =
+                                            inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                          e.target.value = numericValue;
+                                        }}
+                                        onWheel={(e) => e.preventDefault()} // Disable scroll wheel
+                                        inputMode="numeric"
+                                      />
+                                    </td>
+                                    <td style={{ border: "none" }}>
+                                      <ClearIcon
+                                        type="button"
+                                        style={{
+                                          cursor: "pointer",
+                                          padding: 0,
+                                        }}
+                                        onClick={() => handleRemoveRow2(index)}
+                                      >
+                                        Remove
+                                      </ClearIcon>
+                                    </td>
+                                  </tr>
+                                </>
+                              )) : null}
+                              {console.log(generalledgerFormik.errors, "yashu")}
                               <>
                                 {generalledgerFormik.values.entries.map(
                                   (entries, index) => (
@@ -1167,7 +1331,7 @@ const AddPayment = () => {
                                           onChange={
                                             generalledgerFormik.handleChange
                                           }
-                                          value={entries.balance}
+                                          value={entries.amount}
                                           onInput={(e) => {
                                             const inputValue = e.target.value;
                                             const numericValue =
@@ -1175,24 +1339,6 @@ const AddPayment = () => {
                                             e.target.value = numericValue;
                                           }}
                                         />
-                                        {generalledgerFormik.touched.entries &&
-                                        generalledgerFormik.touched.entries[
-                                          index
-                                        ] &&
-                                        generalledgerFormik.errors.entries &&
-                                        generalledgerFormik.errors.entries[
-                                          index
-                                        ] &&
-                                        generalledgerFormik.errors.entries[
-                                          index
-                                        ].balance ? (
-                                          <div style={{ color: "red" }}>
-                                            {
-                                              generalledgerFormik.errors
-                                                .entries[index].balance
-                                            }
-                                          </div>
-                                        ) : null}
                                       </td>
                                       <td>
                                         <Input
@@ -1216,16 +1362,16 @@ const AddPayment = () => {
                                           }}
                                         />
                                         {generalledgerFormik.touched.entries &&
-                                        generalledgerFormik.touched.entries[
+                                          generalledgerFormik.touched.entries[
                                           index
-                                        ] &&
-                                        generalledgerFormik.errors.entries &&
-                                        generalledgerFormik.errors.entries[
+                                          ] &&
+                                          generalledgerFormik.errors.entries &&
+                                          generalledgerFormik.errors.entries[
                                           index
-                                        ] &&
-                                        generalledgerFormik.errors.entries[
-                                          index
-                                        ].amount ? (
+                                          ] &&
+                                          generalledgerFormik.errors.entries[
+                                            index
+                                          ].amount ? (
                                           <div style={{ color: "red" }}>
                                             {
                                               generalledgerFormik.errors
@@ -1301,7 +1447,7 @@ const AddPayment = () => {
                             </label>
 
                             {generalledgerFormik.touched.attachment &&
-                            generalledgerFormik.errors.attachment ? (
+                              generalledgerFormik.errors.attachment ? (
                               <div style={{ color: "red" }}>
                                 {generalledgerFormik.errors.attachment}
                               </div>
@@ -1402,7 +1548,7 @@ const AddPayment = () => {
                         )}
                         <Button
                           color="primary"
-                         //  href="#rms"
+                          //  href="#rms"
                           className="btn btn-primary"
                           onClick={handleCloseButtonClick}
                           style={{ background: "white", color: "black" }}
