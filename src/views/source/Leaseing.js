@@ -260,7 +260,7 @@ const Leaseing = () => {
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [ownerData, setOwnerData] = useState({});
   const [propertyId, setPropertyId] = useState("");
-  console.log(propertyId, "propertyId")
+  // console.log(propertyId, "propertyId")
 
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress);
@@ -277,7 +277,7 @@ const Leaseing = () => {
       console.error("Error handling selected property:", error);
     }
   };
-  console.log(ownerData, "ownerData");
+  // console.log(ownerData, "ownerData");
 
   const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] = useState("")
   const handleselectedPaymetMethod = (paymentMethod) => {
@@ -297,12 +297,13 @@ const Leaseing = () => {
     // localStorage.setItem("leasetype", leasetype);
   };
 
+  //shivam function
   const handleUnitSelect = (selectedUnit,unitId) => {
     setSelectedUnit(selectedUnit);
     entrySchema.values.rental_units = selectedUnit;
-    console.log(selectedUnit, "selectedUnit")
+   // console.log(selectedUnit, "selectedUnit")
     entrySchema.setFieldValue("unit_id", unitId);
-
+    // console.log(unitId, "unitId--------------------------")
     // entrySchema.values.unit_id = unitId;
   };
 
@@ -412,7 +413,7 @@ const Leaseing = () => {
     } else {
       setSelectedTenants([]);
       const selectedTenant = selectedTenants[0];
-      console.log(selectedTenants, "selectedTenants");
+      // console.log(selectedTenants, "selectedTenants");
       const tenantParts = selectedTenant.split(" ");
       const tenantDetails = {
         firstName: tenantParts[0],
@@ -648,7 +649,7 @@ const Leaseing = () => {
     values["parent_account"] = selectedAccountLevel;
     values["fund_type"] = selectedFundType;
 
-    console.log(values, "values");
+    // console.log(values, "values");
     try {
       // values["property_type"] = localStorage.getItem("propertyType");
       const res = await axios.post(
@@ -752,7 +753,6 @@ const Leaseing = () => {
       .then((res) => {
         //setImgLoader(false);
         const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        console.log(imagePath, "imagePath");
         // console.log(imagePath, "imagePath");
         // setFile(imagePath);
       })
@@ -768,7 +768,7 @@ const Leaseing = () => {
   };
 
   const handleOpenFile = (item) => {
-    console.log(item, "item");
+    // console.log(item, "item");
     const url = URL.createObjectURL(item);
     window.open(url, "_blank");
   };
@@ -778,7 +778,7 @@ const Leaseing = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
-          console.log(data.data, "gdasga");
+          // console.log(data.data, "gdasga");
           setPropertyData(data.data);
           // console.log(data.data, "gdasga");
         } else {
@@ -791,7 +791,7 @@ const Leaseing = () => {
         console.error("Network error:", error);
       });
   }, []);
-  console.log(propertyData,'propertyData')
+  // console.log(propertyData,'propertyData')
   const fetchingAccountNames = async () => {
     // console.log("fetching account names");
     fetch(`${baseUrl}/addaccount/find_accountname`)
@@ -925,7 +925,7 @@ const Leaseing = () => {
         emergency_PhoneNumber: tenantInfo.emergency_PhoneNumber,
       });
       // setShowTenantTable(false);
-      console.log(tenantInfo.tenant_firstName, "yup", tenantsSchema.values);
+      // console.log(tenantInfo.tenant_firstName, "yup", tenantsSchema.values);
     } else {
       // console.log(selectedTenants)
       setSelectedTenants(
@@ -1007,7 +1007,7 @@ const Leaseing = () => {
     }),
     onSubmit: (values) => {
       handleAdd(values);
-      console.log(values, "values");
+      // console.log(values, "values");
     },
   });
 
@@ -1191,7 +1191,7 @@ const Leaseing = () => {
   };
 
   useEffect(() => {
-    console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
+    // console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
   }, [isDateUnavailable]);
 
   let recurringChargeSchema = useFormik({
@@ -1376,7 +1376,7 @@ const Leaseing = () => {
       // console.log(values, "values");
     },
   });
-  console.log(tenantsSchema, "tenantsSchema.values");
+  // console.log(tenantsSchema, "tenantsSchema.values");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1540,7 +1540,7 @@ const Leaseing = () => {
 
           setRecurringData(matchedLease.recurring_charges);
           setOneTimeData(matchedLease.one_time_charges);
-          console.log(matchedLease, "yush");
+          // console.log(matchedLease, "yush");
           // leaseFormik.setValues({
           //   entries: [
           //     {
@@ -1621,11 +1621,8 @@ const Leaseing = () => {
     };
     fetchData();
   }, [id, entryIndex]);
-  console.log(entrySchema.values, "entrySchema");
-  console.log(ownerData, "ownerData");
-  console.log(unitData, "unitData");
-  console.log(ownerData,'ownerData')
-  console.log(entrySchema.values,'entryushasfdnjisdgvfhjkhgvbjn')
+  // console.log(entrySchema.values, "entrySchema");
+  // console.log(ownerData, "ownerData");
   const handleSubmit = async (values) => {
     // console.log(file, "values");
     // const arrayOfNames = Array.isArray(file)
@@ -1723,7 +1720,7 @@ const Leaseing = () => {
 
     //   entries: entriesArray,
     // };
-    console.log(tenantsSchema.values, "tenantsSchema.values");
+    // console.log(tenantsSchema.values, "tenantsSchema.values");
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -1817,11 +1814,12 @@ const Leaseing = () => {
         },
       ],
     };
-    console.log(tenantObject, "tenantObject");
+
+    // console.log(tenantObject, "tenantObject");
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
-        console.log(res.data.data, "allTenants");
+        // console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
         const filteredData = allTenants.find((item) => {
           return (
@@ -1832,21 +1830,20 @@ const Leaseing = () => {
         });
 
         if (filteredData) {
-        
           const putObject = {
             entries: tenantObject.entries,
           };
 
           const tenantId = filteredData._id;
-          console.log(tenantId, "tenantId");
+          // console.log(tenantId, "tenantId");
           const res = await axios.put(
             `${baseUrl}/tenant/tenant/${tenantId}`,
             putObject
             );
             if (res.data.statusCode === 200) {
-              console.log(res.data.data, "clgtttt");
+              // console.log(res.data.data, "clgtttt");
               swal("", res.data.message, "success");
-              console.log(entrySchema.values,'hello')
+              // console.log(entrySchema.values,'hello')
             const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
             // debugger;
@@ -1913,13 +1910,13 @@ const Leaseing = () => {
           handleResponse(res);
         } else {
           if (id === undefined) {
-            console.log(tenantObject, "leaseObject");
+            // console.log(tenantObject, "leaseObject");
             const res = await axios.post(
               `${baseUrl}/tenant/tenant`,
               tenantObject
             );
             if (res.data.statusCode === 200) {
-              console.log(res.data.data,'after post');
+              // console.log(res.data.data,'after post');
 
               // debugger
               const delay = (ms) =>
@@ -2446,7 +2443,7 @@ const Leaseing = () => {
                                   <DropdownItem
                                     key={unit._id}
                                     onClick={() =>
-                                      handleUnitSelect(unit.rental_units,unit._id)
+                                      handleUnitSelect(unit.rental_units, unit._id)
                                     }
                                   >
                                     {unit.rental_units}

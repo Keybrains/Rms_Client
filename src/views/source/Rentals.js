@@ -855,7 +855,6 @@ const Rentals = () => {
           rentalOwnerFormik.values.rentalOwner_businessNumber,
         entries: entriesArray,
       };
-      debugger;
       console.log(leaseObject, "leaseObject");
 
       const res = await axios.post(`${baseUrl}/rentals/rentals`, leaseObject);
