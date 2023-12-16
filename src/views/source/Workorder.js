@@ -52,7 +52,7 @@ const Workorder = () => {
       console.error("Error fetching data:", error);
     }
   };
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -136,10 +136,10 @@ const Workorder = () => {
   // };
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
-      return paginatedData;
+      return workData;
     }
 
-    return paginatedData.filter((rental) => {
+    return workData.filter((rental) => {
       const lowerCaseQuery = searchQuery.toLowerCase();
 
       const isUnitAddress = (rental.rental_units + " " + rental.rental_adress)
@@ -156,6 +156,12 @@ const Workorder = () => {
         // rental.due_date.formattedDate.includes(lowerCaseQuery)
       );
     });
+  };
+
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterRentalsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
   };
 
   const navigateToDetails = (workorder_id) => {
@@ -180,7 +186,7 @@ const Workorder = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/admin/addworkorder")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -234,12 +240,16 @@ const Workorder = () => {
                       <th scope="col">Assigned</th>
                       <th scope="col">Status</th>
                       {/* <th scope="col">Created At</th>
+
+
+
+
                       <th scope="col">Last Updated</th> */}
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filterRentalsBySearch().map((rental) => (
+                    {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
                         key={rental._id}
                         onClick={() => navigateToDetails(rental.workorder_id)}

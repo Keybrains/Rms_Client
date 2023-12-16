@@ -106,7 +106,7 @@ const Applicants = () => {
   };
   const [unitId, setUnitId] = useState(null);
   const handleUnitSelect = (selectedUnit) => {
-    console.log(selectedUnit,'sekected wint')
+    console.log(selectedUnit, 'sekected wint')
     setSelectedUnit(selectedUnit.rental_units);
     setUnitId(selectedUnit._id);
     applicantFormik.setFieldValue("rental_units", selectedUnit.rental_units); // Update the formik state here
@@ -280,8 +280,8 @@ const Applicants = () => {
         rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
         rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
         rentalOwner_companyName: ownerData.rentalOwner_companyName,
-        property_id:ownerData._id,
-        unit_id:unitId
+        property_id: ownerData._id,
+        unit_id: unitId
       })
       .then((response) => {
         //console.log("Applicant created successfully:", response.data.data._id);
@@ -387,10 +387,10 @@ const Applicants = () => {
 
   const filterApplicantsBySearch = () => {
     if (searchQuery === undefined) {
-      return paginatedData;
+      return rentalsData;
     }
 
-    return paginatedData.filter((tenant) => {
+    return rentalsData.filter((tenant) => {
       const isRentalAddressMatch = tenant.rental_adress
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
@@ -410,7 +410,11 @@ const Applicants = () => {
       return isRentalAddressMatch || isFirstNameMatch || isEmailMatch;
     });
   };
-
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterApplicantsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
+  };
 
   return (
     <>
@@ -426,7 +430,7 @@ const Applicants = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={openModal}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -491,7 +495,7 @@ const Applicants = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filterApplicantsBySearch().map((applicant, index) => (
+                    {filterTenantsBySearchAndPage().map((applicant, index) => (
                       <tr
                         key={index}
                         onClick={() =>
@@ -963,7 +967,7 @@ const Applicants = () => {
                           }}
                         >
                           <DropdownItem value="">Select</DropdownItem>
-                          {propertyData.map((property,index) => (
+                          {propertyData.map((property, index) => (
                             <DropdownItem
                               key={index}
                               onClick={() =>
@@ -975,10 +979,10 @@ const Applicants = () => {
                           ))}
                         </DropdownMenu>
                         {applicantFormik.errors &&
-                        applicantFormik.errors?.rental_adress &&
-                        applicantFormik.touched &&
-                        applicantFormik.touched?.rental_adress &&
-                        applicantFormik.values.rental_adress === "" ? (
+                          applicantFormik.errors?.rental_adress &&
+                          applicantFormik.touched &&
+                          applicantFormik.touched?.rental_adress &&
+                          applicantFormik.values.rental_adress === "" ? (
                           <div style={{ color: "red" }}>
                             {applicantFormik.errors.rental_adress}
                           </div>
@@ -987,45 +991,45 @@ const Applicants = () => {
                     </FormGroup>
                   </FormGroup>
                   {selectedPropertyType && unitData && unitData[0] && unitData[0].rental_units && (
-                  <FormGroup>
-                    <label className="form-control-label" htmlFor="input-unit">
-                      Unit *
-                    </label>
-                    <FormGroup style={{ marginLeft: "15px" }}>
-                      <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
-                        <DropdownToggle caret>
-                          {selectedUnit ? selectedUnit : "Select Unit"}
-                        </DropdownToggle>
-                        <DropdownMenu>
-                          {unitData.length > 0 ? (
-                            unitData.map((unit,index) => (
-                              <DropdownItem
-                                key={index}
-                                onClick={() =>
-                                  handleUnitSelect(unit)
-                                }
-                              >
-                                {unit.rental_units}
+                    <FormGroup>
+                      <label className="form-control-label" htmlFor="input-unit">
+                        Unit *
+                      </label>
+                      <FormGroup style={{ marginLeft: "15px" }}>
+                        <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
+                          <DropdownToggle caret>
+                            {selectedUnit ? selectedUnit : "Select Unit"}
+                          </DropdownToggle>
+                          <DropdownMenu>
+                            {unitData.length > 0 ? (
+                              unitData.map((unit, index) => (
+                                <DropdownItem
+                                  key={index}
+                                  onClick={() =>
+                                    handleUnitSelect(unit)
+                                  }
+                                >
+                                  {unit.rental_units}
+                                </DropdownItem>
+                              ))
+                            ) : (
+                              <DropdownItem disabled>
+                                No units available
                               </DropdownItem>
-                            ))
-                          ) : (
-                            <DropdownItem disabled>
-                              No units available
-                            </DropdownItem>
-                          )}
-                        </DropdownMenu>
-                        {applicantFormik.errors &&
-                        applicantFormik.errors?.rental_units &&
-                        applicantFormik.touched &&
-                        applicantFormik.touched?.rental_units &&
-                        applicantFormik.values.rental_units === "" ? (
-                          <div style={{ color: "red" }}>
-                            {applicantFormik.errors.rental_units}
-                          </div>
-                        ) : null}
-                      </Dropdown>
+                            )}
+                          </DropdownMenu>
+                          {applicantFormik.errors &&
+                            applicantFormik.errors?.rental_units &&
+                            applicantFormik.touched &&
+                            applicantFormik.touched?.rental_units &&
+                            applicantFormik.values.rental_units === "" ? (
+                            <div style={{ color: "red" }}>
+                              {applicantFormik.errors.rental_units}
+                            </div>
+                          ) : null}
+                        </Dropdown>
+                      </FormGroup>
                     </FormGroup>
-                  </FormGroup>
                   )}
                 </div>
               )}

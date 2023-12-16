@@ -38,7 +38,7 @@ const StaffWorkTable = () => {
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
- 
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -130,10 +130,10 @@ const StaffWorkTable = () => {
   // };
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
-      return paginatedData;
+      return workData;
     }
 
-    return paginatedData.filter((rental) => {
+    return workData.filter((rental) => {
       const lowerCaseQuery = searchQuery.toLowerCase();
       const isUnitAddress = (rental.unit_no + " " + rental.rental_adress)
         .toLowerCase()
@@ -147,6 +147,12 @@ const StaffWorkTable = () => {
         rental.priority.toLowerCase().includes(lowerCaseQuery)
       );
     });
+  };
+
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterRentalsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
   };
 
   return (
@@ -206,7 +212,7 @@ const StaffWorkTable = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filterRentalsBySearch().map((vendor) => (
+                    {filterTenantsBySearchAndPage().map((vendor) => (
                       <tr
                         key={vendor._id}
                         onClick={() => navigateToDetails(vendor.workorder_id)}

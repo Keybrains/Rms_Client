@@ -57,7 +57,7 @@ const RentRoll = () => {
     //console.log(tenantId, "Tenant Id");
     //console.log(entryIndex, "Entry Index");
   };
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -73,10 +73,10 @@ const RentRoll = () => {
     try {
       const response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
-  
+
       // Reverse the data order
       const reversedData = data.slice().reverse();
-  
+
       setLoader(false);
       setTenantsData(reversedData);
       setTotalPages(Math.ceil(reversedData.length / pageItem));
@@ -84,7 +84,7 @@ const RentRoll = () => {
       console.error("Error fetching data:", error);
     }
   };
-  
+
 
   React.useEffect(() => {
     fetchData();
@@ -134,12 +134,12 @@ const RentRoll = () => {
   //     });
   //   });
   // };
- const filterRentRollsBySearch = () => {
+  const filterRentRollsBySearch = () => {
     if (searchQuery === undefined) {
-      return paginatedData;
+      return tenantsData;
     }
 
-    return paginatedData.filter((tenant) => {
+    return tenantsData.filter((tenant) => {
       if (!tenant.entries) {
         return false; // If entries is undefined, exclude this tenant
       }
@@ -153,6 +153,12 @@ const RentRoll = () => {
         (name.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     });
+  };
+
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterRentRollsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
   };
 
   const deleteTenant = (tenantId, entryIndex) => {
@@ -197,7 +203,7 @@ const RentRoll = () => {
     const today = new Date();
     const start = new Date(startDate);
     const end = new Date(endDate);
-  
+
     if (today >= start && today <= end) {
       return 'TENANT';
     } else if (today < start) {
@@ -210,7 +216,7 @@ const RentRoll = () => {
   };
 
 
-  
+
   return (
     <>
       <Header />
@@ -225,7 +231,7 @@ const RentRoll = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/admin/RentRollLeaseing")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -284,11 +290,11 @@ const RentRoll = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filterRentRollsBySearch()?.map((tenant) => (
-                      
-                      
+                    {filterTenantsBySearchAndPage()?.map((tenant) => (
+
+
                       <>
-                      {console.log(tenant,'ttenenenen')}
+                        {console.log(tenant, 'ttenenenen')}
                         <tr
                           key={tenant._id}
                           onClick={() =>
@@ -302,14 +308,14 @@ const RentRoll = () => {
                           <td>
                             {tenant.tenant_firstName} {tenant.tenant_lastName}
                           </td>
-                           <td>{tenant.entries.rental_adress} {tenant.entries.rental_units  ? " - " + tenant.entries.rental_units: null} </td>
+                          <td>{tenant.entries.rental_adress} {tenant.entries.rental_units ? " - " + tenant.entries.rental_units : null} </td>
                           <td>{tenant.entries.lease_type}</td>
                           <td>
-                          {getStatus(tenant.entries.start_date, tenant.entries.end_date)}
+                            {getStatus(tenant.entries.start_date, tenant.entries.end_date)}
                           </td>
                           <td>{tenant.entries.start_date} to {tenant.entries.end_date}</td>
                           <td>{tenant.entries.amount}</td>
-                          <td>{tenant.entries.createdAt } </td>
+                          <td>{tenant.entries.createdAt} </td>
                           <td>{tenant.entries.updateAt ? tenant.entries.updateAt : '-'} </td>
 
                           {/* <td>{tenant.entries.entryIndex}</td>

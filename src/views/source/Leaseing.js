@@ -297,7 +297,7 @@ const Leaseing = () => {
     // localStorage.setItem("leasetype", leasetype);
   };
 
-  const handleUnitSelect = (selectedUnit,unitId) => {
+  const handleUnitSelect = (selectedUnit, unitId) => {
     setSelectedUnit(selectedUnit);
     entrySchema.values.rental_units = selectedUnit;
     console.log(selectedUnit, "selectedUnit")
@@ -791,7 +791,7 @@ const Leaseing = () => {
         console.error("Network error:", error);
       });
   }, []);
-  console.log(propertyData,'propertyData')
+  console.log(propertyData, 'propertyData')
   const fetchingAccountNames = async () => {
     // console.log("fetching account names");
     fetch(`${baseUrl}/addaccount/find_accountname`)
@@ -910,7 +910,7 @@ const Leaseing = () => {
         tenant_email: tenantInfo.tenant_email,
         tenant_password: tenantInfo.tenant_password,
         alternate_email: tenantInfo.alternate_email,
-        tenant_residentStatus:false,
+        tenant_residentStatus: false,
 
         // personal information
         birth_date: tenantInfo.birth_date,
@@ -1236,10 +1236,10 @@ const Leaseing = () => {
   let entrySchema = useFormik({
     initialValues: {
       rental_adress: "",
-      tenant_residentStatus:false,
+      tenant_residentStatus: false,
       lease_type: "",
       rental_units: "",
-      unit_id:"",
+      unit_id: "",
       start_date: "",
       end_date: "",
       leasing_agent: "",
@@ -1624,8 +1624,8 @@ const Leaseing = () => {
   console.log(entrySchema.values, "entrySchema");
   console.log(ownerData, "ownerData");
   console.log(unitData, "unitData");
-  console.log(ownerData,'ownerData')
-  console.log(entrySchema.values,'entryushasfdnjisdgvfhjkhgvbjn')
+  console.log(ownerData, 'ownerData')
+  console.log(entrySchema.values, 'entryushasfdnjisdgvfhjkhgvbjn')
   const handleSubmit = async (values) => {
     // console.log(file, "values");
     // const arrayOfNames = Array.isArray(file)
@@ -1832,7 +1832,7 @@ const Leaseing = () => {
         });
 
         if (filteredData) {
-        
+
           const putObject = {
             entries: tenantObject.entries,
           };
@@ -1842,11 +1842,11 @@ const Leaseing = () => {
           const res = await axios.put(
             `${baseUrl}/tenant/tenant/${tenantId}`,
             putObject
-            );
-            if (res.data.statusCode === 200) {
-              console.log(res.data.data, "clgtttt");
-              swal("", res.data.message, "success");
-              console.log(entrySchema.values,'hello')
+          );
+          if (res.data.statusCode === 200) {
+            console.log(res.data.data, "clgtttt");
+            swal("", res.data.message, "success");
+            console.log(entrySchema.values, 'hello')
             const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
             // debugger;
@@ -1888,7 +1888,7 @@ const Leaseing = () => {
             } else {
               await postCharge("", "", tenantId);
               await postDeposit(
-                "","",
+                "", "",
                 tenantId,
                 entrySchema.values.Security_amount
               );
@@ -1919,67 +1919,67 @@ const Leaseing = () => {
               tenantObject
             );
             if (res.data.statusCode === 200) {
-              console.log(res.data.data,'after post');
+              console.log(res.data.data, 'after post');
 
               // debugger
               const delay = (ms) =>
-              new Promise((resolve) => setTimeout(resolve, ms));
+                new Promise((resolve) => setTimeout(resolve, ms));
 
-            // debugger;
-            if (entrySchema.values.unit_id) {
-              await postCharge(
-                res.data.data.rental_units,
-                res.data.data.unit_id,
-                res.data.data._id
-              );
-
-              await postDeposit(
-                res.data.data.rental_units,
-                res.data.data.unit_id,
-                res.data.data._id,
-                res.data.data.Security_amount
-              );
-
-              for (const item of recurringData) {
-                await postRecOneCharge(
+              // debugger;
+              if (entrySchema.values.unit_id) {
+                await postCharge(
                   res.data.data.rental_units,
                   res.data.data.unit_id,
-                   res.data.data._id,
-                  item,
-                  "Recurring"
+                  res.data.data._id
                 );
-                await delay(1000); // Delay for 3 seconds
-              }
 
-              for (const item of oneTimeData) {
-                await postRecOneCharge(
+                await postDeposit(
                   res.data.data.rental_units,
                   res.data.data.unit_id,
-                   res.data.data._id,
-                  item,
-                  "OneTime"
+                  res.data.data._id,
+                  res.data.data.Security_amount
                 );
-                await delay(1000); // Delay for 3 seconds
-              }
-            } else {
-              await postCharge("", "",  res.data.data._id);
-              await postDeposit(
-                "","",
-                res.data.data._id,
-                res.data.data.Security_amount
-              );
 
-              for (const item of recurringData) {
-                await postRecOneCharge("", "",  res.data.data._id, item, "Recurring");
-                await delay(1000); // Delay for 3 seconds
-              }
+                for (const item of recurringData) {
+                  await postRecOneCharge(
+                    res.data.data.rental_units,
+                    res.data.data.unit_id,
+                    res.data.data._id,
+                    item,
+                    "Recurring"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
+
+                for (const item of oneTimeData) {
+                  await postRecOneCharge(
+                    res.data.data.rental_units,
+                    res.data.data.unit_id,
+                    res.data.data._id,
+                    item,
+                    "OneTime"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
+              } else {
+                await postCharge("", "", res.data.data._id);
+                await postDeposit(
+                  "", "",
+                  res.data.data._id,
+                  res.data.data.Security_amount
+                );
+
+                for (const item of recurringData) {
+                  await postRecOneCharge("", "", res.data.data._id, item, "Recurring");
+                  await delay(1000); // Delay for 3 seconds
+                }
 
 
-              for (const item of oneTimeData) {
-                await postRecOneCharge("", "",  res.data.data._id, item, "OneTime");
-                await delay(1000); // Delay for 3 seconds
+                for (const item of oneTimeData) {
+                  await postRecOneCharge("", "", res.data.data._id, item, "OneTime");
+                  await delay(1000); // Delay for 3 seconds
+                }
               }
-            }
               swal("", res.data.message, "success");
               navigate("/admin/TenantsTable");
             } else {
@@ -2029,8 +2029,8 @@ const Leaseing = () => {
           paymentAndCharges: [
             {
               type: "Charge",
-              charge_type: "Rent",
-              //account: entrySchema.values.account,
+              charge_type: "Last Month's Rent",
+              account: "Last Month's Rent",
               amount: parseFloat(entrySchema.values.amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: entrySchema.values.rent_cycle,
@@ -2060,7 +2060,7 @@ const Leaseing = () => {
         console.log(err);
       });
   };
-  const postDeposit = async (unit, unitId, tenantId, Security_amount) =>{
+  const postDeposit = async (unit, unitId, tenantId, Security_amount) => {
     const chargeObject = {
       properties: {
         rental_adress: entrySchema.values.rental_adress,
@@ -2074,7 +2074,7 @@ const Leaseing = () => {
             {
               type: "Charge",
               charge_type: "Security Deposit",
-              account: "Security Deposit",
+              account: "Security Deposit Liability",
               amount: parseFloat(Security_amount),
               isPaid: false,
               rental_adress: entrySchema.values.rental_adress,
@@ -2137,7 +2137,7 @@ const Leaseing = () => {
                   : item?.onetime_amount || "",
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",
-              isPaid:false,
+              isPaid: false,
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
               memo:
@@ -2413,10 +2413,10 @@ const Leaseing = () => {
                               ))}
                             </DropdownMenu>
                             {entrySchema.errors &&
-                            entrySchema.errors?.rental_adress &&
-                            entrySchema.touched &&
-                            entrySchema.touched?.rental_adress &&
-                            entrySchema.values.rental_adress === "" ? (
+                              entrySchema.errors?.rental_adress &&
+                              entrySchema.touched &&
+                              entrySchema.touched?.rental_adress &&
+                              entrySchema.values.rental_adress === "" ? (
                               <div div style={{ color: "red" }}>
                                 {entrySchema.errors.rental_adress}
                               </div>
@@ -2425,52 +2425,52 @@ const Leaseing = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                     <Row>
-                    {selectedPropertyType && unitData && unitData[0] && unitData[0].rental_units && ( 
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-unit"
-                          style={{ marginLeft: "15px" }}
-                        >
-                          Unit *
-                        </label>
-                        <FormGroup style={{ marginLeft: "15px" }}>
-                          <Dropdown isOpen={unitDropdownOpen} toggle={toggle11}>
-                            <DropdownToggle caret>
-                              {selectedUnit ? selectedUnit : "Select Unit"}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              {unitData.length > 0 ? (
-                                unitData.map((unit) => (
-                                  <DropdownItem
-                                    key={unit._id}
-                                    onClick={() =>
-                                      handleUnitSelect(unit.rental_units,unit._id)
-                                    }
-                                  >
-                                    {unit.rental_units}
+                    <Row>
+                      {selectedPropertyType && unitData && unitData[0] && unitData[0].rental_units && (
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-unit"
+                            style={{ marginLeft: "15px" }}
+                          >
+                            Unit *
+                          </label>
+                          <FormGroup style={{ marginLeft: "15px" }}>
+                            <Dropdown isOpen={unitDropdownOpen} toggle={toggle11}>
+                              <DropdownToggle caret>
+                                {selectedUnit ? selectedUnit : "Select Unit"}
+                              </DropdownToggle>
+                              <DropdownMenu>
+                                {unitData.length > 0 ? (
+                                  unitData.map((unit) => (
+                                    <DropdownItem
+                                      key={unit._id}
+                                      onClick={() =>
+                                        handleUnitSelect(unit.rental_units, unit._id)
+                                      }
+                                    >
+                                      {unit.rental_units}
+                                    </DropdownItem>
+                                  ))
+                                ) : (
+                                  <DropdownItem disabled>
+                                    No units available
                                   </DropdownItem>
-                                ))
-                              ) : (
-                                <DropdownItem disabled>
-                                  No units available
-                                </DropdownItem>
-                              )}
-                            </DropdownMenu>
-                            {entrySchema.errors &&
-                            entrySchema.errors?.rental_units &&
-                            entrySchema.touched &&
-                            entrySchema.touched?.rental_units &&
-                            entrySchema.values.rental_units === "" ? (
-                              <div style={{ color: "red" }}>
-                                {entrySchema.errors.rental_units}
-                              </div>
-                            ) : null}
-                          </Dropdown>
+                                )}
+                              </DropdownMenu>
+                              {entrySchema.errors &&
+                                entrySchema.errors?.rental_units &&
+                                entrySchema.touched &&
+                                entrySchema.touched?.rental_units &&
+                                entrySchema.values.rental_units === "" ? (
+                                <div style={{ color: "red" }}>
+                                  {entrySchema.errors.rental_units}
+                                </div>
+                              ) : null}
+                            </Dropdown>
+                          </FormGroup>
                         </FormGroup>
-                      </FormGroup>
-                    )}
+                      )}
                     </Row>
                     <Row>
                       <Col lg="3">
@@ -2513,10 +2513,10 @@ const Leaseing = () => {
                               </DropdownItem>
                             </DropdownMenu>
                             {entrySchema.errors &&
-                            entrySchema.errors?.lease_type &&
-                            entrySchema.touched &&
-                            entrySchema.touched?.lease_type &&
-                            entrySchema.values.lease_type === "" ? (
+                              entrySchema.errors?.lease_type &&
+                              entrySchema.touched &&
+                              entrySchema.touched?.lease_type &&
+                              entrySchema.values.lease_type === "" ? (
                               <div style={{ color: "red" }}>
                                 {entrySchema.errors.lease_type}
                               </div>
@@ -2801,13 +2801,13 @@ const Leaseing = () => {
                                                 style={{
                                                   width: "100%",
                                                   borderCollapse: "collapse",
-                                                  
+
                                                 }}
                                               >
                                                 <thead>
                                                   <tr>
-                                                    <th style={{padding:"15px"}}>Tenant Name</th>
-                                                    <th style={{padding:"15px"}}>Select</th>
+                                                    <th style={{ padding: "15px" }}>Tenant Name</th>
+                                                    <th style={{ padding: "15px" }}>Select</th>
                                                   </tr>
                                                 </thead>
                                                 <tbody>
@@ -2829,7 +2829,7 @@ const Leaseing = () => {
                                                               "1px solid #ddd",
                                                           }}
                                                         >
-                                                          <td style={{paddingLeft:"15px",paddingTop:"15px"}}>
+                                                          <td style={{ paddingLeft: "15px", paddingTop: "15px" }}>
                                                             <pre>
                                                               {
                                                                 tenant.tenant_firstName
@@ -2840,7 +2840,7 @@ const Leaseing = () => {
                                                               {`(${tenant.tenant_mobileNumber})`}
                                                             </pre>
                                                           </td>
-                                                          <td style={{paddingLeft:"15px",paddingTop:"15px"}}>
+                                                          <td style={{ paddingLeft: "15px", paddingTop: "15px" }}>
                                                             {/* <FormControlLabel
                                                           control={  */}
                                                             <Checkbox
@@ -2888,36 +2888,36 @@ const Leaseing = () => {
                                                                 //   ""
                                                                 //   }`;
                                                                 const tenantInfo1 =
-                                                                  {
-                                                                    tenant_firstName:
-                                                                      tenant.tenant_firstName,
-                                                                    tenant_lastName:
-                                                                      tenant.tenant_lastName,
-                                                                    tenant_mobileNumber:
-                                                                      tenant.tenant_mobileNumber,
-                                                                    tenant_email:
-                                                                      tenant.tenant_email,
-                                                                    textpayer_id:
-                                                                      tenant.textpayer_id,
-                                                                    birth_date:
-                                                                      tenant.birth_date,
-                                                                    comments:
-                                                                      tenant.comments,
-                                                                    contact_name:
-                                                                      tenant.contact_name,
-                                                                    relationship_tenants:
-                                                                      tenant.relationship_tenants,
-                                                                    email:
-                                                                      tenant.email,
-                                                                    emergency_PhoneNumber:
-                                                                      tenant.emergency_PhoneNumber,
-                                                                    tenant_password:
-                                                                      tenant.tenant_password,
-                                                                    tenant_workNumber:
-                                                                      tenant.tenant_workNumber,
-                                                                    alternate_email:
-                                                                      tenant.alternate_email,
-                                                                  };
+                                                                {
+                                                                  tenant_firstName:
+                                                                    tenant.tenant_firstName,
+                                                                  tenant_lastName:
+                                                                    tenant.tenant_lastName,
+                                                                  tenant_mobileNumber:
+                                                                    tenant.tenant_mobileNumber,
+                                                                  tenant_email:
+                                                                    tenant.tenant_email,
+                                                                  textpayer_id:
+                                                                    tenant.textpayer_id,
+                                                                  birth_date:
+                                                                    tenant.birth_date,
+                                                                  comments:
+                                                                    tenant.comments,
+                                                                  contact_name:
+                                                                    tenant.contact_name,
+                                                                  relationship_tenants:
+                                                                    tenant.relationship_tenants,
+                                                                  email:
+                                                                    tenant.email,
+                                                                  emergency_PhoneNumber:
+                                                                    tenant.emergency_PhoneNumber,
+                                                                  tenant_password:
+                                                                    tenant.tenant_password,
+                                                                  tenant_workNumber:
+                                                                    tenant.tenant_workNumber,
+                                                                  alternate_email:
+                                                                    tenant.alternate_email,
+                                                                };
                                                                 handleCheckboxChange(
                                                                   event,
                                                                   tenantInfo1,
@@ -2967,10 +2967,10 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_firstName"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
+                                              // style={{
+                                              //   fontFamily: "monospace",
+                                              //   fontSize: "14px",
+                                              // }}
                                               >
                                                 First Name *
                                               </label>
@@ -2999,8 +2999,8 @@ const Leaseing = () => {
                                               />
                                               {tenantsSchema.touched
                                                 .tenant_firstName &&
-                                              tenantsSchema.errors
-                                                .tenant_firstName ? (
+                                                tenantsSchema.errors
+                                                  .tenant_firstName ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsSchema.errors
@@ -3019,10 +3019,10 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_lastName"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
+                                              // style={{
+                                              //   fontFamily: "monospace",
+                                              //   fontSize: "14px",
+                                              // }}
                                               >
                                                 Last Name *
                                               </label>
@@ -3051,8 +3051,8 @@ const Leaseing = () => {
                                               />
                                               {tenantsSchema.touched
                                                 .tenant_lastName &&
-                                              tenantsSchema.errors
-                                                .tenant_lastName ? (
+                                                tenantsSchema.errors
+                                                  .tenant_lastName ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsSchema.errors
@@ -3117,8 +3117,8 @@ const Leaseing = () => {
                                               />
                                               {tenantsSchema.touched
                                                 .tenant_mobileNumber &&
-                                              tenantsSchema.errors
-                                                .tenant_mobileNumber ? (
+                                                tenantsSchema.errors
+                                                  .tenant_mobileNumber ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsSchema.errors
@@ -3246,10 +3246,10 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_email"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
+                                              // style={{
+                                              //   fontFamily: "monospace",
+                                              //   fontSize: "14px",
+                                              // }}
                                               >
                                                 Email*
                                               </label>
@@ -3278,8 +3278,8 @@ const Leaseing = () => {
                                               />
                                               {tenantsSchema.touched
                                                 .tenant_email &&
-                                              tenantsSchema.errors
-                                                .tenant_email ? (
+                                                tenantsSchema.errors
+                                                  .tenant_email ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsSchema.errors
@@ -3391,10 +3391,10 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_password"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
+                                              // style={{
+                                              //   fontFamily: "monospace",
+                                              //   fontSize: "14px",
+                                              // }}
                                               >
                                                 Password*
                                               </label>
@@ -3450,11 +3450,11 @@ const Leaseing = () => {
                                                 </div>
                                               ) : null} */}
                                               {tenantsSchema.errors &&
-                                              tenantsSchema.errors
-                                                ?.tenant_password &&
-                                              tenantsSchema.touched &&
-                                              tenantsSchema.touched
-                                                ?.tenant_password ? (
+                                                tenantsSchema.errors
+                                                  ?.tenant_password &&
+                                                tenantsSchema.touched &&
+                                                tenantsSchema.touched
+                                                  ?.tenant_password ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsSchema.errors
@@ -3939,13 +3939,13 @@ const Leaseing = () => {
                                               }
                                             />
                                             {cosignerSchema.errors &&
-                                            cosignerSchema.errors
-                                              ?.cosigner_firstName &&
-                                            cosignerSchema.touched &&
-                                            cosignerSchema.touched
-                                              ?.cosigner_firstName &&
-                                            cosignerSchema.values
-                                              .cosigner_firstName === "" ? (
+                                              cosignerSchema.errors
+                                                ?.cosigner_firstName &&
+                                              cosignerSchema.touched &&
+                                              cosignerSchema.touched
+                                                ?.cosigner_firstName &&
+                                              cosignerSchema.values
+                                                .cosigner_firstName === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerSchema.errors
@@ -3977,13 +3977,13 @@ const Leaseing = () => {
                                               }
                                             />
                                             {cosignerSchema.errors &&
-                                            cosignerSchema.errors
-                                              ?.cosigner_lastName &&
-                                            cosignerSchema.touched &&
-                                            cosignerSchema.touched
-                                              ?.cosigner_lastName &&
-                                            cosignerSchema.values
-                                              .cosigner_lastName === "" ? (
+                                              cosignerSchema.errors
+                                                ?.cosigner_lastName &&
+                                              cosignerSchema.touched &&
+                                              cosignerSchema.touched
+                                                ?.cosigner_lastName &&
+                                              cosignerSchema.values
+                                                .cosigner_lastName === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerSchema.errors
@@ -4044,13 +4044,13 @@ const Leaseing = () => {
                                               }}
                                             />
                                             {cosignerSchema.errors &&
-                                            cosignerSchema.errors
-                                              .cosigner_mobileNumber &&
-                                            cosignerSchema.touched &&
-                                            cosignerSchema.touched
-                                              .cosigner_mobileNumber &&
-                                            cosignerSchema.values
-                                              .cosigner_mobileNumber === "" ? (
+                                              cosignerSchema.errors
+                                                .cosigner_mobileNumber &&
+                                              cosignerSchema.touched &&
+                                              cosignerSchema.touched
+                                                .cosigner_mobileNumber &&
+                                              cosignerSchema.values
+                                                .cosigner_mobileNumber === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerSchema.errors
@@ -4194,13 +4194,13 @@ const Leaseing = () => {
                                               }}
                                             />
                                             {cosignerSchema.errors &&
-                                            cosignerSchema.errors
-                                              .cosigner_email &&
-                                            cosignerSchema.touched &&
-                                            cosignerSchema.touched
-                                              .cosigner_email &&
-                                            cosignerSchema.values
-                                              .cosigner_email === "" ? (
+                                              cosignerSchema.errors
+                                                .cosigner_email &&
+                                              cosignerSchema.touched &&
+                                              cosignerSchema.touched
+                                                .cosigner_email &&
+                                              cosignerSchema.values
+                                                .cosigner_email === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerSchema.errors
@@ -4530,7 +4530,7 @@ const Leaseing = () => {
                         </Dialog>
                         <div>
                           {selectedTenantData &&
-                          Object.keys(selectedTenantData).length > 0 ? (
+                            Object.keys(selectedTenantData).length > 0 ? (
                             <>
                               <Row
                                 className="w-100 my-3"
@@ -4574,14 +4574,14 @@ const Leaseing = () => {
                                 <Col>{selectedTenantData.mobileNumber}</Col>
                                 <Col>
                                   <EditIcon
-                                      onClick={() => {
-                                        setShowTenantTable(false);
-                                        setOpenTenantsDialog(true); 
-                                        setSelectedOption('Tenant')
-                                        setAlignment('Tenant');
+                                    onClick={() => {
+                                      setShowTenantTable(false);
+                                      setOpenTenantsDialog(true);
+                                      setSelectedOption('Tenant')
+                                      setAlignment('Tenant');
 
-                                      }}
-                                    />
+                                    }}
+                                  />
 
                                   <DeleteIcon
                                     onClick={() => {
@@ -4640,12 +4640,12 @@ const Leaseing = () => {
                                   <Col>{cosignerData.lastName}</Col>
                                   <Col>{cosignerData.mobileNumber}</Col>
                                   <Col>
-                                  <EditIcon
-                                        onClick={setOpenTenantsDialog}
-                                      />
-                                      <DeleteIcon
-                                        onClick={handleCosignerDelete}
-                                      />
+                                    <EditIcon
+                                      onClick={setOpenTenantsDialog}
+                                    />
+                                    <DeleteIcon
+                                      onClick={handleCosignerDelete}
+                                    />
                                   </Col>
                                 </Row>
                               </>
@@ -4749,10 +4749,10 @@ const Leaseing = () => {
                                     }}
                                   />
                                   {entrySchema.errors &&
-                                  entrySchema.errors.amount &&
-                                  entrySchema.touched &&
-                                  entrySchema.touched.amount &&
-                                  entrySchema.values.amount === "" ? (
+                                    entrySchema.errors.amount &&
+                                    entrySchema.touched &&
+                                    entrySchema.touched.amount &&
+                                    entrySchema.values.amount === "" ? (
                                     <div style={{ color: "red" }}>
                                       {entrySchema.errors.amount}
                                     </div>
@@ -5125,7 +5125,7 @@ const Leaseing = () => {
                                         {recurringChargeSchema.values
                                           .recuring_account
                                           ? recurringChargeSchema.values
-                                              .recuring_account
+                                            .recuring_account
                                           : "Select"}
                                       </DropdownToggle>
                                       <DropdownMenu
@@ -5174,13 +5174,13 @@ const Leaseing = () => {
                                         </DropdownItem>
                                       </DropdownMenu>
                                       {recurringChargeSchema.errors &&
-                                      recurringChargeSchema.errors
-                                        .recuring_account &&
-                                      recurringChargeSchema.touched &&
-                                      recurringChargeSchema.touched
-                                        .recuring_account &&
-                                      recurringChargeSchema.values
-                                        .recuring_account === "" ? (
+                                        recurringChargeSchema.errors
+                                          .recuring_account &&
+                                        recurringChargeSchema.touched &&
+                                        recurringChargeSchema.touched
+                                          .recuring_account &&
+                                        recurringChargeSchema.values
+                                          .recuring_account === "" ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             recurringChargeSchema.errors
@@ -5257,13 +5257,13 @@ const Leaseing = () => {
                                       }}
                                     />
                                     {recurringChargeSchema.errors &&
-                                    recurringChargeSchema.errors
-                                      .recuring_amount &&
-                                    recurringChargeSchema.touched &&
-                                    recurringChargeSchema.touched
-                                      .recuring_amount &&
-                                    recurringChargeSchema.values
-                                      .recuring_amount === "" ? (
+                                      recurringChargeSchema.errors
+                                        .recuring_amount &&
+                                      recurringChargeSchema.touched &&
+                                      recurringChargeSchema.touched
+                                        .recuring_amount &&
+                                      recurringChargeSchema.values
+                                        .recuring_amount === "" ? (
                                       <div style={{ color: "red" }}>
                                         {
                                           recurringChargeSchema.errors
@@ -5365,7 +5365,7 @@ const Leaseing = () => {
                                         {oneTimeChargeSchema.values
                                           .onetime_account
                                           ? oneTimeChargeSchema.values
-                                              .onetime_account
+                                            .onetime_account
                                           : "Select"}
                                       </DropdownToggle>
                                       <DropdownMenu
@@ -5411,13 +5411,13 @@ const Leaseing = () => {
                                         </DropdownItem>
                                       </DropdownMenu>
                                       {oneTimeChargeSchema.errors &&
-                                      oneTimeChargeSchema.errors
-                                        .onetime_account &&
-                                      oneTimeChargeSchema.touched &&
-                                      oneTimeChargeSchema.touched
-                                        .onetime_account &&
-                                      oneTimeChargeSchema.values
-                                        .onetime_account === "" ? (
+                                        oneTimeChargeSchema.errors
+                                          .onetime_account &&
+                                        oneTimeChargeSchema.touched &&
+                                        oneTimeChargeSchema.touched
+                                          .onetime_account &&
+                                        oneTimeChargeSchema.values
+                                          .onetime_account === "" ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             oneTimeChargeSchema.errors
@@ -5491,12 +5491,12 @@ const Leaseing = () => {
                                       }}
                                     />
                                     {oneTimeChargeSchema.errors &&
-                                    oneTimeChargeSchema.errors.onetime_amount &&
-                                    oneTimeChargeSchema.touched &&
-                                    oneTimeChargeSchema.touched
-                                      .onetime_amount &&
-                                    oneTimeChargeSchema.values
-                                      .onetime_amount === "" ? (
+                                      oneTimeChargeSchema.errors.onetime_amount &&
+                                      oneTimeChargeSchema.touched &&
+                                      oneTimeChargeSchema.touched
+                                        .onetime_amount &&
+                                      oneTimeChargeSchema.values
+                                        .onetime_amount === "" ? (
                                       <div style={{ color: "red" }}>
                                         {
                                           oneTimeChargeSchema.errors
@@ -5735,8 +5735,8 @@ const Leaseing = () => {
                         onChange={(e) => {
                           fileData(e.target.files);
                         }}
-                        // onChange={rentalsFormik.handleChange}
-                        // value={entrySchema.values.upload_file[0]}
+                      // onChange={rentalsFormik.handleChange}
+                      // value={entrySchema.values.upload_file[0]}
                       />
                       <label for="upload_file" className="btn">
                         Upload
@@ -5863,24 +5863,24 @@ const Leaseing = () => {
                     </Col>
 
                     <FormGroup>
-                    
+
                       <FormControlLabel
-                      
+
                         control={
                           <Switch
                             color="primary"
-                            
+
                             value={entrySchema.values.tenant_residentStatus}
                             onChange={(e) => {
                               entrySchema.setFieldValue(
                                 "tenant_residentStatus",
                                 e.target.checked
                               );
-                              console.log( entrySchema.setFieldValue(
+                              console.log(entrySchema.setFieldValue(
                                 "tenant_residentStatus",
-                                e.target.checked),"setFieldValue");
-                              console.log(entrySchema.values.tenant_residentStatus,"value");
-                              console.log(e.target.checked,"e.target.checked");
+                                e.target.checked), "setFieldValue");
+                              console.log(entrySchema.values.tenant_residentStatus, "value");
+                              console.log(e.target.checked, "e.target.checked");
                             }}
                           />
                         }
@@ -5889,50 +5889,50 @@ const Leaseing = () => {
                       />
                     </FormGroup>
                   </Row>
-                 
-                    <Row>
-                      <Col md="12">
+
+                  <Row>
+                    <Col md="12">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Select Payment Method
+                        </label>
                         <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
+                          <Dropdown
+                            isOpen={paymentOptionDropdawnOpen}
+                            toggle={paymentMethodtoggle}
                           >
-                            Select Payment Method
-                          </label>
-                          <FormGroup>
-                            <Dropdown
-                              isOpen={paymentOptionDropdawnOpen}
-                              toggle={paymentMethodtoggle}
+                            <DropdownToggle caret style={{ width: "100%" }}>
+                              {selectPaymentMethodDropdawn
+                                ? selectPaymentMethodDropdawn
+                                : "Select"}
+                            </DropdownToggle>
+                            <DropdownMenu
+                              style={{ width: "100%" }}
+                              name="paymentMethod"
+                              onBlur={entrySchema.handleBlur}
+                              onChange={(e) => entrySchema.handleChange(e)}
+                              value={entrySchema.values.paymentMethod}
                             >
-                              <DropdownToggle caret style={{ width: "100%" }}>
-                                {selectPaymentMethodDropdawn
-                                  ? selectPaymentMethodDropdawn
-                                  : "Select"}
-                              </DropdownToggle>
-                              <DropdownMenu
-                                style={{ width: "100%" }}
-                                name="paymentMethod"
-                                onBlur={entrySchema.handleBlur}
-                                onChange={(e) => entrySchema.handleChange(e)}
-                                value={entrySchema.values.paymentMethod}
-                              >
-                                {selectPaymentMethod.map((option) => (
-                                  <DropdownItem
-                                    key={option}
-                                    onClick={() =>
-                                      handleselectedPaymetMethod(option)
-                                    }
-                                  >
-                                    {option}
-                                  </DropdownItem>
-                                ))}
-                              </DropdownMenu>
-                            </Dropdown>
-                          </FormGroup>
+                              {selectPaymentMethod.map((option) => (
+                                <DropdownItem
+                                  key={option}
+                                  onClick={() =>
+                                    handleselectedPaymetMethod(option)
+                                  }
+                                >
+                                  {option}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
+                          </Dropdown>
                         </FormGroup>
-                      </Col>
-                    </Row>
-                
+                      </FormGroup>
+                    </Col>
+                  </Row>
+
                   {/* <Button
                   color="primary"
                  //  href="#rms"

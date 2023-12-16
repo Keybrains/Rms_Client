@@ -95,10 +95,10 @@ const VendorWorkTable = () => {
 
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
-      return paginatedData;
+      return workData;
     }
 
-    return paginatedData.filter((rental) => {
+    return workData.filter((rental) => {
       const lowerCaseQuery = searchQuery.toLowerCase();
       const isUnitAddress = (rental.unit_no + " " + rental.rental_adress)
         .toLowerCase()
@@ -112,6 +112,12 @@ const VendorWorkTable = () => {
         rental.priority.toLowerCase().includes(lowerCaseQuery)
       );
     });
+  };
+
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterRentalsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
   };
 
   return (
@@ -171,7 +177,7 @@ const VendorWorkTable = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filterRentalsBySearch().map((vendor) => (
+                    {filterTenantsBySearchAndPage().map((vendor) => (
                       <tr
                         key={vendor._id}
                         onClick={() => navigateToDetails(vendor.workorder_id)}

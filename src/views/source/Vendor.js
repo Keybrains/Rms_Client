@@ -49,7 +49,7 @@ const Vendor = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -122,15 +122,41 @@ const Vendor = () => {
 
   const filterTenantsBySearch = () => {
     if (searchQuery === undefined) {
-      return paginatedData;
+      return vendorData;
     }
+    return vendorData.filter((tenant) => {
+      if (!tenant.entries) {
+        return false; // If entries is undefined, exclude this tenant
+      }
 
-    return paginatedData.filter((vendor) => {
-      const isVendorMatch = vendor.vendor_name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      return isVendorMatch;
+      const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
+
+      return (
+        (tenant.entries.rental_adress &&
+          tenant.entries.rental_adress
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (tenant.tenant_firstName &&
+          tenant.tenant_firstName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (tenant.entries.lease_type &&
+          tenant.entries.lease_type
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (tenant.tenant_lastName &&
+          tenant.tenant_lastName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     });
+  };
+
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterTenantsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
   };
 
   return (
@@ -147,7 +173,7 @@ const Vendor = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/admin/addvendor")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -202,8 +228,7 @@ const Vendor = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {console.log(filterTenantsBySearch(),'filterTenantsBySearch')}
-                    {filterTenantsBySearch().map((vendor) => (
+                    {filterTenantsBySearchAndPage().map((vendor) => (
                       <tr key={vendor._id}>
                         <td>{vendor.vendor_name}</td>
                         <td>{vendor.vendor_phoneNumber}</td>

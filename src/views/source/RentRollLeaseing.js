@@ -426,7 +426,7 @@ const RentRollLeaseing = () => {
         firstName: tenantParts[0],
         lastName: tenantParts[1],
         mobileNumber: tenantParts[2],
-        tenant_password:tenantParts[11],
+        tenant_password: tenantParts[11],
 
         // textpayerid: tenantParts[3],
         // birthdate: tenantParts[4],
@@ -1361,7 +1361,7 @@ const RentRollLeaseing = () => {
   let entrySchema = useFormik({
     initialValues: {
       rental_adress: "",
-      tenant_residentStatus:false,
+      tenant_residentStatus: false,
       lease_type: "",
       rental_units: "",
       unit_id: "",
@@ -2260,8 +2260,8 @@ const RentRollLeaseing = () => {
           paymentAndCharges: [
             {
               type: "Charge",
-              charge_type: "Rent",
-              //account: entrySchema.values.account,
+              charge_type: "Last Month's Rent",
+              account: "Last Month's Rent",
               amount: parseFloat(entrySchema.values.amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: entrySchema.values.rent_cycle,
@@ -2269,7 +2269,7 @@ const RentRollLeaseing = () => {
               date: moment().format("YYYY-MM-DD"),
               memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
-              isPaid:false,
+              isPaid: false,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
                 " " +
@@ -2305,7 +2305,7 @@ const RentRollLeaseing = () => {
             {
               type: "Charge",
               charge_type: "Security Deposit",
-              account: "Security Deposit",
+              account: "Security Deposit Liability",
               amount: parseFloat(Security_amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",
@@ -2313,7 +2313,7 @@ const RentRollLeaseing = () => {
               date: moment().format("YYYY-MM-DD"),
               memo: "Security Deposit",
               tenant_id: tenantId,
-              isPaid:false,
+              isPaid: false,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
                 " " +
@@ -2371,7 +2371,7 @@ const RentRollLeaseing = () => {
               rent_cycle: "",
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
-              isPaid:false,
+              isPaid: false,
               memo:
                 chargeType === "Recurring"
                   ? item?.recuringmemo || ""
@@ -2759,10 +2759,10 @@ const RentRollLeaseing = () => {
                               ))}
                             </DropdownMenu>
                             {entrySchema.errors &&
-                            entrySchema.errors?.rental_adress &&
-                            entrySchema.touched &&
-                            entrySchema.touched?.rental_adress &&
-                            entrySchema.values.rental_adress === "" ? (
+                              entrySchema.errors?.rental_adress &&
+                              entrySchema.touched &&
+                              entrySchema.touched?.rental_adress &&
+                              entrySchema.values.rental_adress === "" ? (
                               <div div style={{ color: "red" }}>
                                 {entrySchema.errors.rental_adress}
                               </div>
@@ -2814,10 +2814,10 @@ const RentRollLeaseing = () => {
                                   )}
                                 </DropdownMenu>
                                 {entrySchema.errors &&
-                                entrySchema.errors?.rental_units &&
-                                entrySchema.touched &&
-                                entrySchema.touched?.rental_units &&
-                                entrySchema.values.rental_units === "" ? (
+                                  entrySchema.errors?.rental_units &&
+                                  entrySchema.touched &&
+                                  entrySchema.touched?.rental_units &&
+                                  entrySchema.values.rental_units === "" ? (
                                   <div style={{ color: "red" }}>
                                     {entrySchema.errors.rental_units}
                                   </div>
@@ -2868,10 +2868,10 @@ const RentRollLeaseing = () => {
                               </DropdownItem>
                             </DropdownMenu>
                             {entrySchema.errors &&
-                            entrySchema.errors?.lease_type &&
-                            entrySchema.touched &&
-                            entrySchema.touched?.lease_type &&
-                            entrySchema.values.lease_type === "" ? (
+                              entrySchema.errors?.lease_type &&
+                              entrySchema.touched &&
+                              entrySchema.touched?.lease_type &&
+                              entrySchema.values.lease_type === "" ? (
                               <div style={{ color: "red" }}>
                                 {entrySchema.errors.lease_type}
                               </div>
@@ -3267,36 +3267,36 @@ const RentRollLeaseing = () => {
                                                                 //   ""
                                                                 //   }`;
                                                                 const tenantInfo1 =
-                                                                  {
-                                                                    tenant_firstName:
-                                                                      tenant.tenant_firstName,
-                                                                    tenant_lastName:
-                                                                      tenant.tenant_lastName,
-                                                                    tenant_mobileNumber:
-                                                                      tenant.tenant_mobileNumber,
-                                                                    tenant_email:
-                                                                      tenant.tenant_email,
-                                                                    textpayer_id:
-                                                                      tenant.textpayer_id,
-                                                                    birth_date:
-                                                                      tenant.birth_date,
-                                                                    comments:
-                                                                      tenant.comments,
-                                                                    contact_name:
-                                                                      tenant.contact_name,
-                                                                    relationship_tenants:
-                                                                      tenant.relationship_tenants,
-                                                                    email:
-                                                                      tenant.email,
-                                                                    emergency_PhoneNumber:
-                                                                      tenant.emergency_PhoneNumber,
-                                                                    tenant_password:
-                                                                      tenant.tenant_password,
-                                                                    tenant_workNumber:
-                                                                      tenant.tenant_workNumber,
-                                                                    alternate_email:
-                                                                      tenant.alternate_email,
-                                                                  };
+                                                                {
+                                                                  tenant_firstName:
+                                                                    tenant.tenant_firstName,
+                                                                  tenant_lastName:
+                                                                    tenant.tenant_lastName,
+                                                                  tenant_mobileNumber:
+                                                                    tenant.tenant_mobileNumber,
+                                                                  tenant_email:
+                                                                    tenant.tenant_email,
+                                                                  textpayer_id:
+                                                                    tenant.textpayer_id,
+                                                                  birth_date:
+                                                                    tenant.birth_date,
+                                                                  comments:
+                                                                    tenant.comments,
+                                                                  contact_name:
+                                                                    tenant.contact_name,
+                                                                  relationship_tenants:
+                                                                    tenant.relationship_tenants,
+                                                                  email:
+                                                                    tenant.email,
+                                                                  emergency_PhoneNumber:
+                                                                    tenant.emergency_PhoneNumber,
+                                                                  tenant_password:
+                                                                    tenant.tenant_password,
+                                                                  tenant_workNumber:
+                                                                    tenant.tenant_workNumber,
+                                                                  alternate_email:
+                                                                    tenant.alternate_email,
+                                                                };
                                                                 handleCheckboxChange(
                                                                   event,
                                                                   tenantInfo1,
@@ -3344,10 +3344,10 @@ const RentRollLeaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_firstName"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
+                                              // style={{
+                                              //   fontFamily: "monospace",
+                                              //   fontSize: "14px",
+                                              // }}
                                               >
                                                 First Name *
                                               </label>
@@ -3376,8 +3376,8 @@ const RentRollLeaseing = () => {
                                               />
                                               {tenantsSchema.touched
                                                 .tenant_firstName &&
-                                              tenantsSchema.errors
-                                                .tenant_firstName ? (
+                                                tenantsSchema.errors
+                                                  .tenant_firstName ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsSchema.errors
@@ -3396,10 +3396,10 @@ const RentRollLeaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_lastName"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
+                                              // style={{
+                                              //   fontFamily: "monospace",
+                                              //   fontSize: "14px",
+                                              // }}
                                               >
                                                 Last Name *
                                               </label>
@@ -3428,8 +3428,8 @@ const RentRollLeaseing = () => {
                                               />
                                               {tenantsSchema.touched
                                                 .tenant_lastName &&
-                                              tenantsSchema.errors
-                                                .tenant_lastName ? (
+                                                tenantsSchema.errors
+                                                  .tenant_lastName ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsSchema.errors
@@ -3457,10 +3457,10 @@ const RentRollLeaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_mobileNumber"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
+                                              // style={{
+                                              //   fontFamily: "monospace",
+                                              //   fontSize: "14px",
+                                              // }}
                                               >
                                                 Phone Number*
                                               </label>
@@ -3499,8 +3499,8 @@ const RentRollLeaseing = () => {
                                               />
                                               {tenantsSchema.touched
                                                 .tenant_mobileNumber &&
-                                              tenantsSchema.errors
-                                                .tenant_mobileNumber ? (
+                                                tenantsSchema.errors
+                                                  .tenant_mobileNumber ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsSchema.errors
@@ -3628,10 +3628,10 @@ const RentRollLeaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_email"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
+                                              // style={{
+                                              //   fontFamily: "monospace",
+                                              //   fontSize: "14px",
+                                              // }}
                                               >
                                                 Email*
                                               </label>
@@ -3660,8 +3660,8 @@ const RentRollLeaseing = () => {
                                               />
                                               {tenantsSchema.touched
                                                 .tenant_email &&
-                                              tenantsSchema.errors
-                                                .tenant_email ? (
+                                                tenantsSchema.errors
+                                                  .tenant_email ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsSchema.errors
@@ -3773,10 +3773,10 @@ const RentRollLeaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_password"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
+                                              // style={{
+                                              //   fontFamily: "monospace",
+                                              //   fontSize: "14px",
+                                              // }}
                                               >
                                                 Password*
                                               </label>
@@ -3832,11 +3832,11 @@ const RentRollLeaseing = () => {
                                                 </div>
                                               ) : null} */}
                                               {tenantsSchema.errors &&
-                                              tenantsSchema.errors
-                                                ?.tenant_password &&
-                                              tenantsSchema.touched &&
-                                              tenantsSchema.touched
-                                                ?.tenant_password ? (
+                                                tenantsSchema.errors
+                                                  ?.tenant_password &&
+                                                tenantsSchema.touched &&
+                                                tenantsSchema.touched
+                                                  ?.tenant_password ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantsSchema.errors
@@ -4259,7 +4259,7 @@ const RentRollLeaseing = () => {
                                           setShowTenantTable(false);
                                           tenantsSchema.handleSubmit(); // Call this function to close the dialog
                                         }}
-                                        // style={{ background: "green" }}
+                                      // style={{ background: "green" }}
                                       >
                                         Add Tenant
                                       </button>
@@ -4326,13 +4326,13 @@ const RentRollLeaseing = () => {
                                               }
                                             />
                                             {cosignerSchema.errors &&
-                                            cosignerSchema.errors
-                                              ?.cosigner_firstName &&
-                                            cosignerSchema.touched &&
-                                            cosignerSchema.touched
-                                              ?.cosigner_firstName &&
-                                            cosignerSchema.values
-                                              .cosigner_firstName === "" ? (
+                                              cosignerSchema.errors
+                                                ?.cosigner_firstName &&
+                                              cosignerSchema.touched &&
+                                              cosignerSchema.touched
+                                                ?.cosigner_firstName &&
+                                              cosignerSchema.values
+                                                .cosigner_firstName === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerSchema.errors
@@ -4364,13 +4364,13 @@ const RentRollLeaseing = () => {
                                               }
                                             />
                                             {cosignerSchema.errors &&
-                                            cosignerSchema.errors
-                                              ?.cosigner_lastName &&
-                                            cosignerSchema.touched &&
-                                            cosignerSchema.touched
-                                              ?.cosigner_lastName &&
-                                            cosignerSchema.values
-                                              .cosigner_lastName === "" ? (
+                                              cosignerSchema.errors
+                                                ?.cosigner_lastName &&
+                                              cosignerSchema.touched &&
+                                              cosignerSchema.touched
+                                                ?.cosigner_lastName &&
+                                              cosignerSchema.values
+                                                .cosigner_lastName === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerSchema.errors
@@ -4431,13 +4431,13 @@ const RentRollLeaseing = () => {
                                               }}
                                             />
                                             {cosignerSchema.errors &&
-                                            cosignerSchema.errors
-                                              .cosigner_mobileNumber &&
-                                            cosignerSchema.touched &&
-                                            cosignerSchema.touched
-                                              .cosigner_mobileNumber &&
-                                            cosignerSchema.values
-                                              .cosigner_mobileNumber === "" ? (
+                                              cosignerSchema.errors
+                                                .cosigner_mobileNumber &&
+                                              cosignerSchema.touched &&
+                                              cosignerSchema.touched
+                                                .cosigner_mobileNumber &&
+                                              cosignerSchema.values
+                                                .cosigner_mobileNumber === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerSchema.errors
@@ -4581,13 +4581,13 @@ const RentRollLeaseing = () => {
                                               }}
                                             />
                                             {cosignerSchema.errors &&
-                                            cosignerSchema.errors
-                                              .cosigner_email &&
-                                            cosignerSchema.touched &&
-                                            cosignerSchema.touched
-                                              .cosigner_email &&
-                                            cosignerSchema.values
-                                              .cosigner_email === "" ? (
+                                              cosignerSchema.errors
+                                                .cosigner_email &&
+                                              cosignerSchema.touched &&
+                                              cosignerSchema.touched
+                                                .cosigner_email &&
+                                              cosignerSchema.values
+                                                .cosigner_email === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerSchema.errors
@@ -4917,7 +4917,7 @@ const RentRollLeaseing = () => {
                         </Dialog>
                         <div>
                           {selectedTenantData &&
-                          Object.keys(selectedTenantData).length > 0 ? (
+                            Object.keys(selectedTenantData).length > 0 ? (
                             <>
                               <Row
                                 className="w-100 my-3"
@@ -4979,13 +4979,13 @@ const RentRollLeaseing = () => {
                           ) : null}
                         </div>
                         {tenantsSchema.errors &&
-                        tenantsSchema.errors?.tenant_password && entrySchema.submitCount>0 
-                        ? (
-                          <div style={{ color: "red" }}>
-                            {tenantsSchema.errors.tenant_password}
-                            {/* {console.log(tenantsFormik.errors.tenant_password)} */}
-                          </div>
-                        ) : null}
+                          tenantsSchema.errors?.tenant_password && entrySchema.submitCount > 0
+                          ? (
+                            <div style={{ color: "red" }}>
+                              {tenantsSchema.errors.tenant_password}
+                              {/* {console.log(tenantsFormik.errors.tenant_password)} */}
+                            </div>
+                          ) : null}
 
                         <div>
                           {cosignerData &&
@@ -5139,10 +5139,10 @@ const RentRollLeaseing = () => {
                                     }}
                                   />
                                   {entrySchema.errors &&
-                                  entrySchema.errors.amount &&
-                                  entrySchema.touched &&
-                                  entrySchema.touched.amount &&
-                                  entrySchema.values.amount === "" ? (
+                                    entrySchema.errors.amount &&
+                                    entrySchema.touched &&
+                                    entrySchema.touched.amount &&
+                                    entrySchema.values.amount === "" ? (
                                     <div style={{ color: "red" }}>
                                       {entrySchema.errors.amount}
                                     </div>
@@ -5481,7 +5481,7 @@ const RentRollLeaseing = () => {
                                         {recurringChargeSchema.values
                                           .recuring_account
                                           ? recurringChargeSchema.values
-                                              .recuring_account
+                                            .recuring_account
                                           : "Select"}
                                       </DropdownToggle>
                                       <DropdownMenu
@@ -5530,13 +5530,13 @@ const RentRollLeaseing = () => {
                                         </DropdownItem>
                                       </DropdownMenu>
                                       {recurringChargeSchema.errors &&
-                                      recurringChargeSchema.errors
-                                        .recuring_account &&
-                                      recurringChargeSchema.touched &&
-                                      recurringChargeSchema.touched
-                                        .recuring_account &&
-                                      recurringChargeSchema.values
-                                        .recuring_account === "" ? (
+                                        recurringChargeSchema.errors
+                                          .recuring_account &&
+                                        recurringChargeSchema.touched &&
+                                        recurringChargeSchema.touched
+                                          .recuring_account &&
+                                        recurringChargeSchema.values
+                                          .recuring_account === "" ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             recurringChargeSchema.errors
@@ -5613,13 +5613,13 @@ const RentRollLeaseing = () => {
                                       }}
                                     />
                                     {recurringChargeSchema.errors &&
-                                    recurringChargeSchema.errors
-                                      .recuring_amount &&
-                                    recurringChargeSchema.touched &&
-                                    recurringChargeSchema.touched
-                                      .recuring_amount &&
-                                    recurringChargeSchema.values
-                                      .recuring_amount === "" ? (
+                                      recurringChargeSchema.errors
+                                        .recuring_amount &&
+                                      recurringChargeSchema.touched &&
+                                      recurringChargeSchema.touched
+                                        .recuring_amount &&
+                                      recurringChargeSchema.values
+                                        .recuring_amount === "" ? (
                                       <div style={{ color: "red" }}>
                                         {
                                           recurringChargeSchema.errors
@@ -5725,7 +5725,7 @@ const RentRollLeaseing = () => {
                                         {oneTimeChargeSchema.values
                                           .onetime_account
                                           ? oneTimeChargeSchema.values
-                                              .onetime_account
+                                            .onetime_account
                                           : "Select"}
                                       </DropdownToggle>
                                       <DropdownMenu
@@ -5771,13 +5771,13 @@ const RentRollLeaseing = () => {
                                         </DropdownItem>
                                       </DropdownMenu>
                                       {oneTimeChargeSchema.errors &&
-                                      oneTimeChargeSchema.errors
-                                        .onetime_account &&
-                                      oneTimeChargeSchema.touched &&
-                                      oneTimeChargeSchema.touched
-                                        .onetime_account &&
-                                      oneTimeChargeSchema.values
-                                        .onetime_account === "" ? (
+                                        oneTimeChargeSchema.errors
+                                          .onetime_account &&
+                                        oneTimeChargeSchema.touched &&
+                                        oneTimeChargeSchema.touched
+                                          .onetime_account &&
+                                        oneTimeChargeSchema.values
+                                          .onetime_account === "" ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             oneTimeChargeSchema.errors
@@ -5851,12 +5851,12 @@ const RentRollLeaseing = () => {
                                       }}
                                     />
                                     {oneTimeChargeSchema.errors &&
-                                    oneTimeChargeSchema.errors.onetime_amount &&
-                                    oneTimeChargeSchema.touched &&
-                                    oneTimeChargeSchema.touched
-                                      .onetime_amount &&
-                                    oneTimeChargeSchema.values
-                                      .onetime_amount === "" ? (
+                                      oneTimeChargeSchema.errors.onetime_amount &&
+                                      oneTimeChargeSchema.touched &&
+                                      oneTimeChargeSchema.touched
+                                        .onetime_amount &&
+                                      oneTimeChargeSchema.values
+                                        .onetime_amount === "" ? (
                                       <div style={{ color: "red" }}>
                                         {
                                           oneTimeChargeSchema.errors
@@ -6104,8 +6104,8 @@ const RentRollLeaseing = () => {
                           // entrySchema.setFieldValue("upload_file", [...e.target.files]);
                           fileData(e.target.files);
                         }}
-                        // onChange={rentalsFormik.handleChange}
-                        // value={entrySchema.values.upload_file}
+                      // onChange={rentalsFormik.handleChange}
+                      // value={entrySchema.values.upload_file}
                       />
                       <label for="upload_file" className="btn">
                         Upload
@@ -6237,30 +6237,30 @@ const RentRollLeaseing = () => {
                     </Col>
 
                     <FormGroup>
-                    
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          color="primary"
-                          
-                          value={entrySchema.values.tenant_residentStatus}
-                          onChange={(e) => {
-                            entrySchema.setFieldValue(
-                              "tenant_residentStatus",
-                              e.target.checked
-                            );
-                            console.log( entrySchema.setFieldValue(
-                              "tenant_residentStatus",
-                              e.target.checked),"setFieldValue");
-                            console.log(entrySchema.values.tenant_residentStatus,"value");
-                            console.log(e.target.checked,"e.target.checked");
-                          }}
-                        />
-                      }
-                      // label="End"
-                      labelPlacement="end"
-                    />
-                  </FormGroup>
+
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            color="primary"
+
+                            value={entrySchema.values.tenant_residentStatus}
+                            onChange={(e) => {
+                              entrySchema.setFieldValue(
+                                "tenant_residentStatus",
+                                e.target.checked
+                              );
+                              console.log(entrySchema.setFieldValue(
+                                "tenant_residentStatus",
+                                e.target.checked), "setFieldValue");
+                              console.log(entrySchema.values.tenant_residentStatus, "value");
+                              console.log(e.target.checked, "e.target.checked");
+                            }}
+                          />
+                        }
+                        // label="End"
+                        labelPlacement="end"
+                      />
+                    </FormGroup>
                   </Row>
 
                   <Row>
@@ -6347,15 +6347,15 @@ const RentRollLeaseing = () => {
                   ) : (
                     <>
 
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                    >
-                      Create Lease
-                    </button>
-                    
-                      </>
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "pointer" }}
+                      >
+                        Create Lease
+                      </button>
+
+                    </>
                   )}
                   <Button
                     color="primary"
@@ -6372,13 +6372,13 @@ const RentRollLeaseing = () => {
                     Cancel
                   </Button>
                   {tenantsSchema.errors &&
-                      tenantsSchema.errors?.tenant_password && entrySchema.submitCount>0 
-                      ? (
-                        <div style={{ color: "red" }}>
-                          {/* {console.log(tenantsFormik.errors.tenant_password)} */}
-                          Tenant Password is missing
-                        </div>
-                      ) : null}
+                    tenantsSchema.errors?.tenant_password && entrySchema.submitCount > 0
+                    ? (
+                      <div style={{ color: "red" }}>
+                        {/* {console.log(tenantsFormik.errors.tenant_password)} */}
+                        Tenant Password is missing
+                      </div>
+                    ) : null}
                 </Form>
               </CardBody>
             </Card>
