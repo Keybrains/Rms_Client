@@ -226,7 +226,7 @@ const AddPayment = () => {
           setTenantData(tenantDatas);
           console.log("Tenant data:", tenantDatas);
           const rentalAddress = tenantDatas.entries.rental_adress;
-          console.log(tenantDatas.entries.property_id, "propertyId");
+          // console.log(tenantDatas.entries.property_id, "propertyId");
           setSelectedRec(`${tenantDatas.tenant_firstName} ${tenantDatas.tenant_lastName}`);
           setTenantid(tenantDatas._id)
           setPropertyId(tenantDatas.entries.property_id);

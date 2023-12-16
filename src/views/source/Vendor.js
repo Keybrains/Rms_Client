@@ -202,7 +202,7 @@ const Vendor = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {console.log(filterTenantsBySearch(),'filterTenantsBySearch')}
+                    {/* {console.log(filterTenantsBySearch(),'filterTenantsBySearch')} */}
                     {filterTenantsBySearch().map((vendor) => (
                       <tr key={vendor._id}>
                         <td>{vendor.vendor_name}</td>

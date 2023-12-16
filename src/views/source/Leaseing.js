@@ -260,7 +260,7 @@ const Leaseing = () => {
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [ownerData, setOwnerData] = useState({});
   const [propertyId, setPropertyId] = useState("");
-  console.log(propertyId, "propertyId")
+  // console.log(propertyId, "propertyId")
 
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress);
