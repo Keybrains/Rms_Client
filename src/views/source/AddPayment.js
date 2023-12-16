@@ -114,10 +114,8 @@ const AddPayment = () => {
         {
           paymentIndex: "",
           account: "",
-          description: "",
-          debit: "",
-          credit: "",
-          dropdownOpen: false,
+          amount: "",
+          balance: ""
         },
       ],
       attachment: "",
@@ -251,7 +249,7 @@ const AddPayment = () => {
           setTenantData(tenantDatas);
           console.log("Tenant data:", tenantDatas);
           const rentalAddress = tenantDatas.entries.rental_adress;
-          console.log(tenantDatas.entries.property_id, "propertyId");
+          // console.log(tenantDatas.entries.property_id, "propertyId");
           setSelectedRec(`${tenantDatas.tenant_firstName} ${tenantDatas.tenant_lastName}`);
           setTenantid(tenantDatas._id)
           getAllCharges(tenantDatas._id);
@@ -286,6 +284,7 @@ const AddPayment = () => {
 
   }
   // console.log(property,'proeprty')
+
   const handleSubmit = async (values) => {
     const arrayOfNames = file.map((item) => item.name);
     const rentalAddress = generalledgerFormik.values.rental_adress;

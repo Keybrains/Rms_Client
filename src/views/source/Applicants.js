@@ -280,8 +280,9 @@ const Applicants = () => {
         rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
         rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
         rentalOwner_companyName: ownerData.rentalOwner_companyName,
-        property_id: ownerData._id,
-        unit_id: unitId
+        property_id:ownerData._id,
+        unit_id:unitId,
+        isMovein:false
       })
       .then((response) => {
         //console.log("Applicant created successfully:", response.data.data._id);

@@ -114,7 +114,8 @@ const Leaseing = () => {
   const [selectedOption, setSelectedOption] = useState("Tenant");
   // const [selectedValue, setSelectedValue] = useState(null);
   const [showForm, setShowForm] = useState("Tenant");
-  const [paymentOptionDropdawnOpen, setPaymentOptionDropdawnOpen] = useState(false)
+  const [paymentOptionDropdawnOpen, setPaymentOptionDropdawnOpen] =
+    useState(false);
 
   const [accountNames, setAccountNames] = useState([]);
   const [RecAccountNames, setRecAccountNames] = useState([]);
@@ -142,10 +143,7 @@ const Leaseing = () => {
     "Quarterly",
     "Yearly",
   ];
-  const selectPaymentMethod = [
-    "Manually",
-    "AutoPayment",
-  ];
+  const selectPaymentMethod = ["Manually", "AutoPayment"];
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -164,7 +162,8 @@ const Leaseing = () => {
   const toggle11 = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
-  const paymentMethodtoggle = () => setPaymentOptionDropdawnOpen((prevState) => !prevState);
+  const paymentMethodtoggle = () =>
+    setPaymentOptionDropdawnOpen((prevState) => !prevState);
 
   const handleClick = (event) => {
     setrentincDropdownOpen1((current) => !current);
@@ -260,13 +259,13 @@ const Leaseing = () => {
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [ownerData, setOwnerData] = useState({});
   const [propertyId, setPropertyId] = useState("");
-  console.log(propertyId, "propertyId")
+  console.log(propertyId, "propertyId");
 
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress);
     entrySchema.values.rental_adress = property.rental_adress;
     setPropertyId(property._id);
-    console.log(property._id, "------------------------------------")
+    console.log(property._id, "------------------------------------");
     setOwnerData(property);
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
@@ -277,9 +276,10 @@ const Leaseing = () => {
       console.error("Error handling selected property:", error);
     }
   };
-  console.log(ownerData, "ownerData");
+  // console.log(ownerData, "ownerData");
 
-  const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] = useState("")
+  const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] =
+    useState("");
   const handleselectedPaymetMethod = (paymentMethod) => {
     setSelectPaymentMethodDropdawn(paymentMethod);
     // localStorage.setItem("leasetype", leasetype);
@@ -300,9 +300,9 @@ const Leaseing = () => {
   const handleUnitSelect = (selectedUnit, unitId) => {
     setSelectedUnit(selectedUnit);
     entrySchema.values.rental_units = selectedUnit;
-    console.log(selectedUnit, "selectedUnit")
+    // console.log(selectedUnit, "selectedUnit")
     entrySchema.setFieldValue("unit_id", unitId);
-
+    // console.log(unitId, "unitId--------------------------")
     // entrySchema.values.unit_id = unitId;
   };
 
@@ -412,7 +412,7 @@ const Leaseing = () => {
     } else {
       setSelectedTenants([]);
       const selectedTenant = selectedTenants[0];
-      console.log(selectedTenants, "selectedTenants");
+      // console.log(selectedTenants, "selectedTenants");
       const tenantParts = selectedTenant.split(" ");
       const tenantDetails = {
         firstName: tenantParts[0],
@@ -447,7 +447,8 @@ const Leaseing = () => {
       recuring_amount: recurringChargeSchema.values.recuring_amount,
       recuring_account: recurringChargeSchema.values.recuring_account,
       // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-      recuringmemo: recurringChargeSchema.values.recuringmemo || "Recurring Charge",
+      recuringmemo:
+        recurringChargeSchema.values.recuringmemo || "Recurring Charge",
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
@@ -479,7 +480,8 @@ const Leaseing = () => {
       onetime_amount: oneTimeChargeSchema.values.onetime_amount,
       onetime_account: oneTimeChargeSchema.values.onetime_account,
       // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-      onetime_memo: oneTimeChargeSchema.values.onetime_memo || "One Time Charge",
+      onetime_memo:
+        oneTimeChargeSchema.values.onetime_memo || "One Time Charge",
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
@@ -648,13 +650,10 @@ const Leaseing = () => {
     values["parent_account"] = selectedAccountLevel;
     values["fund_type"] = selectedFundType;
 
-    console.log(values, "values");
+    // console.log(values, "values");
     try {
       // values["property_type"] = localStorage.getItem("propertyType");
-      const res = await axios.post(
-        `${baseUrl}/addaccount/addaccount`,
-        values
-      );
+      const res = await axios.post(`${baseUrl}/addaccount/addaccount`, values);
       if (res.data.statusCode === 200) {
         swal("", res.data.message, "success");
         navigate("/admin/Leaseing");
@@ -752,7 +751,6 @@ const Leaseing = () => {
       .then((res) => {
         //setImgLoader(false);
         const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        console.log(imagePath, "imagePath");
         // console.log(imagePath, "imagePath");
         // setFile(imagePath);
       })
@@ -768,7 +766,7 @@ const Leaseing = () => {
   };
 
   const handleOpenFile = (item) => {
-    console.log(item, "item");
+    // console.log(item, "item");
     const url = URL.createObjectURL(item);
     window.open(url, "_blank");
   };
@@ -778,7 +776,7 @@ const Leaseing = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
-          console.log(data.data, "gdasga");
+          // console.log(data.data, "gdasga");
           setPropertyData(data.data);
           // console.log(data.data, "gdasga");
         } else {
@@ -925,7 +923,7 @@ const Leaseing = () => {
         emergency_PhoneNumber: tenantInfo.emergency_PhoneNumber,
       });
       // setShowTenantTable(false);
-      console.log(tenantInfo.tenant_firstName, "yup", tenantsSchema.values);
+      // console.log(tenantInfo.tenant_firstName, "yup", tenantsSchema.values);
     } else {
       // console.log(selectedTenants)
       setSelectedTenants(
@@ -1007,7 +1005,7 @@ const Leaseing = () => {
     }),
     onSubmit: (values) => {
       handleAdd(values);
-      console.log(values, "values");
+      // console.log(values, "values");
     },
   });
 
@@ -1158,9 +1156,7 @@ const Leaseing = () => {
 
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit) {
-      let response = await axios.get(
-        `${baseUrl}/tenant/tenants`
-      );
+      let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
 
       let isUnavailable = false;
@@ -1191,7 +1187,7 @@ const Leaseing = () => {
   };
 
   useEffect(() => {
-    console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
+    // console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
   }, [isDateUnavailable]);
 
   let recurringChargeSchema = useFormik({
@@ -1376,7 +1372,7 @@ const Leaseing = () => {
       // console.log(values, "values");
     },
   });
-  console.log(tenantsSchema, "tenantsSchema.values");
+  // console.log(tenantsSchema, "tenantsSchema.values");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1540,7 +1536,7 @@ const Leaseing = () => {
 
           setRecurringData(matchedLease.recurring_charges);
           setOneTimeData(matchedLease.one_time_charges);
-          console.log(matchedLease, "yush");
+          // console.log(matchedLease, "yush");
           // leaseFormik.setValues({
           //   entries: [
           //     {
@@ -1723,7 +1719,7 @@ const Leaseing = () => {
 
     //   entries: entriesArray,
     // };
-    console.log(tenantsSchema.values, "tenantsSchema.values");
+    // console.log(tenantsSchema.values, "tenantsSchema.values");
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -1806,7 +1802,8 @@ const Leaseing = () => {
 
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
-          tenant_residentStatus: entrySchema.values.tenant_residentStatus || false,
+          tenant_residentStatus:
+            entrySchema.values.tenant_residentStatus || false,
           rentalOwner_firstName: ownerData.rentalOwner_firstName,
           rentalOwner_lastName: ownerData.rentalOwner_lastName,
           rentalOwner_primaryemail: ownerData.rentalOwner_email,
@@ -1817,11 +1814,12 @@ const Leaseing = () => {
         },
       ],
     };
-    console.log(tenantObject, "tenantObject");
+
+    // console.log(tenantObject, "tenantObject");
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
-        console.log(res.data.data, "allTenants");
+        // console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
         const filteredData = allTenants.find((item) => {
           return (
@@ -1838,7 +1836,7 @@ const Leaseing = () => {
           };
 
           const tenantId = filteredData._id;
-          console.log(tenantId, "tenantId");
+          // console.log(tenantId, "tenantId");
           const res = await axios.put(
             `${baseUrl}/tenant/tenant/${tenantId}`,
             putObject
@@ -1904,8 +1902,6 @@ const Leaseing = () => {
               }
             }
 
-
-
             navigate("/admin/TenantsTable");
           } else {
             swal("", res.data.message, "error");
@@ -1913,7 +1909,7 @@ const Leaseing = () => {
           handleResponse(res);
         } else {
           if (id === undefined) {
-            console.log(tenantObject, "leaseObject");
+            // console.log(tenantObject, "leaseObject");
             const res = await axios.post(
               `${baseUrl}/tenant/tenant`,
               tenantObject
@@ -1933,12 +1929,14 @@ const Leaseing = () => {
                   res.data.data._id
                 );
 
+
                 await postDeposit(
                   res.data.data.rental_units,
                   res.data.data.unit_id,
                   res.data.data._id,
                   res.data.data.Security_amount
                 );
+
 
                 for (const item of recurringData) {
                   await postRecOneCharge(
@@ -2102,7 +2100,7 @@ const Leaseing = () => {
       .catch((err) => {
         console.log(err);
       });
-  }
+  };
   const postRecOneCharge = async (unit, unitId, tenantId, item, chargeType) => {
     console.log(
       unit,
@@ -5889,6 +5887,50 @@ const Leaseing = () => {
                       />
                     </FormGroup>
                   </Row>
+
+                  <Row>
+                    <Col md="12">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Select Payment Method
+                        </label>
+                        <FormGroup>
+                          <Dropdown
+                            isOpen={paymentOptionDropdawnOpen}
+                            toggle={paymentMethodtoggle}
+                          >
+                            <DropdownToggle caret style={{ width: "100%" }}>
+                              {selectPaymentMethodDropdawn
+                                ? selectPaymentMethodDropdawn
+                                : "Select"}
+                            </DropdownToggle>
+                            <DropdownMenu
+                              style={{ width: "100%" }}
+                              name="paymentMethod"
+                              onBlur={entrySchema.handleBlur}
+                              onChange={(e) => entrySchema.handleChange(e)}
+                              value={entrySchema.values.paymentMethod}
+                            >
+                              {selectPaymentMethod.map((option) => (
+                                <DropdownItem
+                                  key={option}
+                                  onClick={() =>
+                                    handleselectedPaymetMethod(option)
+                                  }
+                                >
+                                  {option}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
+                          </Dropdown>
+                        </FormGroup>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+
 
                   <Row>
                     <Col md="12">

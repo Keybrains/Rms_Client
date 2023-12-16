@@ -230,7 +230,7 @@ const Rentals = () => {
         firstName: rentalOwnerParts[0],
         lastName: rentalOwnerParts[1],
         phoneNumber: rentalOwnerParts[2],
-        companyName: rentalOwnerParts.slice(3, -3).join(" "), 
+        companyName: rentalOwnerParts[3], 
         primaryEmail: rentalOwnerParts[4],
         homeNumber: rentalOwnerParts[5],
         businessNumber: rentalOwnerParts[6],
@@ -249,6 +249,7 @@ const Rentals = () => {
     verflowY: "auto",
   };
   const [propType, setPropType] = useState("");
+  
   const handlePropSelection = (propertyType) => {
     rentalsFormik.setFieldValue("property_type", propertyType);
     const propTypes = [];
@@ -854,7 +855,6 @@ const Rentals = () => {
           rentalOwnerFormik.values.rentalOwner_businessNumber,
         entries: entriesArray,
       };
-      debugger;
       console.log(leaseObject, "leaseObject");
 
       const res = await axios.post(`${baseUrl}/rentals/rentals`, leaseObject);
@@ -1660,6 +1660,7 @@ const Rentals = () => {
                                                               rentalOwner.rentalOwner_companyName,
                                                             rentalOwner_primaryEmail:
                                                               rentalOwner.rentalOwner_primaryEmail,
+                                                            
                                                             rentalOwner_homeNumber:
                                                               rentalOwner.rentalOwner_homeNumber,
                                                             rentalOwner_businessNumber:
@@ -2576,7 +2577,8 @@ const Rentals = () => {
                                       cursor: "pointer",
                                       position: "absolute",
                                       right: "10px",
-                                      display: selectedProp.ismultiunit ? "block" : "none"
+                                      display: selectedProp.ismultiunit ? "block" : "none",
+                                      // marginBottom: "20px", 
                                     }}
                                     onClick={() => {
                                       deleteResidentialUnit(residentialIndex);
@@ -2584,6 +2586,11 @@ const Rentals = () => {
                                   />
                                   <Col
                                     lg="3"
+                                    style={
+                                      selectedProp.ismultiunit
+                                        ? { display: "block",marginTop: "20px" }
+                                        : { display: "none" }
+                                    }
                                   >
                                     <FormGroup>
                                       <label
@@ -2643,6 +2650,11 @@ const Rentals = () => {
                                   </Col>
                                   <Col
                                     lg="4"
+                                    style={
+                                      selectedProp.ismultiunit
+                                        ? { display: "block" }
+                                        : { display: "none" }
+                                    }
                                   >
                                     <FormGroup>
                                       <label
@@ -3054,6 +3066,11 @@ const Rentals = () => {
                               
                                   <Col
                                     lg="3"
+                                    style={
+                                      selectedProp.ismultiunit
+                                        ? { display: "block" }
+                                        : { display: "none" }
+                                    }
                                   >
                                     <FormGroup>
                                       <label
@@ -3080,8 +3097,7 @@ const Rentals = () => {
                                         value={
                                           rentalsFormik.values.entries[0]
                                             .commercial[commercialIndex].rentalcom_units
-                                        }
-                                       
+                                        }  
                                       />
                                       {/* {rentalsFormik.touched.rentalcom_units &&
                                       rentalsFormik.errors.rentalcom_units ? (
@@ -3089,7 +3105,7 @@ const Rentals = () => {
                                           {rentalsFormik.errors.rentalcom_units}
                                         </div>
                                       ) : null} */}
-                                        {rentalsFormik.errors.entries &&
+                                      {rentalsFormik.errors.entries &&
                                       rentalsFormik.errors.entries[0]
                                         ?.commercial &&
                                       rentalsFormik.errors.entries[0]
@@ -3113,11 +3129,11 @@ const Rentals = () => {
                                   </Col>
                                   <Col
                                     lg="4"
-                                    // style={
-                                    //   selectedProp.ismultiunit
-                                    //     ? { display: "block" }
-                                    //     : { display: "none" }
-                                    // }
+                                    style={
+                                      selectedProp.ismultiunit
+                                        ? { display: "block" }
+                                        : { display: "none" }
+                                    }
                                   >
                                     <FormGroup>
                                       <label
@@ -3184,7 +3200,7 @@ const Rentals = () => {
                                         onInput={(e) => {
                                           const inputValue = e.target.value;
                                           const numericValue =
-                                            inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                            inputValue.replace(/\D/g, ""); 
                                           e.target.value = numericValue;
                                         }}
                                         value={

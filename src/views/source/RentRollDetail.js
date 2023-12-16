@@ -244,9 +244,7 @@ const RentRollDetail = () => {
       setUnitId(unitId);
 
       // setPropertyId(propertyId);
-
       setRental(rental);
-      // console.log(rental, "hell");
       setUnit(unit);
       setLoading(false);
     } catch (error) {
@@ -1182,23 +1180,30 @@ const RentRollDetail = () => {
                                         marginTop: "10px",
                                       }}
                                     >
-                                      <Button
-                                        color="success"
-                                        // onClick={handleClick}
-                                        style={{
-                                          fontSize: "13px",
-                                          background: "white",
-                                          color: "green",
-                                          "&:hover": {
-                                            background: "green",
-                                            color: "white",
-                                          },
-                                        }}
-                                      >
-                                        <Link to={`/admin/AddPayment/`} onClick={(e) => { }}>
-                                          Receive Payment
-                                        </Link>
-                                      </Button>
+                                    <Button
+                            color="primary"
+                            ////  href="#rms"
+                            onClick={() =>
+                              navigate(
+                                `/admin/AddPayment/${tenantId}/${entryIndex}`,
+                                {
+                                  state: {
+                                    unit_name: unit,
+                                    unit_id: unitId,
+                                    property_id: propertyId,
+                                    rental_adress: rental,
+                                  },
+                                }
+                              )
+                            }
+                            style={{
+                              background: "white",
+                              color: "blue",
+                              marginRight: "10px",
+                            }}
+                          >
+                            Receive Payment
+                          </Button>
                                       {myData1.map((item) => (
                                         <>
                                           <Typography
@@ -2071,26 +2076,30 @@ const RentRollDetail = () => {
                                 marginTop: "10px",
                               }}
                             >
-                              <Button
-                                color="success"
-                                // onClick={handleClick}
-                                style={{
-                                  fontSize: "13px",
-                                  background: "white",
-                                  color: "green",
-                                  "&:hover": {
-                                    background: "green",
-                                    color: "white",
+                          <Button
+                            color="primary"
+                            ////  href="#rms"
+                            onClick={() =>
+                              navigate(
+                                `/admin/AddPayment/${tenantId}/${entryIndex}`,
+                                {
+                                  state: {
+                                    unit_name: unit,
+                                    unit_id: unitId,
+                                    property_id: propertyId,
+                                    rental_adress: rental,
                                   },
-                                }}
-                              >
-                                <Link
-                                  to={`/admin/AddPayment/${tenantId}/${entryIndex}`}
-                                  onClick={(e) => { }}
-                                >
-                                  Receive Payment
-                                </Link>
-                              </Button>
+                                }
+                              )
+                            }
+                            style={{
+                              background: "white",
+                              color: "blue",
+                              marginRight: "10px",
+                            }}
+                          >
+                            Receive Payment
+                          </Button>
 
                               {myData1.map((item) => (
                                 <>

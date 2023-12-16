@@ -10,6 +10,7 @@ import {
   Container,
   Row,
   Col,
+  InputGroup,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
@@ -262,7 +263,7 @@ const RentRollLeaseing = () => {
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [propertyId, setPropertyId] = useState("");
   const [ownerData, setOwnerData] = useState({});
-  console.log(ownerData, "ownerData");
+  // console.log(ownerData, "ownerData");
   // console.log(selectedPropertyType, "selectedPropertyType")
   const handlePropertyTypeSelect = async (propertyType, property) => {
     setSelectedPropertyType(propertyType);
@@ -272,7 +273,7 @@ const RentRollLeaseing = () => {
     setOwnerData(property);
     try {
       const units = await fetchUnitsByProperty(propertyType);
-      console.log(units, "units"); // Check the received units in the console
+      //console.log(units, "units"); // Check the received units in the console
       setUnitData(units); // Set the received units in the unitData state
     } catch (error) {
       console.error("Error handling selected property:", error);
@@ -297,7 +298,11 @@ const RentRollLeaseing = () => {
     setSelectPaymentMethodDropdawn(paymentMethod);
   };
 
+  const [CCVNU, setCCVNU] = useState(null);
+  const [CCVEX, setCCVEX] = useState(null);
+
   const [selectedRentCycle, setselectedRentCycle] = useState("");
+  const [selectedDayFrequency, setselectedDayFrequency] = useState("");
   const handleselectedRentCycle = (rentcycle) => {
     setselectedRentCycle(rentcycle);
     // localStorage.setItem("leasetype", leasetype);
@@ -307,31 +312,40 @@ const RentRollLeaseing = () => {
     // localStorage.setItem("leasetype", leasetype);
     const startDate = entrySchema.values.start_date;
     let nextDue_date;
+    let dayFrequency;
     switch (rentcycle) {
       case "Daily":
         nextDue_date = moment(startDate).add(1, "days").format("YYYY-MM-DD");
+        dayFrequency = 1;
         break;
       case "Weekly":
         nextDue_date = moment(startDate).add(1, "weeks").format("YYYY-MM-DD");
+        dayFrequency = 7;
         break;
       case "Every two weeks":
         nextDue_date = moment(startDate).add(2, "weeks").format("YYYY-MM-DD");
+        dayFrequency = 14;
         break;
       case "Monthly":
         nextDue_date = moment(startDate).add(1, "months").format("YYYY-MM-DD");
+        dayFrequency = 30;
         break;
       case "Every two months":
         nextDue_date = moment(startDate).add(2, "months").format("YYYY-MM-DD");
+        dayFrequency = 60;
         break;
       case "Quarterly":
         nextDue_date = moment(startDate).add(3, "months").format("YYYY-MM-DD");
+        dayFrequency = 120;
         break;
       default:
         nextDue_date = moment(startDate).add(1, "years").format("YYYY-MM-DD");
+        dayFrequency = 365;
     }
     entrySchema.setFieldValue("nextDue_date", nextDue_date);
     // entrySchema.values.rent_cycle = rentcycle;
     setselectedRentCycle(rentcycle);
+    setselectedDayFrequency(dayFrequency);
   };
 
   const [selectedAccount, setselectedAccount] = useState("");
@@ -758,7 +772,7 @@ const RentRollLeaseing = () => {
       .then((data) => {
         if (data.statusCode === 200) {
           setPropertyData(data.data);
-          console.log(data.data, "gdasga");
+          // console.log(data.data, "gdasga");
         } else {
           // Handle error
           console.error("Error:", data.message);
@@ -771,7 +785,7 @@ const RentRollLeaseing = () => {
   }, []);
 
   const fetchingAccountNames = async () => {
-    console.log("fetching account names");
+    // console.log("fetching account names");
     fetch(`${baseUrl}/addaccount/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
@@ -790,7 +804,7 @@ const RentRollLeaseing = () => {
   };
 
   const fetchingRecAccountNames = async () => {
-    console.log("fetching rec accounr names");
+    // console.log("fetching rec accounr names");
     fetch(`${baseUrl}/recurringAcc/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
@@ -1502,9 +1516,18 @@ const RentRollLeaseing = () => {
     },
   });
 
+
+  // Helper function to format a Date object as "MM/YY"
+  const formatDateForInput = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${month}/${year}`;
+  };
+
+
   const applicantData = state && state.applicantData;
-  console.log(applicantData, "applicantData");
-  console.log(propertyId, "propertyId");
+  // console.log(applicantData, "applicantData");
+  // console.log(propertyId, "propertyId");
   useEffect(() => {
     const setData = async () => {
       if (state && state.applicantData) {
@@ -1522,6 +1545,8 @@ const RentRollLeaseing = () => {
           lastName: applicantData.tenant_lastName || "",
           mobileNumber: applicantData.tenant_mobileNumber || "",
         });
+
+        console.log(applicantData,'applicantData from 1526')
         setPropertyId(applicantData.property_id);
         setSelectPaymentMethodDropdawn(applicantData.paymentMethod || "Select");
 
@@ -1635,7 +1660,7 @@ const RentRollLeaseing = () => {
     };
     setData();
   }, []);
-  console.log(tenantsSchema.values, entrySchema.values, "tenantsSchema.values");
+  
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
     const fetchData = async () => {
@@ -1644,7 +1669,7 @@ const RentRollLeaseing = () => {
         try {
           const response = await axios.get(url);
           const laesingdata = response.data.data;
-          console.log(laesingdata, "laesingdata");
+
           setTenantData(laesingdata);
           setSelectedTenantData({
             firstName: laesingdata.tenant_firstName || "",
@@ -2025,7 +2050,8 @@ const RentRollLeaseing = () => {
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
 
-          tenant_residentStatus: entrySchema.values.tenant_residentStatus || false,
+          tenant_residentStatus:
+            entrySchema.values.tenant_residentStatus || false,
           rentalOwner_firstName: ownerData.rentalOwner_firstName,
           rentalOwner_lastName: ownerData.rentalOwner_lastName,
           rentalOwner_primaryemail: ownerData.rentalOwner_email,
@@ -2036,13 +2062,23 @@ const RentRollLeaseing = () => {
         },
       ],
     };
-    console.log(tenantObject, "sdgvfyfbhjnkml,kjnhbgvfcvhb");
-    // debugger
+
+    const paymentDetails = {
+      plan_payments: 0,
+      plan_amount: entrySchema.values.amount,
+      dayFrequency: selectedDayFrequency,
+      ccnumber: CCVNU,
+      ccexp: formatDateForInput(CCVEX),
+      first_name: tenantsSchema.values.tenant_firstName,
+      last_name: tenantsSchema.values.tenant_lastName,
+      address: entrySchema.values.rental_adress,
+    };
+    console.log("shardi", paymentDetails);
 
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
-        console.log(res.data.data, "allTenants");
+      
         const allTenants = res.data.data;
         const filteredData = allTenants.find((item) => {
           return (
@@ -2148,9 +2184,17 @@ const RentRollLeaseing = () => {
               `${baseUrl}/tenant/tenant`,
               tenantObject
             );
+            const res2 = await axios.post(
+              `http://localhost:4000/api/nmipayment/custom-add-subscription`,
+              paymentDetails
+            );
             if (res.data.statusCode === 200) {
               console.log(res.data.data, "response after adding data");
-              debugger;
+              // debugger;
+
+              updateApplicants();
+
+
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -2246,6 +2290,20 @@ const RentRollLeaseing = () => {
     }
   };
   console.log(entrySchema.values, "entry cahsdkajl;");
+
+  const updateApplicants = async () => {
+
+    // debugger
+    const url = `${baseUrl}/applicant/applicant/${applicantData._id}/movein`;
+   
+    const res = await axios.put(url);
+    if (res.data.statusCode === 200) {
+      console.log(res.data.data, "response after adding data");
+    }
+    else{
+      console.log(res.data.data, "response after adding data");
+    }
+  }
 
   const postCharge = async (unit, unitId, tenantId) => {
     const chargeObject = {
@@ -2899,14 +2957,9 @@ const RentRollLeaseing = () => {
                               handleDateChange(e.target.value);
                               entrySchema.handleChange(e);
                               checkStartDate(e.target.value); // Check for start date
-                              console.log(
-                                "isStartDateUnavailable:",
-                                isDateUnavailable
-                              );
+                              
                             }}
-                            value={moment(entrySchema.values.start_date).format(
-                              "YYYY-MM-DD"
-                            )}
+                            value={entrySchema.values.start_date}
                           />
                           {isStartDateUnavailable && (
                             <div style={{ color: "red", marginTop: "8px" }}>
@@ -2942,7 +2995,7 @@ const RentRollLeaseing = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-unitadd2"
-                            placeholder="3000"
+                            // placeholder="3000"
                             type="date"
                             name="end_date"
                             onBlur={entrySchema.handleBlur}
@@ -2954,12 +3007,8 @@ const RentRollLeaseing = () => {
                                 isDateUnavailable
                               );
                             }}
-                            value={moment(entrySchema.values.end_date).format(
-                              "YYYY-MM-DD"
-                            )}
-                            min={moment(entrySchema.values.start_date).format(
-                              "YYYY-MM-DD"
-                            )}
+                            value={entrySchema.values.end_date}
+                            min={entrySchema.values.start_date}
                           />
                           {isDateUnavailable && (
                             <div style={{ color: "red", marginTop: "8px" }}>
@@ -5125,9 +5174,8 @@ const RentRollLeaseing = () => {
                                     value={entrySchema.values.amount}
                                     onChange={(e) => {
                                       const inputValue = e.target.value;
-                                      const numericValue = inputValue.replace(
-                                        /\D/g,
-                                        ""
+                                      const numericValue = parseFloat(
+                                        inputValue.replace(/\D/g, "")
                                       );
                                       entrySchema.values.amount = numericValue;
                                       entrySchema.handleChange({
@@ -6305,7 +6353,77 @@ const RentRollLeaseing = () => {
                       </FormGroup>
                     </Col>
                   </Row>
-
+                  <Col sm="12">
+                    {selectPaymentMethodDropdawn === "AutoPayment" ? (
+                      <>
+                        <Row>
+                          <Col sm="4">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                              >
+                                Card Number *
+                              </label>
+                              <InputGroup>
+                                <Input
+                                  type="number"
+                                  id="creditcard_number"
+                                  placeholder="0000 0000 0000"
+                                  name="creditcard_number"
+                                  value={CCVNU}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                                    const limitValue = numericValue.slice(0, 16); // Limit to 12 digits
+                                    setCCVNU(parseInt(limitValue));
+                                  }}
+                                 
+                                />
+                              </InputGroup>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col sm="2">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                              >
+                                Expiration Date *
+                              </label>
+                              <Input
+                                type="text"
+                                id="expiration_date"
+                                name="expiration_date"
+                                onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(/\D/g, "");
+                                  if (numericValue.length >= 2) {
+                                    const month = numericValue.substring(0, 2);
+                                    if (numericValue.length > 2) {
+                                      const year = numericValue.substring(2, 6);
+                                      // Convert the formatted string to a Date object
+                                      const formattedDate = new Date(`${year}-${month}-01`);
+                                      // Set the state with the Date object
+                                      setCCVEX(formattedDate);
+                                      return;
+                                    }
+                                  }
+                                  // If the input is incomplete or invalid, set the state with the raw string
+                                  setCCVEX(inputValue);
+                                }}
+                                value={CCVEX instanceof Date ? formatDateForInput(CCVEX) : CCVEX}
+                                placeholder="MM/YYYY"
+                              
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                      </>
+                    ) : null}
+                  </Col>
                   {/* <Button
                   color="primary"
                  //  href="#rms"
