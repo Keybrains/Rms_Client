@@ -61,7 +61,7 @@ const PropertyType = () => {
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
-  
+
   const handlePropertyTypeChange = (value) => {
     setEditingProperty((prev) => ({
       ...prev,
@@ -78,7 +78,7 @@ const PropertyType = () => {
     setEditDialogOpen(false);
     setEditingProperty([]);
   };
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -236,10 +236,10 @@ const PropertyType = () => {
 
   const filterPropertyBySearch = () => {
     if (searchQuery === undefined) {
-      return paginatedData;
+      return propertyData;
     }
 
-    return paginatedData.filter((property) => {
+    return propertyData.filter((property) => {
       const isPropertyTypeMatch = property.property_type
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
@@ -248,6 +248,12 @@ const PropertyType = () => {
         .includes(searchQuery.toLowerCase());
       return isPropertyTypeMatch,isPropertySubTypeMatch;
     });
+  };
+
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterPropertyBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
   };
 
   return (
@@ -265,7 +271,7 @@ const PropertyType = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/admin/AddPropertyType")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -323,7 +329,7 @@ const PropertyType = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filterPropertyBySearch().map((property) => (
+                    {filterTenantsBySearchAndPage().map((property) => (
                       <tr key={property._id}>
                         <td>{property.property_type}</td>
                         <td>{property.propertysub_type}</td>

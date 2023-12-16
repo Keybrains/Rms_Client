@@ -167,7 +167,7 @@ const PropertiesTables = () => {
       //console.log(rentalsData, "rental from table of properties");
       if (upArrow.length === 0) {
         // getRentalsData();
-        return paginatedData;
+        return rentalsData;
       } else {
         // debugger
         upArrow.map((sort) => {
@@ -232,7 +232,7 @@ const PropertiesTables = () => {
               }
               return 0;
 
-            }else if (sort === "createdAt") {
+            } else if (sort === "createdAt") {
               if (a.createdAt < b.createdAt) {
                 return -1;
               }
@@ -258,7 +258,7 @@ const PropertiesTables = () => {
         });
       }
     } else {
-      return paginatedData.filter((tenant) => {
+      return rentalsData.filter((tenant) => {
         const name =
           tenant.rentalOwner_firstName + " " + tenant.rentalOwner_lastName;
         const add =
@@ -297,17 +297,22 @@ const PropertiesTables = () => {
 
     return rentalsData.slice(startIndex, endIndex);
   };
-  //console.log(filterRentalsBySearch(), "filterasdadasdasdasdasda");
+
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterRentalsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
+  };
 
   const sortData = (value) => {
     if (!sortBy.includes(value)) {
       setSortBy([...sortBy, value]);
       setUpArrow([...upArrow, value]);
-      filterRentalsBySearch();
+      filterTenantsBySearchAndPage();
     } else {
       setSortBy(sortBy.filter((sort) => sort !== value));
       setUpArrow(upArrow.filter((sort) => sort !== value));
-      filterRentalsBySearch();
+      filterTenantsBySearchAndPage();
     }
     //console.log(value);
     // setOnClickUpArrow(!onClickUpArrow);
@@ -333,7 +338,7 @@ const PropertiesTables = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/admin/rentals")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -607,7 +612,7 @@ const PropertiesTables = () => {
                         </tr>
                       ))
                     )} */}
-                    {filterRentalsBySearch()?.map((tenant) => (
+                    {filterTenantsBySearchAndPage()?.map((tenant) => (
                       <>
                         <tr
                           key={tenant._id}
@@ -629,7 +634,7 @@ const PropertiesTables = () => {
                           <td>{`${tenant.entries.rental_city}, ${tenant.entries.rental_country}`}</td>
                           <td>{tenant.rentalOwner_primaryEmail}</td>
                           <td>{tenant.rentalOwner_phoneNumber}</td>
-                          <td>{tenant.entries.createdAt }</td>
+                          <td>{tenant.entries.createdAt}</td>
                           <td>{tenant.entries.updateAt ? tenant.entries.updateAt : "-"}</td>
                           {/* <td>{tenant.entries.createdAt}</td> */}
                           {/* <td>{tenant.entries.entryIndex}</td>

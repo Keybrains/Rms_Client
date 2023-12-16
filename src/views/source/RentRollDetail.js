@@ -61,6 +61,7 @@ import jsPDF from "jspdf";
 import Img from "assets/img/theme/team-4-800x800.jpg";
 import { useLocation } from "react-router-dom";
 import moment from "moment";
+import './Leaseing.css'
 
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -359,10 +360,10 @@ const RentRollDetail = () => {
       const tenantData = response.data.data;
       setTimeout(() => {
         //console.log(tenantData.tenant_firstName, "abcd");
-      // setTenantDetails(tenantData);
-      // setRentaldata(tenantData);
-      console.log(tenantData, "tenantsdata");
-      setLoading(false);
+        // setTenantDetails(tenantData);
+        // setRentaldata(tenantData);
+        console.log(tenantData, "tenantsdata");
+        setLoading(false);
       }, 3000);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -370,7 +371,7 @@ const RentRollDetail = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     getTenantData();
   }, []);
@@ -552,7 +553,7 @@ const RentRollDetail = () => {
 
   const deleteCharge = async (Id) => {
     console.log(Id, 'chargeId');
-  
+
     swal({
       title: "Are you sure?",
       text: "Once deleted, you will not be able to recover this entry!",
@@ -579,15 +580,15 @@ const RentRollDetail = () => {
       }
     });
   };
-  
+
   const editcharge = (chargeId) => {
     // console.log(tenantDetails,'tenant_firstName')
-    navigate(`/admin/AddCharge/${chargeId}`,{state:{tenantDetails:tenantDetails}});
+    navigate(`/admin/AddCharge/${chargeId}`, { state: { tenantDetails: tenantDetails } });
 
     // console.log(id);
   };
   const editpayment = (paymentId) => {
-    navigate(`/admin/AddPayment/${paymentId}`,{state:{tenantDetails:tenantDetails}});
+    navigate(`/admin/AddPayment/${paymentId}`, { state: { tenantDetails: tenantDetails } });
     // console.log(id);
   };
 
@@ -744,8 +745,8 @@ const RentRollDetail = () => {
             entry.account
               ? entry.account
               : entry.charge_type
-              ? entry.charge_type
-              : "N/A",
+                ? entry.charge_type
+                : "N/A",
             entry.memo || "N/A",
             entry.type === "Charge" ? "$" + entry.amount : "-",
             entry.type === "Payment" ? "$" + entry.amount : "-",
@@ -817,9 +818,9 @@ const RentRollDetail = () => {
   // Check if the entry exists and then display the status
   const status = selectedEntry
     ? getStatus1(
-        selectedEntry.entries.start_date,
-        selectedEntry.entries.end_date
-      )
+      selectedEntry.entries.start_date,
+      selectedEntry.entries.end_date
+    )
     : "-";
 
   return (
@@ -828,28 +829,28 @@ const RentRollDetail = () => {
       <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
-          <FormGroup className="">
-            {loading ? (
-                        <tbody>
-                          <tr>
-                            <td></td>
-                          </tr>
-                        </tbody>
-                      ) : (<>
-              <h1 style={{ color: "white" }}>
-                {tenantDetails.tenant_firstName +
-                  " " +
-                  tenantDetails.tenant_lastName}
-              </h1>
-              <h5 style={{ color: "white" }}>
-                {status} |{" "}
-                {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
-                {tenantDetails._id &&
-                tenantDetails.entries.rental_units !== undefined &&
-                tenantDetails.entries.rental_units !== ""
-                  ? ` - ${tenantDetails.entries.rental_units}`
-                  : ""}
-              </h5></>)}
+            <FormGroup className="">
+              {loading ? (
+                <tbody>
+                  <tr>
+                    <td></td>
+                  </tr>
+                </tbody>
+              ) : (<>
+                <h1 style={{ color: "white" }}>
+                  {tenantDetails.tenant_firstName +
+                    " " +
+                    tenantDetails.tenant_lastName}
+                </h1>
+                <h5 style={{ color: "white" }}>
+                  {status} |{" "}
+                  {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
+                  {tenantDetails._id &&
+                    tenantDetails.entries.rental_units !== undefined &&
+                    tenantDetails.entries.rental_units !== ""
+                    ? ` - ${tenantDetails.entries.rental_units}`
+                    : ""}
+                </h5></>)}
             </FormGroup>
 
 
@@ -917,8 +918,8 @@ const RentRollDetail = () => {
                       <div className="col">
                         <Card className="shadow">
                           <div className="table-responsive">
-                            <div className="row m-3">
-                              <div className="col-9">
+                            <div className="row m-3" style={{ overflow: 'hidden' }}>
+                              <div className="col-md-8">
                                 <div
                                   className="align-items-center table-flush"
                                   responsive
@@ -981,10 +982,10 @@ const RentRollDetail = () => {
                                           {tenantDetails.entries
                                             .rentalOwner_firstName
                                             ? tenantDetails.entries
-                                                .rentalOwner_firstName +
-                                              " " +
-                                              tenantDetails.entries
-                                                .rentalOwner_lastName
+                                              .rentalOwner_firstName +
+                                            " " +
+                                            tenantDetails.entries
+                                              .rentalOwner_lastName
                                             : "N/A"}
                                         </Col>
                                         <Col>
@@ -992,107 +993,6 @@ const RentRollDetail = () => {
                                             " " +
                                             tenantDetails?.tenant_lastName ||
                                             "N/A"}
-                                        </Col>
-                                      </Row>
-
-                                      <Row
-                                        className="w-100 my-3 "
-                                        style={{
-                                          fontSize: "18px",
-                                          textTransform: "capitalize",
-                                          color: "#5e72e4",
-                                          fontWeight: "600",
-                                          borderBottom: "1px solid #ddd",
-                                        }}
-                                      >
-                                        <Col>Lease Details</Col>
-                                      </Row>
-                                      <Row
-                                        className="mb-1 m-0 p-0"
-                                        style={{
-                                          fontSize: "12px",
-                                          color: "#000",
-                                        }}
-                                      >
-                                        <Table>
-                                          <tbody
-                                            className="tbbody p-0 m-0"
-                                            style={{
-                                              borderTopRightRadius: "5px",
-                                              borderTopLeftRadius: "5px",
-                                              borderBottomLeftRadius: "5px",
-                                              borderBottomRightRadius: "5px",
-                                            }}
-                                          >
-                                            <tr className="header">
-                                              <th>Status</th>
-                                              <th>Start - End</th>
-                                              <th>Property</th>
-                                              <th>Type</th>
-                                              <th>Rent</th>
-                                            </tr>
-                                            {myData ? (
-                                              <>
-                                                {myData.map((item) => (
-                                                  <>
-                                                    <tr className="body">
-                                                      <td>
-                                                        {getStatus(
-                                                          item.entries
-                                                            .start_date,
-                                                          item.entries.end_date
-                                                        )}
-                                                      </td>
-                                                      <td>
-                                                        <Link
-                                                          to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
-                                                          onClick={(e) => {
-                                                            // Handle any additional actions onClick if needed
-                                                            console.log(
-                                                              item._id,
-                                                              "Tenant Id"
-                                                            );
-                                                            console.log(
-                                                              item.entries
-                                                                .entryIndex,
-                                                              "Entry Index"
-                                                            );
-                                                          }}
-                                                        >
-                                                          {formatDateWithoutTime(
-                                                            item.entries
-                                                              .start_date
-                                                          ) +
-                                                            " To " +
-                                                            formatDateWithoutTime(
-                                                              item.entries
-                                                                .end_date
-                                                            ) || "N/A"}
-                                                        </Link>
-                                                      </td>
-                                                      <td>
-                                                        {item.entries
-                                                          .rental_adress ||
-                                                          "N/A"}
-                                                      </td>
-                                                      <td>
-                                                        {item.entries
-                                                          .lease_type || "N/A"}
-                                                      </td>
-                                                      <td>
-                                                        {item.entries.amount}
-                                                      </td>
-                                                    </tr>
-                                                  </>
-                                                ))}
-                                              </>
-                                            ) : null}
-                                          </tbody>
-                                        </Table>
-                                      </Row>
-                                      <Row className="w-100 my-3 text-left">
-                                        <Col>
-                                          <Link>Reset Pasword</Link>
                                         </Col>
                                       </Row>
                                     </div>
@@ -1105,7 +1005,7 @@ const RentRollDetail = () => {
                                   )}
                                 </div>
                               </div>
-                              <div className="col-3 mt-3">
+                              <div className="col-md-4 mt-3">
                                 <Card style={{ background: "#F4F6FF" }}>
                                   <CardContent>
                                     <div
@@ -1136,10 +1036,10 @@ const RentRollDetail = () => {
                                           GeneralLedgerData.paymentAndCharges
                                             .length > 0 &&
                                           "$" +
-                                            Math.abs(
-                                              GeneralLedgerData
-                                                .paymentAndCharges[0].Total
-                                            )}
+                                          Math.abs(
+                                            GeneralLedgerData
+                                              .paymentAndCharges[0].Total
+                                          )}
                                       </Typography>
                                     </div>
                                     <hr
@@ -1314,13 +1214,11 @@ const RentRollDetail = () => {
                                               cursor: "pointer",
                                               color: "blue",
                                             }}
-                                            // onClick={() => handleChange("Financial")}
+                                          // onClick={() => handleChange("Financial")}
                                           >
                                             <Link
                                               to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
-                                              onClick={() => {
-                                                setValue(`Financial`);
-                                              }}
+                                              onClick={(e) => { }}
                                             >
                                               Lease Ledger
                                             </Link>
@@ -1330,6 +1228,99 @@ const RentRollDetail = () => {
                                     </div>
                                   </CardContent>
                                 </Card>
+                              </div>
+                              <div className="row m-3" style={{ overflow: 'auto' }}>
+                                <Row
+                                  className="w-100 my-3 "
+                                  style={{
+                                    fontSize: "18px",
+                                    textTransform: "capitalize",
+                                    color: "#5e72e4",
+                                    fontWeight: "600",
+                                    borderBottom: "1px solid #ddd",
+                                  }}
+                                >
+                                  <Col>Lease Details</Col>
+                                </Row>
+                                <Row
+                                  className="mb-1 m-0 p-0"
+                                  style={{ fontSize: "12px", color: "#000" }}
+                                >
+                                  <Table>
+                                    <tbody
+                                      className="tbbody p-0 m-0"
+                                      style={{
+                                        borderTopRightRadius: "5px",
+                                        borderTopLeftRadius: "5px",
+                                        borderBottomLeftRadius: "5px",
+                                        borderBottomRightRadius: "5px",
+                                      }}
+                                    >
+                                      <tr className="header">
+                                        <th>Status</th>
+                                        <th>Start - End</th>
+                                        <th>Property</th>
+                                        <th>Type</th>
+                                        <th>Rent</th>
+                                      </tr>
+                                      {myData ? (
+                                        <>
+                                          {myData.map((item) => (
+                                            <>
+                                              <tr className="body">
+                                                <td>
+                                                  {getStatus(
+                                                    item.entries.start_date,
+                                                    item.entries.end_date
+                                                  )}
+                                                </td>
+                                                <td>
+                                                  <Link
+                                                    to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                                    onClick={(e) => {
+                                                      // Handle any additional actions onClick if needed
+                                                      console.log(
+                                                        item._id,
+                                                        "Tenant Id"
+                                                      );
+                                                      console.log(
+                                                        item.entries.entryIndex,
+                                                        "Entry Index"
+                                                      );
+                                                    }}
+                                                  >
+                                                    {formatDateWithoutTime(
+                                                      item.entries.start_date
+                                                    ) +
+                                                      " To " +
+                                                      formatDateWithoutTime(
+                                                        item.entries.end_date
+                                                      ) || "N/A"}
+                                                  </Link>
+                                                </td>
+                                                <td>
+                                                  {item.entries.rental_adress ||
+                                                    "N/A"}
+                                                </td>
+                                                <td>
+                                                  {item.entries.lease_type || "N/A"}
+                                                </td>
+                                                <td>{item.entries.amount}</td>
+                                              </tr>
+                                            </>
+                                          ))}
+                                        </>
+                                      ) : null}
+                                    </tbody>
+                                  </Table>
+                                </Row>
+                              </div>
+                              <div className="row m-3" style={{ overflow: 'hidden' }}>
+                                <Row className="w-100 my-3 text-left">
+                                  <Col>
+                                    <a href="#">Reset Pasword</a>
+                                  </Col>
+                                </Row>
                               </div>
                             </div>
                           </div>
@@ -1465,12 +1456,12 @@ const RentRollDetail = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                
+
                                   {GeneralLedgerData &&
                                     GeneralLedgerData?.paymentAndCharges?.map(
                                       (generalledger) => (
                                         <>
-                                        {console.log(GeneralLedgerData,"GeneralLedgerData")}
+                                          {console.log(GeneralLedgerData, "GeneralLedgerData")}
                                           <tr key={`${generalledger._id}`}>
                                             <td>{generalledger.date || "-"}</td>
                                             <td>{generalledger.type || "-"}</td>
@@ -1493,8 +1484,8 @@ const RentRollDetail = () => {
                                                 ? generalledger.Total >= 0
                                                   ? `$${generalledger.Total}`
                                                   : `$(${Math.abs(
-                                                      generalledger.Total
-                                                    )})`
+                                                    generalledger.Total
+                                                  )})`
                                                 : "0"}
                                               {/* {calculateBalance(
                                                   generalledger.type,
@@ -1511,71 +1502,72 @@ const RentRollDetail = () => {
                                               >
                                                 {generalledger.type ===
                                                   "Charge" && (
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
                                                     // onClick={(e) => {
-                                                      // e.stopPropagation();
-                                                      // console.log(
-                                                      //   "Entry Object:",
-                                                      //   entry
-                                                      // );
-                                                      // deleteCharge(
-                                                      //   generalledger._id,
-                                                      //   entry.chargeIndex
-                                                      // );
-                                                      // console.log(
-                                                      //   generalledger._id,
-                                                      //   "dsgdg"
-                                                      // );
-                                                      // console.log(
-                                                      //   entry.chargeIndex,
-                                                      //   "dsgdg"
-                                                      // );
+                                                    // e.stopPropagation();
+                                                    // console.log(
+                                                    //   "Entry Object:",
+                                                    //   entry
+                                                    // );
+                                                    // deleteCharge(
+                                                    //   generalledger._id,
+                                                    //   entry.chargeIndex
+                                                    // );
+                                                    // console.log(
+                                                    //   generalledger._id,
+                                                    //   "dsgdg"
+                                                    // );
+                                                    // console.log(
+                                                    //   entry.chargeIndex,
+                                                    //   "dsgdg"
+                                                    // );
                                                     // }}
-                                                  >
-                                                    <DeleteIcon onClick={() => {
-                                                      console.log(generalledger,'geennennene')
-                                                      deleteCharge(generalledger._id)}}  />
-                                                  </div>
-                                                )}
+                                                    >
+                                                      <DeleteIcon onClick={() => {
+                                                        console.log(generalledger, 'geennennene')
+                                                        deleteCharge(generalledger._id)
+                                                      }} />
+                                                    </div>
+                                                  )}
 
                                                 {generalledger.type ===
                                                   "Charge" && (
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      editcharge(
-                                                        generalledger._id,
-                                                        
-                                                      );
-                                                    }}
-                                                  >
-                                                    <EditIcon />
-                                                  </div>
-                                                )}
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        editcharge(
+                                                          generalledger._id,
+
+                                                        );
+                                                      }}
+                                                    >
+                                                      <EditIcon />
+                                                    </div>
+                                                  )}
 
                                                 {generalledger.type ===
                                                   "Payment" && (
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      editpayment(
-                                                        generalledger._id,
-                                                        entry
-                                                      );
-                                                    }}
-                                                  >
-                                                    <EditIcon />
-                                                  </div>
-                                                )}
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        editpayment(
+                                                          generalledger._id,
+                                                          entry
+                                                        );
+                                                      }}
+                                                    >
+                                                      <EditIcon />
+                                                    </div>
+                                                  )}
                                               </div>
                                             </td>
                                           </tr>
@@ -1630,7 +1622,7 @@ const RentRollDetail = () => {
                                     ) : (
                                       <div
                                         className="d-flex justify-content-end h5"
-                                        // style={{ cursor: "pointer" }}
+                                      // style={{ cursor: "pointer" }}
                                       >
                                         <DoneIcon fontSize="small" /> Move Out
                                       </div>
@@ -1794,7 +1786,7 @@ const RentRollDetail = () => {
                                           <br></br>
                                           {entry.rental_adress}
                                           {entry.rental_units !== "" &&
-                                          entry.rental_units !== undefined
+                                            entry.rental_units !== undefined
                                             ? ` - ${entry.rental_units}`
                                             : null}
                                         </div>
@@ -1847,14 +1839,14 @@ const RentRollDetail = () => {
                                           style={
                                             entry.moveout_notice_given_date
                                               ? {
-                                                  // display:"block",
-                                                  display: "flex",
-                                                  flexDirection: "row",
-                                                  marginTop: "10px",
-                                                }
+                                                // display:"block",
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }
                                               : {
-                                                  display: "none",
-                                                }
+                                                display: "none",
+                                              }
                                           }
                                         >
                                           <Typography
@@ -1873,14 +1865,14 @@ const RentRollDetail = () => {
                                           style={
                                             entry.moveout_date
                                               ? {
-                                                  // display:"block",
-                                                  display: "flex",
-                                                  flexDirection: "row",
-                                                  marginTop: "10px",
-                                                }
+                                                // display:"block",
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }
                                               : {
-                                                  display: "none",
-                                                }
+                                                display: "none",
+                                              }
                                           }
                                         >
                                           <Typography
@@ -1938,12 +1930,12 @@ const RentRollDetail = () => {
                                 {GeneralLedgerData &&
                                   GeneralLedgerData.paymentAndCharges &&
                                   GeneralLedgerData.paymentAndCharges.length >
-                                    0 &&
+                                  0 &&
                                   "$" +
-                                    Math.abs(
-                                      GeneralLedgerData.paymentAndCharges[0]
-                                        .Total
-                                    )}
+                                  Math.abs(
+                                    GeneralLedgerData.paymentAndCharges[0]
+                                      .Total
+                                  )}
                               </Typography>
                             </div>
                             <hr
@@ -2119,7 +2111,7 @@ const RentRollDetail = () => {
                                       cursor: "pointer",
                                       color: "blue",
                                     }}
-                                    // onClick={() => handleChange("Financial")}
+                                  // onClick={() => handleChange("Financial")}
                                   >
                                     <Link
                                       to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}

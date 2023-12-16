@@ -180,10 +180,10 @@ const TenantWork = () => {
 
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
-      return paginatedData;
+      return workData;
     }
 
-    return paginatedData.filter((rental) => {
+    return workData.filter((rental) => {
       const lowerCaseQuery = searchQuery.toLowerCase();
       return (
         rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
@@ -194,6 +194,11 @@ const TenantWork = () => {
         rental.priority.toLowerCase().includes(lowerCaseQuery)
       );
     });
+  };
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterRentalsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
   };
   const getRentalDataAfterDelete = async (addresses) => {
     try {
@@ -353,7 +358,7 @@ const TenantWork = () => {
                   </thead>
 
                   <tbody>
-                    {filterRentalsBySearch().map((rental) => (
+                    {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
                         key={rental._id}
                         onClick={() => navigateToDetails(rental.workorder_id)}
