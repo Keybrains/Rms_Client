@@ -243,6 +243,7 @@ const ApplicantSummary = () => {
       rental_adress:"",
       applicant_notes: notes,
       applicant_file: files,
+      isMovein:false,
     },
     onSubmit: (values) => {
       handleEdit(values);
@@ -260,6 +261,8 @@ const ApplicantSummary = () => {
       // Fetch tenant data
       const response = await axios.get(apiUrl);
       const tenantData = response.data.data;
+      console.log(response, "response.data");
+      console.log(tenantData, "tenantData");
       ////console.log(tenantData.tenant_firstName, "abcd");
       // setTenantDetails(tenantData);
       setRentaldata(tenantData);
@@ -705,6 +708,7 @@ const ApplicantSummary = () => {
             return applicant._id === id;
           });
           //console.log(matchedApplicant, "matchedApplicant");
+          console.log(matchedApplicant, "matchedApplicant");
           setMatchedApplicant(matchedApplicant);
           setMoveIn(matchedApplicant.applicant_status[0]);
           setApplicantLoader(false);
@@ -1049,17 +1053,23 @@ const ApplicantSummary = () => {
     try {
       const formData = {
         applicant_notes: newNote,
-        applicant_file: newFile,
+          applicant_file: newFile.name,
       };
+
+      console.log(formData,'formData')
       // formData.append('applicant_notes', newNote);
       // formData.append('applicant_file', newFile);
       console.log((formData.applicant_file), "yash")
-      const response = await axios.put(`${baseUrl}/applicant/applicant/note_attachment/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
+      const response = await axios.put(`${baseUrl}/applicant/applicant/note_attachment/${id}`, formData);
+      if (response.data) {
+        console.log(response.data, "response.data")
+        setIsAttachFile(false);
+        getApplicantData();
+        // Handle success, update state, show a success message, etc.
+      } else {
+        // Handle error, show an error message, etc.
+        console.log('error')
+      }
       console.log('Response:', response.data);
       // Handle success, update state, show a success message, etc.
     } catch (error) {
@@ -1372,6 +1382,7 @@ const ApplicantSummary = () => {
                 })}
               </DropdownMenu>
             </Dropdown>
+
             <LoadingButton
               variant="contained"
               loading={loading}
@@ -1386,6 +1397,7 @@ const ApplicantSummary = () => {
                 handleClick();
                 // navigate("/admin/RentRoll");
               }}
+              disabled={ applicantData && applicantData.isMovedin===true}
             >
               Move in
             </LoadingButton>
@@ -1782,7 +1794,7 @@ const ApplicantSummary = () => {
                             </Button>
                           </div>
 
-                          {combinedData.length > 0 && (
+                          {matchedApplicant?.applicant_NotesAndFile.length > 0 && (
                             <>
                               <Row
                                 className="w-100 my-3"
@@ -1811,8 +1823,9 @@ const ApplicantSummary = () => {
                                 <Col>File</Col>
                                 <Col>Clear</Col>
                               </Row>
+                              {console.log(matchedApplicant,'matchedApplicnt')}
 
-                              {combinedData.map((data, index) => (
+                              {matchedApplicant?.applicant_NotesAndFile.map((data, index) => (
                                 <Row
                                   className="w-100 mt-1"
                                   style={{
@@ -1822,9 +1835,9 @@ const ApplicantSummary = () => {
                                   }}
                                   key={index} // Ensure to provide a unique key when iterating in React
                                 >
-                                  <Col>{data.note && <p>{data.note}</p>}</Col>
+                                  <Col>{data.applicant_file && <p>{data.applicant_file}</p>}</Col>
                                   <Col>
-                                    {data.file && (
+                                    {data.applicant_notes && (
                                       <div
                                         style={{
                                           display: "flex",
@@ -1833,11 +1846,11 @@ const ApplicantSummary = () => {
                                       >
                                         <p
                                           onClick={() =>
-                                            openFileInNewTab(data.file)
+                                            openFileInNewTab(data.applicant_notes)
                                           }
                                         >
                                           <FileOpenIcon />
-                                          {data.file.name}
+                                          {data.applicant_notes}
                                         </p>
                                       </div>
                                     )}
@@ -2736,6 +2749,7 @@ const ApplicantSummary = () => {
                     <Col>
                       {/* {Array.isArray(rentaldata) ? ( */}
                       <Grid container spacing={2}>
+                        {console.log(rentaldata, "rentaldata")}
                         {rentaldata.map((tenant, index) => (
                           <Grid
                             item

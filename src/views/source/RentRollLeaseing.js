@@ -1522,6 +1522,8 @@ const RentRollLeaseing = () => {
           lastName: applicantData.tenant_lastName || "",
           mobileNumber: applicantData.tenant_mobileNumber || "",
         });
+
+        console.log(applicantData,'applicantData from 1526')
         setPropertyId(applicantData.property_id);
         setSelectPaymentMethodDropdawn(applicantData.paymentMethod || "Select");
 
@@ -2150,7 +2152,11 @@ const RentRollLeaseing = () => {
             );
             if (res.data.statusCode === 200) {
               console.log(res.data.data, "response after adding data");
-              debugger;
+              // debugger;
+
+              updateApplicants();
+
+
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -2246,6 +2252,20 @@ const RentRollLeaseing = () => {
     }
   };
   console.log(entrySchema.values, "entry cahsdkajl;");
+
+  const updateApplicants = async () => {
+
+    // debugger
+    const url = `${baseUrl}/applicant/applicant/${applicantData._id}/movein`;
+   
+    const res = await axios.put(url);
+    if (res.data.statusCode === 200) {
+      console.log(res.data.data, "response after adding data");
+    }
+    else{
+      console.log(res.data.data, "response after adding data");
+    }
+  }
 
   const postCharge = async (unit, unitId, tenantId) => {
     const chargeObject = {
@@ -2904,9 +2924,7 @@ const RentRollLeaseing = () => {
                                 isDateUnavailable
                               );
                             }}
-                            value={moment(entrySchema.values.start_date).format(
-                              "YYYY-MM-DD"
-                            )}
+                            value={entrySchema.values.start_date}
                           />
                           {isStartDateUnavailable && (
                             <div style={{ color: "red", marginTop: "8px" }}>
@@ -2954,12 +2972,8 @@ const RentRollLeaseing = () => {
                                 isDateUnavailable
                               );
                             }}
-                            value={moment(entrySchema.values.end_date).format(
-                              "YYYY-MM-DD"
-                            )}
-                            min={moment(entrySchema.values.start_date).format(
-                              "YYYY-MM-DD"
-                            )}
+                            value={entrySchema.values.end_date}
+                            min={entrySchema.values.start_date}
                           />
                           {isDateUnavailable && (
                             <div style={{ color: "red", marginTop: "8px" }}>
