@@ -2319,7 +2319,7 @@ const RentRollLeaseing = () => {
             {
               type: "Charge",
               charge_type: "Rent",
-              //account: entrySchema.values.account,
+              account: "Last Month's Rent",
               amount: parseFloat(entrySchema.values.amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: entrySchema.values.rent_cycle,
@@ -2363,7 +2363,7 @@ const RentRollLeaseing = () => {
             {
               type: "Charge",
               charge_type: "Security Deposit",
-              account: "Security Deposit",
+              account: "Security Deposit Liability",
               amount: parseFloat(Security_amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",

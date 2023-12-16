@@ -26,6 +26,11 @@ const TenantDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
+  const [rental, setRental] = useState("");
+  const [unit, setUnit] = useState("");
+  const [unitId, setUnitId] = useState(null);
+  const [propertyId, setPropertyId] = useState(null);
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -38,12 +43,100 @@ const TenantDetailPage = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-  const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  
+  // const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  // const getTenantData = async () => {
+  //   try {
+  //     const response = await axios.get(apiUrl);
+  //     console.log(response.data.data, "huihui");
+  //     const rental = response.data.data.entries.rental_adress;
+  //     const unit = response.data.data.entries.rental_units;
+  //     const unitId = response.data.data.entries.unit_id;
+  //     const propertysId = response.data.data.entries.property_id;
+  //     setTenantDetails(response.data.data);
+  //     setRental(rental);
+  //     setPropertyId(propertysId);
+  //     setUnit(unit);
+  //     setUnitId(unitId);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error("Error fetching tenant details:", error);
+  //     setError(error);
+  //     setLoading(false);
+  //   }
+  // };
+
   const getTenantData = async () => {
     try {
+      const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
       const response = await axios.get(apiUrl);
-      console.log(response.data.data, "huihui");
+      console.log(response.data.data, "huihyui");
       setTenantDetails(response.data.data);
+      //console.log(response.data.data, "hiiii");
+      const rental = response.data.data.entries.rental_adress;
+      const unit = response.data.data.entries.rental_units;
+      const unitId = response.data.data.entries.unit_id;
+      const propertysId = response.data.data.entries.property_id;
+      console.log(propertysId, "propertysId");
+
+      setRental(rental);
+      // setUnit(unit);
+      // setUnitId(unitId);
+      setPropertyId(propertysId);
+      console.log(response.data.data.entries.rental_units, "res.daya dhstab");
+      if (unitId && unit) {
+        console.log("1");
+        const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${propertysId}&unit=${unit}&tenant_id=${tenantId}`;
+        console.log(url, "huewfjnmk");
+        axios
+          .get(url)
+          .then((response) => {
+            setLoader(false);
+
+            if (response.data && response.data.data) {
+              const mergedData = response.data.data;
+              console.log(mergedData, "mergedData1");
+
+              setGeneralLedgerData(mergedData[0]?.unit[0]);
+            } else {
+              console.error("Unexpected response format:", response.data);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
+      } else {
+        console.log("2");
+
+        const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${tenantId}`;
+
+        console.log(url, "huewfjnmk");
+
+        axios
+          .get(url)
+          .then((response) => {
+            setLoader(false);
+
+            if (response.data && response.data.data) {
+              const mergedData = response.data.data;
+              console.log(mergedData, "mergedData2");
+
+              setGeneralLedgerData(mergedData[0]?.unit[0]);
+            } else {
+              console.error("Unexpected response format:", response.data);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+          });
+      }
+       setUnitId(unitId);
+
+      // setPropertyId(propertyId);
+
+      setRental(rental);
+      // console.log(rental, "hell");
+      setUnit(unit);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -324,7 +417,7 @@ const TenantDetailPage = () => {
                               </a>
                             </Col>
                             <Col style={{ textTransform: "lowercase" }}>
-                              <a href={`mailto:${tenantDetails.tenant_email}`}>
+                              <a href={`${tenantDetails.tenant_email}`}>
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="15"
@@ -520,7 +613,7 @@ const TenantDetailPage = () => {
                           </Row>
                           <Row className="w-100 my-3 text-left">
                             <Col>
-                              <a href="#">Reset Pasword</a>
+                              {/* <a href="#">Reset Password</a> */}
                             </Col>
                           </Row>
                         </div>
@@ -680,7 +773,15 @@ const TenantDetailPage = () => {
                               fontWeight: "bold",
                             }}
                           >
-                            {"$" + Math.abs(balance)}
+                            {GeneralLedgerData &&
+                                          GeneralLedgerData.paymentAndCharges &&
+                                          GeneralLedgerData.paymentAndCharges
+                                            .length > 0 &&
+                                          "$" +
+                                            Math.abs(
+                                              GeneralLedgerData
+                                                .paymentAndCharges[0].Total
+                                            )}
                           </Typography>
                         </div>
                         <hr
@@ -697,7 +798,7 @@ const TenantDetailPage = () => {
                             {/* {paymentData.entries.map(
                                   (entry, index) => ( */}
                             <div className="entry-container">
-                              <div
+                              {/* <div
                                 style={{
                                   display: "flex",
                                   flexDirection: "row",
@@ -717,7 +818,7 @@ const TenantDetailPage = () => {
                                   Prepayments:
                                 </Typography>
                                 <Typography sx={{ fontSize: 14 }}>
-                                  {/* entry.amount */}
+                                  entry.amount
                                 </Typography>
                               </div>
                               <div
@@ -739,7 +840,7 @@ const TenantDetailPage = () => {
                                 >
                                   Deposite held:
                                 </Typography>
-                              </div>
+                              </div> */}
                               <div
                                 style={{
                                   display: "flex",
@@ -821,22 +922,29 @@ const TenantDetailPage = () => {
                             marginTop: "10px",
                           }}
                         >
-                          <Button
-                            color="success"
-                            // onClick={handleClick}
+                         <Button
+                            color="primary"
+                            ////  href="#rms"
+                            onClick={() =>
+                              navigate(
+                                `/admin/AddPayment/${tenantId}/${entryIndex}`,
+                                {
+                                  state: {
+                                    unit_name: unit,
+                                    unit_id: unitId,
+                                    property_id: propertyId,
+                                    rental_adress: rental,
+                                  },
+                                }
+                              )
+                            }
                             style={{
-                              fontSize: "13px",
                               background: "white",
-                              color: "green",
-                              "&:hover": {
-                                background: "green",
-                                color: "white",
-                              },
+                              color: "blue",
+                              marginRight: "10px",
                             }}
                           >
-                            <Link to={`/admin/AddPayment/`} onClick={(e) => {}}>
-                              Receive Payment
-                            </Link>
+                            Receive Payment
                           </Button>
                           {myData1.map((item) => (
                             <>

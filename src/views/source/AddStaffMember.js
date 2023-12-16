@@ -384,6 +384,7 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
+                  <Row>
                   <button
                     type="submit"
                     className="btn btn-primary ml-4"
@@ -401,6 +402,8 @@ const AddStaffMember = () => {
                   >
                     Cancel
                   </button>
+                  </Row>
+                  
                 </Form>
                 <br />
               </CardBody>
