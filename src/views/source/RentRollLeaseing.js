@@ -426,7 +426,7 @@ const RentRollLeaseing = () => {
         firstName: tenantParts[0],
         lastName: tenantParts[1],
         mobileNumber: tenantParts[2],
-        tenant_password:tenantParts[11],
+        tenant_password: tenantParts[11],
 
         // textpayerid: tenantParts[3],
         // birthdate: tenantParts[4],
@@ -1361,7 +1361,7 @@ const RentRollLeaseing = () => {
   let entrySchema = useFormik({
     initialValues: {
       rental_adress: "",
-      tenant_residentStatus:false,
+      tenant_residentStatus: false,
       lease_type: "",
       rental_units: "",
       unit_id: "",
@@ -2025,7 +2025,8 @@ const RentRollLeaseing = () => {
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
 
-          tenant_residentStatus: entrySchema.values.tenant_residentStatus || false,
+          tenant_residentStatus:
+            entrySchema.values.tenant_residentStatus || false,
           rentalOwner_firstName: ownerData.rentalOwner_firstName,
           rentalOwner_lastName: ownerData.rentalOwner_lastName,
           rentalOwner_primaryemail: ownerData.rentalOwner_email,
@@ -2261,7 +2262,7 @@ const RentRollLeaseing = () => {
             {
               type: "Charge",
               charge_type: "Rent",
-              //account: entrySchema.values.account,
+              account: "Last Month's Rent",
               amount: parseFloat(entrySchema.values.amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: entrySchema.values.rent_cycle,
@@ -2269,7 +2270,7 @@ const RentRollLeaseing = () => {
               date: moment().format("YYYY-MM-DD"),
               memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
-              isPaid:false,
+              isPaid: false,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
                 " " +
@@ -2305,7 +2306,7 @@ const RentRollLeaseing = () => {
             {
               type: "Charge",
               charge_type: "Security Deposit",
-              account: "Security Deposit",
+              account: "Security Deposit Liability",
               amount: parseFloat(Security_amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",
@@ -2313,7 +2314,7 @@ const RentRollLeaseing = () => {
               date: moment().format("YYYY-MM-DD"),
               memo: "Security Deposit",
               tenant_id: tenantId,
-              isPaid:false,
+              isPaid: false,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
                 " " +
@@ -2371,7 +2372,7 @@ const RentRollLeaseing = () => {
               rent_cycle: "",
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
-              isPaid:false,
+              isPaid: false,
               memo:
                 chargeType === "Recurring"
                   ? item?.recuringmemo || ""
@@ -4979,8 +4980,8 @@ const RentRollLeaseing = () => {
                           ) : null}
                         </div>
                         {tenantsSchema.errors &&
-                        tenantsSchema.errors?.tenant_password && entrySchema.submitCount>0 
-                        ? (
+                        tenantsSchema.errors?.tenant_password &&
+                        entrySchema.submitCount > 0 ? (
                           <div style={{ color: "red" }}>
                             {tenantsSchema.errors.tenant_password}
                             {/* {console.log(tenantsFormik.errors.tenant_password)} */}
@@ -6237,30 +6238,35 @@ const RentRollLeaseing = () => {
                     </Col>
 
                     <FormGroup>
-                    
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          color="primary"
-                          
-                          value={entrySchema.values.tenant_residentStatus}
-                          onChange={(e) => {
-                            entrySchema.setFieldValue(
-                              "tenant_residentStatus",
-                              e.target.checked
-                            );
-                            console.log( entrySchema.setFieldValue(
-                              "tenant_residentStatus",
-                              e.target.checked),"setFieldValue");
-                            console.log(entrySchema.values.tenant_residentStatus,"value");
-                            console.log(e.target.checked,"e.target.checked");
-                          }}
-                        />
-                      }
-                      // label="End"
-                      labelPlacement="end"
-                    />
-                  </FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            color="primary"
+                            value={entrySchema.values.tenant_residentStatus}
+                            onChange={(e) => {
+                              entrySchema.setFieldValue(
+                                "tenant_residentStatus",
+                                e.target.checked
+                              );
+                              console.log(
+                                entrySchema.setFieldValue(
+                                  "tenant_residentStatus",
+                                  e.target.checked
+                                ),
+                                "setFieldValue"
+                              );
+                              console.log(
+                                entrySchema.values.tenant_residentStatus,
+                                "value"
+                              );
+                              console.log(e.target.checked, "e.target.checked");
+                            }}
+                          />
+                        }
+                        // label="End"
+                        labelPlacement="end"
+                      />
+                    </FormGroup>
                   </Row>
 
                   <Row>
@@ -6346,16 +6352,14 @@ const RentRollLeaseing = () => {
                     </button>
                   ) : (
                     <>
-
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                    >
-                      Create Lease
-                    </button>
-                    
-                      </>
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "pointer" }}
+                      >
+                        Create Lease
+                      </button>
+                    </>
                   )}
                   <Button
                     color="primary"
@@ -6372,13 +6376,13 @@ const RentRollLeaseing = () => {
                     Cancel
                   </Button>
                   {tenantsSchema.errors &&
-                      tenantsSchema.errors?.tenant_password && entrySchema.submitCount>0 
-                      ? (
-                        <div style={{ color: "red" }}>
-                          {/* {console.log(tenantsFormik.errors.tenant_password)} */}
-                          Tenant Password is missing
-                        </div>
-                      ) : null}
+                  tenantsSchema.errors?.tenant_password &&
+                  entrySchema.submitCount > 0 ? (
+                    <div style={{ color: "red" }}>
+                      {/* {console.log(tenantsFormik.errors.tenant_password)} */}
+                      Tenant Password is missing
+                    </div>
+                  ) : null}
                 </Form>
               </CardBody>
             </Card>

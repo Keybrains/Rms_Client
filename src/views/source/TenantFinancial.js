@@ -37,6 +37,7 @@ import Header from "components/Headers/Header";
 import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
 import moment from "moment";
+
 const TenantFinancial = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [rental_adress, setRentalAddress] = useState([]);
@@ -882,7 +883,7 @@ const TenantFinancial = () => {
                                   className="form-control-label"
                                   htmlFor="input-property"
                                 >
-                                  Cvv *
+                                  CVV *
                                 </label>
                                 <Input
                                   type="number"

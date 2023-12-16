@@ -281,6 +281,7 @@ const AddPayment = () => {
   }
   console.log(generalledgerFormik?.values?.date?.slice(5, 7) + "-" + generalledgerFormik?.values?.date?.slice(0, 4), 'clasujdnasdasd')
   // console.log(property,'proeprty')
+
   const handleSubmit = async (values) => {
     const arrayOfNames = file.map((item) => item.name);
     const rentalAddress = generalledgerFormik.values.rental_adress;

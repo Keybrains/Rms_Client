@@ -243,7 +243,10 @@ const PropertyType = () => {
       const isPropertyTypeMatch = property.property_type
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-      return isPropertyTypeMatch;
+      const isPropertySubTypeMatch = property.propertysub_type
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      return isPropertyTypeMatch,isPropertySubTypeMatch;
     });
   };
 

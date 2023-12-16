@@ -114,7 +114,8 @@ const Leaseing = () => {
   const [selectedOption, setSelectedOption] = useState("Tenant");
   // const [selectedValue, setSelectedValue] = useState(null);
   const [showForm, setShowForm] = useState("Tenant");
-  const [paymentOptionDropdawnOpen, setPaymentOptionDropdawnOpen] = useState(false)
+  const [paymentOptionDropdawnOpen, setPaymentOptionDropdawnOpen] =
+    useState(false);
 
   const [accountNames, setAccountNames] = useState([]);
   const [RecAccountNames, setRecAccountNames] = useState([]);
@@ -142,10 +143,7 @@ const Leaseing = () => {
     "Quarterly",
     "Yearly",
   ];
-  const selectPaymentMethod = [
-    "Manually",
-    "AutoPayment",
-  ];
+  const selectPaymentMethod = ["Manually", "AutoPayment"];
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -164,7 +162,8 @@ const Leaseing = () => {
   const toggle11 = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
-  const paymentMethodtoggle = () => setPaymentOptionDropdawnOpen((prevState) => !prevState);
+  const paymentMethodtoggle = () =>
+    setPaymentOptionDropdawnOpen((prevState) => !prevState);
 
   const handleClick = (event) => {
     setrentincDropdownOpen1((current) => !current);
@@ -260,13 +259,13 @@ const Leaseing = () => {
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [ownerData, setOwnerData] = useState({});
   const [propertyId, setPropertyId] = useState("");
-  console.log(propertyId, "propertyId")
+  console.log(propertyId, "propertyId");
 
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress);
     entrySchema.values.rental_adress = property.rental_adress;
     setPropertyId(property._id);
-    console.log(property._id, "------------------------------------")
+    console.log(property._id, "------------------------------------");
     setOwnerData(property);
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
@@ -279,7 +278,8 @@ const Leaseing = () => {
   };
   console.log(ownerData, "ownerData");
 
-  const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] = useState("")
+  const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] =
+    useState("");
   const handleselectedPaymetMethod = (paymentMethod) => {
     setSelectPaymentMethodDropdawn(paymentMethod);
     // localStorage.setItem("leasetype", leasetype);
@@ -297,10 +297,10 @@ const Leaseing = () => {
     // localStorage.setItem("leasetype", leasetype);
   };
 
-  const handleUnitSelect = (selectedUnit,unitId) => {
+  const handleUnitSelect = (selectedUnit, unitId) => {
     setSelectedUnit(selectedUnit);
     entrySchema.values.rental_units = selectedUnit;
-    console.log(selectedUnit, "selectedUnit")
+    console.log(selectedUnit, "selectedUnit");
     entrySchema.setFieldValue("unit_id", unitId);
 
     // entrySchema.values.unit_id = unitId;
@@ -447,7 +447,8 @@ const Leaseing = () => {
       recuring_amount: recurringChargeSchema.values.recuring_amount,
       recuring_account: recurringChargeSchema.values.recuring_account,
       // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-      recuringmemo: recurringChargeSchema.values.recuringmemo || "Recurring Charge",
+      recuringmemo:
+        recurringChargeSchema.values.recuringmemo || "Recurring Charge",
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
@@ -479,7 +480,8 @@ const Leaseing = () => {
       onetime_amount: oneTimeChargeSchema.values.onetime_amount,
       onetime_account: oneTimeChargeSchema.values.onetime_account,
       // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-      onetime_memo: oneTimeChargeSchema.values.onetime_memo || "One Time Charge",
+      onetime_memo:
+        oneTimeChargeSchema.values.onetime_memo || "One Time Charge",
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
@@ -651,10 +653,7 @@ const Leaseing = () => {
     console.log(values, "values");
     try {
       // values["property_type"] = localStorage.getItem("propertyType");
-      const res = await axios.post(
-        `${baseUrl}/addaccount/addaccount`,
-        values
-      );
+      const res = await axios.post(`${baseUrl}/addaccount/addaccount`, values);
       if (res.data.statusCode === 200) {
         swal("", res.data.message, "success");
         navigate("/admin/Leaseing");
@@ -791,7 +790,7 @@ const Leaseing = () => {
         console.error("Network error:", error);
       });
   }, []);
-  console.log(propertyData,'propertyData')
+  console.log(propertyData, "propertyData");
   const fetchingAccountNames = async () => {
     // console.log("fetching account names");
     fetch(`${baseUrl}/addaccount/find_accountname`)
@@ -910,7 +909,7 @@ const Leaseing = () => {
         tenant_email: tenantInfo.tenant_email,
         tenant_password: tenantInfo.tenant_password,
         alternate_email: tenantInfo.alternate_email,
-        tenant_residentStatus:false,
+        tenant_residentStatus: false,
 
         // personal information
         birth_date: tenantInfo.birth_date,
@@ -1158,9 +1157,7 @@ const Leaseing = () => {
 
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit) {
-      let response = await axios.get(
-        `${baseUrl}/tenant/tenants`
-      );
+      let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
 
       let isUnavailable = false;
@@ -1236,10 +1233,10 @@ const Leaseing = () => {
   let entrySchema = useFormik({
     initialValues: {
       rental_adress: "",
-      tenant_residentStatus:false,
+      tenant_residentStatus: false,
       lease_type: "",
       rental_units: "",
-      unit_id:"",
+      unit_id: "",
       start_date: "",
       end_date: "",
       leasing_agent: "",
@@ -1624,8 +1621,8 @@ const Leaseing = () => {
   console.log(entrySchema.values, "entrySchema");
   console.log(ownerData, "ownerData");
   console.log(unitData, "unitData");
-  console.log(ownerData,'ownerData')
-  console.log(entrySchema.values,'entryushasfdnjisdgvfhjkhgvbjn')
+  console.log(ownerData, "ownerData");
+  console.log(entrySchema.values, "entryushasfdnjisdgvfhjkhgvbjn");
   const handleSubmit = async (values) => {
     // console.log(file, "values");
     // const arrayOfNames = Array.isArray(file)
@@ -1806,7 +1803,8 @@ const Leaseing = () => {
 
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
-          tenant_residentStatus: entrySchema.values.tenant_residentStatus || false,
+          tenant_residentStatus:
+            entrySchema.values.tenant_residentStatus || false,
           rentalOwner_firstName: ownerData.rentalOwner_firstName,
           rentalOwner_lastName: ownerData.rentalOwner_lastName,
           rentalOwner_primaryemail: ownerData.rentalOwner_email,
@@ -1832,7 +1830,6 @@ const Leaseing = () => {
         });
 
         if (filteredData) {
-        
           const putObject = {
             entries: tenantObject.entries,
           };
@@ -1842,11 +1839,11 @@ const Leaseing = () => {
           const res = await axios.put(
             `${baseUrl}/tenant/tenant/${tenantId}`,
             putObject
-            );
-            if (res.data.statusCode === 200) {
-              console.log(res.data.data, "clgtttt");
-              swal("", res.data.message, "success");
-              console.log(entrySchema.values,'hello')
+          );
+          if (res.data.statusCode === 200) {
+            console.log(res.data.data, "clgtttt");
+            swal("", res.data.message, "success");
+            console.log(entrySchema.values, "hello");
             const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
             // debugger;
@@ -1888,7 +1885,8 @@ const Leaseing = () => {
             } else {
               await postCharge("", "", tenantId);
               await postDeposit(
-                "","",
+                "",
+                "",
                 tenantId,
                 entrySchema.values.Security_amount
               );
@@ -1904,8 +1902,6 @@ const Leaseing = () => {
               }
             }
 
-
-
             navigate("/admin/TenantsTable");
           } else {
             swal("", res.data.message, "error");
@@ -1919,67 +1915,79 @@ const Leaseing = () => {
               tenantObject
             );
             if (res.data.statusCode === 200) {
-              console.log(res.data.data,'after post');
+              console.log(res.data.data, "after post");
 
               // debugger
               const delay = (ms) =>
-              new Promise((resolve) => setTimeout(resolve, ms));
+                new Promise((resolve) => setTimeout(resolve, ms));
 
-            // debugger;
-            if (entrySchema.values.unit_id) {
-              await postCharge(
-                res.data.data.rental_units,
-                res.data.data.unit_id,
-                res.data.data._id
-              );
-
-              await postDeposit(
-                res.data.data.rental_units,
-                res.data.data.unit_id,
-                res.data.data._id,
-                res.data.data.Security_amount
-              );
-
-              for (const item of recurringData) {
-                await postRecOneCharge(
+              // debugger;
+              if (entrySchema.values.unit_id) {
+                await postCharge(
                   res.data.data.rental_units,
                   res.data.data.unit_id,
-                   res.data.data._id,
-                  item,
-                  "Recurring"
+                  res.data.data._id
                 );
-                await delay(1000); // Delay for 3 seconds
-              }
 
-              for (const item of oneTimeData) {
-                await postRecOneCharge(
+                await postDeposit(
                   res.data.data.rental_units,
                   res.data.data.unit_id,
-                   res.data.data._id,
-                  item,
-                  "OneTime"
+                  res.data.data._id,
+                  res.data.data.Security_amount
                 );
-                await delay(1000); // Delay for 3 seconds
-              }
-            } else {
-              await postCharge("", "",  res.data.data._id);
-              await postDeposit(
-                "","",
-                res.data.data._id,
-                res.data.data.Security_amount
-              );
 
-              for (const item of recurringData) {
-                await postRecOneCharge("", "",  res.data.data._id, item, "Recurring");
-                await delay(1000); // Delay for 3 seconds
-              }
+                for (const item of recurringData) {
+                  await postRecOneCharge(
+                    res.data.data.rental_units,
+                    res.data.data.unit_id,
+                    res.data.data._id,
+                    item,
+                    "Recurring"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
 
+                for (const item of oneTimeData) {
+                  await postRecOneCharge(
+                    res.data.data.rental_units,
+                    res.data.data.unit_id,
+                    res.data.data._id,
+                    item,
+                    "OneTime"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
+              } else {
+                await postCharge("", "", res.data.data._id);
+                await postDeposit(
+                  "",
+                  "",
+                  res.data.data._id,
+                  res.data.data.Security_amount
+                );
 
-              for (const item of oneTimeData) {
-                await postRecOneCharge("", "",  res.data.data._id, item, "OneTime");
-                await delay(1000); // Delay for 3 seconds
+                for (const item of recurringData) {
+                  await postRecOneCharge(
+                    "",
+                    "",
+                    res.data.data._id,
+                    item,
+                    "Recurring"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
+
+                for (const item of oneTimeData) {
+                  await postRecOneCharge(
+                    "",
+                    "",
+                    res.data.data._id,
+                    item,
+                    "OneTime"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
               }
-            }
               swal("", res.data.message, "success");
               navigate("/admin/TenantsTable");
             } else {
@@ -2030,7 +2038,7 @@ const Leaseing = () => {
             {
               type: "Charge",
               charge_type: "Rent",
-              //account: entrySchema.values.account,
+              account: "Last Month's Rent",
               amount: parseFloat(entrySchema.values.amount),
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: entrySchema.values.rent_cycle,
@@ -2060,7 +2068,7 @@ const Leaseing = () => {
         console.log(err);
       });
   };
-  const postDeposit = async (unit, unitId, tenantId, Security_amount) =>{
+  const postDeposit = async (unit, unitId, tenantId, Security_amount) => {
     const chargeObject = {
       properties: {
         rental_adress: entrySchema.values.rental_adress,
@@ -2074,7 +2082,7 @@ const Leaseing = () => {
             {
               type: "Charge",
               charge_type: "Security Deposit",
-              account: "Security Deposit",
+              account: "Security Deposit Liability",
               amount: Security_amount,
               isPaid: false,
               rental_adress: entrySchema.values.rental_adress,
@@ -2102,7 +2110,7 @@ const Leaseing = () => {
       .catch((err) => {
         console.log(err);
       });
-  }
+  };
   const postRecOneCharge = async (unit, unitId, tenantId, item, chargeType) => {
     console.log(
       unit,
@@ -2137,7 +2145,7 @@ const Leaseing = () => {
                   : item?.onetime_amount || "",
               rental_adress: entrySchema.values.rental_adress,
               rent_cycle: "",
-              isPaid:false,
+              isPaid: false,
               month_year: moment().format("MM-YYYY"),
               date: moment().format("YYYY-MM-DD"),
               memo:
@@ -2425,52 +2433,61 @@ const Leaseing = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                     <Row>
-                    {selectedPropertyType && unitData && unitData[0] && unitData[0].rental_units && ( 
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-unit"
-                          style={{ marginLeft: "15px" }}
-                        >
-                          Unit *
-                        </label>
-                        <FormGroup style={{ marginLeft: "15px" }}>
-                          <Dropdown isOpen={unitDropdownOpen} toggle={toggle11}>
-                            <DropdownToggle caret>
-                              {selectedUnit ? selectedUnit : "Select Unit"}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              {unitData.length > 0 ? (
-                                unitData.map((unit) => (
-                                  <DropdownItem
-                                    key={unit._id}
-                                    onClick={() =>
-                                      handleUnitSelect(unit.rental_units,unit._id)
-                                    }
-                                  >
-                                    {unit.rental_units}
-                                  </DropdownItem>
-                                ))
-                              ) : (
-                                <DropdownItem disabled>
-                                  No units available
-                                </DropdownItem>
-                              )}
-                            </DropdownMenu>
-                            {entrySchema.errors &&
-                            entrySchema.errors?.rental_units &&
-                            entrySchema.touched &&
-                            entrySchema.touched?.rental_units &&
-                            entrySchema.values.rental_units === "" ? (
-                              <div style={{ color: "red" }}>
-                                {entrySchema.errors.rental_units}
-                              </div>
-                            ) : null}
-                          </Dropdown>
-                        </FormGroup>
-                      </FormGroup>
-                    )}
+                    <Row>
+                      {selectedPropertyType &&
+                        unitData &&
+                        unitData[0] &&
+                        unitData[0].rental_units && (
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-unit"
+                              style={{ marginLeft: "15px" }}
+                            >
+                              Unit *
+                            </label>
+                            <FormGroup style={{ marginLeft: "15px" }}>
+                              <Dropdown
+                                isOpen={unitDropdownOpen}
+                                toggle={toggle11}
+                              >
+                                <DropdownToggle caret>
+                                  {selectedUnit ? selectedUnit : "Select Unit"}
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  {unitData.length > 0 ? (
+                                    unitData.map((unit) => (
+                                      <DropdownItem
+                                        key={unit._id}
+                                        onClick={() =>
+                                          handleUnitSelect(
+                                            unit.rental_units,
+                                            unit._id
+                                          )
+                                        }
+                                      >
+                                        {unit.rental_units}
+                                      </DropdownItem>
+                                    ))
+                                  ) : (
+                                    <DropdownItem disabled>
+                                      No units available
+                                    </DropdownItem>
+                                  )}
+                                </DropdownMenu>
+                                {entrySchema.errors &&
+                                entrySchema.errors?.rental_units &&
+                                entrySchema.touched &&
+                                entrySchema.touched?.rental_units &&
+                                entrySchema.values.rental_units === "" ? (
+                                  <div style={{ color: "red" }}>
+                                    {entrySchema.errors.rental_units}
+                                  </div>
+                                ) : null}
+                              </Dropdown>
+                            </FormGroup>
+                          </FormGroup>
+                        )}
                     </Row>
                     <Row>
                       <Col lg="3">
@@ -2801,13 +2818,24 @@ const Leaseing = () => {
                                                 style={{
                                                   width: "100%",
                                                   borderCollapse: "collapse",
-                                                  
                                                 }}
                                               >
                                                 <thead>
                                                   <tr>
-                                                    <th style={{padding:"15px"}}>Tenant Name</th>
-                                                    <th style={{padding:"15px"}}>Select</th>
+                                                    <th
+                                                      style={{
+                                                        padding: "15px",
+                                                      }}
+                                                    >
+                                                      Tenant Name
+                                                    </th>
+                                                    <th
+                                                      style={{
+                                                        padding: "15px",
+                                                      }}
+                                                    >
+                                                      Select
+                                                    </th>
                                                   </tr>
                                                 </thead>
                                                 <tbody>
@@ -2829,7 +2857,14 @@ const Leaseing = () => {
                                                               "1px solid #ddd",
                                                           }}
                                                         >
-                                                          <td style={{paddingLeft:"15px",paddingTop:"15px"}}>
+                                                          <td
+                                                            style={{
+                                                              paddingLeft:
+                                                                "15px",
+                                                              paddingTop:
+                                                                "15px",
+                                                            }}
+                                                          >
                                                             <pre>
                                                               {
                                                                 tenant.tenant_firstName
@@ -2840,7 +2875,14 @@ const Leaseing = () => {
                                                               {`(${tenant.tenant_mobileNumber})`}
                                                             </pre>
                                                           </td>
-                                                          <td style={{paddingLeft:"15px",paddingTop:"15px"}}>
+                                                          <td
+                                                            style={{
+                                                              paddingLeft:
+                                                                "15px",
+                                                              paddingTop:
+                                                                "15px",
+                                                            }}
+                                                          >
                                                             {/* <FormControlLabel
                                                           control={  */}
                                                             <Checkbox
@@ -4574,14 +4616,13 @@ const Leaseing = () => {
                                 <Col>{selectedTenantData.mobileNumber}</Col>
                                 <Col>
                                   <EditIcon
-                                      onClick={() => {
-                                        setShowTenantTable(false);
-                                        setOpenTenantsDialog(true); 
-                                        setSelectedOption('Tenant')
-                                        setAlignment('Tenant');
-
-                                      }}
-                                    />
+                                    onClick={() => {
+                                      setShowTenantTable(false);
+                                      setOpenTenantsDialog(true);
+                                      setSelectedOption("Tenant");
+                                      setAlignment("Tenant");
+                                    }}
+                                  />
 
                                   <DeleteIcon
                                     onClick={() => {
@@ -4640,12 +4681,10 @@ const Leaseing = () => {
                                   <Col>{cosignerData.lastName}</Col>
                                   <Col>{cosignerData.mobileNumber}</Col>
                                   <Col>
-                                  <EditIcon
-                                        onClick={setOpenTenantsDialog}
-                                      />
-                                      <DeleteIcon
-                                        onClick={handleCosignerDelete}
-                                      />
+                                    <EditIcon onClick={setOpenTenantsDialog} />
+                                    <DeleteIcon
+                                      onClick={handleCosignerDelete}
+                                    />
                                   </Col>
                                 </Row>
                               </>
@@ -5863,24 +5902,28 @@ const Leaseing = () => {
                     </Col>
 
                     <FormGroup>
-                    
                       <FormControlLabel
-                      
                         control={
                           <Switch
                             color="primary"
-                            
                             value={entrySchema.values.tenant_residentStatus}
                             onChange={(e) => {
                               entrySchema.setFieldValue(
                                 "tenant_residentStatus",
                                 e.target.checked
                               );
-                              console.log( entrySchema.setFieldValue(
-                                "tenant_residentStatus",
-                                e.target.checked),"setFieldValue");
-                              console.log(entrySchema.values.tenant_residentStatus,"value");
-                              console.log(e.target.checked,"e.target.checked");
+                              console.log(
+                                entrySchema.setFieldValue(
+                                  "tenant_residentStatus",
+                                  e.target.checked
+                                ),
+                                "setFieldValue"
+                              );
+                              console.log(
+                                entrySchema.values.tenant_residentStatus,
+                                "value"
+                              );
+                              console.log(e.target.checked, "e.target.checked");
                             }}
                           />
                         }
@@ -5889,50 +5932,50 @@ const Leaseing = () => {
                       />
                     </FormGroup>
                   </Row>
-                 
-                    <Row>
-                      <Col md="12">
+
+                  <Row>
+                    <Col md="12">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Select Payment Method
+                        </label>
                         <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
+                          <Dropdown
+                            isOpen={paymentOptionDropdawnOpen}
+                            toggle={paymentMethodtoggle}
                           >
-                            Select Payment Method
-                          </label>
-                          <FormGroup>
-                            <Dropdown
-                              isOpen={paymentOptionDropdawnOpen}
-                              toggle={paymentMethodtoggle}
+                            <DropdownToggle caret style={{ width: "100%" }}>
+                              {selectPaymentMethodDropdawn
+                                ? selectPaymentMethodDropdawn
+                                : "Select"}
+                            </DropdownToggle>
+                            <DropdownMenu
+                              style={{ width: "100%" }}
+                              name="paymentMethod"
+                              onBlur={entrySchema.handleBlur}
+                              onChange={(e) => entrySchema.handleChange(e)}
+                              value={entrySchema.values.paymentMethod}
                             >
-                              <DropdownToggle caret style={{ width: "100%" }}>
-                                {selectPaymentMethodDropdawn
-                                  ? selectPaymentMethodDropdawn
-                                  : "Select"}
-                              </DropdownToggle>
-                              <DropdownMenu
-                                style={{ width: "100%" }}
-                                name="paymentMethod"
-                                onBlur={entrySchema.handleBlur}
-                                onChange={(e) => entrySchema.handleChange(e)}
-                                value={entrySchema.values.paymentMethod}
-                              >
-                                {selectPaymentMethod.map((option) => (
-                                  <DropdownItem
-                                    key={option}
-                                    onClick={() =>
-                                      handleselectedPaymetMethod(option)
-                                    }
-                                  >
-                                    {option}
-                                  </DropdownItem>
-                                ))}
-                              </DropdownMenu>
-                            </Dropdown>
-                          </FormGroup>
+                              {selectPaymentMethod.map((option) => (
+                                <DropdownItem
+                                  key={option}
+                                  onClick={() =>
+                                    handleselectedPaymetMethod(option)
+                                  }
+                                >
+                                  {option}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
+                          </Dropdown>
                         </FormGroup>
-                      </Col>
-                    </Row>
-                
+                      </FormGroup>
+                    </Col>
+                  </Row>
+
                   {/* <Button
                   color="primary"
                  //  href="#rms"
