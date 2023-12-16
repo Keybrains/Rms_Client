@@ -276,7 +276,7 @@ const Leaseing = () => {
       console.error("Error handling selected property:", error);
     }
   };
-  console.log(ownerData, "ownerData");
+  // console.log(ownerData, "ownerData");
 
   const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] =
     useState("");
@@ -297,12 +297,13 @@ const Leaseing = () => {
     // localStorage.setItem("leasetype", leasetype);
   };
 
-  const handleUnitSelect = (selectedUnit, unitId) => {
+  //shivam function
+  const handleUnitSelect = (selectedUnit,unitId) => {
     setSelectedUnit(selectedUnit);
     entrySchema.values.rental_units = selectedUnit;
-    console.log(selectedUnit, "selectedUnit");
+   // console.log(selectedUnit, "selectedUnit")
     entrySchema.setFieldValue("unit_id", unitId);
-
+    // console.log(unitId, "unitId--------------------------")
     // entrySchema.values.unit_id = unitId;
   };
 
@@ -412,7 +413,7 @@ const Leaseing = () => {
     } else {
       setSelectedTenants([]);
       const selectedTenant = selectedTenants[0];
-      console.log(selectedTenants, "selectedTenants");
+      // console.log(selectedTenants, "selectedTenants");
       const tenantParts = selectedTenant.split(" ");
       const tenantDetails = {
         firstName: tenantParts[0],
@@ -650,7 +651,7 @@ const Leaseing = () => {
     values["parent_account"] = selectedAccountLevel;
     values["fund_type"] = selectedFundType;
 
-    console.log(values, "values");
+    // console.log(values, "values");
     try {
       // values["property_type"] = localStorage.getItem("propertyType");
       const res = await axios.post(`${baseUrl}/addaccount/addaccount`, values);
@@ -751,7 +752,6 @@ const Leaseing = () => {
       .then((res) => {
         //setImgLoader(false);
         const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        console.log(imagePath, "imagePath");
         // console.log(imagePath, "imagePath");
         // setFile(imagePath);
       })
@@ -767,7 +767,7 @@ const Leaseing = () => {
   };
 
   const handleOpenFile = (item) => {
-    console.log(item, "item");
+    // console.log(item, "item");
     const url = URL.createObjectURL(item);
     window.open(url, "_blank");
   };
@@ -777,7 +777,7 @@ const Leaseing = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
-          console.log(data.data, "gdasga");
+          // console.log(data.data, "gdasga");
           setPropertyData(data.data);
           // console.log(data.data, "gdasga");
         } else {
@@ -924,7 +924,7 @@ const Leaseing = () => {
         emergency_PhoneNumber: tenantInfo.emergency_PhoneNumber,
       });
       // setShowTenantTable(false);
-      console.log(tenantInfo.tenant_firstName, "yup", tenantsSchema.values);
+      // console.log(tenantInfo.tenant_firstName, "yup", tenantsSchema.values);
     } else {
       // console.log(selectedTenants)
       setSelectedTenants(
@@ -1006,7 +1006,7 @@ const Leaseing = () => {
     }),
     onSubmit: (values) => {
       handleAdd(values);
-      console.log(values, "values");
+      // console.log(values, "values");
     },
   });
 
@@ -1188,7 +1188,7 @@ const Leaseing = () => {
   };
 
   useEffect(() => {
-    console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
+    // console.log("isDateUnavailable (from useEffect):", isDateUnavailable);
   }, [isDateUnavailable]);
 
   let recurringChargeSchema = useFormik({
@@ -1373,7 +1373,7 @@ const Leaseing = () => {
       // console.log(values, "values");
     },
   });
-  console.log(tenantsSchema, "tenantsSchema.values");
+  // console.log(tenantsSchema, "tenantsSchema.values");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1537,7 +1537,7 @@ const Leaseing = () => {
 
           setRecurringData(matchedLease.recurring_charges);
           setOneTimeData(matchedLease.one_time_charges);
-          console.log(matchedLease, "yush");
+          // console.log(matchedLease, "yush");
           // leaseFormik.setValues({
           //   entries: [
           //     {
@@ -1720,7 +1720,7 @@ const Leaseing = () => {
 
     //   entries: entriesArray,
     // };
-    console.log(tenantsSchema.values, "tenantsSchema.values");
+    // console.log(tenantsSchema.values, "tenantsSchema.values");
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -1815,11 +1815,12 @@ const Leaseing = () => {
         },
       ],
     };
-    console.log(tenantObject, "tenantObject");
+
+    // console.log(tenantObject, "tenantObject");
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
-        console.log(res.data.data, "allTenants");
+        // console.log(res.data.data, "allTenants");
         const allTenants = res.data.data;
         const filteredData = allTenants.find((item) => {
           return (
@@ -1835,7 +1836,7 @@ const Leaseing = () => {
           };
 
           const tenantId = filteredData._id;
-          console.log(tenantId, "tenantId");
+          // console.log(tenantId, "tenantId");
           const res = await axios.put(
             `${baseUrl}/tenant/tenant/${tenantId}`,
             putObject
@@ -1909,7 +1910,7 @@ const Leaseing = () => {
           handleResponse(res);
         } else {
           if (id === undefined) {
-            console.log(tenantObject, "leaseObject");
+            // console.log(tenantObject, "leaseObject");
             const res = await axios.post(
               `${baseUrl}/tenant/tenant`,
               tenantObject

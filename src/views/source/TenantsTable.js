@@ -422,7 +422,7 @@ const TenantsTable = ({ tenantDetails }) => {
                   <tbody>
                     {filterTenantsBySearch().map((tenant) => (
                       <>
-                      {console.log(filterTenantsBySearch(),'filterTenantsBySearch')}
+                      {/* {console.log(filterTenantsBySearch(),'filterTenantsBySearch')} */}
                         <tr
                           key={tenant._id}
                           onClick={() =>
