@@ -2577,7 +2577,8 @@ const Rentals = () => {
                                       cursor: "pointer",
                                       position: "absolute",
                                       right: "10px",
-                                      display: selectedProp.ismultiunit ? "block" : "none"
+                                      display: selectedProp.ismultiunit ? "block" : "none",
+                                      // marginBottom: "20px", 
                                     }}
                                     onClick={() => {
                                       deleteResidentialUnit(residentialIndex);
@@ -2587,7 +2588,7 @@ const Rentals = () => {
                                     lg="3"
                                     style={
                                       selectedProp.ismultiunit
-                                        ? { display: "block" }
+                                        ? { display: "block",marginTop: "20px" }
                                         : { display: "none" }
                                     }
                                   >
