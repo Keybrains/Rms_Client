@@ -60,7 +60,7 @@ const StaffMember = () => {
     setEditDialogOpen(false);
     setEditingStaffMember(null);
   };
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -190,10 +190,10 @@ const StaffMember = () => {
 
   const filterTenantsBySearch = () => {
     if (searchQuery === undefined) {
-      return paginatedData;
+      return StaffMemberData;
     }
 
-    return paginatedData.filter((staff) => {
+    return StaffMemberData.filter((staff) => {
       const isNameMatch = staff.staffmember_name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
@@ -203,6 +203,12 @@ const StaffMember = () => {
         .includes(searchQuery.toLowerCase());
       return isNameMatch || isDesignationMatch;
     });
+  };
+
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterTenantsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
   };
 
   return (
@@ -221,7 +227,7 @@ const StaffMember = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/admin/AddStaffMember")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -275,17 +281,19 @@ const StaffMember = () => {
                       <th scope="col">Contact</th>
                       <th scope="col">Mail Id</th>
                       <th scope="col">Created at</th>
+                      <th scope="col">Updated at</th>
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filterTenantsBySearch().map((staff) => (
+                    {filterTenantsBySearchAndPage().map((staff) => (
                       <tr key={staff._id}>
                         <td>{staff.staffmember_name}</td>
                         <td>{staff.staffmember_designation}</td>
                         <td>{staff.staffmember_phoneNumber}</td>
                         <td>{staff.staffmember_email}</td>
                         <td>{staff.createAt}</td>
+                        <td>{staff.updateAt ? staff.updateAt : '-'}</td>
                         <td>
                           <div style={{ display: "flex" }}>
                             <div

@@ -52,10 +52,10 @@ const TenantsTable = ({ tenantDetails }) => {
     try {
       let response = await axios.get(`${baseUrl}/tenant/tenants`);
       let data = response.data.data;
-  
+
       // Reverse the data order
       let reversedData = data.reverse();
-  
+
       setLoader(false);
       setTenantsDate(reversedData);
       setTotalPages(Math.ceil(reversedData.length / pageItem));
@@ -65,8 +65,8 @@ const TenantsTable = ({ tenantDetails }) => {
       console.error('Error fetching tenants data:', error);
     }
   };
-  
-   
+
+
 
   React.useEffect(() => {
     getTenantsDate();
@@ -129,10 +129,9 @@ const TenantsTable = ({ tenantDetails }) => {
 
   const filterTenantsBySearch = () => {
     if (searchQuery === undefined) {
-      return paginatedData;
+      return tentalsData;
     }
-    //console.log(paginatedData);
-    return paginatedData.filter((tenant) => {
+    return tentalsData.filter((tenant) => {
       if (!tenant.entries) {
         return false; // If entries is undefined, exclude this tenant
       }
@@ -160,25 +159,12 @@ const TenantsTable = ({ tenantDetails }) => {
       );
     });
   };
-  // const filterTenantsBySearch = () => {
-  //   if (searchQuery === undefined) {
-  //     return tentalsData;
-  //   }
 
-  //   return tentalsData.filter((tenant) => {
-  //     const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
-  //     const rentalAddress = tenant.entries && tenant.entries.rental_adress;
-  //     const leaseType = tenant.entries && tenant.entries.lease_type;
-
-  //     return (
-  //       (rentalAddress && rentalAddress.toLowerCase().includes(searchQuery.toLowerCase())) ||
-  //       (tenant.tenant_firstName && tenant.tenant_firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-  //       (leaseType && leaseType.toLowerCase().includes(searchQuery.toLowerCase())) ||
-  //       (tenant.tenant_lastName && tenant.tenant_lastName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-  //       (name.toLowerCase().includes(searchQuery.toLowerCase()))
-  //     );
-  //   });
-  // };
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterTenantsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
+  };
 
   const editLeasing = (id, entryIndex) => {
     navigate(`/admin/Leaseing/${id}/${entryIndex}`);
@@ -192,7 +178,7 @@ const TenantsTable = ({ tenantDetails }) => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${month}-${day}-${year}`;
   }
-  
+
   const generatePDF = async (tenantId, tenantDetails, entryIndex) => {
     try {
       let tenantData = tenantDetails;
@@ -205,8 +191,8 @@ const TenantsTable = ({ tenantDetails }) => {
       }
       const doc = new jsPDF();
       doc.text(`Lease Details`, 10, 10);
-  
-      const headers = ["Title","Value",""];
+
+      const headers = ["Title", "Value", ""];
       const data = [
         ["Tenant Name", `${tenantData.tenant_firstName} ${tenantData.tenant_lastName}`, ""],
         ["Phone", tenantData.tenant_mobileNumber],
@@ -247,24 +233,24 @@ const TenantsTable = ({ tenantDetails }) => {
         ["Cosigner Country", tenantData.entries.cosigner_country],
         ["Cosigner PostalCode", tenantData.entries.cosigner_postalcode],
         // ... other fields
-  
+
         ["Recurring Charges", "", ""], // Add a header for Recurring Charges
       ];
 
       data.push(["Recurring Charge", "Recurring Amount", "Recurring Account"]);
 
       tenantData.entries.recurring_charges.forEach((charge, index) => {
-        data.push([` ${index + 1}`, charge.recuring_amount, charge.recuring_account]);                
+        data.push([` ${index + 1}`, charge.recuring_amount, charge.recuring_account]);
       });
-      
+
       // data.push([ "","Recurring Account"]);
 
       // tenantData.entries.recurring_charges.forEach((charge) => {
       //   data.push(["" ,charge.recuring_account]);                
       // });
 
-     
-  
+
+
       // const onetimeCharges = tenantData.entries.one_time_charges.map(
       //   (charge, index) => {
       //     return [
@@ -275,9 +261,9 @@ const TenantsTable = ({ tenantDetails }) => {
       //     ];
       //   }
       // );
-  
+
       // data.push(["One Time Charges", "", ""]); // Add a header for One Time Charges
-  
+
       // // Flatten the onetime charges array and add to the data array
       // tenantData.entries.one_time_charges.forEach((charge, index) => {
       //   data.push(["One Time Charge", index + 1, ":"]);
@@ -290,36 +276,36 @@ const TenantsTable = ({ tenantDetails }) => {
 
       tenantData.entries.one_time_charges.forEach((charge, index) => {
         data.push([` ${index + 1}`, charge.onetime_amount, charge.onetime_account]);
-      
+
       });
       // data.push([ "","One Time Account"]);
 
       // tenantData.entries.one_time_charges.forEach((charge) => {
       //   data.push(["" ,charge.onetime_account]);                
       // });
-  
+
       // ... other fields
-  
+
       // Add uploaded files if available
       if (tenantData.upload_file && Array.isArray(tenantData.upload_file)) {
         tenantData.upload_file.forEach((item, index) => {
           data.push([`Uploaded File ${index + 1}`, item]);
         });
       }
-  
+
       const filteredData = data.filter(
         (row) => row[1] !== undefined && row[1] !== null && row[1] !== ""
       );
-  
+
       if (filteredData.length > 0) {
         doc.autoTable({
-          head: [headers,""],
+          head: [headers, ""],
           body: filteredData,
           startY: 20,
-          
-          
+
+
         });
-  
+
         doc.save(`${tenantId}.pdf`);
       } else {
         console.error("No valid data to generate PDF.");
@@ -332,7 +318,7 @@ const TenantsTable = ({ tenantDetails }) => {
     const today = new Date();
     const start = new Date(startDate);
     const end = new Date(endDate);
-  
+
     if (today >= start && today <= end) {
       return 'TENANT';
     } else if (today < start) {
@@ -344,7 +330,6 @@ const TenantsTable = ({ tenantDetails }) => {
     }
   };
 
- 
 
   return (
     <>
@@ -361,7 +346,7 @@ const TenantsTable = ({ tenantDetails }) => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/admin/Leaseing")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -420,9 +405,9 @@ const TenantsTable = ({ tenantDetails }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filterTenantsBySearch().map((tenant) => (
+                    {filterTenantsBySearchAndPage().map((tenant) => (
                       <>
-                      {console.log(filterTenantsBySearch(),'filterTenantsBySearch')}
+                        {console.log(filterTenantsBySearchAndPage(), 'filterTenantsBySearch')}
                         <tr
                           key={tenant._id}
                           onClick={() =>
@@ -435,19 +420,19 @@ const TenantsTable = ({ tenantDetails }) => {
                         >
                           <td>
                             {tenant.tenant_firstName} {tenant.tenant_lastName}
-                            <br/>
-                             <i>
-                            {getStatus(tenant.entries.start_date, tenant.entries.end_date)}
+                            <br />
+                            <i>
+                              {getStatus(tenant.entries.start_date, tenant.entries.end_date)}
                             </i>
-                            
+
                           </td>
                           <td>
-                            {tenant.entries.rental_adress}{tenant.entries.rental_units ? " - " + tenant.entries.rental_units : null }
-                          </td> 
+                            {tenant.entries.rental_adress}{tenant.entries.rental_units ? " - " + tenant.entries.rental_units : null}
+                          </td>
                           <td>{tenant.tenant_mobileNumber}</td>
                           <td>{tenant.tenant_email}</td>
                           <td>{tenant.entries.start_date} {tenant.entries.end_date ? " To " + tenant.entries.end_date : null}</td>
-                          <td>{tenant.entries.createdAt } </td>
+                          <td>{tenant.entries.createdAt} </td>
                           <td>{tenant.entries.updateAt ? tenant.entries.updateAt : '-'} </td>
                           {/* <td>{tenant.entries.entryIndex}</td>
                           <td>{tenant.entries.rental_adress}</td> */}

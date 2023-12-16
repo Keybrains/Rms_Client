@@ -329,6 +329,7 @@ const AddPropertyType = () => {
                     </Row>
                     <br />
                   </div>
+                  <Row>
                   <button
                     type="submit"
                     className="btn btn-primary ml-4"
@@ -347,6 +348,8 @@ const AddPropertyType = () => {
                   >
                     Cancel
                   </button>
+                  </Row>
+                  
                 </Form>
               </CardBody>
             </Card>
