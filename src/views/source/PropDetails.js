@@ -158,17 +158,18 @@ const fileData = async (file, name, index) => {
 };
 const clearSelectedPhoto = (index, image, name) => {
   if (name === "propertyres_image") {
-    const filteredImage = unitImage[index].filter((item) => {
-      return item !== image;
+    const filteredImage = unitImage.filter((item) => {
+      return item.name !== image.name;
     });
-    // console.log(filteredImage, "filteredImage");
-    // setResidentialImage(filteredImage);
+    
     setUnitImage([
       ...unitImage.slice(0, index),
-      [...filteredImage],
+      ...filteredImage,
       ...unitImage.slice(index + 1),
     ]);
-  }
+    // }
+
+}
   //  else {
   //   // const filteredImage = commercialImage[index].filter((item) => {
   //     // return item !== image;
@@ -276,6 +277,7 @@ const clearSelectedPhoto = (index, image, name) => {
     "5 Bath",
     "5+ Bath",
   ];
+  console.log(unitImage, "unitImage");
 
   const financialTypeArray = [
     // "Next month",
@@ -2706,8 +2708,8 @@ console.log(addUnitFormik.values, "yash")
                                     // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
                                     src={
                                       clickedObject
-                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0] : clickedObject.propertyres_image[0]
-                                        : fone
+                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0] : clickedObject.propertyres_image[0] ? 
+                                        clickedObject.propertyres_image[0] : fone: fone
                                     }
                                     className="img-fluid rounded-start card-image"
                                     alt="..."
@@ -3105,7 +3107,7 @@ console.log(addUnitFormik.values, "yash")
                                             unitImage
                                               .length > 0 &&
                                             unitImage
-                                               .map((unitImg) => (
+                                               .map((unitImg,index) => (
                                               <div
                                                 key={unitImg}
                                                 style={{
@@ -3145,7 +3147,7 @@ console.log(addUnitFormik.values, "yash")
                                                   }}
                                                   onClick={() =>
                                                     clearSelectedPhoto(
-                                                       "",
+                                                       index,
                                                       unitImage,
                                                       "propertyres_image"
                                                     )

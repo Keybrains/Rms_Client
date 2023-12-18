@@ -68,8 +68,10 @@ const OutstandingBalance = () => {
   };
 
   function navigateToDetails(tenantId) {
-    const propDetailsURL = `/admin/OutstandDetails/${tenantId}`;
-    window.location.href = propDetailsURL;
+    navigate(`/admin/OutstandDetails/${tenantId}`);
+
+    // const propDetailsURL = `/admin/OutstandDetails/${tenantId}`;
+    // window.location.href = propDetailsURL;
   }
 
   let getTenantsDate = async () => {

@@ -2013,6 +2013,7 @@ const RentRollLeaseing = () => {
           isrenton: entrySchema.values.isrenton,
           rent_paid: entrySchema.values.rent_paid,
           propertyOnRent: entrySchema.values.propertyOnRent,
+          isMovedin:true,
 
           //security deposite
           Due_date: entrySchema.values.Due_date,
@@ -2102,6 +2103,8 @@ const RentRollLeaseing = () => {
             putObject
           );
           if (res.data.statusCode === 200) {
+            updateApplicants();
+
             console.log(res.data.data, "allTenants22");
             const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
@@ -2179,20 +2182,23 @@ const RentRollLeaseing = () => {
         } else {
           if (id === undefined) {
             console.log(tenantObject, "leaseObject");
-            // debugger
+            debugger
             const res = await axios.post(
               `${baseUrl}/tenant/tenant`,
               tenantObject
             );
+            debugger
             const res2 = await axios.post(
               `http://localhost:4000/api/nmipayment/custom-add-subscription`,
               paymentDetails
             );
+            console.log(res2,'response of subscription')
             if (res.data.statusCode === 200) {
               console.log(res.data.data, "response after adding data");
               // debugger;
 
               updateApplicants();
+              // updateApproveStatus();
 
 
               const delay = (ms) =>
@@ -2292,17 +2298,33 @@ const RentRollLeaseing = () => {
   console.log(entrySchema.values, "entry cahsdkajl;");
 
   const updateApplicants = async () => {
+    if(applicantData){
 
-    // debugger
-    const url = `${baseUrl}/applicant/applicant/${applicantData._id}/movein`;
-   
-    const res = await axios.put(url);
-    if (res.data.statusCode === 200) {
+      // debugger
+      const url = `${baseUrl}/applicant/applicant/${applicantData._id}/movein`;
+      
+      const res = await axios.put(url);
+      if (res.data.statusCode === 200) {
       console.log(res.data.data, "response after adding data");
     }
     else{
       console.log(res.data.data, "response after adding data");
     }
+      // debugger
+      const url2 = `${baseUrl}/applicant/applicant/${applicantData._id}/status`;
+      
+      const res2 = axios.put(url2,{
+        status:"Approved",
+        statusUpdatedBy:"Admin"
+      });
+      if (res2) {
+      console.log(res2, "response after adding data");
+      }
+      else{
+        console.log(res2, "error");
+      }
+    }
+  
   }
 
   const postCharge = async (unit, unitId, tenantId) => {

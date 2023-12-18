@@ -1001,20 +1001,32 @@ const ApplicantSummary = () => {
     window.open(fileURL, "_blank");
   };
 
-  const handleClearRow = (rowIndex) => {
-    const updatedCombinedData = [...combinedData];
-    updatedCombinedData.splice(rowIndex, 1);
+  const handleClearRow = async (document,appId) => {
+    // const updatedCombinedData = [...combinedData];
+    // updatedCombinedData.splice(rowIndex, 1);
 
-    // Remove corresponding note and file from their states
-    const updatedNotes = [...notes];
-    updatedNotes.splice(rowIndex, 1);
+    // // Remove corresponding note and file from their states
+    // const updatedNotes = [...notes];
+    // updatedNotes.splice(rowIndex, 1);
 
-    const updatedFiles = [...files];
-    updatedFiles.splice(rowIndex, 1);
+    // const updatedFiles = [...files];
+    // updatedFiles.splice(rowIndex, 1);
 
-    setCombinedData(updatedCombinedData);
-    setNotes(updatedNotes);
-    setFiles(updatedFiles);
+    // setCombinedData(updatedCombinedData);
+    // setNotes(updatedNotes);
+    // setFiles(updatedFiles);
+
+    const deleteUrl = `${baseUrl}/applicant/applicant/note_attachment/${appId}/${document._id}`;
+    
+    // swal if confirm than only delete
+    await axios.delete(deleteUrl).then((res) => {
+      console.log(res.data);
+      swal("Success!", "Document deleted successfully", "success");
+      // getNotesAndFiles();
+      getApplicantData();
+    }).catch((err) => {
+      console.log(err);
+    })
   };
 
   const openFileInBrowser = (selectedFile) => {
@@ -1858,7 +1870,7 @@ const ApplicantSummary = () => {
                                   <Col>
                                     <ClearIcon
                                       onClick={() => {
-                                        handleClearRow(index);
+                                        handleClearRow(data,matchedApplicant._id);
                                       }}
                                     >
                                       Clear

@@ -50,7 +50,6 @@ const AddWorkorder = () => {
   const [selectedStatus, setSelectedStatus] = useState("Select");
   const [unitData, setUnitData] = useState([]);
 
-
   const [selectedAccount, setSelectedAccount] = useState("");
 
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
@@ -139,7 +138,7 @@ const AddWorkorder = () => {
   const handlePropertyTypeSelect = async (property) => {
     setSelectedProp(property.rental_adress);
     WorkFormik.values.rental_adress = property.rental_adress;
-  
+
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
       const units = await fetchUnitsByProperty(property.rental_adress);
@@ -150,10 +149,10 @@ const AddWorkorder = () => {
     }
   };
 
-  const handleUnitSelect = (selectedUnit,unitId) => {
+  const handleUnitSelect = (selectedUnit, unitId) => {
     setSelectedUnit(selectedUnit);
     WorkFormik.values.rental_units = selectedUnit;
-    console.log(selectedUnit, "selectedUnit")
+    console.log(selectedUnit, "selectedUnit");
     WorkFormik.setFieldValue("unit_id", unitId);
 
     // entrySchema.values.unit_id = unitId;
@@ -162,7 +161,12 @@ const AddWorkorder = () => {
   const handleCategorySelection = (value) => {
     setSelectedCategory(value);
     setcategorydropdownOpen(true);
-    WorkFormik.values.work_category = value;
+    if(value==="Other"){
+      WorkFormik.values.work_category = "";
+    }
+    else{
+      WorkFormik.values.work_category = value;
+    }
   };
 
   const handleVendorSelect = (value) => {
@@ -249,8 +253,8 @@ const AddWorkorder = () => {
   };
 
   const [workOrderData, setWorkOrderData] = useState(null);
-  const [vid, setVid] = useState('')
-  const [entriesID, setentriesID] = useState('')
+  const [vid, setVid] = useState("");
+  const [entriesID, setentriesID] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -259,28 +263,28 @@ const AddWorkorder = () => {
           const response = await axios.get(
             `${baseUrl}/workorder/workorder_summary/${id}`
           );
-  
+
           const vendorData = response.data.data;
           setWorkOrderData(vendorData);
-  
+
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
             : "";
 
-            setVid(vendorData._id)
-          console.log("vid",vendorData._id)
-          setentriesID(vendorData.entries._id)
-          console.log("vid",vendorData.entries[0]._id)
-  
+          setVid(vendorData._id);
+          console.log("vid", vendorData._id);
+          setentriesID(vendorData.entries._id);
+          console.log("vid", vendorData.entries[0]._id);
+
           try {
             const units = await fetchUnitsByProperty(vendorData.rental_adress);
             console.log(units, "unitssssssssssssss");
             setUnitData(units);
           } catch (error) {
-            console.log(error, 'error');
+            console.log(error, "error");
           }
 
-          setSelectedUnit(vendorData.rental_units || "Select")
+          setSelectedUnit(vendorData.rental_units || "Select");
           setSelectedProp(vendorData.rental_adress || "Select");
           setSelectedCategory(vendorData.work_category || "Select");
           setSelectedVendor(vendorData.vendor_name || "Select");
@@ -316,16 +320,16 @@ const AddWorkorder = () => {
         }
       }
     };
-  
+
     fetchData();
   }, [id]);
-  
+
   const { v4: uuidv4 } = require("uuid");
 
   async function handleSubmit(values, work) {
     try {
       values["rental_adress"] = selectedProp;
-      values["work_category"] = selectedCategory;
+      values["work_category"] = WorkFormik.values.work_category?WorkFormik.values.work_category:selectedCategory ;
       values["vendor_name"] = selectedVendor;
       values["entry_allowed"] = selectedEntry;
       values["staffmember_name"] = selecteduser;
@@ -333,7 +337,7 @@ const AddWorkorder = () => {
       values["priority"] = selectedPriority;
       values["account_type"] = selectedAccount;
       values["final_total_amount"] = final_total_amount;
-      values["rental_units"] =selectedUnit;
+      values["rental_units"] = selectedUnit;
       const entries = WorkFormik.values.entries.map((entry) => ({
         part_qty: entry.part_qty,
         account_type: entry.account_type,
@@ -348,16 +352,17 @@ const AddWorkorder = () => {
       values["workorder_id"] = workorder_id;
 
       const work_subject = values.work_subject;
-
+      console.log(values,'values befor submit')
       if (id === undefined) {
         // Create the work order
         const workOrderRes = await axios.post(
           `${baseUrl}/workorder/workorder`,
-          values
+          values  
         );
 
         // Check if the work order was created successfully
         if (workOrderRes.status === 200) {
+          console.log(workOrderRes,'response after submit');
           // console.log(workOrderRes.data);
           // Use the work order data from the response to create the notification
           const notificationRes = await axios.post(
@@ -471,9 +476,7 @@ const AddWorkorder = () => {
     setVendorsName();
 
     // Make an HTTP GET request to your Express API endpoint
-    fetch(
-      `${baseUrl}/addstaffmember/find_staffmember`
-    )
+    fetch(`${baseUrl}/addstaffmember/find_staffmember`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -522,43 +525,46 @@ const AddWorkorder = () => {
       final_total_amount += parseFloat(entries.total_amount);
     }
   });
-console.log(WorkFormik.values,'workForjnik')
+  console.log(WorkFormik.values, "workForjnik");
 
-const editworkorder = async (vid) => {
-  console.log("Updating:", vid);
-  const formattedDueDate = WorkFormik.values.due_date
-  ? new Date(WorkFormik.values.due_date).toISOString().split("T")[0]
-  : "";
-  try {
-console.log(baseUrl)
-const entriesData = WorkFormik.entries || [];
-    const response = await axios.put(`${baseUrl}/workorder/updateworkorder/${vid}`, {
-      work_subject: WorkFormik.values.work_subject,
-      rental_adress: selectedProp,
-      unit_no: WorkFormik.values.unit_no ,
-      work_category: selectedCategory,
-      vendor_name:selectedVendor,
-      invoice_number: WorkFormik.values.invoice_number,
-      work_charge: WorkFormik.values.work_charge,
-      entry_allowed: selectedEntry,
-      staffmember_name: WorkFormik.values.staffmember_name,
-      work_performed: WorkFormik.values.work_performed,
-      vendor_note: WorkFormik.values.vendor_note,
-      priority: selectedPriority,
-      status: selectedStatus,
-      due_date: formattedDueDate,
-        // part_qty: entry.part_qty,
-        // account_type: entry.account_type,
-        // description: entry.description,
-        // part_price: entry.part_price,
-        // total_amount: entry.total_amount,
-    });
-    handleResponse(response);
-    console.log("Workorder updated successfully", response.data);
-  } catch (error) {
-    console.error("Error updating workorder:", error);
-  }
-};
+  const editworkorder = async (vid) => {
+    console.log("Updating:", vid);
+    const formattedDueDate = WorkFormik.values.due_date
+      ? new Date(WorkFormik.values.due_date).toISOString().split("T")[0]
+      : "";
+    try {
+      console.log(baseUrl);
+      const entriesData = WorkFormik.entries || [];
+      const response = await axios.put(
+        `${baseUrl}/workorder/updateworkorder/${vid}`,
+        {
+          work_subject: WorkFormik.values.work_subject,
+          rental_adress: selectedProp,
+          unit_no: WorkFormik.values.unit_no,
+          work_category: WorkFormik.values.work_category,
+          vendor_name: selectedVendor,
+          invoice_number: WorkFormik.values.invoice_number,
+          work_charge: WorkFormik.values.work_charge,
+          entry_allowed: selectedEntry,
+          staffmember_name: WorkFormik.values.staffmember_name,
+          work_performed: WorkFormik.values.work_performed,
+          vendor_note: WorkFormik.values.vendor_note,
+          priority: selectedPriority,
+          status: selectedStatus,
+          due_date: formattedDueDate,
+          // part_qty: entry.part_qty,
+          // account_type: entry.account_type,
+          // description: entry.description,
+          // part_price: entry.part_price,
+          // total_amount: entry.total_amount,
+        }
+      );
+      handleResponse(response);
+      console.log("Workorder updated successfully", response.data);
+    } catch (error) {
+      console.error("Error updating workorder:", error);
+    }
+  };
   return (
     <>
       <AddWorkorderHeader />
@@ -653,24 +659,24 @@ const entriesData = WorkFormik.entries || [];
                                   overflowX: "hidden",
                                 }}
                               >
-                               {propertyData.map((property, index) => (
-                                <DropdownItem
-                                  key={index}
-                                  onClick={() => {
-                                    handlePropertyTypeSelect(property);
-                                  }}
-                                >
-                                  {property.rental_adress}
-                               
+                                {propertyData.map((property, index) => (
+                                  <DropdownItem
+                                    key={index}
+                                    onClick={() => {
+                                      handlePropertyTypeSelect(property);
+                                    }}
+                                  >
+                                    {property.rental_adress}
 
                                     {/* {console.log(selectedProp, "abcd")} */}
-                                </DropdownItem>
-                              ))}
-                            </DropdownMenu>
+                                  </DropdownItem>
+                                ))}
+                              </DropdownMenu>
                               {WorkFormik.errors &&
                               WorkFormik.errors?.rental_adress &&
                               WorkFormik.touched &&
-                              WorkFormik.touched?.rental_adress && WorkFormik.values.rental_adress==="" ? (
+                              WorkFormik.touched?.rental_adress &&
+                              WorkFormik.values.rental_adress === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.rental_adress}
                                 </div>
@@ -679,69 +685,79 @@ const entriesData = WorkFormik.entries || [];
                           </FormGroup>
                         </FormGroup>
                       </Col>
-                     
                     </Row>
                     <br />
                   </div>
 
                   <div className="pl-lg-4">
                     <Row>
-                    <Col lg="4">
-                      <Row>
-                    {selectedProp && unitData && unitData[0] && unitData[0].rental_units && ( 
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-unit"
-                          style={{ marginLeft: "15px" }}
-                        >
-                          Unit *
-                        </label>
-                        <FormGroup style={{ marginLeft: "15px" }}>
-                          <Dropdown isOpen={unitDropdownOpen} toggle={toggle11}>
-                            <DropdownToggle caret>
-                              {selectedUnit ? selectedUnit : "Select Unit"}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              {unitData.length > 0 ? (
-                                unitData.map((unit) => (
-                                  <DropdownItem
-                                    key={unit._id}
-                                    onClick={() =>
-                                      handleUnitSelect(unit.rental_units,unit._id)
-                                    }
+                      <Col lg="4">
+                        <Row>
+                          {selectedProp &&
+                            unitData &&
+                            unitData[0] &&
+                            unitData[0].rental_units && (
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-unit"
+                                  style={{ marginLeft: "15px" }}
+                                >
+                                  Unit *
+                                </label>
+                                <FormGroup style={{ marginLeft: "15px" }}>
+                                  <Dropdown
+                                    isOpen={unitDropdownOpen}
+                                    toggle={toggle11}
                                   >
-                                    {unit.rental_units}
-                                  </DropdownItem>
-                                ))
-                              ) : (
-                                <DropdownItem disabled>
-                                  No units available
-                                </DropdownItem>
-                              )}
-                            </DropdownMenu>
-                            {WorkFormik.errors &&
-                              WorkFormik.errors?.rental_units &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.rental_units &&
-                              WorkFormik.values.rental_units === "" ? (
-                              <div style={{ color: "red" }}>
-                                {WorkFormik.errors.rental_units}
-                              </div>
-                            ) : null}
-                          </Dropdown>
-                        </FormGroup>
-                      </FormGroup>
-                    )}
-                    </Row>
+                                    <DropdownToggle caret>
+                                      {selectedUnit
+                                        ? selectedUnit
+                                        : "Select Unit"}
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                      {unitData.length > 0 ? (
+                                        unitData.map((unit) => (
+                                          <DropdownItem
+                                            key={unit._id}
+                                            onClick={() =>
+                                              handleUnitSelect(
+                                                unit.rental_units,
+                                                unit._id
+                                              )
+                                            }
+                                          >
+                                            {unit.rental_units}
+                                          </DropdownItem>
+                                        ))
+                                      ) : (
+                                        <DropdownItem disabled>
+                                          No units available
+                                        </DropdownItem>
+                                      )}
+                                    </DropdownMenu>
+                                    {WorkFormik.errors &&
+                                    WorkFormik.errors?.rental_units &&
+                                    WorkFormik.touched &&
+                                    WorkFormik.touched?.rental_units &&
+                                    WorkFormik.values.rental_units === "" ? (
+                                      <div style={{ color: "red" }}>
+                                        {WorkFormik.errors.rental_units}
+                                      </div>
+                                    ) : null}
+                                  </Dropdown>
+                                </FormGroup>
+                              </FormGroup>
+                            )}
+                        </Row>
                       </Col>
-                      </Row>
-                      
+                    </Row>
+
                     <br />
                   </div>
                   <div className="pl-lg-4">
                     <Row>
-                      <Col lg="6">
+                      <Col lg="3">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -803,14 +819,57 @@ const entriesData = WorkFormik.entries || [];
                               </DropdownItem>
                             </DropdownMenu>
                             {WorkFormik.errors &&
-                              WorkFormik.errors?.work_category &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.work_category && WorkFormik.values.work_category==="" ? (
-                                <div style={{ color: "red" }}>
-                                  {WorkFormik.errors.work_category}
-                                </div>
-                              ) : null}
+                            WorkFormik.errors?.work_category &&
+                            WorkFormik.touched &&
+                            WorkFormik.touched?.work_category &&
+                            WorkFormik.values.work_category === "" ? (
+                              <div style={{ color: "red" }}>
+                                {WorkFormik.errors.work_category}
+                              </div>
+                            ) : null}
                           </Dropdown>
+                        </FormGroup>
+                      </Col>
+                      <Col lg="3"
+                        style={
+                          selectedCategory === "Other"
+                            ? { display: "block" }
+                            : { display: "none" }
+                        }
+                      >
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-member"
+                          >
+                            Other Category
+                          </label>
+                          <br />
+                          <br />
+                          <Input
+                            className="form-control-alternative"
+                            id="input-work-subject"
+                            placeholder="Enter Other Category"
+                            type="text"
+                            name="work_category"
+                            //name="nput-staffmember-name"
+                            onBlur={WorkFormik.handleBlur}
+                            onChange={(e) => {
+                              // Update the state or Formik values with the new input value
+                              // WorkFormik.handleChange(e);
+                              WorkFormik.setFieldValue(
+                                "work_category",e.target.value
+                              )
+                            }}
+                            value={WorkFormik.values.work_category}
+                            // required
+                          />
+                          {/* {WorkFormik.touched.work_subject &&
+                          WorkFormik.errors.work_subject ? (
+                            <div style={{ color: "red" }}>
+                              {WorkFormik.errors.work_subject}
+                            </div>
+                          ) : null} */}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -859,13 +918,14 @@ const entriesData = WorkFormik.entries || [];
                               ))}
                             </DropdownMenu>
                             {WorkFormik.errors &&
-                              WorkFormik.errors?.vendor &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.vendor && WorkFormik.values.vendor==="" ? (
-                                <div style={{ color: "red" }}>
-                                  {WorkFormik.errors.vendor}
-                                </div>
-                              ) : null}
+                            WorkFormik.errors?.vendor &&
+                            WorkFormik.touched &&
+                            WorkFormik.touched?.vendor &&
+                            WorkFormik.values.vendor === "" ? (
+                              <div style={{ color: "red" }}>
+                                {WorkFormik.errors.vendor}
+                              </div>
+                            ) : null}
                           </Dropdown>
                         </FormGroup>
                       </Col>
@@ -1017,7 +1077,8 @@ const entriesData = WorkFormik.entries || [];
                               {WorkFormik.errors &&
                               WorkFormik.errors?.staffmember_name &&
                               WorkFormik.touched &&
-                              WorkFormik.touched?.staffmember_name && WorkFormik.values.staffmember_name==="" ? (
+                              WorkFormik.touched?.staffmember_name &&
+                              WorkFormik.values.staffmember_name === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.staffmember_name}
                                 </div>
@@ -1633,7 +1694,8 @@ const entriesData = WorkFormik.entries || [];
                               {WorkFormik.errors &&
                               WorkFormik.errors?.status &&
                               WorkFormik.touched &&
-                              WorkFormik.touched?.status && WorkFormik.values.status ==="" ? (
+                              WorkFormik.touched?.status &&
+                              WorkFormik.values.status === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.status}
                                 </div>
@@ -1702,16 +1764,17 @@ const entriesData = WorkFormik.entries || [];
                       Update Work Order
                     </button>
                   ) : (
-                  <button
-                    type="submit"
-                    className="btn btn-primary ml-4"
-                    style={{ background: "green" }}
-                  >
-                    Add Work Order
-                  </button>)}
+                    <button
+                      type="submit"
+                      className="btn btn-primary ml-4"
+                      style={{ background: "green" }}
+                    >
+                      Add Work Order
+                    </button>
+                  )}
                   <button
                     color="primary"
-                   //  href="#rms"
+                    //  href="#rms"
                     className="btn btn-primary"
                     onClick={handleCloseButtonClick}
                     size="sm"
