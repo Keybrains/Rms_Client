@@ -93,39 +93,8 @@ const Login = () => {
             // Tenant login succeeded, but no _id found
             swal("Error!", "Invalid tenant data", "error");
           }
-        } else {
-          // Admin and tenant login failed, try agent login
-          const agentRes = await axios.post(
-            `${baseUrl}/addagent/login`,
-            {
-              agent_email: values.email,
-              agent_password: values.password,
-            }
-          );
-
-          if (agentRes.data.statusCode === 200) {
-            // Agent login successful
-            const agentData = agentRes.data.data; // Assuming the API response structure
-            //console.log("Agent ID:", agentData._id);
-
-            // Check if agentData contains _id
-            if (agentData && agentData._id) {
-              //console.log("Agent ID:", agentData._id);
-              swal("Success!", "Agent Login Successful!", "success").then(
-                (value) => {
-                  if (value) {
-                    cookies.set("token", agentRes.data.token);
-                    cookies.set("Agent ID", agentData._id);
-                    localStorage.setItem("ID", agentData._id);
-                    navigate("/agent/AgentdashBoard");
-                  }
-                }
-              );
-            } else {
-              // Agent login succeeded, but no _id found
-              swal("Error!", "Invalid agent data", "error");
-            }
-          } else {
+         } 
+           else {
             // All login attempts failed, try staff login
             const staffRes = await axios.post(
               `${baseUrl}/addstaffmember/login`,
@@ -197,7 +166,7 @@ const Login = () => {
           }
         }
       }
-    } catch (error) {
+    catch (error) {
       //console.log(error);
     } finally {
       setIsLoading(false); // Set loading state to false after API call completes

@@ -184,7 +184,7 @@ const VendorWorkTable = () => {
                         style={{ cursor: "pointer" }}
                       >
                         <td>{vendor.work_subject}</td>
-                        <td>{`${vendor.unit_no} ${vendor.rental_adress}`}</td>
+                        <td>{vendor.rental_adress}</td>
                         <td>{vendor.work_category}</td>
                         <td>{vendor.staffmember_name}</td>
                         <td>{vendor.status}</td>
