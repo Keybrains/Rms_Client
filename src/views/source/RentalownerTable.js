@@ -84,8 +84,9 @@ const RentalownerTable = () => {
   }, []);
 
   function navigateToRentRollDetails(rentalOwnerId) {
-    const rentalOwnerURL = `/admin/rentalownerdetail/${rentalOwnerId}`;
-    window.location.href = rentalOwnerURL;
+    navigate(`/admin/rentalownerdetail/${rentalOwnerId}`)
+    // const rentalOwnerURL = ;
+    // window.location.href = rentalOwnerURL;
   }
 
   const editTenantData = async (id, updatedData) => {

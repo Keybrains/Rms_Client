@@ -43,6 +43,8 @@ const Login = () => {
 
 
   const handleSubmit = async (values) => {
+    cookies.remove("token");
+    cookies.remove("Tenant ID");
     try {
       setIsLoading(true); // Set loading state to true
 
