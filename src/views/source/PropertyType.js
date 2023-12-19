@@ -36,6 +36,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { RotatingLines } from "react-loader-spinner";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const PropertyType = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -61,6 +63,8 @@ const PropertyType = () => {
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const [upArrow, setUpArrow] = useState([]);
+  const [sortBy, setSortBy] = useState([]);
 
   const handlePropertyTypeChange = (value) => {
     setEditingProperty((prev) => ({
@@ -92,9 +96,7 @@ const PropertyType = () => {
 
   const getPropertyData = async () => {
     try {
-      const response = await axios.get(
-        `${baseUrl}/newproparty/newproparty`
-      );
+      const response = await axios.get(`${baseUrl}/newproparty/newproparty`);
       setLoader(false);
       setPropertyData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -168,12 +170,9 @@ const PropertyType = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(
-            `${baseUrl}/newproparty/newproparty/`,
-            {
-              data: { _id: id },
-            }
-          )
+          .delete(`${baseUrl}/newproparty/newproparty/`, {
+            data: { _id: id },
+          })
 
           .then((response) => {
             //console.log(response.data);
@@ -233,28 +232,78 @@ const PropertyType = () => {
     navigate(`/admin/AddPropertyType/${id}`);
     //console.log(id);
   };
+  console.log(propertyData, "propertyData");
 
   const filterPropertyBySearch = () => {
-    if (searchQuery === undefined) {
-      return propertyData;
+    let filteredData = propertyData;
+  
+    if (searchQuery) {
+      const lowerCaseSearchQuery = searchQuery.toLowerCase();
+      filteredData = filteredData.filter((property) => {
+        const isPropertyTypeMatch = property.property_type.toLowerCase().includes(lowerCaseSearchQuery);
+        const isPropertySubTypeMatch = property.propertysub_type.toLowerCase().includes(lowerCaseSearchQuery);
+        return isPropertyTypeMatch || isPropertySubTypeMatch;
+      });
     }
-
-    return propertyData.filter((property) => {
-      const isPropertyTypeMatch = property.property_type
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const isPropertySubTypeMatch = property.propertysub_type
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      return isPropertyTypeMatch,isPropertySubTypeMatch;
-    });
+  
+    if (upArrow.length > 0) {
+      const sortingArrows = upArrow.length > 0 ? upArrow :null;
+      sortingArrows.forEach((sort) => {
+        switch (sort) {
+          case "propertysub_type":
+            filteredData.sort((a, b) => {
+              const comparison = a.propertysub_type.localeCompare(b.propertysub_type);
+              return upArrow.includes("propertysub_type") ? comparison : -comparison;
+            });
+            break;
+          case "property_type":
+            filteredData.sort((a, b) => {
+              const comparison = a.property_type.localeCompare(b.property_type);
+              return upArrow.includes("property_type") ? comparison : -comparison;
+            });
+            break;
+          case "createAt":
+            filteredData.sort((a, b) => {
+              const comparison = new Date(a.createAt) - new Date(b.createAt);
+              return upArrow.includes("createAt") ? comparison : -comparison;
+            });
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
+  
+    return filteredData.slice(startIndex, endIndex);
   };
+  
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterPropertyBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
     return paginatedData;
   };
+
+  const sortData = (value) => {
+    if (!sortBy.includes(value)) {
+      setSortBy([...sortBy, value]);
+      setUpArrow([...upArrow, value]);
+      filterTenantsBySearchAndPage();
+    } else {
+      setSortBy(sortBy.filter((sort) => sort !== value));
+      setUpArrow(upArrow.filter((sort) => sort !== value));
+      filterTenantsBySearchAndPage();
+    }
+    //console.log(value);
+    // setOnClickUpArrow(!onClickUpArrow);
+  };
+
+  useEffect(() => {
+    // setLoader(false);
+    // filterRentalsBySearch();
+    getPropertyData();
+  }, [upArrow, sortBy]);
 
   return (
     <>
@@ -321,9 +370,60 @@ const PropertyType = () => {
                   <thead className="thead-light">
                     <tr>
                       {/* <th scope="col">Property_ID</th> */}
-                      <th scope="col">Main Type</th>
-                      <th scope="col">Sub Type</th>
-                      <th scope="col">Created At</th>
+                      <th scope="col">
+                        Main Type
+                        {sortBy.includes("property_type") ? (
+                          upArrow.includes("property_type") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("property_type")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("property_type")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("property_type")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Sub Type
+                        {sortBy.includes("propertysub_type") ? (
+                          upArrow.includes("propertysub_type") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("propertysub_type")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("propertysub_type")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("propertysub_type")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Created At
+                        {sortBy.includes("createAt") ? (
+                          upArrow.includes("createAt") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("createAt")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("createAt")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("createAt")}
+                          />
+                        )}
+                      </th>
                       <th scope="col">Updated At</th>
                       <th scope="col">Action</th>
                     </tr>
@@ -334,7 +434,7 @@ const PropertyType = () => {
                         <td>{property.property_type}</td>
                         <td>{property.propertysub_type}</td>
                         <td>{property.createAt}</td>
-                        <td>{property.updateAt ? property.updateAt : '-'}</td>
+                        <td>{property.updateAt ? property.updateAt : "-"}</td>
                         <td>
                           <div style={{ display: "flex" }}>
                             <div

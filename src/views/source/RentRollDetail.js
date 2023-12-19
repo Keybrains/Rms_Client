@@ -678,6 +678,7 @@ const RentRollDetail = () => {
         // Handle default case here
         break;
     }
+    console.log(dateBasedOnOption,'datebased on option ')
     doc.setFontSize(11);
     doc.text(`${dateBasedOnOption}`, 83, 22);
     doc.addImage(Img, "JPEG", 166, 10, 30, 15);
@@ -723,22 +724,23 @@ const RentRollDetail = () => {
         break;
     }
 
-    let filteredData = GeneralLedgerData;
+    let filteredData = GeneralLedgerData && GeneralLedgerData.paymentAndCharges;
     console.log(filteredData, "vaibhav");
 
     if (startDate) {
-      filteredData = GeneralLedgerData.paymentAndCharges.filter(
-        (generalledger) => {
-          const ledgerDate = new Date(generalledger.date);
-          return ledgerDate >= startDate && ledgerDate <= today;
-        }
-      );
+      filteredData = GeneralLedgerData.paymentAndCharges.filter((generalledger) => {
+        const ledgerDate = new Date(generalledger.date).toISOString().split('T')[0];
+        const start = startDate.toISOString().split('T')[0];
+        const end = today.toISOString().split('T')[0];
+        return ledgerDate >= start && ledgerDate <= end;
+      });
+
+      console.log(filteredData, "filteredData");
     }
 
-    const tableData = GeneralLedgerData &&
-      GeneralLedgerData.paymentAndCharges &&
-      GeneralLedgerData.paymentAndCharges.length > 0 && [
-        ...GeneralLedgerData?.paymentAndCharges.reverse().map((entry) => {
+
+    const tableData = filteredData &&  [
+        ...filteredData.reverse().map((entry) => {
           return [
             entry.date || "N/A",
             entry.type || "N/A",
@@ -760,7 +762,7 @@ const RentRollDetail = () => {
           "",
           "",
           "Total Balance:",
-          "$" + GeneralLedgerData?.paymentAndCharges.reverse()[0]?.Total,
+          "$" + filteredData.reverse()[0]?.Total,
         ],
       ];
 
