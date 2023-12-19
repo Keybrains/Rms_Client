@@ -314,7 +314,7 @@ useEffect(() => {
                                       </tr>
 
                                       <tr className="body">
-                                        <td>{entry.staffMember}</td>
+                                        <td>{entry.staffMember || "No staff member assigned"}</td>
                                       </tr>
                                     </tbody>
                                   </Table>

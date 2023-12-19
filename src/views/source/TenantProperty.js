@@ -159,7 +159,7 @@ const TenantProperty = () => {
                               //   textAlign: "center",
                               // }}
                               >
-                                {address.rental_adress}
+                                {address.rental_adress} {address.rental_units ? " - " + address.rental_units : null}
                               </td>
 
                               <td>{address.start_date}</td>

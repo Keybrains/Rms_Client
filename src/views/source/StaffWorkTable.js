@@ -62,7 +62,7 @@ const StaffWorkTable = () => {
         //console.log(response.data.data);
         setStaffDetails(response.data.data);
         setStaffMember(response.data.data.staffmember_name);
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+        setTotalPages(Math.ceil(response.data.data.length / pageItem)||1);
       } else {
         console.error("Invalid or missing data in API response.");
       }
@@ -219,7 +219,7 @@ const StaffWorkTable = () => {
                         style={{ cursor: "pointer" }}
                       >
                         <td>{vendor.work_subject}</td>
-                        <td>{`${vendor.unit_no} ${vendor.staffmember_name}`}</td>
+                        <td>{vendor.rental_adress} {vendor.rental_units ? " - " + vendor.rental_units : null}</td>
                         <td>{vendor.work_category}</td>
                         <td>{vendor.staffmember_name}</td>
                         <td>{vendor.status}</td>
