@@ -124,32 +124,20 @@ const Vendor = () => {
     if (searchQuery === undefined) {
       return vendorData;
     }
+
+    const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
+
     return vendorData.filter((tenant) => {
-      if (!tenant.entries) {
-        return false; // If entries is undefined, exclude this tenant
-      }
+      const phoneNumberString = tenant.vendor_phoneNumber?.toString();
+      const isMatch =
+        (tenant.vendor_name &&
+          tenant.vendor_name.toLowerCase().includes(lowerCaseSearchQuery)) ||
+        (tenant.vendor_email &&
+          tenant.vendor_email.toLowerCase().includes(lowerCaseSearchQuery)) ||
+        (phoneNumberString &&
+          phoneNumberString.includes(lowerCaseSearchQuery));
 
-      const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
-
-      return (
-        (tenant.entries.rental_adress &&
-          tenant.entries.rental_adress
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_firstName &&
-          tenant.tenant_firstName
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (tenant.entries.lease_type &&
-          tenant.entries.lease_type
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_lastName &&
-          tenant.tenant_lastName
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      return isMatch;
     });
   };
 

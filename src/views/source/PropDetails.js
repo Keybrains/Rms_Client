@@ -90,89 +90,89 @@ const PropDetails = () => {
   const togglePhotoresDialog = () => {
     setPhotoresDialogOpen((prevState) => !prevState);
   };
-console.log(propType,'proeptype')
-const fileData = async (file, name, index) => {
-  //setImgLoader(true);
-  const allData = [];
-  const axiosRequests = [];
-  for (let i = 0; i < file.length; i++) {
-    const dataArray = new FormData();
-    dataArray.append("b_video", file[i]);
-    let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
-    // Push the Axios request promises into an array
-    axiosRequests.push(
-      axios
-        .post(url, dataArray, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
-          //setImgLoader(false);
-          const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-          console.log(imagePath, "imagePath");
-          allData.push(imagePath);
-        })
-        .catch((err) => {
-          //setImgLoader(false);
-          // console.log("Error uploading image:", err);
-        })
-    );
-  }
-  // Wait for all Axios requests to complete before logging the data
-  await Promise.all(axiosRequests);
-  if (name === "propertyres_image") {
-    // rentalsFormik.setFieldValue(
-    //   `entries[0].residential[${index}].propertyres_image`,
-    //   ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
-    //   allData
-    // );
-    if (unitImage[index]) {
+  console.log(propType, 'proeptype')
+  const fileData = async (file, name, index) => {
+    //setImgLoader(true);
+    const allData = [];
+    const axiosRequests = [];
+    for (let i = 0; i < file.length; i++) {
+      const dataArray = new FormData();
+      dataArray.append("b_video", file[i]);
+      let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
+      // Push the Axios request promises into an array
+      axiosRequests.push(
+        axios
+          .post(url, dataArray, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            //setImgLoader(false);
+            const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
+            console.log(imagePath, "imagePath");
+            allData.push(imagePath);
+          })
+          .catch((err) => {
+            //setImgLoader(false);
+            // console.log("Error uploading image:", err);
+          })
+      );
+    }
+    // Wait for all Axios requests to complete before logging the data
+    await Promise.all(axiosRequests);
+    if (name === "propertyres_image") {
+      // rentalsFormik.setFieldValue(
+      //   `entries[0].residential[${index}].propertyres_image`,
+      //   ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
+      //   allData
+      // );
+      if (unitImage[index]) {
+        setUnitImage([
+          ...unitImage.slice(0, index),
+          [...unitImage[index], ...allData],
+          ...unitImage.slice(index + 1),
+        ]);
+      } else {
+        setUnitImage([...allData]);
+      }
+    } else {
+      // rentalsFormik.setFieldValue(
+      //   `entries[0].commercial[${index}].property_image`,
+      //   ...rentalsFormik.values.entries[0].commercial[index].property_image,
+      //   allData
+      // );
+      // if (commercialImage[index]) {
+      //   setCommercialImage([
+      //     ...commercialImage.slice(0, index),
+      //     [...commercialImage[index], ...allData],
+      //     ...commercialImage.slice(index + 1),
+      //   ]);
+      // } else {
+      //   setCommercialImage([...allData]);
+      // }
+    }
+    // console.log(allData, "allData");
+    // console.log(unitImage, "unitImage");
+    // console.log(commercialImage, "commercialImage");
+  };
+  const clearSelectedPhoto = (index, image, name) => {
+    if (name === "propertyres_image") {
+      const filteredImage = unitImage[index].filter((item) => {
+        return item !== image;
+      });
+      // console.log(filteredImage, "filteredImage");
+      // setResidentialImage(filteredImage);
       setUnitImage([
         ...unitImage.slice(0, index),
-        [...unitImage[index], ...allData],
+        [...filteredImage],
         ...unitImage.slice(index + 1),
       ]);
-    } else {
-      setUnitImage([...allData]);
     }
-  } else {
-    // rentalsFormik.setFieldValue(
-    //   `entries[0].commercial[${index}].property_image`,
-    //   ...rentalsFormik.values.entries[0].commercial[index].property_image,
-    //   allData
-    // );
-    // if (commercialImage[index]) {
-    //   setCommercialImage([
-    //     ...commercialImage.slice(0, index),
-    //     [...commercialImage[index], ...allData],
-    //     ...commercialImage.slice(index + 1),
-    //   ]);
-    // } else {
-    //   setCommercialImage([...allData]);
-    // }
-  }
-  // console.log(allData, "allData");
-  // console.log(unitImage, "unitImage");
-  // console.log(commercialImage, "commercialImage");
-};
-const clearSelectedPhoto = (index, image, name) => {
-  if (name === "propertyres_image") {
-    const filteredImage = unitImage[index].filter((item) => {
-      return item !== image;
-    });
-    // console.log(filteredImage, "filteredImage");
-    // setResidentialImage(filteredImage);
-    setUnitImage([
-      ...unitImage.slice(0, index),
-      [...filteredImage],
-      ...unitImage.slice(index + 1),
-    ]);
-  }
-  //  else {
-  //   // const filteredImage = commercialImage[index].filter((item) => {
-  //     // return item !== image;
-  //   });
+    //  else {
+    //   // const filteredImage = commercialImage[index].filter((item) => {
+    //     // return item !== image;
+    //   });
     // console.log(filteredImage, "filteredImage");
     // setCommercialImage(filteredImage);
     // setCommercialImage([
@@ -187,7 +187,7 @@ const clearSelectedPhoto = (index, image, name) => {
       const response = await axios.get(
         `${baseUrl}/rentals/rentals_summary/${id}`
       );
-        
+
       setpropertyDetails(response.data.data);
       console.log(response.data.data, "response frirn simmary");
       const rentalId = response.data.data._id;
@@ -208,7 +208,7 @@ const clearSelectedPhoto = (index, image, name) => {
         `
       );
       console.log(resp, "resp");
-      
+
       const selectedType = Object.keys(resp.data.data).find((item) => {
         return resp.data.data[item].some(
           (data) => data.propertysub_type === matchedProperty.property_type,
@@ -216,7 +216,7 @@ const clearSelectedPhoto = (index, image, name) => {
         );
       });
       setSelectedProp(matchedProperty.property_type)
-      console.log(resp.matchedProperty,"mansi") 
+      console.log(resp.matchedProperty, "mansi")
       setPropType(selectedType);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -329,7 +329,7 @@ const clearSelectedPhoto = (index, image, name) => {
       bed: "",
       baths: "",
       description: "",
-      propertyres_image:[],
+      propertyres_image: [],
       property_image: [],
     },
 
@@ -398,7 +398,7 @@ const clearSelectedPhoto = (index, image, name) => {
     }
   };
 
- useEffect(() => {
+  useEffect(() => {
     getUnitProperty(rentalId, propId);
   }, [rentalId, propId]);
 
@@ -428,7 +428,7 @@ const clearSelectedPhoto = (index, image, name) => {
   }
 
   const handleUnitDetailsEdit = async (id, rentalId) => {
-    if(propType==="Residential"){
+    if (propType === "Residential") {
       const updatedValues = {
         rental_adress: addUnitFormik.values.rental_adress,
         rental_units: addUnitFormik.values.unit_number,
@@ -436,23 +436,23 @@ const clearSelectedPhoto = (index, image, name) => {
         rental_state: addUnitFormik.values.state,
         rental_postcode: addUnitFormik.values.zip,
         rental_country: addUnitFormik.values.country,
-        propertyres_image:unitImage,
+        propertyres_image: unitImage,
       };
       await axios
-      .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-      .then((response) => {
-        console.log(response.data, "updated data");
-        getUnitProperty(rentalId);
-        getRentalsData();
-        // setAddUnitDialogOpen(false);
-        // setAddUnitDialogOpen(false);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+        .then((response) => {
+          console.log(response.data, "updated data");
+          getUnitProperty(rentalId);
+          getRentalsData();
+          // setAddUnitDialogOpen(false);
+          // setAddUnitDialogOpen(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       console.log(clickedObject, "clickedObject after update");
     }
-    else{
+    else {
       const updatedValues = {
         rental_adress: addUnitFormik.values.address,
         rental_units: addUnitFormik.values.unit_number,
@@ -460,20 +460,20 @@ const clearSelectedPhoto = (index, image, name) => {
         rental_state: addUnitFormik.values.state,
         rental_postcode: addUnitFormik.values.zip,
         rental_country: addUnitFormik.values.country,
-        property_image:unitImage,
+        property_image: unitImage,
       };
       await axios
-      .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-      .then((response) => {
-        console.log(response.data.data, "updated data");
-        getUnitProperty(rentalId);
-        getRentalsData();
-        // setAddUnitDialogOpen(false);
-        // setAddUnitDialogOpen(false);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+        .then((response) => {
+          console.log(response.data.data, "updated data");
+          getUnitProperty(rentalId);
+          getRentalsData();
+          // setAddUnitDialogOpen(false);
+          // setAddUnitDialogOpen(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       console.log(clickedObject, "clickedObject after update");
     }
   }
@@ -525,7 +525,7 @@ const clearSelectedPhoto = (index, image, name) => {
       }
     });
   };
-console.log(addUnitFormik.values, "yash")
+  console.log(addUnitFormik.values, "yash")
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = {
@@ -556,9 +556,9 @@ console.log(addUnitFormik.values, "yash")
         formData
       );
       if (response.data.statusCode === 200) {
-        swal("Success!","Unit Added Successfully", "success");
+        swal("Success!", "Unit Added Successfully", "success");
         setAddUnitDialogOpen(false);
-        setPropertyUnit([...propertyUnit,response.data.data]);
+        setPropertyUnit([...propertyUnit, response.data.data]);
       } else {
         swal("", response.data.message, "error");
       }
@@ -603,7 +603,7 @@ console.log(addUnitFormik.values, "yash")
           axios
             .put(`${baseUrl}/rentals/proparty_image/${id}/${entryIndex}`, image)
             .then((response) => {
-              
+
               console.log(response.data.data, "updated data");
               getRentalsData();
               // setAddUnitDialogOpen(false);
@@ -642,13 +642,13 @@ console.log(addUnitFormik.values, "yash")
       <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
-          <h1 style={{ color: "white" }}>
-                
-                {matchedProperty.rental_adress}
-              </h1>
-              <h4 style={{ color: "white" }}>
-              {matchedProperty.property_type}
-              </h4>
+            <h1 style={{ color: "white" }}>
+
+              {matchedProperty?.rental_adress}
+            </h1>
+            <h4 style={{ color: "white" }}>
+              {matchedProperty?.property_type}
+            </h4>
           </Col>
           <Col className="text-right" xs="12" sm="6">
             <Button
@@ -666,7 +666,7 @@ console.log(addUnitFormik.values, "yash")
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-              
+
               </CardHeader>
               <Col>
                 <TabContext value={value}>
@@ -714,57 +714,57 @@ console.log(addUnitFormik.values, "yash")
                               alt="..."
                             />
                           </div> */}
-                            {
-                              !propImageLoader ? (
-                                <>
+                          {
+                            !propImageLoader ? (
+                              <>
                                 <div className="col-md-4 mt-2">
-                                <label htmlFor="prop_image">
+                                  <label htmlFor="prop_image">
 
-                                <img
-                                  // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
-                                  src={
-                                    matchedProperty.prop_image
-                                      ? matchedProperty.prop_image
-                                      : uploadedImage
-                                      ? uploadedImage
-                                      : fone
-                                  }
-                                  className="img-fluid rounded-start card-image"
-                                  alt="..."
-                                  // width='260px'
-                                  // height='18px'
-                                  // onClick={handleModalOpen}
-                                />
-                              </label>
-  
-                              <TextField
-                                id="prop_image"
-                                name="prop_image"
-                                type="file"
-                                inputProps={{
-                                  accept: "image/*",
-                                  multiple: false,
-                                }}
-                                onChange={handleImageChange}
-                                style={{ display: "none" }}
-                              />
-                              </div>
-                                </>
-                              ) : (
-                                <div className="col-md-4 mt-2 d-flex justify-content-center">
+                                    <img
+                                      // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
+                                      src={
+                                        matchedProperty?.prop_image
+                                          ? matchedProperty?.prop_image
+                                          : uploadedImage
+                                            ? uploadedImage
+                                            : fone
+                                      }
+                                      className="img-fluid rounded-start card-image"
+                                      alt="..."
+                                    // width='260px'
+                                    // height='18px'
+                                    // onClick={handleModalOpen}
+                                    />
+                                  </label>
+
+                                  <TextField
+                                    id="prop_image"
+                                    name="prop_image"
+                                    type="file"
+                                    inputProps={{
+                                      accept: "image/*",
+                                      multiple: false,
+                                    }}
+                                    onChange={handleImageChange}
+                                    style={{ display: "none" }}
+                                  />
+                                </div>
+                              </>
+                            ) : (
+                              <div className="col-md-4 mt-2 d-flex justify-content-center">
 
                                 <RotatingLines
-                                strokeColor="grey"
-                                strokeWidth="5"
-                                animationDuration="0.75"
-                                width="50"
-                                visible={propImageLoader}
-                              />
+                                  strokeColor="grey"
+                                  strokeWidth="5"
+                                  animationDuration="0.75"
+                                  width="50"
+                                  visible={propImageLoader}
+                                />
                               </div>
-                              )
-                              
-                            }
-                           
+                            )
+
+                          }
+
 
                           <div className="col-md-8">
                             <div
@@ -783,35 +783,35 @@ console.log(addUnitFormik.values, "yash")
                                 style={{ fontSize: "14px" }}
                               >
                                 {" "}
-                                {matchedProperty.property_type}
+                                {matchedProperty?.property_type}
                               </span>
                               <span
                                 className="address"
                                 style={{ fontSize: "14px" }}
                               >
                                 {" "}
-                                {matchedProperty.rental_adress}
+                                {matchedProperty?.rental_adress}
                               </span>
                               <span
                                 className="address"
                                 style={{ fontSize: "14px" }}
                               >
                                 {" "}
-                                {matchedProperty.rental_city}
+                                {matchedProperty?.rental_city}
                               </span>
                               <span
                                 className="address"
                                 style={{ fontSize: "14px" }}
                               >
                                 {" "}
-                                {matchedProperty.rental_country}
+                                {matchedProperty?.rental_country}
                               </span>
                               <span
                                 className="address"
                                 style={{ fontSize: "14px" }}
                               >
                                 {" "}
-                                {matchedProperty.rental_postcode}
+                                {matchedProperty?.rental_postcode}
                               </span>
                               {/* <p className="address">OPERATING ACCOUNT </p> */}
                               {/* <p className="address">3 Industrial Road Boston, MA 02210 <Link to="/">Map it</Link></p> */}
@@ -825,10 +825,10 @@ console.log(addUnitFormik.values, "yash")
           <p>$200.00</p>
         </div>
         </div> */}
-                         
+
+                            </div>
                           </div>
                         </div>
-                      </div>
                       </div>
 
                       {/* <div className="col-4 mt-4">
@@ -962,8 +962,8 @@ console.log(addUnitFormik.values, "yash")
                           //                 flexWrap: "wrap",
                           //               }}
                           //             >
-                          //               {matchedProperty.propertyres_image &&
-                          //                 matchedProperty.propertyres_image.length >
+                          //               {matchedProperty?.propertyres_image &&
+                          //                 matchedProperty?.propertyres_image.length >
                           //                   0 && (
                           //                   <div
                           //                     style={{
@@ -971,7 +971,7 @@ console.log(addUnitFormik.values, "yash")
                           //                     }}
                           //                   >
                           //                     Residential:
-                          //                     {matchedProperty.propertyres_image.map(
+                          //                     {matchedProperty?.propertyres_image.map(
                           //                       (propertyres_image, index) => (
                           //                         <img
                           //                           key={index}
@@ -1036,8 +1036,8 @@ console.log(addUnitFormik.values, "yash")
                           //                     />
                           //                   </div>
                           //                 )}
-                          //               {matchedProperty.property_image &&
-                          //                 matchedProperty.property_image.length >
+                          //               {matchedProperty?.property_image &&
+                          //                 matchedProperty?.property_image.length >
                           //                   0 && (
                           //                   <div
                           //                     style={{
@@ -1045,7 +1045,7 @@ console.log(addUnitFormik.values, "yash")
                           //                     }}
                           //                   >
                           //                     Commercial:
-                          //                     {matchedProperty.property_image.map(
+                          //                     {matchedProperty?.property_image.map(
                           //                       (property_image, index) => (
                           //                         <img
                           //                           key={index}
@@ -1075,7 +1075,7 @@ console.log(addUnitFormik.values, "yash")
                           //             Property Type
                           //           </td>
                           //           <td>
-                          //             {matchedProperty.property_type || "N/A"}
+                          //             {matchedProperty?.property_type || "N/A"}
                           //           </td>
                           //         </tr>
                           //         <tr>
@@ -1083,7 +1083,7 @@ console.log(addUnitFormik.values, "yash")
                           //             Address
                           //           </td>
                           //           <td>
-                          //             {matchedProperty.rental_adress || "N/A"}
+                          //             {matchedProperty?.rental_adress || "N/A"}
                           //           </td>
                           //         </tr>
                           //         <tr>
@@ -1352,13 +1352,11 @@ console.log(addUnitFormik.values, "yash")
                                                     <tr className="body">
                                                       <td>
                                                         {/* <Link to=""> */}
-                                                        {`${
-                                                          propertyDetails.rentalOwner_firstName ||
+                                                        {`${propertyDetails.rentalOwner_firstName ||
                                                           "N/A"
-                                                        } ${
-                                                          propertyDetails.rentalOwner_lastName ||
+                                                          } ${propertyDetails.rentalOwner_lastName ||
                                                           "N/A"
-                                                        }`}
+                                                          }`}
 
                                                         {/* </Link> */}
                                                       </td>
@@ -1428,19 +1426,18 @@ console.log(addUnitFormik.values, "yash")
                                               }}
                                             >
                                               <tr className="header">
-                                                <th>Staff Member</th>                                         
-                                                
-                                                </tr>
+                                                <th>Staff Member</th>
+
+                                              </tr>
                                               {myData ? (
                                                 <>
                                                   <>
                                                     <tr className="body">
                                                       <td>
                                                         {/* <Link to=""> */}
-                                                        {`${
-                                                          matchedProperty.staffMember ||
+                                                        {`${matchedProperty?.staffMember ||
                                                           "N/A"
-                                                        }`}
+                                                          }`}
 
                                                         {/* </Link> */}
                                                       </td>
@@ -2222,11 +2219,11 @@ console.log(addUnitFormik.values, "yash")
                           <label
                             className="form-control-label"
                             htmlFor="input-city"
-                            style={ propType!=="Residential" ? { display: "none" } : { display: "block" }}
+                            style={propType !== "Residential" ? { display: "none" } : { display: "block" }}
                           >
                             Rooms (optional)
                           </label>
-                          <Row style={ propType!=="Residential" ? { display: "none",marginTop: "10px" } : { marginTop: "10px" }} >
+                          <Row style={propType !== "Residential" ? { display: "none", marginTop: "10px" } : { marginTop: "10px" }} >
                             <Col lg="2">
                               <FormGroup>
                                 <Dropdown
@@ -2250,11 +2247,11 @@ console.log(addUnitFormik.values, "yash")
                                         }}
                                         onChange={addUnitFormik.handleChange}
                                         onBlur={addUnitFormik.handleBlur}
-                                        // onClick={() =>
-                                        //   handlePropSelection(
-                                        //     subtype.propertysub_type
-                                        //   )
-                                        // }
+                                      // onClick={() =>
+                                      //   handlePropSelection(
+                                      //     subtype.propertysub_type
+                                      //   )
+                                      // }
                                       >
                                         {subtype}
                                       </DropdownItem>
@@ -2286,11 +2283,11 @@ console.log(addUnitFormik.values, "yash")
                                         }}
                                         onChange={addUnitFormik.handleChange}
                                         onBlur={addUnitFormik.handleBlur}
-                                        // onClick={() =>
-                                        //   handlePropSelection(
-                                        //     subtype.propertysub_type
-                                        //   )
-                                        // }
+                                      // onClick={() =>
+                                      //   handlePropSelection(
+                                      //     subtype.propertysub_type
+                                      //   )
+                                      // }
                                       >
                                         {subtype}
                                       </DropdownItem>
@@ -2324,167 +2321,167 @@ console.log(addUnitFormik.values, "yash")
                           </Row>
                           <Row style={{ marginTop: "10px" }}>
                             <Col lg="2">
-                            <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}
-                                      >
-                                        <label
-                                          className="form-control-label"
-                                          htmlFor="input-unitadd"
-                                        >
-                                          Photo
-                                        </label>
-                                        <span
-                                          onClick={togglePhotoresDialog}
+                              <FormGroup
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-unitadd"
+                                >
+                                  Photo
+                                </label>
+                                <span
+                                  onClick={togglePhotoresDialog}
+                                  style={{
+                                    cursor: "pointer",
+                                    fontSize: "14px",
+                                    fontFamily: "monospace",
+                                    color: "blue",
+                                  }}
+                                >
+                                  {" "}
+                                  <br />
+                                  <input
+                                    type="file"
+                                    className="form-control-file d-none"
+                                    accept="image/*"
+                                    multiple
+                                    id={`unit_img`}
+                                    name={`unit_img`}
+                                    onChange={(e) => {
+                                      const file = [...e.target.files];
+                                      fileData(
+                                        file,
+                                        "propertyres_image",
+                                        ""
+                                      );
+                                      if (file.length > 0) {
+                                        const allImages = file.map(
+                                          (file) => {
+                                            return URL.createObjectURL(
+                                              file
+                                            );
+                                          }
+                                        );
+                                        // console.log(
+                                        //    "",
+                                        //   "indexxxxxx"
+                                        // );
+                                        if (
+                                          unitImage[
+                                          ""
+                                          ]
+                                        ) {
+                                          setUnitImage([
+                                            ...unitImage.slice(
+                                              0,
+                                              ""
+                                            ),
+                                            [
+                                              ...unitImage[
+                                              ""
+                                              ],
+                                              ...allImages,
+                                            ],
+                                            ...unitImage.slice(
+                                              1 + ""
+                                            ),
+                                          ]);
+                                        } else {
+                                          setUnitImage([
+                                            ...allImages,
+                                          ]);
+                                        }
+                                      } else {
+                                        setUnitImage([
+                                          ...unitImage,
+                                        ]);
+                                        // )
+                                      }
+                                    }}
+                                  />
+                                  {console.log(unitImage, 'unitImage')}
+                                  <label
+                                    htmlFor={`unit_img`}
+                                  >
+                                    <b style={{ fontSize: "20px" }}>
+                                      +
+                                    </b>{" "}
+                                    Add
+                                  </label>
+                                  {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                                </span>
+                              </FormGroup>
+                              <FormGroup
+                                style={{
+                                  display: "flex",
+                                  flexWrap: "wrap",
+                                  paddingLeft: "10px",
+                                }}
+                              >
+                                <div className="d-flex">
+                                  {unitImage &&
+                                    unitImage
+                                      .length > 0 &&
+                                    unitImage
+                                      .map((unitImg) => (
+                                        <div
+                                          key={unitImg}
                                           style={{
-                                            cursor: "pointer",
-                                            fontSize: "14px",
-                                            fontFamily: "monospace",
-                                            color: "blue",
+                                            position: "relative",
+                                            width: "100px",
+                                            height: "100px",
+                                            margin: "10px",
+                                            display: "flex",
+                                            flexDirection: "column",
                                           }}
                                         >
-                                          {" "}
-                                          <br />
-                                          <input
-                                            type="file"
-                                            className="form-control-file d-none"
-                                            accept="image/*"
-                                            multiple
-                                            id={`unit_img`}
-                                            name={`unit_img`}
-                                            onChange={(e) => {
-                                              const file = [...e.target.files];
-                                              fileData(
-                                                file,
-                                                "propertyres_image",
-                                                 ""
+                                          <img
+                                            src={unitImg}
+                                            alt=""
+                                            style={{
+                                              width: "100px",
+                                              height: "100px",
+                                              maxHeight: "100%",
+                                              maxWidth: "100%",
+                                              borderRadius: "10px",
+                                              // objectFit: "cover",
+                                            }}
+                                            onClick={() => {
+                                              setSelectedImage(
+                                                unitImg
                                               );
-                                              if (file.length > 0) {
-                                                const allImages = file.map(
-                                                  (file) => {
-                                                    return URL.createObjectURL(
-                                                      file
-                                                    );
-                                                  }
-                                                );
-                                                // console.log(
-                                                //    "",
-                                                //   "indexxxxxx"
-                                                // );
-                                                if (
-                                                  unitImage[
-                                                     ""
-                                                  ]
-                                                ) {
-                                                  setUnitImage([
-                                                    ...unitImage.slice(
-                                                      0,
-                                                       ""
-                                                    ),
-                                                    [
-                                                      ...unitImage[
-                                                         ""
-                                                      ],
-                                                      ...allImages,
-                                                    ],
-                                                    ...unitImage.slice(
-                                                      1 +  ""
-                                                    ),
-                                                  ]);
-                                                } else {
-                                                  setUnitImage([
-                                                    ...allImages,
-                                                  ]);
-                                                }
-                                              } else {
-                                                setUnitImage([
-                                                  ...unitImage,
-                                                ]);
-                                                // )
-                                              }
+                                              setOpen(true);
                                             }}
                                           />
-                                          {console.log(unitImage,'unitImage')}
-                                          <label
-                                            htmlFor={`unit_img`}
-                                          >
-                                            <b style={{ fontSize: "20px" }}>
-                                              +
-                                            </b>{" "}
-                                            Add
-                                          </label>
-                                          {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
-                                        </span>
-                                      </FormGroup>
-                                      <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexWrap: "wrap",
-                                          paddingLeft: "10px",
-                                        }}
-                                      >
-                                        <div className="d-flex">
-                                          {unitImage &&
-                                            unitImage
-                                              .length > 0 &&
-                                            unitImage
-                                               .map((unitImg) => (
-                                              <div
-                                                key={unitImg}
-                                                style={{
-                                                  position: "relative",
-                                                  width: "100px",
-                                                  height: "100px",
-                                                  margin: "10px",
-                                                  display: "flex",
-                                                  flexDirection: "column",
-                                                }}
-                                              >
-                                                <img
-                                                  src={unitImg}
-                                                  alt=""
-                                                  style={{
-                                                    width: "100px",
-                                                    height: "100px",
-                                                    maxHeight: "100%",
-                                                    maxWidth: "100%",
-                                                    borderRadius: "10px",
-                                                    // objectFit: "cover",
-                                                  }}
-                                                  onClick={() => {
-                                                    setSelectedImage(
-                                                      unitImg
-                                                    );
-                                                    setOpen(true);
-                                                  }}
-                                                />
-                                                <ClearIcon
-                                                  style={{
-                                                    cursor: "pointer",
-                                                    alignSelf: "flex-start",
-                                                    position: "absolute",
-                                                    top: "-12px",
-                                                    right: "-12px",
-                                                  }}
-                                                  onClick={() =>
-                                                    clearSelectedPhoto(
-                                                       "",
-                                                      unitImage,
-                                                      "propertyres_image"
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                            ))}
-                                          <OpenImageDialog
-                                            open={open}
-                                            setOpen={setOpen}
-                                            selectedImage={selectedImage}
+                                          <ClearIcon
+                                            style={{
+                                              cursor: "pointer",
+                                              alignSelf: "flex-start",
+                                              position: "absolute",
+                                              top: "-12px",
+                                              right: "-12px",
+                                            }}
+                                            onClick={() =>
+                                              clearSelectedPhoto(
+                                                "",
+                                                unitImage,
+                                                "propertyres_image"
+                                              )
+                                            }
                                           />
                                         </div>
-                                      </FormGroup>
+                                      ))}
+                                  <OpenImageDialog
+                                    open={open}
+                                    setOpen={setOpen}
+                                    selectedImage={selectedImage}
+                                  />
+                                </div>
+                              </FormGroup>
                             </Col>
                           </Row>
                           <Row style={{ marginTop: "10px" }}>
@@ -2492,7 +2489,7 @@ console.log(addUnitFormik.values, "yash")
                               className="btn-icon btn-2"
                               color="success"
                               type="submit"
-                              
+
                             >
                               Create Unit
                             </Button>
@@ -2530,11 +2527,12 @@ console.log(addUnitFormik.values, "yash")
                                 zip: propertyDetails.entries[0].rental_postcode,
                                 country: propertyDetails.entries[0].rental_country,
                               });
-                              
+
                               // setAddUnitDialogOpen(true);
-                              setAddUnitDialogOpen(true)}}
+                              setAddUnitDialogOpen(true)
+                            }}
                           >
-                            
+
                             <span className="btn-inner--text">Add Unit</span>
                           </Button>
                         </div>
@@ -2569,8 +2567,8 @@ console.log(addUnitFormik.values, "yash")
                                   {unit.tenant_firstName == null
                                     ? "-"
                                     : unit.tenant_firstName +
-                                      " " +
-                                      unit.tenant_lastName}
+                                    " " +
+                                    unit.tenant_lastName}
                                   {/* {unit.tenant_firstName +
                                     " " +
                                     unit.tenant_lastName} */}
@@ -2711,9 +2709,9 @@ console.log(addUnitFormik.values, "yash")
                                     }
                                     className="img-fluid rounded-start card-image"
                                     alt="..."
-                                    // width='260px'
-                                    // height='18px'
-                                    // onClick={handleModalOpen}
+                                  // width='260px'
+                                  // height='18px'
+                                  // onClick={handleModalOpen}
                                   />
                                 </label>
                                 {/* <TextField
@@ -2812,8 +2810,8 @@ console.log(addUnitFormik.values, "yash")
                                 {/* i want to put this div to the extreme rigth of main div */}
                               </Grid>
                             </div>
-                          
-                            
+
+
                             <Grid item xs={3}></Grid>
                             <Grid item xs={9}>
                               {editUnitDialogOpen ? (
@@ -2993,175 +2991,175 @@ console.log(addUnitFormik.values, "yash")
                                                 }
                                               />
                                               <Col lg="5">
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                      }}
-                                    >
-                                      <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}
-                                      >
-                                        <label
-                                          className="form-control-label"
-                                          htmlFor="input-unitadd"
-                                        >
-                                          Photo
-                                        </label>
-                                        <span
-                                          onClick={togglePhotoresDialog}
-                                          style={{
-                                            cursor: "pointer",
-                                            fontSize: "14px",
-                                            fontFamily: "monospace",
-                                            color: "blue",
-                                          }}
-                                        >
-                                          {" "}
-                                          <br />
-                                          <input
-                                            type="file"
-                                            className="form-control-file d-none"
-                                            accept="image/*"
-                                            multiple
-                                            id={`unit_img`}
-                                            name={`unit_img`}
-                                            onChange={(e) => {
-                                              const file = [...e.target.files];
-                                              fileData(
-                                                file,
-                                                "propertyres_image",
-                                                 ""
-                                              );
-                                              if (file.length > 0) {
-                                                const allImages = file.map(
-                                                  (file) => {
-                                                    return URL.createObjectURL(
-                                                      file
-                                                    );
-                                                  }
-                                                );
-                                                // console.log(
-                                                //    "",
-                                                //   "indexxxxxx"
-                                                // );
-                                                if (
-                                                  unitImage[
-                                                     ""
-                                                  ]
-                                                ) {
-                                                  setUnitImage([
-                                                    ...unitImage.slice(
-                                                      0,
-                                                       ""
-                                                    ),
-                                                    [
-                                                      ...unitImage[
-                                                         ""
-                                                      ],
-                                                      ...allImages,
-                                                    ],
-                                                    ...unitImage.slice(
-                                                      1 +  ""
-                                                    ),
-                                                  ]);
-                                                } else {
-                                                  setUnitImage([
-                                                    ...allImages,
-                                                  ]);
-                                                }
-                                              } else {
-                                                setUnitImage([
-                                                  ...unitImage,
-                                                ]);
-                                                // )
-                                              }
-                                            }}
-                                          />
-                                          {console.log(unitImage,'unitImage')}
-                                          <label
-                                            htmlFor={`unit_img`}
-                                          >
-                                            <b style={{ fontSize: "20px" }}>
-                                              +
-                                            </b>{" "}
-                                            Add
-                                          </label>
-                                          {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
-                                        </span>
-                                      </FormGroup>
-                                      <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexWrap: "wrap",
-                                          paddingLeft: "10px",
-                                        }}
-                                      >
-                                        <div className="d-flex">
-                                          {unitImage &&
-                                            unitImage
-                                              .length > 0 &&
-                                            unitImage
-                                               .map((unitImg) => (
-                                              <div
-                                                key={unitImg}
-                                                style={{
-                                                  position: "relative",
-                                                  width: "100px",
-                                                  height: "100px",
-                                                  margin: "10px",
-                                                  display: "flex",
-                                                  flexDirection: "column",
-                                                }}
-                                              >
-                                                <img
-                                                  src={unitImg}
-                                                  alt=""
+                                                <div
                                                   style={{
-                                                    width: "100px",
-                                                    height: "100px",
-                                                    maxHeight: "100%",
-                                                    maxWidth: "100%",
-                                                    borderRadius: "10px",
-                                                    // objectFit: "cover",
+                                                    display: "flex",
+                                                    flexDirection: "row",
                                                   }}
-                                                  onClick={() => {
-                                                    setSelectedImage(
-                                                      unitImg
-                                                    );
-                                                    setOpen(true);
-                                                  }}
-                                                />
-                                                <ClearIcon
-                                                  style={{
-                                                    cursor: "pointer",
-                                                    alignSelf: "flex-start",
-                                                    position: "absolute",
-                                                    top: "-12px",
-                                                    right: "-12px",
-                                                  }}
-                                                  onClick={() =>
-                                                    clearSelectedPhoto(
-                                                       "",
-                                                      unitImage,
-                                                      "propertyres_image"
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                            ))}
-                                          <OpenImageDialog
-                                            open={open}
-                                            setOpen={setOpen}
-                                            selectedImage={selectedImage}
-                                          />
-                                        </div>
-                                      </FormGroup>
-                                    </div>
-                                  </Col>
+                                                >
+                                                  <FormGroup
+                                                    style={{
+                                                      display: "flex",
+                                                      flexDirection: "column",
+                                                    }}
+                                                  >
+                                                    <label
+                                                      className="form-control-label"
+                                                      htmlFor="input-unitadd"
+                                                    >
+                                                      Photo
+                                                    </label>
+                                                    <span
+                                                      onClick={togglePhotoresDialog}
+                                                      style={{
+                                                        cursor: "pointer",
+                                                        fontSize: "14px",
+                                                        fontFamily: "monospace",
+                                                        color: "blue",
+                                                      }}
+                                                    >
+                                                      {" "}
+                                                      <br />
+                                                      <input
+                                                        type="file"
+                                                        className="form-control-file d-none"
+                                                        accept="image/*"
+                                                        multiple
+                                                        id={`unit_img`}
+                                                        name={`unit_img`}
+                                                        onChange={(e) => {
+                                                          const file = [...e.target.files];
+                                                          fileData(
+                                                            file,
+                                                            "propertyres_image",
+                                                            ""
+                                                          );
+                                                          if (file.length > 0) {
+                                                            const allImages = file.map(
+                                                              (file) => {
+                                                                return URL.createObjectURL(
+                                                                  file
+                                                                );
+                                                              }
+                                                            );
+                                                            // console.log(
+                                                            //    "",
+                                                            //   "indexxxxxx"
+                                                            // );
+                                                            if (
+                                                              unitImage[
+                                                              ""
+                                                              ]
+                                                            ) {
+                                                              setUnitImage([
+                                                                ...unitImage.slice(
+                                                                  0,
+                                                                  ""
+                                                                ),
+                                                                [
+                                                                  ...unitImage[
+                                                                  ""
+                                                                  ],
+                                                                  ...allImages,
+                                                                ],
+                                                                ...unitImage.slice(
+                                                                  1 + ""
+                                                                ),
+                                                              ]);
+                                                            } else {
+                                                              setUnitImage([
+                                                                ...allImages,
+                                                              ]);
+                                                            }
+                                                          } else {
+                                                            setUnitImage([
+                                                              ...unitImage,
+                                                            ]);
+                                                            // )
+                                                          }
+                                                        }}
+                                                      />
+                                                      {console.log(unitImage, 'unitImage')}
+                                                      <label
+                                                        htmlFor={`unit_img`}
+                                                      >
+                                                        <b style={{ fontSize: "20px" }}>
+                                                          +
+                                                        </b>{" "}
+                                                        Add
+                                                      </label>
+                                                      {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                                                    </span>
+                                                  </FormGroup>
+                                                  <FormGroup
+                                                    style={{
+                                                      display: "flex",
+                                                      flexWrap: "wrap",
+                                                      paddingLeft: "10px",
+                                                    }}
+                                                  >
+                                                    <div className="d-flex">
+                                                      {unitImage &&
+                                                        unitImage
+                                                          .length > 0 &&
+                                                        unitImage
+                                                          .map((unitImg) => (
+                                                            <div
+                                                              key={unitImg}
+                                                              style={{
+                                                                position: "relative",
+                                                                width: "100px",
+                                                                height: "100px",
+                                                                margin: "10px",
+                                                                display: "flex",
+                                                                flexDirection: "column",
+                                                              }}
+                                                            >
+                                                              <img
+                                                                src={unitImg}
+                                                                alt=""
+                                                                style={{
+                                                                  width: "100px",
+                                                                  height: "100px",
+                                                                  maxHeight: "100%",
+                                                                  maxWidth: "100%",
+                                                                  borderRadius: "10px",
+                                                                  // objectFit: "cover",
+                                                                }}
+                                                                onClick={() => {
+                                                                  setSelectedImage(
+                                                                    unitImg
+                                                                  );
+                                                                  setOpen(true);
+                                                                }}
+                                                              />
+                                                              <ClearIcon
+                                                                style={{
+                                                                  cursor: "pointer",
+                                                                  alignSelf: "flex-start",
+                                                                  position: "absolute",
+                                                                  top: "-12px",
+                                                                  right: "-12px",
+                                                                }}
+                                                                onClick={() =>
+                                                                  clearSelectedPhoto(
+                                                                    "",
+                                                                    unitImage,
+                                                                    "propertyres_image"
+                                                                  )
+                                                                }
+                                                              />
+                                                            </div>
+                                                          ))}
+                                                      <OpenImageDialog
+                                                        open={open}
+                                                        setOpen={setOpen}
+                                                        selectedImage={selectedImage}
+                                                      />
+                                                    </div>
+                                                  </FormGroup>
+                                                </div>
+                                              </Col>
                                             </div>
 
                                             <div style={{ marginTop: "10px" }}>
@@ -3297,7 +3295,7 @@ console.log(addUnitFormik.values, "yash")
                                             <div>
                                               <h5>Market Rent</h5>
                                             </div>
-                                            
+
                                             <TextField
                                               type="number"
                                               size="small"
@@ -3311,19 +3309,19 @@ console.log(addUnitFormik.values, "yash")
                                               }
                                               onBlur={addUnitFormik.handleBlur}
                                             />
-                                            </div>
-                                            <div style={{
-                                              display: "flex",
-                                              flexDirection: "column",
-                                              width: "50%",
-                                              marginTop: "10px",
+                                          </div>
+                                          <div style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            width: "50%",
+                                            marginTop: "10px",
 
-                                            }}>
-                                              <div>
+                                          }}>
+                                            <div>
 
                                               <h5>Size</h5>
-                                              </div>
-                                            
+                                            </div>
+
                                             <TextField
                                               type="number"
                                               size="small"
@@ -3425,9 +3423,9 @@ console.log(addUnitFormik.values, "yash")
                                 className="mb-1 m-0 p-0"
                                 style={{ fontSize: "12px", color: "#000" }}
                               >
-                               
+
                                 <Table responsive>
-                                
+
                                   <tbody
                                     className="tbbody p-0 m-0"
                                     style={{
@@ -3444,10 +3442,10 @@ console.log(addUnitFormik.values, "yash")
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
-                                    {console.log("clickedObject",clickedObject)}
+                                    {console.log("clickedObject", clickedObject)}
                                     {clickedObject &&
-                                    clickedObject.tenant_firstName &&
-                                    clickedObject.tenant_lastName ? (
+                                      clickedObject.tenant_firstName &&
+                                      clickedObject.tenant_lastName ? (
                                       <>
                                         <tr className="body">
                                           <td>
@@ -3457,7 +3455,7 @@ console.log(addUnitFormik.values, "yash")
                                           </td>
                                           <td>
                                             {clickedObject.start_date &&
-                                            clickedObject.end_date ? (
+                                              clickedObject.end_date ? (
                                               <>
                                                 <Link
                                                   to={`/admin/tenantdetail/${clickedObject._id}`}
@@ -3488,10 +3486,10 @@ console.log(addUnitFormik.values, "yash")
                                           </td>
                                           <td>
                                             {clickedObject.tenant_firstName &&
-                                            clickedObject.tenant_lastName
+                                              clickedObject.tenant_lastName
                                               ? clickedObject.tenant_firstName +
-                                                " " +
-                                                clickedObject.tenant_lastName
+                                              " " +
+                                              clickedObject.tenant_lastName
                                               : "N/A"}
                                           </td>
                                           <td>
