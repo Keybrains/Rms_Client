@@ -31,6 +31,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
 import Checkbox from "@mui/material/Checkbox";
 import { RotatingLines } from "react-loader-spinner";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+
 
 import Header from "components/Headers/Header";
 import * as React from "react";
@@ -62,7 +65,9 @@ const Applicants = () => {
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [searchQueryy, setSearchQueryy] = useState("");
-
+  const [upArrow, setUpArrow] = useState([]);
+  const [sortBy, setSortBy] = useState([]);
+  
   const handleSearch = (e) => {
     setSearchQueryy(e.target.value);
   };
@@ -223,8 +228,8 @@ const Applicants = () => {
   //     }
   //   } else {
   //     navigate("/auth/login");
-  //   }
   // };
+  //   }
 
   // React.useEffect(() => {
   //   chackAuth();
@@ -385,37 +390,80 @@ const Applicants = () => {
       }
     });
   };
+console.log(rentalsData,'rentalsdata or we can say that 00')
+const filterApplicantsBySearch = () => {
+  let filteredData = rentalsData;
 
-  const filterApplicantsBySearch = () => {
-    if (searchQuery === undefined) {
-      return rentalsData;
-    }
+  if (searchQuery) {
+    filteredData = filteredData
+      .filter((tenant) => {
+        const isRentalAddressMatch = tenant.rental_adress.toLowerCase().includes(searchQuery.toLowerCase());
+        const isFirstNameMatch = (tenant.tenant_firstName + " " + tenant.tenant_lastName).toLowerCase().includes(searchQuery.toLowerCase());
+        const isEmailMatch = tenant.tenant_email.toLowerCase().includes(searchQuery.toLowerCase());
+        return isRentalAddressMatch || isFirstNameMatch || isEmailMatch;
+      });
+  }
 
-    return rentalsData.filter((tenant) => {
-      const isRentalAddressMatch = tenant.rental_adress
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-
-      const isFirstNameMatch = (
-        tenant.tenant_firstName +
-        " " +
-        tenant.tenant_lastName
-      )
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-
-      const isEmailMatch = tenant.tenant_email
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-
-      return isRentalAddressMatch || isFirstNameMatch || isEmailMatch;
+  if (upArrow.length > 0) {
+    upArrow.forEach((sort) => {
+      switch (sort) {
+        case "rental_adress":
+          filteredData.sort((a, b) => a.rental_adress.localeCompare(b.rental_adress));
+          break;
+        case "tenant_lastName":
+          filteredData.sort((a, b) => a.tenant_lastName.localeCompare(b.tenant_lastName));
+          break;
+        case "tenant_firstName":
+          filteredData.sort((a, b) => a.tenant_firstName.localeCompare(b.tenant_firstName));
+          break;
+        case "tenant_mobileNumber":
+          filteredData.sort((a, b) => a.tenant_mobileNumber - b.tenant_mobileNumber);
+          break;
+        case "tenant_email":
+          filteredData.sort((a, b) => a.tenant_email.localeCompare(b.tenant_email));
+          break;
+        case "start_date":
+          filteredData.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+          break;
+        case "createAt":
+          filteredData.sort((a, b) => new Date(a.createAt) - new Date(b.createAt));
+          break;
+        default:
+          // If an unknown sort option is provided, do nothing
+          break;
+      }
     });
-  };
+  }
+
+  return filteredData.slice(startIndex, endIndex);
+};
+
+
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterApplicantsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
     return paginatedData;
   };
+  const sortData = (value) => {
+    if (!sortBy.includes(value)) {
+      setSortBy([...sortBy, value]);
+      setUpArrow([...upArrow, value]);
+      filterTenantsBySearchAndPage();
+    } else {
+      setSortBy(sortBy.filter((sort) => sort !== value));
+      setUpArrow(upArrow.filter((sort) => sort !== value));
+      filterTenantsBySearchAndPage();
+    }
+    //console.log(value);
+    // setOnClickUpArrow(!onClickUpArrow);
+  };
+
+  useEffect(() => {
+    // setLoader(false);
+    // filterRentalsBySearch();
+    getApplicantData();
+  }, [upArrow, sortBy]);
+
 
   return (
     <>
@@ -478,16 +526,107 @@ const Applicants = () => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">FirstName</th>
-                      <th scope="col">LastName</th>
+                      <th scope="col">FirstName 
+                      {sortBy.includes("tenant_firstName") ? (
+                          upArrow.includes("tenant_firstName") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("tenant_firstName")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("tenant_firstName")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("tenant_firstName")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">LastName
+                      {sortBy.includes("tenant_lastName") ? (
+                          upArrow.includes("tenant_lastName") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("tenant_lastName")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("tenant_lastName")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("tenant_lastName")}
+                          />
+                        )}</th>
 
                       {/* <th scope="col">Listed</th> */}
                       {/* <th scope="col">Unit</th> */}
                       {/* <th scope="col">Phone</th> */}
-                      <th scope="col">Email</th>
-                      <th scope="col">Phone Number</th>
-                      <th scope="col">Property</th>
-                      <th scope="col">Created At</th>
+                      <th scope="col">Email
+                      {sortBy.includes("tenant_email") ? (
+                          upArrow.includes("tenant_email") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("tenant_email")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("tenant_email")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("tenant_email")}
+                          />
+                        )}</th>
+                      <th scope="col">Phone Number
+                      {sortBy.includes("tenant_mobileNumber") ? (
+                          upArrow.includes("tenant_mobileNumber") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("tenant_mobileNumber")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("tenant_mobileNumber")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("tenant_mobileNumber")}
+                          />
+                        )}</th>
+                      <th scope="col">Property
+                      {sortBy.includes("rental_adress") ? (
+                          upArrow.includes("rental_adress") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rental_adress")}
+                          />
+                        )}</th>
+                      <th scope="col">Created At
+                      {sortBy.includes("createAt") ? (
+                          upArrow.includes("createAt") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("createAt")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("createAt")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("createAt")}
+                          />
+                        )}</th>
                       <th scope="col">Status</th>
                       <th scope="col">Actions</th>
 

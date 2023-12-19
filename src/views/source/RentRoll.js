@@ -34,6 +34,8 @@ import { Link } from "react-router-dom";
 import InfoIcon from "@mui/icons-material/Info";
 import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const RentRoll = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -41,7 +43,9 @@ const RentRoll = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   let [loader, setLoader] = React.useState(true);
-
+  const [upArrow, setUpArrow] = useState([]);
+  const [sortBy, setSortBy] = useState([]);
+  
   // function navigateToRentRollDetails(rentRollId) {
   //   const rentRollDetailsURL = `/admin/rentrolldetail/${rentRollId}`;
   //   window.location.href = rentRollDetailsURL;
@@ -84,7 +88,6 @@ const RentRoll = () => {
       console.error("Error fetching data:", error);
     }
   };
-
 
   React.useEffect(() => {
     fetchData();
@@ -135,25 +138,54 @@ const RentRoll = () => {
   //   });
   // };
   const filterRentRollsBySearch = () => {
-    if (searchQuery === undefined) {
-      return tenantsData;
+    let filteredData = [...tenantsData]; // Create a copy of tenantsData to avoid mutating the original array
+  
+    if (searchQuery) {
+      const lowerCaseSearchQuery = searchQuery.toLowerCase();
+      filteredData = filteredData.filter((tenant) => {
+      
+        const name = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
+        return (
+          tenant.entries.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.entries.lease_type.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.tenant_firstName.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.tenant_lastName.toLowerCase().includes(lowerCaseSearchQuery) ||
+          name.toLowerCase().includes(lowerCaseSearchQuery)
+        );
+      });
     }
-
-    return tenantsData.filter((tenant) => {
-      if (!tenant.entries) {
-        return false; // If entries is undefined, exclude this tenant
-      }
-      const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
-      //console.log(tenant);
-      return (
-        (tenant.entries.rental_adress && tenant.entries.rental_adress.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_firstName && tenant.tenant_firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (tenant.entries.lease_type && tenant.entries.lease_type.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_lastName && tenant.tenant_lastName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (name.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-    });
+  
+    if (upArrow.length > 0) {
+      upArrow.forEach((value) => {
+        switch (value) {
+          case "rental_adress":
+            filteredData.sort((a, b) => a.entries.rental_adress.localeCompare(b.entries.rental_adress));
+            break;
+          case "lease_type":
+            filteredData.sort((a, b) => a.entries.lease_type.localeCompare(b.entries.lease_type));
+            break;
+          case "tenant_firstName":
+            filteredData.sort((a, b) => a.tenant_firstName.localeCompare(b.tenant_firstName));
+            break;
+          case "start_date":
+            filteredData.sort((a, b) => new Date(a.entries.start_date) - new Date(b.entries.start_date));
+            break;
+          case "amount":
+            filteredData.sort((a, b) => a.entries.amount - b.entries.amount);
+            break;
+          case "createAt":
+            filteredData.sort((a, b) => new Date(a.createAt) - new Date(b.createAt));
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
+  
+    return filteredData.slice(startIndex, endIndex);
   };
+  
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentRollsBySearch();
@@ -171,9 +203,7 @@ const RentRoll = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(
-            `${baseUrl}/tenant/tenant/${tenantId}/entry/${entryIndex}`
-          )
+          .delete(`${baseUrl}/tenant/tenant/${tenantId}/entry/${entryIndex}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
               swal("Success!", "Tenant deleted successfully!", "success");
@@ -198,24 +228,41 @@ const RentRoll = () => {
     //console.log(id);
   };
 
-
   const getStatus = (startDate, endDate) => {
     const today = new Date();
     const start = new Date(startDate);
     const end = new Date(endDate);
 
     if (today >= start && today <= end) {
-      return 'TENANT';
+      return "TENANT";
     } else if (today < start) {
-      return 'FUTURE TENANT';
+      return "FUTURE TENANT";
     } else if (today > end) {
-      return 'PAST TENANT';
+      return "PAST TENANT";
     } else {
-      return '-';
+      return "-";
     }
   };
 
+  const sortData = (value) => {
+    if (!sortBy.includes(value)) {
+      setSortBy([...sortBy, value]);
+      setUpArrow([...upArrow, value]);
+      filterTenantsBySearchAndPage();
+    } else {
+      setSortBy(sortBy.filter((sort) => sort !== value));
+      setUpArrow(upArrow.filter((sort) => sort !== value));
+      filterTenantsBySearchAndPage();
+    }
+    //console.log(value);
+    // setOnClickUpArrow(!onClickUpArrow);
+  };
 
+  useEffect(() => {
+    // setLoader(false);
+    // filterRentalsBySearch();
+    fetchData();
+  }, [upArrow, sortBy]);
 
   return (
     <>
@@ -278,21 +325,121 @@ const RentRoll = () => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">Tenant Name</th>
-                      <th scope="col">Lease</th>
-                      <th scope="col">Type</th>
+                      <th scope="col">
+                        Tenant Name
+                        {sortBy.includes("tenant_firstName") ? (
+                          upArrow.includes("tenant_firstName") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("tenant_firstName")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("tenant_firstName")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("tenant_firstName")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Lease
+                        {sortBy.includes("rental_adress") ? (
+                          upArrow.includes("rental_adress") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rental_adress")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">Type 
+                      {sortBy.includes("lease_type") ? (
+                          upArrow.includes("lease_type") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("lease_type")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("lease_type")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("lease_type")}
+                          />
+                        )}
+                      </th>
+
                       <th scope="col">Status</th>
-                      <th scope="col">Start Date-End Date</th>
-                      <th scope="col"> Rent </th>
-                      <th scope="col">Created At</th>
+                      <th scope="col">Start Date-End Date
+                      {sortBy.includes("start_date") ? (
+                          upArrow.includes("start_date") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("start_date")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("start_date")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("start_date")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        {" "}
+                        Rent
+                        {sortBy.includes("amount") ? (
+                          upArrow.includes("amount") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("amount")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("amount")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("amount")}
+                          />
+                        )}{" "}
+                      </th>
+                      <th scope="col">
+                        Created At
+                        {sortBy.includes("createdAt") ? (
+                          upArrow.includes("createdAt") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("createdAt")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("createdAt")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("createdAt")}
+                          />
+                        )}
+                      </th>
                       <th scope="col">Last Updated</th>
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filterTenantsBySearchAndPage()?.map((tenant) => (
-
-
                       <>
                         <tr
                           key={tenant._id}
@@ -307,15 +454,30 @@ const RentRoll = () => {
                           <td>
                             {tenant.tenant_firstName} {tenant.tenant_lastName}
                           </td>
-                          <td>{tenant.entries.rental_adress} {tenant.entries.rental_units ? " - " + tenant.entries.rental_units : null} </td>
+                          <td>
+                            {tenant.entries.rental_adress}{" "}
+                            {tenant.entries.rental_units
+                              ? " - " + tenant.entries.rental_units
+                              : null}{" "}
+                          </td>
                           <td>{tenant.entries.lease_type}</td>
                           <td>
-                            {getStatus(tenant.entries.start_date, tenant.entries.end_date)}
+                            {getStatus(
+                              tenant.entries.start_date,
+                              tenant.entries.end_date
+                            )}
                           </td>
-                          <td>{tenant.entries.start_date} to {tenant.entries.end_date}</td>
+                          <td>
+                            {tenant.entries.start_date} to{" "}
+                            {tenant.entries.end_date}
+                          </td>
                           <td>{tenant.entries.amount}</td>
                           <td>{tenant.entries.createdAt} </td>
-                          <td>{tenant.entries.updateAt ? tenant.entries.updateAt : '-'} </td>
+                          <td>
+                            {tenant.entries.updateAt
+                              ? tenant.entries.updateAt
+                              : "-"}{" "}
+                          </td>
 
                           {/* <td>{tenant.entries.entryIndex}</td>
                         <td>{tenant.entries.rental_adress}</td> */}

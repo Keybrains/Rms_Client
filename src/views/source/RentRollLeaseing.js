@@ -619,8 +619,9 @@ const RentRollLeaseing = () => {
   const handleDateChange = (date) => {
     const nextDate = moment(date).add(1, "months").format("YYYY-MM-DD");
     entrySchema.values.end_date = nextDate;
+    checkDate(nextDate);
     setIsDateUnavailable(false);
-    checkDate(date);
+    // checkDate(date);
   };
 
   const [file, setFile] = useState("");
@@ -1301,6 +1302,8 @@ const RentRollLeaseing = () => {
     if (selectedPropertyType && selectedUnit) {
       let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
+      let inputStartDate = entrySchema.values.start_date || ""
+      console.log(inputStartDate, "inputStartDate");
 
       let isUnavailable = false;
       let overlappingLease = null;
@@ -1315,8 +1318,8 @@ const RentRollLeaseing = () => {
           const inputDate = new Date(dates);
 
           if (
-            sDate.getTime() < inputDate.getTime() &&
-            inputDate.getTime() < eDate.getTime()
+            (sDate.getTime() < inputDate.getTime() &&
+            inputDate.getTime() < eDate.getTime()) || (new Date(inputStartDate) && sDate.getTime()>=new Date(inputStartDate).getTime() && eDate.getTime()<=inputDate.getTime())
           ) {
             isUnavailable = true;
             overlappingLease = entry.entries;
