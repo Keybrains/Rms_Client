@@ -441,7 +441,6 @@ const RentRoll = () => {
                   <tbody>
                     {filterTenantsBySearchAndPage()?.map((tenant) => (
                       <>
-                        {console.log(tenant, "ttenenenen")}
                         <tr
                           key={tenant._id}
                           onClick={() =>

@@ -368,7 +368,7 @@ const Workorder = () => {
                         style={{ cursor: "pointer" }}
                       >
                         <td>{rental.work_subject}</td>
-                        <td>{rental.rental_adress}</td>
+                        <td>{rental.rental_adress} {rental.rental_units ? " - " + rental.rental_units : null}</td> 
                         <td>{rental.work_category}</td>
                         <td>{rental.staffmember_name}</td>
                         <td>{rental.status}</td>

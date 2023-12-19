@@ -1438,7 +1438,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                                       <td>
                                                         {/* <Link to=""> */}
                                                         {`${matchedProperty?.staffMember ||
-                                                          "N/A"
+                                                          "No staff member assigned"
                                                           }`}
 
                                                         {/* </Link> */}

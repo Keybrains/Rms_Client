@@ -256,7 +256,7 @@ const TenantProfile = () => {
                           ))
                         ) : (
                           <tr>
-                            <td>Loading vendor details...</td>
+                            <td>Loading lease details...</td>
                           </tr>
                         )}
                       </div>
