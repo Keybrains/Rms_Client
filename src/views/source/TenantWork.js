@@ -110,10 +110,13 @@ const TenantWork = () => {
       if (entries.length > 0) {
         const rentalAddresses = entries
           .map((entry) => entry.rental_adress)
-          .join("-");
+          .join("^");
+        const rentalUnits = entries
+          .map((entry) => entry.rental_units)
+          .join("^");
         ////console.log(rentalAddresses, "mansi");
         setTenantDetails(response.data.data);
-        getRentalData(rentalAddresses);
+        getRentalData(rentalAddresses,rentalUnits);
         //getVendorDetails(rentalAddresses);
       } else {
         console.error("No rental addresses found.");
@@ -140,10 +143,10 @@ const TenantWork = () => {
     setCurrentPage(page);
   };
 
-  const getRentalData = async (addresses) => {
+  const getRentalData = async (addresses,units) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/workorder/workorder/tenant/${addresses}`
+        `${baseUrl}/workorder/workorder/tenant/${addresses}/${units}`
       );
       //console.log(response, "abc");
 
@@ -200,10 +203,10 @@ const TenantWork = () => {
     const paginatedData = filteredData.slice(startIndex, endIndex);
     return paginatedData;
   };
-  const getRentalDataAfterDelete = async (addresses) => {
+  const getRentalDataAfterDelete = async (addresses,units) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/workorder/workorder/tenant/${addresses}`
+        `${baseUrl}/workorder/workorder/tenant/${addresses}/${units}`
       );
       //console.log(response, "abc");
       if (Array.isArray(response.data.data)) {
@@ -233,10 +236,13 @@ const TenantWork = () => {
       if (entries.length > 0) {
         const rentalAddresses = entries
           .map((entry) => entry.rental_adress)
-          .join("-");
+          .join("^");
+        const rentalUnits = entries
+          .map((entry) => entry.rental_units)
+          .join("^");
         ////console.log(rentalAddresses, "mansi");
         setTenantDetails(response.data.data);
-        getRentalDataAfterDelete(rentalAddresses);
+        getRentalDataAfterDelete(rentalAddresses, rentalUnits);
         //getVendorDetails(rentalAddresses);
       } else {
         console.error("No rental addresses found.");

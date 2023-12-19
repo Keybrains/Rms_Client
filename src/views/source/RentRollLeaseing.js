@@ -2012,6 +2012,7 @@ const RentRollLeaseing = () => {
           upload_file: entrySchema.values.upload_file,
           isrenton: entrySchema.values.isrenton,
           rent_paid: entrySchema.values.rent_paid,
+          isMovedin:true,
           propertyOnRent: entrySchema.values.propertyOnRent,
 
           //security deposite
@@ -2102,6 +2103,8 @@ const RentRollLeaseing = () => {
             putObject
           );
           if (res.data.statusCode === 200) {
+            updateApplicants();
+
             console.log(res.data.data, "allTenants22");
             const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
@@ -2179,7 +2182,7 @@ const RentRollLeaseing = () => {
         } else {
           if (id === undefined) {
             console.log(tenantObject, "leaseObject");
-            // debugger
+            
             const res = await axios.post(
               `${baseUrl}/tenant/tenant`,
               tenantObject
@@ -2190,7 +2193,7 @@ const RentRollLeaseing = () => {
             );
             if (res.data.statusCode === 200) {
               console.log(res.data.data, "response after adding data");
-              // debugger;
+            
 
               updateApplicants();
 
@@ -2198,7 +2201,7 @@ const RentRollLeaseing = () => {
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
 
-              // debugger;
+            
               if (entrySchema.values.unit_id) {
                 await postCharge(
                   res.data.data.entries[0].rental_units,
@@ -2293,9 +2296,11 @@ const RentRollLeaseing = () => {
 
   const updateApplicants = async () => {
 
-    // debugger
-    const url = `${baseUrl}/applicant/applicant/${applicantData._id}/movein`;
+    if(applicantData){
 
+      // debugger
+      const url = `${baseUrl}/applicant/applicant/${applicantData._id}/movein`;
+   
     const res = await axios.put(url);
     if (res.data.statusCode === 200) {
       console.log(res.data.data, "response after adding data");
@@ -2304,6 +2309,7 @@ const RentRollLeaseing = () => {
       console.log(res.data.data, "response after adding data");
     }
   }
+}
 
   const postCharge = async (unit, unitId, tenantId) => {
     const chargeObject = {
