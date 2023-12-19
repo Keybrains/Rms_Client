@@ -5931,50 +5931,6 @@ const Leaseing = () => {
                     </Col>
                   </Row>
 
-
-                  <Row>
-                    <Col md="12">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Select Payment Method
-                        </label>
-                        <FormGroup>
-                          <Dropdown
-                            isOpen={paymentOptionDropdawnOpen}
-                            toggle={paymentMethodtoggle}
-                          >
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectPaymentMethodDropdawn
-                                ? selectPaymentMethodDropdawn
-                                : "Select"}
-                            </DropdownToggle>
-                            <DropdownMenu
-                              style={{ width: "100%" }}
-                              name="paymentMethod"
-                              onBlur={entrySchema.handleBlur}
-                              onChange={(e) => entrySchema.handleChange(e)}
-                              value={entrySchema.values.paymentMethod}
-                            >
-                              {selectPaymentMethod.map((option) => (
-                                <DropdownItem
-                                  key={option}
-                                  onClick={() =>
-                                    handleselectedPaymetMethod(option)
-                                  }
-                                >
-                                  {option}
-                                </DropdownItem>
-                              ))}
-                            </DropdownMenu>
-                          </Dropdown>
-                        </FormGroup>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-
                   {/* <Button
                   color="primary"
                  //  href="#rms"
