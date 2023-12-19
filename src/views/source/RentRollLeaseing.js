@@ -1546,7 +1546,7 @@ const RentRollLeaseing = () => {
           mobileNumber: applicantData.tenant_mobileNumber || "",
         });
 
-        console.log(applicantData,'applicantData from 1526')
+        console.log(applicantData, 'applicantData from 1526')
         setPropertyId(applicantData.property_id);
         setSelectPaymentMethodDropdawn(applicantData.paymentMethod || "Select");
 
@@ -1660,7 +1660,7 @@ const RentRollLeaseing = () => {
     };
     setData();
   }, []);
-  
+
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
     const fetchData = async () => {
@@ -2012,6 +2012,7 @@ const RentRollLeaseing = () => {
           upload_file: entrySchema.values.upload_file,
           isrenton: entrySchema.values.isrenton,
           rent_paid: entrySchema.values.rent_paid,
+          isMovedin:true,
           propertyOnRent: entrySchema.values.propertyOnRent,
           isMovedin:true,
 
@@ -2079,7 +2080,7 @@ const RentRollLeaseing = () => {
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
-      
+
         const allTenants = res.data.data;
         const filteredData = allTenants.find((item) => {
           return (
@@ -2189,13 +2190,13 @@ const RentRollLeaseing = () => {
             );
             debugger
             const res2 = await axios.post(
-              `http://localhost:4000/api/nmipayment/custom-add-subscription`,
+              `${baseUrl}/nmipayment/custom-add-subscription`,
               paymentDetails
             );
             console.log(res2,'response of subscription')
             if (res.data.statusCode === 200) {
               console.log(res.data.data, "response after adding data");
-              // debugger;
+            
 
               updateApplicants();
               // updateApproveStatus();
@@ -2204,7 +2205,7 @@ const RentRollLeaseing = () => {
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
 
-              // debugger;
+            
               if (entrySchema.values.unit_id) {
                 await postCharge(
                   res.data.data.entries[0].rental_units,
@@ -2307,7 +2308,7 @@ const RentRollLeaseing = () => {
       if (res.data.statusCode === 200) {
       console.log(res.data.data, "response after adding data");
     }
-    else{
+    else {
       console.log(res.data.data, "response after adding data");
     }
       // debugger
@@ -2979,7 +2980,7 @@ const RentRollLeaseing = () => {
                               handleDateChange(e.target.value);
                               entrySchema.handleChange(e);
                               checkStartDate(e.target.value); // Check for start date
-                              
+
                             }}
                             value={entrySchema.values.start_date}
                           />
@@ -6400,7 +6401,7 @@ const RentRollLeaseing = () => {
                                     const limitValue = numericValue.slice(0, 16); // Limit to 12 digits
                                     setCCVNU(parseInt(limitValue));
                                   }}
-                                 
+
                                 />
                               </InputGroup>
                             </FormGroup>
@@ -6438,7 +6439,7 @@ const RentRollLeaseing = () => {
                                 }}
                                 value={CCVEX instanceof Date ? formatDateForInput(CCVEX) : CCVEX}
                                 placeholder="MM/YYYY"
-                              
+
                               />
                             </FormGroup>
                           </Col>

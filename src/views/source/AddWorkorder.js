@@ -372,6 +372,7 @@ const AddWorkorder = () => {
                 vendor_name: selectedVendor,
                 staffmember_name: selecteduser,
                 rental_adress: selectedProp,
+                rental_units: selectedUnit,
                 work_subject: work_subject,
                 workorder_id: workorder_id,
               },
@@ -442,6 +443,7 @@ const AddWorkorder = () => {
 
     validationSchema: yup.object({
       rental_adress: yup.string().required("Required"),
+      rental_units: yup.string().required("Required"),
       vendor: yup.string().required("Required"),
       staffmember_name: yup.string().required("Required"),
       work_category: yup.string().required("Required"),
