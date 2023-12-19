@@ -508,7 +508,7 @@ const Applicants = () => {
                         <td>{applicant.tenant_lastName}</td>
                         <td>{applicant.tenant_email}</td>
                         <td>{applicant.tenant_mobileNumber}</td>
-                        <td>{applicant.rental_adress}</td>
+                        <td>{applicant.rental_adress} {applicant.rental_units ? " - " + applicant.rental_units : null}</td>
                         <td>{applicant.createAt}</td>
                         <td>
                           {applicant?.applicant_status[0]?.status ||

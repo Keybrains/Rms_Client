@@ -294,7 +294,6 @@ const RentRoll = () => {
 
 
                       <>
-                        {console.log(tenant, 'ttenenenen')}
                         <tr
                           key={tenant._id}
                           onClick={() =>
