@@ -31,6 +31,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { RotatingLines } from "react-loader-spinner";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const StaffMember = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -50,6 +52,8 @@ const StaffMember = () => {
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const [upArrow, setUpArrow] = useState([]);
+  const [sortBy, setSortBy] = useState([]);
 
   const openEditDialog = (staff) => {
     setEditingStaffMember(staff);
@@ -121,12 +125,9 @@ const StaffMember = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(
-            `${baseUrl}/addstaffmember/delete_staffmember`,
-            {
-              data: { _id: id },
-            }
-          )
+          .delete(`${baseUrl}/addstaffmember/delete_staffmember`, {
+            data: { _id: id },
+          })
           .then((response) => {
             if (response.data.statusCode === 200) {
               swal("Success!", "Staff Member deleted successfully!", "success");
@@ -189,28 +190,87 @@ const StaffMember = () => {
   };
 
   const filterTenantsBySearch = () => {
-    if (searchQuery === undefined) {
-      return StaffMemberData;
+    let filteredData = StaffMemberData;
+  
+    if (searchQuery) {
+      filteredData = filteredData
+        .filter((staff) => {
+          const isNameMatch = staff.staffmember_name.toLowerCase().includes(searchQuery.toLowerCase());
+          const isDesignationMatch = staff.staffmember_designation.toLowerCase().includes(searchQuery.toLowerCase());
+          return isNameMatch || isDesignationMatch;
+        });
     }
-
-    return StaffMemberData.filter((staff) => {
-      const isNameMatch = staff.staffmember_name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-
-      const isDesignationMatch = staff.staffmember_designation
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      return isNameMatch || isDesignationMatch;
-    });
+  
+    if (upArrow.length > 0 ) {
+      const sortingArrows = upArrow.length > 0 ? upArrow : null;
+  
+      sortingArrows.forEach((sort) => {
+        switch (sort) {
+          case "staffmember_name":
+            filteredData.sort((a, b) => {
+              const comparison = a.staffmember_name.localeCompare(b.staffmember_name);
+              return upArrow.includes("staffmember_name") ? comparison : -comparison;
+            });
+            break;
+          case "staffmember_designation":
+            filteredData.sort((a, b) => {
+              const comparison = a.staffmember_designation.localeCompare(b.staffmember_designation);
+              return upArrow.includes("staffmember_designation") ? comparison : -comparison;
+            });
+            break;
+          case "createAt":
+            filteredData.sort((a, b) => {
+              const comparison = new Date(a.createAt) - new Date(b.createAt);
+              return upArrow.includes("createAt") ? comparison : -comparison;
+            });
+            break;
+          case "staffmember_phoneNumber":
+            filteredData.sort((a, b) => {
+              const comparison = a.staffmember_phoneNumber - b.staffmember_phoneNumber;
+              return upArrow.includes("staffmember_phoneNumber") ? comparison : -comparison;
+            });
+            break;
+          case "staffmember_email":
+            filteredData.sort((a, b) => {
+              const comparison = a.staffmember_email.localeCompare(b.staffmember_email);
+              return upArrow.includes("staffmember_email") ? comparison : -comparison;
+            });
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
+  
+    return filteredData.slice(startIndex, endIndex);
   };
-
+  
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterTenantsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
     return paginatedData;
   };
 
+  const sortData = (value) => {
+    if (!sortBy.includes(value)) {
+      setSortBy([...sortBy, value]);
+      setUpArrow([...upArrow, value]);
+      filterTenantsBySearchAndPage();
+    } else {
+      setSortBy(sortBy.filter((sort) => sort !== value));
+      setUpArrow(upArrow.filter((sort) => sort !== value));
+      filterTenantsBySearchAndPage();
+    }
+    //console.log(value);
+    // setOnClickUpArrow(!onClickUpArrow);
+  };
+
+  useEffect(() => {
+    // setLoader(false);
+    // filterRentalsBySearch(); 
+    getStaffMemberData();
+  }, [upArrow, sortBy]);
   return (
     <>
       <Header />
@@ -276,11 +336,88 @@ const StaffMember = () => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">NAME</th>
-                      <th scope="col">DESIGNATION</th>
-                      <th scope="col">Contact</th>
-                      <th scope="col">Mail Id</th>
-                      <th scope="col">Created at</th>
+                      <th scope="col">NAME
+                      {sortBy.includes("staffmember_name") ? (
+                          upArrow.includes("staffmember_name") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("staffmember_name")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("staffmember_name")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("staffmember_name")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">DESIGNATION
+                      {sortBy.includes("staffmember_designation") ? (
+                          upArrow.includes("staffmember_designation") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("staffmember_designation")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("staffmember_designation")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("staffmember_designation")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">Contact
+                      {sortBy.includes("staffmember_phoneNumber") ? (
+                          upArrow.includes("staffmember_phoneNumber") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("staffmember_phoneNumber")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("staffmember_phoneNumber")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("staffmember_phoneNumber")}
+                          />
+                        )}</th>
+                      <th scope="col">Mail Id
+                      {sortBy.includes("staffmember_email") ? (
+                          upArrow.includes("staffmember_email") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("staffmember_email")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("staffmember_email")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("staffmember_email")}
+                          />
+                        )}</th>
+                      <th scope="col">Created at
+                      {sortBy.includes("createAt") ? (
+                          upArrow.includes("createAt") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("createAt")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("createAt")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("createAt")}
+                          />
+                        )}</th>
                       <th scope="col">Updated at</th>
                       <th scope="col">ACTION</th>
                     </tr>
@@ -293,7 +430,7 @@ const StaffMember = () => {
                         <td>{staff.staffmember_phoneNumber}</td>
                         <td>{staff.staffmember_email}</td>
                         <td>{staff.createAt}</td>
-                        <td>{staff.updateAt ? staff.updateAt : '-'}</td>
+                        <td>{staff.updateAt ? staff.updateAt : "-"}</td>
                         <td>
                           <div style={{ display: "flex" }}>
                             <div

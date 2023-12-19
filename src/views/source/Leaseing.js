@@ -595,7 +595,7 @@ const Leaseing = () => {
     const nextDate = moment(date).add(1, "months").format("YYYY-MM-DD");
     entrySchema.values.end_date = nextDate;
     setIsDateUnavailable(false);
-    checkDate(date);
+    checkDate(nextDate);
   };
 
   const [file, setFile] = useState("");
@@ -1170,10 +1170,10 @@ const Leaseing = () => {
           const sDate = new Date(entry.entries.start_date);
           const eDate = new Date(entry.entries.end_date);
           const inputDate = new Date(dates);
-
+          const inputStartDate = entrySchema.values.start_date;
           if (
-            sDate.getTime() < inputDate.getTime() &&
-            inputDate.getTime() < eDate.getTime()
+            (sDate.getTime() < inputDate.getTime() &&
+            inputDate.getTime() < eDate.getTime()) || (new Date(inputStartDate) && sDate.getTime()>=new Date(inputStartDate).getTime() && eDate.getTime()<=inputDate.getTime())
           ) {
             isUnavailable = true;
             overlappingLease = entry.entries;
