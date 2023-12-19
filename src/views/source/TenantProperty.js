@@ -104,8 +104,8 @@ const TenantProperty = () => {
   // }, [rental_adress]);
 
   function navigateToTenantsDetails(rental_adress) {
-    const tenantsDetailsURL = `/tenant/tenantpropertydetail/${rental_adress}`;
-    window.location.href = tenantsDetailsURL;
+    navigate(`/tenant/tenantpropertydetail/${rental_adress}`);
+    // window.location.href = tenantsDetailsURL;
     // console.log("Rental Address", rental_adress);
   }
   return (
