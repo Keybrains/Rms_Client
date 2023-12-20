@@ -275,7 +275,7 @@ const PropertyType = () => {
       });
     }
   
-    return filteredData.slice(startIndex, endIndex);
+    return filteredData;
   };
   
 

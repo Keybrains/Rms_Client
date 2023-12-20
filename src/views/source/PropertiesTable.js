@@ -252,7 +252,7 @@ const PropertiesTables = () => {
       });
     }
   
-    return filteredData.slice(startIndex, endIndex);
+    return filteredData;
   };
   
 
