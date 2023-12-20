@@ -273,11 +273,6 @@ const AddWorkorder = () => {
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
             : "";
 
-          setVid(vendorData._id)
-          console.log("vid", vendorData._id)
-          setentriesID(vendorData.entries._id)
-          console.log("vid", vendorData.entries[0]._id)
-
           setVid(vendorData._id);
           console.log("vid", vendorData._id);
           if (vendorData && vendorData.entries.length>0) {
@@ -304,7 +299,7 @@ const AddWorkorder = () => {
           setSelectedAccount(vendorData.account_type || "Select");
 
           const entriesData = vendorData.entries || []; // Make sure entries is an array
-          console.log(vendorData, "vendorData");
+          console.log(vendorData.work_subject, "vendorData");
           WorkFormik.setValues({
             work_subject: vendorData.work_subject || "",
             rental_units: vendorData.rental_units || "",
