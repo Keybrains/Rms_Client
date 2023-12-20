@@ -2109,7 +2109,7 @@ const RentRollLeaseing = () => {
               `${baseUrl}/tenant/tenant`,
               tenantObject
             );
-            debugger;
+           
             const res2 = await axios.post(
               `${baseUrl}/nmipayment/custom-add-subscription`,
               paymentDetails
