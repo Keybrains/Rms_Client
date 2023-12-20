@@ -436,7 +436,7 @@ const filterApplicantsBySearch = () => {
     });
   }
 
-  return filteredData.slice(startIndex, endIndex);
+  return filteredData;
 };
 
 

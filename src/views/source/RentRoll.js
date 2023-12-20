@@ -100,6 +100,7 @@ const RentRoll = () => {
     paginatedData = tenantsData.slice(startIndex, endIndex);
   }
   const handlePageChange = (page) => {
+    console.log(page,'page')
     setCurrentPage(page);
   };
 
@@ -141,10 +142,13 @@ const RentRoll = () => {
     let filteredData = [...tenantsData]; // Create a copy of tenantsData to avoid mutating the original array
   
     if (searchQuery) {
+      
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
+      // setCurrentPage(1);
       filteredData = filteredData.filter((tenant) => {
       
         const name = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
+        // setCurrentPage(1)
         return (
           tenant.entries.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
           tenant.entries.lease_type.toLowerCase().includes(lowerCaseSearchQuery) ||
@@ -178,18 +182,21 @@ const RentRoll = () => {
             break;
           default:
             // If an unknown sort option is provided, do nothing
+            filteredData.slice(startIndex, endIndex)
             break;
         }
       });
     }
   
-    return filteredData.slice(startIndex, endIndex);
+    return filteredData;
   };
   
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentRollsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
+    console.log(startIndex, endIndex, 'start index and end index')
+    console.log(filteredData, paginatedData, 'filtered and paginated data')
     return paginatedData;
   };
 

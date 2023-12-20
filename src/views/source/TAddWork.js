@@ -78,7 +78,6 @@ const TAddWork = () => {
 
   const handlePropertyTypeSelect = async (property) => {
     setSelectedProp(property);
-    setSelectedProp(property);
     WorkFormik.values.rental_adress = property;
 
     setSelectedUnit(""); // Reset selected unit when a new property is selected

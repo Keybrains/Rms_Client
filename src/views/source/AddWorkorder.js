@@ -162,7 +162,11 @@ const AddWorkorder = () => {
   const handleCategorySelection = (value) => {
     setSelectedCategory(value);
     setcategorydropdownOpen(true);
-    WorkFormik.values.work_category = value;
+    if(value === "Other") {
+      WorkFormik.values.work_category = "";
+    } else {
+      WorkFormik.values.work_category = value;
+    }
   };
 
   const handleVendorSelect = (value) => {
@@ -276,8 +280,10 @@ const AddWorkorder = () => {
 
           setVid(vendorData._id);
           console.log("vid", vendorData._id);
-          setentriesID(vendorData.entries._id);
-          console.log("vid", vendorData.entries[0]._id);
+          if (vendorData && vendorData.entries.length>0) {
+            setentriesID(vendorData.entries._id);
+            console.log("vid", vendorData.entries[0]._id);
+          }
 
           try {
             const units = await fetchUnitsByProperty(vendorData.rental_adress);
@@ -298,6 +304,7 @@ const AddWorkorder = () => {
           setSelectedAccount(vendorData.account_type || "Select");
 
           const entriesData = vendorData.entries || []; // Make sure entries is an array
+          console.log(vendorData, "vendorData");
           WorkFormik.setValues({
             work_subject: vendorData.work_subject || "",
             rental_units: vendorData.rental_units || "",
@@ -333,7 +340,9 @@ const AddWorkorder = () => {
     setLoader(true);
     try {
       values["rental_adress"] = selectedProp;
-      values["work_category"] = selectedCategory;
+      values["work_category"] = WorkFormik.values.work_category
+        ? WorkFormik.values.work_category
+        : selectedCategory;
       values["vendor_name"] = selectedVendor;
       values["entry_allowed"] = selectedEntry;
       values["staffmember_name"] = selecteduser;
@@ -356,9 +365,9 @@ const AddWorkorder = () => {
       values["workorder_id"] = workorder_id;
 
       const work_subject = values.work_subject;
-
       if (id === undefined) {
         // Create the work order
+        // console.log(values,'values after submit')
         const workOrderRes = await axios.post(
           `${baseUrl}/workorder/workorder`,
           values
@@ -833,6 +842,50 @@ const AddWorkorder = () => {
                               </div>
                             ) : null}
                           </Dropdown>
+                        </FormGroup>
+                      </Col>
+                      <Col
+                        lg="3"
+                        style={
+                          selectedCategory === "Other"
+                            ? { display: "block" }
+                            : { display: "none" }
+                        }
+                      >
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-member"
+                          >
+                            Other Category
+                          </label>
+                          <br />
+                          <br />
+                          <Input
+                            className="form-control-alternative"
+                            id="input-work-subject"
+                            placeholder="Enter Other Category"
+                            type="text"
+                            name="work_category"
+                            //name="nput-staffmember-name"
+                            onBlur={WorkFormik.handleBlur}
+                            onChange={(e) => {
+                              // Update the state or Formik values with the new input value
+                              // WorkFormik.handleChange(e);
+                              WorkFormik.setFieldValue(
+                                "work_category",
+                                e.target.value
+                              );
+                            }}
+                            value={WorkFormik.values.work_category}
+                            // required
+                          />
+                          {/* {WorkFormik.touched.work_subject &&
+                          WorkFormik.errors.work_subject ? (
+                            <div style={{ color: "red" }}>
+                              {WorkFormik.errors.work_subject}
+                            </div>
+                          ) : null} */}
                         </FormGroup>
                       </Col>
                     </Row>
