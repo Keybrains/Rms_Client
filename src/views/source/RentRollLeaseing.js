@@ -301,11 +301,7 @@ const RentRollLeaseing = () => {
   const [selectedDayFrequency, setselectedDayFrequency] = useState("");
   const handleselectedRentCycle = (rentcycle) => {
     setselectedRentCycle(rentcycle);
-    // localStorage.setItem("leasetype", leasetype);
-    // entrySchema.values.rent_cycle = rentcycle;
     entrySchema.setFieldValue("rent_cycle", rentcycle);
-    // };
-    // localStorage.setItem("leasetype", leasetype);
     const startDate = entrySchema.values.start_date;
     let nextDue_date;
     let dayFrequency;
@@ -726,7 +722,7 @@ const RentRollLeaseing = () => {
     const dataArray = new FormData();
     dataArray.append("b_video", files);
 
-    let url = "https://cdn.brandingprofitable.com/image_upload.php/";
+    let url = "https://cdn.profitable.com/image_upload.php/";
     axios
       .post(url, dataArray, {
         headers: {
@@ -1837,80 +1833,7 @@ const RentRollLeaseing = () => {
 
           setRecurringData(matchedLease.recurring_charges);
           setOneTimeData(matchedLease.one_time_charges);
-          console.log(matchedLease, "yush");
-          // leaseFormik.setValues({
-          //   entries: [
-          //     {
-          //       rental_adress: matchedLease.rental_adress || "",
-          //       lease_type: matchedLease.lease_type || "",
-          //       start_date: matchedLease.start_date || "",
-          //       end_date: matchedLease.end_date || "",
-          //       amount: matchedLease.amount || "",
-          //       recuring_amount: matchedLease.recuring_amount || "",
-          //       recuring_account: matchedLease.recuring_account || "",
-          //       recuringmemo: matchedLease.recuringmemo || "",
-
-          //       //add one time charge
-          //       onetime_amount: matchedLease.onetime_amount || "",
-          //       onetime_account: matchedLease.onetime_account || "",
-          //       onetime_memo: matchedLease.onetime_memo || "",
-
-          //       // add account
-          //       account_name: matchedLease.account_name || "",
-          //       account_type: matchedLease.account_type || "",
-          //       account_number: matchedLease.account_number || "",
-
-          //       //upload File
-          //       upload_file: matchedLease.upload_file || "",
-
-          //       // parent account
-          //       parent_account: matchedLease.parent_account || "",
-          //       fund_type: matchedLease.fund_type || "",
-          //       cash_flow: matchedLease.cash_flow || "",
-          //       notes: matchedLease.notes || "",
-          //     },
-          //   ],
-          // });
-
-          // tenantsFormik.setValues({
-          //   birth_date: formattedBirthDate || "",
-          //   textpayer_id: laesingdata.textpayer_id || "",
-          //   comments: laesingdata.comments || "",
-          //   contact_name: laesingdata.contact_name || "",
-          //   relationship_tenants: laesingdata.relationship_tenants || "",
-          //   email: laesingdata.email || "",
-          //   emergency_PhoneNumber: laesingdata.emergency_PhoneNumber || "",
-          //   // Due_date: formattedDueDate,
-          //   tenant_firstName: laesingdata.tenant_firstName || "",
-          //   tenant_lastName: laesingdata.tenant_lastName || "",
-          //   tenant_mobileNumber: laesingdata.tenant_mobileNumber || "",
-          //   tenant_email: laesingdata.tenant_email || "",
-          //   tenant_password: laesingdata.tenant_password || "",
-          //   tenant_workNumber: laesingdata.tenant_workNumber || "",
-          //   alternate_email: laesingdata.alternate_email || "",
-          // });
-
-          // consignerFormik.setValues({
-          //   entries: [
-          //     {
-          //       cosigner_firstName: matchedLease.cosigner_firstName || "",
-          //       cosigner_lastName: matchedLease.cosigner_lastName || "",
-          //       cosigner_mobileNumber: matchedLease.cosigner_mobileNumber || "",
-          //       cosigner_workNumber: matchedLease.cosigner_workNumber || "",
-          //       cosigner_homeNumber: matchedLease.cosigner_homeNumber || "",
-          //       cosigner_faxPhoneNumber:
-          //         matchedLease.cosigner_faxPhoneNumber || "",
-          //       cosigner_email: matchedLease.cosigner_email || "",
-          //       cosigner_alternateemail:
-          //         matchedLease.cosigner_alternateemail || "",
-          //       cosigner_streetAdress: matchedLease.cosigner_streetAdress || "",
-          //       cosigner_city: matchedLease.cosigner_city || "",
-          //       cosigner_state: matchedLease.cosigner_state || "",
-          //       cosigner_country: matchedLease.cosigner_country || "",
-          //       cosigner_postalcode: matchedLease.cosigner_postalcode || "",
-          //     },
-          //   ],
-          // });
+          
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -2014,7 +1937,7 @@ const RentRollLeaseing = () => {
           rent_paid: entrySchema.values.rent_paid,
           isMovedin: true,
           propertyOnRent: entrySchema.values.propertyOnRent,
-          isMovedin: true,
+        
 
           //security deposite
           Due_date: entrySchema.values.Due_date,
@@ -2075,7 +1998,6 @@ const RentRollLeaseing = () => {
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
     };
-    console.log("shardi", paymentDetails);
 
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
@@ -2156,12 +2078,12 @@ const RentRollLeaseing = () => {
                 entrySchema.values.Security_amount
               );
 
-              await postDeposit(
-                "",
-                "",
-                tenantId,
-                entrySchema.values.Security_amount
-              );
+              // await postDeposit(
+              //   "",
+              //   "",
+              //   tenantId,
+              //   entrySchema.values.Security_amount
+              // );
 
               for (const item of recurringData) {
                 await postRecOneCharge("", "", tenantId, item, "Recurring");
@@ -2289,6 +2211,7 @@ const RentRollLeaseing = () => {
     } catch (error) {
       console.log(error);
     }
+    setLoader(false);
   };
   console.log(entrySchema.values, "entry cahsdkajl;");
 
@@ -2978,7 +2901,9 @@ const RentRollLeaseing = () => {
                               entrySchema.handleChange(e);
                               checkStartDate(e.target.value); // Check for start date
                             }}
-                            value={entrySchema.values.start_date}
+                            value={moment(entrySchema.values.start_date).format(
+                              "YYYY-MM-DD"
+                            )}
                           />
                           {isStartDateUnavailable && (
                             <div style={{ color: "red", marginTop: "8px" }}>
@@ -3026,8 +2951,12 @@ const RentRollLeaseing = () => {
                                 isDateUnavailable
                               );
                             }}
-                            value={entrySchema.values.end_date}
-                            min={entrySchema.values.start_date}
+                            value={moment(entrySchema.values.end_date).format(
+                              "YYYY-MM-DD"
+                            )}
+                            min={moment(entrySchema.values.start_date).format(
+                              "YYYY-MM-DD"
+                            )}
                           />
                           {isDateUnavailable && (
                             <div style={{ color: "red", marginTop: "8px" }}>
@@ -5032,6 +4961,8 @@ const RentRollLeaseing = () => {
                                     onClick={() => {
                                       setShowTenantTable(false);
                                       setOpenTenantsDialog(true);
+                                      setSelectedOption("Tenant");
+                                      setAlignment("Tenant");
                                     }}
                                   />
 

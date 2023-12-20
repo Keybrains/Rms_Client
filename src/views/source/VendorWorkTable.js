@@ -174,6 +174,8 @@ const VendorWorkTable = () => {
                       <th scope="col">Category</th>
                       <th scope="col">Assigned</th>
                       <th scope="col">Status</th>
+                      <th scope="col">Created At</th>
+                      <th scope="col">Updated At</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -188,6 +190,8 @@ const VendorWorkTable = () => {
                         <td>{vendor.work_category}</td>
                         <td>{vendor.staffmember_name}</td>
                         <td>{vendor.status}</td>
+                        <td>{vendor.createdAt}</td>
+                        <td>{vendor.updateAt || "-"}</td>
                       </tr>
                     ))}
                   </tbody>
