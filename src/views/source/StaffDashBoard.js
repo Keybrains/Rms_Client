@@ -48,6 +48,7 @@ const StaffDashBoard = (props) => {
     setActiveNav(index);
     setChartExample1Data("data" + index);
   };
+  
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -55,7 +56,8 @@ const StaffDashBoard = (props) => {
     if (cookies.get("token")) {
       const jwt = jwtDecode(cookies.get("token"));
       setAccessType(jwt.accessType);
-    } else {
+    } 
+    else {
       navigate("/auth/login");
     }
   }, [navigate]);

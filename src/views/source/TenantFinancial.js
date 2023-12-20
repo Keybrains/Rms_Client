@@ -351,8 +351,9 @@ const TenantFinancial = () => {
   // }, [rental_adress]);
 
   function navigateToTenantsDetails(rental_adress) {
-    const tenantsDetailsURL = `/tenant/tenantpropertydetail/${rental_adress}`;
-    window.location.href = tenantsDetailsURL;
+    navigate(`/tenant/tenantpropertydetail/${rental_adress}`);
+    // const tenantsDetailsURL = `/tenant/tenantpropertydetail/${rental_adress}`;
+    // window.location.href = tenantsDetailsURL;
     // console.log("Rental Address", rental_adress);
   }
   const formatCardNumber = (inputValue) => {
@@ -479,7 +480,7 @@ const TenantFinancial = () => {
              //  href="#rms"
               onClick={openModal}
               size="sm"
-              style={{ background: "white", color: "blue" }}
+              style={{ background: "white", color: "#3B2F2F" }}
             >
               Make Payment
             </Button>

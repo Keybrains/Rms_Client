@@ -77,7 +77,7 @@ const TenantSidebar = (props) => {
   let navigate = useNavigate();
   let cookies = new Cookies();
   let Logout = () => {
-    cookies.remove("token");
+    
     // localStorage.removeItem("name");
     // localStorage.removeItem("id");
     // navigate("/login");
@@ -438,8 +438,11 @@ const getRentalData = async (addresses) => {
               <DropdownItem divider />
               <DropdownItem
               //  href="#rms"
-               to="/auth/login"  onClick={() => {
-              Logout();
+                 
+               onClick={() => {
+                cookies.remove("token");
+                cookies.remove("Tenant ID");
+                // navigate("/login");
             }} tag={Link} >
                 <i className="ni ni-user-run" />
                 <span>Logout</span>

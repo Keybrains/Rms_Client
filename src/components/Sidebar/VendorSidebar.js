@@ -56,6 +56,7 @@ const VendorSidebar = (props) => {
   let cookies = new Cookies();
   let Logout = () => {
     cookies.remove("token");
+    cookies.remove("Vendor ID");
   };
   useEffect(() => {
     const handleWindowResize = () => {

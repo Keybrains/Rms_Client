@@ -13,7 +13,7 @@ import {
   Nav,
   Container,
   Media,
-  FormGroup, 
+  FormGroup,
   Row,
   Col
 } from "reactstrap";
@@ -36,7 +36,7 @@ const AdminNavbar = (props) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   let navigate = useNavigate();
   const [notificationCount, setNotificationCount] = useState(0);
-  
+
   const [notificationData, setNotificationData] = useState([]);
   //console.log("Rental Address", rental_adress);
   const notifyData = [];
@@ -44,6 +44,7 @@ const AdminNavbar = (props) => {
   let cookies = new Cookies();
   let Logout = () => {
     cookies.remove("token");
+    cookies.remove("Tenant ID");
     // localStorage.removeItem("name");
     // localStorage.removeItem("id");
     // navigate("/login");
@@ -96,33 +97,33 @@ const AdminNavbar = (props) => {
   const navigateToDetails = (workorder_id) => {
     // Make a DELETE request to delete the notification
     axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=admin `)
-    .then((response) => {
-      if (response.status === 200) {
-        const updatedNotificationData = notificationData.map(notification => {
-          if (notification.workorder_id === workorder_id) {
-            return { ...notification, isAdminread: true };
-          }
-          return notification;
-        });
-        setNotificationData(updatedNotificationData);
-        //console.log("updatedNotificationData", updatedNotificationData)
-        setNotificationCount(updatedNotificationData.length);
-        //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
-        fetchNotification();
+      .then((response) => {
+        if (response.status === 200) {
+          const updatedNotificationData = notificationData.map(notification => {
+            if (notification.workorder_id === workorder_id) {
+              return { ...notification, isAdminread: true };
+            }
+            return notification;
+          });
+          setNotificationData(updatedNotificationData);
+          //console.log("updatedNotificationData", updatedNotificationData)
+          setNotificationCount(updatedNotificationData.length);
+          //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
+          fetchNotification();
 
-      } else {
-      console.error(`Failed to delete notification with workorder_id ${workorder_id}.`);
-    }
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
+        } else {
+          console.error(`Failed to delete notification with workorder_id ${workorder_id}.`);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
 
-  
+
     // Continue with navigating to the details page
-    navigate(`/admin/workorderdetail/${workorder_id}`);
+    navigate(`/admin/addworkorder/${workorder_id}`);
   };
-  
+
   // useEffect(() =>{
   //   navigateToDetails();
   // },[workorder_id]);
@@ -144,18 +145,18 @@ const AdminNavbar = (props) => {
             {props.brandText}
           </Link>
           <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
-            <FormGroup className="mb-0" onClick={toggleSidebar} style={{ cursor: 'pointer',position: 'relative' }}>
-              <NotificationsIcon style={{color:'white',fontSize:'30px'}}/>
+            <FormGroup className="mb-0" onClick={toggleSidebar} style={{ cursor: 'pointer', position: 'relative' }}>
+              <NotificationsIcon style={{ color: 'white', fontSize: '30px' }} />
               {notificationCount > 0 && (
-              <div className="notification-circle" style={{position: 'absolute',top: '-15px',right: '-20px',background: 'red',borderRadius: '50%',padding: '0.1px 8px'}}>
-                <span className="notification-count" style={{color:'white',fontSize:"13px"}}>{notificationCount}</span>
-              </div>
-               )}
+                <div className="notification-circle" style={{ position: 'absolute', top: '-15px', right: '-20px', background: 'red', borderRadius: '50%', padding: '0.1px 8px' }}>
+                  <span className="notification-count" style={{ color: 'white', fontSize: "13px" }}>{notificationCount}</span>
+                </div>
+              )}
             </FormGroup>
           </Form>
 
           <Nav className="align-items-center d-none d-md-flex" navbar>
-            
+
             <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
               <div
                 role="presentation"
@@ -163,7 +164,7 @@ const AdminNavbar = (props) => {
                 onKeyDown={toggleSidebar}
               >
                 <List style={{ width: '350px' }}>
-                  <h2 style={{color:'blue',marginLeft:'15px'}}>
+                  <h2 style={{ color: 'blue', marginLeft: '15px' }}>
                     Notifications
                   </h2>
                   <Divider />
@@ -172,35 +173,35 @@ const AdminNavbar = (props) => {
                       data.notification_title || 'No Title Available';
                     const notificationDetails =
                       data.notification_details || 'No Details Available';
-                    const notificationTime = new Date(data.notification_time).toLocaleString(); 
+                    const notificationTime = new Date(data.notification_time).toLocaleString();
 
                     return (
                       <div key={data._id}>
-                      <ListItem
+                        <ListItem
 
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handlePropertySelect(data)}
-                      >
-                        <div>
-                          <h4>{notificationTitle}</h4>
-                          <p>{notificationDetails}</p>
-                          <Row>
-                            <Col lg="8">
-                               <p>{notificationTime}</p>
-                            </Col>
-                            <Col>
-                              <Button
-                              variant="contained"
-                              color="primary"
-                              style={{textTransform: 'none', fontSize: '12px' }}
-                              onClick={() => navigateToDetails(data.workorder_id)}
-                            >
-                              View
-                            </Button>
-                            </Col>
-                          </Row>
-                       </div>
-                        {/* <ListItemText
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handlePropertySelect(data)}
+                        >
+                          <div>
+                            <h4>{notificationTitle}</h4>
+                            <p>{notificationDetails}</p>
+                            <Row>
+                              <Col lg="8">
+                                <p>{notificationTime}</p>
+                              </Col>
+                              <Col>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  style={{ textTransform: 'none', fontSize: '12px' }}
+                                  onClick={() => navigateToDetails(data.workorder_id)}
+                                >
+                                  View
+                                </Button>
+                              </Col>
+                            </Row>
+                          </div>
+                          {/* <ListItemText
                           primary={notificationTitle}
                           secondary={notificationTime}
                         />
@@ -208,16 +209,16 @@ const AdminNavbar = (props) => {
                           primary={notificationDetails}
                           secondary="Notification Details"
                         /> */}
-                      </ListItem>
-                      <Divider/>
-                     </div> 
+                        </ListItem>
+                        <Divider />
+                      </div>
                     );
                   })}
-                  
+
                 </List>
-                
+
                 <Divider />
-                
+
               </div>
             </Drawer>
 
@@ -262,11 +263,11 @@ const AdminNavbar = (props) => {
                 </DropdownItem>*/}
                 <DropdownItem divider />
                 <DropdownItem
-                //  href="#rms" 
-                to="/auth/login"  onClick={() => {
-              Logout();
-            }} tag={Link} >
-                  
+                  //  href="#rms" 
+                  to="/auth/login" onClick={() => {
+                    Logout();
+                  }} tag={Link} >
+
                   <i className="ni ni-user-run" />
                   <span>Logout</span>
                 </DropdownItem>

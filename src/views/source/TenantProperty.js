@@ -104,20 +104,27 @@ const TenantProperty = () => {
   // }, [rental_adress]);
 
   function navigateToTenantsDetails(rental_adress) {
-    const tenantsDetailsURL = `/tenant/tenantpropertydetail/${rental_adress}`;
-    window.location.href = tenantsDetailsURL;
+    navigate(`/tenant/tenantpropertydetail/${rental_adress}`);
+    // window.location.href = tenantsDetailsURL;
     // console.log("Rental Address", rental_adress);
   }
   return (
     <>
       <TenantsHeader />
       {/* Page content */}
-      <Container className="mt--6 ml--10" fluid>
+      <Container className="mt--8 ml--10" fluid>
+        <Row>
+          <Col xs="12" sm="6">
+            <FormGroup className="">
+              <h1 style={{ color: "white" }}>Properties</h1>
+            </FormGroup>
+          </Col>
+        </Row>
         <Row>
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                <h1 className="mb-0">Property</h1>
+                {/* <h1 className="mb-0">Property</h1> */}
               </CardHeader>
               {!loader || rental_adress.length > 0 ? (
                 <div className="table-responsive">
@@ -159,7 +166,7 @@ const TenantProperty = () => {
                               //   textAlign: "center",
                               // }}
                               >
-                                {address.rental_adress}
+                                {address.rental_adress} {address.rental_units ? " - " + address.rental_units : null}
                               </td>
 
                               <td>{address.start_date}</td>

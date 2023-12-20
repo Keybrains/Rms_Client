@@ -123,7 +123,7 @@ const TenantProfile = () => {
                                 style={{
                                   fontSize: "18px",
                                   textTransform: "capitalize",
-                                  color: "#022d60",
+                                  color: "#3B2F2F",
                                   fontWeight: "600",
                                   borderBottom: "1px solid #ddd",
                                 }}
@@ -177,26 +177,27 @@ const TenantProfile = () => {
                             <td>Loading Tenant details...</td>
                           </tr>
                         )}
-                        {Array.isArray(tenantDetails) ? (
-                          tenantDetails.map((tenantDetails, index) => (
-                            <div key={index}>
-                              <Row
+                         <Row
                                 className="w-100 my-3 "
                                 style={{
                                   fontSize: "18px",
                                   textTransform: "capitalize",
-                                  color: "#022d60",
+                                  color: "#3B2F2F",
                                   fontWeight: "600",
                                   borderBottom: "1px solid #ddd",
                                 }}
                               >
                                 <Col>Lease Details</Col>
-                              </Row>
+                         </Row>
+                        {Array.isArray(tenantDetails) ? (
+                          tenantDetails.map((tenantDetails, index) => (
+                            <div key={index}>
+                             
                               <Row
                                 className="mb-1 m-0 p-0"
                                 style={{ fontSize: "12px", color: "#000" }}
                               >
-                                <Table>
+                                <Table style={{marginBottom:"20px"}}>
                                   <tbody
                                     className="tbbody p-0 m-0"
                                     style={{
@@ -256,7 +257,7 @@ const TenantProfile = () => {
                           ))
                         ) : (
                           <tr>
-                            <td>Loading vendor details...</td>
+                            <td>Loading lease details...</td>
                           </tr>
                         )}
                       </div>

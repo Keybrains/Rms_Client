@@ -18,6 +18,7 @@ import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import VendorHeader from "components/Headers/VendorHeader";
+
 const VendorProfile = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
@@ -59,6 +60,7 @@ const VendorProfile = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
+
   return (
     <>
       <VendorHeader />
@@ -68,7 +70,7 @@ const VendorProfile = () => {
           <div className="col">
             <Card className="shadow" style={{ backgroundColor: "#FFFEFA" }}>
               <CardHeader className="border-0">
-                <h3 className="mb-0">Personal detail </h3>
+                <h2 className="mb-0" style={{color:'#36013F'}}>Personal Details</h2>
               </CardHeader>
               <div className="table-responsive" style={{padding:"15px"}}>
               
@@ -98,7 +100,7 @@ const VendorProfile = () => {
                         >
                           <tr className="header">
                             <th>First name</th>
-                            <th>Last name</th>
+                            <th>Phone Number</th>
                             <th>Email</th>
                           </tr>
                           <>

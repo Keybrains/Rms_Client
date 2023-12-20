@@ -26,6 +26,9 @@ import swal from "sweetalert";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { useEffect } from "react";
 
 const Workorder = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -38,12 +41,12 @@ const Workorder = () => {
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const [upArrow, setUpArrow] = useState([]);
+  const [sortBy, setSortBy] = useState([]);
 
   const getWorkData = async () => {
     try {
-      const response = await axios.get(
-        `${baseUrl}/workorder/workorder`
-      );
+      const response = await axios.get(`${baseUrl}/workorder/workorder`);
       setWorkData(response.data.data);
       setLoader(false);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -75,12 +78,9 @@ const Workorder = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(
-            `${baseUrl}/workorder/delete_workorder`,
-            {
-              data: { _id: id },
-            }
-          )
+          .delete(`${baseUrl}/workorder/delete_workorder`, {
+            data: { _id: id },
+          })
           .then((response) => {
             if (response.data.statusCode === 200) {
               swal("Success!", "Work Order deleted successfully", "success");
@@ -112,6 +112,7 @@ const Workorder = () => {
     setCurrentPage(page);
   };
   const editWorkOrder = (id) => {
+    console.log(id,'id male che')
     navigate(`/admin/addworkorder/${id}`);
     //console.log(id);
   };
@@ -135,29 +136,49 @@ const Workorder = () => {
   //   });
   // };
   const filterRentalsBySearch = () => {
-    if (!searchQuery) {
-      return workData;
+    let filteredData = [...workData]; // Create a copy of workData to avoid mutating the original array
+  
+    if (searchQuery) {
+      const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
+      filteredData = filteredData.filter((work) => {
+        return (
+          (work.rental_adress && work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.work_subject && work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.work_category && work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.staffmember_name && work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery))
+        );
+      });
     }
-
-    return workData.filter((rental) => {
-      const lowerCaseQuery = searchQuery.toLowerCase();
-
-      const isUnitAddress = (rental.rental_units + " " + rental.rental_adress)
-        .toLowerCase()
-        .includes(lowerCaseQuery);
-      return (
-        rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
-        rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
-        rental.status.toLowerCase().includes(lowerCaseQuery) ||
-        isUnitAddress ||
-        rental.staffmember_name.toLowerCase().includes(lowerCaseQuery) ||
-        rental.priority.toLowerCase().includes(lowerCaseQuery)
-
-        // rental.due_date.formattedDate.includes(lowerCaseQuery)
-      );
-    });
+  
+    if (upArrow.length > 0) {
+      const sortingArrows = upArrow;
+      sortingArrows.forEach((value) => {
+        switch (value) {
+          case "rental_adress":
+            filteredData.sort((a, b) => a.rental_adress.localeCompare(b.rental_adress));
+            break;
+          case "work_subject":
+            filteredData.sort((a, b) => a.work_subject.localeCompare(b.work_subject));
+            break;
+          case "work_category":
+            filteredData.sort((a, b) => a.work_category.localeCompare(b.work_category));
+            break;
+          case "staffmember_name":
+            filteredData.sort((a, b) => a.staffmember_name.localeCompare(b.staffmember_name));
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
+  
+    return filteredData;
   };
-
+  
+  
+  
+            
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
@@ -169,6 +190,30 @@ const Workorder = () => {
     navigate(`/admin/workorderdetail/${workorder_id}`);
     //console.log(workorder_id);
   };
+  console.log(workData, "workData");
+  console.log(sortBy, "sortBy");
+  console.log(upArrow, "upArrow");
+
+
+  const sortData = (value) => {
+    if (!sortBy.includes(value)) {
+      setSortBy([...sortBy, value]);
+      setUpArrow([...upArrow, value]);
+      filterTenantsBySearchAndPage();
+    } else {
+      setSortBy(sortBy.filter((sort) => sort !== value));
+      setUpArrow(upArrow.filter((sort) => sort !== value));
+      filterTenantsBySearchAndPage();
+    }
+    //console.log(value);
+    // setOnClickUpArrow(!onClickUpArrow);
+  };
+
+  useEffect(() => {
+    // setLoader(false);
+    // filterRentalsBySearch();
+    getWorkData();
+  }, [upArrow, sortBy]);
 
   return (
     <>
@@ -234,17 +279,81 @@ const Workorder = () => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">Work Order</th>
-                      <th scope="col">Property</th>
-                      <th scope="col">Category</th>
-                      <th scope="col">Assigned</th>
+                      <th scope="col">
+                        Work Order
+                        {sortBy.includes("work_subject") ? (
+                          upArrow.includes("work_subject") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("work_subject")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("work_subject")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("work_subject")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Property
+                        {sortBy.includes("rental_adress") ? (
+                          upArrow.includes("rental_adress") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rental_adress")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Category
+                        {sortBy.includes("work_category") ? (
+                          upArrow.includes("work_category") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("work_category")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("work_category")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("work_category")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Assigned
+                        {sortBy.includes("staffmember_name") ? (
+                          upArrow.includes("staffmember_name") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("staffmember_name")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("staffmember_name")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("staffmember_name")}
+                          />
+                        )}
+                      </th>
                       <th scope="col">Status</th>
-                      {/* <th scope="col">Created At</th>
-
-
-
-
-                      <th scope="col">Last Updated</th> */}
+                      <th scope="col">Created At</th>
+                      <th scope="col">Updated At</th>
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
@@ -256,12 +365,12 @@ const Workorder = () => {
                         style={{ cursor: "pointer" }}
                       >
                         <td>{rental.work_subject}</td>
-                        <td>{rental.rental_adress}</td>
+                        <td>{rental.rental_adress} {rental.rental_units ? " - " + rental.rental_units : null}</td> 
                         <td>{rental.work_category}</td>
                         <td>{rental.staffmember_name}</td>
                         <td>{rental.status}</td>
-                        {/* <td>{rental.createdAt}</td>
-                        <td>{rental.updateAt}</td> */}
+                        <td>{rental.createdAt}</td>
+                        <td>{rental.updateAt || "-"}</td>
 
                         <td>
                           <div style={{ display: "flex", gap: "0px" }}>
@@ -275,6 +384,7 @@ const Workorder = () => {
                               <DeleteIcon />
                             </div>
                             &nbsp; &nbsp; &nbsp;
+                            {console.log(rental,'rental js')}
                             <div
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {

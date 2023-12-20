@@ -45,7 +45,7 @@ import Cookies from "universal-cookie";
 import { OpenImageDialog } from "components/OpenImageDialog";
 import { Autocomplete } from "@mui/material";
 import moment from "moment/moment";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Rentals = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -93,7 +93,7 @@ const Rentals = () => {
   const [showRentalOwnerTable, setshowRentalOwnerTable] = useState(false);
   const [checkedCheckbox, setCheckedCheckbox] = useState();
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   const bathArray = [
     "1 Bath",
     "1.5 Bath",
@@ -133,7 +133,7 @@ const Rentals = () => {
       try {
         const response = await fetch(`${baseUrl}/rentals/existing/rentals`);
         const data = await response.json();
-  
+
         if (response.ok) {
           setRentalownerData(data.data || []); // Ensure data is an array or handle empty data
           console.log("Here is the fetched data:", data.data);
@@ -144,10 +144,9 @@ const Rentals = () => {
         console.error("Network error:", error);
       }
     };
-  
+
     fetchData();
   }, [baseUrl, setRentalownerData]); // Add dependencies that trigger a refetch if changed
-  
 
   const handleCheckboxChange = (event, rentalOwnerInfo, phoneNumber) => {
     if (checkedCheckbox === phoneNumber) {
@@ -169,7 +168,10 @@ const Rentals = () => {
 
     // Toggle the selected rentalOwners in the state when their checkboxes are clicked
     if (event.target.checked) {
-      console.log([rentalOwnerInfo, ...selectedrentalOwners],'[rentalOwnerInfo, ...selectedrentalOwners]')
+      console.log(
+        [rentalOwnerInfo, ...selectedrentalOwners],
+        "[rentalOwnerInfo, ...selectedrentalOwners]"
+      );
       setSelectedrentalOwners([rentalOwnerInfo, ...selectedrentalOwners]);
     } else {
       setSelectedrentalOwners(
@@ -192,11 +194,13 @@ const Rentals = () => {
         swal("Success!", "New rentalOwner added successfully", "success");
       }
     } else {
-      console.log(selectedrentalOwner,'selectedrentalOwner')
+      console.log(selectedrentalOwner, "selectedrentalOwner");
       setSelectedrentalOwners([]);
       const selectedrentalOwner = selectedrentalOwners[0];
       console.log(selectedrentalOwners, "selectedrentalOwners");
-      const rentalOwnerParts = selectedrentalOwner.split("-").map(part => part.trim());
+      const rentalOwnerParts = selectedrentalOwner
+        .split("-")
+        .map((part) => part.trim());
       rentalsFormik.setFieldValue(
         "rentalOwner_firstName",
         rentalOwnerParts[0] || ""
@@ -217,7 +221,7 @@ const Rentals = () => {
         "rentalOwner_primaryEmail",
         rentalOwnerParts[4] || ""
       );
-     
+
       rentalsFormik.setFieldValue(
         "rentalOwner_homeNumber",
         rentalOwnerParts[5] || ""
@@ -230,7 +234,8 @@ const Rentals = () => {
         firstName: rentalOwnerParts[0],
         lastName: rentalOwnerParts[1],
         phoneNumber: rentalOwnerParts[2],
-        companyName: rentalOwnerParts[3], 
+        companyName: rentalOwnerParts[3],
+        companyName: rentalOwnerParts[3],
         primaryEmail: rentalOwnerParts[4],
         homeNumber: rentalOwnerParts[5],
         businessNumber: rentalOwnerParts[6],
@@ -249,7 +254,7 @@ const Rentals = () => {
     verflowY: "auto",
   };
   const [propType, setPropType] = useState("");
-  
+
   const handlePropSelection = (propertyType) => {
     rentalsFormik.setFieldValue("property_type", propertyType);
     const propTypes = [];
@@ -529,7 +534,7 @@ const Rentals = () => {
         `entries[0].residential[${index}].propertyres_image`,
         ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
         allData
-        );
+      );
       if (residentialImage[index]) {
         setResidentialImage([
           ...residentialImage.slice(0, index),
@@ -767,11 +772,13 @@ const Rentals = () => {
   };
   // console.log(residentialImage, "residentialImage");
   // console.log(propType, "proptype");
+  const [loader, setLoader] = useState(false);
+
   const handleSubmit = async (values) => {
     // console.log(residentialImage, "residentialImage after submit");
     // console.log(commercialImage, "commercialImage after submit");
     // console.log(file, "values");
-
+    setLoader(true);
     const entriesArray = [];
     if (propType === "Residential") {
       const entriesObject = {
@@ -817,7 +824,11 @@ const Rentals = () => {
         navigate("/admin/RentalownerTable");
         console.log(res.data.data, "res.data.data after post");
       } else {
-        swal("", res.data.message, "error");
+        if (res.data.statusCode === 201) {
+          swal("Failed!", "Property Name Already Added", "error");
+        } else {
+          swal("", res.data.message, "error");
+        }
       }
       handleResponse(res);
     } else {
@@ -895,7 +906,9 @@ const Rentals = () => {
     //   }
     //   // Handle the error and display an error message to the user if necessary.
     // }
+    setLoader(false);
   };
+
   const editProperty = async (id) => {
     const editUrl = `${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`;
     const entriesArray = [];
@@ -1025,11 +1038,20 @@ const Rentals = () => {
       navigate("/admin/propertiesTable");
       swal(
         "Success!",
-        id ? "property updated successfully" : "property added successfully!",
+        id && entryIndex
+          ? "Property Updated Successfully"
+          : "Property Added Successfully!",
         "success"
       );
+    }
+    if (response.status === 201) {
+      swal(
+        "Failed!",
+        `Property "${rentalsFormik.values.entries[0].rental_adress}" already exists in the system`,
+        "warning"
+      );
     } else {
-      alert(response.data.message);
+      //alert(response.data.message);
     }
   }
   const addCommercialUnit = () => {
@@ -1648,7 +1670,7 @@ const Rentals = () => {
                                                           rentalOwner.rentalOwner_phoneNumber
                                                         );
                                                         // console.log(rentalOwner, "rentalownerData");
-                                                         rentalOwnerFormik.setValues(
+                                                        rentalOwnerFormik.setValues(
                                                           {
                                                             rentalOwner_firstName:
                                                               rentalOwner.rentalOwner_firstName,
@@ -1660,7 +1682,7 @@ const Rentals = () => {
                                                               rentalOwner.rentalOwner_companyName,
                                                             rentalOwner_primaryEmail:
                                                               rentalOwner.rentalOwner_primaryEmail,
-                                                            
+
                                                             rentalOwner_homeNumber:
                                                               rentalOwner.rentalOwner_homeNumber,
                                                             rentalOwner_businessNumber:
@@ -1674,7 +1696,6 @@ const Rentals = () => {
                                                           rentalOwner.rentalOwner_lastName ||
                                                           ""
                                                         }-${
-                                                         
                                                           rentalOwner.rentalOwner_phoneNumber ||
                                                           ""
                                                         }-${
@@ -2577,8 +2598,10 @@ const Rentals = () => {
                                       cursor: "pointer",
                                       position: "absolute",
                                       right: "10px",
-                                      display: selectedProp.ismultiunit ? "block" : "none",
-                                      // marginBottom: "20px", 
+                                      display: selectedProp.ismultiunit
+                                        ? "block"
+                                        : "none",
+                                      marginBottom: "20px",
                                     }}
                                     onClick={() => {
                                       deleteResidentialUnit(residentialIndex);
@@ -2588,7 +2611,10 @@ const Rentals = () => {
                                     lg="3"
                                     style={
                                       selectedProp.ismultiunit
-                                        ? { display: "block",marginTop: "20px" }
+                                        ? {
+                                            display: "block",
+                                            marginTop: "20px",
+                                          }
                                         : { display: "none" }
                                     }
                                   >
@@ -2596,7 +2622,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor={`input-unit-${residentialIndex}`}
-                                        style={{ paddingTop: "25px" }}
+                                        style={{ paddingTop: "10px" }}
                                       >
                                         Units *
                                       </label>
@@ -2612,14 +2638,16 @@ const Rentals = () => {
                                           const value = e.target.value; // Get the entered value
 
                                           // Allow only alphabetic and numeric characters
-                                          const newValue = value.replace(/[^A-Za-z0-9]/g, "");
+                                          const newValue = value.replace(
+                                            /[^A-Za-z0-9]/g,
+                                            ""
+                                          );
 
                                           rentalsFormik.setFieldValue(
                                             `entries[0].residential[${residentialIndex}].rental_units`,
                                             newValue
                                           );
                                         }}
-                                        
                                         value={
                                           rentalsFormik.values.entries[0]
                                             .residential[residentialIndex]
@@ -2660,7 +2688,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
-                                        style={{ paddingTop: "25px" }}
+                                        style={{ paddingTop: "30px" }}
                                       >
                                         Unit Address *
                                       </label>
@@ -2702,7 +2730,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
-                                        style={{ paddingTop: "25px" }}
+                                        style={{ paddingTop: "30px" }}
                                       >
                                         SQFT
                                       </label>
@@ -2743,7 +2771,6 @@ const Rentals = () => {
                                   <Col lg="8">
                                     <FormGroup>
                                       <br />
-                                    
                                       <Row
                                         style={{
                                           display: "flex",
@@ -2961,30 +2988,40 @@ const Rentals = () => {
                                           paddingLeft: "10px",
                                         }}
                                       >
-                                      <div className="mt-3 d-flex" style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
-                                        {residentialImage &&
-                                        Array.isArray(residentialImage[residentialIndex]) &&
-                                        residentialImage[residentialIndex].map((image, index) => (
+                                        <div
+                                          className="mt-3 d-flex"
+                                          style={{
+                                            justifyContent: "center",
+                                            flexWrap: "wrap",
+                                          }}
+                                        >
+                                          {residentialImage &&
+                                            Array.isArray(
+                                              residentialImage[residentialIndex]
+                                            ) &&
+                                            residentialImage[
+                                              residentialIndex
+                                            ].map((image, index) => (
                                               <div
                                                 key={index}
                                                 style={{
-                                                  position: 'relative',
-                                                  width: '100px',
-                                                  height: '100px',
-                                                  margin: '10px',
-                                                  display: 'flex',
-                                                  flexDirection: 'column',
+                                                  position: "relative",
+                                                  width: "100px",
+                                                  height: "100px",
+                                                  margin: "10px",
+                                                  display: "flex",
+                                                  flexDirection: "column",
                                                 }}
                                               >
                                                 <img
                                                   src={image}
                                                   alt=""
                                                   style={{
-                                                    width: '100px',
-                                                    height: '100px',
-                                                    maxHeight: '100%',
-                                                    maxWidth: '100%',
-                                                    borderRadius: '10px',
+                                                    width: "100px",
+                                                    height: "100px",
+                                                    maxHeight: "100%",
+                                                    maxWidth: "100%",
+                                                    borderRadius: "10px",
                                                   }}
                                                   onClick={() => {
                                                     setSelectedImage(image);
@@ -2993,22 +3030,37 @@ const Rentals = () => {
                                                 />
                                                 <ClearIcon
                                                   style={{
-                                                    cursor: 'pointer',
-                                                    alignSelf: 'flex-start',
-                                                    position: 'absolute',
-                                                    top: '-12px',
-                                                    right: '-12px',
+                                                    cursor: "pointer",
+                                                    alignSelf: "flex-start",
+                                                    position: "absolute",
+                                                    top: "-12px",
+                                                    right: "-12px",
                                                   }}
-                                                  onClick={() => clearSelectedPhoto(residentialIndex, image, 'propertyres_image')}
+                                                  onClick={() =>
+                                                    clearSelectedPhoto(
+                                                      residentialIndex,
+                                                      image,
+                                                      "propertyres_image"
+                                                    )
+                                                  }
                                                 />
-                                                {imgLoader && index === residentialImage[residentialIndex].length - 1 && (
-                                                  <div className="loader">
-                                                    {/* Your loader component goes here */}
-                                                  </div>
-                                                )}
+                                                {imgLoader &&
+                                                  index ===
+                                                    residentialImage[
+                                                      residentialIndex
+                                                    ].length -
+                                                      1 && (
+                                                    <div className="loader">
+                                                      {/* Your loader component goes here */}
+                                                    </div>
+                                                  )}
                                               </div>
                                             ))}
-                                          <OpenImageDialog open={open} setOpen={setOpen} selectedImage={selectedImage} />
+                                          <OpenImageDialog
+                                            open={open}
+                                            setOpen={setOpen}
+                                            selectedImage={selectedImage}
+                                          />
                                         </div>
                                       </FormGroup>
                                     </div>
@@ -3019,11 +3071,14 @@ const Rentals = () => {
                           )}
                         <Row>
                           <Col>
-                            <Button onClick={addResidentialUnits} style={
-                                      selectedProp.ismultiunit
-                                        ? { display: "block" }
-                                        : { display: "none" }
-                                    }>
+                            <Button
+                              onClick={addResidentialUnits}
+                              style={
+                                selectedProp.ismultiunit
+                                  ? { display: "block" }
+                                  : { display: "none" }
+                              }
+                            >
                               Add another unit
                             </Button>
                           </Col>
@@ -3050,20 +3105,21 @@ const Rentals = () => {
                           rentalsFormik.values.entries[0].commercial.map(
                             (commercialUnit, commercialIndex) => (
                               <div key={commercialIndex}>
-                              <Row style={{ position: "relative" }}>
-                                <ClearIcon
-                                  style={{
-                                    cursor: "pointer",
-                                    position: "absolute",
-                                    right: "10px", 
-                                    display: selectedProp.ismultiunit ? "block" : "none" 
-                                  }}
-                                  
-                                  onClick={() => {
-                                    deleteCommercialUnit(commercialIndex);
-                                  }}
-                                />
-                              
+                                <Row style={{ position: "relative" }}>
+                                  <ClearIcon
+                                    style={{
+                                      cursor: "pointer",
+                                      position: "absolute",
+                                      right: "10px",
+                                      display: selectedProp.ismultiunit
+                                        ? "block"
+                                        : "none",
+                                    }}
+                                    onClick={() => {
+                                      deleteCommercialUnit(commercialIndex);
+                                    }}
+                                  />
+
                                   <Col
                                     lg="3"
                                     style={
@@ -3096,8 +3152,9 @@ const Rentals = () => {
                                         }}
                                         value={
                                           rentalsFormik.values.entries[0]
-                                            .commercial[commercialIndex].rentalcom_units
-                                        }  
+                                            .commercial[commercialIndex]
+                                            .rentalcom_units
+                                        }
                                       />
                                       {/* {rentalsFormik.touched.rentalcom_units &&
                                       rentalsFormik.errors.rentalcom_units ? (
@@ -3200,12 +3257,13 @@ const Rentals = () => {
                                         onInput={(e) => {
                                           const inputValue = e.target.value;
                                           const numericValue =
-                                            inputValue.replace(/\D/g, ""); 
+                                            inputValue.replace(/\D/g, "");
                                           e.target.value = numericValue;
                                         }}
                                         value={
                                           rentalsFormik.values.entries[0]
-                                            .commercial[commercialIndex].rentalcom_sqft
+                                            .commercial[commercialIndex]
+                                            .rentalcom_sqft
                                         }
                                       />
                                       {/* {rentalsFormik.touched.rentalcom_soft &&
@@ -3272,18 +3330,24 @@ const Rentals = () => {
                                                   }
                                                 );
 
-                                                if (commercialImage[commercialIndex]) {
+                                                if (
+                                                  commercialImage[
+                                                    commercialIndex
+                                                  ]
+                                                ) {
                                                   setCommercialImage([
                                                     ...commercialImage.slice(
                                                       0,
                                                       commercialIndex
                                                     ),
                                                     [
-                                                      ...commercialImage[commercialIndex],
+                                                      ...commercialImage[
+                                                        commercialIndex
+                                                      ],
                                                       ...allImages,
                                                     ],
                                                     ...commercialImage.slice(
-                                                       1 + commercialIndex
+                                                      1 + commercialIndex
                                                     ),
                                                   ]);
                                                 } else {
@@ -3309,30 +3373,40 @@ const Rentals = () => {
                                         </span>
                                       </FormGroup>
                                       <FormGroup>
-                                      <div className="mt-3 d-flex" style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
-                                      {commercialImage &&
-                                      Array.isArray(commercialImage[commercialIndex]) &&
-                                      commercialImage[commercialIndex].map((image, index) => (
+                                        <div
+                                          className="mt-3 d-flex"
+                                          style={{
+                                            justifyContent: "center",
+                                            flexWrap: "wrap",
+                                          }}
+                                        >
+                                          {commercialImage &&
+                                            Array.isArray(
+                                              commercialImage[commercialIndex]
+                                            ) &&
+                                            commercialImage[
+                                              commercialIndex
+                                            ].map((image, index) => (
                                               <div
                                                 key={index}
                                                 style={{
-                                                  position: 'relative',
-                                                  width: '100px',
-                                                  height: '100px',
-                                                  margin: '10px',
-                                                  display: 'flex',
-                                                  flexDirection: 'column',
+                                                  position: "relative",
+                                                  width: "100px",
+                                                  height: "100px",
+                                                  margin: "10px",
+                                                  display: "flex",
+                                                  flexDirection: "column",
                                                 }}
                                               >
                                                 <img
                                                   src={image}
                                                   alt=""
                                                   style={{
-                                                    width: '100px',
-                                                    height: '100px',
-                                                    maxHeight: '100%',
-                                                    maxWidth: '100%',
-                                                    borderRadius: '10px',
+                                                    width: "100px",
+                                                    height: "100px",
+                                                    maxHeight: "100%",
+                                                    maxWidth: "100%",
+                                                    borderRadius: "10px",
                                                   }}
                                                   onClick={() => {
                                                     setSelectedImage(image);
@@ -3341,22 +3415,37 @@ const Rentals = () => {
                                                 />
                                                 <ClearIcon
                                                   style={{
-                                                    cursor: 'pointer',
-                                                    alignSelf: 'flex-start',
-                                                    position: 'absolute',
-                                                    top: '-12px',
-                                                    right: '-12px',
+                                                    cursor: "pointer",
+                                                    alignSelf: "flex-start",
+                                                    position: "absolute",
+                                                    top: "-12px",
+                                                    right: "-12px",
                                                   }}
-                                                  onClick={() => clearSelectedPhoto(commercialIndex, image, 'property_image')}
+                                                  onClick={() =>
+                                                    clearSelectedPhoto(
+                                                      commercialIndex,
+                                                      image,
+                                                      "property_image"
+                                                    )
+                                                  }
                                                 />
-                                                {imgLoader && index === commercialImage[commercialIndex].length - 1 && (
-                                                  <div className="loader">
-                                                    {/* Your loader component goes here */}
-                                                  </div>
-                                                )}
+                                                {imgLoader &&
+                                                  index ===
+                                                    commercialImage[
+                                                      commercialIndex
+                                                    ].length -
+                                                      1 && (
+                                                    <div className="loader">
+                                                      {/* Your loader component goes here */}
+                                                    </div>
+                                                  )}
                                               </div>
                                             ))}
-                                          <OpenImageDialog open={open} setOpen={setOpen} selectedImage={selectedImage} />
+                                          <OpenImageDialog
+                                            open={open}
+                                            setOpen={setOpen}
+                                            selectedImage={selectedImage}
+                                          />
                                         </div>
                                       </FormGroup>
                                     </div>
@@ -3367,11 +3456,14 @@ const Rentals = () => {
                           )}
                         <Row>
                           <Col>
-                            <Button onClick={addCommercialUnit} style={
-                                      selectedProp.ismultiunit
-                                        ? { display: "block" }
-                                        : { display: "none" }
-                                    }>
+                            <Button
+                              onClick={addCommercialUnit}
+                              style={
+                                selectedProp.ismultiunit
+                                  ? { display: "block" }
+                                  : { display: "none" }
+                              }
+                            >
                               Add another unit
                             </Button>
                           </Col>
@@ -3382,7 +3474,16 @@ const Rentals = () => {
                   <br />
                   <br />
 
-                  {id ? (
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : id ? (
                     <button
                       type="submit"
                       className="btn btn-primary"

@@ -267,8 +267,9 @@ const AddCharge = () => {
 
   const { chargeId } = useParams();
 
-  console.log(file, "file");
+  const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
+    setLoader(true);
     const arrayOfNames = file.map((item) => item.name);
     console.log(arrayOfNames, "arrayOfNames");
     const rentalAddress = generalledgerFormik.values.rental_adress;
@@ -356,6 +357,7 @@ const AddCharge = () => {
         console.error("Response Data:", error.response.data);
       }
     }
+    setLoader(false);
   };
   console.log(tenantDetails, 'tenantDetails')
   const editCharge = async () => {
@@ -1178,7 +1180,16 @@ const AddCharge = () => {
                         >
                           {mainId ? "Edit Charge" : "New Charge"}
                         </button> */}
-                        {chargeId ? (
+                        {loader ? (
+                          <button
+                            type="submit"
+                            className="btn btn-primary"
+                            style={{ background: "green", cursor: "not-allowed" }}
+                            disabled
+                          >
+                            Loading...
+                          </button>
+                        ) : chargeId ? (
                           <button
                             type="submit"
                             className="btn btn-primary"
