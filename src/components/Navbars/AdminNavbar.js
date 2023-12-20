@@ -44,6 +44,7 @@ const AdminNavbar = (props) => {
   let cookies = new Cookies();
   let Logout = () => {
     cookies.remove("token");
+    cookies.remove("Tenant ID");
     // localStorage.removeItem("name");
     // localStorage.removeItem("id");
     // navigate("/login");

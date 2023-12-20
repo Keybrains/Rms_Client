@@ -71,6 +71,7 @@ const TAddWork = () => {
   const [selectedPriority, setSelectedPriority] = useState("");
 
   const handlePropertySelect = (property) => {
+    console.log(property, "property");
     setSelectedProp(property);
   };
 

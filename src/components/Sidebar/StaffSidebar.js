@@ -80,6 +80,7 @@ const StaffSidebar = (props) => {
   let cookies = new Cookies();
   let Logout = () => {
     cookies.remove("token");
+    cookies.remove("Staff ID");
     // localStorage.removeItem("name");
     // localStorage.removeItem("id");
     // navigate("/login");

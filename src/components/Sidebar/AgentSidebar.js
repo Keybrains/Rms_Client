@@ -26,6 +26,8 @@ const AgentSidebar = (props) => {
   let cookies = new Cookies();
   let Logout = () => {
     cookies.remove("token");
+    cookies.remove("Agent ID");
+
   };
 
   // verifies if routeName is the one active (in browser input)
