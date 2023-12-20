@@ -112,6 +112,7 @@ const Workorder = () => {
     setCurrentPage(page);
   };
   const editWorkOrder = (id) => {
+    console.log(id,'id male che')
     navigate(`/admin/addworkorder/${id}`);
     //console.log(id);
   };
@@ -383,6 +384,7 @@ const Workorder = () => {
                               <DeleteIcon />
                             </div>
                             &nbsp; &nbsp; &nbsp;
+                            {console.log(rental,'rental js')}
                             <div
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {

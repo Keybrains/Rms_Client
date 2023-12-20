@@ -50,6 +50,7 @@ const AddWorkorder = () => {
   const [selectedStatus, setSelectedStatus] = useState("Select");
   const [unitData, setUnitData] = useState([]);
 
+
   const [selectedAccount, setSelectedAccount] = useState("");
 
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
@@ -152,7 +153,7 @@ const AddWorkorder = () => {
   const handleUnitSelect = (selectedUnit, unitId) => {
     setSelectedUnit(selectedUnit);
     WorkFormik.values.rental_units = selectedUnit;
-    console.log(selectedUnit, "selectedUnit");
+    console.log(selectedUnit, "selectedUnit")
     WorkFormik.setFieldValue("unit_id", unitId);
 
     // entrySchema.values.unit_id = unitId;
@@ -161,10 +162,9 @@ const AddWorkorder = () => {
   const handleCategorySelection = (value) => {
     setSelectedCategory(value);
     setcategorydropdownOpen(true);
-    if(value==="Other"){
+    if(value === "Other") {
       WorkFormik.values.work_category = "";
-    }
-    else{
+    } else {
       WorkFormik.values.work_category = value;
     }
   };
@@ -253,8 +253,8 @@ const AddWorkorder = () => {
   };
 
   const [workOrderData, setWorkOrderData] = useState(null);
-  const [vid, setVid] = useState("");
-  const [entriesID, setentriesID] = useState("");
+  const [vid, setVid] = useState('')
+  const [entriesID, setentriesID] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -263,10 +263,11 @@ const AddWorkorder = () => {
           const response = await axios.get(
             `${baseUrl}/workorder/workorder_summary/${id}`
           );
-          console.log(response,"mmmm")
+
 
           const vendorData = response.data.data;
           setWorkOrderData(vendorData);
+
 
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
@@ -274,15 +275,17 @@ const AddWorkorder = () => {
 
           setVid(vendorData._id);
           console.log("vid", vendorData._id);
-          setentriesID(vendorData.entries._id);
-          console.log("vid", vendorData.entries[0]._id);
+          if (vendorData && vendorData.entries.length>0) {
+            setentriesID(vendorData.entries._id);
+            console.log("vid", vendorData.entries[0]._id);
+          }
 
           try {
             const units = await fetchUnitsByProperty(vendorData.rental_adress);
             console.log(units, "unitssssssssssssss");
             setUnitData(units);
           } catch (error) {
-            console.log(error, "error");
+            console.log(error, 'error');
           }
           setSelectedUnit(vendorData.rental_units || "Select");
           setSelectedProp(vendorData.rental_adress || "Select");
@@ -295,6 +298,7 @@ const AddWorkorder = () => {
           setSelectedAccount(vendorData.account_type || "Select");
 
           const entriesData = vendorData.entries || []; // Make sure entries is an array
+          console.log(vendorData.work_subject, "vendorData");
           WorkFormik.setValues({
             work_subject: vendorData.work_subject || "",
             rental_units: vendorData.rental_units || "",
@@ -325,11 +329,14 @@ const AddWorkorder = () => {
   }, [id]);
 
   const { v4: uuidv4 } = require("uuid");
-
+  const [loader, setLoader] = useState(false);
   async function handleSubmit(values, work) {
+    setLoader(true);
     try {
       values["rental_adress"] = selectedProp;
-      values["work_category"] = WorkFormik.values.work_category?WorkFormik.values.work_category:selectedCategory ;
+      values["work_category"] = WorkFormik.values.work_category
+        ? WorkFormik.values.work_category
+        : selectedCategory;
       values["vendor_name"] = selectedVendor;
       values["entry_allowed"] = selectedEntry;
       values["staffmember_name"] = selecteduser;
@@ -352,17 +359,16 @@ const AddWorkorder = () => {
       values["workorder_id"] = workorder_id;
 
       const work_subject = values.work_subject;
-      console.log(values,'values befor submit')
       if (id === undefined) {
         // Create the work order
+        // console.log(values,'values after submit')
         const workOrderRes = await axios.post(
           `${baseUrl}/workorder/workorder`,
-          values  
+          values
         );
 
         // Check if the work order was created successfully
         if (workOrderRes.status === 200) {
-          console.log(workOrderRes,'response after submit');
           // console.log(workOrderRes.data);
           // Use the work order data from the response to create the notification
           const notificationRes = await axios.post(
@@ -372,7 +378,6 @@ const AddWorkorder = () => {
                 vendor_name: selectedVendor,
                 staffmember_name: selecteduser,
                 rental_adress: selectedProp,
-                rental_units: selectedUnit,
                 work_subject: work_subject,
                 workorder_id: workorder_id,
               },
@@ -443,7 +448,6 @@ const AddWorkorder = () => {
 
     validationSchema: yup.object({
       rental_adress: yup.string().required("Required"),
-      rental_units: yup.string().required("Required"),
       vendor: yup.string().required("Required"),
       staffmember_name: yup.string().required("Required"),
       work_category: yup.string().required("Required"),
@@ -478,7 +482,9 @@ const AddWorkorder = () => {
     setVendorsName();
 
     // Make an HTTP GET request to your Express API endpoint
-    fetch(`${baseUrl}/addstaffmember/find_staffmember`)
+    fetch(
+      `${baseUrl}/addstaffmember/find_staffmember`
+    )
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -759,7 +765,7 @@ const AddWorkorder = () => {
                   </div>
                   <div className="pl-lg-4">
                     <Row>
-                      <Col lg="3">
+                      <Col lg="6">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -832,7 +838,8 @@ const AddWorkorder = () => {
                           </Dropdown>
                         </FormGroup>
                       </Col>
-                      <Col lg="3"
+                      <Col
+                        lg="3"
                         style={
                           selectedCategory === "Other"
                             ? { display: "block" }
@@ -860,8 +867,9 @@ const AddWorkorder = () => {
                               // Update the state or Formik values with the new input value
                               // WorkFormik.handleChange(e);
                               WorkFormik.setFieldValue(
-                                "work_category",e.target.value
-                              )
+                                "work_category",
+                                e.target.value
+                              );
                             }}
                             value={WorkFormik.values.work_category}
                             // required
@@ -962,7 +970,7 @@ const AddWorkorder = () => {
                             value={WorkFormik.values.invoice_number}
                           />
                           {WorkFormik.touched.invoice_number &&
-                          WorkFormik.errors.invoice_number ? (
+                            WorkFormik.errors.invoice_number ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.invoice_number}
                             </div>
@@ -994,7 +1002,7 @@ const AddWorkorder = () => {
                             value={WorkFormik.values.work_charge}
                           />
                           {WorkFormik.touched.work_charge &&
-                          WorkFormik.errors.work_charge ? (
+                            WorkFormik.errors.work_charge ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_charge}
                             </div>
@@ -1120,7 +1128,7 @@ const AddWorkorder = () => {
                             value={WorkFormik.values.work_performed}
                           />
                           {WorkFormik.touched.work_performed &&
-                          WorkFormik.errors.work_performed ? (
+                            WorkFormik.errors.work_performed ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_performed}
                             </div>
@@ -1174,11 +1182,11 @@ const AddWorkorder = () => {
                                         value={entry.part_qty}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .part_qty ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .part_qty ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1391,11 +1399,11 @@ const AddWorkorder = () => {
                                         value={entry.description}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .description ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .description ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1423,11 +1431,11 @@ const AddWorkorder = () => {
                                         }}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .part_price ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .part_price ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1449,11 +1457,11 @@ const AddWorkorder = () => {
                                         disabled // Disable the input
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .total_amount ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .total_amount ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1571,7 +1579,7 @@ const AddWorkorder = () => {
                             value={WorkFormik.values.vendor_note}
                           />
                           {WorkFormik.touched.vendor_note &&
-                          WorkFormik.errors.vendor_note ? (
+                            WorkFormik.errors.vendor_note ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.vendor_note}
                             </div>
@@ -1742,7 +1750,7 @@ const AddWorkorder = () => {
                             />
                           </LocalizationProvider> */}
                           {WorkFormik.touched.due_date &&
-                          WorkFormik.errors.due_date ? (
+                            WorkFormik.errors.due_date ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.due_date}
                             </div>
@@ -1753,7 +1761,16 @@ const AddWorkorder = () => {
 
                     <br />
                   </div>
-                  {id ? (
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : id ? (
                     <button
                       type="submit"
                       className="btn btn-primary"

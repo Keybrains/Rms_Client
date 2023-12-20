@@ -85,14 +85,26 @@ const VendorWorkDetail = () => {
 
   const [propertyDetails, setPropertyDetails] = useState({});
   const getPropertyData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
-      );
-      setPropertyDetails(response.data[0]);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
+    if (outstandDetails.rental_adress && outstandDetails.rental_units) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
+        );
+        setPropertyDetails(response.data[0]);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setError(error);
+      }
+    } if (outstandDetails.rental_adress) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/propertyunit/rentals_property/${outstandDetails.rental_adress}`
+        );
+        setPropertyDetails(response.data[0]);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setError(error);
+      }
     }
   };
 
@@ -376,47 +388,50 @@ const VendorWorkDetail = () => {
                                 </Box>
                               </Box>
                             </Box>
-                            <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              padding="16px"
-                              maxWidth="700px"
-                              margin="20px"
-                              style={{ marginLeft: "auto", marginRight: "auto", overflowX: 'auto' }} // Center the box horizontally
-                            >
-                              <h2 className="text text-lg" style={{color:'#36013F'}}>Parts and Labor</h2>
-                              <Box overflowX="auto">
-                                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                                  <thead>
-                                    <tr>
-                                      <th style={tableHeaderStyle}>QTY</th>
-                                      <th style={tableHeaderStyle}>ACCOUNT</th>
-                                      <th style={tableHeaderStyle}>DESCRIPTION</th>
-                                      <th style={tableHeaderStyle}>PRICE</th>
-                                      <th style={tableHeaderStyle}>AMOUNT</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {/* Add your table rows dynamically here */}
-                                    {outstandDetails?.entries && outstandDetails?.entries.map((item, index) => (
-                                      <tr key={index}>
-                                        <td style={tableCellStyle}>{item.part_qty}</td>
-                                        <td style={tableCellStyle}>{item.account_type}</td>
-                                        <td style={tableCellStyle}>{item.description}</td>
-                                        <td style={{ ...tableCellStyle, textAlign: "right" }}>${item.part_price}</td>
-                                        <td style={{ ...tableCellStyle, textAlign: "right" }}>${item.total_amount}</td>
-                                      </tr>
-                                    ))}
-                                  </tbody>
-                                  <tfoot>
-                                    <tr>
-                                      <td colSpan="4" style={tableHeaderStyle}>Total</td>
-                                      <td style={{ ...tableFooterStyle, textAlign: "right" }}>${total()}</td>
-                                    </tr>
-                                  </tfoot>
-                                </table>
-                              </Box>
-                            </Box>
+                            {outstandDetails?.entries?.length > 0 && outstandDetails?.entries[0].part_qty
+                              ? (
+                                <Box
+                                  border="1px solid #ccc"
+                                  borderRadius="8px"
+                                  padding="16px"
+                                  maxWidth="700px"
+                                  margin="20px"
+                                  style={{ marginLeft: "auto", marginRight: "auto", overflowX: 'auto' }} // Center the box horizontally
+                                >
+                                  <h2 className="text-primary text-lg">Parts and Labor</h2>
+                                  <Box overflowX="auto">
+                                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                                      <thead>
+                                        <tr>
+                                          <th style={tableHeaderStyle}>QTY</th>
+                                          <th style={tableHeaderStyle}>ACCOUNT</th>
+                                          <th style={tableHeaderStyle}>DESCRIPTION</th>
+                                          <th style={tableHeaderStyle}>PRICE</th>
+                                          <th style={tableHeaderStyle}>AMOUNT</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {/* Add your table rows dynamically here */}
+                                        {outstandDetails?.entries.map((item, index) => (
+                                          <tr key={index}>
+                                            <td style={tableCellStyle}>{item.part_qty}</td>
+                                            <td style={tableCellStyle}>{item.account_type}</td>
+                                            <td style={tableCellStyle}>{item.description}</td>
+                                            <td style={{ ...tableCellStyle, textAlign: "right" }}>${item.part_price}</td>
+                                            <td style={{ ...tableCellStyle, textAlign: "right" }}>${item.total_amount}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                      <tfoot>
+                                        <tr>
+                                          <td colSpan="4" style={tableHeaderStyle}>Total</td>
+                                          <td style={{ ...tableFooterStyle, textAlign: "right" }}>${total()}</td>
+                                        </tr>
+                                      </tfoot>
+                                    </table>
+                                  </Box>
+                                </Box>
+                              ) : null}
                           </>
                         ) : (
                           <div>No details found.</div>

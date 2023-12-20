@@ -75,14 +75,14 @@ const TAddWork = () => {
   });
   const [selectedPriority, setSelectedPriority] = useState("");
 
- 
+
   const handlePropertyTypeSelect = async (property) => {
-    setSelectedProp(property.rental_adress);
-    WorkFormik.values.rental_adress = property.rental_adress;
+    setSelectedProp(property);
+    WorkFormik.values.rental_adress = property;
 
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
-      const units = await fetchUnitsByProperty(property.rental_adress);
+      const units = await fetchUnitsByProperty(property);
       console.log(units, "units"); // Check the received units in the console
       setUnitData(units); // Set the received units in the unitData state
     } catch (error) {
@@ -98,14 +98,13 @@ const TAddWork = () => {
 
     // entrySchema.values.unit_id = unitId;
   };
-
   const handleCategorySelection = (value) => {
     setSelectedCategory(value);
     setcategorydropdownOpen(true);
-    if(value==="Other"){
+    if (value === "Other") {
       WorkFormik.values.work_category = "";
     }
-    else{
+    else {
       WorkFormik.values.work_category = value;
     }
   };
@@ -140,43 +139,6 @@ const TAddWork = () => {
     navigate("../tenantwork");
   };
 
-  // React.useEffect(() => {
-  //   if (id) {
-  //     axios
-  //       .get(`${baseUrl}/workorder/workorder_summary/${id}`)
-  //       .then((response) => {
-  //         const vendorData = response.data.data;
-  //         setWorkOrderData(workOrderData);
-  //         //console.log(vendorData);
-
-  //         const formattedDueDate = vendorData.due_date
-  //           ? new Date(vendorData.due_date).toISOString().split("T")[0]
-  //           : "";
-  //         setSelectedProp(vendorData.rental_adress || "Select");
-  //         setSelectedCategory(vendorData.work_category || "Select");
-  //         setSelectedVendor(vendorData.vendor || "Select");
-  //         setSelectedEntry(vendorData.entry_allowed || "Select");
-  //         setSelecteduser(vendorData.staffmember_name || "Select");
-  //         setSelectedStatus(vendorData.status);
-  //         setSelectedPriority(vendorData.priority || "Select");
-
-  //         WorkFormik.setValues({
-  //           work_subject: vendorData.work_subject || "",
-  //           unit_no: vendorData.unit_no || "",
-  //           invoice_number: vendorData.invoice_number || "",
-  //           work_charge: vendorData.work_charge || "",
-  //           detail: vendorData.detail || "",
-  //           entry_contact: vendorData.entry_contact || "",
-  //           work_performed: vendorData.work_performed || "",
-  //           vendor_note: vendorData.vendor_note || "",
-  //           due_date: formattedDueDate,
-  //         });
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching vendor data:", error);
-  //       });
-  //   }
-  // }, [id]);
   // Use URLSearchParams to extract parameters from the query string
   var [getData, setGetData] = useState()
   const [vid, setVid] = useState('')
@@ -242,7 +204,7 @@ const TAddWork = () => {
     try {
       values["rental_adress"] = selectedProp;
       values["rental_units"] = selectedUnit;
-      values["work_category"] = WorkFormik.values.work_category?WorkFormik.values.work_category:selectedCategory ;
+      values["work_category"] = WorkFormik.values.work_category ? WorkFormik.values.work_category : selectedCategory;
       values["vendor"] = selectedVendor;
       values["entry_allowed"] = selectedEntry;
 
@@ -311,7 +273,7 @@ const TAddWork = () => {
 
   const WorkFormik = useFormik({
     initialValues: {
-      work_subject: getData?.work_subject ? getData.work_subject :"",
+      work_subject: getData?.work_subject ? getData.work_subject : "",
       rental_adress: "",
       rental_units: "",
       work_category: "",
@@ -322,11 +284,11 @@ const TAddWork = () => {
 
     validationSchema: yup.object({
       rental_adress: yup.string().required("Required"),
-      rental_units: yup.string().required("Required"),
+      // rental_units: yup.string().required("Required"),
       // vendor: yup.string().required("Required"),
       // staffmember_name: yup.string().required("Required"),
       work_category: yup.string().required("Required"),
-      status: yup.string().required("Required"),
+      // status: yup.string().required("Required"),
     }),
 
     onSubmit: (values) => {
@@ -334,9 +296,7 @@ const TAddWork = () => {
       //console.log(values, "values");
     },
   });
-
-  // let cookies = new Cookies();
-  // Check Authe(token)
+  console.log(WorkFormik.values, "yashu")
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -361,8 +321,8 @@ const TAddWork = () => {
         return response.json();
       })
       .then((data) => {
-        setPropertyData(data.rentalAddresses); 
-        console.log(propertyData,"mansi")// Correct the property data source
+        setPropertyData(data.rentalAddresses);
+        console.log(propertyData, "mansi")// Correct the property data source
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -390,7 +350,7 @@ const TAddWork = () => {
   const editworkorder = async (vid) => {
     console.log("gggggggg:", vid);
     try {
-  console.log(baseUrl)
+      console.log(baseUrl)
       const response = await axios.put(`${baseUrl}/workorder/updateworkorder/${vid}`, {
         // work_subject: response.data.data[0].work_subject,
         // rental_adress: selectedProp,
@@ -399,7 +359,7 @@ const TAddWork = () => {
         // work_category: selectedCategory,
         work_subject: WorkFormik.values.work_subject,
         rental_adress: selectedProp,
-        rental_units: WorkFormik.values.rental_units ,
+        rental_units: WorkFormik.values.rental_units,
         work_category: WorkFormik.values.work_category,
         entry_allowed: selectedEntry,
         work_performed: WorkFormik.values.work_performed,
@@ -495,35 +455,37 @@ const TAddWork = () => {
                                 &nbsp;&nbsp;&nbsp;&nbsp;
                               </DropdownToggle>
                               <DropdownMenu
-                                  style={{
-                                    width: "100%",
-                                    maxHeight: "200px",
-                                    overflowY: "auto",
-                                  }}
-                                >
-                                  {/* Check if propertyData is not empty */}
-                                  {propertyData.length > 0 ? (
-                                    <div>
-                                      {propertyData.map((property, index) => (
+                                style={{
+                                  width: "100%",
+                                  maxHeight: "200px",
+                                  overflowY: "auto",
+                                }}
+                              >
+                                {/* Check if propertyData is not empty */}
+                                {propertyData.length > 0 ? (
+                                  <div style={{ color: 'blue' }}>
+                                    {
+                                      propertyData.map((property, index) => (
                                         <DropdownItem
                                           key={index}
                                           onClick={() => handlePropertyTypeSelect(property)}
                                         >
-                                          {property.rental_adress}
+                                          {property}
                                           {console.log(property, "yash")}
                                         </DropdownItem>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <p>No data available</p>
-                                  )}
-                                </DropdownMenu>
+                                      ))
+                                    }
+                                  </div>
+                                ) : (
+                                  <p>No data available</p>
+                                )}
+                              </DropdownMenu>
 
                               {WorkFormik.errors &&
-                              WorkFormik.errors?.rental_adress &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.rental_adress &&
-                              WorkFormik.values.rental_adress === "" ? (
+                                WorkFormik.errors?.rental_adress &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.rental_adress &&
+                                WorkFormik.values.rental_adress === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.rental_adress}
                                 </div>
@@ -532,70 +494,69 @@ const TAddWork = () => {
                           </FormGroup>
                         </FormGroup>
                       </Col>
-                      
+                    </Row>
+                    <br />
+                  </div>
+                  <div className="pl-lg-4">
+                    <Row>
                       <Col lg="4">
-                        <Row>
-                          {selectedProp &&
-                            unitData &&
-                            unitData[0] &&
-                            unitData[0].rental_units && (
+                        {selectedProp &&
+                          unitData &&
+                          unitData[0] &&
+                          unitData[0].rental_units && (
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-unit"
+                              >
+                                Unit *
+                              </label>
                               <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-unit"
-                                  style={{ marginLeft: "15px" }}
+                                <Dropdown
+                                  isOpen={unitDropdownOpen}
+                                  toggle={toggle11}
                                 >
-                                  Unit *
-                                </label>
-                                <FormGroup style={{ marginLeft: "15px" }}>
-                                  <Dropdown
-                                    isOpen={unitDropdownOpen}
-                                    toggle={toggle11}
-                                  >
-                                    <DropdownToggle caret>
-                                      {selectedUnit
-                                        ? selectedUnit
-                                        : "Select Unit"}
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                      {unitData.length > 0 ? (
-                                        unitData.map((unit) => (
-                                          <DropdownItem
-                                            key={unit._id}
-                                            onClick={() =>
-                                              handleUnitSelect(
-                                                unit.rental_units,
-                                                unit._id
-                                              )
-                                            }
-                                          >
-                                            {unit.rental_units}
-                                          </DropdownItem>
-                                        ))
-                                      ) : (
-                                        <DropdownItem disabled>
-                                          No units available
+                                  <DropdownToggle caret>
+                                    {selectedUnit
+                                      ? selectedUnit
+                                      : "Select Unit"}
+                                  </DropdownToggle>
+                                  <DropdownMenu>
+                                    {unitData.length > 0 ? (
+                                      unitData.map((unit) => (
+                                        <DropdownItem
+                                          key={unit._id}
+                                          onClick={() =>
+                                            handleUnitSelect(
+                                              unit.rental_units,
+                                              unit._id
+                                            )
+                                          }
+                                        >
+                                          {unit.rental_units}
                                         </DropdownItem>
-                                      )}
-                                    </DropdownMenu>
-                                    {WorkFormik.errors &&
+                                      ))
+                                    ) : (
+                                      <DropdownItem disabled>
+                                        No units available
+                                      </DropdownItem>
+                                    )}
+                                  </DropdownMenu>
+                                  {WorkFormik.errors &&
                                     WorkFormik.errors?.rental_units &&
                                     WorkFormik.touched &&
                                     WorkFormik.touched?.rental_units &&
                                     WorkFormik.values.rental_units === "" ? (
-                                      <div style={{ color: "red" }}>
-                                        {WorkFormik.errors.rental_units}
-                                      </div>
-                                    ) : null}
-                                  </Dropdown>
-                                </FormGroup>
+                                    <div style={{ color: "red" }}>
+                                      {WorkFormik.errors.rental_units}
+                                    </div>
+                                  ) : null}
+                                </Dropdown>
                               </FormGroup>
-                            )}
-                        </Row>
-                      
+                            </FormGroup>
+                          )}
                       </Col>
                     </Row>
-                    <br />
                   </div>
 
                   <div className="pl-lg-4">
@@ -662,9 +623,9 @@ const TAddWork = () => {
                               </DropdownItem>
                             </DropdownMenu>
                           </Dropdown>
-                          </FormGroup>
+                        </FormGroup>
                       </Col>
-                          <Col lg="3"
+                      <Col lg="3"
                         style={
                           selectedCategory === "Other"
                             ? { display: "block" }
@@ -692,11 +653,11 @@ const TAddWork = () => {
                               // Update the state or Formik values with the new input value
                               // WorkFormik.handleChange(e);
                               WorkFormik.setFieldValue(
-                                "work_category",e.target.value
+                                "work_category", e.target.value
                               )
                             }}
                             value={WorkFormik.values.work_category}
-                            // required
+                          // required
                           />
                           {/* {WorkFormik.touched.work_subject &&
                           WorkFormik.errors.work_subject ? (
@@ -706,10 +667,10 @@ const TAddWork = () => {
                           ) : null} */}
                         </FormGroup>
                       </Col>
-                      </Row>
-                      </div>
-                      <div className="pl-lg-4">
-                      <Row>
+                    </Row>
+                  </div>
+                  <div className="pl-lg-4">
+                    <Row>
                       <Col lg="4">
                         <FormGroup>
                           <label
@@ -794,7 +755,7 @@ const TAddWork = () => {
                             value={WorkFormik.values.work_performed}
                           />
                           {WorkFormik.touched.work_performed &&
-                          WorkFormik.errors.work_performed ? (
+                            WorkFormik.errors.work_performed ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_performed}
                             </div>
@@ -864,7 +825,7 @@ const TAddWork = () => {
                       
                         <br/>
                         </div> */}
-                        {id1 ? (
+                  {id1 ? (
                     <button
                       type="submit"
                       className="btn btn-primary"
@@ -877,16 +838,16 @@ const TAddWork = () => {
                       Update Lease
                     </button>
                   ) : (
-                  <button
-                    type="submit"
-                    className="btn btn-primary ml-4"
-                    style={{ background: "green" }}
-                  >
-                    Add Work Order
-                  </button>)}
+                    <button
+                      type="submit"
+                      className="btn btn-primary ml-4"
+                      style={{ background: "green" }}
+                    >
+                      Add Work Order
+                    </button>)}
                   <button
                     color="primary"
-                   //  href="#rms"
+                    //  href="#rms"
                     className="btn btn-primary"
                     onClick={handleCloseButtonClick}
                     size="sm"
@@ -900,7 +861,7 @@ const TAddWork = () => {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </Container >
     </>
   );
 };

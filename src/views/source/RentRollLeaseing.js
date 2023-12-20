@@ -59,6 +59,7 @@ import AccountDialog from "components/AccountDialog";
 import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import { useLocation } from "react-router-dom";
+import { RotatingLines } from "react-loader-spinner";
 
 const RentRollLeaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -1886,7 +1887,9 @@ const RentRollLeaseing = () => {
     }
   };
 
+  const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
+    setLoader(true);
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -2101,7 +2104,7 @@ const RentRollLeaseing = () => {
         } else {
           if (id === undefined) {
             console.log(tenantObject, "leaseObject");
-            debugger;
+
             const res = await axios.post(
               `${baseUrl}/tenant/tenant`,
               tenantObject
@@ -2114,12 +2117,10 @@ const RentRollLeaseing = () => {
             console.log(res2, "response of subscription");
             if (res.data.statusCode === 200) {
               console.log(res.data.data, "response after adding data");
-
               updateApplicants();
-              // updateApproveStatus();
-
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
+
 
               if (entrySchema.values.unit_id) {
                 await postCharge(
@@ -6383,6 +6384,7 @@ const RentRollLeaseing = () => {
                                     : CCVEX
                                 }
                                 placeholder="MM/YYYY"
+
                               />
                             </FormGroup>
                           </Col>
@@ -6416,7 +6418,16 @@ const RentRollLeaseing = () => {
                     {id ? "Update Lease" : "Add Lease"}
                   </Button> */}
                   {/* {console.log(tenantsSchema.values, "tenantsSchema.values")} */}
-                  {id && yourData !== "ApplicantSummary" ? (
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : id && yourData !== "ApplicantSummary" ? (
                     <button
                       type="submit"
                       className="btn btn-primary"

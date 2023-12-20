@@ -72,7 +72,10 @@ const Sidebar = (props) => {
   let navigate = useNavigate();
   let cookies = new Cookies();
   let Logout = () => {
+    debugger
     cookies.remove("token");
+
+    cookies.remove("Tenant ID");
     // localStorage.removeItem("name");
     // localStorage.removeItem("id");
     // navigate("/login");
@@ -154,9 +157,8 @@ const Sidebar = (props) => {
     console.error("Error:", error);
   });
 
-  
-    // Continue with navigating to the details page
-    navigate(`/admin/workorderdetail/${workorder_id}`);
+    // Continue with navigating to the details pagenavigate(`/admin/addworkorder/${id}`);
+    navigate(`/admin/addworkorder/${workorder_id}`);
   };
   // creates the links that appear in the left menu / Sidebar
   const createLinks = (routes) => {

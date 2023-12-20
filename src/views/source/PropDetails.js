@@ -133,8 +133,22 @@ const fileData = async (file, name, index) => {
         [...unitImage[index], ...allData],
         ...unitImage.slice(index + 1),
       ]);
+      
+        addUnitFormik.setFieldValue(
+          "propertyres_image",[
+            ...unitImage.slice(0, index),
+            [...unitImage[index], ...allData],
+            ...unitImage.slice(index + 1),
+          ]
+        )
+      
     } else {
       setUnitImage([...allData]);
+      // if(propType === "Residential"){
+        addUnitFormik.setFieldValue(
+          "propertyres_image",[...allData]
+        )
+      // }
     }
   } else {
     // rentalsFormik.setFieldValue(
@@ -156,6 +170,8 @@ const fileData = async (file, name, index) => {
   // console.log(unitImage, "unitImage");
   // console.log(commercialImage, "commercialImage");
 };
+
+console.log(propType, "proeptype");
 const clearSelectedPhoto = (index, image, name) => {
   if (name === "propertyres_image") {
     const filteredImage = unitImage.filter((item) => {
@@ -167,6 +183,8 @@ const clearSelectedPhoto = (index, image, name) => {
       ...filteredImage,
       ...unitImage.slice(index + 1),
     ]);
+
+      
     // }
 
 }
@@ -537,7 +555,7 @@ const clearSelectedPhoto = (index, image, name) => {
       market_rent: addUnitFormik.values.market_rent,
       rental_bed: addUnitFormik.values.rooms,
       rental_bath: addUnitFormik.values.baths,
-      propertyres_image: addUnitFormik.values.propertyres_image,
+      propertyres_image: addUnitFormik.values.propertyres_image || unitImage,
       rental_sqft: addUnitFormik.values.size,
       rental_units: addUnitFormik.values.unit_number,
       rental_unitsAdress: addUnitFormik.values.address1,
@@ -549,7 +567,7 @@ const clearSelectedPhoto = (index, image, name) => {
       rental_city: addUnitFormik.values.city,
       rental_postcode: addUnitFormik.values.zip,
       // property_image: addUnitFormik.values.property_image,
-      property_image: addUnitFormik.values.property_image,
+      property_image: addUnitFormik.values.property_image || unitImage,
     };
     console.log("formData", formData);
     try {
@@ -2705,7 +2723,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                   <img
                                     // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
                                     src={
-                                      clickedObject
+                                      clickedObject && clickedObject.property_image.length>0
                                         ? clickedObject.property_image[0] ? clickedObject.property_image[0] : clickedObject.propertyres_image[0] ? 
                                         clickedObject.propertyres_image[0] : fone: fone
                                     }
@@ -3695,7 +3713,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                       padding: "20px", // Add padding for spacing
                                     }}
                                   >
-                                    <span
+                                    {/* <span
                                       style={{
                                         fontSize: "14px", // Increase font size
                                         fontWeight: "bold",
@@ -3708,7 +3726,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                     <span>{clickedObject.unitCreatedAt}</span>
                                     <span style={{ margin: "5px 0" }}>
                                       $900 available {moment().format("DD/MM/YYYY ")}
-                                    </span>
+                                    </span> */}
                                     <span
                                       style={{
                                         fontSize: "14px",

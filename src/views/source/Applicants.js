@@ -274,6 +274,7 @@ const Applicants = () => {
   });
 
   const handleFormSubmit = (values, action) => {
+    setLoader(true);
     axios
       .post(`${baseUrl}/applicant/applicant`, {
         ...values,
@@ -285,9 +286,9 @@ const Applicants = () => {
         rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
         rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
         rentalOwner_companyName: ownerData.rentalOwner_companyName,
-        property_id:ownerData._id,
-        unit_id:unitId,
-        isMovein:false
+        property_id: ownerData._id,
+        unit_id: unitId,
+        isMovein: false
       })
       .then((response) => {
         //console.log("Applicant created successfully:", response.data.data._id);
@@ -435,7 +436,7 @@ const filterApplicantsBySearch = () => {
     });
   }
 
-  return filteredData.slice(startIndex, endIndex);
+  return filteredData;
 };
 
 
@@ -1178,9 +1179,20 @@ const filterApplicantsBySearch = () => {
               )}
             </ModalBody>
             <ModalFooter>
-              <Button color="success" type="submit">
-                Create Applicant
-              </Button>
+              {loader ? (
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  style={{ background: "green", cursor: "not-allowed" }}
+                  disabled
+                >
+                  Loading...
+                </button>
+              ) :
+                <Button color="success" type="submit">
+                  Create Applicant
+                </Button>
+              }
               <Button onClick={closeModal}>Cancel</Button>
             </ModalFooter>
           </Form>
