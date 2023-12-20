@@ -1034,7 +1034,7 @@ const Rentals = () => {
       navigate("/admin/propertiesTable");
       swal(
         "Success!",
-        id ? "Property Updated Successfully" : "Property Added Successfully!",
+        id && entryIndex ? "Property Updated Successfully" : "Property Added Successfully!",
         "success"
       );
     } 
@@ -1042,7 +1042,7 @@ const Rentals = () => {
       swal("Failed!",`Property "${rentalsFormik.values.entries[0].rental_adress}" already exists in the system`,"warning")
     }
     else {
-      alert(response.data.message);
+      //alert(response.data.message);
     }
   }
   const addCommercialUnit = () => {
@@ -2613,7 +2613,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor={`input-unit-${residentialIndex}`}
-                                        style={{ paddingTop: "25px" }}
+                                        style={{ paddingTop: "10px" }}
                                       >
                                         Units *
                                       </label>
@@ -2679,7 +2679,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
-                                        style={{ paddingTop: "25px" }}
+                                        style={{ paddingTop: "30px" }}
                                       >
                                         Unit Address *
                                       </label>
@@ -2721,7 +2721,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
-                                        style={{ paddingTop: "25px" }}
+                                        style={{ paddingTop: "30px" }}
                                       >
                                         SQFT
                                       </label>

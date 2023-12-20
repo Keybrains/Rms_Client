@@ -221,7 +221,7 @@ const VendorWorkDetail = () => {
                         textTransform: "capitalize",
                         cursor: "pointer",
                         color:
-                          activeButton === "Summary" ? "#3B2F2F" : "inherit",
+                          activeButton === "Summary" ? "#36013F" : "inherit",
                         // textDecoration: activeButton === 'Summary' ? 'underline' : 'none',
                       }}
                       onMouseEnter={() => handleMouseEnter("Summary")}
@@ -237,7 +237,7 @@ const VendorWorkDetail = () => {
                         background: "none",
                         textTransform: "capitalize",
                         cursor: "pointer",
-                        color: activeButton === "Task" ? "#3B2F2F" : "inherit",
+                        color: activeButton === "Task" ? "#36013F" : "inherit",
                         // textDecoration: activeButton === 'Task' ? 'underline' : 'none',
                       }}
                       onMouseEnter={() => handleMouseEnter("Task")}
@@ -250,13 +250,12 @@ const VendorWorkDetail = () => {
                 </div>
                 <div className="ml-auto">
                   {" "}
-                  {/* This will push the "Add Details" button to the right */}
                   <Button
                     color="primary"
                     //  href="#rms"
                     onClick={() => navigate(`/vendor/vendoraddwork/${id}`)}
                     size="sm"
-                    style={{ background: "#3B2F2F", color: "white" }}
+                    style={{ background: "#36013F", color: "white" }}
                   >
                     Add Details
                   </Button>
@@ -296,7 +295,7 @@ const VendorWorkDetail = () => {
                                   <AssignmentOutlinedIcon />
                                 </Box>
                                 <Box flex="1">
-                                  <h2 className="text-primary text-lg">
+                                  <h2 className="text-lg" style={{color:'#36013F'}}>
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
                                   <span>{outstandDetails.rental_adress || "N/A"}</span>
@@ -385,7 +384,7 @@ const VendorWorkDetail = () => {
                               margin="20px"
                               style={{ marginLeft: "auto", marginRight: "auto", overflowX: 'auto' }} // Center the box horizontally
                             >
-                              <h2 className="text-primary text-lg">Parts and Labor</h2>
+                              <h2 className="text text-lg" style={{color:'#36013F'}}>Parts and Labor</h2>
                               <Box overflowX="auto">
                                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                                   <thead>
@@ -432,7 +431,7 @@ const VendorWorkDetail = () => {
                             margin="20px"
                           >
                             <Box borderBottom="1px solid #ccc" style={{ minWidth: "100%", padding: "16px 16px 5px 16px", color: "#5e72e4" }}>
-                              <h3 className="text-primary">Contacts</h3>
+                              <h3 className="text" style={{color:'#36013F'}}>Contacts</h3>
                             </Box>
                             <Box
                               borderBottom="1px solid #ccc"
@@ -490,8 +489,8 @@ const VendorWorkDetail = () => {
                             flexDirection="column"
                             alignItems="center" // Center content horizontally
                           >
-                            <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "center", color: "#5e72e4" }}>
-                              <h3 className="text-primary">Property</h3>
+                            <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
+                              <h3 className="text" style={{color:'#36013F'}}>Property</h3>
                             </Box>
                             {propertyDetails?.propertyres_image || propertyDetails?.property_image ? (
                               <Box style={{ width: "100%", padding: "16px", display: "flex", alignItems: "center" }}>
@@ -574,7 +573,7 @@ const VendorWorkDetail = () => {
                           >
                             &nbsp;{outstandDetails.priority}&nbsp;
                           </span>
-                          <h2 className="text-lg" style={{ color: "#3B2F2F" }}>
+                          <h2 className="text-lg" style={{color:'#36013F'}}>
                             {outstandDetails.work_subject || "N/A"}
                           </h2>
 

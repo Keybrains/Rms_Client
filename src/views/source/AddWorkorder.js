@@ -263,6 +263,7 @@ const AddWorkorder = () => {
           const response = await axios.get(
             `${baseUrl}/workorder/workorder_summary/${id}`
           );
+          console.log(response,"mmmm")
 
           const vendorData = response.data.data;
           setWorkOrderData(vendorData);
@@ -283,7 +284,6 @@ const AddWorkorder = () => {
           } catch (error) {
             console.log(error, "error");
           }
-
           setSelectedUnit(vendorData.rental_units || "Select");
           setSelectedProp(vendorData.rental_adress || "Select");
           setSelectedCategory(vendorData.work_category || "Select");
@@ -542,7 +542,7 @@ const AddWorkorder = () => {
         {
           work_subject: WorkFormik.values.work_subject,
           rental_adress: selectedProp,
-          unit_no: WorkFormik.values.unit_no,
+          rental_units: WorkFormik.values.rental_units,
           work_category: WorkFormik.values.work_category,
           vendor_name: selectedVendor,
           invoice_number: WorkFormik.values.invoice_number,

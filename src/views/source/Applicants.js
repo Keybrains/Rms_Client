@@ -611,6 +611,7 @@ const filterApplicantsBySearch = () => {
                             onClick={() => sortData("rental_adress")}
                           />
                         )}</th>
+                      <th scope="col">Status</th>
                       <th scope="col">Created At
                       {sortBy.includes("createAt") ? (
                           upArrow.includes("createAt") ? (
@@ -627,7 +628,7 @@ const filterApplicantsBySearch = () => {
                             onClick={() => sortData("createAt")}
                           />
                         )}</th>
-                      <th scope="col">Status</th>
+                      <th scope="col">Updated At</th>
                       <th scope="col">Actions</th>
 
                       {/* <th scope="col">Last Updated</th> */}
@@ -648,11 +649,13 @@ const filterApplicantsBySearch = () => {
                         <td>{applicant.tenant_email}</td>
                         <td>{applicant.tenant_mobileNumber}</td>
                         <td>{applicant.rental_adress} {applicant.rental_units ? " - " + applicant.rental_units : null}</td>
-                        <td>{applicant.createAt}</td>
+                        
                         <td>
                           {applicant?.applicant_status[0]?.status ||
                             "Undecided"}
                         </td>
+                        <td>{applicant.createAt}</td>
+                        <td>{applicant.updateAt||" - "}</td>
                         <td>
                           <DeleteIcon
                             onClick={(e) => {

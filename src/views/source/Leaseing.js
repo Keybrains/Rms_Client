@@ -262,7 +262,6 @@ const Leaseing = () => {
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [ownerData, setOwnerData] = useState({});
   const [propertyId, setPropertyId] = useState("");
-  console.log(propertyId, "propertyId");
 
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress);
@@ -279,7 +278,6 @@ const Leaseing = () => {
       console.error("Error handling selected property:", error);
     }
   };
-  // console.log(ownerData, "ownerData");
 
   const [selectPaymentMethodDropdawn, setSelectPaymentMethodDropdawn] =
     useState("");
@@ -289,6 +287,8 @@ const Leaseing = () => {
     entrySchema.setFieldValue("paymentMethod", paymentMethod);
     setSelectPaymentMethodDropdawn(paymentMethod);
   };
+
+  const [selectedDayFrequency, setselectedDayFrequency] = useState("");
 
   const [selectedLeaseType, setselectedLeaseType] = useState("");
 
@@ -316,35 +316,41 @@ const Leaseing = () => {
 
     const startDate = entrySchema.values.start_date;
     let nextDue_date;
-
+    let dayFrequency;
     switch (rentcycle) {
       case "Daily":
         nextDue_date = moment(startDate).add(1, "days").format("YYYY-MM-DD");
+        dayFrequency = 1;
         break;
       case "Weekly":
         nextDue_date = moment(startDate).add(1, "weeks").format("YYYY-MM-DD");
+        dayFrequency = 7;
         break;
       case "Every two weeks":
         nextDue_date = moment(startDate).add(2, "weeks").format("YYYY-MM-DD");
+        dayFrequency = 14;
         break;
       case "Monthly":
         nextDue_date = moment(startDate).add(1, "months").format("YYYY-MM-DD");
+        dayFrequency = 30;
         break;
       case "Every two months":
         nextDue_date = moment(startDate).add(2, "months").format("YYYY-MM-DD");
+        dayFrequency = 60;
         break;
       case "Quarterly":
         nextDue_date = moment(startDate).add(3, "months").format("YYYY-MM-DD");
+        dayFrequency = 120;
         break;
       default:
         nextDue_date = moment(startDate).add(1, "years").format("YYYY-MM-DD");
+        dayFrequency = 365;
     }
-
     entrySchema.setFieldValue("nextDue_date", nextDue_date);
-    // entrySchema.values.rent_cycle = rentcycle;
-    // console.log(rentcycle, "rentcycle");
     setselectedRentCycle(rentcycle);
+    setselectedDayFrequency(dayFrequency);
   };
+
 
   const [selectedAccount, setselectedAccount] = useState("");
   const hadleselectedAccount = (account) => {
@@ -1787,7 +1793,17 @@ const Leaseing = () => {
       ],
     };
 
-    // console.log(tenantObject, "tenantObject");
+    const paymentDetails = {
+      plan_payments: 0,
+      plan_amount: entrySchema.values.amount,
+      dayFrequency: selectedDayFrequency,
+      ccnumber: CCVNU || "",
+      ccexp: CCVEX ? formatDateForInput(CCVEX) : "",
+      first_name: tenantsSchema.values.tenant_firstName,
+      last_name: tenantsSchema.values.tenant_lastName,
+      address: entrySchema.values.rental_adress,
+    };
+
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
@@ -1807,19 +1823,17 @@ const Leaseing = () => {
           };
 
           const tenantId = filteredData._id;
-          // console.log(tenantId, "tenantId");
+
           const res = await axios.put(
             `${baseUrl}/tenant/tenant/${tenantId}`,
             putObject
           );
           if (res.data.statusCode === 200) {
-            // swal("Success!","Lease Added Successfully", "success");
-            // console.log(entrySchema.values, 'hello')
             const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
-            // debugger;
+           
             if (entrySchema.values.unit_id) {
-              // debugger
+          
               await postCharge(
                 entrySchema.values.rental_units,
                 entrySchema.values.unit_id,
@@ -1872,7 +1886,7 @@ const Leaseing = () => {
                 await delay(1000); // Delay for 3 seconds
               }
             }
-
+            swal("", res.data.message, "success");
             navigate("/admin/TenantsTable");
           } else {
             swal("", res.data.message, "error");
@@ -1880,62 +1894,62 @@ const Leaseing = () => {
           handleResponse(res);
         } else {
           if (id === undefined) {
-            // console.log(tenantObject, "leaseObject");
             const res = await axios.post(
               `${baseUrl}/tenant/tenant`,
               tenantObject
             );
+            const res2 = await axios.post(
+              `${baseUrl}/nmipayment/custom-add-subscription`,
+              paymentDetails
+            );
+            console.log('mansi..... : ', res2);
             if (res.data.statusCode === 200) {
-              console.log(res.data.data, "after post");
-
-              // debugger
+              
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
 
-              // debugger;
-              if (entrySchema.values.unit_id) {
-                await postCharge(
-                  res.data.data.rental_units,
-                  res.data.data.unit_id,
-                  res.data.data._id
-                );
-
-                await postDeposit(
-                  res.data.data.rental_units,
-                  res.data.data.unit_id,
-                  res.data.data._id,
-                  res.data.data.Security_amount
-                );
-
-                for (const item of recurringData) {
-                  await postRecOneCharge(
-                    res.data.data.rental_units,
-                    res.data.data.unit_id,
-                    res.data.data._id,
-                    item,
-                    "Recurring"
+                if (entrySchema.values.unit_id) {
+                  await postCharge(
+                    res.data.data.entries[0].rental_units,
+                    res.data.data.entries[0].unit_id,
+                    res.data.data._id
                   );
-                  await delay(1000); // Delay for 3 seconds
-                }
-
-                for (const item of oneTimeData) {
-                  await postRecOneCharge(
-                    res.data.data.rental_units,
-                    res.data.data.unit_id,
+                  await postDeposit(
+                    res.data.data.entries[0].rental_units,
+                    res.data.data.entries[0].unit_id,
                     res.data.data._id,
-                    item,
-                    "OneTime"
+                    res.data.data.entries[0].Security_amount
                   );
-                  await delay(1000); // Delay for 3 seconds
-                }
-              } else {
-                await postCharge("", "", res.data.data._id);
-                await postDeposit(
-                  "",
-                  "",
-                  res.data.data._id,
-                  res.data.data.Security_amount
-                );
+  
+                  for (const item of recurringData) {
+                    await postRecOneCharge(
+                      res.data.data.entries[0].rental_units,
+                      res.data.data.entries[0].unit_id,
+                      res.data.data._id,
+                      item,
+                      "Recurring"
+                    );
+                    await delay(1000); // Delay for 3 seconds
+                  }
+  
+                  for (const item of oneTimeData) {
+                    await postRecOneCharge(
+                      res.data.data.entries[0].rental_units,
+                      res.data.data.entries[0].unit_id,
+                      res.data.data._id,
+                      item,
+                      "OneTime"
+                    );
+                    await delay(1000); // Delay for 3 seconds
+                  }
+                } else {
+                  await postCharge("", "", res.data.data._id);
+                  await postDeposit(
+                    "",
+                    "",
+                    res.data.data._id,
+                    res.data.data.entries[0].Security_amount
+                  );
 
                 for (const item of recurringData) {
                   await postRecOneCharge(
@@ -1973,8 +1987,7 @@ const Leaseing = () => {
     } catch (error) {
       console.log(error);
     }
-
-    // console.log(leaseObject, "leaseObject");
+    
     if (Array.isArray(file)) {
       const arrayOfNames = file.map((item) => {
         return item.name;
@@ -4614,6 +4627,14 @@ const Leaseing = () => {
                             </>
                           ) : null}
                         </div>
+                        {tenantsSchema.errors &&
+                        tenantsSchema.errors?.tenant_password &&
+                        entrySchema.submitCount > 0 ? (
+                          <div style={{ color: "red" }}>
+                            {tenantsSchema.errors.tenant_password}
+                            {/* {console.log(tenantsFormik.errors.tenant_password)} */}
+                          </div>
+                        ) : null}
 
                         <div>
                           {cosignerData &&
@@ -6110,6 +6131,14 @@ const Leaseing = () => {
                   >
                     Cancel
                   </Button>
+                  {tenantsSchema.errors &&
+                  tenantsSchema.errors?.tenant_password &&
+                  entrySchema.submitCount > 0 ? (
+                    <div style={{ color: "red" }}>
+                      {/* {console.log(tenantsFormik.errors.tenant_password)} */}
+                      Tenant Password is missing
+                    </div>
+                  ) : null}
                 </Form>
               </CardBody>
             </Card>

@@ -300,11 +300,7 @@ const RentRollLeaseing = () => {
   const [selectedDayFrequency, setselectedDayFrequency] = useState("");
   const handleselectedRentCycle = (rentcycle) => {
     setselectedRentCycle(rentcycle);
-    // localStorage.setItem("leasetype", leasetype);
-    // entrySchema.values.rent_cycle = rentcycle;
     entrySchema.setFieldValue("rent_cycle", rentcycle);
-    // };
-    // localStorage.setItem("leasetype", leasetype);
     const startDate = entrySchema.values.start_date;
     let nextDue_date;
     let dayFrequency;
@@ -725,7 +721,7 @@ const RentRollLeaseing = () => {
     const dataArray = new FormData();
     dataArray.append("b_video", files);
 
-    let url = "https://cdn.brandingprofitable.com/image_upload.php/";
+    let url = "https://cdn.profitable.com/image_upload.php/";
     axios
       .post(url, dataArray, {
         headers: {
@@ -1938,7 +1934,7 @@ const RentRollLeaseing = () => {
           rent_paid: entrySchema.values.rent_paid,
           isMovedin: true,
           propertyOnRent: entrySchema.values.propertyOnRent,
-          isMovedin: true,
+        
 
           //security deposite
           Due_date: entrySchema.values.Due_date,
@@ -1999,7 +1995,6 @@ const RentRollLeaseing = () => {
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
     };
-    console.log("shardi", paymentDetails);
 
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
@@ -2080,12 +2075,12 @@ const RentRollLeaseing = () => {
                 entrySchema.values.Security_amount
               );
 
-              await postDeposit(
-                "",
-                "",
-                tenantId,
-                entrySchema.values.Security_amount
-              );
+              // await postDeposit(
+              //   "",
+              //   "",
+              //   tenantId,
+              //   entrySchema.values.Security_amount
+              // );
 
               for (const item of recurringData) {
                 await postRecOneCharge("", "", tenantId, item, "Recurring");
@@ -2904,7 +2899,9 @@ const RentRollLeaseing = () => {
                               entrySchema.handleChange(e);
                               checkStartDate(e.target.value); // Check for start date
                             }}
-                            value={entrySchema.values.start_date}
+                            value={moment(entrySchema.values.start_date).format(
+                              "YYYY-MM-DD"
+                            )}
                           />
                           {isStartDateUnavailable && (
                             <div style={{ color: "red", marginTop: "8px" }}>
@@ -2952,8 +2949,12 @@ const RentRollLeaseing = () => {
                                 isDateUnavailable
                               );
                             }}
-                            value={entrySchema.values.end_date}
-                            min={entrySchema.values.start_date}
+                            value={moment(entrySchema.values.end_date).format(
+                              "YYYY-MM-DD"
+                            )}
+                            min={moment(entrySchema.values.start_date).format(
+                              "YYYY-MM-DD"
+                            )}
                           />
                           {isDateUnavailable && (
                             <div style={{ color: "red", marginTop: "8px" }}>
@@ -4958,6 +4959,8 @@ const RentRollLeaseing = () => {
                                     onClick={() => {
                                       setShowTenantTable(false);
                                       setOpenTenantsDialog(true);
+                                      setSelectedOption("Tenant");
+                                      setAlignment("Tenant");
                                     }}
                                   />
 
