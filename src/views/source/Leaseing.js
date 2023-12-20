@@ -57,6 +57,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Cookies from "universal-cookie";
 import AccountDialog from "components/AccountDialog";
 import moment from "moment";
+import { RotatingLines } from "react-loader-spinner";
 
 const Leaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -665,30 +666,6 @@ const Leaseing = () => {
     }
   };
 
-  // const fileData = (file) => {
-  //   //setImgLoader(true);
-  //   const dataArray = new FormData();
-  //   dataArray.append("b_video", file);
-
-  //   let url = "https://cdn.brandingprofitable.com/image_upload.php/";
-  //   axios
-  //     .post(url, dataArray, {
-  //       headers: {
-  //         "Content-Type": "multipart/form-data",
-  //       },
-  //     })
-  //     .then((res) => {
-  //       //setImgLoader(false);
-  //       const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-  //       console.log(imagePath, "imagePath");
-  //       setFile(imagePath);
-  //     })
-  //     .catch((err) => {
-  //       //setImgLoader(false);
-  //       console.log("Error uploading image:", err);
-  //     });
-  // };
-
   const fileData = (files) => {
     //setImgLoader(true);
     // console.log(files, "file");
@@ -1009,149 +986,6 @@ const Leaseing = () => {
     },
   });
 
-  // const leaseValidationSchema = yup.object({
-  //   entries: yup.array().of(
-  //     yup.object().shape({
-  //       rental_adress: yup.string().required("Required"),
-  //       lease_type: yup.string().required("Required"),
-  //       start_date: yup.date().required("Required"),
-  //       amount: yup.string().required("Required"),
-  //     })
-  //   ),
-  // });
-
-  // const consignerValidationSchema = yup.object({
-  //   entries: yup.array().of(
-  //     yup.object().shape({
-  //       cosigner_firstName: yup.string().required("Required"),
-  //       cosigner_lastName: yup.string().required("Required"),
-  //       cosigner_mobileNumber: yup.string().required("Required"),
-  //       cosigner_email: yup.string().required("Required"),
-  //     })
-  //   ),
-  // });
-
-  // const tenantsValidationSchema = yup.object({
-  //   tenant_firstName: yup.string().required("Required"),
-  //   tenant_lastName: yup.string().required("Required"),
-  //   tenant_mobileNumber: yup.string().required("Required"),
-  //   tenant_email: yup.string().required("Required"),
-  //   tenant_password: yup
-  //     .string()
-  //     .min(8, "Password is too short")
-  //     .matches(
-  //       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-  //       "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
-  //     )
-  //     .required("Required"),
-  // });
-
-  // let leaseFormik = useFormik({
-  //   initialValues: {
-  //     entries: [
-  //       {
-  //         rental_adress: "",
-  //         lease_type: "",
-  //         start_date: "",
-  //         end_date: "",
-  //         amount: "",
-  //         recuring_amount: "",
-  //         recuring_account: "",
-  //         recuringmemo: "",
-
-  //         //add one time charge
-  //         onetime_amount: "",
-  //         onetime_account: "",
-  //         onetime_memo: "",
-
-  //         // add account
-  //         account_name: "",
-  //         account_type: "",
-  //         account_number: "",
-
-  //         //upload File
-  //         upload_file: "",
-
-  //         // parent account
-  //         parent_account: "",
-  //         fund_type: "",
-  //         cash_flow: "",
-  //         notes: "",
-  //       },
-  //     ],
-  //   },
-  //   validationSchema: leaseValidationSchema,
-  //   onSubmit: (values) => {
-  //     if (selectedTenantData.length !== 0 || !tenantsFormik.errors) {
-  //       handleSubmit(values);
-  //     } else {
-  //       setDisplay(true);
-  //     }
-  //   },
-  // });
-
-  // let consignerFormik = useFormik({
-  //   initialValues: {
-  //     entries: [
-  //       {
-  //         cosigner_firstName: "",
-  //         cosigner_lastName: "",
-  //         cosigner_mobileNumber: "",
-  //         cosigner_workNumber: "",
-  //         cosigner_homeNumber: "",
-  //         cosigner_faxPhoneNumber: "",
-  //         cosigner_email: "",
-  //         cosigner_alternateemail: "",
-  //         cosigner_streetAdress: "",
-  //         cosigner_city: "",
-  //         cosigner_state: "",
-  //         cosigner_zip: "",
-  //         cosigner_country: "",
-  //         cosigner_postalcode: "",
-  //       },
-  //     ],
-  //   },
-
-  //   validationSchema: consignerValidationSchema,
-
-  //   onSubmit: () => {
-  //     handleDialogClose();
-  //     handleAddCosigner();
-  //   },
-  // });
-
-  // let tenantsFormik = useFormik({
-  //   initialValues: {
-  //     tenant_firstName: "",
-  //     tenant_lastName: "",
-  //     tenant_mobileNumber: "",
-  //     tenant_email: "",
-  //     tenant_password: "",
-  //     tenant_workNumber: "",
-  //     tenant_unitNumber: "",
-  //     tenant_homeNumber: "",
-  //     tenant_faxPhoneNumber: "",
-  //     alternate_email: "",
-  //     tenant_residentStatus: "",
-  //     birth_date: "",
-  //     textpayer_id: "",
-  //     comments: "",
-  //     contact_name: "",
-  //     relationship_tenants: "",
-  //     email: "",
-  //     emergency_PhoneNumber: "",
-  //   },
-
-  //   validationSchema: tenantsValidationSchema,
-
-  //   onSubmit: () => {
-  //     // handleSubmit(values);
-  //     handleAddTenant();
-  //     handleDialogClose();
-  //     // console.log(values, "values");
-  //   },
-  // });
-
   const [overlapLease, setOverlapLease] = useState(null);
 
   const checkDate = async (dates) => {
@@ -1404,36 +1238,6 @@ const Leaseing = () => {
             console.log(error, "error");
           }
 
-          // const formattedStartDate = matchedLease.start_date
-          //   ? new Date(matchedLease.start_date).toISOString().split("T")[0]
-          //   : "";
-          // const formattedEndDate = matchedLease.end_date
-          //   ? new Date(matchedLease.end_date).toISOString().split("T")[0]
-          //   : "";
-          // const formattedNextDueDate = matchedLease.nextDue_date
-          //   ? new Date(matchedLease.nextDue_date).toISOString().split("T")[0]
-          //   : "";
-
-          // const formattedBirthDate = laesingdata.birth_date
-          //   ? new Date(laesingdata.birth_date).toISOString().split("T")[0]
-          //   : "";
-
-          // const formattedDueDate = matchedLease.Due_date
-          //   ? new Date(matchedLease.Due_date).toISOString().split("T")[0]
-          //   : "";
-
-          // const formattedRecuringNextDueDate = matchedLease.recuringnextDue_date
-          //   ? new Date(matchedLease.recuringnextDue_date)
-          //     .toISOString()
-          //     .split("T")[0]
-          //   : "";
-
-          // const formattedOnetimeDueDate = matchedLease.onetime_Due_date
-          //   ? new Date(matchedLease.onetime_Due_date)
-          //     .toISOString()
-          //     .split("T")[0]
-          //   : "";
-
           setSelectedPropertyType(matchedLease.rental_adress || "Select");
           setselectedLeaseType(matchedLease.lease_type || "Select");
           setselectedRentCycle(matchedLease.rent_cycle || "Select");
@@ -1447,11 +1251,6 @@ const Leaseing = () => {
           setselectedFundType(matchedLease.fund_type || "Select");
           setSelectedAgent(matchedLease.leasing_agent || "Select");
           setSelectedUnit(matchedLease.rental_units || "");
-          // console.log(laesingdata, "yashraj")
-          // setFile(arrayOfObjects || "Select");
-          // console.log(matchedLease.upload_file, "upload_fileeee");
-
-          // console.log(data, "data");
           setFile(matchedLease.upload_file);
           entrySchema.setValues({
             entryIndex: matchedLease.entryIndex,
@@ -1536,80 +1335,6 @@ const Leaseing = () => {
 
           setRecurringData(matchedLease.recurring_charges);
           setOneTimeData(matchedLease.one_time_charges);
-          // console.log(matchedLease, "yush");
-          // leaseFormik.setValues({
-          //   entries: [
-          //     {
-          //       rental_adress: matchedLease.rental_adress || "",
-          //       lease_type: matchedLease.lease_type || "",
-          //       start_date: matchedLease.start_date || "",
-          //       end_date: matchedLease.end_date || "",
-          //       amount: matchedLease.amount || "",
-          //       recuring_amount: matchedLease.recuring_amount || "",
-          //       recuring_account: matchedLease.recuring_account || "",
-          //       recuringmemo: matchedLease.recuringmemo || "",
-
-          //       //add one time charge
-          //       onetime_amount: matchedLease.onetime_amount || "",
-          //       onetime_account: matchedLease.onetime_account || "",
-          //       onetime_memo: matchedLease.onetime_memo || "",
-
-          //       // add account
-          //       account_name: matchedLease.account_name || "",
-          //       account_type: matchedLease.account_type || "",
-          //       account_number: matchedLease.account_number || "",
-
-          //       //upload File
-          //       upload_file: matchedLease.upload_file || "",
-
-          //       // parent account
-          //       parent_account: matchedLease.parent_account || "",
-          //       fund_type: matchedLease.fund_type || "",
-          //       cash_flow: matchedLease.cash_flow || "",
-          //       notes: matchedLease.notes || "",
-          //     },
-          //   ],
-          // });
-
-          // tenantsFormik.setValues({
-          //   birth_date: formattedBirthDate || "",
-          //   textpayer_id: laesingdata.textpayer_id || "",
-          //   comments: laesingdata.comments || "",
-          //   contact_name: laesingdata.contact_name || "",
-          //   relationship_tenants: laesingdata.relationship_tenants || "",
-          //   email: laesingdata.email || "",
-          //   emergency_PhoneNumber: laesingdata.emergency_PhoneNumber || "",
-          //   // Due_date: formattedDueDate,
-          //   tenant_firstName: laesingdata.tenant_firstName || "",
-          //   tenant_lastName: laesingdata.tenant_lastName || "",
-          //   tenant_mobileNumber: laesingdata.tenant_mobileNumber || "",
-          //   tenant_email: laesingdata.tenant_email || "",
-          //   tenant_password: laesingdata.tenant_password || "",
-          //   tenant_workNumber: laesingdata.tenant_workNumber || "",
-          //   alternate_email: laesingdata.alternate_email || "",
-          // });
-
-          // consignerFormik.setValues({
-          //   entries: [
-          //     {
-          //       cosigner_firstName: matchedLease.cosigner_firstName || "",
-          //       cosigner_lastName: matchedLease.cosigner_lastName || "",
-          //       cosigner_mobileNumber: matchedLease.cosigner_mobileNumber || "",
-          //       cosigner_workNumber: matchedLease.cosigner_workNumber || "",
-          //       cosigner_homeNumber: matchedLease.cosigner_homeNumber || "",
-          //       cosigner_faxPhoneNumber:
-          //         matchedLease.cosigner_faxPhoneNumber || "",
-          //       cosigner_email: matchedLease.cosigner_email || "",
-          //       cosigner_alternateemail:
-          //         matchedLease.cosigner_alternateemail || "",
-          //       cosigner_streetAdress: matchedLease.cosigner_streetAdress || "",
-          //       cosigner_city: matchedLease.cosigner_city || "",
-          //       cosigner_state: matchedLease.cosigner_state || "",
-          //       cosigner_country: matchedLease.cosigner_country || "",
-          //       cosigner_postalcode: matchedLease.cosigner_postalcode || "",
-          //     },
-          //   ],
-          // });
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -1617,109 +1342,10 @@ const Leaseing = () => {
     };
     fetchData();
   }, [id, entryIndex]);
-  console.log(entrySchema.values, "entrySchema");
-  console.log(ownerData, "ownerData");
-  console.log(unitData, "unitData");
-  console.log(ownerData, 'ownerData')
-  console.log(entrySchema.values, 'entryushasfdnjisdgvfhjkhgvbjn')
+  const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
-    // console.log(file, "values");
-    // const arrayOfNames = Array.isArray(file)
-    //   ? file.map((item) => item.name)
-    //   : [];
-    // const entriesArray = [];
+    setLoader(true);
 
-    // const entriesObject = {
-    //   rental_adress: leaseFormik.values.entries[0].rental_adress,
-    //   lease_type: leaseFormik.values.entries[0].lease_type,
-    //   start_date: leaseFormik.values.entries[0].start_date,
-    //   end_date: leaseFormik.values.entries[0].end_date,
-    //   leasing_agent: selectedAgent,
-    //   rent_cycle: selectedRentCycle,
-    //   amount: leaseFormik.values.entries[0].amount,
-    //   // account_name: selectedAccount,
-    //   nextDue_date: leaseFormik.values.nextDue_date,
-    //   memo: leaseFormik.values.memo,
-    //   isrenton: leaseFormik.values.isrenton,
-    //   propertyOnRent: leaseFormik.values.propertyOnRent,
-    //   Due_date: leaseFormik.values.Due_date,
-    //   Security_amount: leaseFormik.values.Security_amount,
-
-    //   // add cosigner
-    //   cosigner_firstName: consignerFormik.values.entries[0].cosigner_firstName,
-    //   cosigner_lastName: consignerFormik.values.entries[0].cosigner_lastName,
-    //   cosigner_mobileNumber:
-    //     consignerFormik.values.entries[0].cosigner_mobileNumber,
-    //   cosigner_workNumber:
-    //     consignerFormik.values.entries[0].cosigner_workNumber,
-    //   cosigner_homeNumber:
-    //     consignerFormik.values.entries[0].cosigner_homeNumber,
-    //   cosigner_faxPhoneNumber:
-    //     consignerFormik.values.entries[0].cosigner_faxPhoneNumber,
-    //   cosigner_email: consignerFormik.values.entries[0].cosigner_email,
-    //   cosigner_alternateemail:
-    //     consignerFormik.values.entries[0].cosigner_alternateemail,
-    //   cosigner_streetAdress:
-    //     consignerFormik.values.entries[0].cosigner_streetAdress,
-    //   cosigner_city: consignerFormik.values.entries[0].cosigner_city,
-    //   cosigner_state: consignerFormik.values.entries[0].cosigner_state,
-    //   cosigner_zip: consignerFormik.values.entries[0].cosigner_zip,
-    //   cosigner_country: consignerFormik.values.entries[0].cosigner_country,
-    //   cosigner_postalcode:
-    //     consignerFormik.values.entries[0].cosigner_postalcode,
-
-    //   // add recuring charge
-    //   recuring_amount: leaseFormik.values.entries[0].recuring_amount,
-    //   recuring_account: leaseFormik.values.entries[0].recuring_account,
-    //   // recuringnextDue_date: leaseFormik.values.recuringnextDue_date,
-    //   recuringmemo: leaseFormik.values.entries[0].recuringmemo,
-    //   // recuringfrequency: selectedFrequency,
-
-    //   //add one time charge
-    //   onetime_amount: leaseFormik.values.entries[0].onetime_amount,
-    //   onetime_account: leaseFormik.values.entries[0].onetime_account,
-    //   onetime_memo: leaseFormik.values.entries[0].onetime_memo,
-
-    //   // add account
-    //   account_name: selectedAccount,
-    //   account_type: leaseFormik.values.account_type,
-
-    //   //upload File
-    //   upload_file: arrayOfNames,
-    //   parent_account: leaseFormik.values.parent_account,
-    //   account_number: leaseFormik.values.account_number,
-    //   fund_type: leaseFormik.values.fund_type,
-    //   cash_flow: leaseFormik.values.cash_flow,
-    //   notes: leaseFormik.values.notes,
-    // };
-
-    // entriesArray.push(entriesObject);
-
-    // const leaseObject = {
-    //   tenant_firstName: tenantsFormik.values.tenant_firstName,
-    //   tenant_lastName: tenantsFormik.values.tenant_lastName,
-    //   tenant_mobileNumber: tenantsFormik.values.tenant_mobileNumber,
-    //   tenant_email: tenantsFormik.values.tenant_email,
-    //   tenant_password: tenantsFormik.values.tenant_password,
-    //   tenant_workNumber: tenantsFormik.values.tenant_workNumber,
-    //   tenant_unitNumber: tenantsFormik.values.tenant_unitNumber,
-    //   tenant_homeNumber: tenantsFormik.values.tenant_homeNumber,
-    //   tenant_faxPhoneNumber: tenantsFormik.values.tenant_faxPhoneNumber,
-    //   alternate_email: tenantsFormik.values.alternate_email,
-    //   tenant_residentStatus: tenantsFormik.values.tenant_residentStatus,
-
-    //   birth_date: tenantsFormik.values.birth_date,
-    //   textpayer_id: tenantsFormik.values.textpayer_id,
-    //   comments: tenantsFormik.values.comments,
-
-    //   contact_name: tenantsFormik.values.contact_name,
-    //   relationship_tenants: tenantsFormik.values.relationship_tenants,
-    //   email: tenantsFormik.values.email,
-    //   emergency_PhoneNumber: tenantsFormik.values.emergency_PhoneNumber,
-
-    //   entries: entriesArray,
-    // };
-    // console.log(tenantsSchema.values, "tenantsSchema.values");
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -1815,7 +1441,6 @@ const Leaseing = () => {
       ],
     };
 
-    // console.log(tenantObject, "tenantObject");
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
@@ -1901,7 +1526,6 @@ const Leaseing = () => {
                 await delay(1000); // Delay for 3 seconds
               }
             }
-
             navigate("/admin/TenantsTable");
           } else {
             swal("", res.data.message, "error");
@@ -2014,6 +1638,7 @@ const Leaseing = () => {
       console.log(error);
     }
   };
+
   const postCharge = async (unit, unitId, tenantId) => {
     const chargeObject = {
       properties: {
@@ -2311,6 +1936,7 @@ const Leaseing = () => {
     <>
       <LeaseHeader />
       {/* Page content */}
+
       <Container className="mt--7" fluid>
         <Row>
           <Col className="order-xl-1" xl="12">
@@ -5189,38 +4815,6 @@ const Leaseing = () => {
                                     </Dropdown>
                                   </FormGroup>
                                 </div>
-                                {/* <div>
-                                  <FormGroup>
-                                    <label
-                                      className="form-control-label"
-                                      htmlFor="input-unitadd"
-                                    >
-                                      Next Due Date*
-                                    </label>
-                                    <Input
-                                      className="form-control-alternative"
-                                      id="recuringnextDue_date"
-                                      placeholder="3000"
-                                      type="date"
-                                      name="recuringnextDue_date"
-                                      onBlur={leaseFormik.handleBlur}
-                                      onChange={leaseFormik.handleChange}
-                                      value={
-                                        leaseFormik.values.recuringnextDue_date
-                                      }
-                                    />
-                                   
-                                    {leaseFormik.touched.recuringnextDue_date &&
-                                    leaseFormik.errors.recuringnextDue_date ? (
-                                      <div style={{ color: "red" }}>
-                                        {
-                                          leaseFormik.errors
-                                            .recuringnextDue_date
-                                        }
-                                      </div>
-                                    ) : null}
-                                  </FormGroup>
-                                </div> */}
                                 <FormGroup>
                                   <label
                                     className="form-control-label"
@@ -5294,13 +4888,6 @@ const Leaseing = () => {
                                         .recuringmemo || ""
                                     }
                                   />
-
-                                  {/* {leaseFormik.touched.entries[0].recuringmemo &&
-                                    leaseFormik.errors.recuringmemo ? (
-                                    <div style={{ color: "red" }}>
-                                      {leaseFormik.errors.recuringmemo}
-                                    </div>
-                                  ) : null} */}
                                 </FormGroup>
                               </div>
                             </div>
@@ -5426,34 +5013,6 @@ const Leaseing = () => {
                                     </Dropdown>
                                   </FormGroup>
                                 </div>
-                                {/* <div>
-                                  <FormGroup>
-                                    <label
-                                      className="form-control-label"
-                                      htmlFor="input-unitadd"
-                                    >
-                                      Next Due Date*
-                                    </label>
-                                    <Input
-                                      className="form-control-alternative"
-                                      id="input-unitadd"
-                                      placeholder="3000"
-                                      type="date"
-                                      name="onetime_Due_date"
-                                      onBlur={leaseFormik.handleBlur}
-                                      onChange={leaseFormik.handleChange}
-                                      value={
-                                        leaseFormik.values.onetime_Due_date
-                                      }
-                                    />
-                                    {leaseFormik.touched.onetime_Due_date &&
-                                    leaseFormik.errors.onetime_Due_date ? (
-                                      <div style={{ color: "red" }}>
-                                        {leaseFormik.errors.onetime_Due_date}
-                                      </div>
-                                    ) : null}
-                                  </FormGroup>
-                                </div> */}
                                 <FormGroup>
                                   <label
                                     className="form-control-label"
@@ -5526,12 +5085,6 @@ const Leaseing = () => {
                                         e.target.value;
                                     }}
                                   />
-                                  {/* {leaseFormik.touched.onetime_memo &&
-                                    leaseFormik.errors.onetime_memo ? (
-                                    <div style={{ color: "red" }}>
-                                      {leaseFormik.errors.onetime_memo}
-                                    </div>
-                                  ) : null} */}
                                 </FormGroup>
                               </div>
                             </div>
@@ -5542,10 +5095,7 @@ const Leaseing = () => {
                                   backgroundColor: "#007bff",
                                   color: "white",
                                 }}
-                                onClick={(e) => {
-                                  // e.preventDefault();
-                                  // handleAddOneTime();
-                                  // handleDialogClose(); // Call this function to close the dialog
+                                onClick={() => {
                                   oneTimeChargeSchema.handleSubmit();
                                 }}
                               >
@@ -5652,7 +5202,6 @@ const Leaseing = () => {
                           className="w-100 mb-1"
                           style={{
                             fontSize: "17px",
-                            // textTransform: "uppercase",
                             color: "#aaa",
                             fontWeight: "bold",
                           }}
@@ -5670,7 +5219,7 @@ const Leaseing = () => {
                               textTransform: "capitalize",
                               color: "#000",
                             }}
-                            key={index} // Add a unique key to each iterated element
+                            key={index}
                           >
                             <Col>{data.onetime_account}</Col>
                             <Col>{data.onetime_amount}</Col>
@@ -5887,7 +5436,6 @@ const Leaseing = () => {
                       />
                     </FormGroup>
                   </Row>
-
                   <Row>
                     <Col md="12">
                       <FormGroup>
@@ -5930,77 +5478,16 @@ const Leaseing = () => {
                       </FormGroup>
                     </Col>
                   </Row>
-
-
-                  <Row>
-                    <Col md="12">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Select Payment Method
-                        </label>
-                        <FormGroup>
-                          <Dropdown
-                            isOpen={paymentOptionDropdawnOpen}
-                            toggle={paymentMethodtoggle}
-                          >
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectPaymentMethodDropdawn
-                                ? selectPaymentMethodDropdawn
-                                : "Select"}
-                            </DropdownToggle>
-                            <DropdownMenu
-                              style={{ width: "100%" }}
-                              name="paymentMethod"
-                              onBlur={entrySchema.handleBlur}
-                              onChange={(e) => entrySchema.handleChange(e)}
-                              value={entrySchema.values.paymentMethod}
-                            >
-                              {selectPaymentMethod.map((option) => (
-                                <DropdownItem
-                                  key={option}
-                                  onClick={() =>
-                                    handleselectedPaymetMethod(option)
-                                  }
-                                >
-                                  {option}
-                                </DropdownItem>
-                              ))}
-                            </DropdownMenu>
-                          </Dropdown>
-                        </FormGroup>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-
-                  {/* <Button
-                  color="primary"
-                 //  href="#rms"
-                  onClick={(e) => e.preventDefault()}
-                  size="sm"
-                  style={{ background: "green" }}
-                >
-                  Save
-
-                </Button> */}
-                  {/* <Button
-                    type="submit"
-                    className="btn btn-primary"
-                    style={{
-                      background: "green",
-                      color: "white",
-                      cursor: "pointer",
-                    }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      leaseFormik.handleSubmit();
-                    }}
-                  >
-                    {id ? "Update Lease" : "Add Lease"}
-                  </Button> */}
-                  {id ? (
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : id ? (
                     <button
                       type="submit"
                       className="btn btn-primary"
@@ -6048,7 +5535,8 @@ const Leaseing = () => {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </Container >
+
     </>
   );
 };

@@ -59,6 +59,8 @@ import AccountDialog from "components/AccountDialog";
 import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import { useLocation } from "react-router-dom";
+import { RotatingLines } from "react-loader-spinner";
+
 const RentRollLeaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id, entryIndex } = useParams();
@@ -1546,7 +1548,7 @@ const RentRollLeaseing = () => {
           mobileNumber: applicantData.tenant_mobileNumber || "",
         });
 
-        console.log(applicantData,'applicantData from 1526')
+        console.log(applicantData, 'applicantData from 1526')
         setPropertyId(applicantData.property_id);
         setSelectPaymentMethodDropdawn(applicantData.paymentMethod || "Select");
 
@@ -1660,7 +1662,7 @@ const RentRollLeaseing = () => {
     };
     setData();
   }, []);
-  
+
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
     const fetchData = async () => {
@@ -1966,7 +1968,9 @@ const RentRollLeaseing = () => {
     }
   };
 
+  const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
+    setLoader(true);
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -2012,7 +2016,7 @@ const RentRollLeaseing = () => {
           upload_file: entrySchema.values.upload_file,
           isrenton: entrySchema.values.isrenton,
           rent_paid: entrySchema.values.rent_paid,
-          isMovedin:true,
+          isMovedin: true,
           propertyOnRent: entrySchema.values.propertyOnRent,
 
           //security deposite
@@ -2079,7 +2083,7 @@ const RentRollLeaseing = () => {
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
-      
+
         const allTenants = res.data.data;
         const filteredData = allTenants.find((item) => {
           return (
@@ -2182,7 +2186,7 @@ const RentRollLeaseing = () => {
         } else {
           if (id === undefined) {
             console.log(tenantObject, "leaseObject");
-            
+
             const res = await axios.post(
               `${baseUrl}/tenant/tenant`,
               tenantObject
@@ -2193,15 +2197,11 @@ const RentRollLeaseing = () => {
             );
             if (res.data.statusCode === 200) {
               console.log(res.data.data, "response after adding data");
-            
-
               updateApplicants();
-
-
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
 
-            
+
               if (entrySchema.values.unit_id) {
                 await postCharge(
                   res.data.data.entries[0].rental_units,
@@ -2296,20 +2296,20 @@ const RentRollLeaseing = () => {
 
   const updateApplicants = async () => {
 
-    if(applicantData){
+    if (applicantData) {
 
       // debugger
       const url = `${baseUrl}/applicant/applicant/${applicantData._id}/movein`;
-   
-    const res = await axios.put(url);
-    if (res.data.statusCode === 200) {
-      console.log(res.data.data, "response after adding data");
-    }
-    else{
-      console.log(res.data.data, "response after adding data");
+
+      const res = await axios.put(url);
+      if (res.data.statusCode === 200) {
+        console.log(res.data.data, "response after adding data");
+      }
+      else {
+        console.log(res.data.data, "response after adding data");
+      }
     }
   }
-}
 
   const postCharge = async (unit, unitId, tenantId) => {
     const chargeObject = {
@@ -2963,7 +2963,7 @@ const RentRollLeaseing = () => {
                               handleDateChange(e.target.value);
                               entrySchema.handleChange(e);
                               checkStartDate(e.target.value); // Check for start date
-                              
+
                             }}
                             value={entrySchema.values.start_date}
                           />
@@ -6384,7 +6384,7 @@ const RentRollLeaseing = () => {
                                     const limitValue = numericValue.slice(0, 16); // Limit to 12 digits
                                     setCCVNU(parseInt(limitValue));
                                   }}
-                                 
+
                                 />
                               </InputGroup>
                             </FormGroup>
@@ -6422,7 +6422,7 @@ const RentRollLeaseing = () => {
                                 }}
                                 value={CCVEX instanceof Date ? formatDateForInput(CCVEX) : CCVEX}
                                 placeholder="MM/YYYY"
-                              
+
                               />
                             </FormGroup>
                           </Col>
@@ -6456,7 +6456,16 @@ const RentRollLeaseing = () => {
                     {id ? "Update Lease" : "Add Lease"}
                   </Button> */}
                   {/* {console.log(tenantsSchema.values, "tenantsSchema.values")} */}
-                  {id && yourData !== "ApplicantSummary" ? (
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : id && yourData !== "ApplicantSummary" ? (
                     <button
                       type="submit"
                       className="btn btn-primary"
@@ -6470,7 +6479,6 @@ const RentRollLeaseing = () => {
                     </button>
                   ) : (
                     <>
-
                       <button
                         type="submit"
                         className="btn btn-primary"
@@ -6478,7 +6486,6 @@ const RentRollLeaseing = () => {
                       >
                         Create Lease
                       </button>
-
                     </>
                   )}
                   <Button

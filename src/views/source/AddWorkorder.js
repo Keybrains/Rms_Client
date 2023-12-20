@@ -139,7 +139,7 @@ const AddWorkorder = () => {
   const handlePropertyTypeSelect = async (property) => {
     setSelectedProp(property.rental_adress);
     WorkFormik.values.rental_adress = property.rental_adress;
-  
+
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
       const units = await fetchUnitsByProperty(property.rental_adress);
@@ -150,7 +150,7 @@ const AddWorkorder = () => {
     }
   };
 
-  const handleUnitSelect = (selectedUnit,unitId) => {
+  const handleUnitSelect = (selectedUnit, unitId) => {
     setSelectedUnit(selectedUnit);
     WorkFormik.values.rental_units = selectedUnit;
     console.log(selectedUnit, "selectedUnit")
@@ -259,19 +259,19 @@ const AddWorkorder = () => {
           const response = await axios.get(
             `${baseUrl}/workorder/workorder_summary/${id}`
           );
-  
+
           const vendorData = response.data.data;
           setWorkOrderData(vendorData);
-  
+
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
             : "";
 
-            setVid(vendorData._id)
-          console.log("vid",vendorData._id)
+          setVid(vendorData._id)
+          console.log("vid", vendorData._id)
           setentriesID(vendorData.entries._id)
-          console.log("vid",vendorData.entries[0]._id)
-  
+          console.log("vid", vendorData.entries[0]._id)
+
           try {
             const units = await fetchUnitsByProperty(vendorData.rental_adress);
             console.log(units, "unitssssssssssssss");
@@ -316,13 +316,14 @@ const AddWorkorder = () => {
         }
       }
     };
-  
+
     fetchData();
   }, [id]);
-  
-  const { v4: uuidv4 } = require("uuid");
 
+  const { v4: uuidv4 } = require("uuid");
+  const [loader, setLoader] = useState(false);
   async function handleSubmit(values, work) {
+    setLoader(true);
     try {
       values["rental_adress"] = selectedProp;
       values["work_category"] = selectedCategory;
@@ -333,7 +334,7 @@ const AddWorkorder = () => {
       values["priority"] = selectedPriority;
       values["account_type"] = selectedAccount;
       values["final_total_amount"] = final_total_amount;
-      values["rental_units"] =selectedUnit;
+      values["rental_units"] = selectedUnit;
       const entries = WorkFormik.values.entries.map((entry) => ({
         part_qty: entry.part_qty,
         account_type: entry.account_type,
@@ -522,43 +523,43 @@ const AddWorkorder = () => {
       final_total_amount += parseFloat(entries.total_amount);
     }
   });
-console.log(WorkFormik.values,'workForjnik')
+  console.log(WorkFormik.values, 'workForjnik')
 
-const editworkorder = async (vid) => {
-  console.log("Updating:", vid);
-  const formattedDueDate = WorkFormik.values.due_date
-  ? new Date(WorkFormik.values.due_date).toISOString().split("T")[0]
-  : "";
-  try {
-console.log(baseUrl)
-const entriesData = WorkFormik.entries || [];
-    const response = await axios.put(`${baseUrl}/workorder/updateworkorder/${vid}`, {
-      work_subject: WorkFormik.values.work_subject,
-      rental_adress: selectedProp,
-      unit_no: WorkFormik.values.unit_no ,
-      work_category: selectedCategory,
-      vendor_name:selectedVendor,
-      invoice_number: WorkFormik.values.invoice_number,
-      work_charge: WorkFormik.values.work_charge,
-      entry_allowed: selectedEntry,
-      staffmember_name: WorkFormik.values.staffmember_name,
-      work_performed: WorkFormik.values.work_performed,
-      vendor_note: WorkFormik.values.vendor_note,
-      priority: selectedPriority,
-      status: selectedStatus,
-      due_date: formattedDueDate,
+  const editworkorder = async (vid) => {
+    console.log("Updating:", vid);
+    const formattedDueDate = WorkFormik.values.due_date
+      ? new Date(WorkFormik.values.due_date).toISOString().split("T")[0]
+      : "";
+    try {
+      console.log(baseUrl)
+      const entriesData = WorkFormik.entries || [];
+      const response = await axios.put(`${baseUrl}/workorder/updateworkorder/${vid}`, {
+        work_subject: WorkFormik.values.work_subject,
+        rental_adress: selectedProp,
+        unit_no: WorkFormik.values.unit_no,
+        work_category: selectedCategory,
+        vendor_name: selectedVendor,
+        invoice_number: WorkFormik.values.invoice_number,
+        work_charge: WorkFormik.values.work_charge,
+        entry_allowed: selectedEntry,
+        staffmember_name: WorkFormik.values.staffmember_name,
+        work_performed: WorkFormik.values.work_performed,
+        vendor_note: WorkFormik.values.vendor_note,
+        priority: selectedPriority,
+        status: selectedStatus,
+        due_date: formattedDueDate,
         // part_qty: entry.part_qty,
         // account_type: entry.account_type,
         // description: entry.description,
         // part_price: entry.part_price,
         // total_amount: entry.total_amount,
-    });
-    handleResponse(response);
-    console.log("Workorder updated successfully", response.data);
-  } catch (error) {
-    console.error("Error updating workorder:", error);
-  }
-};
+      });
+      handleResponse(response);
+      console.log("Workorder updated successfully", response.data);
+    } catch (error) {
+      console.error("Error updating workorder:", error);
+    }
+  };
   return (
     <>
       <AddWorkorderHeader />
@@ -653,24 +654,24 @@ const entriesData = WorkFormik.entries || [];
                                   overflowX: "hidden",
                                 }}
                               >
-                               {propertyData.map((property, index) => (
-                                <DropdownItem
-                                  key={index}
-                                  onClick={() => {
-                                    handlePropertyTypeSelect(property);
-                                  }}
-                                >
-                                  {property.rental_adress}
-                               
+                                {propertyData.map((property, index) => (
+                                  <DropdownItem
+                                    key={index}
+                                    onClick={() => {
+                                      handlePropertyTypeSelect(property);
+                                    }}
+                                  >
+                                    {property.rental_adress}
+
 
                                     {/* {console.log(selectedProp, "abcd")} */}
-                                </DropdownItem>
-                              ))}
-                            </DropdownMenu>
+                                  </DropdownItem>
+                                ))}
+                              </DropdownMenu>
                               {WorkFormik.errors &&
-                              WorkFormik.errors?.rental_adress &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.rental_adress && WorkFormik.values.rental_adress==="" ? (
+                                WorkFormik.errors?.rental_adress &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.rental_adress && WorkFormik.values.rental_adress === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.rental_adress}
                                 </div>
@@ -679,64 +680,64 @@ const entriesData = WorkFormik.entries || [];
                           </FormGroup>
                         </FormGroup>
                       </Col>
-                     
+
                     </Row>
                     <br />
                   </div>
 
                   <div className="pl-lg-4">
                     <Row>
-                    <Col lg="4">
-                      <Row>
-                    {selectedProp && unitData && unitData[0] && unitData[0].rental_units && ( 
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-unit"
-                          style={{ marginLeft: "15px" }}
-                        >
-                          Unit *
-                        </label>
-                        <FormGroup style={{ marginLeft: "15px" }}>
-                          <Dropdown isOpen={unitDropdownOpen} toggle={toggle11}>
-                            <DropdownToggle caret>
-                              {selectedUnit ? selectedUnit : "Select Unit"}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              {unitData.length > 0 ? (
-                                unitData.map((unit) => (
-                                  <DropdownItem
-                                    key={unit._id}
-                                    onClick={() =>
-                                      handleUnitSelect(unit.rental_units,unit._id)
-                                    }
-                                  >
-                                    {unit.rental_units}
-                                  </DropdownItem>
-                                ))
-                              ) : (
-                                <DropdownItem disabled>
-                                  No units available
-                                </DropdownItem>
-                              )}
-                            </DropdownMenu>
-                            {WorkFormik.errors &&
-                              WorkFormik.errors?.rental_units &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.rental_units &&
-                              WorkFormik.values.rental_units === "" ? (
-                              <div style={{ color: "red" }}>
-                                {WorkFormik.errors.rental_units}
-                              </div>
-                            ) : null}
-                          </Dropdown>
-                        </FormGroup>
-                      </FormGroup>
-                    )}
-                    </Row>
+                      <Col lg="4">
+                        <Row>
+                          {selectedProp && unitData && unitData[0] && unitData[0].rental_units && (
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-unit"
+                                style={{ marginLeft: "15px" }}
+                              >
+                                Unit *
+                              </label>
+                              <FormGroup style={{ marginLeft: "15px" }}>
+                                <Dropdown isOpen={unitDropdownOpen} toggle={toggle11}>
+                                  <DropdownToggle caret>
+                                    {selectedUnit ? selectedUnit : "Select Unit"}
+                                  </DropdownToggle>
+                                  <DropdownMenu>
+                                    {unitData.length > 0 ? (
+                                      unitData.map((unit) => (
+                                        <DropdownItem
+                                          key={unit._id}
+                                          onClick={() =>
+                                            handleUnitSelect(unit.rental_units, unit._id)
+                                          }
+                                        >
+                                          {unit.rental_units}
+                                        </DropdownItem>
+                                      ))
+                                    ) : (
+                                      <DropdownItem disabled>
+                                        No units available
+                                      </DropdownItem>
+                                    )}
+                                  </DropdownMenu>
+                                  {WorkFormik.errors &&
+                                    WorkFormik.errors?.rental_units &&
+                                    WorkFormik.touched &&
+                                    WorkFormik.touched?.rental_units &&
+                                    WorkFormik.values.rental_units === "" ? (
+                                    <div style={{ color: "red" }}>
+                                      {WorkFormik.errors.rental_units}
+                                    </div>
+                                  ) : null}
+                                </Dropdown>
+                              </FormGroup>
+                            </FormGroup>
+                          )}
+                        </Row>
                       </Col>
-                      </Row>
-                      
+                    </Row>
+
                     <br />
                   </div>
                   <div className="pl-lg-4">
@@ -805,11 +806,11 @@ const entriesData = WorkFormik.entries || [];
                             {WorkFormik.errors &&
                               WorkFormik.errors?.work_category &&
                               WorkFormik.touched &&
-                              WorkFormik.touched?.work_category && WorkFormik.values.work_category==="" ? (
-                                <div style={{ color: "red" }}>
-                                  {WorkFormik.errors.work_category}
-                                </div>
-                              ) : null}
+                              WorkFormik.touched?.work_category && WorkFormik.values.work_category === "" ? (
+                              <div style={{ color: "red" }}>
+                                {WorkFormik.errors.work_category}
+                              </div>
+                            ) : null}
                           </Dropdown>
                         </FormGroup>
                       </Col>
@@ -861,11 +862,11 @@ const entriesData = WorkFormik.entries || [];
                             {WorkFormik.errors &&
                               WorkFormik.errors?.vendor &&
                               WorkFormik.touched &&
-                              WorkFormik.touched?.vendor && WorkFormik.values.vendor==="" ? (
-                                <div style={{ color: "red" }}>
-                                  {WorkFormik.errors.vendor}
-                                </div>
-                              ) : null}
+                              WorkFormik.touched?.vendor && WorkFormik.values.vendor === "" ? (
+                              <div style={{ color: "red" }}>
+                                {WorkFormik.errors.vendor}
+                              </div>
+                            ) : null}
                           </Dropdown>
                         </FormGroup>
                       </Col>
@@ -900,7 +901,7 @@ const entriesData = WorkFormik.entries || [];
                             value={WorkFormik.values.invoice_number}
                           />
                           {WorkFormik.touched.invoice_number &&
-                          WorkFormik.errors.invoice_number ? (
+                            WorkFormik.errors.invoice_number ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.invoice_number}
                             </div>
@@ -932,7 +933,7 @@ const entriesData = WorkFormik.entries || [];
                             value={WorkFormik.values.work_charge}
                           />
                           {WorkFormik.touched.work_charge &&
-                          WorkFormik.errors.work_charge ? (
+                            WorkFormik.errors.work_charge ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_charge}
                             </div>
@@ -1015,9 +1016,9 @@ const entriesData = WorkFormik.entries || [];
                                 ))}
                               </DropdownMenu>
                               {WorkFormik.errors &&
-                              WorkFormik.errors?.staffmember_name &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.staffmember_name && WorkFormik.values.staffmember_name==="" ? (
+                                WorkFormik.errors?.staffmember_name &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.staffmember_name && WorkFormik.values.staffmember_name === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.staffmember_name}
                                 </div>
@@ -1057,7 +1058,7 @@ const entriesData = WorkFormik.entries || [];
                             value={WorkFormik.values.work_performed}
                           />
                           {WorkFormik.touched.work_performed &&
-                          WorkFormik.errors.work_performed ? (
+                            WorkFormik.errors.work_performed ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_performed}
                             </div>
@@ -1111,11 +1112,11 @@ const entriesData = WorkFormik.entries || [];
                                         value={entry.part_qty}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .part_qty ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .part_qty ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1328,11 +1329,11 @@ const entriesData = WorkFormik.entries || [];
                                         value={entry.description}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .description ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .description ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1360,11 +1361,11 @@ const entriesData = WorkFormik.entries || [];
                                         }}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .part_price ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .part_price ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1386,11 +1387,11 @@ const entriesData = WorkFormik.entries || [];
                                         disabled // Disable the input
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .total_amount ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .total_amount ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1508,7 +1509,7 @@ const entriesData = WorkFormik.entries || [];
                             value={WorkFormik.values.vendor_note}
                           />
                           {WorkFormik.touched.vendor_note &&
-                          WorkFormik.errors.vendor_note ? (
+                            WorkFormik.errors.vendor_note ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.vendor_note}
                             </div>
@@ -1631,9 +1632,9 @@ const entriesData = WorkFormik.entries || [];
                                 </DropdownItem>
                               </DropdownMenu>
                               {WorkFormik.errors &&
-                              WorkFormik.errors?.status &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.status && WorkFormik.values.status ==="" ? (
+                                WorkFormik.errors?.status &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.status && WorkFormik.values.status === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.status}
                                 </div>
@@ -1678,7 +1679,7 @@ const entriesData = WorkFormik.entries || [];
                             />
                           </LocalizationProvider> */}
                           {WorkFormik.touched.due_date &&
-                          WorkFormik.errors.due_date ? (
+                            WorkFormik.errors.due_date ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.due_date}
                             </div>
@@ -1689,7 +1690,16 @@ const entriesData = WorkFormik.entries || [];
 
                     <br />
                   </div>
-                  {id ? (
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : id ? (
                     <button
                       type="submit"
                       className="btn btn-primary"
@@ -1702,16 +1712,16 @@ const entriesData = WorkFormik.entries || [];
                       Update Work Order
                     </button>
                   ) : (
-                  <button
-                    type="submit"
-                    className="btn btn-primary ml-4"
-                    style={{ background: "green" }}
-                  >
-                    Add Work Order
-                  </button>)}
+                    <button
+                      type="submit"
+                      className="btn btn-primary ml-4"
+                      style={{ background: "green" }}
+                    >
+                      Add Work Order
+                    </button>)}
                   <button
                     color="primary"
-                   //  href="#rms"
+                    //  href="#rms"
                     className="btn btn-primary"
                     onClick={handleCloseButtonClick}
                     size="sm"

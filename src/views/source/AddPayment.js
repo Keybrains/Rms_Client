@@ -284,8 +284,9 @@ const AddPayment = () => {
 
   }
   // console.log(property,'proeprty')
-
+  const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
+    setLoader(true);
     const arrayOfNames = file.map((item) => item.name);
     const rentalAddress = generalledgerFormik.values.rental_adress;
     values["total_amount"] = total_amount;
@@ -1671,7 +1672,16 @@ const AddPayment = () => {
                         >
                           Save Payment
                         </button> */}
-                        {mainId && paymentIndex ? (
+                        {loader ? (
+                          <button
+                            type="submit"
+                            className="btn btn-primary"
+                            style={{ background: "green", cursor: "not-allowed" }}
+                            disabled
+                          >
+                            Loading...
+                          </button>
+                        ) : mainId && paymentIndex ? (
                           <button
                             type="submit"
                             className="btn btn-primary"
