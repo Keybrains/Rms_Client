@@ -157,9 +157,8 @@ const Sidebar = (props) => {
     console.error("Error:", error);
   });
 
-  
-    // Continue with navigating to the details page
-    navigate(`/admin/workorderdetail/${workorder_id}`);
+    // Continue with navigating to the details pagenavigate(`/admin/addworkorder/${id}`);
+    navigate(`/admin/addworkorder/${workorder_id}`);
   };
   // creates the links that appear in the left menu / Sidebar
   const createLinks = (routes) => {
