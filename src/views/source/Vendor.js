@@ -23,6 +23,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+
 
 const Vendor = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -35,6 +38,8 @@ const Vendor = () => {
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const [upArrow, setUpArrow] = useState([]);
+  const [sortBy, setSortBy] = useState([]);
 
   useEffect(() => {
     getVendorData();
@@ -121,36 +126,62 @@ const Vendor = () => {
   };
 
   const filterTenantsBySearch = () => {
-    if (searchQuery === undefined) {
-      return vendorData;
+    let filteredData = vendorData;
+  
+    if (searchQuery) {
+      const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
+      filteredData = filteredData.filter((tenant) => {
+        const phoneNumberString = tenant.vendor_phoneNumber?.toString();
+        const isMatch =
+          (tenant.vendor_name &&
+            tenant.vendor_name.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (tenant.vendor_email &&
+            tenant.vendor_email.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (phoneNumberString &&
+            phoneNumberString.includes(lowerCaseSearchQuery));
+        return isMatch;
+      });
     }
-    return vendorData.filter((tenant) => {
-      if (!tenant.entries) {
-        return false; // If entries is undefined, exclude this tenant
-      }
-
-      const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
-
-      return (
-        (tenant.entries.rental_adress &&
-          tenant.entries.rental_adress
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_firstName &&
-          tenant.tenant_firstName
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (tenant.entries.lease_type &&
-          tenant.entries.lease_type
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_lastName &&
-          tenant.tenant_lastName
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    });
+  
+    if (upArrow.length > 0) {
+      upArrow.forEach((value) => {
+        switch (value) {
+          case "vendor_name":
+            filteredData.sort((a, b) => a.vendor_name.localeCompare(b.vendor_name));
+            break;
+          case "vendor_email":
+            filteredData.sort((a, b) => a.vendor_email.localeCompare(b.vendor_email));
+            break;
+          case "vendor_phoneNumber":
+            filteredData.sort((a, b) => a.vendor_phoneNumber - b.vendor_phoneNumber);
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
+  
+    if (upArrow.length === 0) {
+      upArrow.forEach((value) => {
+        switch (value) {
+          case "vendor_name":
+            filteredData.sort((a, b) => b.vendor_name.localeCompare(a.vendor_name));
+            break;
+          case "vendor_email":
+            filteredData.sort((a, b) => b.vendor_email.localeCompare(a.vendor_email));
+            break;
+          case "vendor_phoneNumber":
+            filteredData.sort((a, b) => b.vendor_phoneNumber - a.vendor_phoneNumber);
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
+  
+    return filteredData.slice(startIndex, endIndex);
   };
 
   const filterTenantsBySearchAndPage = () => {
@@ -158,6 +189,25 @@ const Vendor = () => {
     const paginatedData = filteredData.slice(startIndex, endIndex);
     return paginatedData;
   };
+  const sortData = (value) => {
+    if (!sortBy.includes(value)) {
+      setSortBy([...sortBy, value]);
+      setUpArrow([...upArrow, value]);
+      filterTenantsBySearchAndPage();
+    } else {
+      setSortBy(sortBy.filter((sort) => sort !== value));
+      setUpArrow(upArrow.filter((sort) => sort !== value));
+      filterTenantsBySearchAndPage();
+    }
+    //console.log(value);
+    // setOnClickUpArrow(!onClickUpArrow);
+  };
+
+  useEffect(() => {
+    // setLoader(false);
+    // filterRentalsBySearch();
+    getVendorData();
+  }, [upArrow, sortBy]);
 
   return (
     <>
@@ -221,9 +271,55 @@ const Vendor = () => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">Name</th>
-                      <th scope="col">Phone Number</th>
-                      <th scope="col">Mail ID</th>
+                      <th scope="col">Name
+                      
+                      {sortBy.includes("vendor_name") ? (
+                          upArrow.includes("vendor_name") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("vendor_name")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("vendor_name")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("vendor_name")}
+                          />
+                        )}</th>
+                      <th scope="col">Phone Number
+                      {sortBy.includes("vendor_phoneNumber") ? (
+                          upArrow.includes("vendor_phoneNumber") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("vendor_phoneNumber")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("vendor_phoneNumber")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("vendor_phoneNumber")}
+                          />
+                        )}</th>
+                      <th scope="col">Mail ID
+                      {sortBy.includes("vendor_email") ? (
+                          upArrow.includes("vendor_email") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("vendor_email")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("vendor_email")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("vendor_email")}
+                          />
+                        )}</th>
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>

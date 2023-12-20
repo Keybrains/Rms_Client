@@ -64,19 +64,20 @@ const StaffProfile = () => {
       <StaffHeader />
       {/* Page content */}
       <Container className="mt--7" fluid>
-        <Row>
-          <Col>
+       
+         <Row>
+          <div className="col">
             <Card className="shadow" style={{ backgroundColor: "#FFFEFA" }}>
               <CardHeader className="border-0">
-                {/* <h3 className="mb-0">Summary </h3> */}
+                <h3 className="mb-0">Personal detail </h3>
               </CardHeader>
-              <div className="table-responsive">
-                <Table
-                  className="align-items-center table-flush"
-                  responsive
-                  style={{ width: "100%" }}
-                >
-                  <tbody>
+              <div className="table-responsive" style={{padding:"15px"}}>
+              
+                  <Table
+                    className="align-items-center table-flush"
+                    responsive
+                    style={{ width: "100%" }}
+                  >
                     {loading ? (
                       <tr>
                         <td>Loading staff details...</td>
@@ -87,46 +88,45 @@ const StaffProfile = () => {
                       </tr>
                     ) : staffDetails._id ? (
                       <>
-                        <tr>
-                          <th
-                            colSpan="2"
-                            className="text-lg"
-                            style={{ color: "#3B2F2F" }}
-                          >
-                            Personal Details
-                          </th>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">
-                            First Name:
-                          </td>
-                          <td>{staffDetails.staffmember_name}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">
-                            Designation:
-                          </td>
-                          <td>{staffDetails.staffmember_designation}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Phone:</td>
-                          <td>{staffDetails.staffmember_phoneNumber}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-weight-bold text-md">Email:</td>
-                          <td>{staffDetails.staffmember_email}</td>
-                        </tr>
+                        <tbody
+                          className="tbbody p-0 m-0"
+                          style={{
+                            borderTopRightRadius: "5px",
+                            borderTopLeftRadius: "5px",
+                            borderBottomLeftRadius: "5px",
+                            borderBottomRightRadius: "5px",
+                          }}
+                        >
+                          <tr className="header">
+                            <th>First name</th>
+                            <th>Designation</th>
+                            <th>Phone Number</th>
+                            <th>Email</th>
+                          </tr>
+                          <>
+                            <>
+                              <tr className="body">
+                              <td>{staffDetails.staffmember_name}</td>
+                              <td>{staffDetails.staffmember_designation}</td>
+                              <td>{staffDetails.staffmember_phoneNumber}</td>
+                               <td>{staffDetails.staffmember_email}</td>
+                              </tr>
+                            </>
+                          </>
+                        </tbody>
                       </>
                     ) : (
-                      <tr>
-                        <td>No staff details found.</td>
-                      </tr>
+                      <tbody>
+                        <tr>
+                          <td>No vendor details found.</td>
+                        </tr>
+                      </tbody>
                     )}
-                  </tbody>
-                </Table>
+                  </Table>
+             
               </div>
             </Card>
-          </Col>
+          </div>
         </Row>
       </Container>
     </>

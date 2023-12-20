@@ -360,8 +360,8 @@ const RentRollDetail = () => {
       const tenantData = response.data.data;
       setTimeout(() => {
         //console.log(tenantData.tenant_firstName, "abcd");
-        // setTenantDetails(tenantData);
-        // setRentaldata(tenantData);
+        //setTenantDetails(tenantData);
+        setRentaldata(tenantData);
         console.log(tenantData, "tenantsdata");
         setLoading(false);
       }, 3000);
@@ -567,7 +567,7 @@ const RentRollDetail = () => {
           if (response.data.statusCode === 200) {
             swal("Success!", "Entry deleted successfully!", "success");
             getGeneralLedgerData();
-            // Optionally, you can refresh your data here.
+            getTenantData();
           } else {
             swal("", response.data.message, "error");
           }
@@ -646,12 +646,12 @@ const RentRollDetail = () => {
   // Function to generate PDF from table data
   const generatePDF = (selectedOption) => {
     const doc = new jsPDF();
-
+  
     doc.setFontSize(20);
     doc.text("Tenant Statement", 75, 16);
-    //set moment based on selected option
+    // set moment based on selected option
     let dateBasedOnOption;
-
+  
     switch (selectedOption) {
       case "Last 30 days":
         dateBasedOnOption =
@@ -678,6 +678,7 @@ const RentRollDetail = () => {
         // Handle default case here
         break;
     }
+    console.log(dateBasedOnOption,'datebased on option ')
     doc.setFontSize(11);
     doc.text(`${dateBasedOnOption}`, 83, 22);
     doc.addImage(Img, "JPEG", 166, 10, 30, 15);
@@ -697,22 +698,22 @@ const RentRollDetail = () => {
     doc.setFontSize(15);
     doc.text("Statement", 15, 72);
     const tableStartY = 75;
-
+  
     const today = new Date(); // Get current date
     let startDate;
-
+  
     // Calculate the start date based on the selected option
     switch (selectedOption) {
       case "Last 30 days":
-        startDate = new Date(today);
+        startDate = new Date();
         startDate.setDate(today.getDate() - 30);
         break;
       case "Last 3 months":
-        startDate = new Date(today);
+        startDate = new Date();
         startDate.setMonth(today.getMonth() - 3);
         break;
       case "Last 12 months":
-        startDate = new Date(today);
+        startDate = new Date();
         startDate.setFullYear(today.getFullYear() - 1);
         break;
       case "All transactions":
@@ -723,30 +724,31 @@ const RentRollDetail = () => {
         break;
     }
 
-    let filteredData = GeneralLedgerData;
+    let filteredData = GeneralLedgerData && GeneralLedgerData.paymentAndCharges;
     console.log(filteredData, "vaibhav");
-
+  
     if (startDate) {
-      filteredData = GeneralLedgerData.paymentAndCharges.filter(
-        (generalledger) => {
-          const ledgerDate = new Date(generalledger.date);
-          return ledgerDate >= startDate && ledgerDate <= today;
-        }
-      );
+      filteredData = GeneralLedgerData.paymentAndCharges.filter((generalledger) => {
+        const ledgerDate = new Date(generalledger.date).toISOString().split('T')[0];
+        const start = startDate.toISOString().split('T')[0];
+        const end = today.toISOString().split('T')[0];
+        return ledgerDate >= start && ledgerDate <= end;
+      });
+
+      console.log(filteredData, "filteredData");
     }
 
-    const tableData = GeneralLedgerData &&
-      GeneralLedgerData.paymentAndCharges &&
-      GeneralLedgerData.paymentAndCharges.length > 0 && [
-        ...GeneralLedgerData?.paymentAndCharges.reverse().map((entry) => {
+
+    const tableData = filteredData &&  [
+        ...filteredData.reverse().map((entry) => {
           return [
             entry.date || "N/A",
             entry.type || "N/A",
             entry.account
               ? entry.account
               : entry.charge_type
-                ? entry.charge_type
-                : "N/A",
+              ? entry.charge_type
+              : "N/A",
             entry.memo || "N/A",
             entry.type === "Charge" ? "$" + entry.amount : "-",
             entry.type === "Payment" ? "$" + entry.amount : "-",
@@ -760,13 +762,13 @@ const RentRollDetail = () => {
           "",
           "",
           "Total Balance:",
-          "$" + GeneralLedgerData?.paymentAndCharges.reverse()[0]?.Total,
+          "$" + filteredData.reverse()[0]?.Total,
         ],
       ];
-
+  
     // .flat();
     console.log(tableData, "tableData");
-
+  
     doc.autoTable({
       startY: tableStartY,
       head: [
@@ -794,6 +796,7 @@ const RentRollDetail = () => {
     });
     doc.save("general_ledger.pdf");
   };
+  
 
   const getStatus1 = (startDate, endDate) => {
     const today = new Date();
@@ -852,13 +855,6 @@ const RentRollDetail = () => {
                     : ""}
                 </h5></>)}
             </FormGroup>
-
-
-
-
-
-
-
 
           </Col>
           <Col className="text-right" xs="12" sm="6">
@@ -1056,7 +1052,7 @@ const RentRollDetail = () => {
                                         {/* {paymentData.entries.map(
                                   (entry, index) => ( */}
                                         <div className="entry-container">
-                                          <div
+                                          {/* <div
                                             style={{
                                               display: "flex",
                                               flexDirection: "row",
@@ -1076,7 +1072,7 @@ const RentRollDetail = () => {
                                               Prepayments:
                                             </Typography>
                                             <Typography sx={{ fontSize: 14 }}>
-                                              {/* entry.amount */}
+                                                entry.amount 
                                             </Typography>
                                           </div>
                                           <div
@@ -1098,7 +1094,7 @@ const RentRollDetail = () => {
                                             >
                                               Deposite held:
                                             </Typography>
-                                          </div>
+                                          </div> */}
                                           <div
                                             style={{
                                               display: "flex",
@@ -1315,13 +1311,13 @@ const RentRollDetail = () => {
                                   </Table>
                                 </Row>
                               </div>
-                              <div className="row m-3" style={{ overflow: 'hidden' }}>
+                              {/* <div className="row m-3" style={{ overflow: 'hidden' }}>
                                 <Row className="w-100 my-3 text-left">
                                   <Col>
                                     <a href="#">Reset Pasword</a>
                                   </Col>
                                 </Row>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </Card>
@@ -1952,7 +1948,7 @@ const RentRollDetail = () => {
                                 {/* {paymentData.entries.map(
                                   (entry, index) => ( */}
                                 <div className="entry-container">
-                                  <div
+                                  {/* <div
                                     style={{
                                       display: "flex",
                                       flexDirection: "row",
@@ -1972,7 +1968,7 @@ const RentRollDetail = () => {
                                       Prepayments:
                                     </Typography>
                                     <Typography sx={{ fontSize: 14 }}>
-                                      {/* entry.amount */}
+                                       entry.amount 
                                     </Typography>
                                   </div>
                                   <div
@@ -1994,7 +1990,7 @@ const RentRollDetail = () => {
                                     >
                                       Deposite held:
                                     </Typography>
-                                  </div>
+                                  </div> */}
                                   <div
                                     style={{
                                       display: "flex",

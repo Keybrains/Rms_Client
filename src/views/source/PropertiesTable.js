@@ -162,141 +162,99 @@ const PropertiesTables = () => {
   // };
 
   const filterRentalsBySearch = () => {
-    //console.log(upArrow, "upArrow");
-    if (!searchQuery) {
-      //console.log(rentalsData, "rental from table of properties");
-      if (upArrow.length === 0) {
-        // getRentalsData();
-        return rentalsData;
-      } else {
-        // debugger
-        upArrow.map((sort) => {
-          // return (paginatedData = sort(rentalsData));
-          //console.log(sort, "sort");
-
-          const sorted = rentalsData.sort((a, b) => {
-            if (sort === "rental_adress") {
-              if (a.entries.rental_adress.toLowerCase() < b.entries.rental_adress.toLowerCase()) {
-                return -1;
-              }
-              if (a.entries.rental_adress.toLowerCase().toLowerCase() > b.entries.rental_adress.toLowerCase()) {
-                return 1;
-              }
-              return 0;
-            } else if (sort === "property_type") {
-              if (a.entries.property_type.toLowerCase() < b.entries.property_type.toLowerCase()) {
-                return -1;
-              }
-              if (a.entries.property_type.toLowerCase() > b.entries.property_type.toLowerCase()) {
-                return 1;
-              }
-              return 0;
-            } else if (sort === "rental_city") {
-              if (a.entries.rental_city.toLowerCase() < b.entries.rental_city.toLowerCase()) {
-                return -1;
-              }
-              if (a.entries.rental_city.toLowerCase() > b.entries.rental_city.toLowerCase()) {
-                return 1;
-              }
-              return 0;
-            } else if (sort === "rentalOwner_firstName") {
-              if (a.rentalOwner_firstName.toLowerCase() < b.rentalOwner_firstName.toLowerCase()) {
-                return -1;
-              }
-              if (a.rentalOwner_firstName.toLowerCase() > b.rentalOwner_firstName.toLowerCase()) {
-                return 1;
-              }
-              return 0;
-            } else if (sort === "rentalOwner_companyName") {
-              if (a.rentalOwner_companyName.toLowerCase() < b.rentalOwner_companyName.toLowerCase()) {
-                return -1;
-              }
-              if (a.rentalOwner_companyName.toLowerCase() > b.rentalOwner_companyName.toLowerCase()) {
-                return 1;
-              }
-              return 0;
-            } else if (sort === "rentalOwner_primaryEmail") {
-              if (a.rentalOwner_primaryEmail.toLowerCase() < b.rentalOwner_primaryEmail.toLowerCase()) {
-                return -1;
-              }
-              if (a.rentalOwner_primaryEmail.toLowerCase() > b.rentalOwner_primaryEmail.toLowerCase()) {
-                return 1;
-              }
-              return 0;
-            } else if (sort === "rentalOwner_phoneNumber") {
-              if (a.rentalOwner_phoneNumber < b.rentalOwner_phoneNumber) {
-                return -1;
-              }
-              if (a.rentalOwner_phoneNumber > b.rentalOwner_phoneNumber) {
-                return 1;
-              }
-              return 0;
-
-            } else if (sort === "createdAt") {
-              if (a.createdAt < b.createdAt) {
-                return -1;
-              }
-              if (a.createdAt > b.createdAt) {
-                return 1;
-              }
-              return 0;
-            }
-            else if (sort === "updatedAt") {
-              if (a.updateAt < b.updateAt) {
-                return -1;
-              }
-              if (a.updateAt > b.updateAt) {
-                return 1;
-              }
-              return 0;
-            }
-
-          });
-          //console.log(sorted, "sorted");
-          // getRentalsData();
-          return sorted;
-        });
-      }
-    } else {
-      return rentalsData.filter((tenant) => {
-        const name =
-          tenant.rentalOwner_firstName + " " + tenant.rentalOwner_lastName;
-        const add =
-          tenant.entries.rental_city + " " + tenant.entries.rental_country;
-        //console.log(tenant);
+    let filteredData = rentalsData;
+  
+    if (searchQuery) {
+      const lowerCaseSearchQuery = searchQuery.toLowerCase();
+      filteredData = filteredData.filter((tenant) => {
+        const name = `${tenant.rentalOwner_firstName} ${tenant.rentalOwner_lastName}`;
+        const address = `${tenant.entries.rental_adress} ${tenant.entries.rental_city} ${tenant.entries.rental_country}`;
         return (
-          tenant.entries.rental_adress
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          tenant.entries.property_type
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          tenant.entries.rental_city
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          tenant.entries.rental_country
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          tenant.rentalOwner_firstName
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          tenant.rentalOwner_lastName
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          tenant.rentalOwner_companyName
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          tenant.rentalOwner_primaryEmail
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          add.toLowerCase().includes(searchQuery.toLowerCase())
+          tenant.entries.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.entries.property_type.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.entries.rental_city.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.entries.rental_country.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.rentalOwner_firstName.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.rentalOwner_lastName.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.rentalOwner_companyName.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.rentalOwner_primaryEmail.toLowerCase().includes(lowerCaseSearchQuery) ||
+          name.toLowerCase().includes(lowerCaseSearchQuery) ||
+          address.toLowerCase().includes(lowerCaseSearchQuery)
         );
       });
     }
-
-    return rentalsData.slice(startIndex, endIndex);
+  
+    if (upArrow.length > 0 ) {
+      const sortingArrows = upArrow.length > 0 ? upArrow : null;
+      sortingArrows.forEach((sort) => {
+        switch (sort) {
+          case "rental_adress":
+            filteredData.sort((a, b) => {
+              const comparison = a.entries.rental_adress.localeCompare(b.entries.rental_adress);
+              return upArrow.includes("rental_adress") ? comparison : -comparison;
+            });
+            break;
+          case "property_type":
+            filteredData.sort((a, b) => {
+              const comparison = a.entries.property_type.localeCompare(b.entries.property_type);
+              return upArrow.includes("property_type") ? comparison : -comparison;
+            });
+            break;
+          case "rental_city":
+            filteredData.sort((a, b) => {
+              const comparison = a.entries.rental_city.localeCompare(b.entries.rental_city);
+              return upArrow.includes("rental_city") ? comparison : -comparison;
+            });
+            break;
+          case "rentalOwner_firstName":
+            filteredData.sort((a, b) => {
+              const comparison = a.rentalOwner_firstName.localeCompare(b.rentalOwner_firstName);
+              return upArrow.includes("rentalOwner_firstName") ? comparison : -comparison;
+            });
+            break;
+          case "rentalOwner_companyName":
+            filteredData.sort((a, b) => {
+              const comparison = a.rentalOwner_companyName.localeCompare(b.rentalOwner_companyName);
+              return upArrow.includes("rentalOwner_companyName") ? comparison : -comparison;
+            });
+            break;
+          case "rentalOwner_primaryEmail":
+            filteredData.sort((a, b) => {
+              const comparison = a.rentalOwner_primaryEmail.localeCompare(b.rentalOwner_primaryEmail);
+              return upArrow.includes("rentalOwner_primaryEmail") ? comparison : -comparison;
+            });
+            break;
+          case "rentalOwner_phoneNumber":
+            filteredData.sort((a, b) => {
+              const comparison = a.rentalOwner_phoneNumber - b.rentalOwner_phoneNumber;
+              return upArrow.includes("rentalOwner_phoneNumber") ? comparison : -comparison;
+            });
+            break;
+            case "createdAt":
+              filteredData.sort((a, b) => {
+                const dateA = new Date(a.entries.createdAt);
+                const dateB = new Date(b.entries.createdAt);
+                const comparison = dateA - dateB;
+                return upArrow.includes("createdAt") ? comparison : -comparison;
+              });
+              
+            break;
+          case "updatedAt":
+            filteredData.sort((a, b) => {
+              const comparison = new Date(a.updateAt) - new Date(b.updateAt);
+              return upArrow.includes("updatedAt") ? comparison : -comparison;
+            });
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
+  
+    return filteredData.slice(startIndex, endIndex);
   };
+  
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
@@ -536,7 +494,8 @@ const PropertiesTables = () => {
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon onClick={() => sortData("createdAt")} />
+                          <ArrowUpwardIcon
+                          onClick={() => sortData("createdAt")} />
                         )}
                       </th>
                       <th>

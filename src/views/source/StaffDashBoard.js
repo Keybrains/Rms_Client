@@ -48,6 +48,7 @@ const StaffDashBoard = (props) => {
     setActiveNav(index);
     setChartExample1Data("data" + index);
   };
+  
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 

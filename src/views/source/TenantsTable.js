@@ -29,6 +29,10 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { jwtDecode } from "jwt-decode";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+
+import { useState } from "react";
 const TenantsTable = ({ tenantDetails }) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   // const {tenantId} = useParams();
@@ -40,6 +44,9 @@ const TenantsTable = ({ tenantDetails }) => {
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const [upArrow, setUpArrow] = React.useState([]);
+  const [sortBy, setSortBy] = useState([]);
+  
 
   const navigateToTenantsDetails = (tenantId, entryIndex) => {
     navigate(`/admin/tenantdetail/${tenantId}/${entryIndex}`);
@@ -128,37 +135,64 @@ const TenantsTable = ({ tenantDetails }) => {
   }, []);
 
   const filterTenantsBySearch = () => {
-    if (searchQuery === undefined) {
-      return tentalsData;
+    let filteredData = [...tentalsData]; // Create a copy of tentalsData to avoid mutating the original array
+  
+    if (searchQuery) {
+      const lowerCaseSearchQuery = searchQuery.toLowerCase();
+      filteredData = filteredData.filter((tenant) => {
+        if (!tenant.entries) {
+          return false; // If entries are undefined, exclude this tenant
+        }
+        
+        const name = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
+  
+        return (
+          tenant.entries.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.entries.lease_type.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.tenant_firstName.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.tenant_lastName.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.tenant_mobileNumber.toString().includes(lowerCaseSearchQuery) ||
+          tenant.tenant_email.toLowerCase().includes(lowerCaseSearchQuery) ||
+          name.toLowerCase().includes(lowerCaseSearchQuery)
+        );
+      });
     }
-    return tentalsData.filter((tenant) => {
-      if (!tenant.entries) {
-        return false; // If entries is undefined, exclude this tenant
-      }
-
-      const name = tenant.tenant_firstName + " " + tenant.tenant_lastName;
-
-      return (
-        (tenant.entries.rental_adress &&
-          tenant.entries.rental_adress
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_firstName &&
-          tenant.tenant_firstName
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (tenant.entries.lease_type &&
-          tenant.entries.lease_type
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (tenant.tenant_lastName &&
-          tenant.tenant_lastName
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    });
+  
+    if (upArrow.length > 0) {
+      const sortingArrows = upArrow;
+      sortingArrows.forEach((sort) => {
+        switch (sort) {
+          case "rental_adress":
+            filteredData.sort((a, b) => a.entries.rental_adress.localeCompare(b.entries.rental_adress));
+            break;
+          case "lease_type":
+            filteredData.sort((a, b) => a.entries.lease_type.localeCompare(b.entries.lease_type));
+            break;
+          case "tenant_firstName":
+            filteredData.sort((a, b) => a.tenant_firstName.localeCompare(b.tenant_firstName));
+            break;
+          case "tenant_mobileNumber":
+            filteredData.sort((a, b) => a.tenant_mobileNumber - b.tenant_mobileNumber);
+            break;
+          case "tenant_email":
+            filteredData.sort((a, b) => a.tenant_email.localeCompare(b.tenant_email));
+            break;
+          case "start_date":
+            filteredData.sort((a, b) => new Date(a.entries.start_date) - new Date(b.entries.start_date));
+            break;
+          case "createdAt":
+            filteredData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
+  
+    return filteredData;
   };
+  
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterTenantsBySearch();
@@ -330,6 +364,27 @@ const TenantsTable = ({ tenantDetails }) => {
     }
   };
 
+  const sortData = (value) => {
+    if (!sortBy.includes(value)) {
+      setSortBy([...sortBy, value]);
+      setUpArrow([...upArrow, value]);
+      filterTenantsBySearchAndPage();
+    } else {
+      setSortBy(sortBy.filter((sort) => sort !== value));
+      setUpArrow(upArrow.filter((sort) => sort !== value));
+      filterTenantsBySearchAndPage();
+    }
+    //console.log(value);
+    // setOnClickUpArrow(!onClickUpArrow);
+  };
+
+  React.useEffect(() => {
+
+    // setLoader(false);
+    // filterRentalsBySearch();
+    getTenantsDate();
+  }, [upArrow, sortBy]);
+
 
   return (
     <>
@@ -394,12 +449,108 @@ const TenantsTable = ({ tenantDetails }) => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">Tenant name</th>
-                      <th scope="col">Unit Number</th>
-                      <th scope="col">Phone</th>
-                      <th scope="col">Email</th>
-                      <th scope="col">Start-End Date</th>
-                      <th scope="col">Created At</th>
+                      <th scope="col">Tenant name
+                      {sortBy.includes("tenant_firstName") ? (
+                          upArrow.includes("tenant_firstName") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("tenant_firstName")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("tenant_firstName")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("tenant_firstName")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">Unit Number
+                      {sortBy.includes("rental_adress") ? (
+                          upArrow.includes("rental_adress") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rental_adress")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">Phone
+                      
+                      {sortBy.includes("tenant_mobileNumber") ? (
+                          upArrow.includes("tenant_mobileNumber") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("tenant_mobileNumber")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("tenant_mobileNumber")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("tenant_mobileNumber")}
+                          />
+                        )}</th>
+                      <th scope="col">Email
+                      
+                      {sortBy.includes("tenant_email") ? (
+                          upArrow.includes("tenant_email") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("tenant_email")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("tenant_email")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("tenant_email")}
+                          />
+                        )}</th>
+                      <th scope="col">Start-End Date
+                      
+                      {sortBy.includes("start_date") ? (
+                          upArrow.includes("start_date") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("start_date")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("start_date")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("start_date")}
+                          />
+                        )}</th>
+                      <th scope="col">Created At
+                      
+                      {sortBy.includes("createdAt") ? (
+                          upArrow.includes("createdAt") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("createdAt")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("createdAt")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("createdAt")}
+                          />
+                        )}</th>
                       <th scope="col">Last Updated</th>
                       <th scope="col">Action</th>
                     </tr>

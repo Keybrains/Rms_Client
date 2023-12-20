@@ -44,7 +44,7 @@ const TenantDashBoard = (props) => {
   }
 
   const toggleNavs = (e, index) => {
-    e.preventDefault();
+    // e.preventDefault();
     setActiveNav(index);
     setChartExample1Data("data" + index);
   };
@@ -54,7 +54,7 @@ const TenantDashBoard = (props) => {
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
-
+  
   React.useEffect(() => {
     if (cookies.get("token")) {
       const jwt = jwtDecode(cookies.get("token"));
@@ -62,7 +62,7 @@ const TenantDashBoard = (props) => {
     } else {
       navigate("/auth/login");
     }
-  }, [navigate]);
+  }, [navigate,cookies]);
 
   const cardStyle = {
     // background: `url(${require("../assets/img/us3.jpeg").default})`,

@@ -14,7 +14,7 @@ import RentalownerTable from "views/source/RentalownerTable";
 import Listings from "views/source/Listings";
 import Applicants from "views/source/Applicants";
 import RentRoll from "views/source/RentRoll";
-import SumProperties from "views/source/SumProperties";
+// import SumProperties from "views/source/SumProperties";
 import OutstandingBalance from "views/source/OutstandingBalance";
 import TenantDetailPage from "views/source/TenantDetailPage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -187,12 +187,12 @@ var routes = [
     layout: "/admin",
   },
 
-  {
-    path: "/SumProperties",
-    name: "SumProperties",
-    component: <SumProperties />,
-    layout: "/admin",
-  },
+  // {
+  //   path: "/SumProperties",
+  //   name: "SumProperties",
+  //   component: <SumProperties />,
+  //   layout: "/admin",
+  // },
 
   {
     path: "/OutstandingBalance",
