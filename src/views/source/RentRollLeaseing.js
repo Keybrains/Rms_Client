@@ -2211,6 +2211,7 @@ const RentRollLeaseing = () => {
     } catch (error) {
       console.log(error);
     }
+    setLoader(false);
   };
   console.log(entrySchema.values, "entry cahsdkajl;");
 

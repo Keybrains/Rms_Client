@@ -357,6 +357,7 @@ const AddCharge = () => {
         console.error("Response Data:", error.response.data);
       }
     }
+    setLoader(false);
   };
   console.log(tenantDetails, 'tenantDetails')
   const editCharge = async () => {

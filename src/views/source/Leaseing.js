@@ -142,7 +142,6 @@ const Leaseing = () => {
     "Yearly",
   ];
 
-
   const [CCVNU, setCCVNU] = useState(null);
   const [CCVEX, setCCVEX] = useState(null);
 
@@ -350,7 +349,6 @@ const Leaseing = () => {
     setselectedRentCycle(rentcycle);
     setselectedDayFrequency(dayFrequency);
   };
-
 
   const [selectedAccount, setselectedAccount] = useState("");
   const hadleselectedAccount = (account) => {
@@ -1021,7 +1019,10 @@ const Leaseing = () => {
           const inputStartDate = entrySchema.values.start_date;
           if (
             (sDate.getTime() < inputDate.getTime() &&
-            inputDate.getTime() < eDate.getTime()) || (new Date(inputStartDate) && sDate.getTime()>=new Date(inputStartDate).getTime() && eDate.getTime()<=inputDate.getTime())
+              inputDate.getTime() < eDate.getTime()) ||
+            (new Date(inputStartDate) &&
+              sDate.getTime() >= new Date(inputStartDate).getTime() &&
+              eDate.getTime() <= inputDate.getTime())
           ) {
             isUnavailable = true;
             overlappingLease = entry.entries;
@@ -1491,7 +1492,6 @@ const Leaseing = () => {
 
           setRecurringData(matchedLease.recurring_charges);
           setOneTimeData(matchedLease.one_time_charges);
-      
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -1636,9 +1636,8 @@ const Leaseing = () => {
           if (res.data.statusCode === 200) {
             const delay = (ms) =>
               new Promise((resolve) => setTimeout(resolve, ms));
-           
+
             if (entrySchema.values.unit_id) {
-          
               await postCharge(
                 entrySchema.values.rental_units,
                 entrySchema.values.unit_id,
@@ -1707,54 +1706,53 @@ const Leaseing = () => {
               `${baseUrl}/nmipayment/custom-add-subscription`,
               paymentDetails
             );
-            console.log('mansi..... : ', res2);
+            console.log("mansi..... : ", res2);
             if (res.data.statusCode === 200) {
-              
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
 
-                if (entrySchema.values.unit_id) {
-                  await postCharge(
-                    res.data.data.entries[0].rental_units,
-                    res.data.data.entries[0].unit_id,
-                    res.data.data._id
-                  );
-                  await postDeposit(
+              if (entrySchema.values.unit_id) {
+                await postCharge(
+                  res.data.data.entries[0].rental_units,
+                  res.data.data.entries[0].unit_id,
+                  res.data.data._id
+                );
+                await postDeposit(
+                  res.data.data.entries[0].rental_units,
+                  res.data.data.entries[0].unit_id,
+                  res.data.data._id,
+                  res.data.data.entries[0].Security_amount
+                );
+
+                for (const item of recurringData) {
+                  await postRecOneCharge(
                     res.data.data.entries[0].rental_units,
                     res.data.data.entries[0].unit_id,
                     res.data.data._id,
-                    res.data.data.entries[0].Security_amount
+                    item,
+                    "Recurring"
                   );
-  
-                  for (const item of recurringData) {
-                    await postRecOneCharge(
-                      res.data.data.entries[0].rental_units,
-                      res.data.data.entries[0].unit_id,
-                      res.data.data._id,
-                      item,
-                      "Recurring"
-                    );
-                    await delay(1000); // Delay for 3 seconds
-                  }
-  
-                  for (const item of oneTimeData) {
-                    await postRecOneCharge(
-                      res.data.data.entries[0].rental_units,
-                      res.data.data.entries[0].unit_id,
-                      res.data.data._id,
-                      item,
-                      "OneTime"
-                    );
-                    await delay(1000); // Delay for 3 seconds
-                  }
-                } else {
-                  await postCharge("", "", res.data.data._id);
-                  await postDeposit(
-                    "",
-                    "",
+                  await delay(1000); // Delay for 3 seconds
+                }
+
+                for (const item of oneTimeData) {
+                  await postRecOneCharge(
+                    res.data.data.entries[0].rental_units,
+                    res.data.data.entries[0].unit_id,
                     res.data.data._id,
-                    res.data.data.entries[0].Security_amount
+                    item,
+                    "OneTime"
                   );
+                  await delay(1000); // Delay for 3 seconds
+                }
+              } else {
+                await postCharge("", "", res.data.data._id);
+                await postDeposit(
+                  "",
+                  "",
+                  res.data.data._id,
+                  res.data.data.entries[0].Security_amount
+                );
 
                 for (const item of recurringData) {
                   await postRecOneCharge(
@@ -1792,7 +1790,7 @@ const Leaseing = () => {
     } catch (error) {
       console.log(error);
     }
-    
+
     if (Array.isArray(file)) {
       const arrayOfNames = file.map((item) => {
         return item.name;
@@ -1812,6 +1810,7 @@ const Leaseing = () => {
     } catch (error) {
       console.log(error);
     }
+    setLoader(false);
   };
 
   const postCharge = async (unit, unitId, tenantId) => {
@@ -5816,7 +5815,16 @@ const Leaseing = () => {
                   >
                     {id ? "Update Lease" : "Add Lease"}
                   </Button> */}
-                  {id ? (
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : id ? (
                     <button
                       type="submit"
                       className="btn btn-primary"
@@ -5872,8 +5880,7 @@ const Leaseing = () => {
             </Card>
           </Col>
         </Row>
-      </Container >
-
+      </Container>
     </>
   );
 };

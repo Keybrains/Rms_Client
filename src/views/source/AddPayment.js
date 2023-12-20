@@ -542,6 +542,7 @@ const AddPayment = () => {
         console.error("Response Data:", error.response.data);
       }
     }
+    setLoader(false);
   };
 
   const fileData = (files) => {
