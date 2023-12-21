@@ -3033,7 +3033,7 @@ const RentRollLeaseing = () => {
                           {display === false ? (
                             <></>
                           ) : (
-                            <div style={{ color: "red" }}>required</div>
+                            <div style={{ color: "red" }}>Required</div>
                           )}
                         </span>
 
