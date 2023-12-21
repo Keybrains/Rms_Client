@@ -140,6 +140,7 @@ const Workorder = () => {
   
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
+      // setCurrentPage(1);
       filteredData = filteredData.filter((work) => {
         return (
           (work.rental_adress && work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
@@ -213,7 +214,12 @@ const Workorder = () => {
     // setLoader(false);
     // filterRentalsBySearch();
     getWorkData();
+    
   }, [upArrow, sortBy]);
+  
+  useEffect(() => {
+      setCurrentPage(1);
+  },[searchQuery])
 
   return (
     <>

@@ -1212,9 +1212,11 @@ const RentRollDetail = () => {
                                             }}
                                           // onClick={() => handleChange("Financial")}
                                           >
-                                            <Link
+                                             <Link
                                               to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
-                                              onClick={(e) => { }}
+                                              onClick={() => {
+                                                setValue(`Financial`);
+                                              }}
                                             >
                                               Lease Ledger
                                             </Link>

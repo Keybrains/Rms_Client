@@ -235,7 +235,6 @@ const Rentals = () => {
         lastName: rentalOwnerParts[1],
         phoneNumber: rentalOwnerParts[2],
         companyName: rentalOwnerParts[3],
-        companyName: rentalOwnerParts[3],
         primaryEmail: rentalOwnerParts[4],
         homeNumber: rentalOwnerParts[5],
         businessNumber: rentalOwnerParts[6],
@@ -246,6 +245,7 @@ const Rentals = () => {
         swal("Success!", "rentalOwner details Added", "success");
       }
     }
+    setDisplay(false);
   };
 
   const dialogPaperStyles = {
@@ -352,15 +352,15 @@ const Rentals = () => {
       chooseExistingOwner: false,
     },
     validationSchema: yup.object({
-      // rentalOwner_firstName: yup.string().required("First Name is required"),
-      // rentalOwner_lastName: yup.string().required("Last Name is required"),
-      // rentalOwner_primaryEmail: yup
-      //   .string()
-      //   .email("Invalid email address")
-      //   .required("Email is required"),
-      // rentalOwner_phoneNumber: yup
-      //   .string()
-      //   .required("Phone Number is required"),
+      rentalOwner_firstName: yup.string().required("First Name is required"),
+      rentalOwner_lastName: yup.string().required("Last Name is required"),
+      rentalOwner_primaryEmail: yup
+        .string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      rentalOwner_phoneNumber: yup
+        .string()
+        .required("Phone Number is required"),
     }),
     onSubmit: (values) => {
       // console.log(values, "values");
@@ -439,8 +439,12 @@ const Rentals = () => {
       ),
     }),
     onSubmit: (values) => {
-      handleSubmit(values);
-      // console.log(values, "rentals formik finmmal values");
+      if (selectedRentalOwnerData.length !== 0) {
+        handleSubmit(values);
+      } else {
+        // console.log("data not ok")
+        setDisplay(true);
+      }
     },
   });
 
@@ -469,6 +473,7 @@ const Rentals = () => {
     // setSelectedbath(bath);
   };
 
+  const [display, setDisplay] = React.useState(false);
   const [selectedOperatingAccount, setSelectedOperatingAccount] = useState("");
   const handleOperatingAccount = (operatingAccount) => {
     setSelectedOperatingAccount(operatingAccount);
@@ -669,9 +674,10 @@ const Rentals = () => {
             firstName: propertysData.rentalOwner_firstName || "",
             lastName: propertysData.rentalOwner_lastName || "",
             phoneNumber: propertysData.rentalOwner_phoneNumber || "",
-            // Add other fields you want to display in the table
-          });
-
+            rentalOwner_homeNumber: propertysData.rentalOwner_homeNumber || "",
+            rentalOwner_businessNumber:
+              propertysData.rentalOwner_businessNumber || ""
+        });
           const matchedProperty = propertysData.entries.find((entry) => {
             return entry.entryIndex === entryIndex;
           });
@@ -1261,7 +1267,7 @@ const Rentals = () => {
                               className="form-control-label"
                               htmlFor="input-address"
                             >
-                              Address
+                              Address *
                             </label>
                             <Input
                               required
@@ -1313,7 +1319,7 @@ const Rentals = () => {
                             className="form-control-label"
                             htmlFor="input-city"
                           >
-                            City
+                            City *
                           </label>
                           <Input
                             required
@@ -1356,7 +1362,7 @@ const Rentals = () => {
                             className="form-control-label"
                             htmlFor="input-country"
                           >
-                            State
+                            State *
                           </label>
                           <Input
                             required
@@ -1400,7 +1406,7 @@ const Rentals = () => {
                             className="form-control-label"
                             htmlFor="input-country"
                           >
-                            Country
+                            Country *
                           </label>
                           <Input
                             required
@@ -1445,7 +1451,7 @@ const Rentals = () => {
                             className="form-control-label"
                             htmlFor="input-country"
                           >
-                            Postal code
+                            Postal code *
                           </label>
                           <Input
                             required
@@ -1507,7 +1513,7 @@ const Rentals = () => {
                             className="form-control-label"
                             htmlFor="input-address"
                           >
-                            Who is the property owner?
+                            Who is the property owner?    (Required)
                           </label>
                           <br />
                           <br />
@@ -1530,6 +1536,11 @@ const Rentals = () => {
                           >
                             <b style={{ fontSize: "20px" }}>+</b> Add rental
                             owner
+                            {display === false ? (
+                            <></>
+                          ) : (
+                            <div style={{ color: "red" }}>Required</div>
+                          )}
                           </span>
                           <Dialog
                             open={isRentalDialogOpen}
@@ -1538,7 +1549,7 @@ const Rentals = () => {
                           >
                             <Form onSubmit={rentalOwnerFormik.handleSubmit}>
                               <DialogTitle style={{ background: "#F0F8FF" }}>
-                                Add rental owner
+                                Add rental owner   
                               </DialogTitle>
 
                               <DialogContent style={{ width: "100%" }}>
@@ -1769,7 +1780,8 @@ const Rentals = () => {
                                       {rentalOwnerFormik.touched
                                         .rentalOwner_firstName &&
                                       rentalOwnerFormik.errors
-                                        .rentalOwner_firstName ? (
+                                        .rentalOwner_firstName &&
+                                        rentalsFormik.submitCount > 0 ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             rentalOwnerFormik.errors
@@ -3502,7 +3514,13 @@ const Rentals = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                        rentalsFormik.handleSubmit();
+                         rentalsFormik.handleSubmit();
+                        if (selectedRentalOwnerData.length !== 0) {
+                          rentalOwnerFormik.handleSubmit();
+                        } else {
+                          // console.log("data not ok")
+                          setDisplay(true);
+                        }
                       }}
                     >
                       Create Property
@@ -3520,6 +3538,11 @@ const Rentals = () => {
                   >
                     Cancel
                   </button>
+                  {/* { rentalownerData === 0 ? (
+                    <div style={{ color: "red" }}>
+                      Please Add Rental Owner
+                    </div>
+                  ) : null} */}
                 </Form>
               </CardBody>
             </Card>

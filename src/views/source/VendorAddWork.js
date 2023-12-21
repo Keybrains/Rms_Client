@@ -717,7 +717,7 @@ const VendorAddWork = () => {
                     <br />
                   </div>
 
-                  <div className="pl-lg-4">
+                  {/* <div className="pl-lg-4">
                     <Row>
                       <Col lg="4">
                         <FormGroup>
@@ -787,7 +787,8 @@ const VendorAddWork = () => {
                       </Col>
                     </Row>
                     <br />
-                  </div>
+                  </div> */}
+
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="4">

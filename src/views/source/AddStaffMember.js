@@ -346,7 +346,7 @@ const AddStaffMember = () => {
                             className="form-control-label"
                             htmlFor="input-desg"
                           >
-                            Password:
+                            Password *
                           </label>
                           <br />
                           <br />
