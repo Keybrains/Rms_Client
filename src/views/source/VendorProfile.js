@@ -70,7 +70,7 @@ const VendorProfile = () => {
           <div className="col">
             <Card className="shadow" style={{ backgroundColor: "#FFFEFA" }}>
               <CardHeader className="border-0">
-                <h3 className="mb-0">Personal detail </h3>
+                <h2 className="mb-0" style={{color:'#36013F'}}>Personal Details</h2>
               </CardHeader>
               <div className="table-responsive" style={{padding:"15px"}}>
               

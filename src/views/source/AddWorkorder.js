@@ -161,10 +161,9 @@ const AddWorkorder = () => {
   const handleCategorySelection = (value) => {
     setSelectedCategory(value);
     setcategorydropdownOpen(true);
-    if(value==="Other"){
+    if (value === "Other") {
       WorkFormik.values.work_category = "";
-    }
-    else{
+    } else {
       WorkFormik.values.work_category = value;
     }
   };
@@ -273,8 +272,10 @@ const AddWorkorder = () => {
 
           setVid(vendorData._id);
           console.log("vid", vendorData._id);
-          setentriesID(vendorData.entries._id);
-          console.log("vid", vendorData.entries[0]._id);
+          if (vendorData && vendorData.entries.length > 0) {
+            setentriesID(vendorData.entries._id);
+            console.log("vid", vendorData.entries[0]._id);
+          }
 
           try {
             const units = await fetchUnitsByProperty(vendorData.rental_adress);
@@ -283,7 +284,6 @@ const AddWorkorder = () => {
           } catch (error) {
             console.log(error, "error");
           }
-
           setSelectedUnit(vendorData.rental_units || "Select");
           setSelectedProp(vendorData.rental_adress || "Select");
           setSelectedCategory(vendorData.work_category || "Select");
@@ -295,6 +295,7 @@ const AddWorkorder = () => {
           setSelectedAccount(vendorData.account_type || "Select");
 
           const entriesData = vendorData.entries || []; // Make sure entries is an array
+          console.log(vendorData.work_subject, "vendorData");
           WorkFormik.setValues({
             work_subject: vendorData.work_subject || "",
             rental_units: vendorData.rental_units || "",
@@ -325,11 +326,14 @@ const AddWorkorder = () => {
   }, [id]);
 
   const { v4: uuidv4 } = require("uuid");
-
+  const [loader, setLoader] = useState(false);
   async function handleSubmit(values, work) {
+    setLoader(true);
     try {
       values["rental_adress"] = selectedProp;
-      values["work_category"] = WorkFormik.values.work_category?WorkFormik.values.work_category:selectedCategory ;
+      values["work_category"] = WorkFormik.values.work_category
+        ? WorkFormik.values.work_category
+        : selectedCategory;
       values["vendor_name"] = selectedVendor;
       values["entry_allowed"] = selectedEntry;
       values["staffmember_name"] = selecteduser;
@@ -352,17 +356,16 @@ const AddWorkorder = () => {
       values["workorder_id"] = workorder_id;
 
       const work_subject = values.work_subject;
-      console.log(values,'values befor submit')
       if (id === undefined) {
         // Create the work order
+        // console.log(values,'values after submit')
         const workOrderRes = await axios.post(
           `${baseUrl}/workorder/workorder`,
-          values  
+          values
         );
 
         // Check if the work order was created successfully
         if (workOrderRes.status === 200) {
-          console.log(workOrderRes,'response after submit');
           // console.log(workOrderRes.data);
           // Use the work order data from the response to create the notification
           const notificationRes = await axios.post(
@@ -372,7 +375,6 @@ const AddWorkorder = () => {
                 vendor_name: selectedVendor,
                 staffmember_name: selecteduser,
                 rental_adress: selectedProp,
-                rental_units: selectedUnit,
                 work_subject: work_subject,
                 workorder_id: workorder_id,
               },
@@ -394,6 +396,7 @@ const AddWorkorder = () => {
         console.error("Response Data:", error.response.data);
       }
     }
+    setLoader(false);
   }
 
   function handleResponse(response) {
@@ -443,7 +446,6 @@ const AddWorkorder = () => {
 
     validationSchema: yup.object({
       rental_adress: yup.string().required("Required"),
-      rental_units: yup.string().required("Required"),
       vendor: yup.string().required("Required"),
       staffmember_name: yup.string().required("Required"),
       work_category: yup.string().required("Required"),
@@ -542,7 +544,7 @@ const AddWorkorder = () => {
         {
           work_subject: WorkFormik.values.work_subject,
           rental_adress: selectedProp,
-          unit_no: WorkFormik.values.unit_no,
+          rental_units: WorkFormik.values.rental_units,
           work_category: WorkFormik.values.work_category,
           vendor_name: selectedVendor,
           invoice_number: WorkFormik.values.invoice_number,
@@ -759,7 +761,7 @@ const AddWorkorder = () => {
                   </div>
                   <div className="pl-lg-4">
                     <Row>
-                      <Col lg="3">
+                      <Col lg="6">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -832,7 +834,8 @@ const AddWorkorder = () => {
                           </Dropdown>
                         </FormGroup>
                       </Col>
-                      <Col lg="3"
+                      <Col
+                        lg="3"
                         style={
                           selectedCategory === "Other"
                             ? { display: "block" }
@@ -860,8 +863,9 @@ const AddWorkorder = () => {
                               // Update the state or Formik values with the new input value
                               // WorkFormik.handleChange(e);
                               WorkFormik.setFieldValue(
-                                "work_category",e.target.value
-                              )
+                                "work_category",
+                                e.target.value
+                              );
                             }}
                             value={WorkFormik.values.work_category}
                             // required
@@ -1753,7 +1757,16 @@ const AddWorkorder = () => {
 
                     <br />
                   </div>
-                  {id ? (
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : id ? (
                     <button
                       type="submit"
                       className="btn btn-primary"

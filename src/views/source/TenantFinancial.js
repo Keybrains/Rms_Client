@@ -480,7 +480,7 @@ const TenantFinancial = () => {
              //  href="#rms"
               onClick={openModal}
               size="sm"
-              style={{ background: "white", color: "blue" }}
+              style={{ background: "white", color: "#3B2F2F" }}
             >
               Make Payment
             </Button>

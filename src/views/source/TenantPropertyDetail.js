@@ -83,7 +83,7 @@ useEffect(() => {
              //  href="#rms"
               onClick={() => navigate("/tenant/tenantproperty")}
               size="sm"
-              style={{ background: "white", color: "blue" }}
+              style={{ background: "white", color: "#3B2F2F" }}
             >
               Back
             </Button>
@@ -122,8 +122,8 @@ useEffect(() => {
                                     </div>
                                     <div className="col-md-8">
                                       <div className="card-body">
-                                        <h5 className="card-title">
-                                          Property details
+                                        <h5 className="card-title" style={{color:'#3B2F2F'}}>
+                                          Property Details
                                         </h5>
                                         <p className="card-text">
                                           <small className="text-muted">
@@ -144,9 +144,10 @@ useEffect(() => {
                                   style={{
                                     fontSize: "18px",
                                     textTransform: "capitalize",
-                                    color: "#022d60",
+                                    color:'#3B2F2F',
                                     fontWeight: "600",
                                     borderBottom: "1px solid #ddd",
+                                    
                                   }}
                                 >
                                   <Col>Property Details</Col>
@@ -193,7 +194,7 @@ useEffect(() => {
                                     borderBottom: "1px solid #ddd",
                                   }}
                                 >
-                                  <Col>Rental owner detail</Col>
+                                  <Col style={{color:'#3B2F2F'}}>Rental owner detail</Col>
                                 </Row>
                                 <Row
                                   className="mb-1 m-0 p-0"
@@ -288,12 +289,12 @@ useEffect(() => {
                                   style={{
                                     fontSize: "18px",
                                     textTransform: "capitalize",
-                                    color: "#022d60",
+                                    color: "#3B2F2F",
                                     fontWeight: "600",
                                     borderBottom: "1px solid #ddd",
                                   }}
                                 >
-                                  <Col>Staff detail</Col>
+                                  <Col>Staff Details</Col>
                                 </Row>
                                 <Row
                                   className="mb-1 m-0 p-0"
@@ -324,12 +325,12 @@ useEffect(() => {
                                   style={{
                                     fontSize: "18px",
                                     textTransform: "capitalize",
-                                    color: "#022d60",
+                                    color: "#3B2F2F",
                                     fontWeight: "600",
                                     borderBottom: "1px solid #ddd",
                                   }}
                                 >
-                                  <Col>Unit detail</Col>
+                                  <Col>Unit Details</Col>
                                 </Row>
                                 <Row
                                   className="mb-1 m-0 p-0"

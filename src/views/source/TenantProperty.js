@@ -112,12 +112,19 @@ const TenantProperty = () => {
     <>
       <TenantsHeader />
       {/* Page content */}
-      <Container className="mt--6 ml--10" fluid>
+      <Container className="mt--8 ml--10" fluid>
+        <Row>
+          <Col xs="12" sm="6">
+            <FormGroup className="">
+              <h1 style={{ color: "white" }}>Properties</h1>
+            </FormGroup>
+          </Col>
+        </Row>
         <Row>
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                <h1 className="mb-0">Property</h1>
+                {/* <h1 className="mb-0">Property</h1> */}
               </CardHeader>
               {!loader || rental_adress.length > 0 ? (
                 <div className="table-responsive">

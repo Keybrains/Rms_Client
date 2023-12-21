@@ -85,14 +85,26 @@ const StaffWorkDetails = () => {
 
   const [propertyDetails, setPropertyDetails] = useState({});
   const getPropertyData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
-      );
-      setPropertyDetails(response.data[0]);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
+    if (outstandDetails.rental_adress && outstandDetails.rental_units) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
+        );
+        setPropertyDetails(response.data[0]);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setError(error);
+      }
+    } if (outstandDetails.rental_adress) {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/propertyunit/rentals_property/${outstandDetails.rental_adress}`
+        );
+        setPropertyDetails(response.data[0]);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+        setError(error);
+      }
     }
   };
 
@@ -222,7 +234,7 @@ const StaffWorkDetails = () => {
                       background: "none",
                       textTransform: "capitalize",
                       cursor: "pointer",
-                      color: activeButton === "Summary" ? "#3B2F2F" : "inherit",
+                      color: activeButton === "Summary" ? "#033E3E" : "inherit",
                       // textDecoration: activeButton === 'Summary' ? 'underline' : 'none',
                     }}
                     onMouseEnter={() => handleMouseEnter("Summary")}
@@ -239,7 +251,7 @@ const StaffWorkDetails = () => {
                       background: "none",
                       textTransform: "capitalize",
                       cursor: "pointer",
-                      color: activeButton === "Task" ? "#3B2F2F" : "inherit",
+                      color: activeButton === "Task" ? "#033E3E" : "inherit",
                       // textDecoration: activeButton === 'Task' ? 'underline' : 'none',
                     }}
                     onMouseEnter={() => handleMouseEnter("Task")}
@@ -284,7 +296,7 @@ const StaffWorkDetails = () => {
                                   <AssignmentOutlinedIcon />
                                 </Box>
                                 <Box flex="1">
-                                  <h2 className="text-primary text-lg">
+                                  <h2 className="text text-lg" style={{color:'#033E3E'}}>
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
                                   <span>{outstandDetails.rental_adress || "N/A"}</span>
@@ -365,47 +377,50 @@ const StaffWorkDetails = () => {
                                 </Box>
                               </Box>
                             </Box>
-                            <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              padding="16px"
-                              maxWidth="700px"
-                              margin="20px"
-                              style={{ marginLeft: "auto", marginRight: "auto", overflowX: 'auto' }} // Center the box horizontally
-                            >
-                              <h2 className="text-primary text-lg">Parts and Labor</h2>
-                              <Box overflowX="auto">
-                                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                                  <thead>
-                                    <tr>
-                                      <th style={tableHeaderStyle}>QTY</th>
-                                      <th style={tableHeaderStyle}>ACCOUNT</th>
-                                      <th style={tableHeaderStyle}>DESCRIPTION</th>
-                                      <th style={tableHeaderStyle}>PRICE</th>
-                                      <th style={tableHeaderStyle}>AMOUNT</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {/* Add your table rows dynamically here */}
-                                    {outstandDetails?.entries && outstandDetails?.entries.map((item, index) => (
-                                      <tr key={index}>
-                                        <td style={tableCellStyle}>{item.part_qty}</td>
-                                        <td style={tableCellStyle}>{item.account_type}</td>
-                                        <td style={tableCellStyle}>{item.description}</td>
-                                        <td style={{ ...tableCellStyle, textAlign: "right" }}>${item.part_price}</td>
-                                        <td style={{ ...tableCellStyle, textAlign: "right" }}>${item.total_amount}</td>
-                                      </tr>
-                                    ))}
-                                  </tbody>
-                                  <tfoot>
-                                    <tr>
-                                      <td colSpan="4" style={tableHeaderStyle}>Total</td>
-                                      <td style={{ ...tableFooterStyle, textAlign: "right" }}>${total()}</td>
-                                    </tr>
-                                  </tfoot>
-                                </table>
-                              </Box>
-                            </Box>
+                            {outstandDetails?.entries?.length > 0 && outstandDetails?.entries[0].part_qty
+                              ? (
+                                <Box
+                                  border="1px solid #ccc"
+                                  borderRadius="8px"
+                                  padding="16px"
+                                  maxWidth="700px"
+                                  margin="20px"
+                                  style={{ marginLeft: "auto", marginRight: "auto", overflowX: 'auto' }} // Center the box horizontally
+                                >
+                                  <h2 className="text text-lg" style={{color:'#033E3E'}}>Parts and Labor</h2>
+                                  <Box overflowX="auto">
+                                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                                      <thead>
+                                        <tr>
+                                          <th style={tableHeaderStyle}>QTY</th>
+                                          <th style={tableHeaderStyle}>ACCOUNT</th>
+                                          <th style={tableHeaderStyle}>DESCRIPTION</th>
+                                          <th style={tableHeaderStyle}>PRICE</th>
+                                          <th style={tableHeaderStyle}>AMOUNT</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {/* Add your table rows dynamically here */}
+                                        {outstandDetails?.entries.map((item, index) => (
+                                          <tr key={index}>
+                                            <td style={tableCellStyle}>{item.part_qty}</td>
+                                            <td style={tableCellStyle}>{item.account_type}</td>
+                                            <td style={tableCellStyle}>{item.description}</td>
+                                            <td style={{ ...tableCellStyle, textAlign: "right" }}>${item.part_price}</td>
+                                            <td style={{ ...tableCellStyle, textAlign: "right" }}>${item.total_amount}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                      <tfoot>
+                                        <tr>
+                                          <td colSpan="4" style={tableHeaderStyle}>Total</td>
+                                          <td style={{ ...tableFooterStyle, textAlign: "right" }}>${total()}</td>
+                                        </tr>
+                                      </tfoot>
+                                    </table>
+                                  </Box>
+                                </Box>
+                              ) : null}
                           </>
                         ) : (
                           <div>No details found.</div>
@@ -420,7 +435,7 @@ const StaffWorkDetails = () => {
                             margin="20px"
                           >
                             <Box borderBottom="1px solid #ccc" style={{ minWidth: "100%", padding: "16px 16px 5px 16px", color: "#5e72e4" }}>
-                              <h3 className="text-primary">Contacts</h3>
+                              <h3 className="text" style={{color:'#033E3E'}}>Contacts</h3>
                             </Box>
                             <Box
                               borderBottom="1px solid #ccc"
@@ -478,8 +493,8 @@ const StaffWorkDetails = () => {
                             flexDirection="column"
                             alignItems="center" // Center content horizontally
                           >
-                            <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "center", color: "#5e72e4" }}>
-                              <h3 className="text-primary">Property</h3>
+                            <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
+                              <h3 className="text" style={{color:'#033E3E'}}>Property</h3>
                             </Box>
                             {propertyDetails?.propertyres_image || propertyDetails?.property_image ? (
                               <Box style={{ width: "100%", padding: "16px", display: "flex", alignItems: "center" }}>
@@ -562,7 +577,7 @@ const StaffWorkDetails = () => {
                           >
                             &nbsp;{outstandDetails.priority}&nbsp;
                           </span>
-                          <h2 className="text-lg" style={{ color: "#3B2F2F" }}>
+                          <h2 className="text-lg" style={{color:'#033E3E'}}>
                             {outstandDetails.work_subject || "N/A"}
                           </h2>
 

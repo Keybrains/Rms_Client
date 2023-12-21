@@ -34,7 +34,6 @@ import { RotatingLines } from "react-loader-spinner";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
-
 import Header from "components/Headers/Header";
 import * as React from "react";
 import axios from "axios";
@@ -67,7 +66,7 @@ const Applicants = () => {
   const [searchQueryy, setSearchQueryy] = useState("");
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
-  
+
   const handleSearch = (e) => {
     setSearchQueryy(e.target.value);
   };
@@ -111,7 +110,7 @@ const Applicants = () => {
   };
   const [unitId, setUnitId] = useState(null);
   const handleUnitSelect = (selectedUnit) => {
-    console.log(selectedUnit, 'sekected wint')
+    console.log(selectedUnit, "sekected wint");
     setSelectedUnit(selectedUnit.rental_units);
     setUnitId(selectedUnit._id);
     applicantFormik.setFieldValue("rental_units", selectedUnit.rental_units); // Update the formik state here
@@ -129,9 +128,7 @@ const Applicants = () => {
 
   const getRentalsData = async () => {
     try {
-      const response = await axios.get(
-        `${baseUrl}/applicant/applicant`
-      );
+      const response = await axios.get(`${baseUrl}/applicant/applicant`);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setRentalsData(response.data.data);
     } catch (error) {
@@ -274,6 +271,7 @@ const Applicants = () => {
   });
 
   const handleFormSubmit = (values, action) => {
+    setLoader(true);
     axios
       .post(`${baseUrl}/applicant/applicant`, {
         ...values,
@@ -285,23 +283,33 @@ const Applicants = () => {
         rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
         rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
         rentalOwner_companyName: ownerData.rentalOwner_companyName,
-        property_id:ownerData._id,
-        unit_id:unitId,
-        isMovein:false
+        property_id: ownerData._id,
+        unit_id: unitId,
+        isMovein: false,
       })
       .then((response) => {
-        //console.log("Applicant created successfully:", response.data.data._id);
-        // console.log(response.data.data);
-        closeModal();
-        action.resetForm();
-        navigate(`/admin/Applicants/${response.data.data._id}`);
-        setSelectedPropertyType("");
-        applicantFormik.setFieldValue("rental_adress", "");
+        if(response.status===200)
+        {
+          closeModal();
+          action.resetForm();
+          swal("Success!","Applicant Added Successfully","success");
+
+          navigate(`/admin/Applicants/${response.data.data._id}`);
+          setSelectedPropertyType("");
+          applicantFormik.setFieldValue("rental_adress", "");
+        }
+        else if(response.status===201)
+        {
+          swal("Failed!","Applicant number already exist in system","warning");
+        }
+       
       })
+
 
       .catch((error) => {
         console.error("Error creating applicant:", error);
       });
+    setLoader(false);
   };
 
   useEffect(() => {
@@ -390,54 +398,76 @@ const Applicants = () => {
       }
     });
   };
-console.log(rentalsData,'rentalsdata or we can say that 00')
-const filterApplicantsBySearch = () => {
-  let filteredData = rentalsData;
+  console.log(rentalsData, "rentalsdata or we can say that 00");
+  const filterApplicantsBySearch = () => {
+    let filteredData = rentalsData;
 
-  if (searchQuery) {
-    filteredData = filteredData
-      .filter((tenant) => {
-        const isRentalAddressMatch = tenant.rental_adress.toLowerCase().includes(searchQuery.toLowerCase());
-        const isFirstNameMatch = (tenant.tenant_firstName + " " + tenant.tenant_lastName).toLowerCase().includes(searchQuery.toLowerCase());
-        const isEmailMatch = tenant.tenant_email.toLowerCase().includes(searchQuery.toLowerCase());
+    if (searchQuery) {
+      filteredData = filteredData.filter((tenant) => {
+        const isRentalAddressMatch = tenant.rental_adress
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const isFirstNameMatch = (
+          tenant.tenant_firstName +
+          " " +
+          tenant.tenant_lastName
+        )
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const isEmailMatch = tenant.tenant_email
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
         return isRentalAddressMatch || isFirstNameMatch || isEmailMatch;
       });
-  }
+    }
 
-  if (upArrow.length > 0) {
-    upArrow.forEach((sort) => {
-      switch (sort) {
-        case "rental_adress":
-          filteredData.sort((a, b) => a.rental_adress.localeCompare(b.rental_adress));
-          break;
-        case "tenant_lastName":
-          filteredData.sort((a, b) => a.tenant_lastName.localeCompare(b.tenant_lastName));
-          break;
-        case "tenant_firstName":
-          filteredData.sort((a, b) => a.tenant_firstName.localeCompare(b.tenant_firstName));
-          break;
-        case "tenant_mobileNumber":
-          filteredData.sort((a, b) => a.tenant_mobileNumber - b.tenant_mobileNumber);
-          break;
-        case "tenant_email":
-          filteredData.sort((a, b) => a.tenant_email.localeCompare(b.tenant_email));
-          break;
-        case "start_date":
-          filteredData.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
-          break;
-        case "createAt":
-          filteredData.sort((a, b) => new Date(a.createAt) - new Date(b.createAt));
-          break;
-        default:
-          // If an unknown sort option is provided, do nothing
-          break;
-      }
-    });
-  }
+    if (upArrow.length > 0) {
+      upArrow.forEach((sort) => {
+        switch (sort) {
+          case "rental_adress":
+            filteredData.sort((a, b) =>
+              a.rental_adress.localeCompare(b.rental_adress)
+            );
+            break;
+          case "tenant_lastName":
+            filteredData.sort((a, b) =>
+              a.tenant_lastName.localeCompare(b.tenant_lastName)
+            );
+            break;
+          case "tenant_firstName":
+            filteredData.sort((a, b) =>
+              a.tenant_firstName.localeCompare(b.tenant_firstName)
+            );
+            break;
+          case "tenant_mobileNumber":
+            filteredData.sort(
+              (a, b) => a.tenant_mobileNumber - b.tenant_mobileNumber
+            );
+            break;
+          case "tenant_email":
+            filteredData.sort((a, b) =>
+              a.tenant_email.localeCompare(b.tenant_email)
+            );
+            break;
+          case "start_date":
+            filteredData.sort(
+              (a, b) => new Date(a.start_date) - new Date(b.start_date)
+            );
+            break;
+          case "createAt":
+            filteredData.sort(
+              (a, b) => new Date(a.createAt) - new Date(b.createAt)
+            );
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
 
-  return filteredData.slice(startIndex, endIndex);
-};
-
+    return filteredData;
+  };
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterApplicantsBySearch();
@@ -463,7 +493,6 @@ const filterApplicantsBySearch = () => {
     // filterRentalsBySearch();
     getApplicantData();
   }, [upArrow, sortBy]);
-
 
   return (
     <>
@@ -526,8 +555,9 @@ const filterApplicantsBySearch = () => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">FirstName 
-                      {sortBy.includes("tenant_firstName") ? (
+                      <th scope="col">
+                        FirstName
+                        {sortBy.includes("tenant_firstName") ? (
                           upArrow.includes("tenant_firstName") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("tenant_firstName")}
@@ -543,8 +573,9 @@ const filterApplicantsBySearch = () => {
                           />
                         )}
                       </th>
-                      <th scope="col">LastName
-                      {sortBy.includes("tenant_lastName") ? (
+                      <th scope="col">
+                        LastName
+                        {sortBy.includes("tenant_lastName") ? (
                           upArrow.includes("tenant_lastName") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("tenant_lastName")}
@@ -558,13 +589,15 @@ const filterApplicantsBySearch = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("tenant_lastName")}
                           />
-                        )}</th>
+                        )}
+                      </th>
 
                       {/* <th scope="col">Listed</th> */}
                       {/* <th scope="col">Unit</th> */}
                       {/* <th scope="col">Phone</th> */}
-                      <th scope="col">Email
-                      {sortBy.includes("tenant_email") ? (
+                      <th scope="col">
+                        Email
+                        {sortBy.includes("tenant_email") ? (
                           upArrow.includes("tenant_email") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("tenant_email")}
@@ -578,9 +611,11 @@ const filterApplicantsBySearch = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("tenant_email")}
                           />
-                        )}</th>
-                      <th scope="col">Phone Number
-                      {sortBy.includes("tenant_mobileNumber") ? (
+                        )}
+                      </th>
+                      <th scope="col">
+                        Phone Number
+                        {sortBy.includes("tenant_mobileNumber") ? (
                           upArrow.includes("tenant_mobileNumber") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("tenant_mobileNumber")}
@@ -594,9 +629,11 @@ const filterApplicantsBySearch = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("tenant_mobileNumber")}
                           />
-                        )}</th>
-                      <th scope="col">Property
-                      {sortBy.includes("rental_adress") ? (
+                        )}
+                      </th>
+                      <th scope="col">
+                        Property
+                        {sortBy.includes("rental_adress") ? (
                           upArrow.includes("rental_adress") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("rental_adress")}
@@ -610,9 +647,12 @@ const filterApplicantsBySearch = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("rental_adress")}
                           />
-                        )}</th>
-                      <th scope="col">Created At
-                      {sortBy.includes("createAt") ? (
+                        )}
+                      </th>
+                      <th scope="col">Status</th>
+                      <th scope="col">
+                        Created At
+                        {sortBy.includes("createAt") ? (
                           upArrow.includes("createAt") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("createAt")}
@@ -626,8 +666,9 @@ const filterApplicantsBySearch = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("createAt")}
                           />
-                        )}</th>
-                      <th scope="col">Status</th>
+                        )}
+                      </th>
+                      <th scope="col">Updated At</th>
                       <th scope="col">Actions</th>
 
                       {/* <th scope="col">Last Updated</th> */}
@@ -647,12 +688,19 @@ const filterApplicantsBySearch = () => {
                         <td>{applicant.tenant_lastName}</td>
                         <td>{applicant.tenant_email}</td>
                         <td>{applicant.tenant_mobileNumber}</td>
-                        <td>{applicant.rental_adress} {applicant.rental_units ? " - " + applicant.rental_units : null}</td>
-                        <td>{applicant.createAt}</td>
+                        <td>
+                          {applicant.rental_adress}{" "}
+                          {applicant.rental_units
+                            ? " - " + applicant.rental_units
+                            : null}
+                        </td>
+
                         <td>
                           {applicant?.applicant_status[0]?.status ||
                             "Undecided"}
                         </td>
+                        <td>{applicant.createAt}</td>
+                        <td>{applicant.updateAt || " - "}</td>
                         <td>
                           <DeleteIcon
                             onClick={(e) => {
@@ -1110,19 +1158,17 @@ const filterApplicantsBySearch = () => {
                           {propertyData.map((property, index) => (
                             <DropdownItem
                               key={index}
-                              onClick={() =>
-                                handlePropertyTypeSelect(property)
-                              }
+                              onClick={() => handlePropertyTypeSelect(property)}
                             >
                               {property.rental_adress}
                             </DropdownItem>
                           ))}
                         </DropdownMenu>
                         {applicantFormik.errors &&
-                          applicantFormik.errors?.rental_adress &&
-                          applicantFormik.touched &&
-                          applicantFormik.touched?.rental_adress &&
-                          applicantFormik.values.rental_adress === "" ? (
+                        applicantFormik.errors?.rental_adress &&
+                        applicantFormik.touched &&
+                        applicantFormik.touched?.rental_adress &&
+                        applicantFormik.values.rental_adress === "" ? (
                           <div style={{ color: "red" }}>
                             {applicantFormik.errors.rental_adress}
                           </div>
@@ -1130,54 +1176,69 @@ const filterApplicantsBySearch = () => {
                       </Dropdown>
                     </FormGroup>
                   </FormGroup>
-                  {selectedPropertyType && unitData && unitData[0] && unitData[0].rental_units && (
-                    <FormGroup>
-                      <label className="form-control-label" htmlFor="input-unit">
-                        Unit *
-                      </label>
-                      <FormGroup style={{ marginLeft: "15px" }}>
-                        <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
-                          <DropdownToggle caret>
-                            {selectedUnit ? selectedUnit : "Select Unit"}
-                          </DropdownToggle>
-                          <DropdownMenu>
-                            {unitData.length > 0 ? (
-                              unitData.map((unit, index) => (
-                                <DropdownItem
-                                  key={index}
-                                  onClick={() =>
-                                    handleUnitSelect(unit)
-                                  }
-                                >
-                                  {unit.rental_units}
+                  {selectedPropertyType &&
+                    unitData &&
+                    unitData[0] &&
+                    unitData[0].rental_units && (
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-unit"
+                        >
+                          Unit *
+                        </label>
+                        <FormGroup style={{ marginLeft: "15px" }}>
+                          <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
+                            <DropdownToggle caret>
+                              {selectedUnit ? selectedUnit : "Select Unit"}
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              {unitData.length > 0 ? (
+                                unitData.map((unit, index) => (
+                                  <DropdownItem
+                                    key={index}
+                                    onClick={() => handleUnitSelect(unit)}
+                                  >
+                                    {unit.rental_units}
+                                  </DropdownItem>
+                                ))
+                              ) : (
+                                <DropdownItem disabled>
+                                  No units available
                                 </DropdownItem>
-                              ))
-                            ) : (
-                              <DropdownItem disabled>
-                                No units available
-                              </DropdownItem>
-                            )}
-                          </DropdownMenu>
-                          {applicantFormik.errors &&
+                              )}
+                            </DropdownMenu>
+                            {applicantFormik.errors &&
                             applicantFormik.errors?.rental_units &&
                             applicantFormik.touched &&
                             applicantFormik.touched?.rental_units &&
                             applicantFormik.values.rental_units === "" ? (
-                            <div style={{ color: "red" }}>
-                              {applicantFormik.errors.rental_units}
-                            </div>
-                          ) : null}
-                        </Dropdown>
+                              <div style={{ color: "red" }}>
+                                {applicantFormik.errors.rental_units}
+                              </div>
+                            ) : null}
+                          </Dropdown>
+                        </FormGroup>
                       </FormGroup>
-                    </FormGroup>
-                  )}
+                    )}
                 </div>
               )}
             </ModalBody>
             <ModalFooter>
-              <Button color="success" type="submit">
-                Create Applicant
-              </Button>
+              {loader ? (
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  style={{ background: "green", cursor: "not-allowed" }}
+                  disabled
+                >
+                  Loading...
+                </button>
+              ) : (
+                <Button color="success" type="submit">
+                  Create Applicant
+                </Button>
+              )}
               <Button onClick={closeModal}>Cancel</Button>
             </ModalFooter>
           </Form>

@@ -64,6 +64,15 @@ const TenantDashBoard = (props) => {
     }
   }, [navigate,cookies]);
 
+  // React.useEffect(() => {
+  //   if (localStorage.getItem("Token")) {
+  //     const jwt = jwtDecode(localStorage.getItem("Token"));
+  //     setAccessType(jwt.accessType);
+  //   } else {
+  //     navigate("/auth/login");
+  //   }
+  // }, [navigate,localStorage]);
+
   const cardStyle = {
     // background: `url(${require("../assets/img/us3.jpeg").default})`,
     backgroundSize: "cover",

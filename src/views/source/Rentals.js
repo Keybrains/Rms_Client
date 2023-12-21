@@ -235,6 +235,7 @@ const Rentals = () => {
         lastName: rentalOwnerParts[1],
         phoneNumber: rentalOwnerParts[2],
         companyName: rentalOwnerParts[3],
+        companyName: rentalOwnerParts[3],
         primaryEmail: rentalOwnerParts[4],
         homeNumber: rentalOwnerParts[5],
         businessNumber: rentalOwnerParts[6],
@@ -771,11 +772,13 @@ const Rentals = () => {
   };
   // console.log(residentialImage, "residentialImage");
   // console.log(propType, "proptype");
+  const [loader, setLoader] = useState(false);
+
   const handleSubmit = async (values) => {
     // console.log(residentialImage, "residentialImage after submit");
     // console.log(commercialImage, "commercialImage after submit");
     // console.log(file, "values");
-
+    setLoader(true);
     const entriesArray = [];
     if (propType === "Residential") {
       const entriesObject = {
@@ -903,6 +906,7 @@ const Rentals = () => {
     //   }
     //   // Handle the error and display an error message to the user if necessary.
     // }
+    setLoader(false);
   };
 
   const editProperty = async (id) => {
@@ -1034,15 +1038,20 @@ const Rentals = () => {
       navigate("/admin/propertiesTable");
       swal(
         "Success!",
-        id ? "Property Updated Successfully" : "Property Added Successfully!",
+        id && entryIndex
+          ? "Property Updated Successfully"
+          : "Property Added Successfully!",
         "success"
       );
-    } 
-    if(response.status === 201){
-      swal("Failed!",`Property "${rentalsFormik.values.entries[0].rental_adress}" already exists in the system`,"warning")
     }
-    else {
-      alert(response.data.message);
+    if (response.status === 201) {
+      swal(
+        "Failed!",
+        `Property "${rentalsFormik.values.entries[0].rental_adress}" already exists in the system`,
+        "warning"
+      );
+    } else {
+      //alert(response.data.message);
     }
   }
   const addCommercialUnit = () => {
@@ -2613,7 +2622,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor={`input-unit-${residentialIndex}`}
-                                        style={{ paddingTop: "25px" }}
+                                        style={{ paddingTop: "10px" }}
                                       >
                                         Units *
                                       </label>
@@ -2679,7 +2688,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
-                                        style={{ paddingTop: "25px" }}
+                                        style={{ paddingTop: "30px" }}
                                       >
                                         Unit Address *
                                       </label>
@@ -2721,7 +2730,7 @@ const Rentals = () => {
                                       <label
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
-                                        style={{ paddingTop: "25px" }}
+                                        style={{ paddingTop: "30px" }}
                                       >
                                         SQFT
                                       </label>
@@ -3465,7 +3474,16 @@ const Rentals = () => {
                   <br />
                   <br />
 
-                  {id ? (
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : id ? (
                     <button
                       type="submit"
                       className="btn btn-primary"

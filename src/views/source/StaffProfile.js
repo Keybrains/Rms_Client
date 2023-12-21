@@ -31,7 +31,8 @@ const StaffProfile = () => {
     if (cookies.get("token")) {
       const jwt = jwtDecode(cookies.get("token"));
       setAccessType(jwt.accessType);
-    } else {
+    } 
+    else {
       navigate("/auth/login");
     }
   }, [navigate]);
@@ -69,7 +70,7 @@ const StaffProfile = () => {
           <div className="col">
             <Card className="shadow" style={{ backgroundColor: "#FFFEFA" }}>
               <CardHeader className="border-0">
-                <h3 className="mb-0">Personal detail </h3>
+                <h2 className="mb-0" style={{color:'#033E3E'}}>Personal Details</h2>
               </CardHeader>
               <div className="table-responsive" style={{padding:"15px"}}>
               
