@@ -2179,17 +2179,17 @@ const RentRollLeaseing = () => {
         } else {
           if (id === undefined) {
             console.log(tenantObject, "leaseObject");
-            debugger;
+          
             const res = await axios.post(
               `${baseUrl}/tenant/tenant`,
               tenantObject
             );
-            debugger;
+
             const res2 = await axios.post(
               `${baseUrl}/nmipayment/custom-add-subscription`,
               paymentDetails
             );
-            console.log(res2, "response of subscription");
+            console.log(res2, "response of subscription...............");
             if (res.data.statusCode === 200) {
               console.log(res.data.data, "response after adding data");
 
