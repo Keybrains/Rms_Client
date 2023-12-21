@@ -56,13 +56,22 @@ const TenantDashBoard = (props) => {
   const [accessType, setAccessType] = useState(null);
   
   React.useEffect(() => {
-    if (cookies.get("token")) {
+
+    const token = cookies.get('token')
+    console.log(token, "token")
+    setTimeout(() => {
+      
+    if (token) {
       const jwt = jwtDecode(cookies.get("token"));
       setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
+      console.log("token not found")
     }
-  }, [navigate,cookies]);
+
+  }, 500);
+
+  }, [navigate]);
 
   // React.useEffect(() => {
   //   if (localStorage.getItem("Token")) {

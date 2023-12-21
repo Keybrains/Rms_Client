@@ -2504,7 +2504,7 @@ const Leaseing = () => {
                           {display === false ? (
                             <></>
                           ) : (
-                            <div style={{ color: "red" }}>required</div>
+                            <div style={{ color: "red" }}>Required</div>
                           )}
                         </span>
 
@@ -5851,6 +5851,7 @@ const Leaseing = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
+                        tenantsSchema.handleSubmit();
                         if (selectedTenantData.length !== 0) {
                           handleSubmit(entrySchema.values);
                         } else {
