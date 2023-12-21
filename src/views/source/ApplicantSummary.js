@@ -806,10 +806,13 @@ const ApplicantSummary = () => {
 
   const handleChecklistChange = async (event, item) => {
     try {
+      // debugger
+
       const updatedItems = event.target.checked
+
         ? [...checkedItems, item]
         : checkedItems.filter((checkedItem) => checkedItem !== item);
-  
+      console.log(updatedItems, "updatedItems");
       setCheckedItems(updatedItems);
   
       // const storageKey = `applicant_${id}_checkedChecklist`;
@@ -831,7 +834,8 @@ const ApplicantSummary = () => {
       }
   
       const responseData = await response.json();
-      console.log(responseData); // You can handle the response data as needed
+      console.log(responseData);
+      setCheckedItems(responseData.updatedApplicant.applicant_checkedChecklist); // You can handle the response data as needed
   
     } catch (error) {
       console.error(error.message); // Handle the error appropriately
@@ -1107,6 +1111,8 @@ const ApplicantSummary = () => {
 
         if (response.data && response.data.data) {
           setApplicantDatas(response.data.data.applicant);
+          console.log(response.data.data, "response.data.data.applicant");
+          setCheckedItems(response.data.data.applicant_checkedChecklist);
         } else {
           console.error("Invalid data format received from the API");
         }
@@ -1588,6 +1594,8 @@ const ApplicantSummary = () => {
                           </div>
                           <div>
                             <div>
+                            {console.log(checkedItems, "checked")}
+                              
                               <input
                                 type="checkbox"
                                 id="CreditCheck"
