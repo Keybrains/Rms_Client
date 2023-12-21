@@ -37,10 +37,10 @@ const TenantNavbar = (props) => {
   let [loader, setLoader] = React.useState(true);
 
   let cookies = new Cookies();
-  let Logout = () => {
-    cookies.remove("token");
-    cookies.remove("Tenant ID");
-  };
+  // let Logout = () => {
+  //   cookies.remove("token");
+  //   cookies.remove("Tenant ID");
+  // };
   const { id } = useParams();
   //console.log(id);
   const [vendorDetails, setVendorDetails] = useState({});
@@ -109,8 +109,8 @@ const TenantNavbar = (props) => {
   const getRentalData = async (addresses, units) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/notification/tenantnotification/${addresses}/${units}`,
-      );  
+        `${baseUrl}/notification/tenantnotification/${addresses}/${units}`
+      );
       if (Array.isArray(response.data.data)) {
         // Filter the notifications with isTenantread set to false
         const unreadNotifications = response.data.data.filter(
@@ -152,10 +152,10 @@ const TenantNavbar = (props) => {
     fetchNotification();
   }, [rental_adress, rental_units]);
 
-  const fetchNotification = async (addresses,units) => {
+  const fetchNotification = async (addresses, units) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/notification/tenantnotification/${addresses}/${units}`,
+        `${baseUrl}/notification/tenantnotification/${addresses}/${units}`
       );
       if (response.status === 200) {
         const data = response.data.data;
@@ -368,9 +368,12 @@ const TenantNavbar = (props) => {
                 <DropdownItem divider />
                 <DropdownItem
                   //  href="#rms"
-                  to="/auth/login"
+                  // to="/auth/login"
                   onClick={() => {
-                    Logout();
+                    // Logout();
+                    cookies.remove("token");
+                    cookies.remove("Tenant ID");
+                    navigate("/auth/login");
                   }}
                   tag={Link}
                 >

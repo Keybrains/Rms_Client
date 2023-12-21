@@ -1299,7 +1299,7 @@ const RentRollLeaseing = () => {
     if (selectedPropertyType && selectedUnit) {
       let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
-      let inputStartDate = entrySchema.values.start_date || ""
+      let inputStartDate = entrySchema.values.start_date || "";
       console.log(inputStartDate, "inputStartDate");
 
       let isUnavailable = false;
@@ -1316,7 +1316,10 @@ const RentRollLeaseing = () => {
 
           if (
             (sDate.getTime() < inputDate.getTime() &&
-            inputDate.getTime() < eDate.getTime()) || (new Date(inputStartDate) && sDate.getTime()>=new Date(inputStartDate).getTime() && eDate.getTime()<=inputDate.getTime())
+              inputDate.getTime() < eDate.getTime()) ||
+            (new Date(inputStartDate) &&
+              sDate.getTime() >= new Date(inputStartDate).getTime() &&
+              eDate.getTime() <= inputDate.getTime())
           ) {
             isUnavailable = true;
             overlappingLease = entry.entries;
@@ -1833,7 +1836,6 @@ const RentRollLeaseing = () => {
 
           setRecurringData(matchedLease.recurring_charges);
           setOneTimeData(matchedLease.one_time_charges);
-          
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -1937,7 +1939,6 @@ const RentRollLeaseing = () => {
           rent_paid: entrySchema.values.rent_paid,
           isMovedin: true,
           propertyOnRent: entrySchema.values.propertyOnRent,
-        
 
           //security deposite
           Due_date: entrySchema.values.Due_date,
@@ -2109,18 +2110,19 @@ const RentRollLeaseing = () => {
               `${baseUrl}/tenant/tenant`,
               tenantObject
             );
-           
-            const res2 = await axios.post(
-              `${baseUrl}/nmipayment/custom-add-subscription`,
-              paymentDetails
-            );
-            console.log(res2, "response of subscription");
+
+            if (selectPaymentMethodDropdawn === "AutoPayment") {
+              const res2 = await axios.post(
+                `${baseUrl}/nmipayment/custom-add-subscription`,
+                paymentDetails
+              );
+              console.log(res2, "response of subscription");
+            }
             if (res.data.statusCode === 200) {
               console.log(res.data.data, "response after adding data");
               updateApplicants();
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
-
 
               if (entrySchema.values.unit_id) {
                 await postCharge(
@@ -6385,7 +6387,6 @@ const RentRollLeaseing = () => {
                                     : CCVEX
                                 }
                                 placeholder="MM/YYYY"
-
                               />
                             </FormGroup>
                           </Col>
