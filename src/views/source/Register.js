@@ -142,7 +142,7 @@ const Register = () => {
                     >
                       <span className="text-muted">
                         I agree with the{" "}
-                        <a//  href="#rms" onClick={(e) => e.preventDefault()}>
+                        <a  href="#rms" onClick={(e) => e.preventDefault()}>
                           Privacy Policy
                         </a>
                       </span>

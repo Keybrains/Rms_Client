@@ -1994,6 +1994,7 @@ const RentRollLeaseing = () => {
       plan_amount: entrySchema.values.amount,
       dayFrequency: selectedDayFrequency,
       ccnumber: CCVNU || "",
+      email: tenantsSchema.values.tenant_email,
       ccexp: CCVEX ? formatDateForInput(CCVEX) : "",
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
@@ -2021,87 +2022,93 @@ const RentRollLeaseing = () => {
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
 
-          const res = await axios.put(
-            `${baseUrl}/tenant/tenant/${tenantId}`,
-            putObject
+          const res2 = await axios.post(
+            `${baseUrl}/nmipayment/custom-add-subscription`,
+            paymentDetails
           );
-          if (res.data.statusCode === 200) {
-            updateApplicants();
+          if (res2.status === 200) {
+            const res = await axios.put(
+              `${baseUrl}/tenant/tenant/${tenantId}`,
+              putObject
+            );
+            if (res.data.statusCode === 200) {
+              updateApplicants();
 
-            console.log(res.data.data, "allTenants22");
-            const delay = (ms) =>
-              new Promise((resolve) => setTimeout(resolve, ms));
+              console.log(res.data.data, "allTenants22");
+              const delay = (ms) =>
+                new Promise((resolve) => setTimeout(resolve, ms));
 
-            // debugger;
-            if (entrySchema.values.unit_id) {
-              await postCharge(
-                entrySchema.values.rental_units,
-                entrySchema.values.unit_id,
-                tenantId
-              );
+              // debugger;
+              if (entrySchema.values.unit_id) {
+                await postCharge(
+                  entrySchema.values.rental_units,
+                  entrySchema.values.unit_id,
+                  tenantId
+                );
 
-              await postDeposit(
-                entrySchema.values.rental_units,
-                entrySchema.values.unit_id,
-                tenantId,
-                entrySchema.values.Security_amount
-              );
-
-              // await delay(1000); // Delay for 3 seconds
-
-              for (const item of recurringData) {
-                await postRecOneCharge(
+                await postDeposit(
                   entrySchema.values.rental_units,
                   entrySchema.values.unit_id,
                   tenantId,
-                  item,
-                  "Recurring"
+                  entrySchema.values.Security_amount
                 );
-                await delay(1000); // Delay for 3 seconds
-              }
 
-              for (const item of oneTimeData) {
-                await postRecOneCharge(
-                  entrySchema.values.rental_units,
-                  entrySchema.values.unit_id,
+                // await delay(1000); // Delay for 3 seconds
+
+                for (const item of recurringData) {
+                  await postRecOneCharge(
+                    entrySchema.values.rental_units,
+                    entrySchema.values.unit_id,
+                    tenantId,
+                    item,
+                    "Recurring"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
+
+                for (const item of oneTimeData) {
+                  await postRecOneCharge(
+                    entrySchema.values.rental_units,
+                    entrySchema.values.unit_id,
+                    tenantId,
+                    item,
+                    "OneTime"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
+              } else {
+                await postCharge("", "", tenantId);
+                await postDeposit(
+                  "",
+                  "",
                   tenantId,
-                  item,
-                  "OneTime"
+                  entrySchema.values.Security_amount
                 );
-                await delay(1000); // Delay for 3 seconds
+
+                // await postDeposit(
+                //   "",
+                //   "",
+                //   tenantId,
+                //   entrySchema.values.Security_amount
+                // );
+
+                for (const item of recurringData) {
+                  await postRecOneCharge("", "", tenantId, item, "Recurring");
+                  await delay(1000); // Delay for 3 seconds
+                }
+
+                for (const item of oneTimeData) {
+                  await postRecOneCharge("", "", tenantId, item, "OneTime");
+                  await delay(1000); // Delay for 3 seconds
+                }
               }
+              swal("", res.data.message, "success");
+              navigate("/admin/TenantsTable");
             } else {
-              await postCharge("", "", tenantId);
-              await postDeposit(
-                "",
-                "",
-                tenantId,
-                entrySchema.values.Security_amount
-              );
-
-              // await postDeposit(
-              //   "",
-              //   "",
-              //   tenantId,
-              //   entrySchema.values.Security_amount
-              // );
-
-              for (const item of recurringData) {
-                await postRecOneCharge("", "", tenantId, item, "Recurring");
-                await delay(1000); // Delay for 3 seconds
-              }
-
-              for (const item of oneTimeData) {
-                await postRecOneCharge("", "", tenantId, item, "OneTime");
-                await delay(1000); // Delay for 3 seconds
-              }
+              swal("", res.data.message, "error");
             }
-            swal("", res.data.message, "success");
-            navigate("/admin/TenantsTable");
-          } else {
-            swal("", res.data.message, "error");
+            handleResponse(res);
           }
-          handleResponse(res);
         } else {
           if (id === undefined) {
             console.log(tenantObject, "leaseObject");
@@ -2215,7 +2222,7 @@ const RentRollLeaseing = () => {
     }
     setLoader(false);
   };
-  console.log(entrySchema.values, "entry cahsdkajl;");
+  // console.log(entrySchema.values, "entry cahsdkajl;");
 
   const updateApplicants = async () => {
     if (applicantData) {
