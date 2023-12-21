@@ -2131,77 +2131,76 @@ const RentRollLeaseing = () => {
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
 
-                if (entrySchema.values.unit_id) {
-                  await postCharge(
-                    res.data.data.entries[0].rental_units,
-                    res.data.data.entries[0].unit_id,
-                    res.data.data._id
-                  );
-                  await postDeposit(
+              if (entrySchema.values.unit_id) {
+                await postCharge(
+                  res.data.data.entries[0].rental_units,
+                  res.data.data.entries[0].unit_id,
+                  res.data.data._id
+                );
+                await postDeposit(
+                  res.data.data.entries[0].rental_units,
+                  res.data.data.entries[0].unit_id,
+                  res.data.data._id,
+                  res.data.data.entries[0].Security_amount
+                );
+
+                for (const item of recurringData) {
+                  await postRecOneCharge(
                     res.data.data.entries[0].rental_units,
                     res.data.data.entries[0].unit_id,
                     res.data.data._id,
-                    res.data.data.entries[0].Security_amount
+                    item,
+                    "Recurring"
                   );
-
-                  for (const item of recurringData) {
-                    await postRecOneCharge(
-                      res.data.data.entries[0].rental_units,
-                      res.data.data.entries[0].unit_id,
-                      res.data.data._id,
-                      item,
-                      "Recurring"
-                    );
-                    await delay(1000); // Delay for 3 seconds
-                  }
-
-                  for (const item of oneTimeData) {
-                    await postRecOneCharge(
-                      res.data.data.entries[0].rental_units,
-                      res.data.data.entries[0].unit_id,
-                      res.data.data._id,
-                      item,
-                      "OneTime"
-                    );
-                    await delay(1000); // Delay for 3 seconds
-                  }
-                } else {
-                  await postCharge("", "", res.data.data._id);
-                  await postDeposit(
-                    "",
-                    "",
-                    res.data.data._id,
-                    res.data.data.entries[0].Security_amount
-                  );
-                  for (const item of recurringData) {
-                    await postRecOneCharge(
-                      "",
-                      "",
-                      res.data.data._id,
-                      item,
-                      "Recurring"
-                    );
-                    await delay(1000); // Delay for 3 seconds
-                  }
-
-                  for (const item of oneTimeData) {
-                    await postRecOneCharge(
-                      "",
-                      "",
-                      res.data.data._id,
-                      item,
-                      "OneTime"
-                    );
-                    await delay(1000); // Delay for 3 seconds
-                  }
+                  await delay(1000); // Delay for 3 seconds
                 }
-                swal("", res.data.message, "success");
-                navigate("/admin/TenantsTable");
+
+                for (const item of oneTimeData) {
+                  await postRecOneCharge(
+                    res.data.data.entries[0].rental_units,
+                    res.data.data.entries[0].unit_id,
+                    res.data.data._id,
+                    item,
+                    "OneTime"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
               } else {
-                swal("", res.data.message, "error");
+                await postCharge("", "", res.data.data._id);
+                await postDeposit(
+                  "",
+                  "",
+                  res.data.data._id,
+                  res.data.data.entries[0].Security_amount
+                );
+                for (const item of recurringData) {
+                  await postRecOneCharge(
+                    "",
+                    "",
+                    res.data.data._id,
+                    item,
+                    "Recurring"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
+
+                for (const item of oneTimeData) {
+                  await postRecOneCharge(
+                    "",
+                    "",
+                    res.data.data._id,
+                    item,
+                    "OneTime"
+                  );
+                  await delay(1000); // Delay for 3 seconds
+                }
               }
-              handleResponse(res);
+              swal("", res.data.message, "success");
+              navigate("/admin/TenantsTable");
+            } else {
+              swal("", res.data.message, "error");
             }
+            handleResponse(res);
           } else {
           }
         }
