@@ -2113,21 +2113,23 @@ const RentRollLeaseing = () => {
           if (id === undefined) {
             console.log(tenantObject, "leaseObject");
 
-            const res2 = await axios.post(
-              `${baseUrl}/nmipayment/custom-add-subscription`,
-              paymentDetails
+            const res = await axios.post(
+              `${baseUrl}/tenant/tenant`,
+              tenantObject
             );
-            if (res2.status === 200) {
-              const res = await axios.post(
-                `${baseUrl}/tenant/tenant`,
-                tenantObject
+
+            if (selectPaymentMethodDropdawn === "AutoPayment") {
+              const res2 = await axios.post(
+                `${baseUrl}/nmipayment/custom-add-subscription`,
+                paymentDetails
               );
-              console.log(res2, "response of subscription...............");
-              if (res.data.statusCode === 200) {
-                console.log(res.data.data, "response after adding data");
-                updateApplicants();
-                const delay = (ms) =>
-                  new Promise((resolve) => setTimeout(resolve, ms));
+              console.log(res2, "response of subscription");
+            }
+            if (res.data.statusCode === 200) {
+              console.log(res.data.data, "response after adding data");
+              updateApplicants();
+              const delay = (ms) =>
+                new Promise((resolve) => setTimeout(resolve, ms));
 
                 if (entrySchema.values.unit_id) {
                   await postCharge(

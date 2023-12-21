@@ -18,6 +18,8 @@ import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const TenantProperty = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -28,6 +30,11 @@ const TenantProperty = () => {
   const [propertyError, setPropertyError] = useState(null);
   const [tenantDetails, setTenantDetails] = useState({});
   const { id } = useParams();
+  const [upArrow, setUpArrow] = React.useState([]);
+  const [sortBy, setSortBy] = useState([]);
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  
   // console.log(id, tenantDetails);
 
   let cookies = new Cookies();
@@ -108,6 +115,74 @@ const TenantProperty = () => {
     // window.location.href = tenantsDetailsURL;
     // console.log("Rental Address", rental_adress);
   }
+
+  
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterTenantsBySearch();
+    const paginatedData = filteredData;
+    return paginatedData;
+  };
+
+  const filterTenantsBySearch = () => {
+    let filteredData = [...propertyDetails]; // Create a copy of tentalsData to avoid mutating the original array
+  
+    if (searchQuery) {
+      const lowerCaseSearchQuery = searchQuery.toLowerCase();
+      filteredData = filteredData.filter((tenant) => {
+        // const name = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
+  
+        return (
+          tenant.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.start_date.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.end_date.toLowerCase().includes(lowerCaseSearchQuery)
+        );
+      });
+    }
+  
+    if (upArrow.length > 0) {
+      const sortingArrows = upArrow;
+      sortingArrows.forEach((sort) => {
+        switch (sort) {
+          case "rental_adress":
+            filteredData.sort((a, b) => a.rental_adress.localeCompare(b.rental_adress));
+            break;
+          case "start_date":
+            filteredData.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+            break;
+          case "end_date":
+            filteredData.sort((a, b) => new Date(a.end_date) - new Date(b.end_date));
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
+  
+    return filteredData;
+  };
+
+  const sortData = (value) => {
+    if (!sortBy.includes(value)) {
+      setSortBy([...sortBy, value]);
+      setUpArrow([...upArrow, value]);
+      filterTenantsBySearchAndPage();
+    } else {
+      setSortBy(sortBy.filter((sort) => sort !== value));
+      setUpArrow(upArrow.filter((sort) => sort !== value));
+      filterTenantsBySearchAndPage();
+    }
+    //console.log(value);
+    // setOnClickUpArrow(!onClickUpArrow);
+  };
+
+  React.useEffect(() => {
+
+    // setLoader(false);
+    // filterRentalsBySearch();
+    getTenantData();
+  }, [upArrow, sortBy]);
+
   return (
     <>
       <TenantsHeader />
@@ -125,6 +200,24 @@ const TenantProperty = () => {
             <Card className="shadow">
               <CardHeader className="border-0">
                 {/* <h1 className="mb-0">Property</h1> */}
+                <Row>
+                    <Col xs="12" sm="6">
+                      <FormGroup className="">
+                        <Input
+                          fullWidth
+                          type="text"
+                          placeholder="Search"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          style={{
+                            width: "100%",
+                            maxWidth: "200px",
+                            minWidth: "200px",
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
               </CardHeader>
               {!loader || rental_adress.length > 0 ? (
                 <div className="table-responsive">
@@ -141,13 +234,64 @@ const TenantProperty = () => {
                     >
                       <thead className="thead-light">
                         <tr>
-                          <th>Rental Address</th>
-                          <th>Start date</th>
-                          <th>End Date</th>
+                          <th>Rental Address
+                          {sortBy.includes("rental_adress") ? (
+                          upArrow.includes("rental_adress") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rental_adress")}
+                          />
+                        )}
+
+                          </th>
+                          <th>Start date
+
+                          {sortBy.includes("start_date") ? (
+                          upArrow.includes("start_date") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("start_date")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("start_date")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("start_date")}
+                          />
+                        )}
+                          </th>
+                          <th>End Date
+
+                          {sortBy.includes("end_date") ? (
+                          upArrow.includes("end_date") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("end_date")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("end_date")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("end_date")}
+                          />
+                        )}
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
-                        {propertyDetails.map((address, index) => (
+                        {filterTenantsBySearchAndPage().map((address, index) => (
                           <>
                             <tr
                               key={index}

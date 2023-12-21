@@ -30,6 +30,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
+import { OpenImageDialog } from "components/OpenImageDialog";
 
 const AddWorkorder = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -102,6 +103,7 @@ const AddWorkorder = () => {
   const [selectedPriority, setSelectedPriority] = useState("");
   const [selectedSub, setSelectedSub] = useState("");
   const [allVendors, setAllVendors] = useState([]);
+  const [workOrderImage, setWorkOrderImage] = useState([])
 
   const fetchUnitsByProperty = async (propertyType) => {
     try {
@@ -200,6 +202,7 @@ const AddWorkorder = () => {
   const handleCloseButtonClick = () => {
     navigate("../Workorder");
   };
+ 
 
   const handleAddRow = () => {
     const newEntry = {
@@ -254,6 +257,9 @@ const AddWorkorder = () => {
   const [workOrderData, setWorkOrderData] = useState(null);
   const [vid, setVid] = useState("");
   const [entriesID, setentriesID] = useState("");
+  const [open, setOpen] = React.useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -264,6 +270,7 @@ const AddWorkorder = () => {
           );
 
           const vendorData = response.data.data;
+          console.log(vendorData,'vendorData');
           setWorkOrderData(vendorData);
 
           const formattedDueDate = vendorData.due_date
@@ -293,6 +300,7 @@ const AddWorkorder = () => {
           setSelectedStatus(vendorData.status || "Select");
           setSelectedPriority(vendorData.priority || "Select");
           setSelectedAccount(vendorData.account_type || "Select");
+          setWorkOrderImage(vendorData.workOrderImage || []);
 
           const entriesData = vendorData.entries || []; // Make sure entries is an array
           console.log(vendorData.work_subject, "vendorData");
@@ -342,6 +350,7 @@ const AddWorkorder = () => {
       values["account_type"] = selectedAccount;
       values["final_total_amount"] = final_total_amount;
       values["rental_units"] = selectedUnit;
+      values["workOrderImage"] = workOrderImage;
       const entries = WorkFormik.values.entries.map((entry) => ({
         part_qty: entry.part_qty,
         account_type: entry.account_type,
@@ -366,6 +375,7 @@ const AddWorkorder = () => {
 
         // Check if the work order was created successfully
         if (workOrderRes.status === 200) {
+          console.log(workOrderRes, "workOrderRes.data");
           // console.log(workOrderRes.data);
           // Use the work order data from the response to create the notification
           const notificationRes = await axios.post(
@@ -431,6 +441,7 @@ const AddWorkorder = () => {
       due_date: "",
       priority: "",
       final_total_amount: "",
+      workOrderImage:[],
 
       entries: [
         {
@@ -457,6 +468,20 @@ const AddWorkorder = () => {
       // console.log(values, "values");
     },
   });
+  const clearSelectedPhoto = (image) => {
+
+      const filteredImage = workOrderImage.filter((item) => {
+        return item !== image;
+      });
+      // console.log(filteredImage, "filteredImage");
+      // setResidentialImage(filteredImage);
+      setWorkOrderImage([
+        ...filteredImage,
+      ]);
+
+      WorkFormik.setFieldValue("workOrderImage", filteredImage);
+   
+  };
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
@@ -495,6 +520,57 @@ const AddWorkorder = () => {
         console.error("Network error:", error);
       });
   }, []);
+  const fileData = async (file, name, index) => {
+    //setImgLoader(true);
+    const allData = [];
+    const axiosRequests = [];
+    console.log(file,'file after adding')
+
+    for (let i = 0; i < file.length; i++) {
+      // setImgLoader(true);
+      const dataArray = new FormData();
+      dataArray.append("b_video", file[i]);
+      let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
+
+      // Push the Axios request promises into an array
+      axiosRequests.push(
+        axios
+          .post(url, dataArray, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            // setImgLoader(false);
+            const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
+            console.log(imagePath, "imagePath");
+            allData.push(imagePath);
+          })
+          .catch((err) => {
+            // setImgLoader(false);
+            console.log("Error uploading image:", err);
+          })
+      );
+    }
+    console.log(allData,'allData')
+
+    // Wait for all Axios requests to complete before logging the data
+    await Promise.all(axiosRequests);
+     
+      if (workOrderImage && workOrderImage.length>0) {
+        setWorkOrderImage([
+          ...workOrderImage,
+          ...allData,
+        ]);
+      } else {
+        setWorkOrderImage([...allData]);
+      }
+    
+    // console.log(allData, "allData");
+    // console.log(residentialImage, "residentialImage");
+    // console.log(commercialImage, "commercialImage");
+  };
+  console.log(workOrderImage, "workOrderImage");
 
   const handleQuantityChange = (e, index) => {
     const updatedEntries = [...WorkFormik.values.entries];
@@ -1132,6 +1208,170 @@ const AddWorkorder = () => {
                         </FormGroup>
                       </Col>
                     </Row>
+                    <Row>
+                      <Col >
+                      <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                        }}
+                                      >
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-unitadd"
+                                        >
+                                          Photo
+                                        </label>
+                                        <span
+                                          // onClick={workOrderDialog}
+                                          style={{
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontFamily: "monospace",
+                                            color: "blue",
+                                          }}
+                                        >
+                                          {" "}
+                                          <br />
+                                          <input
+                                            type="file"
+                                            className="form-control-file d-none"
+                                            accept="image/*"
+                                            multiple
+                                            id={`workOrderImage`}
+                                            name={`workOrderImage`}
+                                            onChange={(e) => {
+                                              const file = [...e.target.files];
+                                              fileData(
+                                                file,
+                                                "propertyres_image",
+                      
+                                              );
+
+                                              if (file.length > 0) {
+                                                const allImages = file.map(
+                                                  (file) => {
+                                                    return URL.createObjectURL(
+                                                      file
+                                                    );
+                                                  }
+                                                );
+                                                // console.log(
+                                                //   residentialIndex,
+                                                //   "indexxxxxx"
+                                                // );
+                                                if (
+                                                  workOrderImage && workOrderImage.length>0
+                                                ) {
+                                                  setWorkOrderImage([
+                                                    ...workOrderImage, ...allImages,
+                                                    ]);
+                                                    WorkFormik.setFieldValue(
+                                                      `workOrderImage`,
+                                                      [...WorkFormik.values.workOrderImage,
+                                                      ...allImages]
+                                                    );
+                                                } else {
+                                                  setWorkOrderImage([
+                                                    ...allImages,
+                                                  ]);
+                                                  WorkFormik.setFieldValue(
+                                                    `workOrderImage`,
+                                                    [...allImages]
+                                                  )
+                                                }
+                                              } else {
+                                                setWorkOrderImage([
+                                                  ...workOrderImage
+                                                ]);
+                                                WorkFormik.setFieldValue(
+                                                  `workOrderImage`,
+                                                 [ ...WorkFormik.values.workOrderImage]
+                                                )
+                                                // )
+                                              }
+                                            }}
+                                          />
+                                          
+                                          <label
+                                            htmlFor={`workOrderImage`}
+                                          >
+                                            <b style={{ fontSize: "20px" }}>
+                                              +
+                                            </b>{" "}
+                                            Add
+                                          </label>
+                                          {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                                        </span>
+                                      </FormGroup>
+                      </Col>
+                    </Row>
+                    <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexWrap: "wrap",
+                                          paddingLeft: "10px",
+                                        }}
+                                      >
+                                        <div
+                                          className="mt-3 d-flex"
+                                          style={{
+                                            justifyContent: "center",
+                                            flexWrap: "wrap",
+                                          }}
+                                        >
+                                          {workOrderImage.map((image, index) => (
+                                              <div
+                                                key={index}
+                                                style={{
+                                                  position: "relative",
+                                                  width: "100px",
+                                                  height: "100px",
+                                                  margin: "10px",
+                                                  display: "flex",
+                                                  flexDirection: "column",
+                                                }}
+                                              >
+                                                <img
+                                                  src={image}
+                                                  alt=""
+                                                  style={{
+                                                    width: "100px",
+                                                    height: "100px",
+                                                    maxHeight: "100%",
+                                                    maxWidth: "100%",
+                                                    borderRadius: "10px",
+                                                  }}
+                                                  onClick={() => {
+                                                    setSelectedImage(image);
+                                                    setOpen(true);
+                                                  }}
+                                                />
+                                                <ClearIcon
+                                                  style={{
+                                                    cursor: "pointer",
+                                                    alignSelf: "flex-start",
+                                                    position: "absolute",
+                                                    top: "-12px",
+                                                    right: "-12px",
+                                                  }}
+                                                  onClick={() =>
+                                                    clearSelectedPhoto(
+                                                      // residentialIndex,
+                                                      image,
+                                                    )
+                                                  }
+                                                />
+                                            
+                                              </div>
+                                            ))}
+                                          <OpenImageDialog 
+                                            open={open}
+                                            setOpen={setOpen}
+                                            selectedImage={selectedImage}
+                                          />
+                                        </div>
+                                      </FormGroup>
                     <br />
                   </div>
 
