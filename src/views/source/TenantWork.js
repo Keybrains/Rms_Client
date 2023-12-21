@@ -33,6 +33,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Link } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const TenantWork = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -61,6 +63,8 @@ const TenantWork = () => {
   const [tenantDetails, setTenantDetails] = useState({});
   const [rental_adress, setRentalAddress] = useState("");
   const [rentalAddress, setRentalAddresses] = useState([]);
+  const [upArrow, setUpArrow] = useState([]);
+  const [sortBy, setSortBy] = useState([]);
   //console.log(rental_adress);
   const { id } = useParams();
   //console.log(id, tenantDetails);
@@ -182,21 +186,44 @@ const TenantWork = () => {
   };
 
   const filterRentalsBySearch = () => {
-    if (!searchQuery) {
-      return workData;
+    let filteredData = [...workData]; // Create a copy of workData to avoid mutating the original array
+  
+    if (searchQuery) {
+      const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
+      filteredData = filteredData.filter((work) => {
+        return (
+          (work.rental_adress && work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.work_subject && work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.work_category && work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.staffmember_name && work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery))
+        );
+      });
     }
-
-    return workData.filter((rental) => {
-      const lowerCaseQuery = searchQuery.toLowerCase();
-      return (
-        rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
-        rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
-        rental.status.toLowerCase().includes(lowerCaseQuery) ||
-        rental.rental_adress.toLowerCase().includes(lowerCaseQuery) ||
-        rental.staffmember_name.toLowerCase().includes(lowerCaseQuery) ||
-        rental.priority.toLowerCase().includes(lowerCaseQuery)
-      );
-    });
+  
+    if (upArrow.length > 0) {
+      const sortingArrows = upArrow;
+      sortingArrows.forEach((value) => {
+        switch (value) {
+          case "rental_adress":
+            filteredData.sort((a, b) => a.rental_adress.localeCompare(b.rental_adress));
+            break;
+          case "work_subject":
+            filteredData.sort((a, b) => a.work_subject.localeCompare(b.work_subject));
+            break;
+          case "work_category":
+            filteredData.sort((a, b) => a.work_category.localeCompare(b.work_category));
+            break;
+          case "staffmember_name":
+            filteredData.sort((a, b) => a.staffmember_name.localeCompare(b.staffmember_name));
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
+  
+    return filteredData;
   };
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
@@ -290,6 +317,26 @@ const TenantWork = () => {
     navigate(`/tenant/taddwork/?id=${id}`);
     console.log(id, "workorder_id");
   };
+
+  const sortData = (value) => {
+    if (!sortBy.includes(value)) {
+      setSortBy([...sortBy, value]);
+      setUpArrow([...upArrow, value]);
+      filterTenantsBySearchAndPage();
+    } else {
+      setSortBy(sortBy.filter((sort) => sort !== value));
+      setUpArrow(upArrow.filter((sort) => sort !== value));
+      filterTenantsBySearchAndPage();
+    }
+    //console.log(value);
+    // setOnClickUpArrow(!onClickUpArrow);
+  };
+
+  React.useEffect(() => {
+    // setLoader(false);
+    // filterRentalsBySearch();
+    getRentalData();
+  }, [upArrow, sortBy]);
   return (
     <>
       <TenantsHeader />
@@ -352,12 +399,80 @@ const TenantWork = () => {
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
+                <thead className="thead-light">
                     <tr>
-                      <th scope="col">Work Order</th>
-                      <th scope="col">Property</th>
-                      <th scope="col">Category</th>
-                      <th scope="col">Assigned</th>
+                      <th scope="col">
+                        Work Order
+                        {sortBy.includes("work_subject") ? (
+                          upArrow.includes("work_subject") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("work_subject")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("work_subject")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("work_subject")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Property
+                        {sortBy.includes("rental_adress") ? (
+                          upArrow.includes("rental_adress") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("rental_adress")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Category
+                        {sortBy.includes("work_category") ? (
+                          upArrow.includes("work_category") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("work_category")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("work_category")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("work_category")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Assigned
+                        {sortBy.includes("staffmember_name") ? (
+                          upArrow.includes("staffmember_name") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("staffmember_name")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("staffmember_name")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("staffmember_name")}
+                          />
+                        )}
+                      </th>
                       <th scope="col">Status</th>
                       <th scope="col">Created At</th>
                       <th scope="col">Updated At</th>

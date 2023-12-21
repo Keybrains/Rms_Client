@@ -83,7 +83,8 @@ const PropDetails = () => {
   const [propType, setPropType] = useState("");
   const [selectedProp, setSelectedProp] = useState("");
   const [balance, setBalance] = useState("");
-
+  
+  const[multiUnit,setMultiUnit] = useState(null);
   const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
   const [unitImage, setUnitImage] = useState([]);
 
@@ -115,7 +116,7 @@ const fileData = async (file, name, index) => {
         })
         .catch((err) => {
           //setImgLoader(false);
-          // console.log("Error uploading image:", err);
+          console.log("Error uploading image:", err);
         })
     );
   }
@@ -214,6 +215,7 @@ const clearSelectedPhoto = (index, image, name) => {
       const matchedProperty = response.data.data.entries.find(
         (property) => property._id === entryIndex
       );
+
       setMatchedProperty(matchedProperty);
       setRentAdd(matchedProperty.rental_adress);
       console.log(matchedProperty, `matched property`);
@@ -228,15 +230,25 @@ const clearSelectedPhoto = (index, image, name) => {
       );
       console.log(resp, "resp");
 
+      
+      // console.log('setSelectedProp',selectedProp)
+
+      
       const selectedType = Object.keys(resp.data.data).find((item) => {
         return resp.data.data[item].some(
-          (data) => data.propertysub_type === matchedProperty.property_type,
-          setSelectedProp
+          (data) => data.propertysub_type === matchedProperty.property_type
+          // setSelectedProp
         );
       });
+      console.log(selectedType, "selectedType");
       setSelectedProp(matchedProperty.property_type)
       console.log(resp.matchedProperty, "mansi")
       setPropType(selectedType);
+      const isMultiUnits = resp.data.data[selectedType].filter((item)=>{
+        return item.propertysub_type === matchedProperty.property_type
+      });
+      console.log(isMultiUnits, "isMultiUnit")
+      setMultiUnit(isMultiUnits[0].ismultiunit)
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
@@ -2529,6 +2541,7 @@ const clearSelectedPhoto = (index, image, name) => {
                             marginBottom: "10px",
                           }}
                         >
+                          {console.log(multiUnit, "multiiiiiiiS ")}
                           <Button
                             className="btn-icon btn-2"
                             color="primary"
@@ -2536,7 +2549,7 @@ const clearSelectedPhoto = (index, image, name) => {
                             style={{
                               background: "white",
                               color: "blue",
-                              //display: selectedProp.ismultiunit ? "block" : "none"
+                              display: multiUnit ? "block" : "none"
                             }}
                             size="l"
                             onClick={() => {
@@ -2547,7 +2560,7 @@ const clearSelectedPhoto = (index, image, name) => {
                                 zip: propertyDetails.entries[0].rental_postcode,
                                 country: propertyDetails.entries[0].rental_country,
                               });
-
+                              // console.log(propertyUnit,'pppppprrrrrroooooooo')
                               // setAddUnitDialogOpen(true);
                               setAddUnitDialogOpen(true)
                             }}
