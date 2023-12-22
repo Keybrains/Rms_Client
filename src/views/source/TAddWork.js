@@ -83,7 +83,6 @@ const TAddWork = () => {
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
       const units = await fetchUnitsByProperty(property);
-      console.log(units, "units"); // Check the received units in the console
       setUnitData(units); // Set the received units in the unitData state
     } catch (error) {
       console.error("Error handling selected property:", error);
@@ -93,7 +92,6 @@ const TAddWork = () => {
   const handleUnitSelect = (selectedUnit, unitId) => {
     setSelectedUnit(selectedUnit);
     WorkFormik.values.rental_units = selectedUnit;
-    console.log(selectedUnit, "selectedUnit");
     WorkFormik.setFieldValue("unit_id", unitId);
 
     // entrySchema.values.unit_id = unitId;
@@ -151,7 +149,6 @@ const TAddWork = () => {
 
   const fetchUnitsByProperty = async (propertyType) => {
     try {
-      console.log(propertyType, "propertyType");
       const response = await fetch(
         `${baseUrl}/propertyunit/rentals_property/${propertyType}`
       );
@@ -471,7 +468,6 @@ const TAddWork = () => {
                                           onClick={() => handlePropertyTypeSelect(property)}
                                         >
                                           {property}
-                                          {console.log(property, "yash")}
                                         </DropdownItem>
                                       ))
                                     }
