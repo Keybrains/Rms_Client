@@ -206,11 +206,11 @@ const Applicants = () => {
   let cookies = new Cookies();
   // Check Authe(token)
   // let chackAuth = async () => {
-  //   if (cookies.get("token")) {
+  //   if (localStorage.getItem("token")) {
   //     let authConfig = {
   //       headers: {
-  //         Authorization: `Bearer ${cookies.get("token")}`,
-  //         token: cookies.get("token"),
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //         token: localStorage.getItem("token"),
   //       },
   //     };
   //     // auth post method
@@ -220,7 +220,7 @@ const Applicants = () => {
   //       authConfig
   //     );
   //     if (res.data.statusCode !== 200) {
-  //       // cookies.remove("token");
+  //       // localStorage.removeItem("token");
   //       navigate("/auth/login");
   //     }
   //   } else {
@@ -230,13 +230,13 @@ const Applicants = () => {
 
   // React.useEffect(() => {
   //   chackAuth();
-  // }, [cookies.get("token")]);
+  // }, [localStorage.getItem("token")]);
 
   const [accessType, setAccessType] = useState(null);
   const [manager, setManager] = useState("");
   React.useEffect(() => {
-    if (cookies.get("token")) {
-      const jwt = jwtDecode(cookies.get("token"));
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
       setManager(jwt.userName);
     } else {

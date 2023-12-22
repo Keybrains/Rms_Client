@@ -191,7 +191,7 @@ const Rentals = () => {
       };
       setSelectedRentalOwnerData(newrentalOwnerDetails);
       if (!id) {
-        swal("Success!", "New rentalOwner added successfully", "success");
+        swal("Success!", "Rental Owner Added Successfully", "success");
       }
     } else {
       console.log(selectedrentalOwner, "selectedrentalOwner");
@@ -369,6 +369,46 @@ const Rentals = () => {
       handleClose();
     },
   });
+  const residentialSchema = yup.object({
+    rental_sqft: yup.string().required('Required'),
+    // Add more validations as needed for residential entries
+  });
+
+  // Define a schema for the commercial entry
+  const commercialSchema = yup.object({
+    rentalcom_sqft: yup.string().required('Required'),
+    // Add more validations as needed for commercial entries
+  });
+  const residentialSchema2 = yup.object({
+    rental_units: yup.string().required('Required'),
+    rental_sqft: yup.string().required('Required'),
+    // Add more validations as needed for residential entries
+  });
+
+  // Define a schema for the commercial entry
+  const commercialSchema2 = yup.object({
+    rentalcom_sqft: yup.string().required('Required'),
+    rentalcom_units: yup.string().required('Required'),
+    // Add more validations as needed for commercial entries
+  });
+
+  const entrySchema = yup.object({
+    property_type: yup.string().required('Required'),
+    rental_postcode: yup.string().required('Required'),
+    rental_adress: yup.string().required('Required'),
+    rental_city: yup.string().required('Required'),
+    rental_country: yup.string().required('Required'),
+    rental_state: yup.string().required('Required'),
+    // Add conditional validations for residential or commercial entries
+    ...(selectedProp.ismultiunit
+      ? propType === 'Residential'
+        ? { residential: yup.array().of(residentialSchema2) }
+        : { commercial: yup.array().of(commercialSchema2) }
+      : propType === 'Residential'
+        ? { residential: yup.array().of(residentialSchema) }
+        : { commercial: yup.array().of(commercialSchema) }),
+  });
+
   let rentalsFormik = useFormik({
     initialValues: {
       //   Add Rental owner
@@ -419,7 +459,6 @@ const Rentals = () => {
       ],
     },
     validationSchema: yup.object({
-      // rentalOwner_propertyReserve: yup.string().required("Required"),
       rentalOwner_primaryEmail: yup
         .string()
         .email("Invalid email address")
@@ -427,22 +466,12 @@ const Rentals = () => {
       rentalOwner_firstName: yup.string().required("Required"),
       rentalOwner_lastName: yup.string().required("Required"),
       rentalOwner_phoneNumber: yup.string().required("Required"),
-      entries: yup.array().of(
-        yup.object({
-          // property_type: yup.string().notOneOf([''], "Please select a property type").required("Required"),
-          rental_postcode: yup.string().required("Required"),
-          rental_adress: yup.string().required("Required"),
-          rental_city: yup.string().required("Required"),
-          rental_country: yup.string().required("Required"),
-          rental_state: yup.string().required("Required"),
-        })
-      ),
+      entries: yup.array().of(entrySchema),
     }),
     onSubmit: (values) => {
       if (selectedRentalOwnerData.length !== 0) {
         handleSubmit(values);
       } else {
-        // console.log("data not ok")
         setDisplay(true);
       }
     },
@@ -483,8 +512,8 @@ const Rentals = () => {
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
-    if (cookies.get("token")) {
-      const jwt = jwtDecode(cookies.get("token"));
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
@@ -677,7 +706,7 @@ const Rentals = () => {
             rentalOwner_homeNumber: propertysData.rentalOwner_homeNumber || "",
             rentalOwner_businessNumber:
               propertysData.rentalOwner_businessNumber || ""
-        });
+          });
           const matchedProperty = propertysData.entries.find((entry) => {
             return entry.entryIndex === entryIndex;
           });
@@ -1199,8 +1228,8 @@ const Rentals = () => {
                               {selectedProp && selectedProp.propertysub_type
                                 ? selectedProp.propertysub_type
                                 : selectedProp && !selectedProp.propertysub_type
-                                ? selectedProp
-                                : "Select Property Type"}
+                                  ? selectedProp
+                                  : "Select Property Type"}
                             </DropdownToggle>
                             {/* {console.log(propertyData, "property data")} */}
                             <DropdownMenu>
@@ -1234,10 +1263,10 @@ const Rentals = () => {
                           {
                             <div>
                               {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors?.entries[0]?.property_type &&
-                              rentalsFormik.touched?.entries &&
-                              rentalsFormik.touched?.entries[0]
-                                ?.property_type ? (
+                                rentalsFormik.errors?.entries[0]?.property_type &&
+                                rentalsFormik.touched?.entries &&
+                                rentalsFormik.touched?.entries[0]
+                                  ?.property_type ? (
                                 <div style={{ color: "red" }}>
                                   {
                                     rentalsFormik.errors?.entries[0]
@@ -1294,11 +1323,11 @@ const Rentals = () => {
                             {
                               <div>
                                 {rentalsFormik.errors.entries &&
-                                rentalsFormik.errors?.entries[0]
-                                  ?.rental_adress &&
-                                rentalsFormik.touched?.entries &&
-                                rentalsFormik.touched?.entries[0]
-                                  ?.rental_adress ? (
+                                  rentalsFormik.errors?.entries[0]
+                                    ?.rental_adress &&
+                                  rentalsFormik.touched?.entries &&
+                                  rentalsFormik.touched?.entries[0]
+                                    ?.rental_adress ? (
                                   <div style={{ color: "red" }}>
                                     {
                                       rentalsFormik.errors?.entries[0]
@@ -1342,9 +1371,9 @@ const Rentals = () => {
                           {
                             <div>
                               {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors?.entries[0]?.rental_city &&
-                              rentalsFormik.touched?.entries &&
-                              rentalsFormik.touched?.entries[0]?.rental_city ? (
+                                rentalsFormik.errors?.entries[0]?.rental_city &&
+                                rentalsFormik.touched?.entries &&
+                                rentalsFormik.touched?.entries[0]?.rental_city ? (
                                 <div style={{ color: "red" }}>
                                   {
                                     rentalsFormik.errors?.entries[0]
@@ -1385,10 +1414,10 @@ const Rentals = () => {
                           {
                             <div>
                               {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors?.entries[0]?.rental_state &&
-                              rentalsFormik.touched?.entries &&
-                              rentalsFormik.touched?.entries[0]
-                                ?.rental_state ? (
+                                rentalsFormik.errors?.entries[0]?.rental_state &&
+                                rentalsFormik.touched?.entries &&
+                                rentalsFormik.touched?.entries[0]
+                                  ?.rental_state ? (
                                 <div style={{ color: "red" }}>
                                   {
                                     rentalsFormik.errors?.entries[0]
@@ -1429,11 +1458,11 @@ const Rentals = () => {
                           {
                             <div>
                               {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors?.entries[0]
-                                ?.rental_country &&
-                              rentalsFormik.touched?.entries &&
-                              rentalsFormik.touched?.entries[0]
-                                ?.rental_country ? (
+                                rentalsFormik.errors?.entries[0]
+                                  ?.rental_country &&
+                                rentalsFormik.touched?.entries &&
+                                rentalsFormik.touched?.entries[0]
+                                  ?.rental_country ? (
                                 <div style={{ color: "red" }}>
                                   {
                                     rentalsFormik.errors?.entries[0]
@@ -1482,11 +1511,11 @@ const Rentals = () => {
                           {
                             <div>
                               {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors?.entries[0]
-                                ?.rental_postcode &&
-                              rentalsFormik.touched?.entries &&
-                              rentalsFormik.touched?.entries[0]
-                                ?.rental_postcode ? (
+                                rentalsFormik.errors?.entries[0]
+                                  ?.rental_postcode &&
+                                rentalsFormik.touched?.entries &&
+                                rentalsFormik.touched?.entries[0]
+                                  ?.rental_postcode ? (
                                 <div style={{ color: "red" }}>
                                   {
                                     rentalsFormik.errors?.entries[0]
@@ -1537,10 +1566,10 @@ const Rentals = () => {
                             <b style={{ fontSize: "20px" }}>+</b> Add rental
                             owner
                             {display === false ? (
-                            <></>
-                          ) : (
-                            <div style={{ color: "red" }}>Required</div>
-                          )}
+                              <></>
+                            ) : (
+                              <div style={{ color: "red" }}>Required</div>
+                            )}
                           </span>
                           <Dialog
                             open={isRentalDialogOpen}
@@ -1549,7 +1578,7 @@ const Rentals = () => {
                           >
                             <Form onSubmit={rentalOwnerFormik.handleSubmit}>
                               <DialogTitle style={{ background: "#F0F8FF" }}>
-                                Add rental owner   
+                                Add rental owner
                               </DialogTitle>
 
                               <DialogContent style={{ width: "100%" }}>
@@ -1700,28 +1729,21 @@ const Rentals = () => {
                                                               rentalOwner.rentalOwner_businessNumber,
                                                           }
                                                         );
-                                                        const rentalOwnerInfo = `${
-                                                          rentalOwner.rentalOwner_firstName ||
+                                                        const rentalOwnerInfo = `${rentalOwner.rentalOwner_firstName ||
                                                           ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_lastName ||
+                                                          }-${rentalOwner.rentalOwner_lastName ||
                                                           ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_phoneNumber ||
+                                                          }-${rentalOwner.rentalOwner_phoneNumber ||
                                                           ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_companyName ||
+                                                          }-${rentalOwner.rentalOwner_companyName ||
                                                           ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_primaryEmail ||
+                                                          }-${rentalOwner.rentalOwner_primaryEmail ||
                                                           ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_homeNumber ||
+                                                          }-${rentalOwner.rentalOwner_homeNumber ||
                                                           ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_businessNumber ||
+                                                          }-${rentalOwner.rentalOwner_businessNumber ||
                                                           ""
-                                                        }`;
+                                                          }`;
 
                                                         handleCheckboxChange(
                                                           event,
@@ -1779,8 +1801,8 @@ const Rentals = () => {
 
                                       {rentalOwnerFormik.touched
                                         .rentalOwner_firstName &&
-                                      rentalOwnerFormik.errors
-                                        .rentalOwner_firstName &&
+                                        rentalOwnerFormik.errors
+                                          .rentalOwner_firstName &&
                                         rentalsFormik.submitCount > 0 ? (
                                         <div style={{ color: "red" }}>
                                           {
@@ -1817,8 +1839,8 @@ const Rentals = () => {
 
                                       {rentalOwnerFormik.touched
                                         .rentalOwner_lastName &&
-                                      rentalOwnerFormik.errors
-                                        .rentalOwner_lastName ? (
+                                        rentalOwnerFormik.errors
+                                          .rentalOwner_lastName ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             rentalOwnerFormik.errors
@@ -1865,8 +1887,8 @@ const Rentals = () => {
 
                                       {rentalOwnerFormik.touched
                                         .rentalOwner_companyName &&
-                                      rentalOwnerFormik.errors
-                                        .rentalOwner_companyName ? (
+                                        rentalOwnerFormik.errors
+                                          .rentalOwner_companyName ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             rentalOwnerFormik.errors
@@ -1935,8 +1957,8 @@ const Rentals = () => {
 
                                       {rentalOwnerFormik.touched
                                         .rentalOwner_primaryEmail &&
-                                      rentalOwnerFormik.errors
-                                        .rentalOwner_primaryEmail ? (
+                                        rentalOwnerFormik.errors
+                                          .rentalOwner_primaryEmail ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             rentalOwnerFormik.errors
@@ -2007,8 +2029,8 @@ const Rentals = () => {
 
                                       {rentalOwnerFormik.touched
                                         .rentalOwner_phoneNumber &&
-                                      rentalOwnerFormik.errors
-                                        .rentalOwner_phoneNumber ? (
+                                        rentalOwnerFormik.errors
+                                          .rentalOwner_phoneNumber ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             rentalOwnerFormik.errors
@@ -2065,8 +2087,8 @@ const Rentals = () => {
 
                                       {rentalOwnerFormik.touched
                                         .rentalOwner_homeNumber &&
-                                      rentalOwnerFormik.errors
-                                        .rentalOwner_homeNumber ? (
+                                        rentalOwnerFormik.errors
+                                          .rentalOwner_homeNumber ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             rentalOwnerFormik.errors
@@ -2124,8 +2146,8 @@ const Rentals = () => {
 
                                       {rentalOwnerFormik.touched
                                         .rentalOwner_businessNumber &&
-                                      rentalOwnerFormik.errors
-                                        .rentalOwner_businessNumber ? (
+                                        rentalOwnerFormik.errors
+                                          .rentalOwner_businessNumber ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             rentalOwnerFormik.errors
@@ -2624,9 +2646,9 @@ const Rentals = () => {
                                     style={
                                       selectedProp.ismultiunit
                                         ? {
-                                            display: "block",
-                                            marginTop: "20px",
-                                          }
+                                          display: "block",
+                                          marginTop: "20px",
+                                        }
                                         : { display: "none" }
                                     }
                                   >
@@ -2636,7 +2658,7 @@ const Rentals = () => {
                                         htmlFor={`input-unit-${residentialIndex}`}
                                         style={{ paddingTop: "10px" }}
                                       >
-                                        Units *
+                                        Unit *
                                       </label>
                                       <Input
                                         required
@@ -2667,17 +2689,17 @@ const Rentals = () => {
                                         }
                                       />
                                       {rentalsFormik.errors.entries &&
-                                      rentalsFormik.errors.entries[0]
-                                        ?.residential &&
-                                      rentalsFormik.errors.entries[0]
-                                        .residential[residentialIndex]
-                                        ?.rental_units &&
-                                      rentalsFormik.touched.entries &&
-                                      rentalsFormik.touched.entries[0]
-                                        ?.residential &&
-                                      rentalsFormik.touched.entries[0]
-                                        .residential[residentialIndex]
-                                        ?.rental_units ? (
+                                        rentalsFormik.errors.entries[0]
+                                          ?.residential &&
+                                        rentalsFormik.errors.entries[0]
+                                          .residential[residentialIndex]
+                                          ?.rental_units &&
+                                        rentalsFormik.touched.entries &&
+                                        rentalsFormik.touched.entries[0]
+                                          ?.residential &&
+                                        rentalsFormik.touched.entries[0]
+                                          .residential[residentialIndex]
+                                          ?.rental_units ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             rentalsFormik.errors.entries[0]
@@ -2702,7 +2724,7 @@ const Rentals = () => {
                                         htmlFor="input-unitadd"
                                         style={{ paddingTop: "30px" }}
                                       >
-                                        Unit Address *
+                                        Unit Address
                                       </label>
                                       <Input
                                         required
@@ -2744,7 +2766,7 @@ const Rentals = () => {
                                         htmlFor="input-unitadd"
                                         style={{ paddingTop: "30px" }}
                                       >
-                                        SQFT
+                                        SQFT *
                                       </label>
                                       <Input
                                         required
@@ -2772,12 +2794,26 @@ const Rentals = () => {
                                           e.target.value = numericValue;
                                         }}
                                       />
-                                      {/* {rentalsFormik.touched.rental_soft &&
-                                    rentalsFormik.errors.rental_soft ? (
-                                      <div style={{ color: "red" }}>
-                                        {rentalsFormik.errors.rental_soft}
-                                      </div>
-                                    ) : null} */}
+                                      {rentalsFormik.errors.entries &&
+                                        rentalsFormik.errors.entries[0]
+                                          ?.residential &&
+                                        rentalsFormik.errors.entries[0]
+                                          .residential[residentialIndex]
+                                          ?.rental_sqft &&
+                                        rentalsFormik.touched.entries &&
+                                        rentalsFormik.touched.entries[0]
+                                          ?.residential &&
+                                        rentalsFormik.touched.entries[0]
+                                          .residential[residentialIndex]
+                                          ?.rental_sqft ? (
+                                        <div style={{ color: "red" }}>
+                                          {
+                                            rentalsFormik.errors.entries[0]
+                                              .residential[residentialIndex]
+                                              ?.rental_sqft
+                                          }
+                                        </div>
+                                      ) : null}
                                     </FormGroup>
                                   </Col>
                                   <Col lg="8">
@@ -2950,7 +2986,7 @@ const Rentals = () => {
                                                 // );
                                                 if (
                                                   residentialImage[
-                                                    residentialIndex
+                                                  residentialIndex
                                                   ]
                                                 ) {
                                                   setResidentialImage([
@@ -2960,7 +2996,7 @@ const Rentals = () => {
                                                     ),
                                                     [
                                                       ...residentialImage[
-                                                        residentialIndex
+                                                      residentialIndex
                                                       ],
                                                       ...allImages,
                                                     ],
@@ -3058,10 +3094,10 @@ const Rentals = () => {
                                                 />
                                                 {imgLoader &&
                                                   index ===
-                                                    residentialImage[
-                                                      residentialIndex
-                                                    ].length -
-                                                      1 && (
+                                                  residentialImage[
+                                                    residentialIndex
+                                                  ].length -
+                                                  1 && (
                                                     <div className="loader">
                                                       {/* Your loader component goes here */}
                                                     </div>
@@ -3145,7 +3181,7 @@ const Rentals = () => {
                                         className="form-control-label"
                                         htmlFor={`input-unit-${commercialIndex}`}
                                       >
-                                        Units *
+                                        Unit *
                                       </label>
                                       <Input
                                         required
@@ -3175,17 +3211,17 @@ const Rentals = () => {
                                         </div>
                                       ) : null} */}
                                       {rentalsFormik.errors.entries &&
-                                      rentalsFormik.errors.entries[0]
-                                        ?.commercial &&
-                                      rentalsFormik.errors.entries[0]
-                                        .commercial[commercialIndex]
-                                        ?.rentalcom_units &&
-                                      rentalsFormik.touched.entries &&
-                                      rentalsFormik.touched.entries[0]
-                                        ?.commercial &&
-                                      rentalsFormik.touched.entries[0]
-                                        .commercial[commercialIndex]
-                                        ?.rentalcom_units ? (
+                                        rentalsFormik.errors.entries[0]
+                                          ?.commercial &&
+                                        rentalsFormik.errors.entries[0]
+                                          .commercial[commercialIndex]
+                                          ?.rentalcom_units &&
+                                        rentalsFormik.touched.entries &&
+                                        rentalsFormik.touched.entries[0]
+                                          ?.commercial &&
+                                        rentalsFormik.touched.entries[0]
+                                          .commercial[commercialIndex]
+                                          ?.rentalcom_units ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             rentalsFormik.errors.entries[0]
@@ -3209,7 +3245,7 @@ const Rentals = () => {
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
                                       >
-                                        Unit Address *
+                                        Unit Address
                                       </label>
                                       <Input
                                         required
@@ -3250,7 +3286,7 @@ const Rentals = () => {
                                         className="form-control-label"
                                         htmlFor="input-unitadd"
                                       >
-                                        SQFT
+                                        SQFT *
                                       </label>
                                       <Input
                                         required
@@ -3278,12 +3314,26 @@ const Rentals = () => {
                                             .rentalcom_sqft
                                         }
                                       />
-                                      {/* {rentalsFormik.touched.rentalcom_soft &&
-                                      rentalsFormik.errors.rentalcom_soft ? (
+                                      {rentalsFormik.errors.entries &&
+                                        rentalsFormik.errors.entries[0]
+                                          ?.commercial &&
+                                        rentalsFormik.errors.entries[0]
+                                          .commercial[commercialIndex]
+                                          ?.rentalcom_sqft &&
+                                        rentalsFormik.touched.entries &&
+                                        rentalsFormik.touched.entries[0]
+                                          ?.commercial &&
+                                        rentalsFormik.touched.entries[0]
+                                          .commercial[commercialIndex]
+                                          ?.rentalcom_sqft ? (
                                         <div style={{ color: "red" }}>
-                                          {rentalsFormik.errors.rentalcom_soft}
+                                          {
+                                            rentalsFormik.errors.entries[0]
+                                              .commercial[commercialIndex]
+                                              ?.rentalcom_sqft
+                                          }
                                         </div>
-                                      ) : null} */}
+                                      ) : null}
                                     </FormGroup>
                                   </Col>
 
@@ -3344,7 +3394,7 @@ const Rentals = () => {
 
                                                 if (
                                                   commercialImage[
-                                                    commercialIndex
+                                                  commercialIndex
                                                   ]
                                                 ) {
                                                   setCommercialImage([
@@ -3354,7 +3404,7 @@ const Rentals = () => {
                                                     ),
                                                     [
                                                       ...commercialImage[
-                                                        commercialIndex
+                                                      commercialIndex
                                                       ],
                                                       ...allImages,
                                                     ],
@@ -3443,10 +3493,10 @@ const Rentals = () => {
                                                 />
                                                 {imgLoader &&
                                                   index ===
-                                                    commercialImage[
-                                                      commercialIndex
-                                                    ].length -
-                                                      1 && (
+                                                  commercialImage[
+                                                    commercialIndex
+                                                  ].length -
+                                                  1 && (
                                                     <div className="loader">
                                                       {/* Your loader component goes here */}
                                                     </div>
@@ -3514,9 +3564,9 @@ const Rentals = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                         rentalsFormik.handleSubmit();
+                        rentalsFormik.handleSubmit();
                         if (selectedRentalOwnerData.length !== 0) {
-                          rentalOwnerFormik.handleSubmit();
+                          rentalsFormik.handleSubmit();
                         } else {
                           // console.log("data not ok")
                           setDisplay(true);

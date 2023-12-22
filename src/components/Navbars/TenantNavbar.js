@@ -37,10 +37,10 @@ const TenantNavbar = (props) => {
   let [loader, setLoader] = React.useState(true);
 
   let cookies = new Cookies();
-  // let Logout = () => {
-  //   cookies.remove("token");
-  //   cookies.remove("Tenant ID");
-  // };
+  let Logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("Tenant ID");
+  };
   const { id } = useParams();
   //console.log(id);
   const [vendorDetails, setVendorDetails] = useState({});
@@ -56,7 +56,7 @@ const TenantNavbar = (props) => {
 
   let navigate = useNavigate();
 
-  let cookie_id = cookies.get("Tenant ID");
+  let cookie_id = localStorage.getItem("Tenant ID");
   //console.log(cookie_id)
 
   const getVendorDetails = async () => {
@@ -368,12 +368,9 @@ const TenantNavbar = (props) => {
                 <DropdownItem divider />
                 <DropdownItem
                   //  href="#rms"
-                  // to="/auth/login"
+                  to="/auth/login"
                   onClick={() => {
-                    // Logout();
-                    cookies.remove("token");
-                    cookies.remove("Tenant ID");
-                    navigate("/auth/login");
+                    Logout();
                   }}
                   tag={Link}
                 >

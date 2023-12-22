@@ -25,8 +25,8 @@ const AgentSidebar = (props) => {
   const [collapseOpen, setCollapseOpen] = useState();
   let cookies = new Cookies();
   let Logout = () => {
-    cookies.remove("token");
-    cookies.remove("Agent ID");
+    localStorage.removeItem("token");
+    localStorage.removeItem("Agent ID");
 
   };
 

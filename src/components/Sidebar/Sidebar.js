@@ -72,10 +72,8 @@ const Sidebar = (props) => {
   let navigate = useNavigate();
   let cookies = new Cookies();
   let Logout = () => {
-    debugger
-    cookies.remove("token");
-
-    cookies.remove("Tenant ID");
+    localStorage.removeItem("token");
+    localStorage.removeItem("Tenant ID");
     // localStorage.removeItem("name");
     // localStorage.removeItem("id");
     // navigate("/login");
