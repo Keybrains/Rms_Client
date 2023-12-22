@@ -37,8 +37,8 @@ const VendorNavbar = (props) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   let cookies = new Cookies();
   let Logout = () => {
-    cookies.remove("token");
-    cookies.remove("Vendor ID");
+    localStorage.removeItem("token");
+    localStorage.removeItem("Vendor ID");
   };
   const { id } = useParams();
   // console.log(id);
@@ -55,7 +55,7 @@ const VendorNavbar = (props) => {
 
   const navigate = useNavigate();
 
-  let cookie_id = cookies.get("Vendor ID");
+  let cookie_id = localStorage.getItem("Vendor ID");
   // console.log(cookie_id);
 
   const getVendorDetails = async () => {

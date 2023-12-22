@@ -51,10 +51,10 @@ const VendorProfile = () => {
   // Check Authe(token)
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
-  let cookie_id = cookies.get("Vendor ID");
+  let cookie_id = localStorage.getItem("Vendor ID");
   React.useEffect(() => {
-    if (cookies.get("token")) {
-      const jwt = jwtDecode(cookies.get("token"));
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");

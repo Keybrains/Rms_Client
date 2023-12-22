@@ -42,8 +42,7 @@ const Login = () => {
   }; 
 
 
-  const handleSubmit = async (values) => {
-    
+  const handleSubmit = async (values) => {   
     try {
       setIsLoading(true); // Set loading state to true
 
@@ -58,7 +57,7 @@ const Login = () => {
         // Admin login successful
         swal("Success!", "Admin Login Successful!", "success").then((value) => {
           if (value) {
-            cookies.set("token", adminRes.data.token);
+            localStorage.setItem("token", adminRes.data.token);
             navigate("/admin/index");
             //console.log("Admin ID:", adminRes.data.data._id);
           }
@@ -83,14 +82,14 @@ const Login = () => {
             swal("Success!", "Tenant Login Successful!", "success").then(
               (value) => {
                 if (value) {
-                  cookies.set("token", tenantRes.data.token);
-                  cookies.set("Tenant ID", tenantData._id);
+                  localStorage.setItem("token", tenantRes.data.token);
+                  localStorage.setItem("Tenant ID", tenantData._id);
                   localStorage.setItem("ID", tenantData._id);
                   navigate("/tenant/tenantdashboard");
                 }
               }
             );
-          } else {
+          } else {  
             // Tenant login succeeded, but no _id found
             swal("Error!", "Invalid tenant data", "error");
           }
@@ -115,8 +114,8 @@ const Login = () => {
               swal("Success!", "Agent Login Successful!", "success").then(
                 (value) => {
                   if (value) {
-                    cookies.set("token", agentRes.data.token);
-                    cookies.set("Agent ID", agentData._id);
+                    localStorage.setItem("token", agentRes.data.token);
+                    localStorage.setItem("Agent ID", agentData._id);
                     localStorage.setItem("ID", agentData._id);
                     navigate("/agent/AgentdashBoard");
                   }
@@ -147,8 +146,8 @@ const Login = () => {
                 swal("Success!", "Staff Login Successful!", "success").then(
                   (value) => {
                     if (value) {
-                      cookies.set("token", staffRes.data.token);
-                      cookies.set("Staff ID", staffData._id);
+                      localStorage.setItem("token", staffRes.data.token);
+                      localStorage.setItem("Staff ID", staffData._id);
                       localStorage.setItem("ID", staffData._id);
                       navigate("/staff/staffdashboard");
                     }
@@ -179,8 +178,8 @@ const Login = () => {
                   swal("Success!", "Vendor Login Successful!", "success").then(
                     (value) => {
                       if (value) {
-                        cookies.set("token", vendorRes.data.token);
-                        cookies.set("Vendor ID", vendorData._id);
+                        localStorage.setItem("token", vendorRes.data.token);
+                        localStorage.setItem("Vendor ID", vendorData._id);
                         localStorage.setItem("ID", vendorData._id);
                         navigate("/vendor/vendordashboard");
                       }
@@ -225,6 +224,16 @@ const Login = () => {
       handleSubmit(values);
     },
   });
+
+  // React.useEffect(() => {
+
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     console.log("cookies get")
+  //   } else {
+  //     navigate("/admin/index");
+  //   }
+  // }, []);
 
   return (
     <>

@@ -38,8 +38,8 @@ const TWorkOrderDetails = () => {
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
-    if (cookies.get("token")) {
-      const jwt = jwtDecode(cookies.get("token"));
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
@@ -127,7 +127,7 @@ const TWorkOrderDetails = () => {
     );
   }
 
-  let cookie_id = cookies.get("Tenant ID");
+  let cookie_id = localStorage.getItem("Tenant ID");
   const [tenantsDetails, setTenantsDetails] = useState();
 
   const getTenantData = async () => {

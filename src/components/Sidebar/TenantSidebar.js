@@ -77,15 +77,13 @@ const TenantSidebar = (props) => {
   let navigate = useNavigate();
   let cookies = new Cookies();
   let Logout = () => {
-    
-    // localStorage.removeItem("name");
-    // localStorage.removeItem("id");
-    // navigate("/login");
+    localStorage.removeItem("token");
+    localStorage.removeItem("Tenant ID");
   };
 
   const { id } = useParams();
   // console.log(id);
-  let cookie_id = cookies.get("Tenant ID");
+  let cookie_id = localStorage.getItem("Tenant ID");
   // console.log(cookie_id)
 
   // verifies if routeName is the one active (in browser input)
@@ -438,11 +436,12 @@ const getRentalData = async (addresses) => {
               <DropdownItem divider />
               <DropdownItem
               //  href="#rms"
-                 
+               to="/auth/login"
                onClick={() => {
-                cookies.remove("token");
-                cookies.remove("Tenant ID");
-                // navigate("/login");
+                  Logout();
+                // localStorage.removeItem("token");
+                // localStorage.removeItem("Tenant ID");
+                // // navigate("/login");
             }} tag={Link} >
                 <i className="ni ni-user-run" />
                 <span>Logout</span>

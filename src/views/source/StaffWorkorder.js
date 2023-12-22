@@ -26,14 +26,14 @@ const StaffWorkOrder = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   let cookies = new Cookies();
-  let cookie_id = cookies.get("Staff ID");
-  let cookie_name = cookies.get("Staff Name")
+  let cookie_id = localStorage.getItem("Staff ID");
+  let cookie_name = localStorage.getItem("Staff Name")
   const [accessType, setAccessType] = useState(null);
   let navigate = useNavigate()
 
   React.useEffect(() => {
-    if (cookies.get("token")) {
-      const jwt = jwtDecode(cookies.get("token"));
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
