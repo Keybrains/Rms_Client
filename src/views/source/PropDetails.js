@@ -45,7 +45,7 @@ import swal from "sweetalert";
 import { Modal } from "react-bootstrap";
 import { RotatingLines } from "react-loader-spinner";
 // import "bootstrap/dist/css/bootstrap.min.css";
-// import CardActions from "@mui/material/CardActions";
+// import CardActions from "../../../../../rms-y/Rms_client/images";
 
 const bull = (
   <Box
@@ -90,108 +90,108 @@ const PropDetails = () => {
   const togglePhotoresDialog = () => {
     setPhotoresDialogOpen((prevState) => !prevState);
   };
-console.log(propType,'proeptype')
-const fileData = async (file, name, index) => {
-  //setImgLoader(true);
-  const allData = [];
-  const axiosRequests = [];
-  for (let i = 0; i < file.length; i++) {
-    const dataArray = new FormData();
-    dataArray.append("b_video", file[i]);
-    let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
-    // Push the Axios request promises into an array
-    axiosRequests.push(
-      axios
-        .post(url, dataArray, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
-          //setImgLoader(false);
-          const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-          console.log(imagePath, "imagePath");
-          allData.push(imagePath);
-        })
-        .catch((err) => {
-          //setImgLoader(false);
-          // console.log("Error uploading image:", err);
-        })
-    );
-  }
-  // Wait for all Axios requests to complete before logging the data
-  await Promise.all(axiosRequests);
-  if (name === "propertyres_image") {
-    // rentalsFormik.setFieldValue(
-    //   `entries[0].residential[${index}].propertyres_image`,
-    //   ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
-    //   allData
-    // );
-    if (unitImage[index]) {
-      setUnitImage([
-        ...unitImage.slice(0, index),
-        [...unitImage[index], ...allData],
-        ...unitImage.slice(index + 1),
-      ]);
-      
+  console.log(propType, 'proeptype')
+  const fileData = async (file, name, index) => {
+    //setImgLoader(true);
+    const allData = [];
+    const axiosRequests = [];
+    for (let i = 0; i < file.length; i++) {
+      const dataArray = new FormData();
+      dataArray.append("b_video", file[i]);
+      let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
+      // Push the Axios request promises into an array
+      axiosRequests.push(
+        axios
+          .post(url, dataArray, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            //setImgLoader(false);
+            const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
+            console.log(imagePath, "imagePath");
+            allData.push(imagePath);
+          })
+          .catch((err) => {
+            //setImgLoader(false);
+            // console.log("Error uploading image:", err);
+          })
+      );
+    }
+    // Wait for all Axios requests to complete before logging the data
+    await Promise.all(axiosRequests);
+    if (name === "propertyres_image") {
+      // rentalsFormik.setFieldValue(
+      //   `entries[0].residential[${index}].propertyres_image`,
+      //   ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
+      //   allData
+      // );
+      if (unitImage[index]) {
+        setUnitImage([
+          ...unitImage.slice(0, index),
+          [...unitImage[index], ...allData],
+          ...unitImage.slice(index + 1),
+        ]);
+
         addUnitFormik.setFieldValue(
-          "propertyres_image",[
-            ...unitImage.slice(0, index),
-            [...unitImage[index], ...allData],
-            ...unitImage.slice(index + 1),
-          ]
+          "propertyres_image", [
+          ...unitImage.slice(0, index),
+          [...unitImage[index], ...allData],
+          ...unitImage.slice(index + 1),
+        ]
         )
-      
+
+      } else {
+        setUnitImage([...allData]);
+        // if(propType === "Residential"){
+        addUnitFormik.setFieldValue(
+          "propertyres_image", [...allData]
+        )
+        // }
+      }
     } else {
-      setUnitImage([...allData]);
-      // if(propType === "Residential"){
-        addUnitFormik.setFieldValue(
-          "propertyres_image",[...allData]
-        )
+      // rentalsFormik.setFieldValue(
+      //   `entries[0].commercial[${index}].property_image`,
+      //   ...rentalsFormik.values.entries[0].commercial[index].property_image,
+      //   allData
+      // );
+      // if (commercialImage[index]) {
+      //   setCommercialImage([
+      //     ...commercialImage.slice(0, index),
+      //     [...commercialImage[index], ...allData],
+      //     ...commercialImage.slice(index + 1),
+      //   ]);
+      // } else {
+      //   setCommercialImage([...allData]);
       // }
     }
-  } else {
-    // rentalsFormik.setFieldValue(
-    //   `entries[0].commercial[${index}].property_image`,
-    //   ...rentalsFormik.values.entries[0].commercial[index].property_image,
-    //   allData
-    // );
-    // if (commercialImage[index]) {
-    //   setCommercialImage([
-    //     ...commercialImage.slice(0, index),
-    //     [...commercialImage[index], ...allData],
-    //     ...commercialImage.slice(index + 1),
-    //   ]);
-    // } else {
-    //   setCommercialImage([...allData]);
-    // }
-  }
-  // console.log(allData, "allData");
-  // console.log(unitImage, "unitImage");
-  // console.log(commercialImage, "commercialImage");
-};
+    // console.log(allData, "allData");
+    // console.log(unitImage, "unitImage");
+    // console.log(commercialImage, "commercialImage");
+  };
 
-console.log(propType, "proeptype");
-const clearSelectedPhoto = (index, image, name) => {
-  if (name === "propertyres_image") {
-    const filteredImage = unitImage.filter((item) => {
-      return item.name !== image.name;
-    });
-    
-    setUnitImage([
-      ...unitImage.slice(0, index),
-      ...filteredImage,
-      ...unitImage.slice(index + 1),
-    ]);
+  console.log(propType, "proeptype");
+  const clearSelectedPhoto = (index, image, name) => {
+    if (name === "propertyres_image") {
+      const filteredImage = unitImage.filter((item) => {
+        return item.name !== image.name;
+      });
 
-      
-    // }
+      setUnitImage([
+        ...unitImage.slice(0, index),
+        ...filteredImage,
+        ...unitImage.slice(index + 1),
+      ]);
 
-}
-  //  else {
-  //   // const filteredImage = commercialImage[index].filter((item) => {
-  //     // return item !== image;
-  //   });
+
+      // }
+
+    }
+    //  else {
+    //   // const filteredImage = commercialImage[index].filter((item) => {
+    //     // return item !== image;
+    //   });
     // console.log(filteredImage, "filteredImage");
     // setCommercialImage(filteredImage);
     // setCommercialImage([
@@ -593,55 +593,26 @@ const clearSelectedPhoto = (index, image, name) => {
   const [propImageLoader, setPropImageLoader] = useState(false);
   console.log(uploadedImage, "uploadedImage");
 
+  const [img, setImg] = useState("");
+
   const handleImageChange = async (event) => {
     setPropImageLoader(true)
     const file = event.target.files[0];
-    const axiosRequests = [];
 
-    const dataArray = new FormData();
-    dataArray.append("b_video", file);
-    let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
+    const formData = new FormData();
+    formData.append("image", file);
+
+    let url = `${baseUrl}/images/upload-image`;
 
     // Push the Axios request promises into an array
-    axiosRequests.push(
-      axios
-        .post(url, dataArray, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
-          //setImgLoader(false);
-          const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-          console.log(imagePath, "imagePath");
-
-          setUploadedImage(imagePath);
-          const image = {
-            prop_image: imagePath,
-          };
-
-          axios
-            .put(`${baseUrl}/rentals/proparty_image/${id}/${entryIndex}`, image)
-            .then((response) => {
-
-              console.log(response.data.data, "updated data");
-              getRentalsData();
-              // setAddUnitDialogOpen(false);
-              // setAddUnitDialogOpen(false);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-          // allData.push(imagePath);
-        })
-        .catch((err) => {
-          //setImgLoader(false);
-          // console.log("Error uploading image:", err);
-        })
-    );
+    const result = await axios.post(url, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    setImg(result.data.image);
+    console.log(result.data.image, "imgs");
+    setPropImageLoader(false);
 
     // Wait for all Axios requests to complete before logging the data
-    await Promise.all(axiosRequests);
   };
 
   // await Promise.all(axiosRequests);
@@ -742,15 +713,9 @@ const clearSelectedPhoto = (index, image, name) => {
 
                                     <img
                                       // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
-                                      src={
-                                        matchedProperty?.prop_image
-                                          ? matchedProperty?.prop_image
-                                          : uploadedImage
-                                            ? uploadedImage
-                                            : fone
-                                      }
+                                      src={img ? `../../../images/${img}` : fone}
                                       className="img-fluid rounded-start card-image"
-                                      alt="..."
+                                      // alt={"..."}
                                     // width='260px'
                                     // height='18px'
                                     // onClick={handleModalOpen}
@@ -2723,9 +2688,9 @@ const clearSelectedPhoto = (index, image, name) => {
                                   <img
                                     // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
                                     src={
-                                      clickedObject && clickedObject.property_image.length>0
-                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0] : clickedObject.propertyres_image[0] ? 
-                                        clickedObject.propertyres_image[0] : fone: fone
+                                      clickedObject && clickedObject.property_image.length > 0
+                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0] : clickedObject.propertyres_image[0] ?
+                                          clickedObject.propertyres_image[0] : fone : fone
                                     }
                                     className="img-fluid rounded-start card-image"
                                     alt="..."
@@ -3011,175 +2976,175 @@ const clearSelectedPhoto = (index, image, name) => {
                                                 }
                                               />
                                               <Col lg="5">
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                      }}
-                                    >
-                                      <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}
-                                      >
-                                        <label
-                                          className="form-control-label"
-                                          htmlFor="input-unitadd"
-                                        >
-                                          Photo
-                                        </label>
-                                        <span
-                                          onClick={togglePhotoresDialog}
-                                          style={{
-                                            cursor: "pointer",
-                                            fontSize: "14px",
-                                            fontFamily: "monospace",
-                                            color: "blue",
-                                          }}
-                                        >
-                                          {" "}
-                                          <br />
-                                          <input
-                                            type="file"
-                                            className="form-control-file d-none"
-                                            accept="image/*"
-                                            multiple
-                                            id={`unit_img`}
-                                            name={`unit_img`}
-                                            onChange={(e) => {
-                                              const file = [...e.target.files];
-                                              fileData(
-                                                file,
-                                                "propertyres_image",
-                                                 ""
-                                              );
-                                              if (file.length > 0) {
-                                                const allImages = file.map(
-                                                  (file) => {
-                                                    return URL.createObjectURL(
-                                                      file
-                                                    );
-                                                  }
-                                                );
-                                                // console.log(
-                                                //    "",
-                                                //   "indexxxxxx"
-                                                // );
-                                                if (
-                                                  unitImage[
-                                                     ""
-                                                  ]
-                                                ) {
-                                                  setUnitImage([
-                                                    ...unitImage.slice(
-                                                      0,
-                                                       ""
-                                                    ),
-                                                    [
-                                                      ...unitImage[
-                                                         ""
-                                                      ],
-                                                      ...allImages,
-                                                    ],
-                                                    ...unitImage.slice(
-                                                      1 +  ""
-                                                    ),
-                                                  ]);
-                                                } else {
-                                                  setUnitImage([
-                                                    ...allImages,
-                                                  ]);
-                                                }
-                                              } else {
-                                                setUnitImage([
-                                                  ...unitImage,
-                                                ]);
-                                                // )
-                                              }
-                                            }}
-                                          />
-                                          {console.log(unitImage,'unitImage')}
-                                          <label
-                                            htmlFor={`unit_img`}
-                                          >
-                                            <b style={{ fontSize: "20px" }}>
-                                              +
-                                            </b>{" "}
-                                            Add
-                                          </label>
-                                          {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
-                                        </span>
-                                      </FormGroup>
-                                      <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexWrap: "wrap",
-                                          paddingLeft: "10px",
-                                        }}
-                                      >
-                                        <div className="d-flex">
-                                          {unitImage &&
-                                            unitImage
-                                              .length > 0 &&
-                                            unitImage
-                                               .map((unitImg,index) => (
-                                              <div
-                                                key={unitImg}
-                                                style={{
-                                                  position: "relative",
-                                                  width: "100px",
-                                                  height: "100px",
-                                                  margin: "10px",
-                                                  display: "flex",
-                                                  flexDirection: "column",
-                                                }}
-                                              >
-                                                <img
-                                                  src={unitImg}
-                                                  alt=""
+                                                <div
                                                   style={{
-                                                    width: "100px",
-                                                    height: "100px",
-                                                    maxHeight: "100%",
-                                                    maxWidth: "100%",
-                                                    borderRadius: "10px",
-                                                    // objectFit: "cover",
+                                                    display: "flex",
+                                                    flexDirection: "row",
                                                   }}
-                                                  onClick={() => {
-                                                    setSelectedImage(
-                                                      unitImg
-                                                    );
-                                                    setOpen(true);
-                                                  }}
-                                                />
-                                                <ClearIcon
-                                                  style={{
-                                                    cursor: "pointer",
-                                                    alignSelf: "flex-start",
-                                                    position: "absolute",
-                                                    top: "-12px",
-                                                    right: "-12px",
-                                                  }}
-                                                  onClick={() =>
-                                                    clearSelectedPhoto(
-                                                       index,
-                                                      unitImage,
-                                                      "propertyres_image"
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                            ))}
-                                          <OpenImageDialog
-                                            open={open}
-                                            setOpen={setOpen}
-                                            selectedImage={selectedImage}
-                                          />
-                                        </div>
-                                      </FormGroup>
-                                    </div>
-                                  </Col>
+                                                >
+                                                  <FormGroup
+                                                    style={{
+                                                      display: "flex",
+                                                      flexDirection: "column",
+                                                    }}
+                                                  >
+                                                    <label
+                                                      className="form-control-label"
+                                                      htmlFor="input-unitadd"
+                                                    >
+                                                      Photo
+                                                    </label>
+                                                    <span
+                                                      onClick={togglePhotoresDialog}
+                                                      style={{
+                                                        cursor: "pointer",
+                                                        fontSize: "14px",
+                                                        fontFamily: "monospace",
+                                                        color: "blue",
+                                                      }}
+                                                    >
+                                                      {" "}
+                                                      <br />
+                                                      <input
+                                                        type="file"
+                                                        className="form-control-file d-none"
+                                                        accept="image/*"
+                                                        multiple
+                                                        id={`unit_img`}
+                                                        name={`unit_img`}
+                                                        onChange={(e) => {
+                                                          const file = [...e.target.files];
+                                                          fileData(
+                                                            file,
+                                                            "propertyres_image",
+                                                            ""
+                                                          );
+                                                          if (file.length > 0) {
+                                                            const allImages = file.map(
+                                                              (file) => {
+                                                                return URL.createObjectURL(
+                                                                  file
+                                                                );
+                                                              }
+                                                            );
+                                                            // console.log(
+                                                            //    "",
+                                                            //   "indexxxxxx"
+                                                            // );
+                                                            if (
+                                                              unitImage[
+                                                              ""
+                                                              ]
+                                                            ) {
+                                                              setUnitImage([
+                                                                ...unitImage.slice(
+                                                                  0,
+                                                                  ""
+                                                                ),
+                                                                [
+                                                                  ...unitImage[
+                                                                  ""
+                                                                  ],
+                                                                  ...allImages,
+                                                                ],
+                                                                ...unitImage.slice(
+                                                                  1 + ""
+                                                                ),
+                                                              ]);
+                                                            } else {
+                                                              setUnitImage([
+                                                                ...allImages,
+                                                              ]);
+                                                            }
+                                                          } else {
+                                                            setUnitImage([
+                                                              ...unitImage,
+                                                            ]);
+                                                            // )
+                                                          }
+                                                        }}
+                                                      />
+                                                      {console.log(unitImage, 'unitImage')}
+                                                      <label
+                                                        htmlFor={`unit_img`}
+                                                      >
+                                                        <b style={{ fontSize: "20px" }}>
+                                                          +
+                                                        </b>{" "}
+                                                        Add
+                                                      </label>
+                                                      {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                                                    </span>
+                                                  </FormGroup>
+                                                  <FormGroup
+                                                    style={{
+                                                      display: "flex",
+                                                      flexWrap: "wrap",
+                                                      paddingLeft: "10px",
+                                                    }}
+                                                  >
+                                                    <div className="d-flex">
+                                                      {unitImage &&
+                                                        unitImage
+                                                          .length > 0 &&
+                                                        unitImage
+                                                          .map((unitImg, index) => (
+                                                            <div
+                                                              key={unitImg}
+                                                              style={{
+                                                                position: "relative",
+                                                                width: "100px",
+                                                                height: "100px",
+                                                                margin: "10px",
+                                                                display: "flex",
+                                                                flexDirection: "column",
+                                                              }}
+                                                            >
+                                                              <img
+                                                                src={unitImg}
+                                                                alt=""
+                                                                style={{
+                                                                  width: "100px",
+                                                                  height: "100px",
+                                                                  maxHeight: "100%",
+                                                                  maxWidth: "100%",
+                                                                  borderRadius: "10px",
+                                                                  // objectFit: "cover",
+                                                                }}
+                                                                onClick={() => {
+                                                                  setSelectedImage(
+                                                                    unitImg
+                                                                  );
+                                                                  setOpen(true);
+                                                                }}
+                                                              />
+                                                              <ClearIcon
+                                                                style={{
+                                                                  cursor: "pointer",
+                                                                  alignSelf: "flex-start",
+                                                                  position: "absolute",
+                                                                  top: "-12px",
+                                                                  right: "-12px",
+                                                                }}
+                                                                onClick={() =>
+                                                                  clearSelectedPhoto(
+                                                                    index,
+                                                                    unitImage,
+                                                                    "propertyres_image"
+                                                                  )
+                                                                }
+                                                              />
+                                                            </div>
+                                                          ))}
+                                                      <OpenImageDialog
+                                                        open={open}
+                                                        setOpen={setOpen}
+                                                        selectedImage={selectedImage}
+                                                      />
+                                                    </div>
+                                                  </FormGroup>
+                                                </div>
+                                              </Col>
                                             </div>
 
                                             <div style={{ marginTop: "10px" }}>

@@ -163,16 +163,6 @@ const TWorkOrderDetails = () => {
         console.error("Error fetching tenant details:", error);
         setError(error);
       }
-    } if (outstandDetails.rental_adress) {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/propertyunit/rentals_property/${outstandDetails.rental_adress}`
-        );
-        setPropertyDetails(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching tenant details:", error);
-        setError(error);
-      }
     }
   };
 
@@ -291,7 +281,7 @@ const TWorkOrderDetails = () => {
                                   <AssignmentOutlinedIcon />
                                 </Box>
                                 <Box flex="1">
-                                  <h2 className="text text-lg" style={{color:'#3B2F2F'}}>
+                                  <h2 className="text text-lg" style={{ color: '#3B2F2F' }}>
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
                                   <span>{outstandDetails.rental_adress || "N/A"}</span>
@@ -382,7 +372,7 @@ const TWorkOrderDetails = () => {
                                   margin="20px"
                                   style={{ marginLeft: "auto", marginRight: "auto", overflowX: 'auto' }} // Center the box horizontally
                                 >
-                                  <h2 className="text text-lg" style={{color:'#3B2F2F'}}>Parts and Labor</h2>
+                                  <h2 className="text text-lg" style={{ color: '#3B2F2F' }}>Parts and Labor</h2>
                                   <Box overflowX="auto">
                                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                                       <thead>
@@ -431,7 +421,7 @@ const TWorkOrderDetails = () => {
                             margin="20px"
                           >
                             <Box borderBottom="1px solid #ccc" style={{ minWidth: "100%", padding: "16px 16px 5px 16px", color: "#5e72e4" }}>
-                              <h3 className="text" style={{color:'#3B2F2F'}}>Contacts</h3>
+                              <h3 className="text" style={{ color: '#3B2F2F' }}>Contacts</h3>
                             </Box>
                             <Box
                               borderBottom="1px solid #ccc"
@@ -479,7 +469,8 @@ const TWorkOrderDetails = () => {
                             ) : null}
                           </Box>
                         ) : null}
-                        {propertyDetails?.rental_adress ? <>
+                        {console.log(propertyDetails, "property")}
+                        {propertyDetails ? <>
                           <Box
                             border="1px solid #ccc"
                             borderRadius="8px"
@@ -490,7 +481,7 @@ const TWorkOrderDetails = () => {
                             alignItems="center" // Center content horizontally
                           >
                             <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
-                              <h3 className="text" style={{color:'#3B2F2F'}}>Property</h3>
+                              <h3 className="text" style={{ color: '#3B2F2F' }}>Property</h3>
                             </Box>
                             {propertyDetails?.propertyres_image || propertyDetails?.property_image ? (
                               <Box style={{ width: "100%", padding: "16px", display: "flex", alignItems: "center" }}>
