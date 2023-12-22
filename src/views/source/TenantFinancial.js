@@ -57,9 +57,15 @@ const TenantFinancial = () => {
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [searchQueryy, setSearchQueryy] = useState("");
-  const [unit,setUnit]=useState("")
-  const [propertyId,setPropertyId]= useState("")
+  const [unit, setUnit] = useState("")
+  const [propertyId, setPropertyId] = useState("")
   // const [cookie_id, setCookieId] = useState("");
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
+  const [pageItem, setPageItem] = React.useState(6);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
+  const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
   const handleSearch = (e) => {
     setSearchQueryy(e.target.value);
@@ -71,7 +77,7 @@ const TenantFinancial = () => {
   const toggle10 = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
-  
+
 
   const fetchUnitsByProperty = async (propertyType) => {
     try {
@@ -128,17 +134,17 @@ const TenantFinancial = () => {
   };
   const financialFormik = useFormik({
     initialValues: {
-      
-            first_name: "",
-            last_name: "",
-            email_name: "",
-            card_number:"" ,
-            amount: "",
-            expiration_date: "",
-            cvv: "",
-            tenantId: "",
-            propertyId:"",
-            unitId:""
+
+      first_name: "",
+      last_name: "",
+      email_name: "",
+      card_number: "",
+      amount: "",
+      expiration_date: "",
+      cvv: "",
+      tenantId: "",
+      propertyId: "",
+      unitId: ""
 
     },
     validationSchema: yup.object({
@@ -171,7 +177,7 @@ const TenantFinancial = () => {
     },
   });
   const handlePropertyTypeSelect = async (property) => {
-    console.log(property,'peropjihbjmn.................')
+    console.log(property, 'peropjihbjmn.................')
     setSelectedPropertyType(property.rental_adress);
     financialFormik.setFieldValue("propertyId", property.property_id || "");
     financialFormik.setFieldValue("unitId", property.unit_id || "");
@@ -180,7 +186,7 @@ const TenantFinancial = () => {
     setPropertyId(property.property_id)
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
-      const units = await fetchUnitsByProperty(property);
+      const units = await fetchUnitsByProperty(property.rental_adress);
       //console.log(units, "units"); // Check the received units in the console
       setUnitData(units); // Set the received units in the unitData state
     } catch (error) {
@@ -189,7 +195,7 @@ const TenantFinancial = () => {
   };
   const handleUnitSelect = (property) => {
     setSelectedUnit(property.rental_units);
-    financialFormik.setFieldValue("unitId", property.unit_id || "");
+    financialFormik.setFieldValue("unitId", property._id || "");
     financialFormik.setFieldValue("unit", property.rental_units || "");
     // financialFormik.setFieldValue("rental_units", selectedUnit); // Update the formik state here
   };
@@ -239,7 +245,7 @@ const TenantFinancial = () => {
         `${baseUrl}/tenant/tenant_summary/${cookie_id}`
       );
 
-      if (response.data ) {
+      if (response.data) {
         console.log("Data fetched successfully:", response.data);
         setTenantDetails(response.data.data);
         setRentalAddress(response.data.rental_adress);
@@ -268,7 +274,7 @@ const TenantFinancial = () => {
     // console.log(
     //   `${baseUrl}/tenant/tenant_rental_addresses/${cookie_id}`
     // );
-  }, [cookie_id]);
+  }, [cookie_id, pageItem]);
 
   const getGeneralLedgerData = async () => {
     if (tenantDetails) {
@@ -284,7 +290,6 @@ const TenantFinancial = () => {
               const response = await axios.get(url);
               if (response.data && response.data.data) {
                 const mergedData = response.data.data;
-                console.log(response.data.data, "yashu");
                 return mergedData[0]?.unit[0];
               } else {
                 console.error("Unexpected response format:", response.data);
@@ -295,12 +300,11 @@ const TenantFinancial = () => {
           }
           if (rental && property_id) {
             const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${property_id}&tenant_id=${cookie_id}`;
-            
+
             try {
               const response = await axios.get(url);
               if (response.data && response.data.data) {
                 const mergedData = response.data.data;
-                console.log(response.data.data, "yashu");
                 return mergedData[0]?.unit[0];
               } else {
                 console.error("Unexpected response format:", response.data);
@@ -315,7 +319,17 @@ const TenantFinancial = () => {
         const results = await Promise.all(promises);
         const validResults = results.filter((result) => result !== null);
         setLoader(false);
-        setGeneralLedgerData((prevData) => [ ...validResults]);
+        setGeneralLedgerData((prevData) => [...validResults]);
+        const data = [...validResults];
+        const allPaymentAndCharges = data.flatMap((item) => {
+          return item.paymentAndCharges.map((payment) => ({
+            paymentAndCharges: payment,
+            unit: item.unit,
+            unit_id: item.unit_id,
+            _id: item._id,
+          }))
+        });
+        setTotalPages(Math.ceil(allPaymentAndCharges.length / pageItem));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -324,7 +338,7 @@ const TenantFinancial = () => {
 
   useEffect(() => {
     getGeneralLedgerData();
-  }, [tenantDetails]);
+  }, [tenantDetails, pageItem]);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -410,7 +424,7 @@ const TenantFinancial = () => {
     }
   };
 
-  const postCharge = async (unitName,unit_id) => {
+  const postCharge = async (unitName, unit_id) => {
     const chargeObject = {
       properties: {
         rental_adress: selectedPropertyType,
@@ -418,7 +432,7 @@ const TenantFinancial = () => {
       },
       unit: [
         {
-          unit:selectedUnit,
+          unit: selectedUnit,
           unit_id: unit_id,
           paymentAndCharges: [
             {
@@ -453,6 +467,76 @@ const TenantFinancial = () => {
       });
   };
 
+  const startIndex = (currentPage - 1) * pageItem;
+  const endIndex = currentPage * pageItem;
+  var paginatedData;
+  if (GeneralLedgerData) {
+    const allPaymentAndCharges = GeneralLedgerData.flatMap((item) => {
+      return item.paymentAndCharges.map((payment) => ({
+        paymentAndCharges: payment,
+        unit: item.unit,
+        unit_id: item.unit_id,
+        _id: item._id,
+      }))
+    });
+    paginatedData = allPaymentAndCharges.slice(startIndex, endIndex);
+  }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // const [filterData, setFilterData] = useState([]);
+
+  // useEffect(() => {
+  //   // setTotalPages(Math.ceil(filterData.length / pageItem));
+  //   setCurrentPage(1);
+  // }, [searchQuery])
+
+  const filterRentalsBySearch = () => {
+    if (!searchQuery) {
+      return GeneralLedgerData.flatMap((item) => {
+        return item.paymentAndCharges.map((payment) => ({
+          paymentAndCharges: payment,
+          unit: item.unit,
+          unit_id: item.unit_id,
+          _id: item._id,
+        }))
+      });
+    }
+
+    const allPaymentAndCharges = GeneralLedgerData.flatMap((item) => {
+      return item.paymentAndCharges.map((payment) => ({
+        paymentAndCharges: payment,
+        unit: item.unit,
+        unit_id: item.unit_id,
+        _id: item._id,
+      }))
+    });
+
+    return allPaymentAndCharges.filter((rental) => {
+      // const lowerCaseQuery = searchQuery.toLowerCase();
+      console.log(searchQuery, "yash", rental);
+      return (
+        (rental.paymentAndCharges.charges_account && rental.paymentAndCharges.charges_account.includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.account && rental.paymentAndCharges.account.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.type && rental.paymentAndCharges.type.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.charges_memo && rental.paymentAndCharges.charges_memo.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.memo && rental.paymentAndCharges.memo.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.amount && rental.paymentAndCharges.amount.toString().includes(searchQuery.toLowerCase()))
+      );
+    });
+  };
+  const filterTenantsBySearchAndPage = () => {
+    const filteredData = filterRentalsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    // setFilterData(paginatedData)
+    return paginatedData;
+  };
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   return (
     <>
       <TenantsHeader />
@@ -477,7 +561,7 @@ const TenantFinancial = () => {
                     </Button> */}
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={openModal}
               size="sm"
               style={{ background: "white", color: "#3B2F2F" }}
@@ -516,7 +600,26 @@ const TenantFinancial = () => {
                         </div>
                       ) : (
                         <Card className="shadow">
-                          <CardHeader className="border-0"></CardHeader>
+                          <CardHeader className="border-0">
+                            <Row>
+                              <Col xs="12" sm="6">
+                                <FormGroup>
+                                  <Input
+                                    fullWidth
+                                    type="text"
+                                    placeholder="Search"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    style={{
+                                      width: "100%",
+                                      maxWidth: "200px",
+                                      minWidth: "200px",
+                                    }}
+                                  />
+                                </FormGroup>
+                              </Col>
+                            </Row>
+                          </CardHeader>
 
                           <Table
                             className="align-items-center table-flush"
@@ -534,62 +637,132 @@ const TenantFinancial = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              {GeneralLedgerData.map((data, dataIndex) => (
+                              {filterTenantsBySearchAndPage().map((data, dataIndex) => (
                                 <React.Fragment key={dataIndex}>
-                                  {data?.paymentAndCharges?.map(
-                                    (generalledger, index) => (
-                                      <tr key={`${generalledger._id}_${index}`}>
-                                        <td>
-                                          {formatDateWithoutTime(
-                                            generalledger.type === "Charge"
-                                              ? generalledger.date
-                                              : generalledger.date
-                                          ) || "N/A"}
-                                        </td>
-                                        <td>{generalledger.type}</td>
-                                        <td>
-                                          {generalledger.type === "Charge"
-                                            ? generalledger.charges_account
-                                            : generalledger.account}
-                                        </td>
-                                        <td>
-                                          {generalledger.type === "Charge"
-                                            ? generalledger.charges_memo
-                                            : generalledger.memo}
-                                        </td>
-                                        <td>
-                                          {generalledger.type === "Charge"
-                                            ? `$${generalledger.amount}`
-                                            : "-"}
-                                        </td>
-                                        <td>
-                                          {generalledger.type === "Payment"
-                                            ? `$${generalledger.amount}`
-                                            : "-"}
-                                        </td>
-                                        <td>
-                                          {generalledger.Total !==
-                                          undefined ? (
-                                            generalledger.Total === null ? (
-                                              <>0</>
-                                            ) : generalledger.Total >= 0 ? (
-                                              `$${generalledger.Total}`
-                                            ) : (
-                                              `$(${Math.abs(
-                                                generalledger.Total
-                                              )})`
-                                            )
-                                          ) : (
-                                            "0"
-                                          )}
-                                        </td>
-                                      </tr>
-                                    )
-                                  )}
+                                  <tr key={`${data?.paymentAndCharges._id}_${dataIndex}`}>
+                                    <td>
+                                      {formatDateWithoutTime(
+                                        data?.paymentAndCharges.type === "Charge"
+                                          ? data?.paymentAndCharges.date
+                                          : data?.paymentAndCharges.date
+                                      ) || "N/A"}
+                                    </td>
+                                    <td>{data?.paymentAndCharges.type}</td>
+                                    <td>
+                                      {data?.paymentAndCharges.type === "Charge"
+                                        ? data?.paymentAndCharges.charge_type
+                                        : data?.paymentAndCharges.account}
+                                    </td>
+                                    <td>
+                                      {data?.paymentAndCharges.type === "Charge"
+                                        ? data?.paymentAndCharges.charges_memo
+                                        : data?.paymentAndCharges.memo}
+                                    </td>
+                                    <td>
+                                      {data?.paymentAndCharges.type === "Charge"
+                                        ? `$${data?.paymentAndCharges.amount}`
+                                        : "-"}
+                                    </td>
+                                    <td>
+                                      {data?.paymentAndCharges.type === "Payment"
+                                        ? `$${data?.paymentAndCharges.amount}`
+                                        : "-"}
+                                    </td>
+                                    <td>
+                                      {data?.paymentAndCharges.Total !==
+                                        undefined ? (
+                                        data?.paymentAndCharges.Total === null ? (
+                                          <>0</>
+                                        ) : data?.paymentAndCharges.Total >= 0 ? (
+                                          `$${data?.paymentAndCharges.Total}`
+                                        ) : (
+                                          `$(${Math.abs(
+                                            data?.paymentAndCharges.Total
+                                          )})`
+                                        )
+                                      ) : (
+                                        "0"
+                                      )}
+                                    </td>
+                                  </tr>
                                 </React.Fragment>
                               ))}
                             </tbody>
                           </Table>
+                          {paginatedData.length > 0 ? (
+                            <Row>
+                              <Col className="text-right m-3">
+                                <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                                  <DropdownToggle caret>{pageItem}</DropdownToggle>
+                                  <DropdownMenu>
+                                    <DropdownItem
+                                      onClick={() => {
+                                        setPageItem(6);
+                                        setCurrentPage(1);
+                                      }}
+                                    >
+                                      6
+                                    </DropdownItem>
+                                    <DropdownItem
+                                      onClick={() => {
+                                        setPageItem(12);
+                                        setCurrentPage(1);
+                                      }}
+                                    >
+                                      12
+                                    </DropdownItem>
+                                    <DropdownItem
+                                      onClick={() => {
+                                        setPageItem(18);
+                                        setCurrentPage(1);
+                                      }}
+                                    >
+                                      18
+                                    </DropdownItem>
+                                  </DropdownMenu>
+                                </Dropdown>
+                                <Button
+                                  className="p-0"
+                                  style={{ backgroundColor: "#d0d0d0" }}
+                                  onClick={() => handlePageChange(currentPage - 1)}
+                                  disabled={currentPage === 1}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    fill="currentColor"
+                                    className="bi bi-caret-left"
+                                    viewBox="0 0 16 16"
+                                  >
+                                    <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                                  </svg>
+                                </Button>
+                                <span>
+                                  Page {currentPage} of {totalPages}
+                                </span>{" "}
+                                <Button
+                                  className="p-0"
+                                  style={{ backgroundColor: "#d0d0d0" }}
+                                  onClick={() => handlePageChange(currentPage + 1)}
+                                  disabled={currentPage === totalPages}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    fill="currentColor"
+                                    className="bi bi-caret-right"
+                                    viewBox="0 0 16 16"
+                                  >
+                                    <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                                  </svg>
+                                </Button>{" "}
+                              </Col>
+                            </Row>
+                          ) : (
+                            <></>
+                          )}
                         </Card>
                       )}
                     </div>
@@ -607,95 +780,92 @@ const TenantFinancial = () => {
 
                       <ModalBody>
                         <div>
-                  
+
                           <Row>
                             <Col md="6">
-                       
-                      
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Property*
-                        </label>
-                        <FormGroup>
-                          <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectedPropertyType
-                                ? selectedPropertyType
-                                : "Select Property"}
-                            </DropdownToggle>
-                            <DropdownMenu
-                              style={{
-                                width: "100%",
-                                maxHeight: "200px",
-                                overflowY: "auto",
-                              }}
-                            >
-                              {tenantDetails?.entries?.map((property, index) => (
-                                <DropdownItem
-                                key={index}
-                                onClick={() => {
-                                  handlePropertyTypeSelect(property);
-                                  financialFormik.setFieldValue(
-                                    "propertyId",
-                                    property.property_id
-                                  );
-                                  
-                                }}
-                                >
-                                
-                                  {property.rental_adress}
-                                </DropdownItem>
-                              ))}
-                            </DropdownMenu>
-                          </Dropdown>
-                        </FormGroup>
-                     
-                    
+
+
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                              >
+                                Property*
+                              </label>
+                              <FormGroup>
+                                <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
+                                  <DropdownToggle caret style={{ width: "100%" }}>
+                                    {selectedPropertyType
+                                      ? selectedPropertyType
+                                      : "Select Property"}
+                                  </DropdownToggle>
+                                  <DropdownMenu
+                                    style={{
+                                      width: "100%",
+                                      maxHeight: "200px",
+                                      overflowY: "auto",
+                                    }}
+                                  >
+                                    {tenantDetails?.entries?.map((property, index) => (
+                                      <DropdownItem
+                                        key={index}
+                                        onClick={() => {
+                                          handlePropertyTypeSelect(property);
+                                          financialFormik.setFieldValue(
+                                            "propertyId",
+                                            property.property_id
+                                          );
+
+                                        }}
+                                      >
+                                        {property.rental_adress}
+                                      </DropdownItem>
+                                    ))}
+                                  </DropdownMenu>
+                                </Dropdown>
+                              </FormGroup>
+
                             </Col>
                             <Col md="6">
-                       
-                      
-                       <label
-                         className="form-control-label"
-                         htmlFor="input-property"
-                       >
-                         Unit *
-                       </label>
-                       <FormGroup>
-                         <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
-                           <DropdownToggle caret style={{ width: "100%" }}>
-                             {selectedUnit
-                               ? selectedUnit
-                               : "Select Unit"}
-                           </DropdownToggle>
-                           <DropdownMenu
-                             style={{
-                               width: "100%",
-                               maxHeight: "200px",
-                               overflowY: "auto",
-                             }}
-                           >
-                             {tenantDetails?.entries?.map((property, index) => (
-                              selectedPropertyType === property.rental_adress &&
-                               <DropdownItem
-                               key={index}
-                               onClick={() => {
-                                 handleUnitSelect(property);
-                               }}
-                               >
-                                 {/* {console.log(property,'properjhwejk')} */}
-                                 {property.rental_units}
-                               </DropdownItem>
-                             ))}
-                           </DropdownMenu>
-                         </Dropdown>
-                       </FormGroup>
-                    
-                   
-                           </Col>
-                      
+                              {unitData.length !== 0 ? (
+                                <>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-property"
+                                  >
+                                    Unit *
+                                  </label>
+                                  <FormGroup>
+                                    <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
+                                      <DropdownToggle caret style={{ width: "100%" }}>
+                                        {selectedUnit
+                                          ? selectedUnit
+                                          : "Select Unit"}
+                                      </DropdownToggle>
+                                      <DropdownMenu
+                                        style={{
+                                          width: "100%",
+                                          maxHeight: "200px",
+                                          overflowY: "auto",
+                                        }}
+                                      >
+                                        {unitData?.map((property, index) => (
+                                          <DropdownItem
+                                            key={index}
+                                            onClick={() => {
+                                              handleUnitSelect(property);
+                                            }}
+                                          >
+                                            {property.rental_units}
+                                          </DropdownItem>
+                                        ))}
+                                      </DropdownMenu>
+                                    </Dropdown>
+                                  </FormGroup>
+                                </>
+                              ) : null}
+
+                            </Col>
+
                             <Col md="6">
                               <FormGroup>
                                 <label
@@ -722,7 +892,7 @@ const TenantFinancial = () => {
                                 />
                               </FormGroup>
                             </Col>
-                          
+
                             <Col md="6">
                               <FormGroup>
                                 <label
@@ -766,7 +936,7 @@ const TenantFinancial = () => {
                               </FormGroup>
                             </Col>
                           </Row>
-                          
+
                           <FormGroup>
                             <label
                               className="form-control-label"
@@ -792,7 +962,7 @@ const TenantFinancial = () => {
                               />
                             </InputGroup>
                           </FormGroup>
-                          
+
                           <FormGroup>
                             <label
                               className="form-control-label"
