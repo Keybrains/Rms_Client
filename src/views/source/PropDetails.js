@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "components/Headers/Header";
 import fone from "../../assets/img/icons/common/property_bg.png";
-import images from '../../images/1703244767607india-gate.png';
 import {
   Card,
   CardHeader,
@@ -614,9 +613,9 @@ const PropDetails = () => {
     // const formData = new FormData();
 
     const formData = new FormData();
-    for (let i = 0; i < files.length; i++) {
-      formData.append(`files`, files[i]);
-    }
+    // for (let i = 0; i < files.length; i++) {
+    formData.append(`files`, files[0]);
+    // }
 
     const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     try {
@@ -732,7 +731,7 @@ const PropDetails = () => {
                                 <div className="col-md-4 mt-2">
                                   <label htmlFor="prop_image">
                                     <img
-                                      src={images}
+                                      src={"images"}
                                       className="img-fluid rounded-start card-image"
                                       alt={"..."}
                                       width='260px'
@@ -740,21 +739,14 @@ const PropDetails = () => {
                                     // onClick={handleModalOpen}
                                     />
                                   </label>
-                                  <img
-                                    src={'../../images/1703244767607india-gate.png'}
-                                    className="img-fluid rounded-start card-image"
-                                    alt={"..."}
-                                    width='260px'
-                                    height='180px'
-                                  // onClick={handleModalOpen}
-                                  />
+                                 
                                   <TextField
                                     id="prop_image"
                                     name="prop_image"
                                     type="file"
                                     inputProps={{
                                       accept: "image/*",
-                                      multiple: true,
+                                      multiple: false,
                                     }}
                                     onChange={handleImageChange}
                                     style={{ display: "none" }}
