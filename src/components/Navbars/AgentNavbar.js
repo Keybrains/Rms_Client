@@ -17,11 +17,11 @@ import { useEffect, useState } from "react";
 const AgentNavbar = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let cookies = new Cookies();
-  let cookie_id = cookies.get("Agent ID");
+  let cookie_id = localStorage.getItem("Agent ID");
   //console.log(cookie_id);
   let Logout = () => {
-    cookies.remove("token");
-    cookies.remove("Agent ID");
+    localStorage.removeItem("token");
+    localStorage.removeItem("Agent ID");
   };
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

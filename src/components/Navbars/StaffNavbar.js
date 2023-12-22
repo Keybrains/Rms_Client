@@ -29,8 +29,8 @@ const StaffNavbar = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let cookies = new Cookies();
   let Logout = () => {
-    cookies.remove("token");
-    cookies.remove("Agent ID");
+    localStorage.removeItem("token");
+    localStorage.removeItem("Agent ID");
   };
 
   const [notificationCount, setNotificationCount] = useState(0);
@@ -51,7 +51,7 @@ const StaffNavbar = (props) => {
 
   const navigate = useNavigate();
 
-  let cookie_id = cookies.get("Staff ID");
+  let cookie_id = localStorage.getItem("Staff ID");
   //console.log(cookie_id)
 
   const [selectedProp, setSelectedProp] = useState("Select");

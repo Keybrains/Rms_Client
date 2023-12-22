@@ -59,8 +59,8 @@ const Workorder = () => {
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
-    if (cookies.get("token")) {
-      const jwt = jwtDecode(cookies.get("token"));
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
@@ -373,8 +373,8 @@ const Workorder = () => {
                         <td>{rental.work_subject}</td>
                         <td>{rental.rental_adress} {rental.rental_units ? " - " + rental.rental_units : null}</td> 
                         <td>{rental.work_category}</td>
-                        <td>{rental.staffmember_name}</td>
-                        <td>{rental.status}</td>
+                        <td>{rental.staffmember_name || "-"}</td>
+                        <td>{rental.status || "-"}</td>
                         <td>{rental.createdAt}</td>
                         <td>{rental.updateAt || "-"}</td>
 
