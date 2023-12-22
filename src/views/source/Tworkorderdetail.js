@@ -38,19 +38,21 @@ const TWorkOrderDetails = () => {
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
-    if (cookies.get("token")) {
-      const jwt = jwtDecode(cookies.get("token"));
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
 
+  const [imagedetails, setImageDetails] = useState([]);
   const getOutstandData = async () => {
     try {
       const response = await axios.get(`${baseUrl}/workorder/workorder_summary/${id}`);
       setoutstandDetails(response.data.data);
       setLoading(false);
+      setImageDetails(response.data.data.workOrderImage);
     } catch (error) {
       console.error('Error fetching tenant details:', error);
       setError(error);
@@ -127,7 +129,7 @@ const TWorkOrderDetails = () => {
     );
   }
 
-  let cookie_id = cookies.get("Tenant ID");
+  let cookie_id = localStorage.getItem("Tenant ID");
   const [tenantsDetails, setTenantsDetails] = useState();
 
   const getTenantData = async () => {
@@ -163,17 +165,7 @@ const TWorkOrderDetails = () => {
         console.error("Error fetching tenant details:", error);
         setError(error);
       }
-    } if (outstandDetails.rental_adress) {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/propertyunit/rentals_property/${outstandDetails.rental_adress}`
-        );
-        setPropertyDetails(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching tenant details:", error);
-        setError(error);
-      }
-    }
+    } 
   };
 
   React.useEffect(() => {
@@ -431,7 +423,7 @@ const TWorkOrderDetails = () => {
                             margin="20px"
                           >
                             <Box borderBottom="1px solid #ccc" style={{ minWidth: "100%", padding: "16px 16px 5px 16px", color: "#5e72e4" }}>
-                              <h3 className="text" style={{color:'#3B2F2F'}}>Contacts</h3>
+                              <h2 className="text" style={{color:'#3B2F2F'}}>Contacts</h2>
                             </Box>
                             <Box
                               borderBottom="1px solid #ccc"
@@ -479,7 +471,7 @@ const TWorkOrderDetails = () => {
                             ) : null}
                           </Box>
                         ) : null}
-                        {propertyDetails?.rental_adress ? <>
+                        {propertyDetails ? <>
                           <Box
                             border="1px solid #ccc"
                             borderRadius="8px"
@@ -490,7 +482,7 @@ const TWorkOrderDetails = () => {
                             alignItems="center" // Center content horizontally
                           >
                             <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
-                              <h3 className="text" style={{color:'#3B2F2F'}}>Property</h3>
+                              <h2 className="text" style={{color:'#3B2F2F'}}>Property</h2>
                             </Box>
                             {propertyDetails?.propertyres_image || propertyDetails?.property_image ? (
                               <Box style={{ width: "100%", padding: "16px", display: "flex", alignItems: "center" }}>
@@ -522,7 +514,9 @@ const TWorkOrderDetails = () => {
                 )}
 
                 {activeButton === 'Task' && (
-                  <div>
+                   <div className="container-fluid">
+                   <Row className="mb-4">
+                     <Col lg="8" md="12">
                     <Box border="1px solid #ccc" borderRadius="8px" padding="16px" maxWidth="700px" margin={'20px'}>
                       <Row>
                         <Col lg="2">
@@ -637,6 +631,66 @@ const TWorkOrderDetails = () => {
                         </Col>
                       </Row>
                     </Box>
+                    </Col>
+
+                    <Col lg="4" md="12">
+                      {/* <Box
+                      border="1px solid #ccc"
+                      borderRadius="8px"
+                      padding="16px"
+                      maxWidth="1000px"
+                      margin={"20px"}
+                    > */}
+                  
+                  {imagedetails ? (
+                    <>
+                      <Box
+                        border="1px solid #ccc"
+                        borderRadius="8px"
+                        maxWidth="100%" // Use 100% to make it responsive
+                        margin="20px"
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center" // Center content horizontally
+                      >
+                        <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
+                          <h2 className="text" style={{color:'#3B2F2F'}}>Images</h2>
+                        </Box>
+                        
+
+                        {imagedetails && imagedetails.length > 0 ? (
+                          <Box style={{ width: "100%", padding: "16px",marginTop: "10px",display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                            {imagedetails.map((imageUrl, index) => (
+                              <Box key={index} width="48%" style={{ minWidth: "48%", margin: "1%" }}>
+                                <img
+                                  src={imageUrl}
+                                  alt={`property ${index}`}
+                                  style={{ width: "100%", borderRadius: "8px", border: "1px solid #ccc" }}
+                                />
+                              </Box>
+                            ))}
+                          </Box>
+                        ) :"No Images Attached" }
+                          <br/>
+                          <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
+                              <Box width="100%" style={{ minWidth: "100%", textAlign: "center", cursor: 'pointer', color: 'blue' }} onClick={() => navigate(`/tenant/tenantpropertydetail/${propertyDetails.rental_adress}`)}>
+                                <span>{propertyDetails?.rental_adress || "N/A"} ({propertyDetails?.rental_units})</span>
+                              </Box>
+                            </Box>
+                          <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
+                            <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
+                              <span>{propertyDetails.rental_city ? <>{propertyDetails.rental_city},</> : ""} {propertyDetails.rental_state ? <>{propertyDetails.rental_state},</> : ""} {propertyDetails.rental_country ? <>{propertyDetails.rental_country},</> : ""} {propertyDetails.rental_postcode ? <>{propertyDetails.rental_postcode}.</> : ""}</span>
+                            </Box>
+                          </Box>
+                        </Box>
+                      </>
+                    ) : (
+                      <>No Details Found</>
+                    )}
+
+                     
+                      </Col>
+                    </Row>
                   </div>
 
                 )}

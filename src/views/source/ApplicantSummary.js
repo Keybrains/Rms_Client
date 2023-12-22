@@ -137,8 +137,8 @@ const ApplicantSummary = () => {
   };
 
   React.useEffect(() => {
-    if (cookies.get("token")) {
-      const jwt = jwtDecode(cookies.get("token"));
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
       console.log(jwt, jwt);
       setAccessType(jwt.accessType);
       setManager(jwt.userName);

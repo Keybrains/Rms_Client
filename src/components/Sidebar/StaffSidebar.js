@@ -79,8 +79,8 @@ const StaffSidebar = (props) => {
 
   let cookies = new Cookies();
   let Logout = () => {
-    cookies.remove("token");
-    cookies.remove("Staff ID");
+    localStorage.removeItem("token");
+    localStorage.removeItem("Staff ID");
     // localStorage.removeItem("name");
     // localStorage.removeItem("id");
     // navigate("/login");
@@ -88,7 +88,7 @@ const StaffSidebar = (props) => {
 
   const { id } = useParams();
   //console.log(id);
-  let cookie_id = cookies.get("Staff ID");
+  let cookie_id = localStorage.getItem("Staff ID");
   //console.log(cookie_id)
 
   const toggleCollapse = () => {
