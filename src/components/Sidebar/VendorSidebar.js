@@ -55,8 +55,8 @@ const VendorSidebar = (props) => {
 
   let cookies = new Cookies();
   let Logout = () => {
-    cookies.remove("token");
-    cookies.remove("Vendor ID");
+    localStorage.removeItem("token");
+    localStorage.removeItem("Vendor ID");
   };
   useEffect(() => {
     const handleWindowResize = () => {
@@ -97,7 +97,7 @@ const VendorSidebar = (props) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  let cookie_id = cookies.get("Vendor ID");
+  let cookie_id = localStorage.getItem("Vendor ID");
   //console.log(cookie_id)
 
   const { id } = useParams();

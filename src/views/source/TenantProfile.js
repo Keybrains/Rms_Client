@@ -30,13 +30,13 @@ const TenantProfile = () => {
   const navigate = useNavigate();
   // let rentalId = localStorage.getItem("ID")
   let cookies = new Cookies();
-  let cookie_id = cookies.get("Tenant ID");
-  let cookie_email = cookies.get("Tenant email");
+  let cookie_id = localStorage.getItem("Tenant ID");
+  let cookie_email = localStorage.getItem("Tenant email");
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
-    if (cookies.get("token")) {
-      const jwt = jwtDecode(cookies.get("token"));
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
     } else {
       navigate("/auth/login");

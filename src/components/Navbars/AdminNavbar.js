@@ -43,8 +43,8 @@ const AdminNavbar = (props) => {
 
   let cookies = new Cookies();
   let Logout = () => {
-    cookies.remove("token");
-    cookies.remove("Tenant ID");
+    localStorage.removeItem("token");
+    localStorage.removeItem("Tenant ID");
     // localStorage.removeItem("name");
     // localStorage.removeItem("id");
     // navigate("/login");
@@ -68,7 +68,7 @@ const AdminNavbar = (props) => {
     setSelectedProp(property);
   };
 
-  let cookie_id = cookies.get("Tenant ID");
+  let cookie_id = localStorage.getItem("Tenant ID");
   //console.log(cookie_id)
 
   useEffect(() => {
