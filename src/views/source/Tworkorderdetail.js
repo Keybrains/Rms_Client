@@ -283,7 +283,7 @@ const TWorkOrderDetails = () => {
                                   <AssignmentOutlinedIcon />
                                 </Box>
                                 <Box flex="1">
-                                  <h2 className="text text-lg" style={{color:'#3B2F2F'}}>
+                                  <h2 className="text text-lg" style={{ color: '#3B2F2F' }}>
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
                                   <span>{outstandDetails.rental_adress || "N/A"}</span>
@@ -374,7 +374,7 @@ const TWorkOrderDetails = () => {
                                   margin="20px"
                                   style={{ marginLeft: "auto", marginRight: "auto", overflowX: 'auto' }} // Center the box horizontally
                                 >
-                                  <h2 className="text text-lg" style={{color:'#3B2F2F'}}>Parts and Labor</h2>
+                                  <h2 className="text text-lg" style={{ color: '#3B2F2F' }}>Parts and Labor</h2>
                                   <Box overflowX="auto">
                                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
                                       <thead>
