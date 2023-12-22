@@ -455,7 +455,7 @@ const TenantWork = () => {
                           />
                         )}
                       </th>
-                      <th scope="col">
+                      {/* <th scope="col">
                         Assigned
                         {sortBy.includes("staffmember_name") ? (
                           upArrow.includes("staffmember_name") ? (
@@ -473,7 +473,7 @@ const TenantWork = () => {
                           />
                         )}
                       </th>
-                      <th scope="col">Status</th>
+                      <th scope="col">Status</th> */}
                       <th scope="col">Created At</th>
                       <th scope="col">Updated At</th>
                       <th scope="col">ACTION</th>
@@ -490,8 +490,8 @@ const TenantWork = () => {
                         <td>{rental.work_subject}</td>
                         <td>{rental.rental_adress}</td>
                         <td>{rental.work_category}</td>
-                        <td>{rental.staffmember_name}</td>
-                        <td>{rental.status}</td>
+                        {/* <td>{rental.staffmember_name}</td>
+                        <td>{rental.status}</td> */}
                         <td>{rental.createdAt}</td>
                         <td>{rental.updateAt || "-"}</td>
                         <td>
@@ -573,7 +573,7 @@ const TenantWork = () => {
                         </svg>
                       </Button>
                       <span>
-                        Page {currentPage} of {totalPages}
+                        Page {currentPage} of {totalPages || "1"}
                       </span>{" "}
                       <Button
                         className="p-0"

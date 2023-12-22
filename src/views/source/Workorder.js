@@ -373,8 +373,8 @@ const Workorder = () => {
                         <td>{rental.work_subject}</td>
                         <td>{rental.rental_adress} {rental.rental_units ? " - " + rental.rental_units : null}</td> 
                         <td>{rental.work_category}</td>
-                        <td>{rental.staffmember_name}</td>
-                        <td>{rental.status}</td>
+                        <td>{rental.staffmember_name || "-"}</td>
+                        <td>{rental.status || "-"}</td>
                         <td>{rental.createdAt}</td>
                         <td>{rental.updateAt || "-"}</td>
 

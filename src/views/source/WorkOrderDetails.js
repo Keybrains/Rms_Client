@@ -22,6 +22,7 @@ import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { styled } from "@material-ui/core";
 
 const WorkOrderDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -52,9 +53,8 @@ const WorkOrderDetails = () => {
         `${baseUrl}/workorder/workorder_summary/${workorder_id}`
       );
       setoutstandDetails(response.data.data);
-      console.log("first", response.data.data);
       setLoading(false);
-      //console.log("Data", response.data.data);
+      setImageDetails(response.data.data.workOrderImage)
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
@@ -101,6 +101,7 @@ const WorkOrderDetails = () => {
   }, [workorder_id]);
 
   const [propertyDetails, setPropertyDetails] = useState({});
+  
   const getPropertyData = async () => {
     if (outstandDetails.rental_adress && outstandDetails.rental_units) {
       try {
@@ -112,22 +113,14 @@ const WorkOrderDetails = () => {
         console.error("Error fetching tenant details:", error);
         setError(error);
       }
-    } if (outstandDetails.rental_adress) {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/propertyunit/rentals_property/${outstandDetails.rental_adress}`
-        );
-        setPropertyDetails(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching tenant details:", error);
-        setError(error);
-      }
-    }
+    } 
   };
 
   React.useEffect(() => {
     getPropertyData();
   }, [outstandDetails]);
+
+  const [imagedetails, setImageDetails] = useState([]);
 
   const [tenantsDetails, setTenantsDetails] = useState();
 
@@ -435,7 +428,7 @@ const WorkOrderDetails = () => {
                             margin="20px"
                           >
                             <Box borderBottom="1px solid #ccc" style={{ minWidth: "100%", padding: "16px 16px 5px 16px", color: "#5e72e4" }}>
-                              <h3 className="text-primary">Contacts</h3>
+                              <h2 className="text-primary">Contacts</h2>
                             </Box>
                             <Box
                               borderBottom="1px solid #ccc"
@@ -483,7 +476,7 @@ const WorkOrderDetails = () => {
                             ) : null}
                           </Box>
                         ) : null}
-                        {propertyDetails?.rental_adress ? <>
+                        {propertyDetails ? <>
                           <Box
                             border="1px solid #ccc"
                             borderRadius="8px"
@@ -493,8 +486,8 @@ const WorkOrderDetails = () => {
                             flexDirection="column"
                             alignItems="center" // Center content horizontally
                           >
-                            <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "center", color: "#5e72e4" }}>
-                              <h3 className="text-primary">Property</h3>
+                            <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
+                              <h2 className="text-primary">Property</h2>
                             </Box>
                             {propertyDetails?.propertyres_image || propertyDetails?.property_image ? (
                               <Box style={{ width: "100%", padding: "16px", display: "flex", alignItems: "center" }}>
@@ -525,8 +518,10 @@ const WorkOrderDetails = () => {
                   </div>
                 )}
                 {activeButton === "Task" && (
-                  <div>
-                    <Box
+                  <div className="container-fluid">
+                    <Row className="mb-4">
+                      <Col lg="8" md="12">
+                      <Box
                       border="1px solid #ccc"
                       borderRadius="8px"
                       padding="16px"
@@ -664,8 +659,68 @@ const WorkOrderDetails = () => {
                             </span>
                           </FormGroup>
                         </Col>
-                      </Row>
+                      </Row> 
                     </Box>
+                      </Col>
+
+                      <Col lg="4" md="12">
+                      {/* <Box
+                      border="1px solid #ccc"
+                      borderRadius="8px"
+                      padding="16px"
+                      maxWidth="1000px"
+                      margin={"20px"}
+                    > */}
+                  
+                  {imagedetails ? (
+                    <>
+                      <Box
+                        border="1px solid #ccc"
+                        borderRadius="8px"
+                        maxWidth="100%" // Use 100% to make it responsive
+                        margin="20px"
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center" // Center content horizontally
+                      >
+                        <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
+                          <h2 className="text-primary">Images</h2>
+                        </Box>
+                        
+
+                        {imagedetails && imagedetails.length > 0 ? (
+                          <Box style={{ width: "100%", padding: "16px",marginTop: "10px",display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                            {imagedetails.map((imageUrl, index) => (
+                              <Box key={index} width="48%" style={{ minWidth: "48%", margin: "1%" }}>
+                                <img
+                                  src={imageUrl}
+                                  alt={`propertyimage ${index}`}
+                                  style={{ width: "100%", borderRadius: "8px", border: "1px solid #ccc" }}
+                                />
+                              </Box>
+                            ))}
+                          </Box>
+                        ) :"No Images Attached" }
+                          <br/>
+                          <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
+                            <Box width="100%" style={{ minWidth: "100%", textAlign: "center", cursor: 'pointer', color: 'blue' }} onClick={() => navigate(`/admin/PropDetails/${propertyDetails.rentalId}/${propertyDetails.propertyId}`)}>
+                              <span>{propertyDetails.rental_adress || "N/A"} ({propertyDetails.rental_units})</span>
+                            </Box>
+                          </Box>
+                          <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
+                            <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
+                              <span>{propertyDetails.rental_city ? <>{propertyDetails.rental_city},</> : ""} {propertyDetails.rental_state ? <>{propertyDetails.rental_state},</> : ""} {propertyDetails.rental_country ? <>{propertyDetails.rental_country},</> : ""} {propertyDetails.rental_postcode ? <>{propertyDetails.rental_postcode}.</> : ""}</span>
+                            </Box>
+                          </Box>
+                        </Box>
+                      </>
+                    ) : (
+                      <>No Details Found</>
+                    )}
+
+                     
+                      </Col>
+                    </Row>
                   </div>
                 )}
               </div>

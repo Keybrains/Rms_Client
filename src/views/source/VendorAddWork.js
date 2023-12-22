@@ -28,6 +28,8 @@ import ClearIcon from "@mui/icons-material/Clear";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
+import { OpenImageDialog } from "components/OpenImageDialog";
+import PropertyType from "./PropertyType";
 
 const VendorAddWork = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -35,7 +37,8 @@ const VendorAddWork = () => {
   //console.log(workorder_id, "workorder_id");
   const { id } = useParams();
   //console.log(id, "id");
-
+  const [open, setOpen] = React.useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [propdropdownOpen, setpropdropdownOpen] = React.useState(false);
   const [categorydropdownOpen, setcategorydropdownOpen] = React.useState(false);
   const [vendordropdownOpen, setvendordropdownOpen] = React.useState(false);
@@ -43,13 +46,19 @@ const VendorAddWork = () => {
   const [userdropdownOpen, setuserdropdownOpen] = React.useState(false);
   const [statusdropdownOpen, setstatusdropdownOpen] = React.useState(false);
   const [vendorNames, setVendorNames] = useState([]);
+  const [unitData, setUnitData] = useState([]);
   const [selectedProp, setSelectedProp] = useState("Select");
+  const [selectedUnit, setSelectedUnit] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Select");
   const [selectedVendor, setSelectedVendor] = useState("Select");
   const [selectedEntry, setSelectedEntry] = useState("Select");
   const [selecteduser, setSelecteduser] = useState("Select");
   const [selectedStatus, setSelectedStatus] = useState("Select");
+  const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
 
+  const toggle11 = () => {
+    setUnitDropdownOpen((prevState) => !prevState);
+  };
   const toggle1 = () => setpropdropdownOpen((prevState) => !prevState);
   const toggle2 = () => setcategorydropdownOpen((prevState) => !prevState);
   const toggle3 = () => setvendordropdownOpen((prevState) => !prevState);
@@ -61,6 +70,8 @@ const VendorAddWork = () => {
   const [propertyData, setPropertyData] = useState([]);
   const [staffData, setstaffData] = useState([]);
   const [tableData, setTableData] = useState([]);
+  const [workOrderImage, setWorkOrderImage] = useState([])
+
   const [formData, setFormData] = useState({
     part_qty: "",
     account_type: "",
@@ -71,8 +82,121 @@ const VendorAddWork = () => {
   const [selectedPriority, setSelectedPriority] = useState("");
   const [selectedSub, setSelectedSub] = useState("");
 
-  const handlePropertySelect = (property) => {
+  // const handlePropertySelect = (property) => {
+  //   setSelectedProp(property);
+  // };
+
+  const handlePropertySelect = async (property) => {
     setSelectedProp(property);
+    WorkFormik.values.rental_adress = property;
+
+    setSelectedUnit(""); 
+    try {
+      const units = await fetchUnitsByProperty(property.rental_adress);
+      setUnitData(units);
+    } catch (error) {
+      console.error("Error handling selected property:", error);
+    }
+  };
+
+  const fetchUnitsByProperty = async (propertyType) => {
+    try {
+      console.log(propertyType, "propertyType");
+      const response = await fetch(
+        `${baseUrl}/propertyunit/rentals_property/${propertyType}`
+      );
+      const data = await response.json();
+      // Ensure that units are extracted correctly and set as an array
+      const units = data?.data || [];
+
+      console.log(units, "units246");
+      return units;
+    } catch (error) {
+      console.error("Error fetching units:", error);
+      return [];
+    }
+  };
+
+  const [vid, setVid] = useState("");
+  const [entriesID, setentriesID] = useState("");
+
+  const [imagedetails, setImageDetails] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (id) {
+        try {
+          const response = await axios.get(
+            `${baseUrl}/workorder/workorder_summary/${id}`
+          );
+          setImageDetails(response.data.data.workOrderImage)
+          const vendorData = response.data.data;
+          setWorkOrderData(vendorData);
+
+          const formattedDueDate = vendorData.due_date
+            ? new Date(vendorData.due_date).toISOString().split("T")[0]
+            : "";
+
+          setVid(vendorData._id);
+          if (vendorData && vendorData.entries.length > 0) {
+            setentriesID(vendorData.entries._id);
+          }
+
+          try {
+            const units = await fetchUnitsByProperty(vendorData.rental_adress);
+            setUnitData(units);
+          } catch (error) {
+            console.log(error, "error");
+          }
+          setSelectedUnit(vendorData.rental_units || "Select");
+          setSelectedProp(vendorData.rental_adress || "Select");
+          setSelectedCategory(vendorData.work_category || "Select");
+          setSelectedVendor(vendorData.vendor_name || "Select");
+          setSelectedEntry(vendorData.entry_allowed || "Select");
+          setSelecteduser(vendorData.staffmember_name || "Select");
+          setSelectedStatus(vendorData.status || "Select");
+          setSelectedPriority(vendorData.priority || "Select");
+          setSelectedAccount(vendorData.account_type || "Select");
+          setWorkOrderImage(vendorData.workOrderImage || []);
+
+          const entriesData = vendorData.entries || []; // Make sure entries is an array
+          console.log(vendorData.work_subject, "vendorData");
+          WorkFormik.setValues({
+            work_subject: vendorData.work_subject || "",
+            rental_units: vendorData.rental_units || "",
+            invoice_number: vendorData.invoice_number || "",
+            work_charge: vendorData.work_charge || "",
+            detail: vendorData.detail || "",
+            entry_contact: vendorData.entry_contact || "",
+            work_performed: vendorData.work_performed || "",
+            vendor_note: vendorData.vendor_note || "",
+            due_date: formattedDueDate,
+            final_total_amount: vendorData.final_total_amount || "",
+            entries: entriesData.map((entry) => ({
+              part_qty: entry.part_qty || "",
+              account_type: entry.account_type || "Select",
+              description: entry.description || "",
+              part_price: entry.part_price || "",
+              total_amount: entry.total_amount || "",
+              dropdownOpen: false,
+            })),
+          });
+        } catch (error) {
+          console.error("Error fetching vendor data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const handleUnitSelect = (selectedUnit, unitId) => {
+    setSelectedUnit(selectedUnit);
+    WorkFormik.values.rental_units = selectedUnit;
+    console.log(selectedUnit, "selectedUnit");
+    WorkFormik.setFieldValue("unit_id", unitId);
+
+    // entrySchema.values.unit_id = unitId;
   };
 
   const handleCategorySelection = (value) => {
@@ -202,6 +326,7 @@ const VendorAddWork = () => {
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
             : "";
+          setSelectedUnit(vendorData.rental_units || "Select");
           setSelectedProp(vendorData.rental_adress || "Select");
           setSelectedCategory(vendorData.work_category || "Select");
           setSelectedVendor(vendorData.vendor || "Select");
@@ -210,11 +335,12 @@ const VendorAddWork = () => {
           setSelectedStatus(vendorData.status);
           setSelectedPriority(vendorData.priority || "Select");
           setSelectedAccount(vendorData.account_type || "Select");
+          setWorkOrderImage(vendorData.workOrderImage || []);
 
           const entriesData = vendorData.entries || []; // Make sure entries is an array
           WorkFormik.setValues({
             work_subject: vendorData.work_subject || "",
-            unit_no: vendorData.unit_no || "",
+            rental_units: vendorData.rental_units || "",
             invoice_number: vendorData.invoice_number || "",
             work_charge: vendorData.work_charge || "",
             detail: vendorData.detail || "",
@@ -240,8 +366,10 @@ const VendorAddWork = () => {
   }, [id]);
 
   const { v4: uuidv4 } = require("uuid");
+  const [loader, setLoader] = useState(false);
 
   async function handleSubmit(values, work) {
+    setLoader(true);
     try {
       values["rental_adress"] = selectedProp;
       values["work_category"] = selectedCategory;
@@ -252,6 +380,8 @@ const VendorAddWork = () => {
       values["priority"] = selectedPriority;
       values["account_type"] = selectedAccount;
       values["final_total_amount"] = final_total_amount;
+      values["rental_units"] = selectedUnit;
+      values["workOrderImage"] = workOrderImage;
 
       const entries = WorkFormik.values.entries.map((entry) => ({
         part_qty: entry.part_qty,
@@ -335,7 +465,7 @@ const VendorAddWork = () => {
       navigate("/vendor/vendorworktable");
       swal(
         "Success!",
-        id ? "Workorder updated successfully" : "Workorder added successfully!",
+        id ? "Workorder Updated Successfully" : "Workorder Added Successfully!",
         "success"
       );
     } else {
@@ -347,7 +477,7 @@ const VendorAddWork = () => {
     initialValues: {
       work_subject: "",
       rental_adress: "",
-      unit_no: "",
+      rental_units: "",
       work_category: "",
       vendor: "",
       invoice_number: "",
@@ -362,6 +492,8 @@ const VendorAddWork = () => {
       due_date: "",
       priority: "",
       final_total_amount: "",
+      workOrderImage:[],
+
       entries: [
         {
           part_qty: "",
@@ -379,6 +511,21 @@ const VendorAddWork = () => {
       //console.log(values, "values");
     },
   });
+
+  const clearSelectedPhoto = (image) => {
+
+    const filteredImage = workOrderImage.filter((item) => {
+      return item !== image;
+    });
+    // console.log(filteredImage, "filteredImage");
+    // setResidentialImage(filteredImage);
+    setWorkOrderImage([
+      ...filteredImage,
+    ]);
+
+    WorkFormik.setFieldValue("workOrderImage", filteredImage);
+ 
+};
 
   React.useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
@@ -415,6 +562,57 @@ const VendorAddWork = () => {
         console.error("Network error:", error);
       });
   }, []);
+
+  const fileData = async (file, name, index) => {
+    //setImgLoader(true);
+    const allData = [];
+    const axiosRequests = [];
+    console.log(file,'file after adding')
+
+    for (let i = 0; i < file.length; i++) {
+      // setImgLoader(true);
+      const dataArray = new FormData();
+      dataArray.append("b_video", file[i]);
+      let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
+
+      // Push the Axios request promises into an array
+      axiosRequests.push(
+        axios
+          .post(url, dataArray, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            // setImgLoader(false);
+            const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
+            console.log(imagePath, "imagePath");
+            allData.push(imagePath);
+          })
+          .catch((err) => {
+            // setImgLoader(false);
+            console.log("Error uploading image:", err);
+          })
+      );
+    }
+    console.log(allData,'allData')
+
+    // Wait for all Axios requests to complete before logging the data
+    await Promise.all(axiosRequests);
+     
+      if (workOrderImage && workOrderImage.length>0) {
+        setWorkOrderImage([
+          ...workOrderImage,
+          ...allData,
+        ]);
+      } else {
+        setWorkOrderImage([...allData]);
+      }
+    
+    // console.log(allData, "allData");
+    // console.log(residentialImage, "residentialImage");
+    // console.log(commercialImage, "commercialImage");
+  };
 
   const handleQuantityChange = (e, index) => {
     const updatedEntries = [...WorkFormik.values.entries];
@@ -523,6 +721,174 @@ const VendorAddWork = () => {
                         </FormGroup>
                       </Col>
                     </Row>
+                    <Row>
+                    <Col>
+                      {imagedetails >0 ? (
+     
+                      <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                        }}
+                                      >
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-unitadd"
+                                        >
+                                          Photo
+                                        </label>
+                                        {/* <span
+                                          // onClick={workOrderDialog}
+                                          style={{
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontFamily: "monospace",
+                                            color: "blue",
+                                          }}
+                                        >
+                                          {" "}
+                                          <br />
+                                          <input
+                                            type="file"
+                                            className="form-control-file d-none"
+                                            accept="image/*"
+                                            multiple
+                                            id={`workOrderImage`}
+                                            name={`workOrderImage`}
+                                           
+                                            onChange={(e) => {
+                                              const file = [...e.target.files];
+                                              fileData(
+                                                file,
+                                                "propertyres_image",
+                      
+                                              );
+
+                                              if (file.length > 0) {
+                                                const allImages = file.map(
+                                                  (file) => {
+                                                    return URL.createObjectURL(
+                                                      file
+                                                    );
+                                                  }
+                                                );
+                                                // console.log(
+                                                //   residentialIndex,
+                                                //   "indexxxxxx"
+                                                // );
+                                                if (
+                                                  workOrderImage && workOrderImage.length>0
+                                                ) {
+                                                  setWorkOrderImage([
+                                                    ...workOrderImage, ...allImages,
+                                                    ]);
+                                                    WorkFormik.setFieldValue(
+                                                      `workOrderImage`,
+                                                      [...WorkFormik.values.workOrderImage,
+                                                      ...allImages]
+                                                    );
+                                                } else {
+                                                  setWorkOrderImage([
+                                                    ...allImages,
+                                                  ]);
+                                                  WorkFormik.setFieldValue(
+                                                    `workOrderImage`,
+                                                    [...allImages]
+                                                  )
+                                                }
+                                              } else {
+                                                setWorkOrderImage([
+                                                  ...workOrderImage
+                                                ]);
+                                                WorkFormik.setFieldValue(
+                                                  `workOrderImage`,
+                                                 [ ...WorkFormik.values.workOrderImage]
+                                                )
+                                                // )
+                                              }
+                                            }}
+                                          />
+                                          
+                                          <label
+                                            htmlFor={`workOrderImage`}
+                                          >
+                                            <b style={{ fontSize: "20px" }}>
+                                              +
+                                            </b>{" "}
+                                            Add
+                                          </label>
+                                        </span> */}
+                                      </FormGroup>
+                                       ) : null}
+                                        </Col>
+                                      </Row>
+                                      <FormGroup
+                                        style={{
+                                          display: "flex",
+                                          flexWrap: "wrap",
+                                          paddingLeft: "10px",
+                                        }}
+                                      >
+                                        <div
+                                          className="mt-3 d-flex"
+                                          style={{
+                                            justifyContent: "center",
+                                            flexWrap: "wrap",
+                                          }}
+                                        >
+                                          {workOrderImage.map((image, index) => (
+                                              <div
+                                                key={index}
+                                                style={{
+                                                  position: "relative",
+                                                  width: "100px",
+                                                  height: "100px",
+                                                  margin: "10px",
+                                                  display: "flex",
+                                                  flexDirection: "column",
+                                                }}
+                                              >
+                                                <img
+                                                  src={image}
+                                                  alt=""
+                                                  style={{
+                                                    width: "100px",
+                                                    height: "100px",
+                                                    maxHeight: "100%",
+                                                    maxWidth: "100%",
+                                                    borderRadius: "10px",
+                                                  }}
+                                                  onClick={() => {
+                                                    setSelectedImage(image);
+                                                    setOpen(true);
+                                                  }}
+                                                />
+                                                {/* <ClearIcon
+                                                  style={{
+                                                    cursor: "pointer",
+                                                    alignSelf: "flex-start",
+                                                    position: "absolute",
+                                                    top: "-12px",
+                                                    right: "-12px",
+                                                  }}
+                                                  onClick={() =>
+                                                    clearSelectedPhoto(
+                                                      // residentialIndex,
+                                                      image,
+                                                    )
+                                                  }
+                                                  
+                                                /> */}
+                                            
+                                              </div>
+                                            ))}
+                                          <OpenImageDialog 
+                                            open={open}
+                                            setOpen={setOpen}
+                                            selectedImage={selectedImage}
+                                          />
+                                        </div>
+                                      </FormGroup>
                     <br />
                   </div>
                   <div className="pl-lg-4">
@@ -573,40 +939,74 @@ const VendorAddWork = () => {
                           </FormGroup>
                         </FormGroup>
                       </Col>
+                  
                       <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Unit
-                          </label>
-                          <br />
-                          <br />
-                          <Input
-                            className="form-control-alternative"
-                            id="input-name"
-                            placeholder="Flat Number"
-                            type="text"
-                            name="unit_no"
-                            readOnly
-                            //name="nput-staffmember-name"
-                            onBlur={WorkFormik.handleBlur}
-                            onChange={(e) => {
-                              // Update the state or Formik values with the new input value
-                              WorkFormik.handleChange(e);
-                            }}
-                            value={WorkFormik.values.unit_no}
-                          />
-                          {WorkFormik.touched.unit_no &&
-                          WorkFormik.errors.unit_no ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.unit_no}
-                            </div>
-                          ) : null}
-                        </FormGroup>
+                        <Row>
+                        {console.log(unitData, "mj")}
+                        
+                          {selectedProp &&
+                            unitData &&
+                            unitData[0] &&
+                            unitData[0].rental_units && (
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-unit"
+                                  style={{ marginLeft: "15px" }}
+                                >
+                                  Unit *
+                                </label>
+                                <br/>
+                                <br/>
+                                <FormGroup style={{ marginLeft: "15px" }}>
+                                  <Dropdown
+                                    isOpen={unitDropdownOpen}
+                                    toggle={toggle11}
+                                    disabled={true}
+                                  >
+                                    <DropdownToggle caret>
+                                      {selectedUnit
+                                        ? selectedUnit
+                                        : "Select Unit"}
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                      {unitData.length > 0 ? (
+                                        unitData.map((unit) => (
+                                          <DropdownItem
+                                            key={unit._id}
+                                            onClick={() =>
+                                              handleUnitSelect(
+                                                unit.rental_units,
+                                                unit._id
+                                              )
+                                            }
+                                          >
+                                            {unit.rental_units}
+                                          </DropdownItem>
+                                        ))
+                                      ) : (
+                                        <DropdownItem disabled>
+                                          No units available
+                                        </DropdownItem>
+                                      )}
+                                    </DropdownMenu>
+                                    {/* {WorkFormik.errors &&
+                                    WorkFormik.errors?.rental_units &&
+                                    WorkFormik.touched &&
+                                    WorkFormik.touched?.rental_units &&
+                                    WorkFormik.values.rental_units === "" ? (
+                                      <div style={{ color: "red" }}>
+                                        {WorkFormik.errors.rental_units}
+                                      </div>
+                                    ) : null} */}
+                                  </Dropdown>
+                                </FormGroup>
+                              </FormGroup>
+                            )}
+                        </Row>
                       </Col>
                     </Row>
+
                     <br />
                   </div>
                   <div className="pl-lg-4">
@@ -679,7 +1079,7 @@ const VendorAddWork = () => {
                     </Row>
                     <br />
                   </div>
-                  <div className="pl-lg-4">
+                  {/* <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
                         <FormGroup>
@@ -715,7 +1115,7 @@ const VendorAddWork = () => {
                       </Col>
                     </Row>
                     <br />
-                  </div>
+                  </div> */}
 
                   {/* <div className="pl-lg-4">
                     <Row>
@@ -1507,14 +1907,35 @@ const VendorAddWork = () => {
 
                     <br />
                   </div>
+
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                   ) : id ? (
                   <button
                     type="submit"
                     onSubmit={{ handleSubmit }}
                     className="btn btn-primary ml-4"
                     style={{ background: "green" }}
                   >
-                    {id ? "Update Work Order" : "Add Work Order"}
+                    Save Work Order"
                   </button>
+                    ) : (
+                      <button
+                      type="submit"
+                      onSubmit={{ handleSubmit }}
+                      className="btn btn-primary ml-4"
+                      style={{ background: "green" }}
+                    >
+                      Add Work Order"
+                    </button>
+                    )}
                   <button
                     color="primary"
                    //  href="#rms"
