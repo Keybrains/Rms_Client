@@ -1158,6 +1158,7 @@ const AddWorkorder = () => {
                         </FormGroup>
                       </Col>
                     </Row>
+                    <img src='./' />
                     <br />
                   </div>
 
