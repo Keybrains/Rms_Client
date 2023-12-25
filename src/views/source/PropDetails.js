@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "components/Headers/Header";
 import fone from "../../assets/img/icons/common/property_bg.png";
-// import fone from "../../assets/img/icons/common/property_image.jpg";
 import {
   Card,
   CardHeader,
@@ -45,7 +44,7 @@ import swal from "sweetalert";
 import { Modal } from "react-bootstrap";
 import { RotatingLines } from "react-loader-spinner";
 // import "bootstrap/dist/css/bootstrap.min.css";
-// import CardActions from "@mui/material/CardActions";
+// import CardActions from "../../../../../rms-y/Rms_client/images";
 
 const bull = (
   <Box
@@ -89,7 +88,7 @@ const PropDetails = () => {
   const togglePhotoresDialog = () => {
     setPhotoresDialogOpen((prevState) => !prevState);
   };
-  console.log(propType, "proeptype");
+  console.log(propType, 'proeptype')
   const fileData = async (file, name, index) => {
     //setImgLoader(true);
     const allData = [];
@@ -133,15 +132,20 @@ const PropDetails = () => {
           ...unitImage.slice(index + 1),
         ]);
 
-        addUnitFormik.setFieldValue("propertyres_image", [
+        addUnitFormik.setFieldValue(
+          "propertyres_image", [
           ...unitImage.slice(0, index),
           [...unitImage[index], ...allData],
           ...unitImage.slice(index + 1),
-        ]);
+        ]
+        )
+
       } else {
         setUnitImage([...allData]);
         // if(propType === "Residential"){
-        addUnitFormik.setFieldValue("propertyres_image", [...allData]);
+        addUnitFormik.setFieldValue(
+          "propertyres_image", [...allData]
+        )
         // }
       }
     } else {
@@ -178,7 +182,9 @@ const PropDetails = () => {
         ...unitImage.slice(index + 1),
       ]);
 
+
       // }
+
     }
     //  else {
     //   // const filteredImage = commercialImage[index].filter((item) => {
@@ -218,6 +224,8 @@ const PropDetails = () => {
         `
       );
       console.log(resp, "resp");
+
+
 
       // console.log('setSelectedProp',selectedProp)
 
@@ -580,6 +588,9 @@ const PropDetails = () => {
 
   const [uploadedImage, setUploadedImage] = useState(null);
   const [propImageLoader, setPropImageLoader] = useState(false);
+  console.log(uploadedImage, "uploadedImage");
+
+  const [img, setImg] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleImageChange = async (event) => {
@@ -587,46 +598,24 @@ const PropDetails = () => {
     const file = event.target.files[0];
     const axiosRequests = [];
 
-    const dataArray = new FormData();
-    dataArray.append("b_video", file);
-    let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
+    const formData = new FormData();
+    // for (let i = 0; i < files.length; i++) {
+    formData.append(`files`, files[0]);
+    // }
 
-    // Push the Axios request promises into an array
-    axiosRequests.push(
-      axios
-        .post(url, dataArray, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
-          //setImgLoader(false);
-          const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-          console.log(imagePath, "imagePath");
+    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    try {
+      const result = await axios.post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-          setUploadedImage(imagePath);
-          const image = {
-            prop_image: imagePath,
-          };
-
-          axios
-            .put(`${baseUrl}/rentals/proparty_image/${id}/${entryIndex}`, image)
-            .then((response) => {
-              console.log(response.data.data, "updated data");
-              getRentalsData();
-              // setAddUnitDialogOpen(false);
-              // setAddUnitDialogOpen(false);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-          // allData.push(imagePath);
-        })
-        .catch((err) => {
-          //setImgLoader(false);
-          // console.log("Error uploading image:", err);
-        })
-    );
+      console.log(result.data, "imgs");
+    } catch (error) {
+      console.error(error);
+    }
+    setPropImageLoader(false);
 
     // Wait for all Axios requests to complete before logging the data
     await Promise.all(axiosRequests);
@@ -785,6 +774,7 @@ const PropDetails = () => {
                       {console.log(propertyUnit, "property unit")}
                     </TabList>
                   </Box>
+
                   <TabPanel value="summary">
                     <div className="main d-flex justify-content-between">
                       <div className="card mb-3 col-8">
