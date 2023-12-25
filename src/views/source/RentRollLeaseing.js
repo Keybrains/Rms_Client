@@ -2016,6 +2016,7 @@ const RentRollLeaseing = () => {
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
+      start_date: entrySchema.values.start_date,
     };
 
     try {
