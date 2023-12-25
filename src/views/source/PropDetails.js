@@ -90,116 +90,29 @@ const PropDetails = () => {
   const togglePhotoresDialog = () => {
     setPhotoresDialogOpen((prevState) => !prevState);
   };
-  console.log(propType, 'proeptype')
-  const fileData = async (file, name, index) => {
-    //setImgLoader(true);
-    const allData = [];
-    const axiosRequests = [];
-    for (let i = 0; i < file.length; i++) {
-      const dataArray = new FormData();
-      dataArray.append("b_video", file[i]);
-      let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
-      // Push the Axios request promises into an array
-      axiosRequests.push(
-        axios
-          .post(url, dataArray, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            //setImgLoader(false);
-            const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-            console.log(imagePath, "imagePath");
-            allData.push(imagePath);
-          })
-          .catch((err) => {
-            //setImgLoader(false);
-            console.log("Error uploading image:", err);
-          })
-      );
-    }
-    // Wait for all Axios requests to complete before logging the data
-    await Promise.all(axiosRequests);
-    if (name === "propertyres_image") {
-      // rentalsFormik.setFieldValue(
-      //   `entries[0].residential[${index}].propertyres_image`,
-      //   ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
-      //   allData
-      // );
-      if (unitImage[index]) {
-        setUnitImage([
-          ...unitImage.slice(0, index),
-          [...unitImage[index], ...allData],
-          ...unitImage.slice(index + 1),
-        ]);
 
-        addUnitFormik.setFieldValue(
-          "propertyres_image", [
-          ...unitImage.slice(0, index),
-          [...unitImage[index], ...allData],
-          ...unitImage.slice(index + 1),
-        ]
-        )
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const fileData = (e, type) => {
+    // Use the correct state-setting function for setSelectedFiles
+    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...e.target.files]);
 
-      } else {
-        setUnitImage([...allData]);
-        // if(propType === "Residential"){
-        addUnitFormik.setFieldValue(
-          "propertyres_image", [...allData]
-        )
-        // }
-      }
-    } else {
-      // rentalsFormik.setFieldValue(
-      //   `entries[0].commercial[${index}].property_image`,
-      //   ...rentalsFormik.values.entries[0].commercial[index].property_image,
-      //   allData
-      // );
-      // if (commercialImage[index]) {
-      //   setCommercialImage([
-      //     ...commercialImage.slice(0, index),
-      //     [...commercialImage[index], ...allData],
-      //     ...commercialImage.slice(index + 1),
-      //   ]);
-      // } else {
-      //   setCommercialImage([...allData]);
-      // }
-    }
-    // console.log(allData, "allData");
-    // console.log(unitImage, "unitImage");
-    // console.log(commercialImage, "commercialImage");
+    const newFiles = [
+      ...unitImage,
+      ...Array.from(e.target.files).map((file) => URL.createObjectURL(file)),
+    ];
+
+    // Update the state with the new files
+    setUnitImage(newFiles);
   };
 
   console.log(propType, "proeptype");
-  const clearSelectedPhoto = (index, image, name) => {
+  const clearSelectedPhoto = (index, name) => {
     if (name === "propertyres_image") {
-      const filteredImage = unitImage.filter((item) => {
-        return item.name !== image.name;
-      });
+      const filteredImage = unitImage.filter((item, i) => i !== index);
 
-      setUnitImage([
-        ...unitImage.slice(0, index),
-        ...filteredImage,
-        ...unitImage.slice(index + 1),
-      ]);
-
-
-      // }
-
+      setUnitImage(filteredImage);
     }
-    //  else {
-    //   // const filteredImage = commercialImage[index].filter((item) => {
-    //     // return item !== image;
-    //   });
-    // console.log(filteredImage, "filteredImage");
-    // setCommercialImage(filteredImage);
-    // setCommercialImage([
-    //   ...commercialImage.slice(0, index),
-    //   [...filteredImage],
-    //   ...commercialImage.slice(index + 1),
-    // ]);
-  }
+  };
 
   const getRentalsData = async (propertyType) => {
     try {
@@ -227,11 +140,6 @@ const PropDetails = () => {
         ${baseUrl}/newproparty/propropartytype
         `
       );
-      console.log(resp, "resp");
-
-
-      // console.log('setSelectedProp',selectedProp)
-
 
       const selectedType = Object.keys(resp.data.data).find((item) => {
         return resp.data.data[item].some(
@@ -556,9 +464,34 @@ const PropDetails = () => {
       }
     });
   };
-  console.log(addUnitFormik.values, "yash")
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const imageData = new FormData();
+    for (let index = 0; index < selectedFiles.length; index++) {
+      const element = selectedFiles[index];
+      imageData.append(`files`, element);
+    }
+
+    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    var image;
+    try {
+      const result = await axios.post(url, imageData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(result, "imgs");
+      image = {
+        prop_image: result.data.files.map((data, index) => {
+          return data.url;
+        }),
+      };
+    }
+    catch (error) {
+      console.error(error);
+    }
+
     const formData = {
       rental_adress: RentAdd,
       rentalId: id,
@@ -566,7 +499,7 @@ const PropDetails = () => {
       market_rent: addUnitFormik.values.market_rent,
       rental_bed: addUnitFormik.values.rooms,
       rental_bath: addUnitFormik.values.baths,
-      propertyres_image: addUnitFormik.values.propertyres_image || unitImage,
+      propertyres_image: propType === "Residential" ? image.prop_image : "",
       rental_sqft: addUnitFormik.values.size,
       rental_units: addUnitFormik.values.unit_number,
       rental_unitsAdress: addUnitFormik.values.address1,
@@ -578,9 +511,8 @@ const PropDetails = () => {
       rental_city: addUnitFormik.values.city,
       rental_postcode: addUnitFormik.values.zip,
       // property_image: addUnitFormik.values.property_image,
-      property_image: addUnitFormik.values.property_image || unitImage,
+      property_image: propType === "Residential" ? "" : image.prop_image,
     };
-    console.log("formData", formData);
     try {
       const response = await axios.post(
         `${baseUrl}/propertyunit/propertyunit`,
@@ -590,6 +522,7 @@ const PropDetails = () => {
         swal("Success!", "Unit Added Successfully", "success");
         setAddUnitDialogOpen(false);
         setPropertyUnit([...propertyUnit, response.data.data]);
+        console.log(response.data.data)
       } else {
         swal("", response.data.message, "error");
       }
@@ -600,50 +533,44 @@ const PropDetails = () => {
   };
 
 
-  const [uploadedImage, setUploadedImage] = useState(null);
+  // const [uploadedImage, setUploadedImage] = useState(null);
   const [propImageLoader, setPropImageLoader] = useState(false);
-  console.log(uploadedImage, "uploadedImage");
-
-  const [img, setImg] = useState("");
 
   const handleImageChange = async (event) => {
     setPropImageLoader(true)
     const files = event.target.files;
-    console.log(files, "yash")
-    // const formData = new FormData();
 
     const formData = new FormData();
-    // for (let i = 0; i < files.length; i++) {
     formData.append(`files`, files[0]);
-    // }
-
     const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    var image;
     try {
       const result = await axios.post(url, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      console.log(result.data, "imgs");
-    } catch (error) {
-      console.error(error);
+      console.log(result, "imgs");
+      image = {
+        prop_image: result.data.files[0].url
+      };
     }
+    catch (error) {
+      console.error(error, "imgs");
+    }
+    axios
+      .put(`${baseUrl}/rentals/proparty_image/${id}/${entryIndex}`, image)
+      .then((response) => {
+
+        console.log(response.data, "updated data");
+        getRentalsData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     setPropImageLoader(false);
 
-    // Wait for all Axios requests to complete before logging the data
   };
-
-  // await Promise.all(axiosRequests);
-  // Wait for all Axios requests to complete before logging the data
-
-  // if (file) {
-  //   const reader = new FileReader();
-  //   reader.onloadend = () => {
-  //     setUploadedImage(reader.result);
-  //   };
-  //   reader.readAsDataURL(file);
-  // }
 
   return (
     <>
@@ -731,15 +658,14 @@ const PropDetails = () => {
                                 <div className="col-md-4 mt-2">
                                   <label htmlFor="prop_image">
                                     <img
-                                      src={"images"}
+                                      src={matchedProperty.prop_image ? matchedProperty.prop_image : fone}
                                       className="img-fluid rounded-start card-image"
                                       alt={"..."}
-                                      width='260px'
-                                      height='180px'
+                                    // width='260px'
+                                    // height='180px'
                                     // onClick={handleModalOpen}
                                     />
                                   </label>
-                                 
                                   <TextField
                                     id="prop_image"
                                     name="prop_image"
@@ -767,7 +693,6 @@ const PropDetails = () => {
                             )
 
                           }
-
 
                           <div className="col-md-8">
                             <div
@@ -2354,59 +2279,8 @@ const PropDetails = () => {
                                     multiple
                                     id={`unit_img`}
                                     name={`unit_img`}
-                                    onChange={(e) => {
-                                      const file = [...e.target.files];
-                                      fileData(
-                                        file,
-                                        "propertyres_image",
-                                        ""
-                                      );
-                                      if (file.length > 0) {
-                                        const allImages = file.map(
-                                          (file) => {
-                                            return URL.createObjectURL(
-                                              file
-                                            );
-                                          }
-                                        );
-                                        // console.log(
-                                        //    "",
-                                        //   "indexxxxxx"
-                                        // );
-                                        if (
-                                          unitImage[
-                                          ""
-                                          ]
-                                        ) {
-                                          setUnitImage([
-                                            ...unitImage.slice(
-                                              0,
-                                              ""
-                                            ),
-                                            [
-                                              ...unitImage[
-                                              ""
-                                              ],
-                                              ...allImages,
-                                            ],
-                                            ...unitImage.slice(
-                                              1 + ""
-                                            ),
-                                          ]);
-                                        } else {
-                                          setUnitImage([
-                                            ...allImages,
-                                          ]);
-                                        }
-                                      } else {
-                                        setUnitImage([
-                                          ...unitImage,
-                                        ]);
-                                        // )
-                                      }
-                                    }}
+                                    onChange={(e) => fileData(e, matchedProperty.property_type)}
                                   />
-                                  {console.log(unitImage, 'unitImage')}
                                   <label
                                     htmlFor={`unit_img`}
                                   >
@@ -2427,57 +2301,46 @@ const PropDetails = () => {
                               >
                                 <div className="d-flex">
                                   {unitImage &&
-                                    unitImage
-                                      .length > 0 &&
-                                    unitImage
-                                      .map((unitImg) => (
-                                        <div
-                                          key={unitImg}
+                                    unitImage.length > 0 &&
+                                    unitImage.map((unitImg, index) => (
+                                      <div
+                                        key={index}  // Use a unique identifier, such as index or image URL
+                                        style={{
+                                          position: "relative",
+                                          width: "100px",
+                                          height: "100px",
+                                          margin: "10px",
+                                          display: "flex",
+                                          flexDirection: "column",
+                                        }}
+                                      >
+                                        <img
+                                          src={unitImg}
+                                          alt=""
                                           style={{
-                                            position: "relative",
                                             width: "100px",
                                             height: "100px",
-                                            margin: "10px",
-                                            display: "flex",
-                                            flexDirection: "column",
+                                            maxHeight: "100%",
+                                            maxWidth: "100%",
+                                            borderRadius: "10px",
                                           }}
-                                        >
-                                          <img
-                                            src={unitImg}
-                                            alt=""
-                                            style={{
-                                              width: "100px",
-                                              height: "100px",
-                                              maxHeight: "100%",
-                                              maxWidth: "100%",
-                                              borderRadius: "10px",
-                                              // objectFit: "cover",
-                                            }}
-                                            onClick={() => {
-                                              setSelectedImage(
-                                                unitImg
-                                              );
-                                              setOpen(true);
-                                            }}
-                                          />
-                                          <ClearIcon
-                                            style={{
-                                              cursor: "pointer",
-                                              alignSelf: "flex-start",
-                                              position: "absolute",
-                                              top: "-12px",
-                                              right: "-12px",
-                                            }}
-                                            onClick={() =>
-                                              clearSelectedPhoto(
-                                                "",
-                                                unitImage,
-                                                "propertyres_image"
-                                              )
-                                            }
-                                          />
-                                        </div>
-                                      ))}
+                                          onClick={() => {
+                                            setSelectedImage(unitImg);
+                                            setOpen(true);
+                                          }}
+                                        />
+                                        <ClearIcon
+                                          style={{
+                                            cursor: "pointer",
+                                            alignSelf: "flex-start",
+                                            position: "absolute",
+                                            top: "-12px",
+                                            right: "-12px",
+                                          }}
+                                          onClick={() => clearSelectedPhoto(index, "propertyres_image")}
+                                        />
+                                      </div>
+                                    ))}
                                   <OpenImageDialog
                                     open={open}
                                     setOpen={setOpen}
@@ -2512,7 +2375,6 @@ const PropDetails = () => {
                             marginBottom: "10px",
                           }}
                         >
-                          {console.log(multiUnit, "multiiiiiiiS ")}
                           <Button
                             className="btn-icon btn-2"
                             color="primary"
@@ -2531,7 +2393,6 @@ const PropDetails = () => {
                                 zip: propertyDetails.entries[0].rental_postcode,
                                 country: propertyDetails.entries[0].rental_country,
                               });
-                              // console.log(propertyUnit,'pppppprrrrrroooooooo')
                               // setAddUnitDialogOpen(true);
                               setAddUnitDialogOpen(true)
                             }}
@@ -2707,9 +2568,9 @@ const PropDetails = () => {
                                   <img
                                     // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
                                     src={
-                                      clickedObject && clickedObject.property_image.length > 0
-                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0] : clickedObject.propertyres_image[0] ?
-                                          clickedObject.propertyres_image[0] : fone : fone
+                                      clickedObject && (clickedObject.property_image.length > 0 || clickedObject.propertyres_image.length > 0)
+                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0][0] : clickedObject.propertyres_image[0] ?
+                                          clickedObject.propertyres_image[0][0] : fone : fone
                                     }
                                     className="img-fluid rounded-start card-image"
                                     alt="..."
@@ -2739,7 +2600,6 @@ const PropDetails = () => {
                                 }}
                               >
                                 <div>
-                                  {console.log(clickedObject, "clickedObject")}
                                   <Typography
                                     variant="h6"
                                     sx={{
@@ -3083,7 +2943,6 @@ const PropDetails = () => {
                                                           }
                                                         }}
                                                       />
-                                                      {console.log(unitImage, 'unitImage')}
                                                       <label
                                                         htmlFor={`unit_img`}
                                                       >
