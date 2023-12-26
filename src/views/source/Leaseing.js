@@ -2333,10 +2333,7 @@ const Leaseing = () => {
       <Container className="mt--7" fluid>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card
-              className="bg-secondary shadow"
-              onSubmit={entrySchema.handleSubmit}
-            >
+            <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
@@ -6104,11 +6101,11 @@ const Leaseing = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                        entrySchema.handleSubmit();
                         if (selectedTenantData.length !== 0) {
                           handleSubmit(entrySchema.values);
                         } else {
                           // console.log("data not ok")
+                          entrySchema.handleSubmit();
                           setDisplay(true);
                         }
                       }}
