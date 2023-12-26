@@ -204,13 +204,37 @@ const TAddWork = () => {
 
   const handleSubmit = async (values) => {
     setLoader(true);
+    var image;
+    const imageData = new FormData();
+    for (let index = 0; index < selectedFiles.length; index++) {
+      const element = selectedFiles[index];
+      imageData.append(`files`, element);
+    }
+
+    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+    try {
+      const result = await axios.post(url, imageData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      image = {
+        prop_image: result.data.files.map((data, index) => {
+          return data.url;
+        }),
+      };
+      console.log(image, "imgs");
+    }
+    catch (error) {
+      console.error(error);
+    }
     try {
       values["rental_adress"] = selectedProp;
       values["rental_units"] = selectedUnit;
       values["work_category"] = WorkFormik.values.work_category ? WorkFormik.values.work_category : selectedCategory;
       values["vendor"] = selectedVendor;
       values["entry_allowed"] = selectedEntry;
-      values["workOrderImage"] = workOrderImage;
+      values["workOrderImage"] = image.prop_image;
 
       const workorder_id = uuidv4();
       values["workorder_id"] = workorder_id;
@@ -284,7 +308,7 @@ const TAddWork = () => {
       entry_allowed: "",
       staffmember_name: "",
       work_performed: "",
-      workOrderImage:[],
+      workOrderImage: [],
     },
 
     validationSchema: yup.object({
@@ -353,64 +377,27 @@ const TAddWork = () => {
   const [workOrderImage, setWorkOrderImage] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const clearSelectedPhoto = (image) => {
-
-    const filteredImage = workOrderImage.filter((item) => {
-      return item !== image;
-    });
-    setWorkOrderImage([
-      ...filteredImage,
-    ]);
-
-    WorkFormik.setFieldValue("workOrderImage", filteredImage);
- 
-};
-
-  const fileData = async (file, name, index) => {
-    //setImgLoader(true);
-    const allData = [];
-    const axiosRequests = [];
-    console.log(file,'file after adding')
-
-    for (let i = 0; i < file.length; i++) {
-      // setImgLoader(true);
-      const dataArray = new FormData();
-      dataArray.append("b_video", file[i]);
-      let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
-
-      // Push the Axios request promises into an array
-      axiosRequests.push(
-        axios
-          .post(url, dataArray, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            // setImgLoader(false);
-            const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-            console.log(imagePath, "imagePath");
-            allData.push(imagePath);
-          })
-          .catch((err) => {
-            // setImgLoader(false);
-            console.log("Error uploading image:", err);
-          })
-      );
+  const clearSelectedPhoto = (index, name) => {
+    if (name === "propertyres_image") {
+      const filteredImage = workOrderImage.filter((item, i) => i !== index);
+      const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
+      setSelectedFiles(filteredImage2);
+      setWorkOrderImage(filteredImage);
     }
-   
+  };
 
-    // Wait for all Axios requests to complete before logging the data
-    await Promise.all(axiosRequests);
-     
-      if (workOrderImage && workOrderImage.length>0) {
-        setWorkOrderImage([
-          ...workOrderImage,
-          ...allData,
-        ]);
-      } else {
-        setWorkOrderImage([...allData]);
-      }
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const fileData = (e, type) => {
+    // Use the correct state-setting function for setSelectedFiles
+    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...e.target.files]);
+
+    const newFiles = [
+      ...workOrderImage,
+      ...Array.from(e.target.files).map((file) => URL.createObjectURL(file)),
+    ];
+
+    // Update the state with the new files
+    setWorkOrderImage(newFiles);
   };
 
   const editworkorder = async (vid) => {
@@ -496,168 +483,121 @@ const TAddWork = () => {
                     </Row>
                     <Row>
                       <Col >
-                      <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}
-                                      >
-                                        <label
-                                          className="form-control-label"
-                                          htmlFor="input-unitadd"
-                                        >
-                                          Photo
-                                        </label>
-                                        <span
-                                          // onClick={workOrderDialog}
-                                          style={{
-                                            cursor: "pointer",
-                                            fontSize: "14px",
-                                            fontFamily: "monospace",
-                                            color: "blue",
-                                          }}
-                                        >
-                                          {" "}
-                                          <br />
-                                          <input
-                                            type="file"
-                                            className="form-control-file d-none"
-                                            accept="image/*"
-                                            multiple
-                                            id={`workOrderImage`}
-                                            name={`workOrderImage`}
-                                            onChange={(e) => {
-                                              const file = [...e.target.files];
-                                              fileData(
-                                                file,
-                                                "propertyres_image",
-                      
-                                              );
+                        <FormGroup
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-unitadd"
+                          >
+                            Photo
+                          </label>
+                          <span
+                            // onClick={workOrderDialog}
+                            style={{
+                              cursor: "pointer",
+                              fontSize: "14px",
+                              fontFamily: "monospace",
+                              color: "blue",
+                            }}
+                          >
+                            {" "}
+                            <br />
+                            <input
+                              type="file"
+                              className="form-control-file d-none"
+                              accept="image/*"
+                              multiple
+                              id={`workOrderImage`}
+                              name={`workOrderImage`}
+                              onChange={(e) => fileData(e)}
+                            />
 
-                                              if (file.length > 0) {
-                                                const allImages = file.map(
-                                                  (file) => {
-                                                    return URL.createObjectURL(
-                                                      file
-                                                    );
-                                                  }
-                                                );
-                                                // console.log(
-                                                //   residentialIndex,
-                                                //   "indexxxxxx"
-                                                // );
-                                                if (
-                                                  workOrderImage && workOrderImage.length>0
-                                                ) {
-                                                  setWorkOrderImage([
-                                                    ...workOrderImage, ...allImages,
-                                                    ]);
-                                                    WorkFormik.setFieldValue(
-                                                      `workOrderImage`,
-                                                      [...WorkFormik.values.workOrderImage,
-                                                      ...allImages]
-                                                    );
-                                                } else {
-                                                  setWorkOrderImage([
-                                                    ...allImages,
-                                                  ]);
-                                                  WorkFormik.setFieldValue(
-                                                    `workOrderImage`,
-                                                    [...allImages]
-                                                  )
-                                                }
-                                              } else {
-                                                setWorkOrderImage([
-                                                  ...workOrderImage
-                                                ]);
-                                                WorkFormik.setFieldValue(
-                                                  `workOrderImage`,
-                                                 [ ...WorkFormik.values.workOrderImage]
-                                                )
-                                                // )
-                                              }
-                                            }}
-                                          />
-                                          
-                                          <label
-                                            htmlFor={`workOrderImage`}
-                                          >
-                                            <b style={{ fontSize: "20px" }}>
-                                              +
-                                            </b>{" "}
-                                            Add
-                                          </label>
-                                          {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
-                                        </span>
-                                      </FormGroup>
+                            <label
+                              htmlFor={`workOrderImage`}
+                            >
+                              <b style={{ fontSize: "20px" }}>
+                                +
+                              </b>{" "}
+                              Add
+                            </label>
+                            {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                          </span>
+                        </FormGroup>
                       </Col>
                     </Row>
                     <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexWrap: "wrap",
-                                          paddingLeft: "10px",
-                                        }}
-                                      >
-                                        <div
-                                          className="mt-3 d-flex"
-                                          style={{
-                                            justifyContent: "center",
-                                            flexWrap: "wrap",
-                                          }}
-                                        >
-                                          {workOrderImage.map((image, index) => (
-                                              <div
-                                                key={index}
-                                                style={{
-                                                  position: "relative",
-                                                  width: "100px",
-                                                  height: "100px",
-                                                  margin: "10px",
-                                                  display: "flex",
-                                                  flexDirection: "column",
-                                                }}
-                                              >
-                                                <img
-                                                  src={image}
-                                                  alt=""
-                                                  style={{
-                                                    width: "100px",
-                                                    height: "100px",
-                                                    maxHeight: "100%",
-                                                    maxWidth: "100%",
-                                                    borderRadius: "10px",
-                                                  }}
-                                                  onClick={() => {
-                                                    setSelectedImage(image);
-                                                    setOpen(true);
-                                                  }}
-                                                />
-                                                <ClearIcon
-                                                  style={{
-                                                    cursor: "pointer",
-                                                    alignSelf: "flex-start",
-                                                    position: "absolute",
-                                                    top: "-12px",
-                                                    right: "-12px",
-                                                  }}
-                                                  onClick={() =>
-                                                    clearSelectedPhoto(
-                                                      // residentialIndex,
-                                                      image,
-                                                    )
-                                                  }
-                                                />
-                                            
-                                              </div>
-                                            ))}
-                                          <OpenImageDialog 
-                                            open={open}
-                                            setOpen={setOpen}
-                                            selectedImage={selectedImage}
-                                          />
-                                        </div>
-                                      </FormGroup>
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        paddingLeft: "10px",
+                      }}
+                    >
+                      <div
+                        className="mt-3 d-flex"
+                        style={{
+                          justifyContent: "center",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <div className="d-flex">
+                          {workOrderImage &&
+                            workOrderImage.length > 0 &&
+                            workOrderImage.map((unitImg, index) => (
+                              <div
+                                key={index}  // Use a unique identifier, such as index or image URL
+                                style={{
+                                  position: "relative",
+                                  width: "100px",
+                                  height: "100px",
+                                  margin: "10px",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <img
+                                  src={unitImg}
+                                  alt=""
+                                  style={{
+                                    width: "100px",
+                                    height: "100px",
+                                    maxHeight: "100%",
+                                    maxWidth: "100%",
+                                    borderRadius: "10px",
+                                  }}
+                                  onClick={() => {
+                                    setSelectedImage(unitImg);
+                                    setOpen(true);
+                                  }}
+                                />
+                                <ClearIcon
+                                  style={{
+                                    cursor: "pointer",
+                                    alignSelf: "flex-start",
+                                    position: "absolute",
+                                    top: "-12px",
+                                    right: "-12px",
+                                  }}
+                                  onClick={() => clearSelectedPhoto(index, "propertyres_image")}
+                                />
+                              </div>
+                            ))}
+                          <OpenImageDialog
+                            open={open}
+                            setOpen={setOpen}
+                            selectedImage={selectedImage}
+                          />
+                        </div>
+                        <OpenImageDialog
+                          open={open}
+                          setOpen={setOpen}
+                          selectedImage={selectedImage}
+                        />
+                      </div>
+                    </FormGroup>
                     <br />
                   </div>
 
@@ -723,8 +663,8 @@ const TAddWork = () => {
                           </FormGroup>
                         </FormGroup>
                       </Col>
-                  
-                   
+
+
                       <Col lg="4">
                         {selectedProp &&
                           unitData &&
@@ -785,7 +725,7 @@ const TAddWork = () => {
                           )}
                       </Col>
                     </Row>
-                    <br/>
+                    <br />
                   </div>
 
                   <div className="pl-lg-4">

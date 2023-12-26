@@ -674,6 +674,7 @@ const RentRollLeaseing = () => {
     //setImgLoader(true);
     // console.log(files, "file");
     const filesArray = [...files];
+    console.log(filesArray, "yash")
 
     if (filesArray.length <= 10 && file.length === 0) {
       const finalArray = [];
@@ -716,47 +717,17 @@ const RentRollLeaseing = () => {
 
       entrySchema.setFieldValue("upload_file", [...file, ...finalArray]);
     }
-
-    // console.log(file, "fileanaadsaa");
-
-    const dataArray = new FormData();
-    dataArray.append("b_video", files);
-
-    let url = "https://cdn.profitable.com/image_upload.php/";
-    axios
-      .post(url, dataArray, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        //setImgLoader(false);
-        const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        // console.log(imagePath, "imagePath");
-        // setFile(imagePath);
-      })
-      .catch((err) => {
-        //setImgLoader(false);
-        console.log("Error uploading image:", err);
-      });
   };
+
   const deleteFile = (index) => {
     const newFile = [...file];
     newFile.splice(index, 1);
     setFile(newFile);
+    entrySchema.setFieldValue("upload_file", newFile);
   };
 
   const handleOpenFile = (item) => {
-    console.log(file, "fike");
-    if (file.length > 0) {
-      //   const fileToOpen = file?.filter((file) => {
-      //     return file.name === item.name;
-      // });
-      // console.log(fileToOpen, "fileToOpen");
-      console.log(item, "item");
-      const url = URL.createObjectURL(item);
-      window.open(url, "_blank");
-    }
+    window.open(item, "_blank");
   };
 
   useEffect(() => {
@@ -1909,6 +1880,35 @@ const RentRollLeaseing = () => {
   const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
     setLoader(true);
+
+    for (const [index, files] of entrySchema.values.upload_file.entries()) {
+      if (files.upload_file instanceof File) {
+        console.log(files.upload_file, "myfile");
+
+        const imageData = new FormData();
+        imageData.append(`files`, files.upload_file);
+
+        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+
+        try {
+          const result = await axios.post(url, imageData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          console.log(result, "imgs");
+
+          // Update the original array with the uploaded file URL
+          entrySchema.values.upload_file[index].upload_file = result.data.files[0].url;
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        console.log(files.upload_file, "myfile");
+      }
+    }
+
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -2585,6 +2585,34 @@ const RentRollLeaseing = () => {
 
     const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
+    for (const [index, files] of entrySchema.values.upload_file.entries()) {
+      if (files.upload_file instanceof File) {
+        console.log(files.upload_file, "myfile");
+
+        const imageData = new FormData();
+        imageData.append(`files`, files.upload_file);
+
+        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+
+        try {
+          const result = await axios.post(url, imageData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          console.log(result, "imgs");
+
+          // Update the original array with the uploaded file URL
+          entrySchema.values.upload_file[index].upload_file = result.data.files[0].url;
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        console.log(files.upload_file, "myfile");
+      }
+    }
+
     try {
       const units = await fetchUnitsByProperty(entrySchema.values.rental_units);
       //console.log(units, "units"); // Check the received units in the console
@@ -2684,7 +2712,7 @@ const RentRollLeaseing = () => {
       entries: entriesArray,
     };
 
-    // console.log(leaseObject, "updated values");
+    console.log(entriesObject.upload_file, "updated values");
     await axios
       .put(editUrl, leaseObject)
       .then((response) => {
@@ -6402,12 +6430,12 @@ const RentRollLeaseing = () => {
                               </p>
                             ) : (
                               <p
-                                // onClick={() => handleOpenFile(file.upload_file)}
+                                onClick={() => handleOpenFile(singleFile.upload_file)}
                                 style={{ cursor: "pointer" }}
                               >
                                 {/* {console.log(file, "file 5803")} */}
-                                {file[0]?.file_name?.substr(0, 5)}
-                                {file[0]?.file_name?.length > 5 ? "..." : null}
+                                {singleFile?.file_name?.substr(0, 5)}
+                                {singleFile?.file_name?.length > 5 ? "..." : null}
                               </p>
                             )}
                             <CloseIcon
