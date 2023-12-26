@@ -493,7 +493,7 @@ const WorkOrderDetails = () => {
                               <Box style={{ width: "100%", padding: "16px", display: "flex", alignItems: "center" }}>
                                 <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
                                   <img
-                                    src={propertyDetails?.propertyres_image || propertyDetails?.property_image}
+                                    src={propertyDetails.propertyres_image[0] || propertyDetails.property_image[0]}
                                     alt="property"
                                     style={{ maxWidth: "80%", maxHeight: "100%", borderRadius: "8px", border: "1px solid #ccc" }}
                                   />
