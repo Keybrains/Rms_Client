@@ -1625,7 +1625,7 @@ const Leaseing = () => {
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
-      // start_date: entrySchema.values.start_date,
+      // nextDue_date: entrySchema.values.nextDue_date,
     };
     console.log("..............paymentDetails.............", paymentDetails);
     try {
@@ -1644,7 +1644,6 @@ const Leaseing = () => {
           const putObject = {
             entries: tenantObject.entries,
           };
-          // debugger
 
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
@@ -2334,10 +2333,7 @@ const Leaseing = () => {
       <Container className="mt--7" fluid>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card
-              className="bg-secondary shadow"
-              onSubmit={entrySchema.handleSubmit}
-            >
+            <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
@@ -6105,11 +6101,11 @@ const Leaseing = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                        entrySchema.handleSubmit();
                         if (selectedTenantData.length !== 0) {
                           handleSubmit(entrySchema.values);
                         } else {
                           // console.log("data not ok")
+                          entrySchema.handleSubmit();
                           setDisplay(true);
                         }
                       }}
