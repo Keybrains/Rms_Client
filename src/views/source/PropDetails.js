@@ -81,7 +81,7 @@ const PropDetails = () => {
   const [RentAdd, setRentAdd] = useState({});
   const [propType, setPropType] = useState("");
   const [selectedProp, setSelectedProp] = useState("");
-  const [balance, setBalance] = useState("");
+  // const [balance, setBalance] = useState("");
 
   const [multiUnit, setMultiUnit] = useState(null);
   const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
@@ -92,9 +92,14 @@ const PropDetails = () => {
   };
 
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [unitImageLoader, setUnitImageLoader] = useState(false);
   const fileData = (e, type) => {
+    // setUnitImageLoader(true);
     // Use the correct state-setting function for setSelectedFiles
-    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...e.target.files]);
+    setSelectedFiles((prevSelectedFiles) => [
+      ...prevSelectedFiles,
+      ...e.target.files,
+    ]);
 
     const newFiles = [
       ...unitImage,
@@ -109,11 +114,11 @@ const PropDetails = () => {
   const clearSelectedPhoto = (index, name) => {
     if (name === "propertyres_image") {
       const filteredImage = unitImage.filter((item, i) => i !== index);
-
+      const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
+      setSelectedFiles(filteredImage2);
       setUnitImage(filteredImage);
     }
   };
-
   const getRentalsData = async (propertyType) => {
     try {
       const response = await axios.get(
@@ -132,8 +137,8 @@ const PropDetails = () => {
       setRentAdd(matchedProperty.rental_adress);
       console.log(matchedProperty, `matched property`);
       setLoading(false);
-      setPropImageLoader(false)
-
+      setPropImageLoader(false);
+      setUnitImageLoader(false);
 
       const resp = await axios.get(
         `
@@ -148,14 +153,14 @@ const PropDetails = () => {
         );
       });
       console.log(selectedType, "selectedType");
-      setSelectedProp(matchedProperty.property_type)
-      console.log(resp.matchedProperty, "mansi")
+      setSelectedProp(matchedProperty.property_type);
+      console.log(resp.matchedProperty, "mansi");
       setPropType(selectedType);
       const isMultiUnits = resp.data.data[selectedType].filter((item) => {
-        return item.propertysub_type === matchedProperty.property_type
+        return item.propertysub_type === matchedProperty.property_type;
       });
-      console.log(isMultiUnits, "isMultiUnit")
-      setMultiUnit(isMultiUnits[0].ismultiunit)
+      console.log(isMultiUnits, "isMultiUnit");
+      setMultiUnit(isMultiUnits[0].ismultiunit);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
@@ -276,6 +281,7 @@ const PropDetails = () => {
       console.log(values);
     },
   });
+
   const [financialType, setFinancialType] = React.useState("");
   const [month, setMonth] = useState([]);
   const [threeMonths, setThreeMonths] = useState([]);
@@ -367,6 +373,31 @@ const PropDetails = () => {
   }
 
   const handleUnitDetailsEdit = async (id, rentalId) => {
+    if (selectedFiles) {
+      const imageData = new FormData();
+      for (let index = 0; index < selectedFiles.length; index++) {
+        const element = selectedFiles[index];
+        imageData.append(`files`, element);
+      }
+
+      const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+      var image;
+      try {
+        const result = await axios.post(url, imageData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log(result, "imgs");
+        image = {
+          prop_image: result.data.files.map((data, index) => {
+            return data.url;
+          }),
+        };
+      } catch (error) {
+        console.error(error);
+      }
+    }
     if (propType === "Residential") {
       const updatedValues = {
         rental_adress: addUnitFormik.values.rental_adress,
@@ -375,7 +406,7 @@ const PropDetails = () => {
         rental_state: addUnitFormik.values.state,
         rental_postcode: addUnitFormik.values.zip,
         rental_country: addUnitFormik.values.country,
-        propertyres_image: unitImage,
+        propertyres_image: [image.prop_image],
       };
       await axios
         .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
@@ -383,6 +414,7 @@ const PropDetails = () => {
           console.log(response.data, "updated data");
           getUnitProperty(rentalId);
           getRentalsData();
+          
           // setAddUnitDialogOpen(false);
           // setAddUnitDialogOpen(false);
         })
@@ -390,8 +422,7 @@ const PropDetails = () => {
           console.log(err);
         });
       console.log(clickedObject, "clickedObject after update");
-    }
-    else {
+    } else {
       const updatedValues = {
         rental_adress: addUnitFormik.values.address,
         rental_units: addUnitFormik.values.unit_number,
@@ -399,7 +430,7 @@ const PropDetails = () => {
         rental_state: addUnitFormik.values.state,
         rental_postcode: addUnitFormik.values.zip,
         rental_country: addUnitFormik.values.country,
-        property_image: unitImage,
+        property_image: [image.prop_image],
       };
       await axios
         .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
@@ -407,6 +438,7 @@ const PropDetails = () => {
           console.log(response.data.data, "updated data");
           getUnitProperty(rentalId);
           getRentalsData();
+
           // setAddUnitDialogOpen(false);
           // setAddUnitDialogOpen(false);
         })
@@ -415,7 +447,7 @@ const PropDetails = () => {
         });
       console.log(clickedObject, "clickedObject after update");
     }
-  }
+  };
 
   const handleListingEdit = async (id, rentalId) => {
     const updatedValues = {
@@ -473,12 +505,12 @@ const PropDetails = () => {
       imageData.append(`files`, element);
     }
 
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
     var image;
     try {
       const result = await axios.post(url, imageData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(result, "imgs");
@@ -487,8 +519,7 @@ const PropDetails = () => {
           return data.url;
         }),
       };
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
     }
 
@@ -522,7 +553,7 @@ const PropDetails = () => {
         swal("Success!", "Unit Added Successfully", "success");
         setAddUnitDialogOpen(false);
         setPropertyUnit([...propertyUnit, response.data.data]);
-        console.log(response.data.data)
+        console.log(response.data.data);
       } else {
         swal("", response.data.message, "error");
       }
@@ -532,36 +563,33 @@ const PropDetails = () => {
     }
   };
 
-
   // const [uploadedImage, setUploadedImage] = useState(null);
   const [propImageLoader, setPropImageLoader] = useState(false);
 
   const handleImageChange = async (event) => {
-    setPropImageLoader(true)
+    setPropImageLoader(true);
     const files = event.target.files;
 
     const formData = new FormData();
     formData.append(`files`, files[0]);
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
     var image;
     try {
       const result = await axios.post(url, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(result, "imgs");
       image = {
-        prop_image: result.data.files[0].url
+        prop_image: result.data.files[0].url,
       };
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error, "imgs");
     }
     axios
       .put(`${baseUrl}/rentals/proparty_image/${id}/${entryIndex}`, image)
       .then((response) => {
-
         console.log(response.data, "updated data");
         getRentalsData();
       })
@@ -569,7 +597,6 @@ const PropDetails = () => {
         console.log(err);
       });
     setPropImageLoader(false);
-
   };
 
   return (
@@ -579,13 +606,8 @@ const PropDetails = () => {
       <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
-            <h1 style={{ color: "white" }}>
-
-              {matchedProperty?.rental_adress}
-            </h1>
-            <h4 style={{ color: "white" }}>
-              {matchedProperty?.property_type}
-            </h4>
+            <h1 style={{ color: "white" }}>{matchedProperty?.rental_adress}</h1>
+            <h4 style={{ color: "white" }}>{matchedProperty?.property_type}</h4>
           </Col>
           <Col className="text-right" xs="12" sm="6">
             <Button
@@ -602,9 +624,7 @@ const PropDetails = () => {
         <Row>
           <div className="col">
             <Card className="shadow">
-              <CardHeader className="border-0">
-
-              </CardHeader>
+              <CardHeader className="border-0"></CardHeader>
               <Col>
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -652,47 +672,47 @@ const PropDetails = () => {
                               alt="..."
                             />
                           </div> */}
-                          {
-                            !propImageLoader ? (
-                              <>
-                                <div className="col-md-4 mt-2">
-                                  <label htmlFor="prop_image">
-                                    <img
-                                      src={matchedProperty.prop_image ? matchedProperty.prop_image : fone}
-                                      className="img-fluid rounded-start card-image"
-                                      alt={"..."}
+                          {!propImageLoader ? (
+                            <>
+                              <div className="col-md-4 mt-2">
+                                <label htmlFor="prop_image">
+                                  <img
+                                    src={
+                                      matchedProperty.prop_image
+                                        ? matchedProperty.prop_image
+                                        : fone
+                                    }
+                                    className="img-fluid rounded-start card-image"
+                                    alt={"..."}
                                     // width='260px'
                                     // height='180px'
                                     // onClick={handleModalOpen}
-                                    />
-                                  </label>
-                                  <TextField
-                                    id="prop_image"
-                                    name="prop_image"
-                                    type="file"
-                                    inputProps={{
-                                      accept: "image/*",
-                                      multiple: false,
-                                    }}
-                                    onChange={handleImageChange}
-                                    style={{ display: "none" }}
                                   />
-                                </div>
-                              </>
-                            ) : (
-                              <div className="col-md-4 mt-2 d-flex justify-content-center">
-
-                                <RotatingLines
-                                  strokeColor="grey"
-                                  strokeWidth="5"
-                                  animationDuration="0.75"
-                                  width="50"
-                                  visible={propImageLoader}
+                                </label>
+                                <TextField
+                                  id="prop_image"
+                                  name="prop_image"
+                                  type="file"
+                                  inputProps={{
+                                    accept: "image/*",
+                                    multiple: false,
+                                  }}
+                                  onChange={handleImageChange}
+                                  style={{ display: "none" }}
                                 />
                               </div>
-                            )
-
-                          }
+                            </>
+                          ) : (
+                            <div className="col-md-4 mt-2 d-flex justify-content-center">
+                              <RotatingLines
+                                strokeColor="grey"
+                                strokeWidth="5"
+                                animationDuration="0.75"
+                                width="50"
+                                visible={propImageLoader}
+                              />
+                            </div>
+                          )}
 
                           <div className="col-md-8">
                             <div
@@ -753,7 +773,6 @@ const PropDetails = () => {
           <p>$200.00</p>
         </div>
         </div> */}
-
                             </div>
                           </div>
                         </div>
@@ -1280,11 +1299,13 @@ const PropDetails = () => {
                                                     <tr className="body">
                                                       <td>
                                                         {/* <Link to=""> */}
-                                                        {`${propertyDetails.rentalOwner_firstName ||
+                                                        {`${
+                                                          propertyDetails.rentalOwner_firstName ||
                                                           "N/A"
-                                                          } ${propertyDetails.rentalOwner_lastName ||
+                                                        } ${
+                                                          propertyDetails.rentalOwner_lastName ||
                                                           "N/A"
-                                                          }`}
+                                                        }`}
 
                                                         {/* </Link> */}
                                                       </td>
@@ -1355,7 +1376,6 @@ const PropDetails = () => {
                                             >
                                               <tr className="header">
                                                 <th>Staff Member</th>
-
                                               </tr>
                                               {myData ? (
                                                 <>
@@ -1363,9 +1383,10 @@ const PropDetails = () => {
                                                     <tr className="body">
                                                       <td>
                                                         {/* <Link to=""> */}
-                                                        {`${matchedProperty?.staffMember ||
+                                                        {`${
+                                                          matchedProperty?.staffMember ||
                                                           "No staff member assigned"
-                                                          }`}
+                                                        }`}
 
                                                         {/* </Link> */}
                                                       </td>
@@ -2147,11 +2168,21 @@ const PropDetails = () => {
                           <label
                             className="form-control-label"
                             htmlFor="input-city"
-                            style={propType !== "Residential" ? { display: "none" } : { display: "block" }}
+                            style={
+                              propType !== "Residential"
+                                ? { display: "none" }
+                                : { display: "block" }
+                            }
                           >
                             Rooms (optional)
                           </label>
-                          <Row style={propType !== "Residential" ? { display: "none", marginTop: "10px" } : { marginTop: "10px" }} >
+                          <Row
+                            style={
+                              propType !== "Residential"
+                                ? { display: "none", marginTop: "10px" }
+                                : { marginTop: "10px" }
+                            }
+                          >
                             <Col lg="2">
                               <FormGroup>
                                 <Dropdown
@@ -2175,11 +2206,11 @@ const PropDetails = () => {
                                         }}
                                         onChange={addUnitFormik.handleChange}
                                         onBlur={addUnitFormik.handleBlur}
-                                      // onClick={() =>
-                                      //   handlePropSelection(
-                                      //     subtype.propertysub_type
-                                      //   )
-                                      // }
+                                        // onClick={() =>
+                                        //   handlePropSelection(
+                                        //     subtype.propertysub_type
+                                        //   )
+                                        // }
                                       >
                                         {subtype}
                                       </DropdownItem>
@@ -2211,11 +2242,11 @@ const PropDetails = () => {
                                         }}
                                         onChange={addUnitFormik.handleChange}
                                         onBlur={addUnitFormik.handleBlur}
-                                      // onClick={() =>
-                                      //   handlePropSelection(
-                                      //     subtype.propertysub_type
-                                      //   )
-                                      // }
+                                        // onClick={() =>
+                                        //   handlePropSelection(
+                                        //     subtype.propertysub_type
+                                        //   )
+                                        // }
                                       >
                                         {subtype}
                                       </DropdownItem>
@@ -2279,15 +2310,12 @@ const PropDetails = () => {
                                     multiple
                                     id={`unit_img`}
                                     name={`unit_img`}
-                                    onChange={(e) => fileData(e, matchedProperty.property_type)}
+                                    onChange={(e) =>
+                                      fileData(e, matchedProperty.property_type)
+                                    }
                                   />
-                                  <label
-                                    htmlFor={`unit_img`}
-                                  >
-                                    <b style={{ fontSize: "20px" }}>
-                                      +
-                                    </b>{" "}
-                                    Add
+                                  <label htmlFor={`unit_img`}>
+                                    <b style={{ fontSize: "20px" }}>+</b> Add
                                   </label>
                                   {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
                                 </span>
@@ -2304,7 +2332,7 @@ const PropDetails = () => {
                                     unitImage.length > 0 &&
                                     unitImage.map((unitImg, index) => (
                                       <div
-                                        key={index}  // Use a unique identifier, such as index or image URL
+                                        key={index} // Use a unique identifier, such as index or image URL
                                         style={{
                                           position: "relative",
                                           width: "100px",
@@ -2337,7 +2365,12 @@ const PropDetails = () => {
                                             top: "-12px",
                                             right: "-12px",
                                           }}
-                                          onClick={() => clearSelectedPhoto(index, "propertyres_image")}
+                                          onClick={() =>
+                                            clearSelectedPhoto(
+                                              index,
+                                              "propertyres_image"
+                                            )
+                                          }
                                         />
                                       </div>
                                     ))}
@@ -2355,7 +2388,6 @@ const PropDetails = () => {
                               className="btn-icon btn-2"
                               color="success"
                               type="submit"
-
                             >
                               Create Unit
                             </Button>
@@ -2382,22 +2414,23 @@ const PropDetails = () => {
                             style={{
                               background: "white",
                               color: "blue",
-                              display: multiUnit ? "block" : "none"
+                              display: multiUnit ? "block" : "none",
                             }}
                             size="l"
                             onClick={() => {
                               addUnitFormik.setValues({
-                                address1: propertyDetails.entries[0].rental_adress,
+                                address1:
+                                  propertyDetails.entries[0].rental_adress,
                                 city: propertyDetails.entries[0].rental_city,
                                 state: propertyDetails.entries[0].rental_state,
                                 zip: propertyDetails.entries[0].rental_postcode,
-                                country: propertyDetails.entries[0].rental_country,
+                                country:
+                                  propertyDetails.entries[0].rental_country,
                               });
                               // setAddUnitDialogOpen(true);
-                              setAddUnitDialogOpen(true)
+                              setAddUnitDialogOpen(true);
                             }}
                           >
-
                             <span className="btn-inner--text">Add Unit</span>
                           </Button>
                         </div>
@@ -2425,15 +2458,13 @@ const PropDetails = () => {
                                 style={{ cursor: "pointer" }}
                               >
                                 <td>{unit.rental_units || "N/A"}</td>
-                                <td>
-                                  {unit.rental_adress || "N/A"}
-                                </td>
+                                <td>{unit.rental_adress || "N/A"}</td>
                                 <td>
                                   {unit.tenant_firstName == null
                                     ? "-"
                                     : unit.tenant_firstName +
-                                    " " +
-                                    unit.tenant_lastName}
+                                      " " +
+                                      unit.tenant_lastName}
                                   {/* {unit.tenant_firstName +
                                     " " +
                                     unit.tenant_lastName} */}
@@ -2565,19 +2596,45 @@ const PropDetails = () => {
                             <div className="din d-flex">
                               <div className="col-md-4 mt-2">
                                 <label htmlFor="unit_image">
-                                  <img
-                                    // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
-                                    src={
-                                      clickedObject && (clickedObject.property_image.length > 0 || clickedObject.propertyres_image.length > 0)
-                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0][0] : clickedObject.propertyres_image[0] ?
-                                          clickedObject.propertyres_image[0][0] : fone : fone
-                                    }
-                                    className="img-fluid rounded-start card-image"
-                                    alt="..."
-                                  // width='260px'
-                                  // height='18px'
-                                  // onClick={handleModalOpen}
-                                  />
+                                  {unitImageLoader ? (
+                                    <>
+                                      <RotatingLines
+                                        strokeColor="grey"
+                                        strokeWidth="5"
+                                        animationDuration="0.75"
+                                        width="50"
+                                        visible={true}
+                                      />
+                                    </>
+                                  ) : (
+                                    <>
+                                      {" "}
+                                      <img
+                                        // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
+                                        src={
+                                          clickedObject &&
+                                          (clickedObject.property_image.length >
+                                            0 ||
+                                            clickedObject.propertyres_image
+                                              .length > 0)
+                                            ? clickedObject.property_image[0]
+                                              ? clickedObject
+                                                  .property_image[0][0]
+                                              : clickedObject
+                                                  .propertyres_image[0]
+                                              ? clickedObject
+                                                  .propertyres_image[0][0]
+                                              : fone
+                                            : fone
+                                        }
+                                        className="img-fluid rounded-start card-image"
+                                        alt="..."
+                                        // width='260px'
+                                        // height='18px'
+                                        // onClick={handleModalOpen}
+                                      />
+                                    </>
+                                  )}
                                 </label>
                                 {/* <TextField
                                   id="unit_image"
@@ -2674,7 +2731,6 @@ const PropDetails = () => {
                                 {/* i want to put this div to the extreme rigth of main div */}
                               </Grid>
                             </div>
-
 
                             <Grid item xs={3}></Grid>
                             <Grid item xs={9}>
@@ -2874,7 +2930,9 @@ const PropDetails = () => {
                                                       Photo
                                                     </label>
                                                     <span
-                                                      onClick={togglePhotoresDialog}
+                                                      onClick={
+                                                        togglePhotoresDialog
+                                                      }
                                                       style={{
                                                         cursor: "pointer",
                                                         fontSize: "14px",
@@ -2892,61 +2950,17 @@ const PropDetails = () => {
                                                         id={`unit_img`}
                                                         name={`unit_img`}
                                                         onChange={(e) => {
-                                                          const file = [...e.target.files];
-                                                          fileData(
-                                                            file,
-                                                            "propertyres_image",
-                                                            ""
-                                                          );
-                                                          if (file.length > 0) {
-                                                            const allImages = file.map(
-                                                              (file) => {
-                                                                return URL.createObjectURL(
-                                                                  file
-                                                                );
-                                                              }
-                                                            );
-                                                            // console.log(
-                                                            //    "",
-                                                            //   "indexxxxxx"
-                                                            // );
-                                                            if (
-                                                              unitImage[
-                                                              ""
-                                                              ]
-                                                            ) {
-                                                              setUnitImage([
-                                                                ...unitImage.slice(
-                                                                  0,
-                                                                  ""
-                                                                ),
-                                                                [
-                                                                  ...unitImage[
-                                                                  ""
-                                                                  ],
-                                                                  ...allImages,
-                                                                ],
-                                                                ...unitImage.slice(
-                                                                  1 + ""
-                                                                ),
-                                                              ]);
-                                                            } else {
-                                                              setUnitImage([
-                                                                ...allImages,
-                                                              ]);
-                                                            }
-                                                          } else {
-                                                            setUnitImage([
-                                                              ...unitImage,
-                                                            ]);
-                                                            // )
-                                                          }
+                                                          fileData(e);
                                                         }}
                                                       />
                                                       <label
                                                         htmlFor={`unit_img`}
                                                       >
-                                                        <b style={{ fontSize: "20px" }}>
+                                                        <b
+                                                          style={{
+                                                            fontSize: "20px",
+                                                          }}
+                                                        >
                                                           +
                                                         </b>{" "}
                                                         Add
@@ -2963,31 +2977,36 @@ const PropDetails = () => {
                                                   >
                                                     <div className="d-flex">
                                                       {unitImage &&
-                                                        unitImage
-                                                          .length > 0 &&
-                                                        unitImage
-                                                          .map((unitImg, index) => (
+                                                        unitImage.length > 0 &&
+                                                        unitImage.map(
+                                                          (unitImg, index) => (
                                                             <div
-                                                              key={unitImg}
+                                                              key={index} // Use a unique identifier, such as index or image URL
                                                               style={{
-                                                                position: "relative",
+                                                                position:
+                                                                  "relative",
                                                                 width: "100px",
                                                                 height: "100px",
                                                                 margin: "10px",
                                                                 display: "flex",
-                                                                flexDirection: "column",
+                                                                flexDirection:
+                                                                  "column",
                                                               }}
                                                             >
                                                               <img
                                                                 src={unitImg}
                                                                 alt=""
                                                                 style={{
-                                                                  width: "100px",
-                                                                  height: "100px",
-                                                                  maxHeight: "100%",
-                                                                  maxWidth: "100%",
-                                                                  borderRadius: "10px",
-                                                                  // objectFit: "cover",
+                                                                  width:
+                                                                    "100px",
+                                                                  height:
+                                                                    "100px",
+                                                                  maxHeight:
+                                                                    "100%",
+                                                                  maxWidth:
+                                                                    "100%",
+                                                                  borderRadius:
+                                                                    "10px",
                                                                 }}
                                                                 onClick={() => {
                                                                   setSelectedImage(
@@ -2998,26 +3017,32 @@ const PropDetails = () => {
                                                               />
                                                               <ClearIcon
                                                                 style={{
-                                                                  cursor: "pointer",
-                                                                  alignSelf: "flex-start",
-                                                                  position: "absolute",
+                                                                  cursor:
+                                                                    "pointer",
+                                                                  alignSelf:
+                                                                    "flex-start",
+                                                                  position:
+                                                                    "absolute",
                                                                   top: "-12px",
-                                                                  right: "-12px",
+                                                                  right:
+                                                                    "-12px",
                                                                 }}
                                                                 onClick={() =>
                                                                   clearSelectedPhoto(
                                                                     index,
-                                                                    unitImage,
                                                                     "propertyres_image"
                                                                   )
                                                                 }
                                                               />
                                                             </div>
-                                                          ))}
+                                                          )
+                                                        )}
                                                       <OpenImageDialog
                                                         open={open}
                                                         setOpen={setOpen}
-                                                        selectedImage={selectedImage}
+                                                        selectedImage={
+                                                          selectedImage
+                                                        }
                                                       />
                                                     </div>
                                                   </FormGroup>
@@ -3038,6 +3063,10 @@ const PropDetails = () => {
                                                   setEditUnitDialogOpen(
                                                     !editUnitDialogOpen
                                                   );
+
+                                                  setUnitImageLoader(
+                                                    !unitImageLoader
+                                                  )
                                                 }}
                                               >
                                                 Save
@@ -3082,12 +3111,17 @@ const PropDetails = () => {
                                         marginBottom: "5px",
                                       }}
                                       onClick={() => {
-                                        console.log(clickedObject, "clickedObject");
+                                        console.log(
+                                          clickedObject,
+                                          "clickedObject"
+                                        );
                                         addUnitFormik.setValues({
-                                          market_rent: clickedObject.market_rent,
+                                          market_rent:
+                                            clickedObject.market_rent,
                                           size: clickedObject.rental_sqft,
-                                          description: clickedObject.description,
-                                        })
+                                          description:
+                                            clickedObject.description,
+                                        });
                                         setEditListingData(!editListingData);
                                       }}
                                     >
@@ -3173,15 +3207,15 @@ const PropDetails = () => {
                                               onBlur={addUnitFormik.handleBlur}
                                             />
                                           </div>
-                                          <div style={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            width: "50%",
-                                            marginTop: "10px",
-
-                                          }}>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "column",
+                                              width: "50%",
+                                              marginTop: "10px",
+                                            }}
+                                          >
                                             <div>
-
                                               <h5>Size</h5>
                                             </div>
 
@@ -3190,9 +3224,7 @@ const PropDetails = () => {
                                               size="small"
                                               id="size"
                                               name="size"
-                                              value={
-                                                addUnitFormik.values.size
-                                              }
+                                              value={addUnitFormik.values.size}
                                               onChange={
                                                 addUnitFormik.handleChange
                                               }
@@ -3286,9 +3318,7 @@ const PropDetails = () => {
                                 className="mb-1 m-0 p-0"
                                 style={{ fontSize: "12px", color: "#000" }}
                               >
-
                                 <Table responsive>
-
                                   <tbody
                                     className="tbbody p-0 m-0"
                                     style={{
@@ -3305,10 +3335,13 @@ const PropDetails = () => {
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
-                                    {console.log("clickedObject", clickedObject)}
+                                    {console.log(
+                                      "clickedObject",
+                                      clickedObject
+                                    )}
                                     {clickedObject &&
-                                      clickedObject.tenant_firstName &&
-                                      clickedObject.tenant_lastName ? (
+                                    clickedObject.tenant_firstName &&
+                                    clickedObject.tenant_lastName ? (
                                       <>
                                         <tr className="body">
                                           <td>
@@ -3318,7 +3351,7 @@ const PropDetails = () => {
                                           </td>
                                           <td>
                                             {clickedObject.start_date &&
-                                              clickedObject.end_date ? (
+                                            clickedObject.end_date ? (
                                               <>
                                                 <Link
                                                   to={`/admin/tenantdetail/${clickedObject._id}`}
@@ -3349,18 +3382,17 @@ const PropDetails = () => {
                                           </td>
                                           <td>
                                             {clickedObject.tenant_firstName &&
-                                              clickedObject.tenant_lastName
+                                            clickedObject.tenant_lastName
                                               ? clickedObject.tenant_firstName +
-                                              " " +
-                                              clickedObject.tenant_lastName
+                                                " " +
+                                                clickedObject.tenant_lastName
                                               : "N/A"}
                                           </td>
                                           <td>
                                             {clickedObject.lease_type || "N/A"}
                                           </td>
                                           <td>
-                                            {clickedObject.amount ||
-                                              "N/A"}
+                                            {clickedObject.amount || "N/A"}
                                           </td>
                                         </tr>
                                       </>
