@@ -88,117 +88,30 @@ const PropDetails = () => {
   const togglePhotoresDialog = () => {
     setPhotoresDialogOpen((prevState) => !prevState);
   };
-  console.log(propType, 'proeptype')
-  const fileData = async (file, name, index) => {
-    //setImgLoader(true);
-    const allData = [];
-    const axiosRequests = [];
-    for (let i = 0; i < file.length; i++) {
-      const dataArray = new FormData();
-      dataArray.append("b_video", file[i]);
-      let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
-      // Push the Axios request promises into an array
-      axiosRequests.push(
-        axios
-          .post(url, dataArray, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            //setImgLoader(false);
-            const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-            console.log(imagePath, "imagePath");
-            allData.push(imagePath);
-          })
-          .catch((err) => {
-            //setImgLoader(false);
-            console.log("Error uploading image:", err);
-          })
-      );
-    }
-    // Wait for all Axios requests to complete before logging the data
-    await Promise.all(axiosRequests);
-    if (name === "propertyres_image") {
-      // rentalsFormik.setFieldValue(
-      //   `entries[0].residential[${index}].propertyres_image`,
-      //   ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
-      //   allData
-      // );
-      if (unitImage[index]) {
-        setUnitImage([
-          ...unitImage.slice(0, index),
-          [...unitImage[index], ...allData],
-          ...unitImage.slice(index + 1),
-        ]);
 
-        addUnitFormik.setFieldValue(
-          "propertyres_image", [
-          ...unitImage.slice(0, index),
-          [...unitImage[index], ...allData],
-          ...unitImage.slice(index + 1),
-        ]
-        )
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const fileData = (e, type) => {
+    // Use the correct state-setting function for setSelectedFiles
+    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...e.target.files]);
 
-      } else {
-        setUnitImage([...allData]);
-        // if(propType === "Residential"){
-        addUnitFormik.setFieldValue(
-          "propertyres_image", [...allData]
-        )
-        // }
-      }
-    } else {
-      // rentalsFormik.setFieldValue(
-      //   `entries[0].commercial[${index}].property_image`,
-      //   ...rentalsFormik.values.entries[0].commercial[index].property_image,
-      //   allData
-      // );
-      // if (commercialImage[index]) {
-      //   setCommercialImage([
-      //     ...commercialImage.slice(0, index),
-      //     [...commercialImage[index], ...allData],
-      //     ...commercialImage.slice(index + 1),
-      //   ]);
-      // } else {
-      //   setCommercialImage([...allData]);
-      // }
-    }
-    // console.log(allData, "allData");
-    // console.log(unitImage, "unitImage");
-    // console.log(commercialImage, "commercialImage");
+    const newFiles = [
+      ...unitImage,
+      ...Array.from(e.target.files).map((file) => URL.createObjectURL(file)),
+    ];
+
+    // Update the state with the new files
+    setUnitImage(newFiles);
   };
 
   console.log(propType, "proeptype");
-  const clearSelectedPhoto = (index, image, name) => {
+  const clearSelectedPhoto = (index, name) => {
     if (name === "propertyres_image") {
-      const filteredImage = unitImage.filter((item) => {
-        return item.name !== image.name;
-      });
-
-      setUnitImage([
-        ...unitImage.slice(0, index),
-        ...filteredImage,
-        ...unitImage.slice(index + 1),
-      ]);
-
-
-      // }
-
+      const filteredImage = unitImage.filter((item, i) => i !== index);
+      const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
+      setSelectedFiles(filteredImage2);
+      setUnitImage(filteredImage);
     }
-    //  else {
-    //   // const filteredImage = commercialImage[index].filter((item) => {
-    //     // return item !== image;
-    //   });
-    // console.log(filteredImage, "filteredImage");
-    // setCommercialImage(filteredImage);
-    // setCommercialImage([
-    //   ...commercialImage.slice(0, index),
-    //   [...filteredImage],
-    //   ...commercialImage.slice(index + 1),
-    // ]);
   };
-
   const getRentalsData = async (propertyType) => {
     try {
       const response = await axios.get(
@@ -223,11 +136,6 @@ const PropDetails = () => {
         ${baseUrl}/newproparty/propropartytype
         `
       );
-      console.log(resp, "resp");
-
-
-
-      // console.log('setSelectedProp',selectedProp)
 
       const selectedType = Object.keys(resp.data.data).find((item) => {
         return resp.data.data[item].some(
@@ -453,6 +361,32 @@ const PropDetails = () => {
   }
 
   const handleUnitDetailsEdit = async (id, rentalId) => {
+    if (selectedFiles) {
+      const imageData = new FormData();
+      for (let index = 0; index < selectedFiles.length; index++) {
+        const element = selectedFiles[index];
+        imageData.append(`files`, element);
+      }
+
+      const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+      var image;
+      try {
+        const result = await axios.post(url, imageData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log(result, "imgs");
+        image = {
+          prop_image: result.data.files.map((data, index) => {
+            return data.url;
+          }),
+        };
+      }
+      catch (error) {
+        console.error(error);
+      }
+    }
     if (propType === "Residential") {
       const updatedValues = {
         rental_adress: addUnitFormik.values.rental_adress,
@@ -461,7 +395,7 @@ const PropDetails = () => {
         rental_state: addUnitFormik.values.state,
         rental_postcode: addUnitFormik.values.zip,
         rental_country: addUnitFormik.values.country,
-        propertyres_image: unitImage,
+        propertyres_image: [image.prop_image],
       };
       await axios
         .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
@@ -482,7 +416,7 @@ const PropDetails = () => {
         rental_state: addUnitFormik.values.state,
         rental_postcode: addUnitFormik.values.zip,
         rental_country: addUnitFormik.values.country,
-        property_image: unitImage,
+        property_image: [image.prop_image],
       };
       await axios
         .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
@@ -547,9 +481,34 @@ const PropDetails = () => {
       }
     });
   };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const imageData = new FormData();
+    for (let index = 0; index < selectedFiles.length; index++) {
+      const element = selectedFiles[index];
+      imageData.append(`files`, element);
+    }
+
+    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+    var image;
+    try {
+      const result = await axios.post(url, imageData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(result, "imgs");
+      image = {
+        prop_image: result.data.files.map((data, index) => {
+          return data.url;
+        }),
+      };
+    }
+    catch (error) {
+      console.error(error);
+    }
+
     const formData = {
       rental_adress: RentAdd,
       rentalId: id,
@@ -557,7 +516,7 @@ const PropDetails = () => {
       market_rent: addUnitFormik.values.market_rent,
       rental_bed: addUnitFormik.values.rooms,
       rental_bath: addUnitFormik.values.baths,
-      propertyres_image: addUnitFormik.values.propertyres_image || unitImage,
+      propertyres_image: propType === "Residential" ? image.prop_image : "",
       rental_sqft: addUnitFormik.values.size,
       rental_units: addUnitFormik.values.unit_number,
       rental_unitsAdress: addUnitFormik.values.address1,
@@ -569,9 +528,8 @@ const PropDetails = () => {
       rental_city: addUnitFormik.values.city,
       rental_postcode: addUnitFormik.values.zip,
       // property_image: addUnitFormik.values.property_image,
-      property_image: addUnitFormik.values.property_image || unitImage,
+      property_image: propType === "Residential" ? "" : image.prop_image,
     };
-    console.log("formData", formData);
     try {
       const response = await axios.post(
         `${baseUrl}/propertyunit/propertyunit`,
@@ -581,6 +539,7 @@ const PropDetails = () => {
         swal("Success!", "Unit Added Successfully", "success");
         setAddUnitDialogOpen(false);
         setPropertyUnit([...propertyUnit, response.data.data]);
+        console.log(response.data.data)
       } else {
         swal("", response.data.message, "error");
       }
@@ -603,22 +562,33 @@ const PropDetails = () => {
     const axiosRequests = [];
 
     const formData = new FormData();
-    // for (let i = 0; i < files.length; i++) {
     formData.append(`files`, files[0]);
-    // }
-
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+    var image;
     try {
       const result = await axios.post(url, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      console.log(result.data, "imgs");
-    } catch (error) {
-      console.error(error);
+      console.log(result, "imgs");
+      image = {
+        prop_image: result.data.files[0].url
+      };
     }
+    catch (error) {
+      console.error(error, "imgs");
+    }
+    axios
+      .put(`${baseUrl}/rentals/proparty_image/${id}/${entryIndex}`, image)
+      .then((response) => {
+
+        console.log(response.data, "updated data");
+        getRentalsData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     setPropImageLoader(false);
 
     // Wait for all Axios requests to complete before logging the data
@@ -857,51 +827,47 @@ const calculateNetIncome = (property) => {
                               alt="..."
                             />
                           </div> */}
-                          {!propImageLoader ? (
-                            <>
-                              <div className="col-md-4 mt-2">
-                                <label htmlFor="prop_image">
-                                  <img
-                                    // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
-                                    src={
-                                      matchedProperty?.prop_image
-                                        ? matchedProperty?.prop_image
-                                        : uploadedImage
-                                        ? uploadedImage
-                                        : fone
-                                    }
-                                    className="img-fluid rounded-start card-image"
-                                    alt="..."
+                          {
+                            !propImageLoader ? (
+                              <>
+                                <div className="col-md-4 mt-2">
+                                  <label htmlFor="prop_image">
+                                    <img
+                                      src={matchedProperty.prop_image ? matchedProperty.prop_image : fone}
+                                      className="img-fluid rounded-start card-image"
+                                      alt={"..."}
                                     // width='260px'
-                                    // height='18px'
+                                    // height='180px'
                                     // onClick={handleModalOpen}
+                                    />
+                                  </label>
+                                  <TextField
+                                    id="prop_image"
+                                    name="prop_image"
+                                    type="file"
+                                    inputProps={{
+                                      accept: "image/*",
+                                      multiple: false,
+                                    }}
+                                    onChange={handleImageChange}
+                                    style={{ display: "none" }}
                                   />
-                                </label>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="col-md-4 mt-2 d-flex justify-content-center">
 
-                                <TextField
-                                  id="prop_image"
-                                  name="prop_image"
-                                  type="file"
-                                  inputProps={{
-                                    accept: "image/*",
-                                    multiple: false,
-                                  }}
-                                  onChange={handleImageChange}
-                                  style={{ display: "none" }}
+                                <RotatingLines
+                                  strokeColor="grey"
+                                  strokeWidth="5"
+                                  animationDuration="0.75"
+                                  width="50"
+                                  visible={propImageLoader}
                                 />
                               </div>
-                            </>
-                          ) : (
-                            <div className="col-md-4 mt-2 d-flex justify-content-center">
-                              <RotatingLines
-                                strokeColor="grey"
-                                strokeWidth="5"
-                                animationDuration="0.75"
-                                width="50"
-                                visible={propImageLoader}
-                              />
-                            </div>
-                          )}
+                            )
+
+                          }
 
                           <div className="col-md-8">
                             <div
@@ -2540,35 +2506,15 @@ const calculateNetIncome = (property) => {
                                     multiple
                                     id={`unit_img`}
                                     name={`unit_img`}
-                                    onChange={(e) => {
-                                      const file = [...e.target.files];
-                                      fileData(file, "propertyres_image", "");
-                                      if (file.length > 0) {
-                                        const allImages = file.map((file) => {
-                                          return URL.createObjectURL(file);
-                                        });
-                                        // console.log(
-                                        //    "",
-                                        //   "indexxxxxx"
-                                        // );
-                                        if (unitImage[""]) {
-                                          setUnitImage([
-                                            ...unitImage.slice(0, ""),
-                                            [...unitImage[""], ...allImages],
-                                            ...unitImage.slice(1 + ""),
-                                          ]);
-                                        } else {
-                                          setUnitImage([...allImages]);
-                                        }
-                                      } else {
-                                        setUnitImage([...unitImage]);
-                                        // )
-                                      }
-                                    }}
+                                    onChange={(e) => fileData(e)}
                                   />
-                                  {console.log(unitImage, "unitImage")}
-                                  <label htmlFor={`unit_img`}>
-                                    <b style={{ fontSize: "20px" }}>+</b> Add
+                                  <label
+                                    htmlFor={`unit_img`}
+                                  >
+                                    <b style={{ fontSize: "20px" }}>
+                                      +
+                                    </b>{" "}
+                                    Add
                                   </label>
                                   {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
                                 </span>
@@ -2583,9 +2529,9 @@ const calculateNetIncome = (property) => {
                                 <div className="d-flex">
                                   {unitImage &&
                                     unitImage.length > 0 &&
-                                    unitImage.map((unitImg) => (
+                                    unitImage.map((unitImg, index) => (
                                       <div
-                                        key={unitImg}
+                                        key={index}  // Use a unique identifier, such as index or image URL
                                         style={{
                                           position: "relative",
                                           width: "100px",
@@ -2604,7 +2550,6 @@ const calculateNetIncome = (property) => {
                                             maxHeight: "100%",
                                             maxWidth: "100%",
                                             borderRadius: "10px",
-                                            // objectFit: "cover",
                                           }}
                                           onClick={() => {
                                             setSelectedImage(unitImg);
@@ -2619,13 +2564,7 @@ const calculateNetIncome = (property) => {
                                             top: "-12px",
                                             right: "-12px",
                                           }}
-                                          onClick={() =>
-                                            clearSelectedPhoto(
-                                              "",
-                                              unitImage,
-                                              "propertyres_image"
-                                            )
-                                          }
+                                          onClick={() => clearSelectedPhoto(index, "propertyres_image")}
                                         />
                                       </div>
                                     ))}
@@ -2662,7 +2601,6 @@ const calculateNetIncome = (property) => {
                             marginBottom: "10px",
                           }}
                         >
-                          {console.log(multiUnit, "multiiiiiiiS ")}
                           <Button
                             className="btn-icon btn-2"
                             color="primary"
@@ -2683,7 +2621,6 @@ const calculateNetIncome = (property) => {
                                 country:
                                   propertyDetails.entries[0].rental_country,
                               });
-                              // console.log(propertyUnit,'pppppprrrrrroooooooo')
                               // setAddUnitDialogOpen(true);
                               setAddUnitDialogOpen(true);
                             }}
@@ -2856,14 +2793,9 @@ const calculateNetIncome = (property) => {
                                   <img
                                     // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
                                     src={
-                                      clickedObject &&
-                                      clickedObject.property_image.length > 0
-                                        ? clickedObject.property_image[0]
-                                          ? clickedObject.property_image[0]
-                                          : clickedObject.propertyres_image[0]
-                                          ? clickedObject.propertyres_image[0]
-                                          : fone
-                                        : fone
+                                      clickedObject && (clickedObject.property_image.length > 0 || clickedObject.propertyres_image.length > 0)
+                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0][0] : clickedObject.propertyres_image[0] ?
+                                          clickedObject.propertyres_image[0][0] : fone : fone
                                     }
                                     className="img-fluid rounded-start card-image"
                                     alt="..."
@@ -2893,7 +2825,6 @@ const calculateNetIncome = (property) => {
                                 }}
                               >
                                 <div>
-                                  {console.log(clickedObject, "clickedObject")}
                                   <Typography
                                     variant="h6"
                                     sx={{
@@ -3187,60 +3118,9 @@ const calculateNetIncome = (property) => {
                                                         id={`unit_img`}
                                                         name={`unit_img`}
                                                         onChange={(e) => {
-                                                          const file = [
-                                                            ...e.target.files,
-                                                          ];
-                                                          fileData(
-                                                            file,
-                                                            "propertyres_image",
-                                                            ""
-                                                          );
-                                                          if (file.length > 0) {
-                                                            const allImages =
-                                                              file.map(
-                                                                (file) => {
-                                                                  return URL.createObjectURL(
-                                                                    file
-                                                                  );
-                                                                }
-                                                              );
-                                                            // console.log(
-                                                            //    "",
-                                                            //   "indexxxxxx"
-                                                            // );
-                                                            if (unitImage[""]) {
-                                                              setUnitImage([
-                                                                ...unitImage.slice(
-                                                                  0,
-                                                                  ""
-                                                                ),
-                                                                [
-                                                                  ...unitImage[
-                                                                    ""
-                                                                  ],
-                                                                  ...allImages,
-                                                                ],
-                                                                ...unitImage.slice(
-                                                                  1 + ""
-                                                                ),
-                                                              ]);
-                                                            } else {
-                                                              setUnitImage([
-                                                                ...allImages,
-                                                              ]);
-                                                            }
-                                                          } else {
-                                                            setUnitImage([
-                                                              ...unitImage,
-                                                            ]);
-                                                            // )
-                                                          }
+                                                          fileData(e);
                                                         }}
                                                       />
-                                                      {console.log(
-                                                        unitImage,
-                                                        "unitImage"
-                                                      )}
                                                       <label
                                                         htmlFor={`unit_img`}
                                                       >
@@ -3263,70 +3143,49 @@ const calculateNetIncome = (property) => {
                                                       paddingLeft: "10px",
                                                     }}
                                                   >
+
                                                     <div className="d-flex">
                                                       {unitImage &&
                                                         unitImage.length > 0 &&
-                                                        unitImage.map(
-                                                          (unitImg, index) => (
-                                                            <div
-                                                              key={unitImg}
+                                                        unitImage.map((unitImg, index) => (
+                                                          <div
+                                                            key={index}  // Use a unique identifier, such as index or image URL
+                                                            style={{
+                                                              position: "relative",
+                                                              width: "100px",
+                                                              height: "100px",
+                                                              margin: "10px",
+                                                              display: "flex",
+                                                              flexDirection: "column",
+                                                            }}
+                                                          >
+                                                            <img
+                                                              src={unitImg}
+                                                              alt=""
                                                               style={{
-                                                                position:
-                                                                  "relative",
                                                                 width: "100px",
                                                                 height: "100px",
-                                                                margin: "10px",
-                                                                display: "flex",
-                                                                flexDirection:
-                                                                  "column",
+                                                                maxHeight: "100%",
+                                                                maxWidth: "100%",
+                                                                borderRadius: "10px",
                                                               }}
-                                                            >
-                                                              <img
-                                                                src={unitImg}
-                                                                alt=""
-                                                                style={{
-                                                                  width:
-                                                                    "100px",
-                                                                  height:
-                                                                    "100px",
-                                                                  maxHeight:
-                                                                    "100%",
-                                                                  maxWidth:
-                                                                    "100%",
-                                                                  borderRadius:
-                                                                    "10px",
-                                                                  // objectFit: "cover",
-                                                                }}
-                                                                onClick={() => {
-                                                                  setSelectedImage(
-                                                                    unitImg
-                                                                  );
-                                                                  setOpen(true);
-                                                                }}
-                                                              />
-                                                              <ClearIcon
-                                                                style={{
-                                                                  cursor:
-                                                                    "pointer",
-                                                                  alignSelf:
-                                                                    "flex-start",
-                                                                  position:
-                                                                    "absolute",
-                                                                  top: "-12px",
-                                                                  right:
-                                                                    "-12px",
-                                                                }}
-                                                                onClick={() =>
-                                                                  clearSelectedPhoto(
-                                                                    index,
-                                                                    unitImage,
-                                                                    "propertyres_image"
-                                                                  )
-                                                                }
-                                                              />
-                                                            </div>
-                                                          )
-                                                        )}
+                                                              onClick={() => {
+                                                                setSelectedImage(unitImg);
+                                                                setOpen(true);
+                                                              }}
+                                                            />
+                                                            <ClearIcon
+                                                              style={{
+                                                                cursor: "pointer",
+                                                                alignSelf: "flex-start",
+                                                                position: "absolute",
+                                                                top: "-12px",
+                                                                right: "-12px",
+                                                              }}
+                                                              onClick={() => clearSelectedPhoto(index, "propertyres_image")}
+                                                            />
+                                                          </div>
+                                                        ))}
                                                       <OpenImageDialog
                                                         open={open}
                                                         setOpen={setOpen}

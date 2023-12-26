@@ -681,6 +681,7 @@ const Leaseing = () => {
     //setImgLoader(true);
     // console.log(files, "file");
     const filesArray = [...files];
+    console.log(filesArray, "yash")
 
     if (filesArray.length <= 10 && file.length === 0) {
       const finalArray = [];
@@ -723,41 +724,19 @@ const Leaseing = () => {
 
       entrySchema.setFieldValue("upload_file", [...file, ...finalArray]);
     }
-
-    // console.log(file, "fileanaadsaa");
-
-    const dataArray = new FormData();
-    dataArray.append("b_video", files);
-
-    let url = "https://cdn.brandingprofitable.com/image_upload.php/";
-    axios
-      .post(url, dataArray, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        //setImgLoader(false);
-        const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        // console.log(imagePath, "imagePath");
-        // setFile(imagePath);
-      })
-      .catch((err) => {
-        //setImgLoader(false);
-        console.log("Error uploading image:", err);
-      });
   };
 
   const deleteFile = (index) => {
     const newFile = [...file];
     newFile.splice(index, 1);
     setFile(newFile);
+    entrySchema.setFieldValue("upload_file", newFile);
   };
 
   const handleOpenFile = (item) => {
-    // console.log(item, "item");
-    const url = URL.createObjectURL(item);
-    window.open(url, "_blank");
+    console.log(item, "item");
+    // const url = URL.createObjectURL(item);
+    window.open(item, "_blank");
   };
 
   useEffect(() => {
@@ -1113,27 +1092,27 @@ const Leaseing = () => {
       fund_type: "",
       cash_flow: "",
       notes: "",
-      paymentMethod: '',
-      ccvEx: '',
-      ccvNu: '',
+      paymentMethod: "",
+      ccvEx: "",
+      ccvNu: "",
     },
 
     validationSchema: yup.object({
-      rental_adress: yup.string().required('Required'),
-      lease_type: yup.string().required('Required'),
-      rent_cycle: yup.string().required('Required'),
-      start_date: yup.string().required('Required'),
-      amount: yup.string().required('Required'),
-      paymentMethod: yup.string().required('Required'),
-      ...(selectPaymentMethodDropdawn === 'AutoPayment'
+      rental_adress: yup.string().required("Required"),
+      lease_type: yup.string().required("Required"),
+      rent_cycle: yup.string().required("Required"),
+      start_date: yup.string().required("Required"),
+      amount: yup.string().required("Required"),
+      paymentMethod: yup.string().required("Required"),
+      ...(selectPaymentMethodDropdawn === "AutoPayment"
         ? {
-          ccvEx: yup.string().required('Required'),
-          ccvNu: yup.string().required('Required'),
+          ccvEx: yup.string().required("Required"),
+          ccvNu: yup.string().required("Required"),
         }
         : null),
       ...(unitData[0]?.rental_units
         ? {
-          rental_units: yup.string().required('Required'),
+          rental_units: yup.string().required("Required"),
         }
         : null),
     }),
@@ -1520,6 +1499,34 @@ const Leaseing = () => {
   const handleSubmit = async (values) => {
     setLoader(true);
 
+    for (const [index, files] of entrySchema.values.upload_file.entries()) {
+      if (files.upload_file instanceof File) {
+        console.log(files.upload_file, "myfile");
+
+        const imageData = new FormData();
+        imageData.append(`files`, files.upload_file);
+
+        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+
+        try {
+          const result = await axios.post(url, imageData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          console.log(result, "imgs");
+
+          // Update the original array with the uploaded file URL
+          entrySchema.values.upload_file[index].upload_file = result.data.files[0].url;
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        console.log(files.upload_file, "myfile");
+      }
+    }
+
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -1625,8 +1632,9 @@ const Leaseing = () => {
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
+      // nextDue_date: entrySchema.values.nextDue_date,
     };
-
+    console.log("..............paymentDetails.............", entrySchema.values.upload_file);
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
@@ -1643,7 +1651,6 @@ const Leaseing = () => {
           const putObject = {
             entries: tenantObject.entries,
           };
-          // debugger
 
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
@@ -1659,8 +1666,6 @@ const Leaseing = () => {
                 putObject
               );
               if (res.data.statusCode === 200) {
-
-
                 console.log(res.data.data, "allTenants22");
                 const delay = (ms) =>
                   new Promise((resolve) => setTimeout(resolve, ms));
@@ -1742,8 +1747,6 @@ const Leaseing = () => {
               putObject
             );
             if (res.data.statusCode === 200) {
-
-
               console.log(res.data.data, "allTenants22");
               const delay = (ms) =>
                 new Promise((resolve) => setTimeout(resolve, ms));
@@ -1822,7 +1825,6 @@ const Leaseing = () => {
         } else {
           if (id === undefined) {
             console.log(tenantObject, "leaseObject");
-
 
             if (selectPaymentMethodDropdawn === "AutoPayment") {
               const res2 = await axios.post(
@@ -1994,7 +1996,6 @@ const Leaseing = () => {
               }
               handleResponse(res);
             }
-
           } else {
           }
         }
@@ -2181,6 +2182,34 @@ const Leaseing = () => {
     // const arrayOfNames = file.map((item) => item.name);
     const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
+    for (const [index, files] of entrySchema.values.upload_file.entries()) {
+      if (files.upload_file instanceof File) {
+        console.log(files.upload_file, "myfile");
+
+        const imageData = new FormData();
+        imageData.append(`files`, files.upload_file);
+
+        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+
+        try {
+          const result = await axios.post(url, imageData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          console.log(result, "imgs");
+
+          // Update the original array with the uploaded file URL
+          entrySchema.values.upload_file[index].upload_file = result.data.files[0].url;
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        console.log(files.upload_file, "myfile");
+      }
+    }
+    console.log("..............paymentDetails.............", entrySchema.values.upload_file);
 
     try {
       const units = await fetchUnitsByProperty(entrySchema.values.rental_units);
@@ -2298,7 +2327,11 @@ const Leaseing = () => {
       return;
     }
     if (response.status === 201) {
-      swal("Failed!", "Tenant mobile number already exists in the system", "warning");
+      swal(
+        "Failed!",
+        "Tenant mobile number already exists in the system",
+        "warning"
+      );
       return;
     } else {
       alert(response.data.message);
@@ -2335,10 +2368,7 @@ const Leaseing = () => {
       <Container className="mt--7" fluid>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card
-              className="bg-secondary shadow"
-              onSubmit={entrySchema.handleSubmit}
-            >
+            <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
@@ -5816,7 +5846,6 @@ const Leaseing = () => {
                                 }
                                 style={{ cursor: "pointer" }}
                               >
-                                {/* {console.log(file, "fromm 5867")} */}
                                 {singleFile?.file_name?.substr(0, 5)}
                                 {singleFile?.file_name?.length > 5
                                   ? "..."
@@ -5824,12 +5853,11 @@ const Leaseing = () => {
                               </p>
                             ) : (
                               <p
-                                // onClick={() => handleOpenFile(file.upload_file)}
+                                onClick={() => handleOpenFile(singleFile.upload_file)}
                                 style={{ cursor: "pointer" }}
                               >
-                                {/* {console.log(file, "file 5803")} */}
-                                {file[0]?.file_name?.substr(0, 5)}
-                                {file[0]?.file_name?.length > 5 ? "..." : null}
+                                {singleFile.file_name?.substr(0, 5)}
+                                {singleFile.file_name?.length > 5 ? "..." : null}
                               </p>
                             )}
                             <CloseIcon
@@ -5978,7 +6006,8 @@ const Leaseing = () => {
                                       16
                                     ); // Limit to 12 digits
                                     setCCVNU(parseInt(limitValue));
-                                    entrySchema.values.ccvNu = parseInt(limitValue);
+                                    entrySchema.values.ccvNu =
+                                      parseInt(limitValue);
                                   }}
                                 />
                               </InputGroup>
@@ -6028,7 +6057,7 @@ const Leaseing = () => {
                                   }
                                   // If the input is incomplete or invalid, set the state with the raw string
                                   setCCVEX(inputValue);
-                                  entrySchema.values.ccvEx = (inputValue);
+                                  entrySchema.values.ccvEx = inputValue;
                                 }}
                                 value={
                                   CCVEX instanceof Date
@@ -6105,11 +6134,11 @@ const Leaseing = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                        entrySchema.handleSubmit();
                         if (selectedTenantData.length !== 0) {
                           handleSubmit(entrySchema.values);
                         } else {
                           // console.log("data not ok")
+                          entrySchema.handleSubmit();
                           setDisplay(true);
                         }
                       }}

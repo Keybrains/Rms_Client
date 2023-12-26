@@ -256,7 +256,7 @@ const Rentals = () => {
   const [propType, setPropType] = useState("");
 
   const handlePropSelection = (propertyType) => {
-    rentalsFormik.setFieldValue("property_type", propertyType);
+    rentalsFormik.values.entries[0].property_type = propertyType.propertysub_type;
     const propTypes = [];
     console.log(propertyType, "first");
     axios
@@ -525,79 +525,39 @@ const Rentals = () => {
   // navigate(`/admin/rentals/rental/${id}/entry/${propertyIndex}`);
   const { id, entryIndex } = useParams();
   // console.log(entryIndex, "entryIndex");
-  const [residentialImage, setResidentialImage] = useState([[]]);
-  const [commercialImage, setCommercialImage] = useState([[]]);
-  const [imgLoader, setImgLoader] = useState(false); // Use camelCase for variable names
-  const [loadingImages, setLoadingImages] = useState([]);
-  const fileData = async (file, name, index) => {
-    //setImgLoader(true);
-    const allData = [];
-    const axiosRequests = [];
+  const [residentialImage, setResidentialImage] = useState([]);
+  const [commercialImage, setCommercialImage] = useState([]);
 
-    for (let i = 0; i < file.length; i++) {
-      setImgLoader(true);
-      const dataArray = new FormData();
-      dataArray.append("b_video", file[i]);
-      let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
+  const fileData = async (e, type, i) => {
+    const files = Array.from(e.target.files).map((file) => URL.createObjectURL(file));
 
-      // Push the Axios request promises into an array
-      axiosRequests.push(
-        axios
-          .post(url, dataArray, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            setImgLoader(false);
-            const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-            console.log(imagePath, "imagePath");
-            allData.push(imagePath);
-          })
-          .catch((err) => {
-            setImgLoader(false);
-            // console.log("Error uploading image:", err);
-          })
-      );
-    }
+    if (type === "property_image") {
+      setCommercialImage((prevCommercialImage) => {
+        const newFiles = [...prevCommercialImage];
 
-    // Wait for all Axios requests to complete before logging the data
-    await Promise.all(axiosRequests);
-    if (name === "propertyres_image") {
-      rentalsFormik.setFieldValue(
-        `entries[0].residential[${index}].propertyres_image`,
-        ...rentalsFormik.values.entries[0].residential[index].propertyres_image,
-        allData
-      );
-      if (residentialImage[index]) {
-        setResidentialImage([
-          ...residentialImage.slice(0, index),
-          [...residentialImage[index], ...allData],
-          ...residentialImage.slice(index + 1),
-        ]);
-      } else {
-        setResidentialImage([...allData]);
-      }
+        // Ensure the array at index i exists or initialize it as an empty array
+        if (!newFiles[i]) {
+          newFiles[i] = [];
+        }
+
+        newFiles[i] = [...newFiles[i], ...files];
+        return newFiles;
+      });
     } else {
-      rentalsFormik.setFieldValue(
-        `entries[0].commercial[${index}].property_image`,
-        ...rentalsFormik.values.entries[0].commercial[index].property_image,
-        allData
-      );
-      if (commercialImage[index]) {
-        setCommercialImage([
-          ...commercialImage.slice(0, index),
-          [...commercialImage[index], ...allData],
-          ...commercialImage.slice(index + 1),
-        ]);
-      } else {
-        setCommercialImage([...allData]);
-      }
+      setResidentialImage((prevResidentialImage) => {
+        const newFiles = [...prevResidentialImage];
+
+        // Ensure the array at index i exists or initialize it as an empty array
+        if (!newFiles[i]) {
+          newFiles[i] = [];
+        }
+
+        newFiles[i] = [...newFiles[i], ...files];
+        return newFiles;
+      });
     }
-    // console.log(allData, "allData");
-    // console.log(residentialImage, "residentialImage");
-    // console.log(commercialImage, "commercialImage");
   };
+
 
   // console.log(commercialImage, "commercialImage");
 
@@ -607,29 +567,27 @@ const Rentals = () => {
     navigate("../propertiesTable");
   };
 
-  const clearSelectedPhoto = (index, image, name) => {
+  const clearSelectedPhoto = (index, name, indexes) => {
     if (name === "propertyres_image") {
-      const filteredImage = residentialImage[index].filter((item) => {
-        return item !== image;
+      setResidentialImage((prevResidentialImage) => {
+        const filteredImage = prevResidentialImage.map((residentialUnit, i) => {
+          if (i === indexes) {
+            return residentialUnit.filter((item, j) => j !== index);
+          }
+          return residentialUnit;
+        });
+        return filteredImage;
       });
-      // console.log(filteredImage, "filteredImage");
-      // setResidentialImage(filteredImage);
-      setResidentialImage([
-        ...residentialImage.slice(0, index),
-        [...filteredImage],
-        ...residentialImage.slice(index + 1),
-      ]);
     } else {
-      const filteredImage = commercialImage[index].filter((item) => {
-        return item !== image;
+      setCommercialImage((prevResidentialImage) => {
+        const filteredImage = prevResidentialImage.map((residentialUnit, i) => {
+          if (i === indexes) {
+            return residentialUnit.filter((item, j) => j !== index);
+          }
+          return residentialUnit;
+        });
+        return filteredImage;
       });
-      // console.log(filteredImage, "filteredImage");
-      // setCommercialImage(filteredImage);
-      setCommercialImage([
-        ...commercialImage.slice(0, index),
-        [...filteredImage],
-        ...commercialImage.slice(index + 1),
-      ]);
     }
   };
 
@@ -810,12 +768,48 @@ const Rentals = () => {
   const [loader, setLoader] = useState(false);
 
   const handleSubmit = async (values) => {
-    // console.log(residentialImage, "residentialImage after submit");
-    // console.log(commercialImage, "commercialImage after submit");
-    // console.log(file, "values");
+
+    console.log(propType, "values");
     setLoader(true);
     const entriesArray = [];
     if (propType === "Residential") {
+      if (residentialImage && residentialImage.length > 0) {
+        for (let i = 0; i < residentialImage.length; i++) {
+          const fileArray = residentialImage[i];
+
+          if (fileArray && fileArray.length > 0) {
+            for (let j = 0; j < fileArray.length; j++) {
+              const fileUrl = fileArray[j];
+
+              try {
+                // Fetch the file using the URL
+                const response = await fetch(fileUrl);
+                const blob = await response.blob();
+
+                const file = new File([blob], `residential_${i}_${j}.png`, { type: blob.type });
+
+                const formData = new FormData();
+                formData.append('files', file);
+                const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+                try {
+                  const result = await axios.post(url, formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data',
+                    },
+                  });
+                  residentialImage[i][j] = result.data.files.map(file => file.url);
+                }
+                catch (error) {
+                  console.error(error, "error");
+                }
+              } catch (error) {
+                console.error(`Error fetching file at index ${i}-${j}:`, error);
+              }
+            }
+          }
+        }
+      }
+
       const entriesObject = {
         property_type: selectedProp.propertysub_type,
         rental_adress: rentalsFormik.values.entries[0].rental_adress,
@@ -829,11 +823,10 @@ const Rentals = () => {
         staffMember: selectedUser,
         //RESIDENTIAL
         residential: rentalsFormik.values.entries[0].residential,
-        // createdAt:moment().format("YYYY-MM-DD"),
       };
-
-      //COMMERCIAL
-
+      residentialImage.map((data, index) => {
+        rentalsFormik.values.entries[0].residential[index].propertyres_image = data;
+      })
       entriesArray.push(entriesObject);
 
       const leaseObject = {
@@ -866,7 +859,45 @@ const Rentals = () => {
         }
       }
       handleResponse(res);
+      setLoader(false);
+      return;
     } else {
+      if (commercialImage && commercialImage.length > 0) {
+        for (let i = 0; i < commercialImage.length; i++) {
+          const fileArray = commercialImage[i];
+
+          if (fileArray && fileArray.length > 0) {
+            for (let j = 0; j < fileArray.length; j++) {
+              const fileUrl = fileArray[j];
+
+              try {
+                // Fetch the file using the URL
+                const response = await fetch(fileUrl);
+                const blob = await response.blob();
+
+                const file = new File([blob], `commercial_${i}_${j}.png`, { type: blob.type });
+
+                const formData = new FormData();
+                formData.append('files', file);
+                const url = `${baseUrl}/images/upload`;
+                try {
+                  const result = await axios.post(url, formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data',
+                    },
+                  });
+                  commercialImage[i][j] = result.data.files.map(file => file.url);
+                }
+                catch (error) {
+                  console.error(error, "imgs");
+                }
+              } catch (error) {
+                console.error(`Error fetching file at index ${i}-${j}:`, error);
+              }
+            }
+          }
+        }
+      }
       const entriesObject = {
         property_type: selectedProp.propertysub_type,
         rental_adress: rentalsFormik.values.entries[0].rental_adress,
@@ -882,9 +913,12 @@ const Rentals = () => {
         // residential: rentalsFormik.values.entries[0].residential,
         commercial: rentalsFormik.values.entries[0].commercial,
         // createdAt:moment().format("YYYY-MM-DD"),
-
+        property_image: commercialImage
         //COMMERCIAL
       };
+      commercialImage.map((data, index) => {
+        rentalsFormik.values.entries[0].commercial[index].property_image = data;
+      })
       entriesArray.push(entriesObject);
       const leaseObject = {
         //   Add Rental owner
@@ -913,36 +947,11 @@ const Rentals = () => {
         swal("", res.data.message, "error");
       }
       handleResponse(res);
+      setLoader(false);
+      return;
     }
-    //      try {
-    //   values["property_type"] = selectedProp;
-    //   values["rental_bath"] = selectedbath;
-    //   values["rental_bed"] = selectedBad;
-    //   values["rentalOwner_operatingAccount"] = selectedBank;
-    //   values["property_image"] = commercialImage;
-    //   values["propertyres_image"] = residentialImage;
-    //   values["staffMember"] = selectedUser;
-    //   if (id === undefined) {
-    //     console.log(values, "values after submit");
-    //     const res = await axios.post(
-    //       "https://propertymanager.cloudpress.host/api/rentals/rentals",
-    //       values
-    //     );
-    //     handleResponse(res);
-    //   } else {
-    //     const editUrl = `${baseUrl}/rentals/rentals/${id}`;
-    //     const res = await axios.put(editUrl, values);
-    //     handleResponse(res);
-    //   }
-    // } catch (error) {
-    //   console.error("Error:", error);
-    //   if (error.response) {
-    //     console.error("Response Data:", error.response.data);
-    //   }
-    //   // Handle the error and display an error message to the user if necessary.
-    // }
-    setLoader(false);
   };
+
 
   const editProperty = async (id) => {
     const editUrl = `${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`;
@@ -1113,6 +1122,13 @@ const Rentals = () => {
 
   const deleteCommercialUnit = (index) => {
     // console.log("delete commercial");
+    setCommercialImage((prevResidentialImage) => {
+      // Use filter to exclude the sub-array at the specified index (i)
+      const filteredImage = prevResidentialImage.filter((residentialUnit, j) => j !== index);
+
+      // Return the updated array with the sub-array removed
+      return filteredImage;
+    });
     const updatedCommercialUnits = [
       ...rentalsFormik.values.entries[0].commercial,
     ];
@@ -1155,6 +1171,13 @@ const Rentals = () => {
   };
 
   const deleteResidentialUnit = (index) => {
+    setResidentialImage((prevResidentialImage) => {
+      // Use filter to exclude the sub-array at the specified index (i)
+      const filteredImage = prevResidentialImage.filter((residentialUnit, j) => j !== index);
+
+      // Return the updated array with the sub-array removed
+      return filteredImage;
+    });
     const updatedResidentialUnits = [
       ...rentalsFormik.values.entries[0].residential,
     ];
@@ -2964,58 +2987,9 @@ const Rentals = () => {
                                             multiple
                                             id={`propertyres_image_${residentialIndex}`}
                                             name={`propertyres_image_${residentialIndex}`}
-                                            onChange={(e) => {
-                                              const file = [...e.target.files];
-                                              fileData(
-                                                file,
-                                                "propertyres_image",
-                                                residentialIndex
-                                              );
-
-                                              if (file.length > 0) {
-                                                const allImages = file.map(
-                                                  (file) => {
-                                                    return URL.createObjectURL(
-                                                      file
-                                                    );
-                                                  }
-                                                );
-                                                // console.log(
-                                                //   residentialIndex,
-                                                //   "indexxxxxx"
-                                                // );
-                                                if (
-                                                  residentialImage[
-                                                  residentialIndex
-                                                  ]
-                                                ) {
-                                                  setResidentialImage([
-                                                    ...residentialImage.slice(
-                                                      0,
-                                                      residentialIndex
-                                                    ),
-                                                    [
-                                                      ...residentialImage[
-                                                      residentialIndex
-                                                      ],
-                                                      ...allImages,
-                                                    ],
-                                                    ...residentialImage.slice(
-                                                      1 + residentialIndex
-                                                    ),
-                                                  ]);
-                                                } else {
-                                                  setResidentialImage([
-                                                    ...allImages,
-                                                  ]);
-                                                }
-                                              } else {
-                                                setResidentialImage([
-                                                  ...residentialImage,
-                                                ]);
-                                                // )
-                                              }
-                                            }}
+                                            onChange={
+                                              (e) => fileData(e, "propertyres_image", residentialIndex)
+                                            }
                                           />
                                           <label
                                             htmlFor={`propertyres_image_${residentialIndex}`}
@@ -3044,14 +3018,11 @@ const Rentals = () => {
                                           }}
                                         >
                                           {residentialImage &&
-                                            Array.isArray(
-                                              residentialImage[residentialIndex]
-                                            ) &&
-                                            residentialImage[
-                                              residentialIndex
-                                            ].map((image, index) => (
+                                            residentialImage.length > 0 &&
+                                            residentialImage[residentialIndex] &&
+                                            residentialImage[residentialIndex].map((unitImg, index) => (
                                               <div
-                                                key={index}
+                                                key={index} // Use a unique identifier, such as index or image URL
                                                 style={{
                                                   position: "relative",
                                                   width: "100px",
@@ -3062,7 +3033,7 @@ const Rentals = () => {
                                                 }}
                                               >
                                                 <img
-                                                  src={image}
+                                                  src={unitImg}
                                                   alt=""
                                                   style={{
                                                     width: "100px",
@@ -3072,7 +3043,7 @@ const Rentals = () => {
                                                     borderRadius: "10px",
                                                   }}
                                                   onClick={() => {
-                                                    setSelectedImage(image);
+                                                    setSelectedImage(unitImg);
                                                     setOpen(true);
                                                   }}
                                                 />
@@ -3084,24 +3055,8 @@ const Rentals = () => {
                                                     top: "-12px",
                                                     right: "-12px",
                                                   }}
-                                                  onClick={() =>
-                                                    clearSelectedPhoto(
-                                                      residentialIndex,
-                                                      image,
-                                                      "propertyres_image"
-                                                    )
-                                                  }
+                                                  onClick={() => clearSelectedPhoto(index, "propertyres_image", residentialIndex)}
                                                 />
-                                                {imgLoader &&
-                                                  index ===
-                                                  residentialImage[
-                                                    residentialIndex
-                                                  ].length -
-                                                  1 && (
-                                                    <div className="loader">
-                                                      {/* Your loader component goes here */}
-                                                    </div>
-                                                  )}
                                               </div>
                                             ))}
                                           <OpenImageDialog
@@ -3375,54 +3330,7 @@ const Rentals = () => {
                                             multiple
                                             id={`property_image${commercialIndex}`}
                                             name={`property_image${commercialIndex}`}
-                                            onChange={(e) => {
-                                              const file = [...e.target.files];
-                                              fileData(
-                                                file,
-                                                "property_image",
-                                                commercialIndex
-                                              );
-
-                                              if (file) {
-                                                const allImages = file.map(
-                                                  (file) => {
-                                                    return URL.createObjectURL(
-                                                      file
-                                                    );
-                                                  }
-                                                );
-
-                                                if (
-                                                  commercialImage[
-                                                  commercialIndex
-                                                  ]
-                                                ) {
-                                                  setCommercialImage([
-                                                    ...commercialImage.slice(
-                                                      0,
-                                                      commercialIndex
-                                                    ),
-                                                    [
-                                                      ...commercialImage[
-                                                      commercialIndex
-                                                      ],
-                                                      ...allImages,
-                                                    ],
-                                                    ...commercialImage.slice(
-                                                      1 + commercialIndex
-                                                    ),
-                                                  ]);
-                                                } else {
-                                                  setCommercialImage([
-                                                    ...allImages,
-                                                  ]);
-                                                }
-                                              } else {
-                                                setCommercialImage([
-                                                  ...commercialImage,
-                                                ]);
-                                              }
-                                            }}
+                                            onChange={(e) => fileData(e, "property_image", commercialIndex)}
                                           />
                                           <label
                                             htmlFor={`property_image${commercialIndex}`}
@@ -3443,14 +3351,10 @@ const Rentals = () => {
                                           }}
                                         >
                                           {commercialImage &&
-                                            Array.isArray(
-                                              commercialImage[commercialIndex]
-                                            ) &&
-                                            commercialImage[
-                                              commercialIndex
-                                            ].map((image, index) => (
+                                            commercialImage.length > 0 &&
+                                            commercialImage.map((unitImg, index) => (
                                               <div
-                                                key={index}
+                                                key={index}  // Use a unique identifier, such as index or image URL
                                                 style={{
                                                   position: "relative",
                                                   width: "100px",
@@ -3461,7 +3365,7 @@ const Rentals = () => {
                                                 }}
                                               >
                                                 <img
-                                                  src={image}
+                                                  src={unitImg}
                                                   alt=""
                                                   style={{
                                                     width: "100px",
@@ -3471,7 +3375,7 @@ const Rentals = () => {
                                                     borderRadius: "10px",
                                                   }}
                                                   onClick={() => {
-                                                    setSelectedImage(image);
+                                                    setSelectedImage(unitImg);
                                                     setOpen(true);
                                                   }}
                                                 />
@@ -3483,24 +3387,8 @@ const Rentals = () => {
                                                     top: "-12px",
                                                     right: "-12px",
                                                   }}
-                                                  onClick={() =>
-                                                    clearSelectedPhoto(
-                                                      commercialIndex,
-                                                      image,
-                                                      "property_image"
-                                                    )
-                                                  }
+                                                  onClick={() => clearSelectedPhoto(index, "property_image")}
                                                 />
-                                                {imgLoader &&
-                                                  index ===
-                                                  commercialImage[
-                                                    commercialIndex
-                                                  ].length -
-                                                  1 && (
-                                                    <div className="loader">
-                                                      {/* Your loader component goes here */}
-                                                    </div>
-                                                  )}
                                               </div>
                                             ))}
                                           <OpenImageDialog
@@ -3564,10 +3452,10 @@ const Rentals = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                        rentalsFormik.handleSubmit();
                         if (selectedRentalOwnerData.length !== 0) {
                           rentalsFormik.handleSubmit();
                         } else {
+                          rentalsFormik.handleSubmit();
                           // console.log("data not ok")
                           setDisplay(true);
                         }

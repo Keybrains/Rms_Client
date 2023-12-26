@@ -138,7 +138,7 @@ const AddPayment = () => {
       }
     },
   });
-
+  console.log(generalledgerFormik.values, "yash")
   const handleCloseButtonClick = () => {
     navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
   };
@@ -287,7 +287,34 @@ const AddPayment = () => {
   const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
     setLoader(true);
-    const arrayOfNames = file.map((item) => item.name);
+    for (const [index, files] of generalledgerFormik.values.attachment.entries()) {
+
+      if (files.upload_file instanceof File) {
+        console.log(files.upload_file, "myfile");
+
+        const imageData = new FormData();
+        imageData.append(`files`, files.upload_file);
+
+        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+
+        try {
+          const result = await axios.post(url, imageData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          console.log(result, "imgs");
+
+          // Update the original array with the uploaded file URL
+          generalledgerFormik.values.attachment[index].upload_file = result.data.files[0].url;
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        console.log(files.upload_file, "myfile");
+      }
+    }
     const rentalAddress = generalledgerFormik.values.rental_adress;
     values["total_amount"] = total_amount;
 
@@ -299,7 +326,7 @@ const AddPayment = () => {
       expiration_date: values.expiration_date,
       creditcard_number: values.creditcard_number,
       tenant_firstName: selectedRec,
-      attachment: arrayOfNames,
+      attachment: generalledgerFormik.values.attachment,
       rental_adress: rentalAddress,
       tenant_id: tenantid,
       entryIndex: tenantentryIndex,
@@ -362,9 +389,6 @@ const AddPayment = () => {
             console.log(error);
           }
         }
-
-
-
 
         const id = response.data.data._id;
         if (id) {
@@ -503,6 +527,7 @@ const AddPayment = () => {
                 date: values.date,
                 memo: values.charges_memo,
                 tenant_id: tenantid,
+                charges_attachment: generalledgerFormik.values.attachment,
                 tenant_firstName: selectedRec,
               })),
               ...formikForAnotherData.values.entries
@@ -516,6 +541,7 @@ const AddPayment = () => {
                   month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
                   date: values.date,
                   memo: values.charges_memo,
+                  charges_attachment: generalledgerFormik.values.attachment,
                   tenant_id: tenantid,
                   tenant_firstName: selectedRec,
                 })),
@@ -545,58 +571,72 @@ const AddPayment = () => {
     setLoader(false);
   };
 
+
   const fileData = (files) => {
+    //setImgLoader(true);
+    // console.log(files, "file");
     const filesArray = [...files];
+    console.log(filesArray, "yash")
 
     if (filesArray.length <= 10 && file.length === 0) {
-      setFile([...filesArray]);
+      const finalArray = [];
+      // i want to loop and create object
+      for (let i = 0; i < filesArray.length; i++) {
+        const object = {
+          upload_file: filesArray[i],
+          upload_date: moment().format("YYYY-MM-DD"),
+          upload_time: moment().format("HH:mm:ss"),
+          upload_by: localStorage.getItem("user_id"),
+          file_name: filesArray[i].name,
+        };
+        // Do something with the object... push it to final array
+        finalArray.push(object);
+      }
+      setFile([...finalArray]);
+      generalledgerFormik.setFieldValue("attachment", [...finalArray]);
     } else if (
       file.length >= 0 &&
       file.length <= 10 &&
       filesArray.length + file.length > 10
     ) {
       setFile([...file]);
+      generalledgerFormik.setFieldValue("attachment", [...file]);
     } else {
-      setFile([...file, ...filesArray]);
+      const finalArray = [];
+
+      for (let i = 0; i < filesArray.length; i++) {
+        const object = {
+          upload_file: filesArray[i],
+          upload_date: moment().format("YYYY-MM-DD"),
+          upload_time: moment().format("HH:mm:ss"),
+          upload_by: localStorage.getItem("user_id"),
+          file_name: filesArray[i].name,
+        };
+        // Do something with the object... push it to final array
+        finalArray.push(object);
+      }
+      setFile([...file, ...finalArray]);
+
+      generalledgerFormik.setFieldValue("attachment", [...file, ...finalArray]);
     }
-
-    const dataArray = new FormData();
-    dataArray.append("b_video", files);
-
-    let url = "https://cdn.brandingprofitable.com/image_upload.php/";
-    axios
-      .post(url, dataArray, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        //setImgLoader(false);
-        const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        //console.log(imagePath, "imagePath");
-        // setFile(imagePath);
-      })
-      .catch((err) => {
-        //setImgLoader(false);
-        //console.log("Error uploading image:", err);
-      });
   };
 
   const deleteFile = (index) => {
     const newFile = [...file];
     newFile.splice(index, 1);
     setFile(newFile);
+    generalledgerFormik.setFieldValue("attachment", newFile);
   };
 
   const handleOpenFile = (item) => {
-    // //console.log(file,"fike")
-    // const fileToOpen = file.filter((file) => {
-    //   return file.name === item.name
-    // })
-    // //console.log(fileToOpen, "fileToOpen");
-    //console.log(item, "item");
-    const url = URL.createObjectURL(item);
-    window.open(url, "_blank");
+    if (typeof item !== "string") {
+      const url = URL.createObjectURL(item);
+      window.open(url, "_blank");
+    }
+    // console.log(item, "item");
+    else {
+      window.open(item, "_blank");
+    }
   };
   const [paymentData, setpaymentData] = useState(null);
 
@@ -673,6 +713,34 @@ const AddPayment = () => {
 
   const editpayment = async (mainId, paymentIndex, values) => {
     const arrayOfNames = file.map((item) => item.name);
+    for (const [index, files] of generalledgerFormik.values.attachment.entries()) {
+
+      if (files.upload_file instanceof File) {
+        console.log(files.upload_file, "myfile");
+
+        const imageData = new FormData();
+        imageData.append(`files`, files.upload_file);
+
+        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+
+        try {
+          const result = await axios.post(url, imageData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          console.log(result, "imgs");
+
+          // Update the original array with the uploaded file URL
+          generalledgerFormik.values.attachment[index].upload_file = result.data.files[0].url;
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        console.log(files.upload_file, "myfile");
+      }
+    }
     const rentalAddress = generalledgerFormik.values.rental_adress;
     values["total_amount"] = total_amount;
 
@@ -683,7 +751,7 @@ const AddPayment = () => {
         payment_method: selectedProp,
         debitcard_number: values.debitcard_number,
         tenant_firstName: selectedRec,
-        attachment: arrayOfNames,
+        attachment: generalledgerFormik.values.attachment,
         rental_adress: rentalAddress,
         tenant_id: tenantid,
         entryIndex: tenantentryIndex,
@@ -1621,11 +1689,11 @@ const AddPayment = () => {
                                   }}
                                 >
                                   <p
-                                    onClick={() => handleOpenFile(file)}
+                                    onClick={() => handleOpenFile(file?.upload_file ? file?.upload_file : file?.name?.upload_file)}
                                     style={{ cursor: "pointer" }}
                                   >
-                                    {file?.name?.substr(0, 5)}
-                                    {file?.name?.length > 5 ? "..." : null}
+                                    {file?.name?.file_name?.substr(0, 5) || file?.file_name?.substr(0, 5)}
+                                    {file?.name?.file_name?.length > 5 ? "..." : null || file?.file_name?.length > 5 ? "..." : null}
                                   </p>
                                   <CloseIcon
                                     style={{

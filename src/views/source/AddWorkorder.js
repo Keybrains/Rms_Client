@@ -325,6 +325,30 @@ const AddWorkorder = () => {
 
   async function handleSubmit(values, work) {
     setLoader(true);
+    var image;
+    const imageData = new FormData();
+    for (let index = 0; index < selectedFiles.length; index++) {
+      const element = selectedFiles[index];
+      imageData.append(`files`, element);
+    }
+
+    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+    try {
+      const result = await axios.post(url, imageData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      image = {
+        prop_image: result.data.files.map((data, index) => {
+          return data.url;
+        }),
+      };
+      console.log(image, "imgs");
+    }
+    catch (error) {
+      console.error(error);
+    }
     try {
       values["rental_adress"] = selectedProp;
       values["work_category"] = WorkFormik.values.work_category
@@ -339,7 +363,8 @@ const AddWorkorder = () => {
       values["account_type"] = selectedAccount;
       values["final_total_amount"] = final_total_amount;
       values["rental_units"] = selectedUnit;
-      values["workOrderImage"] = workOrderImage;
+      values["workOrderImage"] = image.prop_image;
+
 
       const entries = WorkFormik.values.entries.map((entry) => ({
         part_qty: entry.part_qty,
@@ -516,15 +541,13 @@ const AddWorkorder = () => {
   });
   console.log(WorkFormik.values.rental_units, "kk")
 
-  const clearSelectedPhoto = (image) => {
-    const filteredImage = workOrderImage.filter((item) => {
-      return item !== image;
-    });
-    // console.log(filteredImage, "filteredImage");
-    // setResidentialImage(filteredImage);
-    setWorkOrderImage([...filteredImage]);
-
-    WorkFormik.setFieldValue("workOrderImage", filteredImage);
+  const clearSelectedPhoto = (index, name) => {
+    if (name === "propertyres_image") {
+      const filteredImage = workOrderImage.filter((item, i) => i !== index);
+      const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
+      setSelectedFiles(filteredImage2);
+      setWorkOrderImage(filteredImage);
+    }
   };
 
   React.useEffect(() => {
@@ -565,52 +588,18 @@ const AddWorkorder = () => {
       });
   }, []);
 
-  const fileData = async (file, name, index) => {
-    //setImgLoader(true);
-    const allData = [];
-    const axiosRequests = [];
-    console.log(file, "file after adding");
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const fileData = (e, type) => {
+    // Use the correct state-setting function for setSelectedFiles
+    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...e.target.files]);
 
-    for (let i = 0; i < file.length; i++) {
-      // setImgLoader(true);
-      const dataArray = new FormData();
-      dataArray.append("b_video", file[i]);
-      let url = "https://www.sparrowgroups.com/CDN/image_upload.php";
+    const newFiles = [
+      ...workOrderImage,
+      ...Array.from(e.target.files).map((file) => URL.createObjectURL(file)),
+    ];
 
-      // Push the Axios request promises into an array
-      axiosRequests.push(
-        axios
-          .post(url, dataArray, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            // setImgLoader(false);  
-            const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-            console.log(imagePath, "imagePath");
-            allData.push(imagePath);
-          })
-          .catch((err) => {
-            // setImgLoader(false);
-            console.log("Error uploading image:", err);
-          })
-      );
-    }
-    console.log(allData, "allData");
-
-    // Wait for all Axios requests to complete before logging the data
-    await Promise.all(axiosRequests);
-
-    if (workOrderImage && workOrderImage.length > 0) {
-      setWorkOrderImage([...workOrderImage, ...allData]);
-    } else {
-      setWorkOrderImage([...allData]);
-    }
-
-    // console.log(allData, "allData");
-    // console.log(residentialImage, "residentialImage");
-    // console.log(commercialImage, "commercialImage");
+    // Update the state with the new files
+    setWorkOrderImage(newFiles);
   };
   console.log(workOrderImage, "workOrderImage");
 
@@ -747,7 +736,7 @@ const AddWorkorder = () => {
                       </Col>
                     </Row>
                     <Row>
-                      <Col>
+                      <Col >
                         <FormGroup
                           style={{
                             display: "flex",
@@ -778,47 +767,16 @@ const AddWorkorder = () => {
                               multiple
                               id={`workOrderImage`}
                               name={`workOrderImage`}
-                              onChange={(e) => {
-                                const file = [...e.target.files];
-                                fileData(file, "propertyres_image");
-
-                                if (file.length > 0) {
-                                  const allImages = file.map((file) => {
-                                    return URL.createObjectURL(file);
-                                  });
-                                  // console.log(
-                                  //   residentialIndex,
-                                  //   "indexxxxxx"
-                                  // );
-                                  if (
-                                    workOrderImage &&
-                                    workOrderImage.length > 0
-                                  ) {
-                                    setWorkOrderImage([
-                                      ...workOrderImage,
-                                      ...allImages,
-                                    ]);
-                                    WorkFormik.setFieldValue(`workOrderImage`, [
-                                      ...WorkFormik.values.workOrderImage,
-                                      ...allImages,
-                                    ]);
-                                  } else {
-                                    setWorkOrderImage([...allImages]);
-                                    WorkFormik.setFieldValue(`workOrderImage`, [
-                                      ...allImages,
-                                    ]);
-                                  }
-                                } else {
-                                  setWorkOrderImage([...workOrderImage]);
-                                  WorkFormik.setFieldValue(`workOrderImage`, [
-                                    ...WorkFormik.values.workOrderImage,
-                                  ]);
-                                  // )
-                                }
-                              }}
+                              onChange={(e) => fileData(e)}
                             />
-                            <label htmlFor={`workOrderImage`}>
-                              <b style={{ fontSize: "20px" }}>+</b> Add
+
+                            <label
+                              htmlFor={`workOrderImage`}
+                            >
+                              <b style={{ fontSize: "20px" }}>
+                                +
+                              </b>{" "}
+                              Add
                             </label>
                             {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
                           </span>
@@ -839,50 +797,54 @@ const AddWorkorder = () => {
                           flexWrap: "wrap",
                         }}
                       >
-                        {workOrderImage.map((image, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              position: "relative",
-                              width: "100px",
-                              height: "100px",
-                              margin: "10px",
-                              display: "flex",
-                              flexDirection: "column",
-                            }}
-                          >
-                            <img
-                              src={image}
-                              alt=""
-                              style={{
-                                width: "100px",
-                                height: "100px",
-                                maxHeight: "100%",
-                                maxWidth: "100%",
-                                borderRadius: "10px",
-                              }}
-                              onClick={() => {
-                                setSelectedImage(image);
-                                setOpen(true);
-                              }}
-                            />
-                            <ClearIcon
-                              style={{
-                                cursor: "pointer",
-                                alignSelf: "flex-start",
-                                position: "absolute",
-                                top: "-12px",
-                                right: "-12px",
-                              }}
-                              onClick={() =>
-                                clearSelectedPhoto(
-                                  // residentialIndex,
-                                  image
-                                )
-                              }
-                            />
-                          </div>
-                        ))}
+                        <div className="d-flex">
+                          {workOrderImage &&
+                            workOrderImage.length > 0 &&
+                            workOrderImage.map((unitImg, index) => (
+                              <div
+                                key={index}  // Use a unique identifier, such as index or image URL
+                                style={{
+                                  position: "relative",
+                                  width: "100px",
+                                  height: "100px",
+                                  margin: "10px",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                }}
+                              >
+                                <img
+                                  src={unitImg}
+                                  alt=""
+                                  style={{
+                                    width: "100px",
+                                    height: "100px",
+                                    maxHeight: "100%",
+                                    maxWidth: "100%",
+                                    borderRadius: "10px",
+                                  }}
+                                  onClick={() => {
+                                    setSelectedImage(unitImg);
+                                    setOpen(true);
+                                  }}
+                                />
+                                <ClearIcon
+                                  style={{
+                                    cursor: "pointer",
+                                    alignSelf: "flex-start",
+                                    position: "absolute",
+                                    top: "-12px",
+                                    right: "-12px",
+                                  }}
+                                  onClick={() => clearSelectedPhoto(index, "propertyres_image")}
+                                />
+                              </div>
+                            ))}
+                          <OpenImageDialog
+                            open={open}
+                            setOpen={setOpen}
+                            selectedImage={selectedImage}
+                          />
+                        </div>
                         <OpenImageDialog
                           open={open}
                           setOpen={setOpen}
@@ -940,10 +902,10 @@ const AddWorkorder = () => {
                                 ))}
                               </DropdownMenu>
                               {WorkFormik.errors &&
-                              WorkFormik.errors?.rental_adress &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.rental_adress &&
-                              WorkFormik.values.rental_adress === "" ? (
+                                WorkFormik.errors?.rental_adress &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.rental_adress &&
+                                WorkFormik.values.rental_adress === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.rental_adress}
                                 </div>
@@ -1004,10 +966,10 @@ const AddWorkorder = () => {
                                       )}
                                     </DropdownMenu>
                                     {WorkFormik.errors &&
-                                    WorkFormik.errors?.rental_units &&
-                                    WorkFormik.touched &&
-                                    WorkFormik.touched?.rental_units &&
-                                    WorkFormik.values.rental_units === "" ? (
+                                      WorkFormik.errors?.rental_units &&
+                                      WorkFormik.touched &&
+                                      WorkFormik.touched?.rental_units &&
+                                      WorkFormik.values.rental_units === "" ? (
                                       <div style={{ color: "red" }}>
                                         {WorkFormik.errors.rental_units}
                                       </div>
@@ -1086,10 +1048,10 @@ const AddWorkorder = () => {
                               </DropdownItem>
                             </DropdownMenu>
                             {WorkFormik.errors &&
-                            WorkFormik.errors?.work_category &&
-                            WorkFormik.touched &&
-                            WorkFormik.touched?.work_category &&
-                            WorkFormik.values.work_category === "" ? (
+                              WorkFormik.errors?.work_category &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.work_category &&
+                              WorkFormik.values.work_category === "" ? (
                               <div style={{ color: "red" }}>
                                 {WorkFormik.errors.work_category}
                               </div>
@@ -1131,7 +1093,7 @@ const AddWorkorder = () => {
                               );
                             }}
                             value={WorkFormik.values.work_category}
-                            // required
+                          // required
                           />
                           {/* {WorkFormik.touched.work_subject &&
                           WorkFormik.errors.work_subject ? (
@@ -1187,10 +1149,10 @@ const AddWorkorder = () => {
                               ))}
                             </DropdownMenu>
                             {WorkFormik.errors &&
-                            WorkFormik.errors?.vendor &&
-                            WorkFormik.touched &&
-                            WorkFormik.touched?.vendor &&
-                            WorkFormik.values.vendor === "" ? (
+                              WorkFormik.errors?.vendor &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.vendor &&
+                              WorkFormik.values.vendor === "" ? (
                               <div style={{ color: "red" }}>
                                 {WorkFormik.errors.vendor}
                               </div>
@@ -1309,10 +1271,10 @@ const AddWorkorder = () => {
                                 ))}
                               </DropdownMenu>
                               {WorkFormik.errors &&
-                              WorkFormik.errors?.staffmember_name &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.staffmember_name &&
-                              WorkFormik.values.staffmember_name === "" ? (
+                                WorkFormik.errors?.staffmember_name &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.staffmember_name &&
+                                WorkFormik.values.staffmember_name === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.staffmember_name}
                                 </div>
@@ -1352,7 +1314,7 @@ const AddWorkorder = () => {
                             value={WorkFormik.values.work_performed}
                           />
                           {WorkFormik.touched.work_performed &&
-                          WorkFormik.errors.work_performed ? (
+                            WorkFormik.errors.work_performed ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_performed}
                             </div>
@@ -1407,11 +1369,11 @@ const AddWorkorder = () => {
                                         value={entry.part_qty}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .part_qty ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .part_qty ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1624,11 +1586,11 @@ const AddWorkorder = () => {
                                         value={entry.description}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .description ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .description ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1656,11 +1618,11 @@ const AddWorkorder = () => {
                                         }}
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .part_price ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .part_price ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1682,11 +1644,11 @@ const AddWorkorder = () => {
                                         disabled // Disable the input
                                       />
                                       {WorkFormik.touched.entries &&
-                                      WorkFormik.touched.entries[index] &&
-                                      WorkFormik.errors.entries &&
-                                      WorkFormik.errors.entries[index] &&
-                                      WorkFormik.errors.entries[index]
-                                        .total_amount ? (
+                                        WorkFormik.touched.entries[index] &&
+                                        WorkFormik.errors.entries &&
+                                        WorkFormik.errors.entries[index] &&
+                                        WorkFormik.errors.entries[index]
+                                          .total_amount ? (
                                         <div style={{ color: "red" }}>
                                           {
                                             WorkFormik.errors.entries[index]
@@ -1804,7 +1766,7 @@ const AddWorkorder = () => {
                             value={WorkFormik.values.vendor_note}
                           />
                           {WorkFormik.touched.vendor_note &&
-                          WorkFormik.errors.vendor_note ? (
+                            WorkFormik.errors.vendor_note ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.vendor_note}
                             </div>
@@ -1963,10 +1925,10 @@ const AddWorkorder = () => {
                                 </DropdownItem>
                               </DropdownMenu>
                               {WorkFormik.errors &&
-                              WorkFormik.errors?.status &&
-                              WorkFormik.touched &&
-                              WorkFormik.touched?.status &&
-                              WorkFormik.values.status === "" ? (
+                                WorkFormik.errors?.status &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.status &&
+                                WorkFormik.values.status === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.status}
                                 </div>
@@ -2011,7 +1973,7 @@ const AddWorkorder = () => {
                             />
                           </LocalizationProvider> */}
                           {WorkFormik.touched.due_date &&
-                          WorkFormik.errors.due_date ? (
+                            WorkFormik.errors.due_date ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.due_date}
                             </div>
