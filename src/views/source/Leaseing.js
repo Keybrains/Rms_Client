@@ -1625,7 +1625,7 @@ const Leaseing = () => {
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
-      start_date: entrySchema.values.start_date,
+      // nextDue_date: entrySchema.values.nextDue_date,
     };
     console.log("..............paymentDetails.............", paymentDetails);
     try {
@@ -1644,7 +1644,6 @@ const Leaseing = () => {
           const putObject = {
             entries: tenantObject.entries,
           };
-          // debugger
 
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
