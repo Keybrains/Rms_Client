@@ -109,11 +109,11 @@ const PropDetails = () => {
   const clearSelectedPhoto = (index, name) => {
     if (name === "propertyres_image") {
       const filteredImage = unitImage.filter((item, i) => i !== index);
-
+      const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
+      setSelectedFiles(filteredImage2);
       setUnitImage(filteredImage);
     }
   };
-
   const getRentalsData = async (propertyType) => {
     try {
       const response = await axios.get(
@@ -367,6 +367,32 @@ const PropDetails = () => {
   }
 
   const handleUnitDetailsEdit = async (id, rentalId) => {
+    if (selectedFiles) {
+      const imageData = new FormData();
+      for (let index = 0; index < selectedFiles.length; index++) {
+        const element = selectedFiles[index];
+        imageData.append(`files`, element);
+      }
+
+      const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+      var image;
+      try {
+        const result = await axios.post(url, imageData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log(result, "imgs");
+        image = {
+          prop_image: result.data.files.map((data, index) => {
+            return data.url;
+          }),
+        };
+      }
+      catch (error) {
+        console.error(error);
+      }
+    }
     if (propType === "Residential") {
       const updatedValues = {
         rental_adress: addUnitFormik.values.rental_adress,
@@ -375,7 +401,7 @@ const PropDetails = () => {
         rental_state: addUnitFormik.values.state,
         rental_postcode: addUnitFormik.values.zip,
         rental_country: addUnitFormik.values.country,
-        propertyres_image: unitImage,
+        propertyres_image: [image.prop_image],
       };
       await axios
         .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
@@ -399,7 +425,7 @@ const PropDetails = () => {
         rental_state: addUnitFormik.values.state,
         rental_postcode: addUnitFormik.values.zip,
         rental_country: addUnitFormik.values.country,
-        property_image: unitImage,
+        property_image: [image.prop_image],
       };
       await axios
         .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
@@ -473,7 +499,7 @@ const PropDetails = () => {
       imageData.append(`files`, element);
     }
 
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
     var image;
     try {
       const result = await axios.post(url, imageData, {
@@ -542,7 +568,7 @@ const PropDetails = () => {
 
     const formData = new FormData();
     formData.append(`files`, files[0]);
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
     var image;
     try {
       const result = await axios.post(url, formData, {
@@ -2279,7 +2305,7 @@ const PropDetails = () => {
                                     multiple
                                     id={`unit_img`}
                                     name={`unit_img`}
-                                    onChange={(e) => fileData(e, matchedProperty.property_type)}
+                                    onChange={(e) => fileData(e)}
                                   />
                                   <label
                                     htmlFor={`unit_img`}
@@ -2892,55 +2918,7 @@ const PropDetails = () => {
                                                         id={`unit_img`}
                                                         name={`unit_img`}
                                                         onChange={(e) => {
-                                                          const file = [...e.target.files];
-                                                          fileData(
-                                                            file,
-                                                            "propertyres_image",
-                                                            ""
-                                                          );
-                                                          if (file.length > 0) {
-                                                            const allImages = file.map(
-                                                              (file) => {
-                                                                return URL.createObjectURL(
-                                                                  file
-                                                                );
-                                                              }
-                                                            );
-                                                            // console.log(
-                                                            //    "",
-                                                            //   "indexxxxxx"
-                                                            // );
-                                                            if (
-                                                              unitImage[
-                                                              ""
-                                                              ]
-                                                            ) {
-                                                              setUnitImage([
-                                                                ...unitImage.slice(
-                                                                  0,
-                                                                  ""
-                                                                ),
-                                                                [
-                                                                  ...unitImage[
-                                                                  ""
-                                                                  ],
-                                                                  ...allImages,
-                                                                ],
-                                                                ...unitImage.slice(
-                                                                  1 + ""
-                                                                ),
-                                                              ]);
-                                                            } else {
-                                                              setUnitImage([
-                                                                ...allImages,
-                                                              ]);
-                                                            }
-                                                          } else {
-                                                            setUnitImage([
-                                                              ...unitImage,
-                                                            ]);
-                                                            // )
-                                                          }
+                                                          fileData(e);
                                                         }}
                                                       />
                                                       <label
@@ -2961,59 +2939,49 @@ const PropDetails = () => {
                                                       paddingLeft: "10px",
                                                     }}
                                                   >
+
                                                     <div className="d-flex">
                                                       {unitImage &&
-                                                        unitImage
-                                                          .length > 0 &&
-                                                        unitImage
-                                                          .map((unitImg, index) => (
-                                                            <div
-                                                              key={unitImg}
+                                                        unitImage.length > 0 &&
+                                                        unitImage.map((unitImg, index) => (
+                                                          <div
+                                                            key={index}  // Use a unique identifier, such as index or image URL
+                                                            style={{
+                                                              position: "relative",
+                                                              width: "100px",
+                                                              height: "100px",
+                                                              margin: "10px",
+                                                              display: "flex",
+                                                              flexDirection: "column",
+                                                            }}
+                                                          >
+                                                            <img
+                                                              src={unitImg}
+                                                              alt=""
                                                               style={{
-                                                                position: "relative",
                                                                 width: "100px",
                                                                 height: "100px",
-                                                                margin: "10px",
-                                                                display: "flex",
-                                                                flexDirection: "column",
+                                                                maxHeight: "100%",
+                                                                maxWidth: "100%",
+                                                                borderRadius: "10px",
                                                               }}
-                                                            >
-                                                              <img
-                                                                src={unitImg}
-                                                                alt=""
-                                                                style={{
-                                                                  width: "100px",
-                                                                  height: "100px",
-                                                                  maxHeight: "100%",
-                                                                  maxWidth: "100%",
-                                                                  borderRadius: "10px",
-                                                                  // objectFit: "cover",
-                                                                }}
-                                                                onClick={() => {
-                                                                  setSelectedImage(
-                                                                    unitImg
-                                                                  );
-                                                                  setOpen(true);
-                                                                }}
-                                                              />
-                                                              <ClearIcon
-                                                                style={{
-                                                                  cursor: "pointer",
-                                                                  alignSelf: "flex-start",
-                                                                  position: "absolute",
-                                                                  top: "-12px",
-                                                                  right: "-12px",
-                                                                }}
-                                                                onClick={() =>
-                                                                  clearSelectedPhoto(
-                                                                    index,
-                                                                    unitImage,
-                                                                    "propertyres_image"
-                                                                  )
-                                                                }
-                                                              />
-                                                            </div>
-                                                          ))}
+                                                              onClick={() => {
+                                                                setSelectedImage(unitImg);
+                                                                setOpen(true);
+                                                              }}
+                                                            />
+                                                            <ClearIcon
+                                                              style={{
+                                                                cursor: "pointer",
+                                                                alignSelf: "flex-start",
+                                                                position: "absolute",
+                                                                top: "-12px",
+                                                                right: "-12px",
+                                                              }}
+                                                              onClick={() => clearSelectedPhoto(index, "propertyres_image")}
+                                                            />
+                                                          </div>
+                                                        ))}
                                                       <OpenImageDialog
                                                         open={open}
                                                         setOpen={setOpen}
