@@ -38,6 +38,7 @@ const AddWorkorder = () => {
   const [propdropdownOpen, setpropdropdownOpen] = React.useState(false);
   const [categorydropdownOpen, setcategorydropdownOpen] = React.useState(false);
   const [vendordropdownOpen, setvendordropdownOpen] = React.useState(false);
+  const [chargedropdownOpen, setchargedropdownOpen] = React.useState(false);
   const [entrydropdownOpen, setentrydropdownOpen] = React.useState(false);
   const [userdropdownOpen, setuserdropdownOpen] = React.useState(false);
   const [statusdropdownOpen, setstatusdropdownOpen] = React.useState(false);
@@ -46,6 +47,7 @@ const AddWorkorder = () => {
   const [selectedUnit, setSelectedUnit] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Select");
   const [selectedVendor, setSelectedVendor] = useState("Select");
+  const [selectedCharge, setSelectedCharge] = useState("Select");
   const [selectedEntry, setSelectedEntry] = useState("Select");
   const [selecteduser, setSelecteduser] = useState("Select");
   const [selectedStatus, setSelectedStatus] = useState("Select");
@@ -89,6 +91,7 @@ const AddWorkorder = () => {
   const toggle4 = () => setentrydropdownOpen((prevState) => !prevState);
   const toggle5 = () => setuserdropdownOpen((prevState) => !prevState);
   const toggle6 = () => setstatusdropdownOpen((prevState) => !prevState);
+  const toggle7 = () => setchargedropdownOpen((prevState) => !prevState);
 
   const [propertyData, setPropertyData] = useState([]);
   const [staffData, setstaffData] = useState([]);
@@ -103,7 +106,7 @@ const AddWorkorder = () => {
   const [selectedPriority, setSelectedPriority] = useState("");
   const [selectedSub, setSelectedSub] = useState("");
   const [allVendors, setAllVendors] = useState([]);
-  const [workOrderImage, setWorkOrderImage] = useState([])
+  const [workOrderImage, setWorkOrderImage] = useState([]);
 
   const fetchUnitsByProperty = async (propertyType) => {
     try {
@@ -125,7 +128,7 @@ const AddWorkorder = () => {
   const handlePropertyTypeSelect = async (property) => {
     setSelectedProp(property.rental_adress);
     WorkFormik.values.rental_adress = property.rental_adress;
-
+    WorkFormik.values.rental_id = property._id;
     setSelectedUnit("");
     try {
       const units = await fetchUnitsByProperty(property.rental_adress);
@@ -163,6 +166,10 @@ const AddWorkorder = () => {
     setSelectedEntry(value);
   };
 
+  const handleChargeSelect = (value) => {
+    setSelectedCharge(value);
+  };
+
   const handleStaffSelect = (staff) => {
     setSelecteduser(staff);
     WorkFormik.values.staffmember_name = staff;
@@ -186,7 +193,6 @@ const AddWorkorder = () => {
   const handleCloseButtonClick = () => {
     navigate("../Workorder");
   };
-
 
   const handleAddRow = () => {
     const newEntry = {
@@ -222,6 +228,7 @@ const AddWorkorder = () => {
       entries: updatedEntries,
     });
   };
+
   const setVendorsName = () => {
     axios
       .get(`${baseUrl}/vendor/vendor_name`)
@@ -244,7 +251,6 @@ const AddWorkorder = () => {
   const [open, setOpen] = React.useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-
   useEffect(() => {
     const fetchData = async () => {
       if (id) {
@@ -254,8 +260,8 @@ const AddWorkorder = () => {
           );
 
           const vendorData = response.data.data;
-          setWorkOrderData(vendorData);
-
+          setWorkOrderData(vendorData); 
+ 
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
             : "";
@@ -275,6 +281,7 @@ const AddWorkorder = () => {
           setSelectedProp(vendorData.rental_adress || "Select");
           setSelectedCategory(vendorData.work_category || "Select");
           setSelectedVendor(vendorData.vendor_name || "Select");
+          setSelectedCharge(vendorData.work_charge || "Select");
           setSelectedEntry(vendorData.entry_allowed || "Select");
           setSelecteduser(vendorData.staffmember_name || "Select");
           setSelectedStatus(vendorData.status || "Select");
@@ -348,6 +355,7 @@ const AddWorkorder = () => {
         ? WorkFormik.values.work_category
         : selectedCategory;
       values["vendor_name"] = selectedVendor;
+      values["work_charge"] = selectedCharge;
       values["entry_allowed"] = selectedEntry;
       values["staffmember_name"] = selecteduser;
       values["status"] = selectedStatus;
@@ -367,46 +375,104 @@ const AddWorkorder = () => {
       }));
 
       values["entries"] = entries;
-
       const workorder_id = uuidv4();
       values["workorder_id"] = workorder_id;
 
-      const work_subject = values.work_subject;
-      if (id === undefined) {
-        // Create the work order
-        // console.log(values,'values after submit')
-        const workOrderRes = await axios.post(
-          `${baseUrl}/workorder/workorder`,
-          values
-        );
-
-        // Check if the work order was created successfully
-        if (workOrderRes.status === 200) {
-          // console.log(workOrderRes.data);
-          // Use the work order data from the response to create the notification
-          const notificationRes = await axios.post(
-            `${baseUrl}/notification/notification`,
+      if (selectedCharge === "Property") {
+        const entry = WorkFormik.values.entries.map((entry) => ({
+          charge_type: "Workorder Charge",
+          account: entry.account_type,
+          amount: parseFloat(entry.total_amount),
+          date: WorkFormik.values.due_date,
+        }));
+        const object = {
+          properties: {
+            rental_adress:WorkFormik.values.rental_adress,
+            property_id: WorkFormik.values.rental_id, 
+          },
+          unit: [
             {
-              workorder: {
-                vendor_name: selectedVendor,
-                staffmember_name: selecteduser,
-                rental_adress: selectedProp,
-                work_subject: work_subject,
-                workorder_id: workorder_id,
-              },
-              notification: {},
-            }
-          );
-          handleResponse(workOrderRes, notificationRes);
-        } else {
-          console.error("Work Order Error:", workOrderRes.data);
-        }
-      } else {
-        const editUrl = `${baseUrl}/workorder/workorder/${id}`;
-        const res = await axios.put(editUrl, values);
-        handleResponse(res);
+              unit:WorkFormik.values.rental_units,
+              unit_id:WorkFormik.values.unit_id,
+              property_expense: entry, 
+            },
+          ], 
+        };
+        const chargework = await axios.post(
+          `${baseUrl}/payment_charge/property_expense`,
+          object).then((res) => {
+          console.log(res)
+        }).catch((err) => {
+          console.log(err)
+        })
       }
-    } catch (error) {
+      else if (selectedCharge === "Tenant") {
+        const entry = WorkFormik.values.entries.map((entry) => ({
+          charge_type: "Workorder Charge",
+          account: entry.account_type,
+          amount: parseFloat(entry.total_amount),
+          date: WorkFormik.values.due_date,
+        }));
+        const object = {
+          properties: {
+            rental_adress:WorkFormik.values.rental_adress,
+            property_id: WorkFormik.values.rental_id,
+          }, 
+          unit: [
+            {
+              unit:WorkFormik.values.rental_units,
+              unit_id:WorkFormik.values.unit_id,
+              paymentAndCharges: entry,
+            },
+          ],
+        };
+        const chargework = await axios.post(
+          `${baseUrl}/payment_charge/payment_charge`,
+          object).then((res) => {
+          console.log(res)
+        }).catch((err) => {
+          console.log(err)
+        })
+      }
+
+      
+
+      // const work_subject = values.work_subject;
+      // if (id === undefined) {
+      //   // Create the work order
+      //   // console.log(values,'values after submit')
+      //   const workOrderRes = await axios.post(
+      //     `${baseUrl}/workorder/workorder`,
+      //     values
+      //   );
+
+      //   // Check if the work order was created successfully
+      //   if (workOrderRes.status === 200) {
+      //     // console.log(workOrderRes.data);
+      //     // Use the work order data from the response to create the notification
+      //     const notificationRes = await axios.post(
+      //       `${baseUrl}/notification/notification`,
+      //       {
+      //         workorder: {
+      //           vendor_name: selectedVendor,
+      //           staffmember_name: selecteduser,
+      //           rental_adress: selectedProp,
+      //           work_subject: work_subject,
+      //           workorder_id: workorder_id,
+      //         },
+      //         notification: {},
+      //       }
+      //     );
+      //     handleResponse(workOrderRes, notificationRes);
+      //   } else {
+      //     console.error("Work Order Error:", workOrderRes.data);
+      //   }
+      // } else {
+      //   const editUrl = `${baseUrl}/workorder/workorder/${id}`;
+      //   const res = await axios.put(editUrl, values);
+      //   handleResponse(res);
+      // }
+    }catch (error) {
       console.error("Error:", error);
       if (error.response) {
         console.error("Response Data:", error.response.data);
@@ -473,6 +539,7 @@ const AddWorkorder = () => {
       handleSubmit(values);
     },
   });
+  console.log(WorkFormik.values.rental_units, "kk")
 
   const clearSelectedPhoto = (index, name) => {
     if (name === "propertyres_image") {
@@ -586,7 +653,7 @@ const AddWorkorder = () => {
           work_category: WorkFormik.values.work_category,
           vendor_name: selectedVendor,
           invoice_number: WorkFormik.values.invoice_number,
-          work_charge: WorkFormik.values.work_charge,
+          work_charge: selectedCharge,
           entry_allowed: selectedEntry,
           staffmember_name: WorkFormik.values.staffmember_name,
           work_performed: WorkFormik.values.work_performed,
@@ -595,6 +662,7 @@ const AddWorkorder = () => {
           priority: selectedPriority,
           status: selectedStatus,
           due_date: formattedDueDate,
+
           // part_qty: entry.part_qty,
           // account_type: entry.account_type,
           // description: entry.description,
@@ -819,6 +887,7 @@ const AddWorkorder = () => {
                                   overflowX: "hidden",
                                 }}
                               >
+                                {console.log(propertyData, "mansi")}
                                 {propertyData.map((property, index) => (
                                   <DropdownItem
                                     key={index}
@@ -846,12 +915,12 @@ const AddWorkorder = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                    <br />
                   </div>
 
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="4">
+                        {console.log(unitData, "sahil")}
                         <Row>
                           {selectedProp &&
                             unitData &&
@@ -1128,42 +1197,7 @@ const AddWorkorder = () => {
                             </div>
                           ) : null}
                         </FormGroup>
-                      </Col>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Charge Work To
-                          </label>
-                          <br />
-                          <br />
-                          <Input
-                            className="form-control-alternative"
-                            id="input-name"
-                            placeholder=""
-                            type="text"
-                            name="work_charge"
-                            //name="nput-staffmember-name"
-                            onBlur={WorkFormik.handleBlur}
-                            onChange={(e) => {
-                              // Update the state or Formik values with the new input value
-                              WorkFormik.handleChange(e);
-                            }}
-                            value={WorkFormik.values.work_charge}
-                          />
-                          {WorkFormik.touched.work_charge &&
-                          WorkFormik.errors.work_charge ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.work_charge}
-                            </div>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <br />
-                  </div> */}
+                          </Col>*/}
 
                   <div className="pl-lg-4">
                     <Row>
@@ -1742,6 +1776,42 @@ const AddWorkorder = () => {
                     </Row>
                     <br />
                   </div>
+
+                  <Col lg="4">
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-desg"
+                      >
+                        Charge Work To
+                      </label>
+                      <br />
+                      <br />
+                      <Dropdown isOpen={chargedropdownOpen} toggle={toggle7}>
+                        <DropdownToggle caret style={{ width: "100%" }}>
+                          {selectedCharge} &nbsp;&nbsp;&nbsp;&nbsp;
+                        </DropdownToggle>
+                        <DropdownMenu style={{ width: "100%" }}>
+                          <DropdownItem
+                            onClick={() => handleChargeSelect("Property")}
+                          >
+                            Property
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => handleChargeSelect("Tenant")}
+                          >
+                            Tenant
+                          </DropdownItem>
+                        </DropdownMenu>
+                        {WorkFormik.touched.work_charge &&
+                        WorkFormik.errors.work_charge ? (
+                          <div style={{ color: "red" }}>
+                            {WorkFormik.errors.work_charge}
+                          </div>
+                        ) : null}
+                      </Dropdown>
+                    </FormGroup>
+                  </Col>
 
                   <div className="pl-lg-4">
                     <Row>
