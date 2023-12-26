@@ -255,6 +255,10 @@ const PropDetails = () => {
     console.log(id);
   }, [id, clickedObject]);
 
+  React.useEffect(() => {
+    getGeneralLedgerData();
+  }, [matchedProperty])
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -595,7 +599,7 @@ const PropDetails = () => {
 
   const handleImageChange = async (event) => {
     setPropImageLoader(true);
-    const file = event.target.files[0];
+    const files = event.target.files;
     const axiosRequests = [];
 
     const formData = new FormData();
@@ -675,43 +679,110 @@ const PropDetails = () => {
   };
 
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
+  const [PropertyExpenseData, setPropertyExpenseData] = useState([]);
   const [loader, setLoader] = useState(false);
 
   const getGeneralLedgerData = async () => {
-    setLoader(true);
-    if (matchedProperty) {
-      try {
-        const rental = matchedProperty?.rental_adress;
-        // console.log(matchedProperty, "manu"
-
-        if (rental && id) {
-          const url = `${baseUrl}/payment_charge/property_financial?rental_adress=${rental}&property_id=${id}`;
+      setLoader(true);
+      if (matchedProperty) {
           try {
-            const response = await axios.get(url);
-            console.log(url, "yash");
-            if (response.data && response.data.data) {
-              const data = response.data.data[0];
-              
-              setGeneralLedgerData([data]);
-            } else {
-              console.error("Unexpected response format:", response.data);
-            }
+              const rental = matchedProperty?.rental_adress;
+  
+              if (rental && id) {
+                  // First API call
+                  const urlFinancial = `${baseUrl}/payment_charge/property_financial?rental_adress=${rental}&property_id=${id}`;
+                  try {
+                      const responseFinancial = await axios.get(urlFinancial);
+                      console.log(responseFinancial, "yash");
+                      if (responseFinancial.data && responseFinancial.data.data) {
+                          const dataFinancial = responseFinancial.data.data[0];
+  
+                          // Second API call
+                          const urlExpense = `${baseUrl}/payment_charge/property_financial/property_expense?rental_adress=${rental}&property_id=${id}`;
+                          try {
+                              const responseExpense = await axios.get(urlExpense);
+                              console.log(responseExpense, "expense");
+                              if (responseExpense.data && responseExpense.data.data) {
+                                  const dataExpense = responseExpense.data.data[0];
+  
+                                  // Merge data from both API calls
+                                  const combinedData = {
+                                    _id: 'mergedId', // Provide a unique identifier for the merged data if needed
+                                    properties: { /* ... */ },
+                                    unit: dataFinancial.unit.map((financialUnit, index) => ({
+                                      ...financialUnit,
+                                      paymentAndCharges: financialUnit.paymentAndCharges || [],
+                                      property_expense: dataExpense.unit[index]?.property_expense || [],
+                                    })),
+                                    __v: 0, // Update as needed
+                                  };                                                              
+  
+                                  // Update GeneralLedgerData state with the merged data
+                                  setGeneralLedgerData([combinedData]);
+                                  console.log(dataFinancial, "Financial Data");
+                                  console.log(dataExpense, "Expense Data");
+
+                                  console.log(combinedData,"combine data")
+                              } else {
+                                  console.error("Unexpected response format:", responseExpense.data);
+                              }
+                          } catch (error) {
+                              console.error("Error fetching expense data:", error);
+                          }
+                      } else {
+                          console.error("Unexpected response format:", responseFinancial.data);
+                      }
+                  } catch (error) {
+                      console.error("Error fetching financial data:", error);
+                  }
+              } else {
+                  console.error("Invalid matchedProperty object:", matchedProperty);
+              }
           } catch (error) {
-            console.error("Error fetching data:", error);
+              console.error("Error processing matchedProperty:", error);
           }
-        } else {
-          console.error("Invalid matchedProperty object:", matchedProperty);
-        }
-      } catch (error) {
-        console.error("Error processing matchedProperty:", error);
       }
-    }
-    setLoader(false);
+      setLoader(false);
+  };
+  
+  // Usage:
+  // GeneralLedgerData will contain combined data from both API calls
+  
+  
+  const calculateTotalIncome = (property) => {
+    let totalIncome = 0;
+  
+    // Check if property and unit are defined before iterating
+    property?.unit?.forEach((unit) => {
+      // Check if paymentAndCharges is defined before iterating
+      unit?.paymentAndCharges?.forEach((charge) => {
+        totalIncome += charge.amount || 0;
+      });
+    });
+  
+    return totalIncome.toFixed(2);
+  };
+  
+  const calculateTotalExpenses = (property) => {
+    let totalExpenses = 0;
+  
+    // Check if property and unit are defined before iterating
+    property?.unit?.forEach((unit) => {
+      // Check if property_expense is defined before iterating
+      unit?.property_expense?.forEach((charge) => {
+        totalExpenses += charge.amount || 0;
+      });
+    });
+  
+    return totalExpenses.toFixed(2);
   };
 
-  useEffect(() => {
-    getGeneralLedgerData();
-  }, []);
+const calculateNetIncome = (property) => {
+  const totalIncome = calculateTotalIncome(property);
+  const totalExpenses = calculateTotalExpenses(property);
+  const netIncome = (totalIncome - totalExpenses).toFixed(2);
+  return netIncome;
+};
 
   return (
     <>
@@ -1778,6 +1849,7 @@ const PropDetails = () => {
                       </Table>
                     </div>
                   </TabPanel>
+
                   <TabPanel value="financial">
                     <>
                       <Col
@@ -1807,115 +1879,154 @@ const PropDetails = () => {
                                   onClick={() =>
                                     handleFinancialSelection(subtype)
                                   }
-
-                                  // onClick={() =>
-                                  //   handlePropSelection(
-                                  //     subtype.propertysub_type
-                                  //   )
-                                  // }
                                 >
                                   {subtype}
                                 </DropdownItem>
                               ))}
                             </DropdownMenu>
                           </Dropdown>
-                        </FormGroup>
+                        </FormGroup> 
                       </Col>
 
-                      {false ? (
+                      {loader ? (
                         <div>Loading...</div>
                       ) : (
                         <>
-                          {financialType === "Month to date" && (
-                            <Table responsive>
-                              <thead>
-                                <th>Property account</th>
-                                <th>{month} 1 to date</th>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <th className="font-weight-bold text-md">
-                                    Property account
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Income
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Application fee income</th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Rent income</th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Total income
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Expenses
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Total expenses
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Net operating income
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Net income
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                              </tbody>
-                            </Table>
-                          )}
+                      {financialType === "Month to date" && (
+                        <Table responsive>
+                          <thead>
+                            <th>Property account</th>
+                            <th>{month} 1 to date</th>
+                          </thead>
+                          <tbody>
+                          <React.Fragment>
+                              <tr>
+                                <th
+                                  style={{
+                                    color: "blue",
+                                    fontWeight: "bold",
+                                    backgroundColor: "#f0f0f0",
+                                  }}
+                                  colSpan="2"
+                                >
+                                  Income
+                                </th>
+                              </tr>
+                              {GeneralLedgerData.map((property, index) => (
+                                <React.Fragment key={index}>
+                                  {property.unit.map((unit, unitIndex) => (
+                                    <React.Fragment key={unitIndex}>
+                                      {unit.paymentAndCharges && unit.paymentAndCharges.map((charge, chargeIndex) => (
+                                        <React.Fragment key={chargeIndex}>
+                                          <tr>
+                                            <th>{charge.account}</th>
+                                            <td>${charge.amount || "0.00"}</td>
+                                          </tr>
+                                        </React.Fragment>
+                                      ))}
+                                    </React.Fragment>
+                                  ))}
+                                    <tr>
+                                <th
+                                  style={{
+                                    color: "black",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  Total income
+                                </th>
+                                <td
+                                  style={{
+                                    color: "black",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  ${calculateTotalIncome(property)}
+                                </td>
+                              </tr>
+                                </React.Fragment>
+                              ))}
+
+                              <tr>
+                                <th
+                                  style={{
+                                    color: "blue",
+                                    fontWeight: "bold",
+                                    backgroundColor: "#f0f0f0",
+                                  }}
+                                  colSpan="2"
+                                >
+                                  Expenses
+                                </th>
+                                <td></td>
+                              </tr>
+                              {GeneralLedgerData.map((property, index) => (
+                                <React.Fragment key={index}>
+                                  {property.unit.map((unit, unitIndex) => (
+                                    <React.Fragment key={unitIndex}>
+                                      {unit.property_expense && unit.property_expense.map((expense, expenseIndex) => (
+                                        <React.Fragment key={expenseIndex}>
+                                          <tr>
+                                            <th>{expense.account}</th>
+                                            <td>${expense.amount || "0.00"}</td>
+                                          </tr>
+                                        </React.Fragment>
+                                      ))}
+                                    </React.Fragment>
+                                  ))}
+                                    <tr>
+                                <th
+                                  style={{
+                                    color: "black",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  Total expenses
+                                </th>
+                                <td
+                                  style={{
+                                    color: "black",
+                                    fontWeight: "bold",
+                                  }}
+                                >
+                                  ${calculateTotalExpenses(property)}
+                                </td>
+                              </tr>
+                              <tr>
+                                <th
+                                  style={{
+                                    color: "black",
+                                    fontWeight: "bold",
+                                    backgroundColor: "#f0f0f0",
+                                  }}
+                                  //colSpan="2"
+                                >
+                                  Net income
+                                </th>
+                                <td
+                                  style={{
+                                    color: "black",
+                                    fontWeight: "bold",
+                                    backgroundColor: "#f0f0f0",
+                                  }}
+                                  //colSpan="2"
+                                >
+                                  ${calculateNetIncome(property)}
+                                </td>
+                              </tr>
+                                </React.Fragment>
+                              ))}
+                          </React.Fragment>
+
+
+                              
+
+                               
+
+                          </tbody>
+                        </Table>
+                      )}
+
                           {financialType === "Three months to date" && (
                             <Table responsive>
                               <thead>
@@ -2060,6 +2171,7 @@ const PropDetails = () => {
                       )}
                     </>
                   </TabPanel>
+
                   <TabPanel value="units">
                     {addUnitDialogOpen ? (
                       <>

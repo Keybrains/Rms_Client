@@ -2716,7 +2716,7 @@ const Leaseing = () => {
                           }}
                         >
                           <b style={{ fontSize: "20px" }}>+</b> Add Tenant or
-                          Consigner
+                          Cosigner
                           {display === false ? (
                             <></>
                           ) : (
