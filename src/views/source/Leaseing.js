@@ -1625,9 +1625,10 @@ const Leaseing = () => {
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
-      // nextDue_date: entrySchema.values.nextDue_date,
     };
+
     console.log("..............paymentDetails.............", paymentDetails);
+
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
