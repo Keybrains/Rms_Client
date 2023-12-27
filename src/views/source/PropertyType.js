@@ -256,7 +256,7 @@ const PropertyType = () => {
         return isPropertyTypeMatch || isPropertySubTypeMatch;
       });
     }
-
+    console.log(filteredData,"mmmm")
     if (upArrow.length > 0) {
       const sortingArrows = upArrow.length > 0 ? upArrow : null;
       sortingArrows.forEach((sort) => {
