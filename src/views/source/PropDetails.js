@@ -649,75 +649,83 @@ const PropDetails = () => {
   };
 
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
-  const [PropertyExpenseData, setPropertyExpenseData] = useState([]);
   const [loader, setLoader] = useState(false);
 
   const getGeneralLedgerData = async () => {
-      setLoader(true);
-      if (matchedProperty) {
+    setLoader(true);
+  
+    if (matchedProperty) {
+      try {
+        const rental = matchedProperty?.rental_adress;
+        if (rental && id) {
+          // First API call
+          const urlFinancial = `${baseUrl}/payment_charge/property_financial?rental_adress=${rental}&property_id=${id}`;
+  
+          let dataFinancial;
           try {
-              const rental = matchedProperty?.rental_adress;
+            const responseFinancial = await axios.get(urlFinancial);
   
-              if (rental && id) {
-                  // First API call
-                  const urlFinancial = `${baseUrl}/payment_charge/property_financial?rental_adress=${rental}&property_id=${id}`;
-                  try {
-                      const responseFinancial = await axios.get(urlFinancial);
-                      console.log(responseFinancial, "yash");
-                      if (responseFinancial.data && responseFinancial.data.data) {
-                          const dataFinancial = responseFinancial.data.data[0];
-  
-                          // Second API call
-                          const urlExpense = `${baseUrl}/payment_charge/property_financial/property_expense?rental_adress=${rental}&property_id=${id}`;
-                          try {
-                              const responseExpense = await axios.get(urlExpense);
-                              console.log(responseExpense, "expense");
-                              if (responseExpense.data && responseExpense.data.data) {
-                                  const dataExpense = responseExpense.data.data[0];
-  
-                                  // Merge data from both API calls
-                                  const combinedData = {
-                                    _id: 'mergedId', // Provide a unique identifier for the merged data if needed
-                                    properties: { /* ... */ },
-                                    unit: dataFinancial.unit.map((financialUnit, index) => ({
-                                      ...financialUnit,
-                                      paymentAndCharges: financialUnit.paymentAndCharges || [],
-                                      property_expense: dataExpense.unit[index]?.property_expense || [],
-                                    })),
-                                    __v: 0, // Update as needed
-                                  };                                                              
-  
-                                  // Update GeneralLedgerData state with the merged data
-                                  setGeneralLedgerData([combinedData]);
-                                  console.log(dataFinancial, "Financial Data");
-                                  console.log(dataExpense, "Expense Data");
-
-                                  console.log(combinedData,"combine data")
-                              } else {
-                                  console.error("Unexpected response format:", responseExpense.data);
-                              }
-                          } catch (error) {
-                              console.error("Error fetching expense data:", error);
-                          }
-                      } else {
-                          console.error("Unexpected response format:", responseFinancial.data);
-                      }
-                  } catch (error) {
-                      console.error("Error fetching financial data:", error);
-                  }
-              } else {
-                  console.error("Invalid matchedProperty object:", matchedProperty);
-              }
+            if (responseFinancial.data && responseFinancial.data.data) {
+              dataFinancial = responseFinancial.data.data[0] || [{unit: []}];
+            } else {
+              console.error("Unexpected response format:", responseFinancial.data);
+            }
           } catch (error) {
-              console.error("Error processing matchedProperty:", error);
+            console.error("Error fetching financial data:", error);
           }
+  
+          // Second API call
+          const urlExpense = `${baseUrl}/payment_charge/property_financial/property_expense?rental_adress=${rental}&property_id=${id}`;
+  
+          let dataExpense;
+          try {
+            const responseExpense = await axios.get(urlExpense);
+  
+            if (responseExpense.data && responseExpense.data.data) {
+              dataExpense = responseExpense.data.data[0];
+            } else {
+              console.error("Unexpected response format:", responseExpense.data);
+            }
+          } catch (error) {
+            console.error("Error fetching expense data:", error);
+          }
+  
+          // Merge data from both API calls
+          const combinedData = {
+            _id: 'mergedId', // Provide a unique identifier for the merged data if needed
+            properties: {},
+            unit: [],
+            __v: 0,
+          };
+          
+          if (dataFinancial && dataFinancial.unit) {
+            combinedData.unit = dataFinancial.unit.map((financialUnit, index) => ({
+              ...financialUnit,
+              paymentAndCharges: financialUnit.paymentAndCharges || [],
+              property_expense: dataExpense?.unit[index]?.property_expense || [],
+            }));
+          } else if (dataExpense && dataExpense.unit) {
+            combinedData.unit = dataExpense.unit.map((expenseUnit, index) => ({
+              paymentAndCharges: [],
+              property_expense: expenseUnit.property_expense || [],
+            }));
+          }
+          // Update GeneralLedgerData state with the merged data
+          setGeneralLedgerData([combinedData]);
+          
+  
+          // Update GeneralLedgerData state with the merged data
+          setGeneralLedgerData([combinedData]);
+        } else {
+          console.error("Invalid matchedProperty object:", matchedProperty);
+        }
+      } catch (error) { 
+        console.error("Error processing matchedProperty:", error);
       }
-      setLoader(false);
+    }
+    setLoader(false);
   };
-  
-  // Usage:
-  // GeneralLedgerData will contain combined data from both API calls
-  
+   
   
   const calculateTotalIncome = (property) => {
     let totalIncome = 0;

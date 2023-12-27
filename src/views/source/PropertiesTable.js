@@ -69,7 +69,6 @@ const PropertiesTables = () => {
       const response = await axios.get(
         `${baseUrl}/rentals/rental`
       );
-      console.log(response.data.data);
 
       setRentalsData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -148,7 +147,8 @@ const PropertiesTables = () => {
   //   }
 
   //   return rentalsData.filter((rental) => {
-  //     const lowerCaseQuery = searchQuery.toLowerCase();
+  //    
+   const lowerCaseQuery = searchQuery.toLowerCase();
   //     return (
   //       rental.rental_adress.toLowerCase().includes(lowerCaseQuery) ||
   //       rental.property_type.toLowerCase().includes(lowerCaseQuery) ||
@@ -174,6 +174,7 @@ const PropertiesTables = () => {
         const address = `${tenant.entries.rental_adress} ${tenant.entries.rental_city} ${tenant.entries.rental_country}`;
         return (
           tenant.entries.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.entries.type.toLowerCase().includes(lowerCaseSearchQuery) ||
           tenant.entries.property_type.toLowerCase().includes(lowerCaseSearchQuery) ||
           tenant.entries.rental_city.toLowerCase().includes(lowerCaseSearchQuery) ||
           tenant.entries.rental_country.toLowerCase().includes(lowerCaseSearchQuery) ||
@@ -185,15 +186,16 @@ const PropertiesTables = () => {
           address.toLowerCase().includes(lowerCaseSearchQuery)
         );
       });
+    } 
+    if (searchQuery2) {
+      const lowerCaseSearchQuery = searchQuery2.toLowerCase();
+      filteredData = filteredData.filter((property) => {
+        const isPropertyTypeMatch = property.entries.type && property.entries.type.toLowerCase().includes(lowerCaseSearchQuery);
+        const isPropertySubTypeMatch = property.entries.property_type && property.entries.property_type.toLowerCase().includes(lowerCaseSearchQuery);
+        return isPropertyTypeMatch || isPropertySubTypeMatch;
+      });
     }
-    // if (searchQuery2) {
-    //   const lowerCaseSearchQuery = searchQuery2.toLowerCase();
-    //   filteredData = filteredData.filter((property) => {
-    //     const isPropertyTypeMatch = property.property_type.toLowerCase().includes(lowerCaseSearchQuery);
-    //     const isPropertySubTypeMatch = property.propertysub_type.toLowerCase().includes(lowerCaseSearchQuery);
-    //     return isPropertyTypeMatch || isPropertySubTypeMatch;
-    //   });
-    // }
+    console.log(filteredData,"vvvv")
     if (upArrow.length > 0) {
       const sortingArrows = upArrow.length > 0 ? upArrow : null;
       sortingArrows.forEach((sort) => {
@@ -202,6 +204,12 @@ const PropertiesTables = () => {
             filteredData.sort((a, b) => {
               const comparison = a.entries.rental_adress.localeCompare(b.entries.rental_adress);
               return upArrow.includes("rental_adress") ? comparison : -comparison;
+            });
+            break;
+          case "type":
+            filteredData.sort((a, b) => {
+              const comparison = a.entries.type.localeCompare(b.entries.type);
+              return upArrow.includes("type") ? comparison : -comparison;
             });
             break;
           case "property_type":
@@ -327,7 +335,7 @@ const PropertiesTables = () => {
                   width="50"
                   visible={loader}
                 />
-              </div>
+              </div> 
             ) : (
               <Card className="shadow">
                 <CardHeader className="border-0">
@@ -383,6 +391,24 @@ const PropertiesTables = () => {
                       </th>
                       <th scope="col">
                         Property Type{" "}
+                        {sortBy.includes("type") ? (
+                          upArrow.includes("type") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("type")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("type")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("type")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Property Sub Type{" "}
                         {sortBy.includes("property_type") ? (
                           upArrow.includes("property_type") ? (
                             <ArrowDownwardIcon
@@ -604,6 +630,7 @@ const PropertiesTables = () => {
                           style={{ cursor: "pointer" }}
                         >
                           <td>{tenant.entries.rental_adress}</td>
+                          <td>{tenant.entries.type}</td>
                           <td>{tenant.entries.property_type}</td>
                           <td>
                             {tenant.rentalOwner_firstName}{" "}
