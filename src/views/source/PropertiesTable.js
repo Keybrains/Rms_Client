@@ -31,7 +31,10 @@ const PropertiesTables = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [rentalsData, setRentalsData] = useState([]);
+  const [search, setSearch] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery2, setSearchQuery2] = useState("");
+  const toggle3 = () => setSearch((prevState) => !prevState);
   const [loader, setLoader] = useState(true);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -163,7 +166,7 @@ const PropertiesTables = () => {
 
   const filterRentalsBySearch = () => {
     let filteredData = rentalsData;
-  
+    console.log(rentalsData, "data")
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((tenant) => {
@@ -183,8 +186,15 @@ const PropertiesTables = () => {
         );
       });
     }
-  
-    if (upArrow.length > 0 ) {
+    // if (searchQuery2) {
+    //   const lowerCaseSearchQuery = searchQuery2.toLowerCase();
+    //   filteredData = filteredData.filter((property) => {
+    //     const isPropertyTypeMatch = property.property_type.toLowerCase().includes(lowerCaseSearchQuery);
+    //     const isPropertySubTypeMatch = property.propertysub_type.toLowerCase().includes(lowerCaseSearchQuery);
+    //     return isPropertyTypeMatch || isPropertySubTypeMatch;
+    //   });
+    // }
+    if (upArrow.length > 0) {
       const sortingArrows = upArrow.length > 0 ? upArrow : null;
       sortingArrows.forEach((sort) => {
         switch (sort) {
@@ -230,14 +240,14 @@ const PropertiesTables = () => {
               return upArrow.includes("rentalOwner_phoneNumber") ? comparison : -comparison;
             });
             break;
-            case "createdAt":
-              filteredData.sort((a, b) => {
-                const dateA = new Date(a.entries.createdAt);
-                const dateB = new Date(b.entries.createdAt);
-                const comparison = dateA - dateB;
-                return upArrow.includes("createdAt") ? comparison : -comparison;
-              });
-              
+          case "createdAt":
+            filteredData.sort((a, b) => {
+              const dateA = new Date(a.entries.createdAt);
+              const dateB = new Date(b.entries.createdAt);
+              const comparison = dateA - dateB;
+              return upArrow.includes("createdAt") ? comparison : -comparison;
+            });
+
             break;
           case "updatedAt":
             filteredData.sort((a, b) => {
@@ -251,10 +261,10 @@ const PropertiesTables = () => {
         }
       });
     }
-  
+
     return filteredData;
   };
-  
+
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
@@ -321,23 +331,33 @@ const PropertiesTables = () => {
             ) : (
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <Row>
-                    <Col xs="12" sm="6">
-                      <FormGroup>
-                        <Input
-                          fullWidth
-                          type="text"
-                          placeholder="Search"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          style={{
-                            width: "100%",
-                            maxWidth: "200px",
-                            minWidth: "200px",
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
+                  <Row className="d-flex">
+                    <FormGroup className="mr-sm-2">
+                      <Input
+                        fullWidth
+                        type="text"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => { setSearchQuery(e.target.value); setSearchQuery2("") }}
+                        style={{
+                          width: "100%",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                          border: "1px solid #ced4da", // Border color similar to the input
+                        }}
+                      />
+                    </FormGroup>
+                    <FormGroup className="mr-sm-2">
+                      <Dropdown isOpen={search} toggle={toggle3}>
+                        <DropdownToggle caret style={{ boxShadow: "none", border: "1px solid #ced4da", maxWidth: "200px", minWidth: "200px" }}>
+                          {searchQuery2 ? searchQuery ? "Select Type" : searchQuery2 : "Select Type"}
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem onClick={() => { setSearchQuery2("Residential"); setSearchQuery("") }}>Residential</DropdownItem>
+                          <DropdownItem onClick={() => { setSearchQuery2("Commercial"); setSearchQuery("") }}>Commercial</DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                    </FormGroup>
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
@@ -495,7 +515,7 @@ const PropertiesTables = () => {
                           )
                         ) : (
                           <ArrowUpwardIcon
-                          onClick={() => sortData("createdAt")} />
+                            onClick={() => sortData("createdAt")} />
                         )}
                       </th>
                       <th>
