@@ -437,41 +437,41 @@ const AddWorkorder = () => {
 
       
 
-      // const work_subject = values.work_subject;
-      // if (id === undefined) {
-      //   // Create the work order
-      //   // console.log(values,'values after submit')
-      //   const workOrderRes = await axios.post(
-      //     `${baseUrl}/workorder/workorder`,
-      //     values
-      //   );
+      const work_subject = values.work_subject;
+      if (id === undefined) {
+        // Create the work order
+        // console.log(values,'values after submit')
+        const workOrderRes = await axios.post(
+          `${baseUrl}/workorder/workorder`,
+          values
+        );
 
-      //   // Check if the work order was created successfully
-      //   if (workOrderRes.status === 200) {
-      //     // console.log(workOrderRes.data);
-      //     // Use the work order data from the response to create the notification
-      //     const notificationRes = await axios.post(
-      //       `${baseUrl}/notification/notification`,
-      //       {
-      //         workorder: {
-      //           vendor_name: selectedVendor,
-      //           staffmember_name: selecteduser,
-      //           rental_adress: selectedProp,
-      //           work_subject: work_subject,
-      //           workorder_id: workorder_id,
-      //         },
-      //         notification: {},
-      //       }
-      //     );
-      //     handleResponse(workOrderRes, notificationRes);
-      //   } else {
-      //     console.error("Work Order Error:", workOrderRes.data);
-      //   }
-      // } else {
-      //   const editUrl = `${baseUrl}/workorder/workorder/${id}`;
-      //   const res = await axios.put(editUrl, values);
-      //   handleResponse(res);
-      // }
+        // Check if the work order was created successfully
+        if (workOrderRes.status === 200) {
+          // console.log(workOrderRes.data);
+          // Use the work order data from the response to create the notification
+          const notificationRes = await axios.post(
+            `${baseUrl}/notification/notification`,
+            {
+              workorder: {
+                vendor_name: selectedVendor,
+                staffmember_name: selecteduser,
+                rental_adress: selectedProp,
+                work_subject: work_subject,
+                workorder_id: workorder_id,
+              },
+              notification: {},
+            }
+          );
+          handleResponse(workOrderRes, notificationRes);
+        } else {
+          console.error("Work Order Error:", workOrderRes.data);
+        }
+      } else {
+        const editUrl = `${baseUrl}/workorder/workorder/${id}`;
+        const res = await axios.put(editUrl, values);
+        handleResponse(res);
+      }
     }catch (error) {
       console.error("Error:", error);
       if (error.response) {
