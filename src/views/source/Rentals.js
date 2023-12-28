@@ -273,6 +273,7 @@ const Rentals = () => {
         });
         setPropType(selectedType);
         console.log(selectedType, "third");
+        console.log(propType, "thirdx");
         rentalsFormik.setFieldValue("propType", selectedType);
         // console.error("Error:", data.message);
       })
@@ -673,8 +674,6 @@ const Rentals = () => {
           // setshowRentalOwnerTable(true);
           // setRentalownerData(propertysData);
 
-          //setSelectedProp(propertysData.property_type || "Select");
-          //setCommercialImage(propertysData.property_image || "");
           setSelectedProp(matchedProperty.property_type || "Select");
           setSelectedbath(matchedProperty.rental_bath || "Select");
           setSelectedBad(matchedProperty.rental_bed || "Select");

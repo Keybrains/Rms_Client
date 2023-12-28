@@ -719,6 +719,7 @@ const PropDetails = () => {
           }
           
           setGeneralLedgerData([combinedData]);
+        
         } else {
           console.error("Invalid matchedProperty object:", matchedProperty);
         }
