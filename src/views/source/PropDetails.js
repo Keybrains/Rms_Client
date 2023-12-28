@@ -710,12 +710,10 @@ const PropDetails = () => {
               property_expense: expenseUnit.property_expense || [],
             }));
           }
-          // Update GeneralLedgerData state with the merged data
-          setGeneralLedgerData([combinedData]);
           
-  
           // Update GeneralLedgerData state with the merged data
           setGeneralLedgerData([combinedData]);
+        
         } else {
           console.error("Invalid matchedProperty object:", matchedProperty);
         }
