@@ -673,8 +673,8 @@ const Rentals = () => {
           // setshowRentalOwnerTable(true);
           // setRentalownerData(propertysData);
 
-          setSelectedProp(propertysData.property_type || "Select");
-          setCommercialImage(propertysData.property_image || "");
+          //setSelectedProp(propertysData.property_type || "Select");
+          //setCommercialImage(propertysData.property_image || "");
           setSelectedProp(matchedProperty.property_type || "Select");
           setSelectedbath(matchedProperty.rental_bath || "Select");
           setSelectedBad(matchedProperty.rental_bed || "Select");
@@ -954,7 +954,6 @@ const Rentals = () => {
     }
   };
 
-  console.log(selectedProp.property_type,"123")
   const editProperty = async (id) => {
     const editUrl = `${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`;
     const entriesArray = [];
