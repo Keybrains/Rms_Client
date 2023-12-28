@@ -618,7 +618,6 @@ const PropDetails = () => {
 
     return allPaymentAndCharges.filter((rental) => {
       // const lowerCaseQuery = searchQuery.toLowerCase();
-      console.log(searchQuery, "yash", rental);
       return (
         (rental.paymentAndCharges.charges_account &&
           rental.paymentAndCharges.charges_account.includes(
@@ -699,23 +698,28 @@ const PropDetails = () => {
           };
           
           if (dataFinancial && dataFinancial.unit) {
-            combinedData.unit = dataFinancial.unit.map((financialUnit, index) => ({
-              ...financialUnit,
-              paymentAndCharges: financialUnit.paymentAndCharges || [],
-              property_expense: dataExpense?.unit[index]?.property_expense || [],
-            }));
+            combinedData.unit = dataFinancial.unit.map((financialUnit, index) => {
+              const combinedUnit = {
+                ...financialUnit,
+                paymentAndCharges: financialUnit.paymentAndCharges || [],
+                property_expense: [],
+              };
+          
+              if (dataExpense && dataExpense.unit && dataExpense.unit[index]) {
+                combinedUnit.property_expense = dataExpense.unit[index].property_expense || [];
+              }
+          
+              return combinedUnit;
+            });
           } else if (dataExpense && dataExpense.unit) {
-            combinedData.unit = dataExpense.unit.map((expenseUnit, index) => ({
+            combinedData.unit = dataExpense.unit.map((expenseUnit) => ({
               paymentAndCharges: [],
               property_expense: expenseUnit.property_expense || [],
             }));
           }
-          // Update GeneralLedgerData state with the merged data
-          setGeneralLedgerData([combinedData]);
           
-  
-          // Update GeneralLedgerData state with the merged data
           setGeneralLedgerData([combinedData]);
+        
         } else {
           console.error("Invalid matchedProperty object:", matchedProperty);
         }
@@ -835,8 +839,7 @@ const calculateNetIncome = (property) => {
                               alt="..."
                             />
                           </div> */}
-                          {
-                            !propImageLoader ? (
+                          {!propImageLoader ? (
                               <>
                                 <div className="col-md-4 mt-2">
                                   <label htmlFor="prop_image">

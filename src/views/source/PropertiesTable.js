@@ -166,7 +166,6 @@ const PropertiesTables = () => {
 
   const filterRentalsBySearch = () => {
     let filteredData = rentalsData;
-    console.log(rentalsData, "data")
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((tenant) => {
