@@ -945,13 +945,13 @@ const TenantDetailPage = () => {
                     </Table>
                   </Row>
                 </div>
-                <div className="row m-3" style={{ overflow: 'hidden' }}>
+                {/* <div className="row m-3" style={{ overflow: 'hidden' }}>
                   <Row className="w-100 my-3 text-left">
                     <Col>
-                      <a href="#">Reset Pasword</a>
+                      <div onClick={ () => navigate(`/admin/changepassword`)}>Reset Pasword</div>
                     </Col>
                   </Row>
-                </div>
+                </div> */}
               </div>
             </Card>
           </div>

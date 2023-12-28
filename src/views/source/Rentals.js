@@ -953,7 +953,6 @@ const Rentals = () => {
     }
   };
 
-  console.log(selectedProp.property_type,"123")
   const editProperty = async (id) => {
     const editUrl = `${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`;
     const entriesArray = [];

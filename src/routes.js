@@ -58,7 +58,8 @@ import Payment from "views/source/Payment";
 import AddPayment from "views/source/AddPayment";
 import AddCharge from "views/source/AddCharge";
 import TenantFinancial from "views/source/TenantFinancial";
-import ApplicantForm from "views/source/ApplicantForm"
+import ApplicantForm from "views/source/ApplicantForm";
+import Changepassword from "views/source/Changepassword";
 
 var routes = [
   {
@@ -161,6 +162,12 @@ var routes = [
     name: "Login",
     icon: "ni ni-key-25 text-info",
     component: <Login />,
+    layout: "/auth",
+  },
+  {
+    path: "/changepassword",
+    name: "Change Password",
+    component: <Changepassword />,
     layout: "/auth",
   },
 

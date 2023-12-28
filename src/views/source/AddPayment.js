@@ -244,7 +244,6 @@ const AddPayment = () => {
         if (data.statusCode === 200) {
           const tenantDatas = data.data;
           setTenantData(tenantDatas);
-          console.log("Tenant data:", tenantDatas);
           const rentalAddress = tenantDatas.entries.rental_adress;
           // console.log(tenantDatas.entries.property_id, "propertyId");
           setSelectedRec(
@@ -253,8 +252,6 @@ const AddPayment = () => {
           setTenantid(tenantDatas._id);
           getAllCharges(tenantDatas._id);
           setPropertyId(tenantDatas.entries.property_id);
-          // setTenantid(tenantDatas._id); // Set the selected tenant's ID
-          // setTenantentryIndex(tenantDatas.entryIndex); // Set the selected tenant's entry index
           setRentAddress(rentalAddress);
           generalledgerFormik.setValues({
             ...generalledgerFormik.values,
@@ -280,15 +277,17 @@ const AddPayment = () => {
   }, []);
 
   if (generalledgerFormik.values.values) {
+
   }
   // console.log(property,'proeprty')
   const [loader, setLoader] = useState(false);
+  
   const handleSubmit = async (values) => {
     setLoader(true);
-    for (const [
-      index,
-      files,
-    ] of generalledgerFormik.values.attachment.entries()) {
+
+    if (Array.isArray(generalledgerFormik.values.attachment)) {
+    for (const [index, files] of generalledgerFormik.values.attachment.entries()) {
+
       if (files.upload_file instanceof File) {
         console.log(files.upload_file, "myfile");
 
@@ -300,15 +299,14 @@ const AddPayment = () => {
         try {
           const result = await axios.post(url, imageData, {
             headers: {
-              "Content-Type": "multipart/form-data",
+              'Content-Type': 'multipart/form-data',
             },
           });
 
           console.log(result, "imgs");
 
           // Update the original array with the uploaded file URL
-          generalledgerFormik.values.attachment[index].upload_file =
-            result.data.files[0].url;
+          generalledgerFormik.values.attachment[index].upload_file = result.data.files[0].url;
         } catch (error) {
           console.error(error);
         }
@@ -316,6 +314,10 @@ const AddPayment = () => {
         console.log(files.upload_file, "myfile");
       }
     }
+  } else {
+    console.error("Attachment is not an array");
+    // Handle the case where attachment is not an array
+  }
     const rentalAddress = generalledgerFormik.values.rental_adress;
     values["total_amount"] = total_amount;
 
@@ -353,11 +355,12 @@ const AddPayment = () => {
       );
 
       if (response.data.statusCode === 200) {
-        console.log(response.data.data, "resdadadadad");
         if (selectedProp === "Credit Card") {
-          try {
-            const url = `${baseUrl}/nmipayment/purchase`;
 
+          try {
+
+            const url = `${baseUrl}/nmipayment/purchase`;
+            console.log(url,"nmi api -----------")
             const postObject = {
               first_name: tenantData.tenant_firstName,
               last_name: tenantData.tenant_lastName,
@@ -369,19 +372,17 @@ const AddPayment = () => {
               tenantId: tenantData._id,
               propertyId: tenantData?.entries?.property_id,
               unitId: tenantData?.entries?.unit_id,
-            };
-
-            console.log(postObject, "postObjectg");
+            }
 
             const response = await axios.post(url, {
               paymentDetails: postObject,
             });
             if (response.data && response.data.statusCode === 100) {
               console.log(response.data, "response.data");
+
             } else {
               console.error("Unexpected response format:", response.data);
               swal("", response.data.message, "error");
-              // Handle other status codes or show an error message
             }
           } catch (error) {
             console.log(error);
@@ -499,9 +500,7 @@ const AddPayment = () => {
           swal("Error", "Failed to get 'id' from the response", "error");
         }
 
-        navigate(
-          `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
-        ); // Navigate to the desired page
+        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`); // Navigate to the desired page
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -510,63 +509,58 @@ const AddPayment = () => {
         const paymentObject = {
           properties: {
             rental_adress: rentalAddress,
-            property_id: propertyId,
+            property_id: propertyId
           },
-          unit: [
-            {
-              unit: (state && state.unit_name) || "",
-              unit_id: (state && state.unit_id) || "",
+          unit: [{
+            unit: (state && state.unit_name) || "",
+            unit_id: (state && state.unit_id) || "",
 
-              paymentAndCharges: [
-                ...generalledgerFormik.values.entries.map((entry) => ({
+            paymentAndCharges: [
+              ...generalledgerFormik.values.entries.map((entry) => ({
+                type: "Payment",
+                account: entry.account,
+                amount: parseFloat(entry.amount),
+                rental_adress: rentAddress,
+                rent_cycle: "",
+                month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                date: values.date,
+                memo: values.charges_memo,
+                tenant_id: tenantid,
+                charges_attachment: generalledgerFormik.values.attachment,
+                tenant_firstName: selectedRec,
+              })),
+              ...formikForAnotherData.values.entries
+                .filter((entry) => parseFloat(entry.amount) !== 0) // Filter out entries with amount 0
+                .map((entry) => ({
                   type: "Payment",
                   account: entry.account,
                   amount: parseFloat(entry.amount),
                   rental_adress: rentAddress,
                   rent_cycle: "",
-                  month_year:
-                    values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                  month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
                   date: values.date,
                   memo: values.charges_memo,
-                  tenant_id: tenantid,
                   charges_attachment: generalledgerFormik.values.attachment,
+                  tenant_id: tenantid,
                   tenant_firstName: selectedRec,
                 })),
-                ...formikForAnotherData.values.entries
-                  .filter((entry) => parseFloat(entry.amount) !== 0) // Filter out entries with amount 0
-                  .map((entry) => ({
-                    type: "Payment",
-                    account: entry.account,
-                    amount: parseFloat(entry.amount),
-                    rental_adress: rentAddress,
-                    rent_cycle: "",
-                    month_year:
-                      values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
-                    date: values.date,
-                    memo: values.charges_memo,
-                    charges_attachment: generalledgerFormik.values.attachment,
-                    tenant_id: tenantid,
-                    tenant_firstName: selectedRec,
-                  })),
-              ],
-            },
-          ],
-        };
-        const url = `${baseUrl}/payment_charge/payment_charge`;
-        await axios
-          .post(url, paymentObject)
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } catch (error) {
+            ],
+          }]
+        }
+        const url = `${baseUrl}/payment_charge/payment_charge`
+        await axios.post(url, paymentObject).then((res) => {
+          console.log(res)
+        }).catch((err) => {
+          console.log(err)
+        })
+      }
+      catch (error) {
         console.error("Error:", error);
         if (error.response) {
           console.error("Response Data:", error.response.data);
         }
       }
+
     } catch (error) {
       console.error("Error:", error);
       if (error.response) {
@@ -1074,13 +1068,27 @@ const AddPayment = () => {
                                   placeholder="Enter amount"
                                   name="amount"
                                   onBlur={generalledgerFormik.handleBlur}
-                                  // only input number
+                                  onWheel={(e) => e.preventDefault()} 
                                   onKeyDown={(event) => {
                                     if (!/[0-9]/.test(event.key)) {
-                                      event.preventDefault();
+                                      //event.preventDefault();
                                     }
                                   }}
-                                  onChange={generalledgerFormik.handleChange}
+                                  onChange={(e) => {
+                                    const inputValue = e.target.value;
+                                    const numericValue = inputValue.replace(
+                                      /\D/g,
+                                      ""
+                                    );
+                                    generalledgerFormik.values.amount = numericValue;
+                                    generalledgerFormik.handleChange({
+                                      target: {
+                                        name: "amount",
+                                        value: numericValue,
+                                      },
+                                    });
+                                  }}
+                                  //-onChange={generalledgerFormik.handleChange}
                                   value={generalledgerFormik.values.amount}
                                   required
                                 />
@@ -1207,36 +1215,45 @@ const AddPayment = () => {
                             </Col>
                           </Row>
                         </>
-                      ) : (
-                        <>
-                          <Row>
-                            <Col sm="4">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Amount *
-                                </label>
-                                <Input
-                                  type="number"
-                                  id="amount"
-                                  placeholder="Enter amount"
-                                  name="amount"
-                                  onBlur={generalledgerFormik.handleBlur}
-                                  // only input number
-
-                                  onChange={generalledgerFormik.handleChange}
-                                  value={generalledgerFormik.values.amount}
-                                  onWheel={(e) => e.preventDefault()} // Disable scroll wheel
-                                  inputMode="numeric"
-                                  required
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                        </>
-                      )}
+                      ) : <>
+                        <Row>
+                          <Col sm="4">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                              >
+                                Amount *
+                              </label>
+                              <Input
+                                type="number"
+                                id="amount"
+                                placeholder="Enter amount"
+                                name="amount"
+                                onBlur={generalledgerFormik.handleBlur}
+                                onChange={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  );
+                                  generalledgerFormik.values.amount = numericValue;
+                                  generalledgerFormik.handleChange({
+                                    target: {
+                                      name: "amount",
+                                      value: numericValue,
+                                    },
+                                  });
+                                }}
+                                value={generalledgerFormik.values.amount}
+                                onWheel={(e) => e.preventDefault()} // Disable scroll wheel
+                                inputMode="numeric"
+                                required
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                      </>}
                     </Col>
                   </Row>
                   <Row>
@@ -1332,91 +1349,73 @@ const AddPayment = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              {formikForAnotherData.values.entries.length > 0
-                                ? formikForAnotherData.values.entries.map(
-                                    (entries, index) => (
-                                      <>
-                                        <tr key={index}>
-                                          <td>
-                                            <Dropdown
-                                              isOpen={
-                                                entries && entries.dropdownOpen
-                                              }
-                                              toggle={() =>
-                                                toggleDropdownForFormik(index)
-                                              }
-                                            >
-                                              <DropdownToggle caret>
-                                                {entries.account
-                                                  ? entries.account
-                                                  : "Select"}
-                                              </DropdownToggle>
-                                            </Dropdown>
-                                          </td>
-                                          <td>
-                                            <Input
-                                              className="form-control-alternative"
-                                              id="input-unitadd"
-                                              placeholder="$0.00"
-                                              type="text"
-                                              name={`entries[${index}].balance`}
-                                              value={
-                                                Math.abs(entries.balance) -
-                                                entries.amount
-                                              }
-                                              readOnly // Add readOnly attribute
-                                              onWheel={(e) =>
-                                                e.preventDefault()
-                                              } // Disable scroll wheel
-                                              inputMode="numeric"
-                                            />
-                                          </td>
-                                          <td>
-                                            <Input
-                                              className="form-control-alternative"
-                                              id="input-unitadd"
-                                              placeholder="$0.00"
-                                              type="number"
-                                              name={`entries[${index}].amount`}
-                                              onBlur={
-                                                formikForAnotherData.handleBlur
-                                              }
-                                              onChange={
-                                                formikForAnotherData.handleChange
-                                              }
-                                              value={entries.amount}
-                                              onInput={(e) => {
-                                                const inputValue =
-                                                  e.target.value;
-                                                const numericValue =
-                                                  inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-                                                e.target.value = numericValue;
-                                              }}
-                                              onWheel={(e) =>
-                                                e.preventDefault()
-                                              } // Disable scroll wheel
-                                              inputMode="numeric"
-                                            />
-                                          </td>
-                                          <td style={{ border: "none" }}>
-                                            <ClearIcon
-                                              type="button"
-                                              style={{
-                                                cursor: "pointer",
-                                                padding: 0,
-                                              }}
-                                              onClick={() =>
-                                                handleRemoveRow2(index)
-                                              }
-                                            >
-                                              Remove
-                                            </ClearIcon>
-                                          </td>
-                                        </tr>
-                                      </>
-                                    )
-                                  )
-                                : null}
+                              {formikForAnotherData.values.entries.length > 0 ? formikForAnotherData.values.entries.map((entries, index) => (
+                                <>
+                                  <tr key={index}>
+                                    <td>
+                                      <Dropdown
+                                        isOpen={entries && entries.dropdownOpen}
+                                        toggle={() => toggleDropdownForFormik(index)}
+                                      >
+                                        <DropdownToggle caret>
+                                          {entries.account
+                                            ? entries.account
+                                            : "Select"}
+                                        </DropdownToggle>
+                                      </Dropdown>
+                                    </td>
+                                    <td>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-unitadd"
+                                        placeholder="$0.00"
+                                        type="text"
+                                        name={`entries[${index}].balance`}
+                                        value={Math.abs(entries.balance) - entries.amount}
+                                        readOnly  
+                                        onWheel={(e) => e.preventDefault()} 
+                                        inputMode="numeric"
+                                      />
+                                    </td>
+                                    <td>
+                                      <Input
+                                        className="form-control-alternative"
+                                        id="input-unitadd"
+                                        placeholder="$0.00"
+                                        type="number"
+                                        name={`entries[${index}].amount`}
+                                        onBlur={
+                                          formikForAnotherData.handleBlur
+                                        }
+                                        onChange={
+                                          formikForAnotherData.handleChange
+                                        }
+                                        value={entries.amount}
+                                        onInput={(e) => {
+                                          const inputValue = e.target.value;
+                                          const numericValue =
+                                            inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                          e.target.value = numericValue;
+                                        }}
+                                        onWheel={(e) => e.preventDefault()} // Disable scroll wheel
+                                        inputMode="numeric"
+                                      />
+                                    </td>
+                                    <td style={{ border: "none" }}>
+                                      <ClearIcon
+                                        type="button"
+                                        style={{
+                                          cursor: "pointer",
+                                          padding: 0,
+                                        }}
+                                        onClick={() => handleRemoveRow2(index)}
+                                      >
+                                        Remove
+                                      </ClearIcon>
+                                    </td>
+                                  </tr>
+                                </>
+                              )) : null}
                               <>
                                 {generalledgerFormik.values.entries.map(
                                   (entries, index) => (
@@ -1587,6 +1586,7 @@ const AddPayment = () => {
                                               inputValue.replace(/\D/g, ""); // Remove non-numeric characters
                                             e.target.value = numericValue;
                                           }}
+                                          
                                         />
                                       </td>
                                       <td>
@@ -1599,9 +1599,20 @@ const AddPayment = () => {
                                           onBlur={
                                             generalledgerFormik.handleBlur
                                           }
-                                          onChange={
-                                            generalledgerFormik.handleChange
-                                          }
+                                          onChange={(e) => {
+                                            const inputValue = e.target.value;
+                                            const numericValue = inputValue.replace(
+                                              /\D/g,
+                                              ""
+                                            );
+                                            generalledgerFormik.values.amount = numericValue;
+                                            generalledgerFormik.handleChange({
+                                              target: {
+                                                name: "amount",
+                                                value: numericValue,
+                                              },
+                                            });
+                                          }}
                                           value={entries.amount}
                                           onInput={(e) => {
                                             const inputValue = e.target.value;
