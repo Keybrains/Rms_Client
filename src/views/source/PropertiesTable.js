@@ -169,20 +169,20 @@ const PropertiesTables = () => {
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((tenant) => {
-        const name = `${tenant.rentalOwner_firstName} ${tenant.rentalOwner_lastName}`;
-        const address = `${tenant.entries.rental_adress} ${tenant.entries.rental_city} ${tenant.entries.rental_country}`;
+        const name = `${tenant?.rentalOwner_firstName} ${tenant?.rentalOwner_lastName}`;
+        const address = `${tenant?.entries?.rental_adress} ${tenant?.entries?.rental_city} ${tenant?.entries?.rental_country}`;
         return (
-          tenant.entries.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.entries.type.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.entries.property_type.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.entries.rental_city.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.entries.rental_country.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.rentalOwner_firstName.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.rentalOwner_lastName.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.rentalOwner_companyName.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.rentalOwner_primaryEmail.toLowerCase().includes(lowerCaseSearchQuery) ||
-          name.toLowerCase().includes(lowerCaseSearchQuery) ||
-          address.toLowerCase().includes(lowerCaseSearchQuery)
+          tenant?.entries?.rental_adress?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.entries?.type?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.entries?.property_type?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.entries?.rental_city?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.entries?.rental_country?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.rentalOwner_firstName?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.rentalOwner_lastName?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.rentalOwner_companyName?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.rentalOwner_primaryEmail?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          name?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          address?.toLowerCase().includes(lowerCaseSearchQuery)
         );
       });
     } 
