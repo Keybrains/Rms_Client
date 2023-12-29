@@ -218,6 +218,7 @@ const PropDetails = () => {
     // "Next month",
     "Month to date",
     "Three months to date",
+    "All"
     // "Quarter to date",
     // "Year to date",
     // "Last month",
@@ -592,7 +593,7 @@ const PropDetails = () => {
     setPropImageLoader(false);
 
     // Wait for all Axios requests to complete before logging the data
-    await Promise.all(axiosRequests);
+    // await Promise.all(axiosRequests);
   };
 
   const filterRentalsBySearch = () => {
@@ -652,34 +653,34 @@ const PropDetails = () => {
 
   const getGeneralLedgerData = async () => {
     setLoader(true);
-  
+
     if (matchedProperty) {
       try {
         const rental = matchedProperty?.rental_adress;
         if (rental && id) {
           // First API call
           const urlFinancial = `${baseUrl}/payment_charge/property_financial?rental_adress=${rental}&property_id=${id}`;
-  
+
           let dataFinancial;
           try {
             const responseFinancial = await axios.get(urlFinancial);
-  
+
             if (responseFinancial.data && responseFinancial.data.data) {
-              dataFinancial = responseFinancial.data.data[0] || [{unit: []}];
+              dataFinancial = responseFinancial.data.data[0] || [{ unit: [] }];
             } else {
               console.error("Unexpected response format:", responseFinancial.data);
             }
           } catch (error) {
             console.error("Error fetching financial data:", error);
           }
-  
+
           // Second API call
           const urlExpense = `${baseUrl}/payment_charge/property_financial/property_expense?rental_adress=${rental}&property_id=${id}`;
-  
+
           let dataExpense;
           try {
             const responseExpense = await axios.get(urlExpense);
-  
+
             if (responseExpense.data && responseExpense.data.data) {
               dataExpense = responseExpense.data.data[0];
             } else {
@@ -688,7 +689,7 @@ const PropDetails = () => {
           } catch (error) {
             console.error("Error fetching expense data:", error);
           }
-  
+
           // Merge data from both API calls
           const combinedData = {
             _id: 'mergedId', // Provide a unique identifier for the merged data if needed
@@ -696,7 +697,7 @@ const PropDetails = () => {
             unit: [],
             __v: 0,
           };
-          
+
           if (dataFinancial && dataFinancial.unit) {
             combinedData.unit = dataFinancial.unit.map((financialUnit, index) => {
               const combinedUnit = {
@@ -704,11 +705,11 @@ const PropDetails = () => {
                 paymentAndCharges: financialUnit.paymentAndCharges || [],
                 property_expense: [],
               };
-          
+
               if (dataExpense && dataExpense.unit && dataExpense.unit[index]) {
                 combinedUnit.property_expense = dataExpense.unit[index].property_expense || [];
               }
-          
+
               return combinedUnit;
             });
           } else if (dataExpense && dataExpense.unit) {
@@ -717,22 +718,23 @@ const PropDetails = () => {
               property_expense: expenseUnit.property_expense || [],
             }));
           }
-          
+
           setGeneralLedgerData([combinedData]);
+
         } else {
           console.error("Invalid matchedProperty object:", matchedProperty);
         }
-      } catch (error) { 
+      } catch (error) {
         console.error("Error processing matchedProperty:", error);
       }
     }
     setLoader(false);
   };
-   
-  
+
+
   const calculateTotalIncome = (property) => {
     let totalIncome = 0;
-  
+
     // Check if property and unit are defined before iterating
     property?.unit?.forEach((unit) => {
       // Check if paymentAndCharges is defined before iterating
@@ -740,13 +742,13 @@ const PropDetails = () => {
         totalIncome += charge.amount || 0;
       });
     });
-  
+
     return totalIncome.toFixed(2);
   };
-  
+
   const calculateTotalExpenses = (property) => {
     let totalExpenses = 0;
-  
+
     // Check if property and unit are defined before iterating
     property?.unit?.forEach((unit) => {
       // Check if property_expense is defined before iterating
@@ -754,16 +756,115 @@ const PropDetails = () => {
         totalExpenses += charge.amount || 0;
       });
     });
-  
+
     return totalExpenses.toFixed(2);
   };
 
-const calculateNetIncome = (property) => {
-  const totalIncome = calculateTotalIncome(property);
-  const totalExpenses = calculateTotalExpenses(property);
-  const netIncome = (totalIncome - totalExpenses).toFixed(2);
-  return netIncome;
-};
+  const calculateNetIncome = (property) => {
+    const totalIncome = calculateTotalIncome(property);
+    const totalExpenses = calculateTotalExpenses(property);
+    const netIncome = (totalIncome - totalExpenses).toFixed(2);
+    return netIncome;
+  };
+
+  const monthWiseData = {};
+
+  GeneralLedgerData.forEach((property) => {
+    property.unit.forEach((unit) => {
+      if (unit.paymentAndCharges) {
+        unit.paymentAndCharges.forEach((charge) => {
+          const chargeDate = moment(charge.date);
+          const chargeMonth = chargeDate.format("MMMM");
+
+          if (!monthWiseData[chargeMonth]) {
+            monthWiseData[chargeMonth] = [];
+          }
+
+          // Add charge data to the corresponding month
+          monthWiseData[chargeMonth].push({
+            account: charge.account,
+            amount: charge.amount || "0.00",
+          });
+        });
+      }
+    });
+  });
+
+  const monthWiseData2 = {};
+
+  GeneralLedgerData.forEach((property) => {
+    property.unit.forEach((unit) => {
+      if (unit.property_expense) {
+        unit.property_expense.forEach((charge) => {
+          const chargeDate = moment(charge.date);
+          const chargeMonth = chargeDate.format("MMMM");
+
+          if (!monthWiseData2[chargeMonth]) {
+            monthWiseData2[chargeMonth] = [];
+          }
+
+          // Add charge data to the corresponding month
+          monthWiseData2[chargeMonth].push({
+            account: charge.account,
+            amount: charge.amount || "0.00",
+          });
+        });
+      }
+    });
+  });
+
+  const totals = {
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+  };
+
+  const totals2 = {
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+  };
+
+  // Iterate over the data to calculate totals
+  threeMonths.forEach((months, index) => {
+    if (monthWiseData[months]) {
+      monthWiseData[months].forEach((data) => {
+        totals[index] += data.amount || 0;
+      });
+    }
+
+  });
+
+  if (monthWiseData[month]) {
+    monthWiseData[month].forEach((data) => {
+      totals[2] += data.amount || 0;
+    });
+  }
+
+  threeMonths.forEach((months, index) => {
+    if (monthWiseData2[months]) {
+      monthWiseData2[months].forEach((data) => {
+        totals2[index] += data.amount || 0;
+      });
+    }
+
+  });
+
+  if (monthWiseData2[month]) {
+    monthWiseData2[month].forEach((data) => {
+      totals2[2] += data.amount || 0;
+    });
+  }
+
+  const totalIncome = monthWiseData[month]?.reduce((total, data) => total + parseFloat(data.amount || 0), 0);
+
+  // Calculate total expenses
+  const totalExpenses = monthWiseData2[month]?.reduce((total, data) => total + parseFloat(data.amount || 0), 0);
+
+  // Calculate net income
+  const netIncome = totalIncome - totalExpenses;
 
   return (
     <>
@@ -839,43 +940,43 @@ const calculateNetIncome = (property) => {
                             />
                           </div> */}
                           {!propImageLoader ? (
-                              <>
-                                <div className="col-md-4 mt-2">
-                                  <label htmlFor="prop_image">
-                                    <img
-                                      src={matchedProperty.prop_image ? matchedProperty.prop_image : fone}
-                                      className="img-fluid rounded-start card-image"
-                                      alt={"..."}
-                                    // width='260px'
-                                    // height='180px'
-                                    // onClick={handleModalOpen}
-                                    />
-                                  </label>
-                                  <TextField
-                                    id="prop_image"
-                                    name="prop_image"
-                                    type="file"
-                                    inputProps={{
-                                      accept: "image/*",
-                                      multiple: false,
-                                    }}
-                                    onChange={handleImageChange}
-                                    style={{ display: "none" }}
+                            <>
+                              <div className="col-md-4 mt-2">
+                                <label htmlFor="prop_image">
+                                  <img
+                                    src={matchedProperty.prop_image ? matchedProperty.prop_image : fone}
+                                    className="img-fluid rounded-start card-image"
+                                    alt={"..."}
+                                  // width='260px'
+                                  // height='180px'
+                                  // onClick={handleModalOpen}
                                   />
-                                </div>
-                              </>
-                            ) : (
-                              <div className="col-md-4 mt-2 d-flex justify-content-center">
-
-                                <RotatingLines
-                                  strokeColor="grey"
-                                  strokeWidth="5"
-                                  animationDuration="0.75"
-                                  width="50"
-                                  visible={propImageLoader}
+                                </label>
+                                <TextField
+                                  id="prop_image"
+                                  name="prop_image"
+                                  type="file"
+                                  inputProps={{
+                                    accept: "image/*",
+                                    multiple: false,
+                                  }}
+                                  onChange={handleImageChange}
+                                  style={{ display: "none" }}
                                 />
                               </div>
-                            )
+                            </>
+                          ) : (
+                            <div className="col-md-4 mt-2 d-flex justify-content-center">
+
+                              <RotatingLines
+                                strokeColor="grey"
+                                strokeWidth="5"
+                                animationDuration="0.75"
+                                width="50"
+                                visible={propImageLoader}
+                              />
+                            </div>
+                          )
 
                           }
 
@@ -1464,13 +1565,11 @@ const calculateNetIncome = (property) => {
                                                     <tr className="body">
                                                       <td>
                                                         {/* <Link to=""> */}
-                                                        {`${
-                                                          propertyDetails.rentalOwner_firstName ||
+                                                        {`${propertyDetails.rentalOwner_firstName ||
                                                           "N/A"
-                                                        } ${
-                                                          propertyDetails.rentalOwner_lastName ||
+                                                          } ${propertyDetails.rentalOwner_lastName ||
                                                           "N/A"
-                                                        }`}
+                                                          }`}
 
                                                         {/* </Link> */}
                                                       </td>
@@ -1548,10 +1647,9 @@ const calculateNetIncome = (property) => {
                                                     <tr className="body">
                                                       <td>
                                                         {/* <Link to=""> */}
-                                                        {`${
-                                                          matchedProperty?.staffMember ||
+                                                        {`${matchedProperty?.staffMember ||
                                                           "No staff member assigned"
-                                                        }`}
+                                                          }`}
 
                                                         {/* </Link> */}
                                                       </td>
@@ -1846,7 +1944,7 @@ const calculateNetIncome = (property) => {
                               {financialType
                                 ? financialType
                                 : "Month to date" &&
-                                  setFinancialType("Month to date")}
+                                setFinancialType("Month to date")}
                             </DropdownToggle>
                             <DropdownMenu>
                               {financialTypeArray.map((subtype, index) => (
@@ -1861,147 +1959,259 @@ const calculateNetIncome = (property) => {
                               ))}
                             </DropdownMenu>
                           </Dropdown>
-                        </FormGroup> 
+                        </FormGroup>
                       </Col>
 
                       {loader ? (
                         <div>Loading...</div>
                       ) : (
                         <>
-                      {financialType === "Month to date" && (
-                        <Table responsive>
-                          <thead>
-                            <th>Property account</th>
-                            <th>{month} 1 to date</th>
-                          </thead>
-                          <tbody>
-                          <React.Fragment>
-                              <tr>
-                                <th
-                                  style={{
-                                    color: "blue",
-                                    fontWeight: "bold",
-                                    backgroundColor: "#f0f0f0",
-                                  }}
-                                  colSpan="2"
-                                >
-                                  Income
-                                </th>
-                              </tr>
-                              {GeneralLedgerData.map((property, index) => (
-                                <React.Fragment key={index}>
-                                  {property.unit.map((unit, unitIndex) => (
-                                    <React.Fragment key={unitIndex}>
-                                      {unit.paymentAndCharges && unit.paymentAndCharges.map((charge, chargeIndex) => (
-                                        <React.Fragment key={chargeIndex}>
-                                          <tr>
-                                            <th>{charge.account}</th>
-                                            <td>${charge.amount || "0.00"}</td>
-                                          </tr>
+                          {financialType === "All" && (
+                            <Table responsive>
+                              <thead>
+                                <th>Property account</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                              </thead>
+                              <tbody>
+                                <React.Fragment>
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "blue",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                      colSpan="3"
+                                    >
+                                      Income
+                                    </th>
+                                  </tr>
+                                  {GeneralLedgerData.map((property, index) => (
+                                    <React.Fragment key={index}>
+                                      {property.unit.map((unit, unitIndex) => (
+                                        <React.Fragment key={unitIndex}>
+                                          {unit.paymentAndCharges && unit.paymentAndCharges
+                                            .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                            .map((charge, chargeIndex) => (
+                                              <React.Fragment key={chargeIndex}>
+                                                <tr>
+                                                  <th>{charge.account}</th>
+                                                  <td>${charge.amount || "0.00"}</td>
+                                                  <td>{charge.date}</td>
+                                                </tr>
+                                              </React.Fragment>
+                                            ))}
                                         </React.Fragment>
                                       ))}
+                                      <tr>
+                                        <th
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Total income
+                                        </th>
+                                        <td
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          ${calculateTotalIncome(property)}
+                                        </td>
+                                      </tr>
                                     </React.Fragment>
                                   ))}
-                                    <tr>
-                                <th
-                                  style={{
-                                    color: "black",
-                                    fontWeight: "bold",
-                                  }}
-                                >
-                                  Total income
-                                </th>
-                                <td
-                                  style={{
-                                    color: "black",
-                                    fontWeight: "bold",
-                                  }}
-                                >
-                                  ${calculateTotalIncome(property)}
-                                </td>
-                              </tr>
-                                </React.Fragment>
-                              ))}
-
-                              <tr>
-                                <th
-                                  style={{
-                                    color: "blue",
-                                    fontWeight: "bold",
-                                    backgroundColor: "#f0f0f0",
-                                  }}
-                                  colSpan="2"
-                                >
-                                  Expenses
-                                </th>
-                                <td></td>
-                              </tr>
-                              {GeneralLedgerData.map((property, index) => (
-                                <React.Fragment key={index}>
-                                  {property.unit.map((unit, unitIndex) => (
-                                    <React.Fragment key={unitIndex}>
-                                      {unit.property_expense && unit.property_expense.map((expense, expenseIndex) => (
-                                        <React.Fragment key={expenseIndex}>
-                                          <tr>
-                                            <th>{expense.account}</th>
-                                            <td>${expense.amount || "0.00"}</td>
-                                          </tr>
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "blue",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                      colSpan="3"
+                                    >
+                                      Expenses
+                                    </th>
+                                    <td></td>
+                                  </tr>
+                                  {GeneralLedgerData.map((property, index) => (
+                                    <React.Fragment key={index}>
+                                      {property.unit.map((unit, unitIndex) => (
+                                        <React.Fragment key={unitIndex}>
+                                          {unit.property_expense && unit.property_expense
+                                            .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                            .map((expense, expenseIndex) => (
+                                              <React.Fragment key={expenseIndex}>
+                                                <tr>
+                                                  <th>{expense.account}</th>
+                                                  <td>${expense.amount || "0.00"}</td>
+                                                  <td>{expense.date}</td>
+                                                </tr>
+                                              </React.Fragment>
+                                            ))}
                                         </React.Fragment>
                                       ))}
+                                      <tr>
+                                        <th
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Total expenses
+                                        </th>
+                                        <td
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          ${calculateTotalExpenses(property)}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <th
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                            backgroundColor: "#f0f0f0",
+                                          }}
+                                        //colSpan="2"
+                                        >
+                                          Net income
+                                        </th>
+                                        <td
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                            backgroundColor: "#f0f0f0",
+                                          }}
+                                        //colSpan="2"
+                                        >
+                                          ${calculateNetIncome(property)}
+                                        </td>
+                                      </tr>
                                     </React.Fragment>
                                   ))}
-                                    <tr>
-                                <th
-                                  style={{
-                                    color: "black",
-                                    fontWeight: "bold",
-                                  }}
-                                >
-                                  Total expenses
-                                </th>
-                                <td
-                                  style={{
-                                    color: "black",
-                                    fontWeight: "bold",
-                                  }}
-                                >
-                                  ${calculateTotalExpenses(property)}
-                                </td>
-                              </tr>
-                              <tr>
-                                <th
-                                  style={{
-                                    color: "black",
-                                    fontWeight: "bold",
-                                    backgroundColor: "#f0f0f0",
-                                  }}
-                                  //colSpan="2"
-                                >
-                                  Net income
-                                </th>
-                                <td
-                                  style={{
-                                    color: "black",
-                                    fontWeight: "bold",
-                                    backgroundColor: "#f0f0f0",
-                                  }}
-                                  //colSpan="2"
-                                >
-                                  ${calculateNetIncome(property)}
-                                </td>
-                              </tr>
                                 </React.Fragment>
-                              ))}
-                          </React.Fragment>
+                              </tbody>
+                            </Table>
+                          )}
+                          {financialType === "Month to date" && (
+                            <Table responsive>
+                              <thead>
+                                <th>Property account</th>
+                                <th>{month} 1 to date</th>
+                              </thead>
+                              <tbody>
+                                <React.Fragment>
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "blue",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                      colSpan="2"
+                                    >
+                                      Income
+                                    </th>
+                                  </tr>
+                                  {monthWiseData[month] && monthWiseData[month].map((data, index) => (
+                                    <React.Fragment key={index}>
+                                      <tr>
+                                        <th>{data.account}</th>
+                                        <td>${data.amount || "0.00"}</td>
+                                      </tr>
+                                    </React.Fragment>
+                                  ))}
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      Total income
+                                    </th>
+                                    <td
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {totalIncome}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "blue",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                      colSpan="2"
+                                    >
+                                      Expenses
+                                    </th>
+                                    <td></td>
+                                  </tr>
+                                  {monthWiseData2[month] && monthWiseData2[month].map((data, index) => (
+                                    <React.Fragment key={index}>
+                                      <tr>
+                                        <th>{data.account}</th>
+                                        <td>${data.amount || "0.00"}</td>
+                                      </tr>
 
-
-                              
-
-                               
-
-                          </tbody>
-                        </Table>
-                      )}
+                                    </React.Fragment>
+                                  ))}
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      Total expenses
+                                    </th>
+                                    <td
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {totalExpenses}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                    //colSpan="2"
+                                    >
+                                      Net income
+                                    </th>
+                                    <td
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                    //colSpan="2"
+                                    >
+                                      {netIncome}
+                                    </td>
+                                  </tr>
+                                </React.Fragment>
+                              </tbody>
+                            </Table>
+                          )}
 
                           {financialType === "Three months to date" && (
                             <Table responsive>
@@ -2012,10 +2222,8 @@ const calculateNetIncome = (property) => {
                                     {month} {moment().format("YYYY")}
                                   </th>
                                 ))}
+                                {console.log(monthWiseData, 'yash', monthWiseData2)}
                                 <th>{month} 1 to date</th>
-                                <th>
-                                  Total as of {moment().format("YYYY/MM/DD")}
-                                </th>
                               </thead>
                               <tbody>
                                 <tr>
@@ -2028,20 +2236,32 @@ const calculateNetIncome = (property) => {
                                     Income
                                   </th>
                                 </tr>
-                                <tr>
-                                  <th>Application fee income</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Rent income</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
+                                {threeMonths.map((months, index) => (
+                                  <tr key={index}>
+                                    {monthWiseData[months] && monthWiseData[months].map((data) => (
+                                      <>
+                                        <th>{data.account}</th>
+                                        <td>
+                                          {index === 0 ? data.amount : "-"}
+                                        </td>
+                                        <td>
+                                          {index === 1 ? data.amount : "-"}
+                                        </td>
+                                        <td>
+                                          {index === 2 ? data.amount : "-"}
+                                        </td>
+                                      </>
+                                    ))}
+                                  </tr >
+                                ))}
+                                {monthWiseData[month] && monthWiseData[month].map((data, index) => (
+                                  <tr key={index}>
+                                    <th>{data.account}</th>
+                                    <td>{"-"}</td>
+                                    <td>{"-"}</td>
+                                    <td>{data.amount || "-"}</td>
+                                  </tr>
+                                ))}
                                 <tr>
                                   <th
                                     style={{
@@ -2051,10 +2271,9 @@ const calculateNetIncome = (property) => {
                                   >
                                     Total income
                                   </th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
+                                  <td>{totals[0]}</td>
+                                  <td>{totals[1]}</td>
+                                  <td>{totals[2]}</td>
                                 </tr>
                                 <tr>
                                   <th
@@ -2065,39 +2284,36 @@ const calculateNetIncome = (property) => {
                                   >
                                     Expenses
                                   </th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
                                 </tr>
-                                <tr>
-                                  <th>Landscaping</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Repairs</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Supplies</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Utilities</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
+                                {threeMonths.map((months, index) => (
+                                  <tr key={index}>
+                                    {monthWiseData2[months] && monthWiseData2[months].map((data) => (
+                                      <>
+                                        <th>{data.account}</th>
+                                        <td>
+                                          {index === 0 ? data.amount : "-"}
+                                        </td>
+                                        <td>
+                                          {index === 1 ? data.amount : "-"}
+                                        </td>
+                                        <td>
+                                          {index === 2 ? data.amount : "-"}
+                                        </td>
+                                      </>
+                                    ))}
+                                  </tr >
+                                ))}
+                                {monthWiseData2[month] && monthWiseData2[month].map((data, index) => (
+                                  <tr key={index}>
+                                    <th>{data.account}</th>
+                                    <td>{"-"}</td>
+                                    <td>{"-"}</td>
+                                    <td>{data.amount || "-"}</td>
+                                  </tr>
+                                ))}
                                 <tr>
                                   <th
                                     style={{
@@ -2107,24 +2323,9 @@ const calculateNetIncome = (property) => {
                                   >
                                     Total expenses
                                   </th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Net operating income
-                                  </th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
+                                  <td>{totals2[0]}</td>
+                                  <td>{totals2[1]}</td>
+                                  <td>{totals2[2]}</td>
                                 </tr>
                                 <tr>
                                   <th
@@ -2135,10 +2336,9 @@ const calculateNetIncome = (property) => {
                                   >
                                     Net income
                                   </th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
+                                  <td>{totals[0] - totals2[0]}</td>
+                                  <td>{totals[1] - totals2[1]}</td>
+                                  <td>{totals[2] - totals2[2]}</td>
                                 </tr>
                               </tbody>
                             </Table>
@@ -2412,11 +2612,11 @@ const calculateNetIncome = (property) => {
                                         }}
                                         onChange={addUnitFormik.handleChange}
                                         onBlur={addUnitFormik.handleBlur}
-                                        // onClick={() =>
-                                        //   handlePropSelection(
-                                        //     subtype.propertysub_type
-                                        //   )
-                                        // }
+                                      // onClick={() =>
+                                      //   handlePropSelection(
+                                      //     subtype.propertysub_type
+                                      //   )
+                                      // }
                                       >
                                         {subtype}
                                       </DropdownItem>
@@ -2448,11 +2648,11 @@ const calculateNetIncome = (property) => {
                                         }}
                                         onChange={addUnitFormik.handleChange}
                                         onBlur={addUnitFormik.handleBlur}
-                                        // onClick={() =>
-                                        //   handlePropSelection(
-                                        //     subtype.propertysub_type
-                                        //   )
-                                        // }
+                                      // onClick={() =>
+                                      //   handlePropSelection(
+                                      //     subtype.propertysub_type
+                                      //   )
+                                      // }
                                       >
                                         {subtype}
                                       </DropdownItem>
@@ -2667,8 +2867,8 @@ const calculateNetIncome = (property) => {
                                   {unit.tenant_firstName == null
                                     ? "-"
                                     : unit.tenant_firstName +
-                                      " " +
-                                      unit.tenant_lastName}
+                                    " " +
+                                    unit.tenant_lastName}
                                   {/* {unit.tenant_firstName +
                                     " " +
                                     unit.tenant_lastName} */}
@@ -2809,9 +3009,9 @@ const calculateNetIncome = (property) => {
                                     }
                                     className="img-fluid rounded-start card-image"
                                     alt="..."
-                                    // width='260px'
-                                    // height='18px'
-                                    // onClick={handleModalOpen}
+                                  // width='260px'
+                                  // height='18px'
+                                  // onClick={handleModalOpen}
                                   />
                                 </label>
                                 {/* <TextField
@@ -3495,8 +3695,8 @@ const calculateNetIncome = (property) => {
                                       clickedObject
                                     )}
                                     {clickedObject &&
-                                    clickedObject.tenant_firstName &&
-                                    clickedObject.tenant_lastName ? (
+                                      clickedObject.tenant_firstName &&
+                                      clickedObject.tenant_lastName ? (
                                       <>
                                         <tr className="body">
                                           <td>
@@ -3506,7 +3706,7 @@ const calculateNetIncome = (property) => {
                                           </td>
                                           <td>
                                             {clickedObject.start_date &&
-                                            clickedObject.end_date ? (
+                                              clickedObject.end_date ? (
                                               <>
                                                 <Link
                                                   to={`/admin/tenantdetail/${clickedObject._id}`}
@@ -3537,10 +3737,10 @@ const calculateNetIncome = (property) => {
                                           </td>
                                           <td>
                                             {clickedObject.tenant_firstName &&
-                                            clickedObject.tenant_lastName
+                                              clickedObject.tenant_lastName
                                               ? clickedObject.tenant_firstName +
-                                                " " +
-                                                clickedObject.tenant_lastName
+                                              " " +
+                                              clickedObject.tenant_lastName
                                               : "N/A"}
                                           </td>
                                           <td>
