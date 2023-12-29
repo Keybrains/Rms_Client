@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import swal from "sweetalert";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Button,
   Card,
@@ -29,6 +29,19 @@ const Changepassword = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   let navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Extract the token from the URL
+    const searchParams = new URLSearchParams(location.search);
+    const token = searchParams.get("token");
+
+    // Decode the token to get the email
+    const decodedEmail = decodeURIComponent(token);
+
+    // Set the email state
+    setEmail(decodedEmail);
+  }, [location.search]);
 
   const handleChangePassword = async () => { 
     if (newPassword !== confirmPassword) {
@@ -86,7 +99,7 @@ const Changepassword = () => {
               <big>Change Password</big>
             </div>
             <Form role="form" onSubmit={handleSubmit}>
-              <FormGroup className="mb-3">
+              {/* <FormGroup className="mb-3">
                 <InputGroup className="input-group-alternative">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
@@ -102,7 +115,7 @@ const Changepassword = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 </InputGroup>
-              </FormGroup>
+              </FormGroup> */}
               <FormGroup>
                 <InputGroup className="input-group-alternative">
                   <InputGroupAddon addonType="prepend">
