@@ -165,7 +165,7 @@ const TWorkOrderDetails = () => {
         console.error("Error fetching tenant details:", error);
         setError(error);
       }
-    } 
+    }
   };
 
   React.useEffect(() => {
@@ -423,7 +423,7 @@ const TWorkOrderDetails = () => {
                             margin="20px"
                           >
                             <Box borderBottom="1px solid #ccc" style={{ minWidth: "100%", padding: "16px 16px 5px 16px", color: "#5e72e4" }}>
-                              <h2 className="text" style={{color:'#3B2F2F'}}>Contacts</h2>
+                              <h2 className="text" style={{ color: '#3B2F2F' }}>Contacts</h2>
                             </Box>
                             <Box
                               borderBottom="1px solid #ccc"
@@ -482,13 +482,13 @@ const TWorkOrderDetails = () => {
                             alignItems="center" // Center content horizontally
                           >
                             <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
-                              <h2 className="text" style={{color:'#3B2F2F'}}>Property</h2>
+                              <h2 className="text" style={{ color: '#3B2F2F' }}>Property</h2>
                             </Box>
                             {propertyDetails?.propertyres_image || propertyDetails?.property_image ? (
                               <Box style={{ width: "100%", padding: "16px", display: "flex", alignItems: "center" }}>
                                 <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
                                   <img
-                                    src={propertyDetails?.propertyres_image || propertyDetails?.property_image}
+                                    src={propertyDetails?.propertyres_image[0][0] || propertyDetails?.property_image[0][0]}
                                     alt="property"
                                     style={{ maxWidth: "80%", maxHeight: "100%", borderRadius: "8px", border: "1px solid #ccc" }}
                                   />
@@ -514,181 +514,181 @@ const TWorkOrderDetails = () => {
                 )}
 
                 {activeButton === 'Task' && (
-                   <div className="container-fluid">
-                   <Row className="mb-4">
-                     <Col lg="8" md="12">
-                    <Box border="1px solid #ccc" borderRadius="8px" padding="16px" maxWidth="700px" margin={'20px'}>
-                      <Row>
-                        <Col lg="2">
-                          <Box
-                            width="40px"
-                            height="40px"
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            backgroundColor="grey"
-                            borderRadius="8px"
-                            color="white"
-                            fontSize="24px"
-                          >
-                            <AssignmentOutlinedIcon />
-                          </Box>
-                        </Col>
-                        <Col lg="8">
-                          <span
-                            style={{
-                              border: "2px solid",
-                              borderColor:
-                                outstandDetails.priority === "High"
-                                  ? "red"
-                                  : outstandDetails.priority === "Medium"
-                                    ? "green"
-                                    : outstandDetails.priority === "Low"
-                                      ? "#FFD700"
-                                      : "inherit",
-                              borderRadius: "15px",
-                              padding: "2px",
-                              fontSize: "15px",
-                              color:
-                                outstandDetails.priority === "High"
-                                  ? "red"
-                                  : outstandDetails.priority === "Medium"
-                                    ? "green"
-                                    : outstandDetails.priority === "Low"
-                                      ? "#FFD700"
-                                      : "inherit",
-                            }}
-                          >
-                            &nbsp;{outstandDetails.priority}&nbsp;
-                          </span>
-                          <h2 className="text-lg" style={{ color: '#3B2F2F' }}>{outstandDetails.work_subject || "N/A"}</h2>
+                  <div className="container-fluid">
+                    <Row className="mb-4">
+                      <Col lg="8" md="12">
+                        <Box border="1px solid #ccc" borderRadius="8px" padding="16px" maxWidth="700px" margin={'20px'}>
+                          <Row>
+                            <Col lg="2">
+                              <Box
+                                width="40px"
+                                height="40px"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                backgroundColor="grey"
+                                borderRadius="8px"
+                                color="white"
+                                fontSize="24px"
+                              >
+                                <AssignmentOutlinedIcon />
+                              </Box>
+                            </Col>
+                            <Col lg="8">
+                              <span
+                                style={{
+                                  border: "2px solid",
+                                  borderColor:
+                                    outstandDetails.priority === "High"
+                                      ? "red"
+                                      : outstandDetails.priority === "Medium"
+                                        ? "green"
+                                        : outstandDetails.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
+                                  borderRadius: "15px",
+                                  padding: "2px",
+                                  fontSize: "15px",
+                                  color:
+                                    outstandDetails.priority === "High"
+                                      ? "red"
+                                      : outstandDetails.priority === "Medium"
+                                        ? "green"
+                                        : outstandDetails.priority === "Low"
+                                          ? "#FFD700"
+                                          : "inherit",
+                                }}
+                              >
+                                &nbsp;{outstandDetails.priority}&nbsp;
+                              </span>
+                              <h2 className="text-lg" style={{ color: '#3B2F2F' }}>{outstandDetails.work_subject || "N/A"}</h2>
 
-                          <span className="">{outstandDetails.rental_adress || "N/A"}</span>
-                        </Col>
-                      </Row><br />
-                      <Row>
-                        <Col lg="6">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-property"
-                            >
-                              Description
-                            </label><br />
-                            <span style={{ fontSize: '13px' }}>{outstandDetails.work_performed || "N/A"}</span>
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col lg="6">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-property"
-                            >
-                              Status
-                            </label><br />
-                            <span style={{ fontSize: '13px' }}>{outstandDetails.status || "N/A"}</span>
-                          </FormGroup>
-                        </Col>
+                              <span className="">{outstandDetails.rental_adress || "N/A"}</span>
+                            </Col>
+                          </Row><br />
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Description
+                                </label><br />
+                                <span style={{ fontSize: '13px' }}>{outstandDetails.work_performed || "N/A"}</span>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Status
+                                </label><br />
+                                <span style={{ fontSize: '13px' }}>{outstandDetails.status || "N/A"}</span>
+                              </FormGroup>
+                            </Col>
 
-                        <Col lg="6">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-property"
-                            >
-                              Due Date
-                            </label><br />
-                            <span style={{ fontSize: '13px' }}>{formatDateWithoutTime(
-                              outstandDetails.due_date
-                            ) || "N/A"}</span>
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col lg="6">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-property"
-                            >
-                              Assignees
-                            </label><br />
-                            <span style={{ fontSize: '13px' }}>{outstandDetails.staffmember_name || "N/A"}</span>
-                          </FormGroup>
-                        </Col>
-                        <Col lg="6">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-property"
-                            >
-                              Permission to enter
-                            </label><br />
-                            <span style={{ fontSize: '13px' }}>{outstandDetails.entry_allowed || "N/A"}</span>
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                    </Box>
-                    </Col>
+                            <Col lg="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Due Date
+                                </label><br />
+                                <span style={{ fontSize: '13px' }}>{formatDateWithoutTime(
+                                  outstandDetails.due_date
+                                ) || "N/A"}</span>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Assignees
+                                </label><br />
+                                <span style={{ fontSize: '13px' }}>{outstandDetails.staffmember_name || "N/A"}</span>
+                              </FormGroup>
+                            </Col>
+                            <Col lg="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Permission to enter
+                                </label><br />
+                                <span style={{ fontSize: '13px' }}>{outstandDetails.entry_allowed || "N/A"}</span>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                        </Box>
+                      </Col>
 
-                    <Col lg="4" md="12">
-                      {/* <Box
+                      <Col lg="4" md="12">
+                        {/* <Box
                       border="1px solid #ccc"
                       borderRadius="8px"
                       padding="16px"
                       maxWidth="1000px"
                       margin={"20px"}
                     > */}
-                  
-                  {imagedetails ? (
-                    <>
-                      <Box
-                        border="1px solid #ccc"
-                        borderRadius="8px"
-                        maxWidth="100%" // Use 100% to make it responsive
-                        margin="20px"
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center" // Center content horizontally
-                      >
-                        <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
-                          <h2 className="text" style={{color:'#3B2F2F'}}>Images</h2>
-                        </Box>
-                        
 
-                        {imagedetails && imagedetails.length > 0 ? (
-                          <Box style={{ width: "100%", padding: "16px",marginTop: "10px",display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-                            {imagedetails.map((imageUrl, index) => (
-                              <Box key={index} width="48%" style={{ minWidth: "48%", margin: "1%" }}>
-                                <img
-                                  src={imageUrl}
-                                  alt={`property ${index}`}
-                                  style={{ width: "100%", borderRadius: "8px", border: "1px solid #ccc" }}
-                                />
+                        {imagedetails ? (
+                          <>
+                            <Box
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              maxWidth="100%" // Use 100% to make it responsive
+                              margin="20px"
+                              display="flex"
+                              flexDirection="column"
+                              alignItems="center" // Center content horizontally
+                            >
+                              <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
+                                <h2 className="text" style={{ color: '#3B2F2F' }}>Images</h2>
                               </Box>
-                            ))}
-                          </Box>
-                        ) :"No Images Attached" }
-                          <br/>
-                          <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
-                              <Box width="100%" style={{ minWidth: "100%", textAlign: "center", cursor: 'pointer', color: 'blue' }} onClick={() => navigate(`/tenant/tenantpropertydetail/${propertyDetails.rental_adress}`)}>
-                                <span>{propertyDetails?.rental_adress || "N/A"} ({propertyDetails?.rental_units})</span>
+
+
+                              {imagedetails && imagedetails.length > 0 ? (
+                                <Box style={{ width: "100%", padding: "16px", marginTop: "10px", display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+                                  {imagedetails.map((imageUrl, index) => (
+                                    <Box key={index} width="48%" style={{ minWidth: "48%", margin: "1%" }}>
+                                      <img
+                                        src={imageUrl}
+                                        alt={`property ${index}`}
+                                        style={{ width: "100%", borderRadius: "8px", border: "1px solid #ccc" }}
+                                      />
+                                    </Box>
+                                  ))}
+                                </Box>
+                              ) : "No Images Attached"}
+                              <br />
+                              <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
+                                <Box width="100%" style={{ minWidth: "100%", textAlign: "center", cursor: 'pointer', color: 'blue' }} onClick={() => navigate(`/tenant/tenantpropertydetail/${propertyDetails.rental_adress}`)}>
+                                  <span>{propertyDetails?.rental_adress || "N/A"} ({propertyDetails?.rental_units})</span>
+                                </Box>
+                              </Box>
+                              <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
+                                <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
+                                  <span>{propertyDetails.rental_city ? <>{propertyDetails.rental_city},</> : ""} {propertyDetails.rental_state ? <>{propertyDetails.rental_state},</> : ""} {propertyDetails.rental_country ? <>{propertyDetails.rental_country},</> : ""} {propertyDetails.rental_postcode ? <>{propertyDetails.rental_postcode}.</> : ""}</span>
+                                </Box>
                               </Box>
                             </Box>
-                          <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
-                            <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
-                              <span>{propertyDetails.rental_city ? <>{propertyDetails.rental_city},</> : ""} {propertyDetails.rental_state ? <>{propertyDetails.rental_state},</> : ""} {propertyDetails.rental_country ? <>{propertyDetails.rental_country},</> : ""} {propertyDetails.rental_postcode ? <>{propertyDetails.rental_postcode}.</> : ""}</span>
-                            </Box>
-                          </Box>
-                        </Box>
-                      </>
-                    ) : (
-                      <>No Details Found</>
-                    )}
+                          </>
+                        ) : (
+                          <>No Details Found</>
+                        )}
 
-                     
+
                       </Col>
                     </Row>
                   </div>
