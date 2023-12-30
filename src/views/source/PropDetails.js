@@ -132,6 +132,7 @@ const PropDetails = () => {
       );
 
       setMatchedProperty(matchedProperty);
+      getTasks(matchedProperty.rental_adress);
       setRentAdd(matchedProperty.rental_adress);
       console.log(matchedProperty, `matched property`);
       setLoading(false);
@@ -447,6 +448,18 @@ const PropDetails = () => {
       console.log(clickedObject, "clickedObject after update");
     }
   };
+  const [tasks, setTasks] = useState([]);
+  const getTasks = async (rentalAddress) => {
+    await axios
+      .get(`${baseUrl}/workorder/workorder/${rentalAddress}`)
+      .then((res) => {
+        console.log(res, "tasks");
+        setTasks(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   const handleListingEdit = async (id, rentalId) => {
     const updatedValues = {
@@ -926,11 +939,11 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="units"
                       />
-                      {/* <Tab
+                      <Tab
                         label="Task"
                         style={{ textTransform: "none" }}
                         value="task"
-                      /> */}
+                      />
                       {/* <Tab
                         label="Event history"
                         style={{ textTransform: "none" }}
@@ -1939,7 +1952,6 @@ const PropDetails = () => {
                       </Table>
                     </div>
                   </TabPanel>
-
                   <TabPanel value="financial">
                     <>
                       <Col
@@ -2363,7 +2375,6 @@ const PropDetails = () => {
                       )}
                     </>
                   </TabPanel>
-
                   <TabPanel value="units">
                     {addUnitDialogOpen ? (
                       <>
@@ -4063,6 +4074,43 @@ const PropDetails = () => {
                       // </div>
                     )}
                   </TabPanel>
+                  <TabPanel value="task">
+                    <Table
+                      className="align-items-center table-flush"
+                      responsive
+                    >
+                      <thead className="thead-light">
+                        <tr>
+                          <th scope="col">Task</th>
+                          <th scope="col">Category</th>
+                          <th scope="col">Assigned To</th>
+                          <th scope="col">Status</th>
+                          <th scope="col">Due Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tasks && tasks.length>0 ?(tasks.map((task, index) => (
+                          <tr
+                          onClick={() => {
+                            navigate(`/admin/workorderdetail/${task.workorder_id}`);
+                          }}
+                          >
+                          <td>{task.work_subject}</td>
+                          <td>{task.work_category}</td>
+                          <td>{task.staffmember_name}</td>
+                          <td>{task.status}</td>
+                          <td>{task.due_date}</td>
+                        </tr>
+                          ))):(
+                            <tr>
+                              <td colSpan="5" className="text-center">
+                                No tasks found
+                              </td>
+                            </tr>
+                          )}
+                      </tbody>
+                    </Table>
+                  </TabPanel>                    
                 </TabContext>
                 {/* <h3 className="mb-0">Summary</h3> */}
               </Col>
