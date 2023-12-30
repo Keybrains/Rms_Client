@@ -41,9 +41,9 @@ const Changepassword = () => {
 
     // Set the email state
     setEmail(decodedEmail);
-    console.log(decodedEmail,"mansi---------------------");
+    
   }, [location.search]);
-
+console.log(email,"mansi---------------------");
   const handleChangePassword = async () => { 
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
