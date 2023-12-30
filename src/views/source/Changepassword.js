@@ -41,7 +41,7 @@ const Changepassword = () => {
 
     // Set the email state
     setEmail(decodedEmail);
-    console.log(decodedEmail);
+    console.log(decodedEmail,"mansi---------------------");
   }, [location.search]);
 
   const handleChangePassword = async () => { 
