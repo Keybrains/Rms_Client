@@ -273,6 +273,7 @@ const Rentals = () => {
         });
         setPropType(selectedType);
         console.log(selectedType, "third");
+        console.log(propType, "thirdx");
         rentalsFormik.setFieldValue("propType", selectedType);
         // console.error("Error:", data.message);
       })
@@ -433,6 +434,7 @@ const Rentals = () => {
           rentalOwner_operatingAccount: "",
           rentalOwner_propertyReserve: "",
           staffMember: "",
+          type:"",
           //rooms
           //RESIDENTIAL
           residential: [
@@ -672,8 +674,6 @@ const Rentals = () => {
           // setshowRentalOwnerTable(true);
           // setRentalownerData(propertysData);
 
-          setSelectedProp(propertysData.property_type || "Select");
-          setCommercialImage(propertysData.property_image || "");
           setSelectedProp(matchedProperty.property_type || "Select");
           setSelectedbath(matchedProperty.rental_bath || "Select");
           setSelectedBad(matchedProperty.rental_bed || "Select");
@@ -769,7 +769,7 @@ const Rentals = () => {
 
   const handleSubmit = async (values) => {
 
-    console.log(propType, "values");
+   // console.log(propType, "values");
     setLoader(true);
     const entriesArray = [];
     if (propType === "Residential") {
@@ -900,6 +900,7 @@ const Rentals = () => {
       }
       const entriesObject = {
         property_type: selectedProp.propertysub_type,
+        type: propType,
         rental_adress: rentalsFormik.values.entries[0].rental_adress,
         rental_city: rentalsFormik.values.entries[0].rental_city,
         rental_state: rentalsFormik.values.entries[0].rental_state,
@@ -952,13 +953,14 @@ const Rentals = () => {
     }
   };
 
-
   const editProperty = async (id) => {
     const editUrl = `${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`;
     const entriesArray = [];
     if (propType === "Residential") {
       const entriesObject = {
         property_type: selectedProp.propertysub_type,
+        type: propType,
+      
         rental_adress: rentalsFormik.values.entries[0].rental_adress,
         rental_city: rentalsFormik.values.entries[0].rental_city,
         rental_state: rentalsFormik.values.entries[0].rental_state,
@@ -1018,12 +1020,12 @@ const Rentals = () => {
     } else {
       const entriesObject = {
         property_type: selectedProp.propertysub_type,
+        type: propType,
         rental_adress: rentalsFormik.values.entries[0].rental_adress,
         rental_city: rentalsFormik.values.entries[0].rental_city,
         rental_state: rentalsFormik.values.entries[0].rental_state,
         rental_country: rentalsFormik.values.entries[0].rental_country,
         rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-
         rentalOwner_operatingAccount:
           rentalsFormik.values.entries[0].rentalOwner_operatingAccount,
         rentalOwner_propertyReserve:

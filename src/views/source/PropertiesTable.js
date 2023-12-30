@@ -31,7 +31,10 @@ const PropertiesTables = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [rentalsData, setRentalsData] = useState([]);
+  const [search, setSearch] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery2, setSearchQuery2] = useState("");
+  const toggle3 = () => setSearch((prevState) => !prevState);
   const [loader, setLoader] = useState(true);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -66,7 +69,6 @@ const PropertiesTables = () => {
       const response = await axios.get(
         `${baseUrl}/rentals/rental`
       );
-      console.log(response.data.data);
 
       setRentalsData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -145,7 +147,8 @@ const PropertiesTables = () => {
   //   }
 
   //   return rentalsData.filter((rental) => {
-  //     const lowerCaseQuery = searchQuery.toLowerCase();
+  //    
+   const lowerCaseQuery = searchQuery.toLowerCase();
   //     return (
   //       rental.rental_adress.toLowerCase().includes(lowerCaseQuery) ||
   //       rental.property_type.toLowerCase().includes(lowerCaseQuery) ||
@@ -163,28 +166,36 @@ const PropertiesTables = () => {
 
   const filterRentalsBySearch = () => {
     let filteredData = rentalsData;
-  
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((tenant) => {
-        const name = `${tenant.rentalOwner_firstName} ${tenant.rentalOwner_lastName}`;
-        const address = `${tenant.entries.rental_adress} ${tenant.entries.rental_city} ${tenant.entries.rental_country}`;
+        const name = `${tenant?.rentalOwner_firstName} ${tenant?.rentalOwner_lastName}`;
+        const address = `${tenant?.entries?.rental_adress} ${tenant?.entries?.rental_city} ${tenant?.entries?.rental_country}`;
         return (
-          tenant.entries.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.entries.property_type.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.entries.rental_city.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.entries.rental_country.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.rentalOwner_firstName.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.rentalOwner_lastName.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.rentalOwner_companyName.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.rentalOwner_primaryEmail.toLowerCase().includes(lowerCaseSearchQuery) ||
-          name.toLowerCase().includes(lowerCaseSearchQuery) ||
-          address.toLowerCase().includes(lowerCaseSearchQuery)
+          tenant?.entries?.rental_adress?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.entries?.type?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.entries?.property_type?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.entries?.rental_city?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.entries?.rental_country?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.rentalOwner_firstName?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.rentalOwner_lastName?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.rentalOwner_companyName?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant?.rentalOwner_primaryEmail?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          name?.toLowerCase().includes(lowerCaseSearchQuery) ||
+          address?.toLowerCase().includes(lowerCaseSearchQuery)
         );
       });
+    } 
+    if (searchQuery2) {
+      const lowerCaseSearchQuery = searchQuery2.toLowerCase();
+      filteredData = filteredData.filter((property) => {
+        const isPropertyTypeMatch = property.entries.type && property.entries.type.toLowerCase().includes(lowerCaseSearchQuery);
+        const isPropertySubTypeMatch = property.entries.property_type && property.entries.property_type.toLowerCase().includes(lowerCaseSearchQuery);
+        return isPropertyTypeMatch || isPropertySubTypeMatch;
+      });
     }
-  
-    if (upArrow.length > 0 ) {
+    console.log(filteredData,"vvvv")
+    if (upArrow.length > 0) {
       const sortingArrows = upArrow.length > 0 ? upArrow : null;
       sortingArrows.forEach((sort) => {
         switch (sort) {
@@ -192,6 +203,12 @@ const PropertiesTables = () => {
             filteredData.sort((a, b) => {
               const comparison = a.entries.rental_adress.localeCompare(b.entries.rental_adress);
               return upArrow.includes("rental_adress") ? comparison : -comparison;
+            });
+            break;
+          case "type":
+            filteredData.sort((a, b) => {
+              const comparison = a.entries.type.localeCompare(b.entries.type);
+              return upArrow.includes("type") ? comparison : -comparison;
             });
             break;
           case "property_type":
@@ -230,14 +247,14 @@ const PropertiesTables = () => {
               return upArrow.includes("rentalOwner_phoneNumber") ? comparison : -comparison;
             });
             break;
-            case "createdAt":
-              filteredData.sort((a, b) => {
-                const dateA = new Date(a.entries.createdAt);
-                const dateB = new Date(b.entries.createdAt);
-                const comparison = dateA - dateB;
-                return upArrow.includes("createdAt") ? comparison : -comparison;
-              });
-              
+          case "createdAt":
+            filteredData.sort((a, b) => {
+              const dateA = new Date(a.entries.createdAt);
+              const dateB = new Date(b.entries.createdAt);
+              const comparison = dateA - dateB;
+              return upArrow.includes("createdAt") ? comparison : -comparison;
+            });
+
             break;
           case "updatedAt":
             filteredData.sort((a, b) => {
@@ -251,10 +268,10 @@ const PropertiesTables = () => {
         }
       });
     }
-  
+
     return filteredData;
   };
-  
+
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
@@ -317,27 +334,37 @@ const PropertiesTables = () => {
                   width="50"
                   visible={loader}
                 />
-              </div>
+              </div> 
             ) : (
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <Row>
-                    <Col xs="12" sm="6">
-                      <FormGroup>
-                        <Input
-                          fullWidth
-                          type="text"
-                          placeholder="Search"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          style={{
-                            width: "100%",
-                            maxWidth: "200px",
-                            minWidth: "200px",
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
+                  <Row className="d-flex">
+                    <FormGroup className="mr-sm-2">
+                      <Input
+                        fullWidth
+                        type="text"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => { setSearchQuery(e.target.value); setSearchQuery2("") }}
+                        style={{
+                          width: "100%",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                          border: "1px solid #ced4da", // Border color similar to the input
+                        }}
+                      />
+                    </FormGroup>
+                    <FormGroup className="mr-sm-2">
+                      <Dropdown isOpen={search} toggle={toggle3}>
+                        <DropdownToggle caret style={{ boxShadow: "none", border: "1px solid #ced4da", maxWidth: "200px", minWidth: "200px" }}>
+                          {searchQuery2 ? searchQuery ? "Select Type" : searchQuery2 : "Select Type"}
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem onClick={() => { setSearchQuery2("Residential"); setSearchQuery("") }}>Residential</DropdownItem>
+                          <DropdownItem onClick={() => { setSearchQuery2("Commercial"); setSearchQuery("") }}>Commercial</DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                    </FormGroup>
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
@@ -363,6 +390,24 @@ const PropertiesTables = () => {
                       </th>
                       <th scope="col">
                         Property Type{" "}
+                        {sortBy.includes("type") ? (
+                          upArrow.includes("type") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("type")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("type")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("type")}
+                          />
+                        )}
+                      </th>
+                      <th scope="col">
+                        Property Sub Type{" "}
                         {sortBy.includes("property_type") ? (
                           upArrow.includes("property_type") ? (
                             <ArrowDownwardIcon
@@ -495,7 +540,7 @@ const PropertiesTables = () => {
                           )
                         ) : (
                           <ArrowUpwardIcon
-                          onClick={() => sortData("createdAt")} />
+                            onClick={() => sortData("createdAt")} />
                         )}
                       </th>
                       <th>
@@ -584,6 +629,7 @@ const PropertiesTables = () => {
                           style={{ cursor: "pointer" }}
                         >
                           <td>{tenant.entries.rental_adress}</td>
+                          <td>{tenant.entries.type}</td>
                           <td>{tenant.entries.property_type}</td>
                           <td>
                             {tenant.rentalOwner_firstName}{" "}

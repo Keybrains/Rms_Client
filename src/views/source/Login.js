@@ -312,17 +312,31 @@ const Login = () => {
               </FormGroup>
 
               <div className="custom-control custom-control-alternative custom-checkbox">
-                <input
-                  className="custom-control-input"
-                  id=" customCheckLogin"
-                  type="checkbox"
-                />
-                {/* <label
-                  className="custom-control-label"
-                  htmlFor=" customCheckLogin"
-                >
-                  <span className="text-muted">Remember me</span>
-                </label> */}
+                <Row>
+                  <Col>
+                  <input
+                      className="custom-control-input"
+                      id=" customCheckLogin"
+                      type="checkbox"
+                    />
+                    <label
+                      className="custom-control-label"
+                      htmlFor=" customCheckLogin"
+                    >
+                      <span className="text-muted">Remember me</span>
+                    </label>
+                  </Col>
+                  <Col xs="6">
+                    <label
+                      className=""
+                      href="#rms"
+                      onClick={ () => navigate(`/auth/changepassword`)}
+                    >
+                      <span className="text-muted mb-4" style={{fontSize:"14px"}}>Forgot password?</span>
+                    </label>
+                  </Col>
+                </Row>
+              <br/>
               </div>
               <div className="text-center">
                 {/* <Button className="my-4" color="primary" type="button">
@@ -339,6 +353,8 @@ const Login = () => {
                   {isLoading ? <CircularProgress size={24} /> : "Login"}
                 </Button>
               </div>
+              <br/>
+    
             </Form>
           </CardBody>
         </Card>
@@ -347,7 +363,7 @@ const Login = () => {
               <a
                 className="text-light"
                 href="#rms"
-                onClick={(e) => e.preventDefault()}
+                onClick={ () => navigate(`/auth/changepassword`)}
               >
                 <small>Forgot password?</small>
               </a>

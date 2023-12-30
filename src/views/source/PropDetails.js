@@ -66,9 +66,7 @@ const style = {
 };
 const PropDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-
   const { id, entryIndex } = useParams();
-  console.log(id);
   const [propertyDetails, setpropertyDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -114,6 +112,7 @@ const PropDetails = () => {
   const clearSelectedPhoto = (index, name) => {
     if (name === "propertyres_image") {
       const filteredImage = unitImage.filter((item, i) => i !== index);
+
       const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
       setSelectedFiles(filteredImage2);
       setUnitImage(filteredImage);
@@ -126,7 +125,6 @@ const PropDetails = () => {
       );
 
       setpropertyDetails(response.data.data);
-      console.log(response.data.data, "response frirn simmary");
       const rentalId = response.data.data._id;
       getUnitProperty(rentalId);
       const matchedProperty = response.data.data.entries.find(
@@ -155,6 +153,7 @@ const PropDetails = () => {
       console.log(selectedType, "selectedType");
       setSelectedProp(matchedProperty.property_type);
       console.log(resp.matchedProperty, "mansi");
+
       setPropType(selectedType);
       const isMultiUnits = resp.data.data[selectedType].filter((item) => {
         return item.propertysub_type === matchedProperty.property_type;
@@ -172,6 +171,10 @@ const PropDetails = () => {
     getRentalsData();
     console.log(id);
   }, [id, clickedObject]);
+
+  React.useEffect(() => {
+    getGeneralLedgerData();
+  }, [matchedProperty])
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -219,12 +222,12 @@ const PropDetails = () => {
     "5 Bath",
     "5+ Bath",
   ];
-  console.log(unitImage, "unitImage");
 
   const financialTypeArray = [
     // "Next month",
     "Month to date",
     "Three months to date",
+    "All"
     // "Quarter to date",
     // "Year to date",
     // "Last month",
@@ -245,7 +248,7 @@ const PropDetails = () => {
   const [value, setValue] = React.useState("summary");
   const [addUnitDialogOpen, setAddUnitDialogOpen] = useState(false);
   const [clickedObject, setClickedObject] = useState({});
-  console.log(matchedProperty, "matchedProperty");
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -304,11 +307,7 @@ const PropDetails = () => {
   }, []);
 
   const todayDate = () => {
-    //how can i get last three months name from today's date
-    // Print the names of the last three months
-
     const todayDate = moment().format("YYYY-MM-DD");
-    console.log(todayDate, "todayDate");
     const monthNumber = todayDate.substring(5, 7);
     const month = new Date(0, monthNumber - 1).toLocaleString("en-US", {
       month: "long",
@@ -385,7 +384,9 @@ const PropDetails = () => {
       try {
         const result = await axios.post(url, imageData, {
           headers: {
+
             "Content-Type": "multipart/form-data",
+
           },
         });
         console.log(result, "imgs");
@@ -394,7 +395,8 @@ const PropDetails = () => {
             return data.url;
           }),
         };
-      } catch (error) {
+      } 
+      catch (error) {
         console.error(error);
       }
     }
@@ -414,9 +416,6 @@ const PropDetails = () => {
           console.log(response.data, "updated data");
           getUnitProperty(rentalId);
           getRentalsData();
-          
-          // setAddUnitDialogOpen(false);
-          // setAddUnitDialogOpen(false);
         })
         .catch((err) => {
           console.log(err);
@@ -563,12 +562,17 @@ const PropDetails = () => {
     }
   };
 
-  // const [uploadedImage, setUploadedImage] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(null);
   const [propImageLoader, setPropImageLoader] = useState(false);
+  console.log(uploadedImage, "uploadedImage");
+
+  const [img, setImg] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleImageChange = async (event) => {
     setPropImageLoader(true);
     const files = event.target.files;
+    const axiosRequests = [];
 
     const formData = new FormData();
     formData.append(`files`, files[0]);
@@ -597,7 +601,282 @@ const PropDetails = () => {
         console.log(err);
       });
     setPropImageLoader(false);
+
+
+    // Wait for all Axios requests to complete before logging the data
+    // await Promise.all(axiosRequests);
+
   };
+
+  const filterRentalsBySearch = () => {
+    if (!searchQuery) {
+      return GeneralLedgerData.flatMap((item) => {
+        return item.paymentAndCharges.map((payment) => ({
+          paymentAndCharges: payment,
+          unit: item.unit,
+          unit_id: item.unit_id,
+          _id: item._id,
+        }));
+      });
+    }
+
+    const allPaymentAndCharges = GeneralLedgerData.flatMap((item) => {
+      return item.paymentAndCharges.map((payment) => ({
+        paymentAndCharges: payment,
+        unit: item.unit,
+        unit_id: item.unit_id,
+        _id: item._id,
+      }));
+    });
+
+    return allPaymentAndCharges.filter((rental) => {
+      // const lowerCaseQuery = searchQuery.toLowerCase();
+      return (
+        (rental.paymentAndCharges.charges_account &&
+          rental.paymentAndCharges.charges_account.includes(
+            searchQuery.toLowerCase()
+          )) ||
+        (rental.paymentAndCharges.account &&
+          rental.paymentAndCharges.account
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.type &&
+          rental.paymentAndCharges.type
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.charges_memo &&
+          rental.paymentAndCharges.charges_memo
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.memo &&
+          rental.paymentAndCharges.memo
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.amount &&
+          rental.paymentAndCharges.amount
+            .toString()
+            .includes(searchQuery.toLowerCase()))
+      );
+    });
+  };
+
+  const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
+  const [loader, setLoader] = useState(false);
+
+  const getGeneralLedgerData = async () => {
+    setLoader(true);
+
+    if (matchedProperty) {
+      try {
+        const rental = matchedProperty?.rental_adress;
+        if (rental && id) {
+          // First API call
+          const urlFinancial = `${baseUrl}/payment_charge/property_financial?rental_adress=${rental}&property_id=${id}`;
+
+          let dataFinancial;
+          try {
+            const responseFinancial = await axios.get(urlFinancial);
+
+            if (responseFinancial.data && responseFinancial.data.data) {
+              dataFinancial = responseFinancial.data.data[0] || [{ unit: [] }];
+            } else {
+              console.error("Unexpected response format:", responseFinancial.data);
+            }
+          } catch (error) {
+            console.error("Error fetching financial data:", error);
+          }
+
+          // Second API call
+          const urlExpense = `${baseUrl}/payment_charge/property_financial/property_expense?rental_adress=${rental}&property_id=${id}`;
+
+          let dataExpense;
+          try {
+            const responseExpense = await axios.get(urlExpense);
+
+            if (responseExpense.data && responseExpense.data.data) {
+              dataExpense = responseExpense.data.data[0];
+            } else {
+              console.error("Unexpected response format:", responseExpense.data);
+            }
+          } catch (error) {
+            console.error("Error fetching expense data:", error);
+          }
+
+          // Merge data from both API calls
+          const combinedData = {
+            _id: 'mergedId', // Provide a unique identifier for the merged data if needed
+            properties: {},
+            unit: [],
+            __v: 0,
+          };
+
+          if (dataFinancial && dataFinancial.unit) {
+            combinedData.unit = dataFinancial.unit.map((financialUnit, index) => {
+              const combinedUnit = {
+                ...financialUnit,
+                paymentAndCharges: financialUnit.paymentAndCharges || [],
+                property_expense: [],
+              };
+
+              if (dataExpense && dataExpense.unit && dataExpense.unit[index]) {
+                combinedUnit.property_expense = dataExpense.unit[index].property_expense || [];
+              }
+
+              return combinedUnit;
+            });
+          } else if (dataExpense && dataExpense.unit) {
+            combinedData.unit = dataExpense.unit.map((expenseUnit) => ({
+              paymentAndCharges: [],
+              property_expense: expenseUnit.property_expense || [],
+            }));
+          }
+
+          setGeneralLedgerData([combinedData]);
+
+        } else {
+          console.error("Invalid matchedProperty object:", matchedProperty);
+        }
+      } catch (error) {
+        console.error("Error processing matchedProperty:", error);
+      }
+    }
+    setLoader(false);
+  };
+
+
+  const calculateTotalIncome = (property) => {
+    let totalIncome = 0;
+
+    // Check if property and unit are defined before iterating
+    property?.unit?.forEach((unit) => {
+      // Check if paymentAndCharges is defined before iterating
+      unit?.paymentAndCharges?.forEach((charge) => {
+        totalIncome += charge.amount || 0;
+      });
+    });
+
+    return totalIncome.toFixed(2);
+  };
+
+  const calculateTotalExpenses = (property) => {
+    let totalExpenses = 0;
+
+    // Check if property and unit are defined before iterating
+    property?.unit?.forEach((unit) => {
+      // Check if property_expense is defined before iterating
+      unit?.property_expense?.forEach((charge) => {
+        totalExpenses += charge.amount || 0;
+      });
+    });
+
+    return totalExpenses.toFixed(2);
+  };
+
+  const calculateNetIncome = (property) => {
+    const totalIncome = calculateTotalIncome(property);
+    const totalExpenses = calculateTotalExpenses(property);
+    const netIncome = (totalIncome - totalExpenses).toFixed(2);
+    return netIncome;
+  };
+
+  const monthWiseData = {};
+
+  GeneralLedgerData.forEach((property) => {
+    property.unit.forEach((unit) => {
+      if (unit.paymentAndCharges) {
+        unit.paymentAndCharges.forEach((charge) => {
+          const chargeDate = moment(charge.date);
+          const chargeMonth = chargeDate.format("MMMM");
+
+          if (!monthWiseData[chargeMonth]) {
+            monthWiseData[chargeMonth] = [];
+          }
+
+          // Add charge data to the corresponding month
+          monthWiseData[chargeMonth].push({
+            account: charge.account,
+            amount: charge.amount || "0.00",
+          });
+        });
+      }
+    });
+  });
+
+  const monthWiseData2 = {};
+
+  GeneralLedgerData.forEach((property) => {
+    property.unit.forEach((unit) => {
+      if (unit.property_expense) {
+        unit.property_expense.forEach((charge) => {
+          const chargeDate = moment(charge.date);
+          const chargeMonth = chargeDate.format("MMMM");
+
+          if (!monthWiseData2[chargeMonth]) {
+            monthWiseData2[chargeMonth] = [];
+          }
+
+          // Add charge data to the corresponding month
+          monthWiseData2[chargeMonth].push({
+            account: charge.account,
+            amount: charge.amount || "0.00",
+          });
+        });
+      }
+    });
+  });
+
+  const totals = {
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+  };
+
+  const totals2 = {
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+  };
+
+  // Iterate over the data to calculate totals
+  threeMonths.forEach((months, index) => {
+    if (monthWiseData[months]) {
+      monthWiseData[months].forEach((data) => {
+        totals[index] += data.amount || 0;
+      });
+    }
+
+  });
+
+  if (monthWiseData[month]) {
+    monthWiseData[month].forEach((data) => {
+      totals[2] += data.amount || 0;
+    });
+  }
+
+  threeMonths.forEach((months, index) => {
+    if (monthWiseData2[months]) {
+      monthWiseData2[months].forEach((data) => {
+        totals2[index] += data.amount || 0;
+      });
+    }
+
+  });
+
+  if (monthWiseData2[month]) {
+    monthWiseData2[month].forEach((data) => {
+      totals2[2] += data.amount || 0;
+    });
+  }
+
+  const totalIncome = monthWiseData[month]?.reduce((total, data) => total + parseFloat(data.amount || 0), 0);
+
+  // Calculate total expenses
+  const totalExpenses = monthWiseData2[month]?.reduce((total, data) => total + parseFloat(data.amount || 0), 0);
+
+  // Calculate net income
+  const netIncome = totalIncome - totalExpenses;
 
   return (
     <>
@@ -637,11 +916,11 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="summary"
                       />
-                      {/* <Tab
+                      <Tab
                         label="Financial"
                         style={{ textTransform: "none" }}
                         value="financial"
-                      /> */}
+                      />
                       <Tab
                         label={`Units (${propertyUnit.length})`}
                         style={{ textTransform: "none" }}
@@ -1660,7 +1939,8 @@ const PropDetails = () => {
                       </Table>
                     </div>
                   </TabPanel>
-                  {/* <TabPanel value="financial">
+
+                  <TabPanel value="financial">
                     <>
                       <Col
                         lg="6"
@@ -1680,7 +1960,7 @@ const PropDetails = () => {
                               {financialType
                                 ? financialType
                                 : "Month to date" &&
-                                  setFinancialType("Month to date")}
+                                setFinancialType("Month to date")}
                             </DropdownToggle>
                             <DropdownMenu>
                               {financialTypeArray.map((subtype, index) => (
@@ -1689,12 +1969,6 @@ const PropDetails = () => {
                                   onClick={() =>
                                     handleFinancialSelection(subtype)
                                   }
-
-                                  // onClick={() =>
-                                  //   handlePropSelection(
-                                  //     subtype.propertysub_type
-                                  //   )
-                                  // }
                                 >
                                   {subtype}
                                 </DropdownItem>
@@ -1704,10 +1978,144 @@ const PropDetails = () => {
                         </FormGroup>
                       </Col>
 
-                      {false ? (
+                      {loader ? (
                         <div>Loading...</div>
                       ) : (
                         <>
+                          {financialType === "All" && (
+                            <Table responsive>
+                              <thead>
+                                <th>Property account</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                              </thead>
+                              <tbody>
+                                <React.Fragment>
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "blue",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                      colSpan="3"
+                                    >
+                                      Income
+                                    </th>
+                                  </tr>
+                                  {GeneralLedgerData.map((property, index) => (
+                                    <React.Fragment key={index}>
+                                      {property.unit.map((unit, unitIndex) => (
+                                        <React.Fragment key={unitIndex}>
+                                          {unit.paymentAndCharges && unit.paymentAndCharges
+                                            .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                            .map((charge, chargeIndex) => (
+                                              <React.Fragment key={chargeIndex}>
+                                                <tr>
+                                                  <th>{charge.account}</th>
+                                                  <td>${charge.amount || "0.00"}</td>
+                                                  <td>{charge.date}</td>
+                                                </tr>
+                                              </React.Fragment>
+                                            ))}
+                                        </React.Fragment>
+                                      ))}
+                                      <tr>
+                                        <th
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Total income
+                                        </th>
+                                        <td
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          ${calculateTotalIncome(property)}
+                                        </td>
+                                      </tr>
+                                    </React.Fragment>
+                                  ))}
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "blue",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                      colSpan="3"
+                                    >
+                                      Expenses
+                                    </th>
+                                    <td></td>
+                                  </tr>
+                                  {GeneralLedgerData.map((property, index) => (
+                                    <React.Fragment key={index}>
+                                      {property.unit.map((unit, unitIndex) => (
+                                        <React.Fragment key={unitIndex}>
+                                          {unit.property_expense && unit.property_expense
+                                            .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                            .map((expense, expenseIndex) => (
+                                              <React.Fragment key={expenseIndex}>
+                                                <tr>
+                                                  <th>{expense.account}</th>
+                                                  <td>${expense.amount || "0.00"}</td>
+                                                  <td>{expense.date}</td>
+                                                </tr>
+                                              </React.Fragment>
+                                            ))}
+                                        </React.Fragment>
+                                      ))}
+                                      <tr>
+                                        <th
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Total expenses
+                                        </th>
+                                        <td
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          ${calculateTotalExpenses(property)}
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <th
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                            backgroundColor: "#f0f0f0",
+                                          }}
+                                        //colSpan="2"
+                                        >
+                                          Net income
+                                        </th>
+                                        <td
+                                          style={{
+                                            color: "black",
+                                            fontWeight: "bold",
+                                            backgroundColor: "#f0f0f0",
+                                          }}
+                                        //colSpan="2"
+                                        >
+                                          ${calculateNetIncome(property)}
+                                        </td>
+                                      </tr>
+                                    </React.Fragment>
+                                  ))}
+                                </React.Fragment>
+                              </tbody>
+                            </Table>
+                          )}
                           {financialType === "Month to date" && (
                             <Table responsive>
                               <thead>
@@ -1715,89 +2123,112 @@ const PropDetails = () => {
                                 <th>{month} 1 to date</th>
                               </thead>
                               <tbody>
-                                <tr>
-                                  <th className="font-weight-bold text-md">
-                                    Property account
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Income
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Application fee income</th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Rent income</th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Total income
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Expenses
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Total expenses
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Net operating income
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Net income
-                                  </th>
-                                  <td>N/A</td>
-                                </tr>
+                                <React.Fragment>
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "blue",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                      colSpan="2"
+                                    >
+                                      Income
+                                    </th>
+                                  </tr>
+                                  {monthWiseData[month] && monthWiseData[month].map((data, index) => (
+                                    <React.Fragment key={index}>
+                                      <tr>
+                                        <th>{data.account}</th>
+                                        <td>${data.amount || "0.00"}</td>
+                                      </tr>
+                                    </React.Fragment>
+                                  ))}
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      Total income
+                                    </th>
+                                    <td
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {totalIncome}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "blue",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                      colSpan="2"
+                                    >
+                                      Expenses
+                                    </th>
+                                    <td></td>
+                                  </tr>
+                                  {monthWiseData2[month] && monthWiseData2[month].map((data, index) => (
+                                    <React.Fragment key={index}>
+                                      <tr>
+                                        <th>{data.account}</th>
+                                        <td>${data.amount || "0.00"}</td>
+                                      </tr>
+
+                                    </React.Fragment>
+                                  ))}
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      Total expenses
+                                    </th>
+                                    <td
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {totalExpenses}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                    //colSpan="2"
+                                    >
+                                      Net income
+                                    </th>
+                                    <td
+                                      style={{
+                                        color: "black",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#f0f0f0",
+                                      }}
+                                    //colSpan="2"
+                                    >
+                                      {netIncome}
+                                    </td>
+                                  </tr>
+                                </React.Fragment>
                               </tbody>
                             </Table>
                           )}
+
                           {financialType === "Three months to date" && (
                             <Table responsive>
                               <thead>
@@ -1807,10 +2238,8 @@ const PropDetails = () => {
                                     {month} {moment().format("YYYY")}
                                   </th>
                                 ))}
+                                {console.log(monthWiseData, 'yash', monthWiseData2)}
                                 <th>{month} 1 to date</th>
-                                <th>
-                                  Total as of {moment().format("YYYY/MM/DD")}
-                                </th>
                               </thead>
                               <tbody>
                                 <tr>
@@ -1823,20 +2252,32 @@ const PropDetails = () => {
                                     Income
                                   </th>
                                 </tr>
-                                <tr>
-                                  <th>Application fee income</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Rent income</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
+                                {threeMonths.map((months, index) => (
+                                  <tr key={index}>
+                                    {monthWiseData[months] && monthWiseData[months].map((data) => (
+                                      <>
+                                        <th>{data.account}</th>
+                                        <td>
+                                          {index === 0 ? data.amount : "-"}
+                                        </td>
+                                        <td>
+                                          {index === 1 ? data.amount : "-"}
+                                        </td>
+                                        <td>
+                                          {index === 2 ? data.amount : "-"}
+                                        </td>
+                                      </>
+                                    ))}
+                                  </tr >
+                                ))}
+                                {monthWiseData[month] && monthWiseData[month].map((data, index) => (
+                                  <tr key={index}>
+                                    <th>{data.account}</th>
+                                    <td>{"-"}</td>
+                                    <td>{"-"}</td>
+                                    <td>{data.amount || "-"}</td>
+                                  </tr>
+                                ))}
                                 <tr>
                                   <th
                                     style={{
@@ -1846,10 +2287,9 @@ const PropDetails = () => {
                                   >
                                     Total income
                                   </th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
+                                  <td>{totals[0]}</td>
+                                  <td>{totals[1]}</td>
+                                  <td>{totals[2]}</td>
                                 </tr>
                                 <tr>
                                   <th
@@ -1860,39 +2300,36 @@ const PropDetails = () => {
                                   >
                                     Expenses
                                   </th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
+                                  <td></td>
+                                  <td></td>
+                                  <td></td>
                                 </tr>
-                                <tr>
-                                  <th>Landscaping</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Repairs</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Supplies</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th>Utilities</th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
+                                {threeMonths.map((months, index) => (
+                                  <tr key={index}>
+                                    {monthWiseData2[months] && monthWiseData2[months].map((data) => (
+                                      <>
+                                        <th>{data.account}</th>
+                                        <td>
+                                          {index === 0 ? data.amount : "-"}
+                                        </td>
+                                        <td>
+                                          {index === 1 ? data.amount : "-"}
+                                        </td>
+                                        <td>
+                                          {index === 2 ? data.amount : "-"}
+                                        </td>
+                                      </>
+                                    ))}
+                                  </tr >
+                                ))}
+                                {monthWiseData2[month] && monthWiseData2[month].map((data, index) => (
+                                  <tr key={index}>
+                                    <th>{data.account}</th>
+                                    <td>{"-"}</td>
+                                    <td>{"-"}</td>
+                                    <td>{data.amount || "-"}</td>
+                                  </tr>
+                                ))}
                                 <tr>
                                   <th
                                     style={{
@@ -1902,24 +2339,9 @@ const PropDetails = () => {
                                   >
                                     Total expenses
                                   </th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                </tr>
-                                <tr>
-                                  <th
-                                    style={{
-                                      color: "black",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Net operating income
-                                  </th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
+                                  <td>{totals2[0]}</td>
+                                  <td>{totals2[1]}</td>
+                                  <td>{totals2[2]}</td>
                                 </tr>
                                 <tr>
                                   <th
@@ -1930,10 +2352,9 @@ const PropDetails = () => {
                                   >
                                     Net income
                                   </th>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
-                                  <td>N/A</td>
+                                  <td>{totals[0] - totals2[0]}</td>
+                                  <td>{totals[1] - totals2[1]}</td>
+                                  <td>{totals[2] - totals2[2]}</td>
                                 </tr>
                               </tbody>
                             </Table>
@@ -1941,7 +2362,8 @@ const PropDetails = () => {
                         </>
                       )}
                     </>
-                  </TabPanel> */}
+                  </TabPanel>
+
                   <TabPanel value="units">
                     {addUnitDialogOpen ? (
                       <>
@@ -2310,9 +2732,7 @@ const PropDetails = () => {
                                     multiple
                                     id={`unit_img`}
                                     name={`unit_img`}
-                                    onChange={(e) =>
-                                      fileData(e, matchedProperty.property_type)
-                                    }
+                                    onChange={(e) => fileData(e)}
                                   />
                                   <label htmlFor={`unit_img`}>
                                     <b style={{ fontSize: "20px" }}>+</b> Add
@@ -2414,6 +2834,7 @@ const PropDetails = () => {
                             style={{
                               background: "white",
                               color: "blue",
+                              display: multiUnit ? "block" : "none",
                               display: multiUnit ? "block" : "none",
                             }}
                             size="l"
@@ -2933,6 +3354,7 @@ const PropDetails = () => {
                                                       onClick={
                                                         togglePhotoresDialog
                                                       }
+                                                      
                                                       style={{
                                                         cursor: "pointer",
                                                         fontSize: "14px",
@@ -2951,11 +3373,13 @@ const PropDetails = () => {
                                                         name={`unit_img`}
                                                         onChange={(e) => {
                                                           fileData(e);
+                                                          fileData(e);
                                                         }}
                                                       />
                                                       <label
                                                         htmlFor={`unit_img`}
                                                       >
+                                                        
                                                         <b
                                                           style={{
                                                             fontSize: "20px",
@@ -2975,68 +3399,49 @@ const PropDetails = () => {
                                                       paddingLeft: "10px",
                                                     }}
                                                   >
+
                                                     <div className="d-flex">
                                                       {unitImage &&
                                                         unitImage.length > 0 &&
-                                                        unitImage.map(
-                                                          (unitImg, index) => (
-                                                            <div
-                                                              key={index} // Use a unique identifier, such as index or image URL
+                                                        unitImage.map((unitImg, index) => (
+                                                          <div
+                                                            key={index}  // Use a unique identifier, such as index or image URL
+                                                            style={{
+                                                              position: "relative",
+                                                              width: "100px",
+                                                              height: "100px",
+                                                              margin: "10px",
+                                                              display: "flex",
+                                                              flexDirection: "column",
+                                                            }}
+                                                          >
+                                                            <img
+                                                              src={unitImg}
+                                                              alt=""
                                                               style={{
-                                                                position:
-                                                                  "relative",
                                                                 width: "100px",
                                                                 height: "100px",
-                                                                margin: "10px",
-                                                                display: "flex",
-                                                                flexDirection:
-                                                                  "column",
+                                                                maxHeight: "100%",
+                                                                maxWidth: "100%",
+                                                                borderRadius: "10px",
                                                               }}
-                                                            >
-                                                              <img
-                                                                src={unitImg}
-                                                                alt=""
-                                                                style={{
-                                                                  width:
-                                                                    "100px",
-                                                                  height:
-                                                                    "100px",
-                                                                  maxHeight:
-                                                                    "100%",
-                                                                  maxWidth:
-                                                                    "100%",
-                                                                  borderRadius:
-                                                                    "10px",
-                                                                }}
-                                                                onClick={() => {
-                                                                  setSelectedImage(
-                                                                    unitImg
-                                                                  );
-                                                                  setOpen(true);
-                                                                }}
-                                                              />
-                                                              <ClearIcon
-                                                                style={{
-                                                                  cursor:
-                                                                    "pointer",
-                                                                  alignSelf:
-                                                                    "flex-start",
-                                                                  position:
-                                                                    "absolute",
-                                                                  top: "-12px",
-                                                                  right:
-                                                                    "-12px",
-                                                                }}
-                                                                onClick={() =>
-                                                                  clearSelectedPhoto(
-                                                                    index,
-                                                                    "propertyres_image"
-                                                                  )
-                                                                }
-                                                              />
-                                                            </div>
-                                                          )
-                                                        )}
+                                                              onClick={() => {
+                                                                setSelectedImage(unitImg);
+                                                                setOpen(true);
+                                                              }}
+                                                            />
+                                                            <ClearIcon
+                                                              style={{
+                                                                cursor: "pointer",
+                                                                alignSelf: "flex-start",
+                                                                position: "absolute",
+                                                                top: "-12px",
+                                                                right: "-12px",
+                                                              }}
+                                                              onClick={() => clearSelectedPhoto(index, "propertyres_image")}
+                                                            />
+                                                          </div>
+                                                        ))}
                                                       <OpenImageDialog
                                                         open={open}
                                                         setOpen={setOpen}

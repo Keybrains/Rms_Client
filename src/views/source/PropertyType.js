@@ -50,6 +50,7 @@ const PropertyType = () => {
   let navigate = useNavigate();
   let [modalShowForPopupForm, setModalShowForPopupForm] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery2, setSearchQuery2] = useState("");
 
   // let [id, setId] = React.useState();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -62,7 +63,9 @@ const PropertyType = () => {
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(6);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
+  const [search, setSearch] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const toggle3 = () => setSearch((prevState) => !prevState);
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
 
@@ -236,7 +239,7 @@ const PropertyType = () => {
 
   const filterPropertyBySearch = () => {
     let filteredData = propertyData;
-  
+
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((property) => {
@@ -245,9 +248,17 @@ const PropertyType = () => {
         return isPropertyTypeMatch || isPropertySubTypeMatch;
       });
     }
-  
+    if (searchQuery2) {
+      const lowerCaseSearchQuery = searchQuery2.toLowerCase();
+      filteredData = filteredData.filter((property) => {
+        const isPropertyTypeMatch = property.property_type.toLowerCase().includes(lowerCaseSearchQuery);
+        const isPropertySubTypeMatch = property.propertysub_type.toLowerCase().includes(lowerCaseSearchQuery);
+        return isPropertyTypeMatch || isPropertySubTypeMatch;
+      });
+    }
+    console.log(filteredData,"mmmm")
     if (upArrow.length > 0) {
-      const sortingArrows = upArrow.length > 0 ? upArrow :null;
+      const sortingArrows = upArrow.length > 0 ? upArrow : null;
       sortingArrows.forEach((sort) => {
         switch (sort) {
           case "propertysub_type":
@@ -274,10 +285,10 @@ const PropertyType = () => {
         }
       });
     }
-  
+
     return filteredData;
   };
-  
+
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterPropertyBySearch();
@@ -346,26 +357,35 @@ const PropertyType = () => {
             ) : (
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <Row>
-                    <Col xs="12" sm="6">
-                      <FormGroup className="">
-                        <Input
-                          fullWidth
-                          type="text"
-                          placeholder="Search"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          style={{
-                            width: "100%",
-                            maxWidth: "200px",
-                            minWidth: "200px",
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
+                  <Row className="d-flex">
+                    <FormGroup className="mr-sm-2">
+                      <Input
+                        fullWidth
+                        type="text"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => { setSearchQuery(e.target.value); setSearchQuery2("") }}
+                        style={{
+                          width: "100%",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                          border: "1px solid #ced4da", // Border color similar to the input
+                        }}
+                      />
+                    </FormGroup>
+                    <FormGroup className="mr-sm-2">
+                      <Dropdown isOpen={search} toggle={toggle3}>
+                        <DropdownToggle caret style={{ boxShadow: "none", border: "1px solid #ced4da", maxWidth: "200px", minWidth: "200px" }}>
+                          {searchQuery2 ? searchQuery ? "Select Type" : searchQuery2 : "Select Type"}
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem onClick={() => { setSearchQuery2("Residential"); setSearchQuery("") }}>Residential</DropdownItem>
+                          <DropdownItem onClick={() => { setSearchQuery2("Commercial"); setSearchQuery("") }}>Commercial</DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                    </FormGroup>
                   </Row>
                 </CardHeader>
-
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>

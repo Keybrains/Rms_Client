@@ -18,7 +18,6 @@ import {
   Collapse,
   Label,
 } from "reactstrap";
-
 import CloseIcon from "@mui/icons-material/Close";
 import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
@@ -611,51 +610,68 @@ const Leaseing = () => {
   const [overlapStartDateLease, setOverlapStartDateLease] = useState(null);
 
   const checkStartDate = async (date) => {
-    if (selectedPropertyType && selectedUnit) {
+    if (selectedPropertyType && selectedUnit && selectedTenantData) {
       let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
 
       let isStartDateUnavailable = false;
       let overlappingLease = null;
 
-      data.forEach((entry) => {
-        if (
-          selectedPropertyType === entry.entries.rental_adress &&
-          selectedUnit === entry.entries.rental_units
-        ) {
-          const sDate = new Date(entry.entries.start_date);
-          const eDate = new Date(entry.entries.end_date);
-          const inputDate = new Date(date);
-
-          if (
-            (sDate.getTime() <= inputDate.getTime() &&
-              inputDate.getTime() < eDate.getTime()) ||
-            (sDate.getTime() < inputDate.getTime() &&
-              inputDate.getTime() <= eDate.getTime()) ||
-            (inputDate.getTime() <= sDate.getTime() &&
-              eDate.getTime() <= inputDate.getTime())
-          ) {
-            isStartDateUnavailable = true;
-            overlappingLease = entry.entries;
-          }
+      const isSameTenant = data.find(
+        (entry) => {
+          console.log(entry._id, "yash");
+          return id === entry._id;
         }
-      });
+        // selectedTenantData.lastName === entry.tenant_lastName &&
+        // selectedTenantData.mobileNumber === entry.tenant_mobileNumber
+      );
 
-      setIsStartDateUnavailable(isStartDateUnavailable);
-      setOverlapStartDateLease(overlappingLease);
-
-      // Additional validation logic can be added here
-      if (isStartDateUnavailable) {
-        entrySchema.setFieldError(
-          "start_date",
-          "Start date overlaps with an existing lease"
-        );
+      if (isSameTenant) {
+        setIsDateUnavailable(false);
+        setOverlapLease(null);
+        console.log("object1", isStartDateUnavailable)
+        return;
       } else {
-        entrySchema.setFieldError("start_date", null);
-      }
-    }
-  };
+        data.forEach((entry) => {
+          if (
+            selectedPropertyType === entry.entries.rental_adress &&
+            selectedUnit === entry.entries.rental_units
+          ) {
+            const sDate = new Date(entry.entries.start_date);
+            const eDate = new Date(entry.entries.end_date);
+            const inputDate = new Date(date);
 
+            if (
+              (sDate.getTime() <= inputDate.getTime() &&
+                inputDate.getTime() < eDate.getTime()) ||
+              (sDate.getTime() < inputDate.getTime() &&
+                inputDate.getTime() <= eDate.getTime()) ||
+              (inputDate.getTime() <= sDate.getTime() &&
+                eDate.getTime() <= inputDate.getTime())
+            ) {
+              isStartDateUnavailable = true;
+              overlappingLease = entry.entries;
+            }
+          }
+        });
+
+        setIsStartDateUnavailable(isStartDateUnavailable);
+        setOverlapStartDateLease(overlappingLease);
+
+        // Additional validation logic can be added here
+        if (isStartDateUnavailable) {
+          entrySchema.setFieldError(
+            "start_date",
+            "Start date overlaps with an existing lease"
+          );
+        } else {
+          entrySchema.setFieldError("start_date", null);
+        }
+    }
+  } else{
+    return;
+  }
+  };
   const handleAdd = async (values) => {
     values["account_name "] = selectedAccount;
     values["account_type"] = selectedAccountType;
@@ -681,6 +697,7 @@ const Leaseing = () => {
     //setImgLoader(true);
     // console.log(files, "file");
     const filesArray = [...files];
+    console.log(filesArray, "yash");
 
     if (filesArray.length <= 10 && file.length === 0) {
       const finalArray = [];
@@ -723,41 +740,19 @@ const Leaseing = () => {
 
       entrySchema.setFieldValue("upload_file", [...file, ...finalArray]);
     }
-
-    // console.log(file, "fileanaadsaa");
-
-    const dataArray = new FormData();
-    dataArray.append("b_video", files);
-
-    let url = "https://cdn.brandingprofitable.com/image_upload.php/";
-    axios
-      .post(url, dataArray, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        //setImgLoader(false);
-        const imagePath = res?.data?.iamge_path; // Correct the key to "iamge_path"
-        // console.log(imagePath, "imagePath");
-        // setFile(imagePath);
-      })
-      .catch((err) => {
-        //setImgLoader(false);
-        console.log("Error uploading image:", err);
-      });
   };
 
   const deleteFile = (index) => {
     const newFile = [...file];
     newFile.splice(index, 1);
     setFile(newFile);
+    entrySchema.setFieldValue("upload_file", newFile);
   };
 
   const handleOpenFile = (item) => {
-    // console.log(item, "item");
-    const url = URL.createObjectURL(item);
-    window.open(url, "_blank");
+    console.log(item, "item");
+    // const url = URL.createObjectURL(item);
+    window.open(item, "_blank");
   };
 
   useEffect(() => {
@@ -1001,37 +996,55 @@ const Leaseing = () => {
   const [overlapLease, setOverlapLease] = useState(null);
 
   const checkDate = async (dates) => {
-    if (selectedPropertyType && selectedUnit) {
+    if (selectedPropertyType && selectedUnit && selectedTenantData) {
       let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
 
       let isUnavailable = false;
       let overlappingLease = null;
 
-      data.forEach((entry) => {
-        if (
-          selectedPropertyType === entry.entries.rental_adress &&
-          selectedUnit === entry.entries.rental_units
-        ) {
-          const sDate = new Date(entry.entries.start_date);
-          const eDate = new Date(entry.entries.end_date);
-          const inputDate = new Date(dates);
-          const inputStartDate = entrySchema.values.start_date;
-          if (
-            (sDate.getTime() < inputDate.getTime() &&
-              inputDate.getTime() < eDate.getTime()) ||
-            (new Date(inputStartDate) &&
-              sDate.getTime() >= new Date(inputStartDate).getTime() &&
-              eDate.getTime() <= inputDate.getTime())
-          ) {
-            isUnavailable = true;
-            overlappingLease = entry.entries;
-          }
+      // Check if the selected tenant's details are the same as any other tenant
+      const isSameTenant = data.find(
+        (entry) => {
+          console.log(entry._id, "yash");
+          return id === entry._id;
         }
-      });
+        // selectedTenantData.lastName === entry.tenant_lastName &&
+        // selectedTenantData.mobileNumber === entry.tenant_mobileNumber
+      );
 
-      setIsDateUnavailable(isUnavailable);
-      setOverlapLease(overlappingLease);
+      if (isSameTenant) {
+        setIsDateUnavailable(false);
+        setOverlapLease(null);
+        console.log("object1", isStartDateUnavailable)
+        return;
+      } else {
+        data.forEach((entry) => {
+          if (
+            selectedPropertyType === entry.entries.rental_adress &&
+            selectedUnit === entry.entries.rental_units
+          ) {
+            const sDate = new Date(entry.entries.start_date);
+            const eDate = new Date(entry.entries.end_date);
+            const inputDate = new Date(dates);
+            const inputStartDate = entrySchema.values.start_date;
+            if (
+              (sDate.getTime() < inputDate.getTime() &&
+                inputDate.getTime() < eDate.getTime()) ||
+              (new Date(inputStartDate) &&
+                sDate.getTime() >= new Date(inputStartDate).getTime() &&
+                eDate.getTime() <= inputDate.getTime())
+            ) {
+              isUnavailable = true;
+              overlappingLease = entry.entries;
+            }
+          }
+        });
+        setIsDateUnavailable(isUnavailable);
+        setOverlapLease(overlappingLease);
+      }
+    } else {
+      return;
     }
   };
 
@@ -1520,6 +1533,35 @@ const Leaseing = () => {
   const handleSubmit = async (values) => {
     setLoader(true);
 
+    for (const [index, files] of entrySchema.values.upload_file.entries()) {
+      if (files.upload_file instanceof File) {
+        console.log(files.upload_file, "myfile");
+
+        const imageData = new FormData();
+        imageData.append(`files`, files.upload_file);
+
+        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+
+        try {
+          const result = await axios.post(url, imageData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          console.log(result, "imgs");
+
+          // Update the original array with the uploaded file URL
+          entrySchema.values.upload_file[index].upload_file =
+            result.data.files[0].url;
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        console.log(files.upload_file, "myfile");
+      }
+    }
+
     const tenantObject = {
       tenant_firstName: tenantsSchema.values.tenant_firstName,
       tenant_lastName: tenantsSchema.values.tenant_lastName,
@@ -1625,9 +1667,10 @@ const Leaseing = () => {
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
-      // start_date: entrySchema.values.start_date,
     };
+
     console.log("..............paymentDetails.............", paymentDetails);
+
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
@@ -1644,7 +1687,6 @@ const Leaseing = () => {
           const putObject = {
             entries: tenantObject.entries,
           };
-          // debugger
 
           const tenantId = filteredData._id;
           console.log(tenantId, "tenantId");
@@ -2176,6 +2218,38 @@ const Leaseing = () => {
     // const arrayOfNames = file.map((item) => item.name);
     const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
+    for (const [index, files] of entrySchema.values.upload_file.entries()) {
+      if (files.upload_file instanceof File) {
+        console.log(files.upload_file, "myfile");
+
+        const imageData = new FormData();
+        imageData.append(`files`, files.upload_file);
+
+        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+
+        try {
+          const result = await axios.post(url, imageData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          console.log(result, "imgs");
+
+          // Update the original array with the uploaded file URL
+          entrySchema.values.upload_file[index].upload_file =
+            result.data.files[0].url;
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        console.log(files.upload_file, "myfile");
+      }
+    }
+    console.log(
+      "..............paymentDetails.............",
+      entrySchema.values.upload_file
+    );
 
     try {
       const units = await fetchUnitsByProperty(entrySchema.values.rental_units);
@@ -2334,10 +2408,7 @@ const Leaseing = () => {
       <Container className="mt--7" fluid>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card
-              className="bg-secondary shadow"
-              onSubmit={entrySchema.handleSubmit}
-            >
+            <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
@@ -2715,7 +2786,7 @@ const Leaseing = () => {
                           }}
                         >
                           <b style={{ fontSize: "20px" }}>+</b> Add Tenant or
-                          Consigner
+                          Cosigner
                           {display === false ? (
                             <></>
                           ) : (
@@ -5815,7 +5886,6 @@ const Leaseing = () => {
                                 }
                                 style={{ cursor: "pointer" }}
                               >
-                                {/* {console.log(file, "fromm 5867")} */}
                                 {singleFile?.file_name?.substr(0, 5)}
                                 {singleFile?.file_name?.length > 5
                                   ? "..."
@@ -5823,12 +5893,15 @@ const Leaseing = () => {
                               </p>
                             ) : (
                               <p
-                                // onClick={() => handleOpenFile(file.upload_file)}
+                                onClick={() =>
+                                  handleOpenFile(singleFile.upload_file)
+                                }
                                 style={{ cursor: "pointer" }}
                               >
-                                {/* {console.log(file, "file 5803")} */}
-                                {file[0]?.file_name?.substr(0, 5)}
-                                {file[0]?.file_name?.length > 5 ? "..." : null}
+                                {singleFile.file_name?.substr(0, 5)}
+                                {singleFile.file_name?.length > 5
+                                  ? "..."
+                                  : null}
                               </p>
                             )}
                             <CloseIcon
@@ -6105,11 +6178,11 @@ const Leaseing = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                        entrySchema.handleSubmit();
                         if (selectedTenantData.length !== 0) {
                           handleSubmit(entrySchema.values);
                         } else {
                           // console.log("data not ok")
+                          entrySchema.handleSubmit();
                           setDisplay(true);
                         }
                       }}
