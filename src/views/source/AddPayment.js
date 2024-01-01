@@ -1605,13 +1605,13 @@ const AddPayment = () => {
                                               /\D/g,
                                               ""
                                             );
-                                            generalledgerFormik.values.amount = numericValue;
-                                            generalledgerFormik.handleChange({
-                                              target: {
-                                                name: "amount",
-                                                value: numericValue,
-                                              },
-                                            });
+                                            generalledgerFormik.values.entries[index].amount = numericValue;
+                                            // generalledgerFormik.handleChange({
+                                            //   target: {
+                                            //     name: "amount",
+                                            //     value: numericValue,
+                                            //   },
+                                            // });
                                           }}
                                           value={entries.amount}
                                           onInput={(e) => {

@@ -159,7 +159,7 @@ const TAddWork = () => {
       // Ensure that units are extracted correctly and set as an array
       const units = data?.data || [];
 
-      console.log(units, "units246");
+      console.log(data, "units246");
       return units;
     } catch (error) {
       console.error("Error fetching units:", error);
@@ -332,7 +332,7 @@ const TAddWork = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -348,8 +348,10 @@ const TAddWork = () => {
         return response.json();
       })
       .then((data) => {
-        setPropertyData(data.rentalAddresses);
-        console.log(propertyData, "mansi")// Correct the property data source
+        const uniqueAddresses = [...new Set(data.rentalAddresses.map(item => item[0].rental_adress))];
+        setPropertyData(uniqueAddresses);
+        setUnitData(data.rentalUnits);
+        console.log(data, "mansi")// Correct the property data source
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -416,6 +418,8 @@ const TAddWork = () => {
         entry_allowed: selectedEntry,
         work_performed: WorkFormik.values.work_performed,
         workOrderImage: WorkFormik.values.workOrderImage,
+        statusUpdatedBy: accessType.userName,
+
         // Add other fields as needed
       });
       handleResponse(response);
