@@ -17,8 +17,6 @@ import RentRoll from "views/source/RentRoll";
 // import SumProperties from "views/source/SumProperties";
 import OutstandingBalance from "views/source/OutstandingBalance";
 import TenantDetailPage from "views/source/TenantDetailPage";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
 import RentRollDetail from "views/source/RentRollDetail";
 import RentalOwnerDetail from "views/source/RentalOwnerDetail";
 import OutstandDetails from "views/source/OutstandDetails";
@@ -60,6 +58,7 @@ import AddCharge from "views/source/AddCharge";
 import TenantFinancial from "views/source/TenantFinancial";
 import ApplicantForm from "views/source/ApplicantForm";
 import Changepassword from "views/source/Changepassword";
+import Forgetmail from "views/source/forgetmail";
 
 var routes = [
   {
@@ -137,10 +136,8 @@ var routes = [
     component: <StaffMember />,
     layout: "/admin",
   },
-
   {
     path: "/Rentalowner",
-
     component: <Rentalowner />,
     layout: "/admin",
   },
@@ -170,6 +167,13 @@ var routes = [
     component: <Changepassword />,
     layout: "/auth",
   },
+  {
+    path: "/forgetpassword",
+    name: "Forget Password",
+    component: <Forgetmail />,
+    layout: "/auth",
+  },
+
 
   {
     path: "/RentRoll",
