@@ -66,7 +66,8 @@ const AddWorkorder = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
+      // console.log(jwt,'accessType');
     } else {
       navigate("/auth/login");
     }
@@ -512,7 +513,7 @@ const AddWorkorder = () => {
       priority: "",
       final_total_amount: "",
       workOrderImage: [],
-
+      statusUpdatedBy: "Admin",
       entries: [
         {
           part_qty: "",
@@ -688,6 +689,7 @@ const AddWorkorder = () => {
           priority: selectedPriority,
           status: selectedStatus,
           due_date: formattedDueDate,
+          statusUpdatedBy: "Admin",
 
           // part_qty: entry.part_qty,
           // account_type: entry.account_type,
@@ -701,7 +703,22 @@ const AddWorkorder = () => {
     } catch (error) {
       console.error("Error updating workorder:", error);
     }
+    await axios
+      .put(`${baseUrl}/workorder/workorder/${workOrderData._id}/status`, {
+        statusUpdatedBy: accessType.userName,
+        status: selectedStatus!== workOrderData.status ? selectedStatus : "",
+        due_date: formattedDueDate!== workOrderData.due_date ? formattedDueDate : "",
+        staffmember_name:  selecteduser!== workOrderData.staffmember_name ? selecteduser : "",
+        // updateAt: updatedAt,
+      })
+      .then((res) => {
+        console.log(res.data, "the status put");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
+  console.log(workOrderData, "workorderdata");
 
   const [isDisplay, setIsDisplay] = useState("false");
   useEffect(() => {
@@ -842,6 +859,7 @@ const AddWorkorder = () => {
                                   flexDirection: "column",
                                 }}
                               >
+                                {console.log(unitImg, "unitImage")}
                                 <img
                                   src={unitImg}
                                   alt=""

@@ -332,7 +332,7 @@ const TAddWork = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -418,6 +418,8 @@ const TAddWork = () => {
         entry_allowed: selectedEntry,
         work_performed: WorkFormik.values.work_performed,
         workOrderImage: WorkFormik.values.workOrderImage,
+        statusUpdatedBy: accessType.userName,
+
         // Add other fields as needed
       });
       handleResponse(response);

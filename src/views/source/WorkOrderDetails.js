@@ -17,6 +17,12 @@ import {
   Col,
   Table,
   Button,
+  Input,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Form,
 } from "reactstrap";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
@@ -27,17 +33,32 @@ import {
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { styled } from "@material-ui/core";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  Modal,
+  TextField,
+} from "@mui/material";
+import { useFormik } from "formik";
 
 const WorkOrderDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { workorder_id } = useParams();
   //console.log("ID:", workorder_id);
   const [outstandDetails, setoutstandDetails] = useState({});
+  const [workOrderStatus, setWorkOrderStatus] = useState("");
   const [showTenantTable, setShowTenantTable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // const [hoveredButton, setHoveredButton] = useState(null);
   const [activeButton, setActiveButton] = useState("Summary");
+  const [updateButton, setUpdateButton] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [user, setUser] = useState(null);
   let navigate = useNavigate();
 
   let cookies = new Cookies();
@@ -46,17 +67,42 @@ const WorkOrderDetails = () => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       // setAccessType(jwt.accessType);
+      setUser(jwt.userName);
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
+  const handleUpdateButtonClick = () => {
+    // Add any logic or state changes you need before opening the dialog
+    setUpdateButton(true);
+    setOpenDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    // Add any logic or state changes you need when the dialog is closed
+    setOpenDialog(false);
+  };
 
   const getOutstandData = async () => {
     try {
       const response = await axios.get(
         `${baseUrl}/workorder/workorder_summary/${workorder_id}`
       );
+      console.log(response.data.data, "yug console");
       setoutstandDetails(response.data.data);
+      setWorkOrderStatus(response.data.data.workorder_status.reverse());
+      setSelectedStatus(response.data.data.status);
+      setSelecteduser(response.data.data.staffmember_name);
+      updateWorkorderFormik.setValues({
+        status: response.data.data.status,
+        // staffmember_name: response.data.data.staffmember_name,
+        due_date: response.data.data.due_date,
+        assigned_to: response.data.data.staffmember_name,
+        message: response.data.data.message ? response.data.data.message : "",
+        statusUpdatedBy: response.data.data.statusUpdatedBy
+          ? response.data.data.statusUpdatedBy
+          : "Admin",
+      });
       setLoading(false);
       setImageDetails(response.data.data.workOrderImage);
     } catch (error) {
@@ -85,6 +131,68 @@ const WorkOrderDetails = () => {
     fontWeight: 600,
   };
 
+  const updateWorkorderFormik = useFormik({
+    initialValues: {
+      status: "",
+      staffmember_name: "",
+      due_date: "",
+      // assigned_to: "",
+      message: "",
+      statusUpdatedBy: "",
+    },
+    onSubmit: (values) => {
+      //console.log(values);
+      // updateValues()
+      // updateWorkorder(values);
+    },
+  });
+
+  const updateValues = async () => {
+    console.log(selectedStatus, "selected status");
+    handleDialogClose();
+    const formatedDate = updateWorkorderFormik.values.due_date
+      ? new Date(updateWorkorderFormik.values.due_date)
+          .toISOString()
+          .split("T")[0]
+      : "";
+    await axios
+      .put(`${baseUrl}/workorder/updateworkorder/${outstandDetails._id}`, {
+        due_date: formatedDate,
+        staffmember_name: selecteduser,
+        message: updateWorkorderFormik.values.message,
+        status: selectedStatus,
+      })
+      .then((res) => {
+        console.log(res.data, "the wgike put");
+        getOutstandData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    await axios
+      .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
+        statusUpdatedBy: user,
+        status:
+          selectedStatus !== outstandDetails.status ? selectedStatus : " ",
+        due_date:
+          formatedDate !== outstandDetails.due_date ? formatedDate : " ",
+        staffmember_name:
+          selecteduser !== outstandDetails.staffmember_name
+            ? selecteduser
+            : " ",
+        // updateAt: updatedAt,
+      })
+      .then((res) => {
+        console.log(res.data, "the status put");
+        getOutstandData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  // console.log(outstandDetails);
+
   // const handleMouseEnter = (buttonValue) => {
   //   setHoveredButton(buttonValue);
   // };
@@ -95,6 +203,25 @@ const WorkOrderDetails = () => {
 
   const handleChange = () => {
     setShowTenantTable(!showTenantTable);
+  };
+  const [selectedStatus, setSelectedStatus] = useState("Select");
+  const [statusdropdownOpen, setstatusdropdownOpen] = React.useState(false);
+  const [userdropdownOpen, setuserdropdownOpen] = React.useState(false);
+  const [selecteduser, setSelecteduser] = useState("Select");
+  const [staffData, setstaffData] = useState([]);
+
+  const toggle5 = () => setuserdropdownOpen((prevState) => !prevState);
+
+  const toggle6 = () => setstatusdropdownOpen((prevState) => !prevState);
+
+  const handleStatusSelect = (status) => {
+    setSelectedStatus(status);
+    // WorkFormik.values.status = status;
+  };
+
+  const handleStaffSelect = (staff) => {
+    setSelecteduser(staff);
+    // WorkFormik.values.staffmember_name = staff;
   };
 
   function formatDateWithoutTime(dateString) {
@@ -108,6 +235,20 @@ const WorkOrderDetails = () => {
 
   React.useEffect(() => {
     getOutstandData();
+    fetch(`${baseUrl}/addstaffmember/find_staffmember`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.statusCode === 200) {
+          setstaffData(data.data);
+        } else {
+          // Handle error
+          console.error("Error:", data.message);
+        }
+      })
+      .catch((error) => {
+        // Handle network error
+        console.error("Network error:", error);
+      });
   }, [workorder_id]);
 
   const [propertyDetails, setPropertyDetails] = useState({});
@@ -544,6 +685,121 @@ const WorkOrderDetails = () => {
                                 </Box>
                               </Box>
                             ) : null}
+
+                            <Grid
+                              container
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              padding="16px"
+                              maxWidth="700px"
+                              margin="20px"
+                              style={{
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                overflowX: "auto",
+                              }} // Center the box horizontally
+                            >
+                              <Grid item xs={3} sm={3.5} md={3} lg={2} xl={2}>
+                                <h2 className="text-primary text-lg">
+                                  Updates
+                                </h2>
+                              </Grid>
+                              <Grid item xs={3}>
+                                <Button
+                                  size="sm"
+                                  onClick={handleUpdateButtonClick}
+                                >
+                                  Update
+                                </Button>
+                              </Grid>
+                              {outstandDetails.workorder_status &&
+                                outstandDetails.workorder_status.length > 0 &&
+                                workOrderStatus.map((item, index) => (
+                                  <Grid item xs={12}>
+                                    <Box
+                                      padding="12px"
+                                      maxWidth="700px"
+                                      style={{
+                                        marginLeft: "auto",
+                                        marginRight: "auto",
+                                        overflowX: "auto",
+                                      }} // Center the box horizontally
+                                    >
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                        }}
+                                      >
+                                        <div style={{ fontWeight: "bold" }}>
+                                          {item.statusUpdatedBy} {item.createdAt ? 
+                                            "Created this work order" : "Updated this work order"
+                                           }
+                                          <span style={{ fontSize: "13px" }}>
+                                            &nbsp;({item.updateAt})
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <hr
+                                        style={{
+                                          marginTop: "0px",
+                                          marginBottom: "0px",
+                                        }}
+                                      />
+
+                                      <Grid container>
+                                        {item.status !== (" " || "")  ||
+                                        item.due_date !== (" " || "")  ||
+                                        item.staffmember_name !== (" " || "")  ? (
+                                          <>
+                                            <Grid
+                                              item
+                                              xs={4}
+                                              style={
+                                                item.status === (" " || "") 
+                                                  ? { display: "none" }
+                                                  : { display: "block" }
+                                              }
+                                            >
+                                              Status: {item.status}
+                                            </Grid>
+                                            <Grid
+                                              item
+                                              xs={4}
+                                              style={
+                                                item.due_date === (" " || null) 
+                                                  ? { display: "none" }
+                                                  : { display: "block" }
+                                              }
+                                            >
+                                              Due Date: {item.due_date}
+                                            </Grid>
+                                            <Grid
+                                              item
+                                              xs={4}
+                                              style={
+                                                item.staffmember_name === (" " || "") 
+                                                  ? { display: "none" }
+                                                  : { display: "block" }
+                                              }
+                                            >
+                                              Assigned To:{" "}
+                                              {item.staffmember_name}
+                                            </Grid>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Grid item>
+                                              {" "}
+                                              Work Order Is Updated
+                                            </Grid>
+                                          </>
+                                        )}
+                                      </Grid>
+                                    </Box>
+                                  </Grid>
+                                ))}
+                            </Grid>
                           </>
                         ) : (
                           <div>No details found.</div>
@@ -797,6 +1053,205 @@ const WorkOrderDetails = () => {
                         )}
                       </Col>
                     </Row>
+                    {updateButton && (
+                      <Form onSubmit={updateWorkorderFormik.handleSubmit}>
+                        <Dialog open={openDialog} onClose={handleDialogClose}>
+                          <DialogTitle>Update Dialog</DialogTitle>
+                          <DialogContent>
+                            <Grid container spacing={2}>
+                              <Grid item xs={4}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-desg"
+                                  >
+                                    Status *
+                                  </label>
+                                  <FormGroup>
+                                    <Dropdown
+                                      isOpen={statusdropdownOpen}
+                                      toggle={toggle6}
+                                    >
+                                      <DropdownToggle caret>
+                                        {selectedStatus
+                                          ? selectedStatus
+                                          : "Select"}
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                      </DropdownToggle>
+                                      <DropdownMenu
+                                        style={{
+                                          width: "100%",
+                                          maxHeight: "200px",
+                                          overflowY: "auto",
+                                        }}
+                                      >
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("New")
+                                          }
+                                        >
+                                          New
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("In Progress")
+                                          }
+                                        >
+                                          In Progress
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("On Hold")
+                                          }
+                                        >
+                                          On Hold
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("Complete")
+                                          }
+                                        >
+                                          Complete
+                                        </DropdownItem>
+                                      </DropdownMenu>
+                                      {/* {WorkFormik.errors &&
+                                WorkFormik.errors?.status &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.status &&
+                                WorkFormik.values.status === "" ? (
+                                <div style={{ color: "red" }}>
+                                  {WorkFormik.errors.status}
+                                </div>
+                              ) : null} */}
+                                    </Dropdown>
+                                  </FormGroup>
+                                </FormGroup>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-unitadd"
+                                  >
+                                    Due Date
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-unitadd"
+                                    type="date"
+                                    name="due_date"
+                                    value={
+                                      updateWorkorderFormik.values.due_date
+                                    }
+                                    onChange={
+                                      updateWorkorderFormik.handleChange
+                                    }
+                                    onBlur={updateWorkorderFormik.handleBlur}
+                                  />
+                                  {/* {WorkFormik.touched.due_date &&
+                            WorkFormik.errors.due_date ? (
+                            <div style={{ color: "red" }}>
+                              {WorkFormik.errors.due_date}
+                            </div>
+                          ) : null} */}
+                                </FormGroup>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-desg"
+                                  >
+                                    Assigned To *
+                                  </label>
+                                  <FormGroup>
+                                    <Dropdown
+                                      isOpen={userdropdownOpen}
+                                      toggle={toggle5}
+                                    >
+                                      <DropdownToggle caret>
+                                        {selecteduser ? selecteduser : "Select"}
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                      </DropdownToggle>
+                                      <DropdownMenu
+                                        style={{
+                                          width: "100%",
+                                          maxHeight: "200px",
+                                          overflowY: "auto",
+                                        }}
+                                      >
+                                        <DropdownItem
+                                          header
+                                          style={{ color: "blue" }}
+                                        >
+                                          Staff
+                                        </DropdownItem>
+                                        {staffData.map((user) => (
+                                          <DropdownItem
+                                            key={user._id}
+                                            onClick={() =>
+                                              handleStaffSelect(
+                                                user.staffmember_name
+                                              )
+                                            }
+                                          >
+                                            {user.staffmember_name}
+                                          </DropdownItem>
+                                        ))}
+                                      </DropdownMenu>
+                                      {/* {WorkFormik.errors &&
+                                WorkFormik.errors?.staffmember_name &&
+                                WorkFormik.touched &&
+                                WorkFormik.touched?.staffmember_name &&
+                                WorkFormik.values.staffmember_name === "" ? (
+                                <div style={{ color: "red" }}>
+                                  {WorkFormik.errors.staffmember_name}
+                                </div>
+                              ) : null} */}
+                                    </Dropdown>
+                                  </FormGroup>
+                                </FormGroup>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-unitadd"
+                                  >
+                                    Message
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-unitadd"
+                                    type="textarea"
+                                    name="message"
+                                    value={updateWorkorderFormik.values.message}
+                                    onChange={
+                                      updateWorkorderFormik.handleChange
+                                    }
+                                    onBlur={updateWorkorderFormik.handleBlur}
+                                  />
+                                  {/* {WorkFormik.touched.due_date &&
+                            WorkFormik.errors.due_date ? (
+                            <div style={{ color: "red" }}>
+                              {WorkFormik.errors.due_date}
+                            </div>
+                          ) : null} */}
+                                </FormGroup>
+                              </Grid>
+                            </Grid>
+                          </DialogContent>
+                          <DialogActions>
+                            <Button onClick={handleDialogClose} color="primary">
+                              Cancel
+                            </Button>
+                            <Button color="primary" onClick={updateValues}>
+                              Save
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
+                      </Form>
+                    )}
                   </div>
                 )}
                 {activeButton === "Task" && (
