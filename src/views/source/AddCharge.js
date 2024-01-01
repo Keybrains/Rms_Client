@@ -107,13 +107,16 @@ const AddCharge = () => {
       ),
     }),
     onSubmit: (values) => {
-      if (Number(generalledgerFormik.values.charges_amount) === Number(charges_total_amount)) {
+      if (
+        Number(generalledgerFormik.values.charges_amount) ===
+        Number(charges_total_amount)
+      ) {
         handleSubmit(values);
       }
     },
   });
   let navigate = useNavigate();
-  console.log(generalledgerFormik.values, "yash")
+  console.log(generalledgerFormik.values, "yash");
 
   const handleCloseButtonClick = () => {
     navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
@@ -263,39 +266,48 @@ const AddCharge = () => {
   const location = useLocation();
   const state = location.state && location.state;
   const tenantDetails = state ? state.tenantDetails : "";
-  console.log(state, 'state')
-  console.log(tenantDetails, 'tenantDetails')
+  console.log(state, "state");
+  console.log(tenantDetails, "tenantDetails");
 
   const { chargeId } = useParams();
 
   const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
     setLoader(true);
-    for (const [index, files] of generalledgerFormik.values.charges_attachment.entries()) {
-      if (files?.upload_file instanceof File) {
-        console.log(files?.upload_file, "myfile");
+    if (
+      generalledgerFormik.values.charges_attachment &&
+      Array.isArray(generalledgerFormik.values.charges_attachment)
+    ) {
+      for (const [
+        index,
+        files,
+      ] of generalledgerFormik.values.charges_attachment.entries()) {
+        if (files?.upload_file instanceof File) {
+          console.log(files?.upload_file, "myfile");
 
-        const imageData = new FormData();
-        imageData.append(`files`, files.upload_file);
+          const imageData = new FormData();
+          imageData.append(`files`, files.upload_file);
 
-        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+          const url = `${baseUrl}/images/upload`;
 
-        try {
-          const result = await axios.post(url, imageData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
+          try {
+            const result = await axios.post(url, imageData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
 
-          console.log(result, "imgs");
+            console.log(result, "imgs");
 
-          // Update the original array with the uploaded file URL
-          generalledgerFormik.values.charges_attachment[index].upload_file = result.data.files[0].url;
-        } catch (error) {
-          console.error(error);
+            // Update the original array with the uploaded file URL
+            generalledgerFormik.values.charges_attachment[index].upload_file =
+              result.data.files[0].url;
+          } catch (error) {
+            console.error(error);
+          }
+        } else {
+          console.log(files.upload_file, "myfile");
         }
-      } else {
-        console.log(files.upload_file, "myfile");
       }
     }
     const rentalAddress = generalledgerFormik.values.rental_adress;
@@ -326,7 +338,9 @@ const AddCharge = () => {
       if (response.data.statusCode === 200) {
         swal("Success", "Charges Added Successfully", "success");
         console.log(response, "response of object");
-        navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`);
+        navigate(
+          `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
+        );
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -356,7 +370,8 @@ const AddCharge = () => {
                   memo: values.charges_memo,
                   tenant_id: tenantid,
                   tenant_firstName: selectedRec,
-                  charges_attachment: generalledgerFormik.values.charges_attachment,
+                  charges_attachment:
+                    generalledgerFormik.values.charges_attachment,
                   isPaid: false,
                   // charges_total_amount:charges_total_amount
                 })
@@ -375,7 +390,7 @@ const AddCharge = () => {
           .catch((err) => {
             console.log(err);
           });
-      } catch { }
+      } catch {}
     } catch (error) {
       console.error("Error:", error);
       if (error.response) {
@@ -384,36 +399,45 @@ const AddCharge = () => {
     }
     setLoader(false);
   };
-  console.log(tenantDetails, 'tenantDetails')
+  console.log(tenantDetails, "tenantDetails");
   const editCharge = async () => {
-    console.log(generalledgerFormik.values.charges_attachment, "filesb")
-    console.log(file, "filesb")
+    console.log(generalledgerFormik.values.charges_attachment, "filesb");
+    console.log(file, "filesb");
     try {
-      for (const [index, files] of generalledgerFormik.values.charges_attachment.entries()) {
-        if (files?.upload_file instanceof File) {
-          console.log(files?.upload_file, "myfile");
+      if (
+        generalledgerFormik.values.charges_attachment &&
+        Array.isArray(generalledgerFormik.values.charges_attachment)
+      ) {
+        for (const [
+          index,
+          files,
+        ] of generalledgerFormik.values.charges_attachment.entries()) {
+          if (files?.upload_file instanceof File) {
+            console.log(files?.upload_file, "myfile");
 
-          const imageData = new FormData();
-          imageData.append(`files`, files.upload_file);
+            const imageData = new FormData();
+            imageData.append(`files`, files.upload_file);
 
-          const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+            const url = `${baseUrl}/images/upload`;
 
-          try {
-            const result = await axios.post(url, imageData, {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            });
+            try {
+              const result = await axios.post(url, imageData, {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              });
 
-            console.log(result, "imgs");
+              console.log(result, "imgs");
 
-            // Update the original array with the uploaded file URL
-            generalledgerFormik.values.charges_attachment[index].upload_file = result.data.files[0].url;
-          } catch (error) {
-            console.error(error);
+              // Update the original array with the uploaded file URL
+              generalledgerFormik.values.charges_attachment[index].upload_file =
+                result.data.files[0].url;
+            } catch (error) {
+              console.error(error);
+            }
+          } else {
+            console.log(files.upload_file, "myfile");
           }
-        }  else {
-          console.log(files.upload_file, "myfile");
         }
       }
       const rentalAddress = generalledgerFormik.values.rental_adress;
@@ -446,7 +470,9 @@ const AddCharge = () => {
 
       if (response.data.statusCode === 200) {
         swal("Success", "Charges Update Successfully", "success");
-        navigate(`/admin/rentrolldetail/${tenantDetails._id}/${tenantDetails.entries.entryIndex}`);
+        navigate(
+          `/admin/rentrolldetail/${tenantDetails._id}/${tenantDetails.entries.entryIndex}`
+        );
         console.log(response, "response of object");
         // navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
         // if (tenantId && entryIndex) {
@@ -471,7 +497,7 @@ const AddCharge = () => {
     //setImgLoader(true);
     // console.log(files, "file");
     const filesArray = [...files];
-    console.log(filesArray, "yash")
+    console.log(filesArray, "yash");
 
     if (filesArray.length <= 10 && file.length === 0) {
       const finalArray = [];
@@ -512,7 +538,10 @@ const AddCharge = () => {
       }
       setFile([...file, ...finalArray]);
 
-      generalledgerFormik.setFieldValue("charges_attachment", [...file, ...finalArray]);
+      generalledgerFormik.setFieldValue("charges_attachment", [
+        ...file,
+        ...finalArray,
+      ]);
     }
   };
 
@@ -606,9 +635,7 @@ const AddCharge = () => {
       .then((response) => {
         if (response.data.statusCode === 200) {
           setchargeData(response.data.data);
-          setFile(
-            response.data.data.charges_attachment
-          );
+          setFile(response.data.data.charges_attachment);
           generalledgerFormik.setValues({
             date: response.data.data.date,
             charges_amount: response.data.data.amount,
@@ -649,7 +676,6 @@ const AddCharge = () => {
     }
   }, []);
 
-
   const [oneTimeCharges, setOneTimeCharges] = useState([]);
   const [RecAccountNames, setRecAccountNames] = useState([]);
 
@@ -688,7 +714,11 @@ const AddCharge = () => {
   const popoverContent = (
     <Popover id="popover-content">
       <Popover.Content>
-        The payment's amount must match the total applied to balance. The difference is ${Math.abs(generalledgerFormik.values.charges_amount - charges_total_amount).toFixed(2)}
+        The payment's amount must match the total applied to balance. The
+        difference is $
+        {Math.abs(
+          generalledgerFormik.values.charges_amount - charges_total_amount
+        ).toFixed(2)}
       </Popover.Content>
     </Popover>
   );
@@ -741,7 +771,7 @@ const AddCharge = () => {
                           value={generalledgerFormik.values.date}
                         />
                         {generalledgerFormik.touched.date &&
-                          generalledgerFormik.errors.date ? (
+                        generalledgerFormik.errors.date ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.date}
                           </div>
@@ -769,7 +799,7 @@ const AddCharge = () => {
                           value={generalledgerFormik.values.charges_amount}
                         />
                         {generalledgerFormik.touched.charges_amount &&
-                          generalledgerFormik.errors.charges_amount ? (
+                        generalledgerFormik.errors.charges_amount ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.charges_amount}
                           </div>
@@ -787,7 +817,11 @@ const AddCharge = () => {
                           Recieved From
                         </label>
                         <br />
-                        <Dropdown isOpen={recdropdownOpen} toggle={toggle2} disabled={chargeId}>
+                        <Dropdown
+                          isOpen={recdropdownOpen}
+                          toggle={toggle2}
+                          disabled={chargeId}
+                        >
                           <DropdownToggle caret style={{ width: "100%" }}>
                             {selectedRec ? selectedRec : "Select Resident"}
                           </DropdownToggle>
@@ -834,7 +868,7 @@ const AddCharge = () => {
                           value={generalledgerFormik.values.charges_memo}
                         />
                         {generalledgerFormik.touched.charges_memo &&
-                          generalledgerFormik.errors.charges_memo ? (
+                        generalledgerFormik.errors.charges_memo ? (
                           <div style={{ color: "red" }}>
                             {generalledgerFormik.errors.charges_memo}
                           </div>
@@ -945,7 +979,7 @@ const AddCharge = () => {
                                                 {item.account_name}
                                               </DropdownItem>
                                             ))}
-                                            {RecAccountNames ?
+                                            {RecAccountNames ? (
                                               <>
                                                 <DropdownItem
                                                   header
@@ -953,22 +987,26 @@ const AddCharge = () => {
                                                 >
                                                   Reccuring Charges
                                                 </DropdownItem>
-                                                {RecAccountNames?.map((item) => (
-                                                  <DropdownItem
-                                                    key={item._id}
-                                                    onClick={() =>
-                                                      handleAccountSelection(
-                                                        item.account_name,
-                                                        index
-                                                      )
-                                                    }
-                                                  >
-                                                    {item.account_name}
-                                                  </DropdownItem>
-                                                ))}
+                                                {RecAccountNames?.map(
+                                                  (item) => (
+                                                    <DropdownItem
+                                                      key={item._id}
+                                                      onClick={() =>
+                                                        handleAccountSelection(
+                                                          item.account_name,
+                                                          index
+                                                        )
+                                                      }
+                                                    >
+                                                      {item.account_name}
+                                                    </DropdownItem>
+                                                  )
+                                                )}
                                               </>
-                                              : <></>}
-                                            {oneTimeCharges ?
+                                            ) : (
+                                              <></>
+                                            )}
+                                            {oneTimeCharges ? (
                                               <>
                                                 <DropdownItem
                                                   header
@@ -990,7 +1028,9 @@ const AddCharge = () => {
                                                   </DropdownItem>
                                                 ))}
                                               </>
-                                              : <></>}
+                                            ) : (
+                                              <></>
+                                            )}
                                           </DropdownMenu>
                                         </Dropdown>
                                       </td>
@@ -1051,16 +1091,16 @@ const AddCharge = () => {
                                           value={entries.charges_amount}
                                         />
                                         {generalledgerFormik.touched.entries &&
-                                          generalledgerFormik.touched.entries[
+                                        generalledgerFormik.touched.entries[
                                           index
-                                          ] &&
-                                          generalledgerFormik.errors.entries &&
-                                          generalledgerFormik.errors.entries[
+                                        ] &&
+                                        generalledgerFormik.errors.entries &&
+                                        generalledgerFormik.errors.entries[
                                           index
-                                          ] &&
-                                          generalledgerFormik.errors.entries[
-                                            index
-                                          ].charges_amount ? (
+                                        ] &&
+                                        generalledgerFormik.errors.entries[
+                                          index
+                                        ].charges_amount ? (
                                           <div style={{ color: "red" }}>
                                             {
                                               generalledgerFormik.errors
@@ -1077,11 +1117,11 @@ const AddCharge = () => {
                                               cursor: "pointer",
                                               padding: 0,
                                             },
-                                              tenantDetails
-                                                ? {
+                                            tenantDetails
+                                              ? {
                                                   display: "none",
                                                 }
-                                                : {
+                                              : {
                                                   display: "block",
                                                 })
                                           }
@@ -1099,7 +1139,9 @@ const AddCharge = () => {
 
                                   <th>{charges_total_amount.toFixed(2)}</th>
                                 </tr>
-                                {Number(generalledgerFormik.values.charges_amount) !== Number(charges_total_amount) ? (
+                                {Number(
+                                  generalledgerFormik.values.charges_amount
+                                ) !== Number(charges_total_amount) ? (
                                   <tr>
                                     <th colSpan={2}>
                                       <OverlayTrigger
@@ -1107,8 +1149,20 @@ const AddCharge = () => {
                                         placement="top"
                                         overlay={popoverContent}
                                       >
-                                        <span style={{ cursor: 'pointer', color: 'red' }}>
-                                          The payment's amount must match the total applied to balance. The difference is ${Math.abs(generalledgerFormik.values.charges_amount - charges_total_amount).toFixed(2)}
+                                        <span
+                                          style={{
+                                            cursor: "pointer",
+                                            color: "red",
+                                          }}
+                                        >
+                                          The payment's amount must match the
+                                          total applied to balance. The
+                                          difference is $
+                                          {Math.abs(
+                                            generalledgerFormik.values
+                                              .charges_amount -
+                                              charges_total_amount
+                                          ).toFixed(2)}
                                         </span>
                                       </OverlayTrigger>
                                     </th>
@@ -1126,11 +1180,11 @@ const AddCharge = () => {
                                     style={
                                       tenantDetails
                                         ? {
-                                          display: "none",
-                                        }
+                                            display: "none",
+                                          }
                                         : {
-                                          display: "block",
-                                        }
+                                            display: "block",
+                                          }
                                     }
                                   >
                                     Add Row
@@ -1169,7 +1223,7 @@ const AddCharge = () => {
                             </label>
 
                             {generalledgerFormik.touched.charges_attachment &&
-                              generalledgerFormik.errors.charges_attachment ? (
+                            generalledgerFormik.errors.charges_attachment ? (
                               <div style={{ color: "red" }}>
                                 {generalledgerFormik.errors.charges_attachment}
                               </div>
@@ -1188,11 +1242,25 @@ const AddCharge = () => {
                                   }}
                                 >
                                   <p
-                                    onClick={() => handleOpenFile(file?.upload_file ? file?.upload_file : file?.name?.upload_file)}
+                                    onClick={() =>
+                                      handleOpenFile(
+                                        file?.upload_file
+                                          ? file?.upload_file
+                                          : file?.name?.upload_file
+                                      )
+                                    }
                                     style={{ cursor: "pointer" }}
                                   >
-                                    {file?.name?.file_name ? file?.name?.file_name?.substr(0, 5) : file?.file_name?.substr(0, 5)}
-                                    {file?.name?.file_name ? file?.name?.file_name?.length > 5 ? "..." : null : file?.file_name?.length > 5 ? "..." : null}
+                                    {file?.name?.file_name
+                                      ? file?.name?.file_name?.substr(0, 5)
+                                      : file?.file_name?.substr(0, 5)}
+                                    {file?.name?.file_name
+                                      ? file?.name?.file_name?.length > 5
+                                        ? "..."
+                                        : null
+                                      : file?.file_name?.length > 5
+                                      ? "..."
+                                      : null}
                                   </p>
                                   <CloseIcon
                                     style={{
@@ -1245,7 +1313,10 @@ const AddCharge = () => {
                           <button
                             type="submit"
                             className="btn btn-primary"
-                            style={{ background: "green", cursor: "not-allowed" }}
+                            style={{
+                              background: "green",
+                              cursor: "not-allowed",
+                            }}
                             disabled
                           >
                             Loading...

@@ -922,8 +922,10 @@ const WorkOrderDetails = () => {
                               >
                                 <h2 className="text-primary">Property</h2>
                               </Box>
-                              {propertyDetails?.propertyres_image ||
-                              propertyDetails?.property_image ? (
+                              {Array.isArray(
+                                propertyDetails?.propertyres_image
+                              ) ||
+                              Array.isArray(propertyDetails?.property_image) ? (
                                 <Box
                                   style={{
                                     width: "100%",
@@ -939,157 +941,44 @@ const WorkOrderDetails = () => {
                                       textAlign: "center",
                                     }}
                                   >
-                                    <img
-                                      src={
-                                        propertyDetails.propertyres_image &&
-                                        propertyDetails.propertyres_image
-                                          .length > 0
-                                          ? propertyDetails
-                                              .propertyres_image[0][0]
-                                          : propertyDetails.property_image &&
-                                            propertyDetails.property_image
-                                              .length > 0 &&
-                                            propertyDetails.property_image[0][0]
-                                      }
-                                      alt="property"
-                                      style={{
-                                        maxWidth: "80%",
-                                        maxHeight: "100%",
-                                        borderRadius: "8px",
-                                        border: "1px solid #ccc",
-                                      }}
-                                    />
-                                  </Box>
-                                </Box>
-                              ) : null}
-                              <Box
-                                style={{
-                                  width: "100%",
-                                  padding: "5px 16px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Box
-                                  width="100%"
-                                  style={{
-                                    minWidth: "100%",
-                                    textAlign: "center",
-                                    cursor: "pointer",
-                                    color: "blue",
-                                  }}
-                                  onClick={() =>
-                                    navigate(
-                                      `/admin/PropDetails/${propertyDetails.rentalId}/${propertyDetails.propertyId}`
-                                    )
-                                  }
-                                >
-                                  <span>
-                                    {propertyDetails.rental_adress || "N/A"} (
-                                    {propertyDetails.rental_units})
-                                  </span>
-                                </Box>
-                              </Box>
-                              <Box
-                                style={{
-                                  width: "100%",
-                                  padding: "5px 16px",
-                                  display: "flex",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Box
-                                  width="100%"
-                                  style={{
-                                    minWidth: "100%",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  <span>
-                                    {propertyDetails.rental_city ? (
-                                      <>{propertyDetails.rental_city},</>
+                                    {propertyDetails?.propertyres_image &&
+                                    propertyDetails
+                                      ?.propertyres_image[0]?.[0] ? (
+                                      <img
+                                        src={
+                                          propertyDetails
+                                            .propertyres_image[0][0]
+                                        }
+                                        alt="property"
+                                        style={{
+                                          maxWidth: "80%",
+                                          maxHeight: "100%",
+                                          borderRadius: "8px",
+                                          border: "1px solid #ccc",
+                                        }}
+                                      />
+                                    ) : propertyDetails?.property_image &&
+                                      propertyDetails
+                                        ?.property_image[0]?.[0] ? (
+                                      <img
+                                        src={
+                                          propertyDetails.property_image[0][0]
+                                        }
+                                        alt="property"
+                                        style={{
+                                          maxWidth: "80%",
+                                          maxHeight: "100%",
+                                          borderRadius: "8px",
+                                          border: "1px solid #ccc",
+                                        }}
+                                      />
                                     ) : (
-                                      ""
-                                    )}{" "}
-                                    {propertyDetails.rental_state ? (
-                                      <>{propertyDetails.rental_state},</>
-                                    ) : (
-                                      ""
-                                    )}{" "}
-                                    {propertyDetails.rental_country ? (
-                                      <>{propertyDetails.rental_country},</>
-                                    ) : (
-                                      ""
-                                    )}{" "}
-                                    {propertyDetails.rental_postcode ? (
-                                      <>{propertyDetails.rental_postcode}.</>
-                                    ) : (
-                                      ""
+                                      <span>No Image Found</span>
                                     )}
-                                  </span>
-                                </Box>
-                              </Box>
-                            </Box>
-                          </>
-                        ) : (
-                          <></>
-                        )}
-
-                        {propertyDetails ? (
-                          <>
-                            <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              maxWidth="100%" // Use 100% to make it responsive
-                              margin="20px"
-                              display="flex"
-                              flexDirection="column"
-                              alignItems="center" // Center content horizontally
-                            >
-                              <Box
-                                borderBottom="1px solid #ccc"
-                                style={{
-                                  width: "100%",
-                                  padding: "16px",
-                                  textAlign: "left",
-                                  color: "#5e72e4",
-                                }}
-                              >
-                                <h2 className="text-primary">Property</h2>
-                              </Box>
-                              {propertyDetails?.propertyres_image ||
-                              propertyDetails?.property_image ? (
-                                <Box
-                                  style={{
-                                    width: "100%",
-                                    padding: "16px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Box
-                                    width="100%"
-                                    style={{
-                                      minWidth: "100%",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    <img
-                                      src={
-                                        propertyDetails.propertyres_image[0] ||
-                                        propertyDetails.property_image[0]
-                                      }
-                                      alt="property"
-                                      style={{
-                                        maxWidth: "80%",
-                                        maxHeight: "100%",
-                                        borderRadius: "8px",
-                                        border: "1px solid #ccc",
-                                      }}
-                                    />
                                   </Box>
                                 </Box>
                               ) : null}
+
                               <Box
                                 style={{
                                   width: "100%",

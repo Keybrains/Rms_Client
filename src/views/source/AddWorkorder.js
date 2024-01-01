@@ -328,12 +328,13 @@ const AddWorkorder = () => {
     setLoader(true);
     var image;
     const imageData = new FormData();
+    console.log(selectedFiles, "yashu");
     for (let index = 0; index < selectedFiles.length; index++) {
       const element = selectedFiles[index];
       imageData.append(`files`, element);
     }
 
-    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     try {
       const result = await axios.post(url, imageData, {
         headers: {
@@ -642,7 +643,6 @@ const AddWorkorder = () => {
     const formattedDueDate = WorkFormik.values.due_date
       ? new Date(WorkFormik.values.due_date).toISOString().split("T")[0]
       : "";
-
     setLoader(true);
     var image;
     const imageData = new FormData();
@@ -652,7 +652,7 @@ const AddWorkorder = () => {
       imageData.append(`files`, element);
     }
 
-    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     try {
       const result = await axios.post(url, imageData, {
         headers: {

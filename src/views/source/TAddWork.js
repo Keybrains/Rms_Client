@@ -211,7 +211,7 @@ const TAddWork = () => {
       imageData.append(`files`, element);
     }
 
-    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     try {
       const result = await axios.post(url, imageData, {
         headers: {
