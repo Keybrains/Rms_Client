@@ -405,7 +405,7 @@ const PropDetails = () => {
     }
     if (propType === "Residential") {
       const updatedValues = {
-        rental_adress: addUnitFormik.values.rental_adress,
+        rental_unitsAdress: addUnitFormik.values.address1,
         rental_units: addUnitFormik.values.unit_number,
         rental_city: addUnitFormik.values.city,
         rental_state: addUnitFormik.values.state,
@@ -426,7 +426,7 @@ const PropDetails = () => {
       console.log(clickedObject, "clickedObject after update");
     } else {
       const updatedValues = {
-        rental_adress: addUnitFormik.values.address,
+        rental_unitsAdress: addUnitFormik.values.address1,
         rental_units: addUnitFormik.values.unit_number,
         rental_city: addUnitFormik.values.city,
         rental_state: addUnitFormik.values.state,
@@ -2854,7 +2854,7 @@ const PropDetails = () => {
                             onClick={() => {
                               addUnitFormik.setValues({
                                 address1:
-                                  propertyDetails.entries[0].rental_adress,
+                                  propertyDetails.entries[0].rental_unitsAdress,
                                 city: propertyDetails.entries[0].rental_city,
                                 state: propertyDetails.entries[0].rental_state,
                                 zip: propertyDetails.entries[0].rental_postcode,
@@ -3119,7 +3119,7 @@ const PropDetails = () => {
                                         addUnitFormik.setValues({
                                           unit_number:
                                             clickedObject.rental_units,
-                                          address: clickedObject.rental_adress,
+                                          address1: clickedObject.rental_unitsAdress,
                                           city: clickedObject.rental_city,
                                           state: clickedObject.rental_state,
                                           zip: clickedObject.rental_postcode,
@@ -3232,10 +3232,10 @@ const PropDetails = () => {
                                               <TextField
                                                 type="text"
                                                 size="small"
-                                                id="address"
-                                                name="address"
+                                                id="address1"
+                                                name="address1"
                                                 value={
-                                                  addUnitFormik.values.address
+                                                  addUnitFormik.values.address1
                                                 }
                                                 onChange={
                                                   addUnitFormik.handleChange

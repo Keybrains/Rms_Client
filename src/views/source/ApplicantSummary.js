@@ -1414,7 +1414,7 @@ const ApplicantSummary = () => {
                     })}
                   </DropdownMenu>
                 </Dropdown>
-
+                    
                 <LoadingButton
                   variant="contained"
                   loading={loading}
@@ -1429,7 +1429,7 @@ const ApplicantSummary = () => {
                     handleClick();
                     // navigate("/admin/RentRoll");
                   }}
-                  disabled={applicantData && applicantData.isMovedin === true}
+                  disabled={matchedApplicant && matchedApplicant.isMovedin === true}
                 >
                   Move in
                 </LoadingButton>

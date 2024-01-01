@@ -50,6 +50,7 @@ const WorkOrderDetails = () => {
   const { workorder_id } = useParams();
   //console.log("ID:", workorder_id);
   const [outstandDetails, setoutstandDetails] = useState({});
+  const [workOrderStatus, setWorkOrderStatus] = useState("");
   const [showTenantTable, setShowTenantTable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -57,6 +58,7 @@ const WorkOrderDetails = () => {
   const [activeButton, setActiveButton] = useState("Summary");
   const [updateButton, setUpdateButton] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const [user, setUser] = useState(null);
   let navigate = useNavigate();
 
   let cookies = new Cookies();
@@ -65,6 +67,7 @@ const WorkOrderDetails = () => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       // setAccessType(jwt.accessType);
+      setUser(jwt.userName);
     } else {
       navigate("/auth/login");
     }
@@ -85,8 +88,9 @@ const WorkOrderDetails = () => {
       const response = await axios.get(
         `${baseUrl}/workorder/workorder_summary/${workorder_id}`
       );
-      console.log(response.data.data,'yug console');
+      console.log(response.data.data, "yug console");
       setoutstandDetails(response.data.data);
+      setWorkOrderStatus(response.data.data.workorder_status.reverse());
       setSelectedStatus(response.data.data.status);
       setSelecteduser(response.data.data.staffmember_name);
       updateWorkorderFormik.setValues({
@@ -94,9 +98,11 @@ const WorkOrderDetails = () => {
         // staffmember_name: response.data.data.staffmember_name,
         due_date: response.data.data.due_date,
         assigned_to: response.data.data.staffmember_name,
-        message: response.data.data.message? response.data.data.message: "",
-        statusUpdatedBy:response.data.data.statusUpdatedBy ? response.data.data.statusUpdatedBy : "Admin",
-      })
+        message: response.data.data.message ? response.data.data.message : "",
+        statusUpdatedBy: response.data.data.statusUpdatedBy
+          ? response.data.data.statusUpdatedBy
+          : "Admin",
+      });
       setLoading(false);
       setImageDetails(response.data.data.workOrderImage);
     } catch (error) {
@@ -132,48 +138,59 @@ const WorkOrderDetails = () => {
       due_date: "",
       // assigned_to: "",
       message: "",
-      statusUpdatedBy:""
+      statusUpdatedBy: "",
     },
     onSubmit: (values) => {
       //console.log(values);
-      // updateValues()  
+      // updateValues()
       // updateWorkorder(values);
     },
-  })
+  });
 
   const updateValues = async () => {
-    console.log(selectedStatus,'selected status');
+    console.log(selectedStatus, "selected status");
     handleDialogClose();
-    await axios.put(`${baseUrl}/workorder/updateworkorder/${outstandDetails._id}`,
-    {
-      due_date: updateWorkorderFormik.values.due_date,
-      staffmember_name: selecteduser,
-      message: updateWorkorderFormik.values.message,
-      status: selectedStatus
-    }).then((res) => {
-      console.log(res.data,'the wgike put');
-      getOutstandData();
-
-    }).catch((err) => {
-      console.log(err);
-    })
-    await axios.put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, 
-    {
-        statusUpdatedBy: "Admin",
+    const formatedDate = updateWorkorderFormik.values.due_date
+      ? new Date(updateWorkorderFormik.values.due_date)
+          .toISOString()
+          .split("T")[0]
+      : "";
+    await axios
+      .put(`${baseUrl}/workorder/updateworkorder/${outstandDetails._id}`, {
+        due_date: formatedDate,
+        staffmember_name: selecteduser,
+        message: updateWorkorderFormik.values.message,
         status: selectedStatus,
+      })
+      .then((res) => {
+        console.log(res.data, "the wgike put");
+        getOutstandData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    await axios
+      .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
+        statusUpdatedBy: user,
+        status:
+          selectedStatus !== outstandDetails.status ? selectedStatus : " ",
+        due_date:
+          formatedDate !== outstandDetails.due_date ? formatedDate : " ",
+        staffmember_name:
+          selecteduser !== outstandDetails.staffmember_name
+            ? selecteduser
+            : " ",
         // updateAt: updatedAt,
-    }
-    ).then((res) => {
-      console.log(res.data,'the status put');
-      getOutstandData();
-      
-    }).catch((err) => {
-      console.log(err);
-    });
-
-    
-
-  }
+      })
+      .then((res) => {
+        console.log(res.data, "the status put");
+        getOutstandData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   // console.log(outstandDetails);
 
   // const handleMouseEnter = (buttonValue) => {
@@ -193,12 +210,9 @@ const WorkOrderDetails = () => {
   const [selecteduser, setSelecteduser] = useState("Select");
   const [staffData, setstaffData] = useState([]);
 
-
-
   const toggle5 = () => setuserdropdownOpen((prevState) => !prevState);
 
   const toggle6 = () => setstatusdropdownOpen((prevState) => !prevState);
-
 
   const handleStatusSelect = (status) => {
     setSelectedStatus(status);
@@ -218,7 +232,7 @@ const WorkOrderDetails = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${month}-${day}-${year}`;
   }
-  
+
   React.useEffect(() => {
     getOutstandData();
     fetch(`${baseUrl}/addstaffmember/find_staffmember`)
@@ -698,44 +712,93 @@ const WorkOrderDetails = () => {
                                   Update
                                 </Button>
                               </Grid>
-                              { outstandDetails.workorder_status && outstandDetails.workorder_status.length> 0 &&
-                              outstandDetails.workorder_status.map((item, index) => (
-                                <Grid item xs={12}>
-                                <Box
-                                  padding="8px"
-                                  maxWidth="700px"
-                                  style={{
-                                    marginLeft: "auto",
-                                    marginRight: "auto",
-                                    overflowX: "auto",
-                                    
-                                  }} // Center the box horizontally
-                                >
-                                  <div style={{
-                                    display: "flex",
-                                    justifyContent: "space-between"}}>
-                                <div>
-                                  {item.statusUpdatedBy} updated this task
-                                  <br/>
-                                  {item.updateAt}
-                                </div>
-                                  </div>
-                                  <hr style={{marginTop: "0px", marginBottom: "0px"}}/>
-                                  <div style={{display: "flex", justifyContent: "space-between"}}>
-                                  <div>
-                                  Status: {item.status}
-                                </div>
-                                <div>
-                                  Due Date: {outstandDetails.due_date}
-                                </div>
-                                <div>
-                                  Status: {item.status}
-                                </div>
-                                  </div>
-                                </Box>
-                              </Grid>
-                              ))
-                              }
+                              {outstandDetails.workorder_status &&
+                                outstandDetails.workorder_status.length > 0 &&
+                                workOrderStatus.map((item, index) => (
+                                  <Grid item xs={12}>
+                                    <Box
+                                      padding="12px"
+                                      maxWidth="700px"
+                                      style={{
+                                        marginLeft: "auto",
+                                        marginRight: "auto",
+                                        overflowX: "auto",
+                                      }} // Center the box horizontally
+                                    >
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                        }}
+                                      >
+                                        <div style={{ fontWeight: "bold" }}>
+                                          {item.statusUpdatedBy} {item.createdAt ? 
+                                            "Created this work order" : "Updated this work order"
+                                           }
+                                          <span style={{ fontSize: "13px" }}>
+                                            &nbsp;({item.updateAt})
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <hr
+                                        style={{
+                                          marginTop: "0px",
+                                          marginBottom: "0px",
+                                        }}
+                                      />
+
+                                      <Grid container>
+                                        {item.status !== (" " || "")  ||
+                                        item.due_date !== (" " || "")  ||
+                                        item.staffmember_name !== (" " || "")  ? (
+                                          <>
+                                            <Grid
+                                              item
+                                              xs={4}
+                                              style={
+                                                item.status === (" " || "") 
+                                                  ? { display: "none" }
+                                                  : { display: "block" }
+                                              }
+                                            >
+                                              Status: {item.status}
+                                            </Grid>
+                                            <Grid
+                                              item
+                                              xs={4}
+                                              style={
+                                                item.due_date === (" " || null) 
+                                                  ? { display: "none" }
+                                                  : { display: "block" }
+                                              }
+                                            >
+                                              Due Date: {item.due_date}
+                                            </Grid>
+                                            <Grid
+                                              item
+                                              xs={4}
+                                              style={
+                                                item.staffmember_name === (" " || "") 
+                                                  ? { display: "none" }
+                                                  : { display: "block" }
+                                              }
+                                            >
+                                              Assigned To:{" "}
+                                              {item.staffmember_name}
+                                            </Grid>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Grid item>
+                                              {" "}
+                                              Work Order Is Updated
+                                            </Grid>
+                                          </>
+                                        )}
+                                      </Grid>
+                                    </Box>
+                                  </Grid>
+                                ))}
                             </Grid>
                           </>
                         ) : (
@@ -837,42 +900,140 @@ const WorkOrderDetails = () => {
                             ) : null}
                           </Box>
                         ) : null}
-                        {propertyDetails ? <>
-                          <Box
-                            border="1px solid #ccc"
-                            borderRadius="8px"
-                            maxWidth="100%" // Use 100% to make it responsive
-                            margin="20px"
-                            display="flex"
-                            flexDirection="column"
-                            alignItems="center" // Center content horizontally
-                          >
-                            <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
-                              <h2 className="text-primary">Property</h2>
-                            </Box>
-                            {propertyDetails?.propertyres_image || propertyDetails?.property_image ? (
-                              <Box style={{ width: "100%", padding: "16px", display: "flex", alignItems: "center" }}>
-                                <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
-                                  <img
-                                    src={propertyDetails.propertyres_image[0][0] || propertyDetails.property_image[0][0]}
-                                    alt="property"
-                                    style={{ maxWidth: "80%", maxHeight: "100%", borderRadius: "8px", border: "1px solid #ccc" }}
-                                  />
+                        {propertyDetails ? (
+                          <>
+                            <Box
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              maxWidth="100%" // Use 100% to make it responsive
+                              margin="20px"
+                              display="flex"
+                              flexDirection="column"
+                              alignItems="center" // Center content horizontally
+                            >
+                              <Box
+                                borderBottom="1px solid #ccc"
+                                style={{
+                                  width: "100%",
+                                  padding: "16px",
+                                  textAlign: "left",
+                                  color: "#5e72e4",
+                                }}
+                              >
+                                <h2 className="text-primary">Property</h2>
+                              </Box>
+                              {propertyDetails?.propertyres_image ||
+                              propertyDetails?.property_image ? (
+                                <Box
+                                  style={{
+                                    width: "100%",
+                                    padding: "16px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Box
+                                    width="100%"
+                                    style={{
+                                      minWidth: "100%",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    <img
+                                      src={
+                                        propertyDetails.propertyres_image &&
+                                        propertyDetails.propertyres_image
+                                          .length > 0
+                                          ? propertyDetails
+                                              .propertyres_image[0][0]
+                                          : propertyDetails.property_image &&
+                                            propertyDetails.property_image
+                                              .length > 0 &&
+                                            propertyDetails.property_image[0][0]
+                                      }
+                                      alt="property"
+                                      style={{
+                                        maxWidth: "80%",
+                                        maxHeight: "100%",
+                                        borderRadius: "8px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    />
+                                  </Box>
+                                </Box>
+                              ) : null}
+                              <Box
+                                style={{
+                                  width: "100%",
+                                  padding: "5px 16px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Box
+                                  width="100%"
+                                  style={{
+                                    minWidth: "100%",
+                                    textAlign: "center",
+                                    cursor: "pointer",
+                                    color: "blue",
+                                  }}
+                                  onClick={() =>
+                                    navigate(
+                                      `/admin/PropDetails/${propertyDetails.rentalId}/${propertyDetails.propertyId}`
+                                    )
+                                  }
+                                >
+                                  <span>
+                                    {propertyDetails.rental_adress || "N/A"} (
+                                    {propertyDetails.rental_units})
+                                  </span>
                                 </Box>
                               </Box>
-                            ) : null}
-                            <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
-                              <Box width="100%" style={{ minWidth: "100%", textAlign: "center", cursor: 'pointer', color: 'blue' }} onClick={() => navigate(`/admin/PropDetails/${propertyDetails.rentalId}/${propertyDetails.propertyId}`)}>
-                                <span>{propertyDetails.rental_adress || "N/A"} ({propertyDetails.rental_units})</span>
+                              <Box
+                                style={{
+                                  width: "100%",
+                                  padding: "5px 16px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Box
+                                  width="100%"
+                                  style={{
+                                    minWidth: "100%",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  <span>
+                                    {propertyDetails.rental_city ? (
+                                      <>{propertyDetails.rental_city},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}
+                                    {propertyDetails.rental_state ? (
+                                      <>{propertyDetails.rental_state},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}
+                                    {propertyDetails.rental_country ? (
+                                      <>{propertyDetails.rental_country},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}
+                                    {propertyDetails.rental_postcode ? (
+                                      <>{propertyDetails.rental_postcode}.</>
+                                    ) : (
+                                      ""
+                                    )}
+                                  </span>
+                                </Box>
                               </Box>
                             </Box>
-                            <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
-                              <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
-                                <span>{propertyDetails.rental_city ? <>{propertyDetails.rental_city},</> : ""} {propertyDetails.rental_state ? <>{propertyDetails.rental_state},</> : ""} {propertyDetails.rental_country ? <>{propertyDetails.rental_country},</> : ""} {propertyDetails.rental_postcode ? <>{propertyDetails.rental_postcode}.</> : ""}</span>
-                              </Box>
-                            </Box>
-                          </Box>
-                        </> : <></>}
+                          </>
+                        ) : (
+                          <></>
+                        )}
 
                         {propertyDetails ? (
                           <>
@@ -1005,59 +1166,66 @@ const WorkOrderDetails = () => {
                     </Row>
                     {updateButton && (
                       <Form onSubmit={updateWorkorderFormik.handleSubmit}>
-                      <Dialog open={openDialog} onClose={handleDialogClose}>
-                        <DialogTitle>Update Dialog</DialogTitle>
-                        <DialogContent>
-                          <Grid container spacing={2}>
-                            <Grid item xs={4}>
-                            <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Status *
-                          </label>
-                          <FormGroup>
-                            <Dropdown
-                              isOpen={statusdropdownOpen}
-                              toggle={toggle6}
-                              
-                            >
-                              <DropdownToggle caret>
-                                {selectedStatus ? selectedStatus : "Select"}
-                                &nbsp;&nbsp;&nbsp;&nbsp;
-                              </DropdownToggle>
-                              <DropdownMenu
-                                style={{
-                                  width: "100%",
-                                  maxHeight: "200px",
-                                  overflowY: "auto",
-                                }}
-                              >
-                                <DropdownItem
-                                  onClick={() => handleStatusSelect("New")}
-                                >
-                                  New
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() =>
-                                    handleStatusSelect("In Progress")
-                                  }
-                                >
-                                  In Progress
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() => handleStatusSelect("On Hold")}
-                                >
-                                  On Hold
-                                </DropdownItem>
-                                <DropdownItem
-                                  onClick={() => handleStatusSelect("Complete")}
-                                >
-                                  Complete
-                                </DropdownItem>
-                              </DropdownMenu>
-                              {/* {WorkFormik.errors &&
+                        <Dialog open={openDialog} onClose={handleDialogClose}>
+                          <DialogTitle>Update Dialog</DialogTitle>
+                          <DialogContent>
+                            <Grid container spacing={2}>
+                              <Grid item xs={4}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-desg"
+                                  >
+                                    Status *
+                                  </label>
+                                  <FormGroup>
+                                    <Dropdown
+                                      isOpen={statusdropdownOpen}
+                                      toggle={toggle6}
+                                    >
+                                      <DropdownToggle caret>
+                                        {selectedStatus
+                                          ? selectedStatus
+                                          : "Select"}
+                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                      </DropdownToggle>
+                                      <DropdownMenu
+                                        style={{
+                                          width: "100%",
+                                          maxHeight: "200px",
+                                          overflowY: "auto",
+                                        }}
+                                      >
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("New")
+                                          }
+                                        >
+                                          New
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("In Progress")
+                                          }
+                                        >
+                                          In Progress
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("On Hold")
+                                          }
+                                        >
+                                          On Hold
+                                        </DropdownItem>
+                                        <DropdownItem
+                                          onClick={() =>
+                                            handleStatusSelect("Complete")
+                                          }
+                                        >
+                                          Complete
+                                        </DropdownItem>
+                                      </DropdownMenu>
+                                      {/* {WorkFormik.errors &&
                                 WorkFormik.errors?.status &&
                                 WorkFormik.touched &&
                                 WorkFormik.touched?.status &&
@@ -1066,75 +1234,83 @@ const WorkOrderDetails = () => {
                                   {WorkFormik.errors.status}
                                 </div>
                               ) : null} */}
-                            </Dropdown>
-                          </FormGroup>
-                        </FormGroup>
-                            </Grid>
-                            <Grid item xs={6}>
-                            <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-unitadd"
-                          >
-                            Due Date
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-unitadd"
-                            type="date"
-                            name="due_date"
-                            value={updateWorkorderFormik.values.due_date}
-                            onChange={updateWorkorderFormik.handleChange}
-                            onBlur={updateWorkorderFormik.handleBlur}
-
-                          />
-                          {/* {WorkFormik.touched.due_date &&
+                                    </Dropdown>
+                                  </FormGroup>
+                                </FormGroup>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-unitadd"
+                                  >
+                                    Due Date
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-unitadd"
+                                    type="date"
+                                    name="due_date"
+                                    value={
+                                      updateWorkorderFormik.values.due_date
+                                    }
+                                    onChange={
+                                      updateWorkorderFormik.handleChange
+                                    }
+                                    onBlur={updateWorkorderFormik.handleBlur}
+                                  />
+                                  {/* {WorkFormik.touched.due_date &&
                             WorkFormik.errors.due_date ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.due_date}
                             </div>
                           ) : null} */}
-                        </FormGroup>
-                            </Grid>
-                            <Grid item xs={4}>
-                            <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-desg"
-                          >
-                            Assigned To *
-                          </label>
-                          <FormGroup>
-                            <Dropdown
-                              isOpen={userdropdownOpen}
-                              toggle={toggle5}
-                            >
-                              <DropdownToggle caret>
-                                {selecteduser ? selecteduser : "Select"}
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                              </DropdownToggle>
-                              <DropdownMenu
-                                style={{
-                                  width: "100%",
-                                  maxHeight: "200px",
-                                  overflowY: "auto",
-                                }}
-                              >
-                                <DropdownItem header style={{ color: "blue" }}>
-                                  Staff
-                                </DropdownItem>
-                                {staffData.map((user) => (
-                                  <DropdownItem
-                                    key={user._id}
-                                    onClick={() =>
-                                      handleStaffSelect(user.staffmember_name)
-                                    }
+                                </FormGroup>
+                              </Grid>
+                              <Grid item xs={4}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-desg"
                                   >
-                                    {user.staffmember_name}
-                                  </DropdownItem>
-                                ))}
-                              </DropdownMenu>
-                              {/* {WorkFormik.errors &&
+                                    Assigned To *
+                                  </label>
+                                  <FormGroup>
+                                    <Dropdown
+                                      isOpen={userdropdownOpen}
+                                      toggle={toggle5}
+                                    >
+                                      <DropdownToggle caret>
+                                        {selecteduser ? selecteduser : "Select"}
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                      </DropdownToggle>
+                                      <DropdownMenu
+                                        style={{
+                                          width: "100%",
+                                          maxHeight: "200px",
+                                          overflowY: "auto",
+                                        }}
+                                      >
+                                        <DropdownItem
+                                          header
+                                          style={{ color: "blue" }}
+                                        >
+                                          Staff
+                                        </DropdownItem>
+                                        {staffData.map((user) => (
+                                          <DropdownItem
+                                            key={user._id}
+                                            onClick={() =>
+                                              handleStaffSelect(
+                                                user.staffmember_name
+                                              )
+                                            }
+                                          >
+                                            {user.staffmember_name}
+                                          </DropdownItem>
+                                        ))}
+                                      </DropdownMenu>
+                                      {/* {WorkFormik.errors &&
                                 WorkFormik.errors?.staffmember_name &&
                                 WorkFormik.touched &&
                                 WorkFormik.touched?.staffmember_name &&
@@ -1143,45 +1319,48 @@ const WorkOrderDetails = () => {
                                   {WorkFormik.errors.staffmember_name}
                                 </div>
                               ) : null} */}
-                            </Dropdown>
-                          </FormGroup>
-                        </FormGroup>
-                            </Grid>
-                            <Grid item xs={12}>
-                            <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-unitadd"
-                          >
-                            Message
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-unitadd"
-                            type="textarea"
-                            name="message"
-                            value={updateWorkorderFormik.values.message}
-                            onChange={updateWorkorderFormik.handleChange}
-                            onBlur={updateWorkorderFormik.handleBlur}
-
-                          />
-                          {/* {WorkFormik.touched.due_date &&
+                                    </Dropdown>
+                                  </FormGroup>
+                                </FormGroup>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-unitadd"
+                                  >
+                                    Message
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-unitadd"
+                                    type="textarea"
+                                    name="message"
+                                    value={updateWorkorderFormik.values.message}
+                                    onChange={
+                                      updateWorkorderFormik.handleChange
+                                    }
+                                    onBlur={updateWorkorderFormik.handleBlur}
+                                  />
+                                  {/* {WorkFormik.touched.due_date &&
                             WorkFormik.errors.due_date ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.due_date}
                             </div>
                           ) : null} */}
-                        </FormGroup>
+                                </FormGroup>
+                              </Grid>
                             </Grid>
-                          </Grid>
-                        </DialogContent>
-                        <DialogActions>
-                          <Button onClick={handleDialogClose} color="primary">
-                            Cancel
-                          </Button>
-                          <Button color="primary" onClick={updateValues}>Save</Button>
-                        </DialogActions>
-                      </Dialog>
+                          </DialogContent>
+                          <DialogActions>
+                            <Button onClick={handleDialogClose} color="primary">
+                              Cancel
+                            </Button>
+                            <Button color="primary" onClick={updateValues}>
+                              Save
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
                       </Form>
                     )}
                   </div>
