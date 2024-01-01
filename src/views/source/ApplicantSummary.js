@@ -72,9 +72,11 @@ const ApplicantSummary = () => {
   let cookies = new Cookies();
   const [applicantLoader, setApplicantLoader] = useState(true);
   const [loader, setLoader] = React.useState(true);
+  const [loader2, setLoader2] = React.useState(false);
+  const [loader3, setLoader3] = React.useState(false);
   const handleOpen = () => {
     setIsOpen(true);
-  }; 
+  };
   const [accessType, setAccessType] = useState(null);
   const [manager, setManager] = useState(null);
 
@@ -210,6 +212,18 @@ const ApplicantSummary = () => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    if (newValue === "Approved") {
+      setLoader2(true)
+      setTimeout(function () {
+        setLoader2(false)
+      }, 500)
+    }
+    if (newValue === "Rejected") {
+      setLoader3(true)
+      setTimeout(function () {
+        setLoader3(false)
+      }, 500)
+    }
     //console.log(newValue);
     //console.log(matchedApplicant?.tenant_mobileNumber);
     tenantsData(matchedApplicant?.tenant_mobileNumber, newValue);
@@ -239,11 +253,11 @@ const ApplicantSummary = () => {
       tenant_faxPhoneNumber: "",
       tenant_email: "",
       attachment: "",
-      rental_units:"",
-      rental_adress:"",
+      rental_units: "",
+      rental_adress: "",
       applicant_notes: notes,
       applicant_file: files,
-      isMovein:false,
+      isMovein: false,
     },
     onSubmit: (values) => {
       handleEdit(values);
@@ -315,14 +329,14 @@ const ApplicantSummary = () => {
         getApplicantData();
       });
   };
-  
+
 
   const navigateToLease = () => {
     axios
       .get(`${baseUrl}/applicant/applicant_summary/${id}`)
       .then((response) => {
         const applicantsData = response.data.data;
-        console.log(applicantsData,'data frpm 325')
+        console.log(applicantsData, 'data frpm 325')
         // Extract the rental address from the response
         const rentalAddress = applicantsData.rental_adress;
         //console.log(rentalAddress, "Rental Addressss");
@@ -341,12 +355,12 @@ const ApplicantSummary = () => {
             } else {
               // navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
               navigate(`/admin/RentRollLeaseing`,
-              //console.log(tenantID, "tenantID");
-              {
-                state:{
-                  applicantData: applicantsData,
-                }
-              });
+                //console.log(tenantID, "tenantID");
+                {
+                  state: {
+                    applicantData: applicantsData,
+                  }
+                });
               //console.log(matchedApplicant, "matchedApplicant");
               // axios
               // .get("https://propertymanager.cloudpress.host/api/tenant/tenant")
@@ -539,7 +553,7 @@ const ApplicantSummary = () => {
 
       // Check if the response contains the data you expect
       const fetchedData = response.data;
-      console.log(fetchedData,'fetched data')
+      console.log(fetchedData, 'fetched data')
       //console.log(fetchedData, "fetched data");
       if (fetchedData) {
         // Step 2: Create an object with the fetched data
@@ -563,7 +577,7 @@ const ApplicantSummary = () => {
           tenant_firstName: fetchedData.data.tenant_firstName || "",
           tenant_lastName: fetchedData.data.tenant_lastName || "",
           tenant_unitNumber: fetchedData.data.tenant_unitNumbe || "",
-    
+
           // tenant_phoneNumber: ,
           tenant_mobileNumber: fetchedData.data.tenant_mobileNumber || "",
           tenant_workNumber: fetchedData.data.tenant_workNumber || "",
@@ -573,14 +587,14 @@ const ApplicantSummary = () => {
           tenant_password: fetchedData.data.tenant_password || "",
           alternate_email: fetchedData.data.alternate_email || "",
           tenant_residentStatus: fetchedData.data.tenant_residentStatus || "",
-    
+
           // personal information
           birth_date: fetchedData.data.birth_date || "",
           textpayer_id: fetchedData.data.textpayer_id || "",
           comments: fetchedData.data.comments || "",
-    
+
           //Emergency contact
-    
+
           contact_name: fetchedData.data.contact_name || "",
           relationship_tenants: fetchedData.data.relationship_tenants || "",
           email: fetchedData.data.email || "",
@@ -603,11 +617,11 @@ const ApplicantSummary = () => {
               isrenton: fetchedData.data.isrenton || false,
               rent_paid: fetchedData.data.rent_paid || false,
               propertyOnRent: fetchedData.data.propertyOnRent || false,
-              
+
               //security deposite
               Due_date: fetchedData.data.Due_date || "",
               Security_amount: fetchedData.data.Security_amount || "",
-              
+
               // add cosigner
               cosigner_firstName: fetchedData.data.cosigner_firstName || "",
               cosigner_lastName: fetchedData.data.cosigner_lastName || "",
@@ -625,11 +639,11 @@ const ApplicantSummary = () => {
               cosigner_zip: fetchedData.data.cosigner_zip || "",
               cosigner_country: fetchedData.data.cosigner_country || "",
               cosigner_postalcode: fetchedData.data.cosigner_postalcode || "",
-    
+
               // add account
               account_name: fetchedData.data.account_name || "",
               account_type: fetchedData.data.account_type || "",
-    
+
               //account level (sub account)
               parent_account: fetchedData.data.parent_account || "",
               account_number: fetchedData.data.account_number || "",
@@ -651,14 +665,14 @@ const ApplicantSummary = () => {
             },
           ],
         };
-    
+
         console.log(dataToSend, "hagfjg");
         // Step 3: Make a POST request to send the data to the server
         // const postResponse = await axios.post(
         //   `${baseUrl}/tenant/tenant`,
         //   dataToSend
         // );
-          // debugger
+        // debugger
         //console.log(dataToSend, "hagfjg");
         // if (postResponse.status === 200) {
         //   console.log(postResponse,'clgbcmnm')
@@ -679,7 +693,7 @@ const ApplicantSummary = () => {
         // }
         navigateToLease(
           dataToSend
-            );
+        );
 
       } else {
         // Handle the case where the fetched data is not as expected
@@ -692,7 +706,7 @@ const ApplicantSummary = () => {
   };
 
   const [moveIn, setMoveIn] = useState([]);
-  
+
 
   const [matchedApplicant, setMatchedApplicant] = useState([]);
 
@@ -723,13 +737,13 @@ const ApplicantSummary = () => {
     setIsEdit(true);
     //console.log(matchedApplicant, "matchedApplicant from edit ");
     setSelectedPropertyType(matchedApplicant.rental_adress || "Select");
-    try{
+    try {
       const units = await fetchUnitsByProperty(matchedApplicant.rental_adress);
       //console.log(units, "units"); // Check the received units in the console
 
       setUnitData(units);
-    }catch (error){
-      console.log(error,'error')
+    } catch (error) {
+      console.log(error, 'error')
     }
 
 
@@ -801,7 +815,7 @@ const ApplicantSummary = () => {
   useEffect(() => {
     // const storageKey = `applicant_${id}_checkedChecklist`;
     // const storedCheckedItems = JSON.parse(localStorage.getItem(storageKey));
-     handleChecklistChange();
+    handleChecklistChange();
   }, [id]);
 
   const handleChecklistChange = async (event, item) => {
@@ -814,10 +828,10 @@ const ApplicantSummary = () => {
         : checkedItems.filter((checkedItem) => checkedItem !== item);
       console.log(updatedItems, "updatedItems");
       setCheckedItems(updatedItems);
-  
+
       // const storageKey = `applicant_${id}_checkedChecklist`;
       // localStorage.setItem(storageKey, JSON.stringify(updatedItems));
-  
+
       // Make a PUT request to update the checked checklist on the server
       const apiUrl = `${baseUrl}/applicant/applicant/${id}/checked-checklist`;
       const response = await fetch(apiUrl, {
@@ -827,23 +841,23 @@ const ApplicantSummary = () => {
         },
         body: JSON.stringify({ applicant_checkedChecklist: updatedItems }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(`Server error: ${errorData.message}`);
       }
-  
+
       const responseData = await response.json();
       console.log(responseData);
       setCheckedItems(responseData.updatedApplicant.applicant_checkedChecklist); // You can handle the response data as needed
-  
+
     } catch (error) {
       console.error(error.message); // Handle the error appropriately
     }
   };
-  
 
-  
+
+
   // const handleCheckItem = () => {
   //   if (newItem.trim() !== "") {
   //     setCheckedItems([...checkedItems, newItem]);
@@ -854,7 +868,7 @@ const ApplicantSummary = () => {
   //       ...matchedApplicant,
   //       applicant_checkedChecklist: [...matchedApplicant.applicant_checkedChecklist, newItem],
   //     };
-      
+
   //     //console.log(updatedApplicant, "updatedApplicant");
   //     axios
   //       .put(
@@ -1005,7 +1019,7 @@ const ApplicantSummary = () => {
     window.open(fileURL, "_blank");
   };
 
-  const handleClearRow = async (document,appId) => {
+  const handleClearRow = async (document, appId) => {
     // const updatedCombinedData = [...combinedData];
     // updatedCombinedData.splice(rowIndex, 1);
 
@@ -1021,7 +1035,7 @@ const ApplicantSummary = () => {
     // setFiles(updatedFiles);
 
     const deleteUrl = `${baseUrl}/applicant/applicant/note_attachment/${appId}/${document._id}`;
-    
+
     // swal if confirm than only delete
     await axios.delete(deleteUrl).then((res) => {
       console.log(res.data);
@@ -1051,9 +1065,9 @@ const ApplicantSummary = () => {
       // hadlenotesandfile(); // Call handleEdit function to make PUT request
     },
   });
-  
 
-  const handleSubmit = (values={}) => {
+
+  const handleSubmit = (values = {}) => {
     // Handle form submission
     hadlenotesandfile(values); // Call handleEdit function to make PUT request
   };
@@ -1065,14 +1079,14 @@ const ApplicantSummary = () => {
   // const [fileName, setFileName] = useState('');
   // const [isAttachFile, setIsAttachFile] = useState(false);
 
-  const hadlenotesandfile = async() => { 
+  const hadlenotesandfile = async () => {
     try {
       const formData = {
         applicant_notes: newNote,
-          applicant_file: newFile.name,
+        applicant_file: newFile.name,
       };
 
-      console.log(formData,'formData')
+      console.log(formData, 'formData')
       // formData.append('applicant_notes', newNote);
       // formData.append('applicant_file', newFile);
       console.log((formData.applicant_file), "yash")
@@ -1093,10 +1107,10 @@ const ApplicantSummary = () => {
       // Handle error, show an error message, etc.
     }
   };
-  
-  
 
-  
+
+
+
 
   // ----------------------------------------------Applicant Put----------------------------------------------------------------------------
 
@@ -1255,39 +1269,39 @@ const ApplicantSummary = () => {
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
-            {applicantLoader ? (
-          <tbody className="d-flex flex-direction-column justify-content-left align-items-left">
-            <tr>
-              <div className="p-5 m-5">
-                {/* <RotatingLines
+              {applicantLoader ? (
+                <tbody className="d-flex flex-direction-column justify-content-left align-items-left">
+                  <tr>
+                    <div className="p-5 m-5">
+                      {/* <RotatingLines
                   strokeColor="grey"
                   strokeWidth="5"
                   animationDuration="0.75"
                   width="50"
                   visible={loader}/> */}
-                </div>
-            </tr>
-          </tbody>) :(<>
-              <h1 style={{ color: "white" }}>
-                Applicant :
-                {" " +
-                  matchedApplicant?.tenant_firstName +
-                  " " +
-                  matchedApplicant?.tenant_lastName}
-              </h1>
-              <h4 style={{ color: "white" }}>
-                {/* Tenant |{" "} */}
-                {matchedApplicant.rental_adress}
-                {matchedApplicant.rental_units
-                  ? " - " + matchedApplicant.rental_units
-                  : " "}
-              </h4></>)}
+                    </div>
+                  </tr>
+                </tbody>) : (<>
+                  <h1 style={{ color: "white" }}>
+                    Applicant :
+                    {" " +
+                      matchedApplicant?.tenant_firstName +
+                      " " +
+                      matchedApplicant?.tenant_lastName}
+                  </h1>
+                  <h4 style={{ color: "white" }}>
+                    {/* Tenant |{" "} */}
+                    {matchedApplicant.rental_adress}
+                    {matchedApplicant.rental_units
+                      ? " - " + matchedApplicant.rental_units
+                      : " "}
+                  </h4></>)}
             </FormGroup>
           </Col>
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/admin/Applicants")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -1345,870 +1359,870 @@ const ApplicantSummary = () => {
             </Typography>
           </div> */}
           {applicantLoader ? (
-          <tbody className="d-flex flex-direction-column justify-content-center align-items-center">
-            <tr>
-              <div className="p-5 m-5">
-                <RotatingLines
-                  strokeColor="grey"
-                  strokeWidth="5"
-                  animationDuration="0.75"
-                  width="50"
-                  visible={loader}/>
+            <tbody className="d-flex flex-direction-column justify-content-center align-items-center">
+              <tr>
+                <div className="p-5 m-5">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="50"
+                    visible={loader} />
                 </div>
-            </tr>
-          </tbody>) :(
-          <>
-          <div
-            className="formInput d-flex flex-direction-row"
-            style={{ margin: "30px 30px" }}
-          >
-            <Dropdown
-              //   isOpen={selectAccountDropDown}
-              //   toggle={toggle8}
-              isOpen={isOpen}
-              toggle={toggle}
-            >
-              {console.log(matchedApplicant.applicant_status, "status")}
-              <DropdownToggle caret style={{ width: "100%" }}>
-                {matchedApplicant &&
-                matchedApplicant.applicant_status &&
-                matchedApplicant?.applicant_status[0]?.status
-                  ? matchedApplicant?.applicant_status[0]?.status
-                  : selectedDropdownItem
-                  ? selectedDropdownItem
-                  : "Select"}
-              </DropdownToggle>
-              <DropdownMenu
-                style={{ width: "100%" }}
-                name="rent_cycle"
-                //   onBlur={accountFormik.handleBlur}
-                //   onChange={accountFormik.handleChange}
-                //   value={accountFormik.values.account_type}
+              </tr>
+            </tbody>) : (
+            <>
+              <div
+                className="formInput d-flex flex-direction-row"
+                style={{ margin: "30px 30px" }}
               >
-                {dropdownList.map((item, index) => {
-                  return (
-                    <DropdownItem
-                      key={index}
-                      onClick={() => {
-                        selectedDropdown(item);
-                        handleEditStatus(item);
-                      }}
-                    >
-                      {item}
-                    </DropdownItem>
-                  );
-                })}
-              </DropdownMenu>
-            </Dropdown>
-
-            <LoadingButton
-              variant="contained"
-              loading={loading}
-              style={
-                moveIn && moveIn.status === "Approved"
-                  ? { display: "block", marginLeft: "10px" }
-                  : { display: "none" }
-              }
-              color="success"
-              onClick={(e) => {
-                fetchDataAndPost();
-                handleClick();
-                // navigate("/admin/RentRoll");
-              }}
-              disabled={ applicantData && applicantData.isMovedin===true}
-            >
-              Move in
-            </LoadingButton>
-          </div>
-          <Row>
-            <Col>
-              <TabContext value={value}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList
-                    onChange={handleChange}
-                    aria-label="lab API tabs example"
+                <Dropdown
+                  //   isOpen={selectAccountDropDown}
+                  //   toggle={toggle8}
+                  isOpen={isOpen}
+                  toggle={toggle}
+                >
+                  {console.log(matchedApplicant.applicant_status, "status")}
+                  <DropdownToggle caret style={{ width: "100%" }}>
+                    {matchedApplicant &&
+                      matchedApplicant.applicant_status &&
+                      matchedApplicant?.applicant_status[0]?.status
+                      ? matchedApplicant?.applicant_status[0]?.status
+                      : selectedDropdownItem
+                        ? selectedDropdownItem
+                        : "Select"}
+                  </DropdownToggle>
+                  <DropdownMenu
+                    style={{ width: "100%" }}
+                    name="rent_cycle"
+                  //   onBlur={accountFormik.handleBlur}
+                  //   onChange={accountFormik.handleChange}
+                  //   value={accountFormik.values.account_type}
                   >
-                    <Tab
-                      label="Summary"
-                      value="Summary"
-                      style={{ textTransform: "none" }}
-                    />
-                    <Tab
-                      label="Application"
-                      value="Application"
-                      style={{ textTransform: "none" }}
-                    />
-                    <Tab
-                      label="Approved"
-                      value="Approved"
-                      style={{ textTransform: "none" }}
-                      // onClick={(e) =>
-                      //   tenantsData(
-                      //     matchedApplicant?.tenant_mobileNumber,
-                      //     e.target.value
-                      //   )
-                      // }
-                    />
-                    <Tab
-                      label="Rejected"
-                      value="Rejected"
-                      style={{ textTransform: "none" }}
-                    />
-                  </TabList>
-                </Box>
-                <TabPanel value="Summary">
-                  <Row>
-                    <Col>
-                      <Grid container spacing={3}>
-                        <Grid item xs={9}>
-                          <div>
-                            <div>
-                              {isAttachFile ? (
-                                <Card
-                                  style={{
-                                    // width: "400px",
-                                    // background: "#F4F6FF",
-                                    // margin: "20px auto",
-                                    position: "relative",
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      position: "absolute",
-                                      top: "5px",
-                                      right: "5px",
-                                      cursor: "pointer",
-                                      fontSize: "24px",
-                                    }}
-                                    onClick={() => {
-                                      setIsAttachFile(false);
-                                    }}
-                                  >
-                                    &times;
-                                  </span>
-                                  <CardBody>
-                                    <CardTitle tag="h4">Notes</CardTitle>
+                    {dropdownList.map((item, index) => {
+                      return (
+                        <DropdownItem
+                          key={index}
+                          onClick={() => {
+                            selectedDropdown(item);
+                            handleEditStatus(item);
+                          }}
+                        >
+                          {item}
+                        </DropdownItem>
+                      );
+                    })}
+                  </DropdownMenu>
+                </Dropdown>
 
-                                    {/* Notes */}
-                                    <div>
-                                           <div>
-                                              <TextField
-                                                type="text"
-                                                size="small"
-                                                fullWidth
-                                                value={newNote}
-                                                onChange={(e) => {
-                                                  setNewNote(e.target.value);
-                                                }}
-                                              />
-                                            </div>
+                <LoadingButton
+                  variant="contained"
+                  loading={loading}
+                  style={
+                    moveIn && moveIn.status === "Approved"
+                      ? { display: "block", marginLeft: "10px" }
+                      : { display: "none" }
+                  }
+                  color="success"
+                  onClick={(e) => {
+                    fetchDataAndPost();
+                    handleClick();
+                    // navigate("/admin/RentRoll");
+                  }}
+                  disabled={applicantData && applicantData.isMovedin === true}
+                >
+                  Move in
+                </LoadingButton>
+              </div>
+              <Row>
+                <Col>
+                  <TabContext value={value}>
+                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                      <TabList
+                        onChange={handleChange}
+                        aria-label="lab API tabs example"
+                      >
+                        <Tab
+                          label="Summary"
+                          value="Summary"
+                          style={{ textTransform: "none" }}
+                        />
+                        <Tab
+                          label="Application"
+                          value="Application"
+                          style={{ textTransform: "none" }}
+                        />
+                        <Tab
+                          label="Approved"
+                          value="Approved"
+                          style={{ textTransform: "none" }}
+                        // onClick={(e) =>
+                        //   tenantsData(
+                        //     matchedApplicant?.tenant_mobileNumber,
+                        //     e.target.value
+                        //   )
+                        // }
+                        />
+                        <Tab
+                          label="Rejected"
+                          value="Rejected"
+                          style={{ textTransform: "none" }}
+                        />
+                      </TabList>
+                    </Box>
+                    <TabPanel value="Summary">
+                      <Row>
+                        <Col>
+                          <Grid container spacing={3}>
+                            <Grid item xs={9}>
+                              <div>
+                                <div>
+                                  {isAttachFile ? (
+                                    <Card
+                                      style={{
+                                        // width: "400px",
+                                        // background: "#F4F6FF",
+                                        // margin: "20px auto",
+                                        position: "relative",
+                                      }}
+                                    >
+                                      <span
+                                        style={{
+                                          position: "absolute",
+                                          top: "5px",
+                                          right: "5px",
+                                          cursor: "pointer",
+                                          fontSize: "24px",
+                                        }}
+                                        onClick={() => {
+                                          setIsAttachFile(false);
+                                        }}
+                                      >
+                                        &times;
+                                      </span>
+                                      <CardBody>
+                                        <CardTitle tag="h4">Notes</CardTitle>
 
-                                            <label
-                                              htmlFor="upload_file"
-                                              className="form-control-label"
+                                        {/* Notes */}
+                                        <div>
+                                          <div>
+                                            <TextField
+                                              type="text"
+                                              size="small"
+                                              fullWidth
+                                              value={newNote}
+                                              onChange={(e) => {
+                                                setNewNote(e.target.value);
+                                              }}
+                                            />
+                                          </div>
+
+                                          <label
+                                            htmlFor="upload_file"
+                                            className="form-control-label"
+                                            style={{
+                                              display: "block",
+                                              marginBottom: "15px",
+                                              marginTop: "20px",
+                                            }}
+                                          >
+                                            Upload Files (Maximum of 10)
+                                          </label>
+                                        </div>
+                                        <div className="d-flex align-items-center">
+                                          <input
+                                            type="file"
+                                            className="form-control-file d-none"
+                                            accept="file/*"
+                                            name="upload_file"
+                                            id="upload_file"
+                                            multiple
+                                            onChange={(e) => {
+                                              setNewFile(e.target.files[0]);
+                                              // Display the file name
+                                              setFileName(e.target.files[0]?.name || "");
+                                            }}
+                                          />
+                                          <label
+                                            htmlFor="upload_file"
+                                            className="btn btn-primary mr-3"
+                                            style={{
+                                              borderRadius: "5px",
+                                              padding: "8px",
+                                            }}
+                                          >
+                                            Choose Files
+                                          </label>
+
+                                          {newFile && (
+                                            <p
                                               style={{
-                                                display: "block",
-                                                marginBottom: "15px",
-                                                marginTop: "20px",
+                                                cursor: "pointer",
+                                                color: "blue",
+                                              }}
+                                              onClick={() => openFileInBrowser(newFile)}
+                                            >
+                                              {fileName}
+                                            </p>
+                                          )}
+
+                                          {applicantFormik1.touched.applicant_file &&
+                                            applicantFormik1.errors.applicant_file ? (
+                                            <div style={{ color: "red" }}>
+                                              {applicantFormik1.errors.applicant_file}
+                                            </div>
+                                          ) : null}
+                                        </div>
+
+                                        <div className="mt-3">
+                                          <Button
+                                            color="success"
+                                            onClick={hadlenotesandfile}
+                                            style={{ marginRight: "10px" }}
+                                          >
+                                            Save
+                                          </Button>
+
+                                          <Button onClick={() => setIsAttachFile(false)}>
+                                            Cancel
+                                          </Button>
+                                        </div>
+                                      </CardBody>
+                                    </Card>
+                                  ) : (
+                                    <Button
+                                      onClick={handleAttachFile}
+                                      style={{
+                                        marginTop: "3px",
+                                        padding: "10px 20px",
+                                        fontSize: "16px",
+                                        borderRadius: "15px",
+                                        boxShadow:
+                                          "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                                      }}
+                                    >
+                                      Attach note or file
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+                              <div>
+                                <div>
+                                  {console.log(checkedItems, "checked")}
+
+                                  <input
+                                    type="checkbox"
+                                    id="CreditCheck"
+                                    name="CreditCheck"
+                                    value="CreditCheck"
+                                    style={{
+                                      transform: "scale(1.5)",
+                                      marginLeft: "4px",
+                                      marginTop: "20px",
+                                      fontWeight: "bold",
+                                    }}
+                                    onChange={(e) =>
+                                      handleChecklistChange(e, "CreditCheck")
+                                    }
+                                    checked={checkedItems.includes("CreditCheck")}
+                                  />{" "}
+                                  Credit and background check <br />
+                                  <input
+                                    type="checkbox"
+                                    id="EmploymentVerification"
+                                    name="EmploymentVerification"
+                                    value="EmploymentVerification"
+                                    style={{
+                                      transform: "scale(1.5)",
+                                      marginLeft: "4px",
+                                      marginTop: "20px",
+                                      fontWeight: "bold",
+                                    }}
+                                    onChange={(e) =>
+                                      handleChecklistChange(
+                                        e,
+                                        "EmploymentVerification"
+                                      )
+                                    }
+                                    checked={checkedItems.includes(
+                                      "EmploymentVerification"
+                                    )}
+                                  />{" "}
+                                  Employment verification <br />
+                                  <input
+                                    type="checkbox"
+                                    id="ApplicationFee"
+                                    name="ApplicationFee"
+                                    value="ApplicationFee"
+                                    style={{
+                                      transform: "scale(1.5)",
+                                      marginLeft: "4px",
+                                      marginTop: "20px",
+                                      fontWeight: "bold",
+                                    }}
+                                    onChange={(e) =>
+                                      handleChecklistChange(e, "ApplicationFee")
+                                    }
+                                    checked={checkedItems.includes(
+                                      "ApplicationFee"
+                                    )}
+                                  />{" "}
+                                  Application fee collected <br />
+                                  <input
+                                    type="checkbox"
+                                    id="IncomeVerification"
+                                    name="IncomeVerification"
+                                    value="IncomeVerification"
+                                    style={{
+                                      transform: "scale(1.5)",
+                                      marginLeft: "4px",
+                                      marginTop: "20px",
+                                      fontWeight: "bold",
+                                    }}
+                                    onChange={(e) =>
+                                      handleChecklistChange(e, "IncomeVerification")
+                                    }
+                                    checked={checkedItems.includes(
+                                      "IncomeVerification"
+                                    )}
+                                  />{" "}
+                                  Income verification <br />
+                                  <input
+                                    type="checkbox"
+                                    id="LandlordVerification"
+                                    name="LandlordVerification"
+                                    value="LandlordVerification"
+                                    style={{
+                                      transform: "scale(1.5)",
+                                      marginLeft: "4px",
+                                      marginTop: "20px",
+                                      marginBottom: "20px",
+                                      fontWeight: "bold",
+                                    }}
+                                    onChange={(e) =>
+                                      handleChecklistChange(
+                                        e,
+                                        "LandlordVerification"
+                                      )
+                                    }
+                                    checked={checkedItems.includes(
+                                      "LandlordVerification"
+                                    )}
+                                  />{" "}
+                                  Landlord verification <br />
+                                </div>
+
+                                <Box display="flex" flexDirection="column">
+                                  {matchedApplicant?.applicant_checklist?.map(
+                                    (item, index) => (
+                                      <div
+                                        key={index}
+                                        style={{
+                                          paddingTop: "10px",
+                                          margin: "0",
+                                          padding: "0",
+                                        }}
+                                      >
+                                        <FormControlLabel
+                                          control={
+                                            <input
+                                              style={{
+                                                transform: "scale(1.5)",
+                                                marginLeft: "14px",
+                                                // marginTop: "20px",
+                                                fontWeight: "bold",
+                                              }}
+                                              type="checkbox"
+                                              value={item}
+                                              color="success"
+                                              onChange={(e) =>
+                                                handleChecklistChange(e, item)
+                                              }
+                                              checked={checkedItems.includes(item)}
+                                            />
+                                          }
+                                          label={
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                marginLeft: "5px",
                                               }}
                                             >
-                                              Upload Files (Maximum of 10)
-                                            </label>
-                                    </div>
-                                    <div className="d-flex align-items-center">
-                                      <input
-                                        type="file"
-                                        className="form-control-file d-none"
-                                        accept="file/*"
-                                        name="upload_file"
-                                        id="upload_file"
-                                        multiple
-                                        onChange={(e) => {
-                                          setNewFile(e.target.files[0]);
-                                          // Display the file name
-                                          setFileName(e.target.files[0]?.name || "");
-                                        }}
+                                              <span>{item}</span>
+                                              <IconButton
+                                                aria-label="delete"
+                                                onClick={() =>
+                                                  handleRemoveItem(item)
+                                                }
+                                              >
+                                                <CloseIcon />
+                                              </IconButton>
+                                            </div>
+                                          }
+                                        />
+                                      </div>
+                                    )
+                                  )}
+                                </Box>
+                                {isChecklistVisible && (
+                                  <div>
+                                    <Box
+                                      display="flex"
+                                      sx={{ width: "40%" }}
+                                      flexDirection="row"
+                                      alignItems="center"
+                                      paddingTop="10px"
+                                    >
+                                      <TextField
+                                        type="text"
+                                        size="small"
+                                        fullWidth
+                                        value={newItem}
+                                        onChange={(e) => setNewItem(e.target.value)}
                                       />
-                                      <label
-                                        htmlFor="upload_file"
-                                        className="btn btn-primary mr-3"
+                                      <CheckIcon
                                         style={{
-                                          borderRadius: "5px",
-                                          padding: "8px",
+                                          width: "30px",
+                                          height: "30px",
+                                          marginLeft: "5px",
+                                          cursor: "pointer",
+                                          color: "green", // Change color as desired
+                                          border: "2px solid green", // Border for the icon
+                                          borderRadius: "5px", // Makes the border square
+                                          display: "flex",
+                                          alignItems: "center",
+                                          justifyContent: "center",
                                         }}
-                                      >
-                                        Choose Files
-                                      </label>
-
-                                      {newFile && (
-                                        <p
-                                          style={{
-                                            cursor: "pointer",
-                                            color: "blue",
-                                          }}
-                                          onClick={() => openFileInBrowser(newFile)}
-                                        >
-                                          {fileName}
-                                        </p>
-                                      )}
-
-                                      {applicantFormik1.touched.applicant_file &&
-                                      applicantFormik1.errors.applicant_file ? (
-                                        <div style={{ color: "red" }}>
-                                          {applicantFormik1.errors.applicant_file}
-                                        </div>
-                                      ) : null}
-                                    </div>
-
-                                    <div className="mt-3">
-                                      <Button
-                                        color="success"
-                                        onClick={hadlenotesandfile}
-                                        style={{ marginRight: "10px" }}
-                                      >
-                                        Save
-                                      </Button>
-
-                                      <Button onClick={() => setIsAttachFile(false)}>
-                                        Cancel
-                                      </Button>
-                                    </div>
-                                  </CardBody>
-                                </Card>
-                              ) : (
+                                        onClick={handleAddItem}
+                                      />
+                                      <CloseIcon
+                                        style={{
+                                          width: "30px",
+                                          height: "30px",
+                                          marginLeft: "5px",
+                                          cursor: "pointer",
+                                          color: "red", // Change color as desired
+                                          border: "2px solid red", // Border for the icon
+                                          borderRadius: "5px", // Makes the border square
+                                          display: "flex",
+                                          alignItems: "center",
+                                          justifyContent: "center",
+                                        }}
+                                        onClick={toggleChecklist}
+                                      />
+                                    </Box>
+                                  </div>
+                                )}
+                                <br></br>
                                 <Button
-                                  onClick={handleAttachFile}
-                                  style={{
-                                    marginTop: "3px",
-                                    padding: "10px 20px",
-                                    fontSize: "16px",
-                                    borderRadius: "15px",
-                                    boxShadow:
-                                      "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                                  variant="body1"
+                                  sx={{
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
                                   }}
+                                  onClick={toggleChecklist}
                                 >
-                                  Attach note or file
+                                  + Add checklist
                                 </Button>
-                              )}
-                            </div>
-                          </div>
-                          <div>
-                            <div>
-                            {console.log(checkedItems, "checked")}
-                              
-                              <input
-                                type="checkbox"
-                                id="CreditCheck"
-                                name="CreditCheck"
-                                value="CreditCheck"
-                                style={{
-                                  transform: "scale(1.5)",
-                                  marginLeft: "4px",
-                                  marginTop: "20px",
-                                  fontWeight: "bold",
-                                }}
-                                onChange={(e) =>
-                                  handleChecklistChange(e, "CreditCheck")
-                                }
-                                checked={checkedItems.includes("CreditCheck")}
-                              />{" "}
-                              Credit and background check <br />
-                              <input
-                                type="checkbox"
-                                id="EmploymentVerification"
-                                name="EmploymentVerification"
-                                value="EmploymentVerification"
-                                style={{
-                                  transform: "scale(1.5)",
-                                  marginLeft: "4px",
-                                  marginTop: "20px",
-                                  fontWeight: "bold",
-                                }}
-                                onChange={(e) =>
-                                  handleChecklistChange(
-                                    e,
-                                    "EmploymentVerification"
-                                  )
-                                }
-                                checked={checkedItems.includes(
-                                  "EmploymentVerification"
-                                )}
-                              />{" "}
-                              Employment verification <br />
-                              <input
-                                type="checkbox"
-                                id="ApplicationFee"
-                                name="ApplicationFee"
-                                value="ApplicationFee"
-                                style={{
-                                  transform: "scale(1.5)",
-                                  marginLeft: "4px",
-                                  marginTop: "20px",
-                                  fontWeight: "bold",
-                                }}
-                                onChange={(e) =>
-                                  handleChecklistChange(e, "ApplicationFee")
-                                }
-                                checked={checkedItems.includes(
-                                  "ApplicationFee"
-                                )}
-                              />{" "}
-                              Application fee collected <br />
-                              <input
-                                type="checkbox"
-                                id="IncomeVerification"
-                                name="IncomeVerification"
-                                value="IncomeVerification"
-                                style={{
-                                  transform: "scale(1.5)",
-                                  marginLeft: "4px",
-                                  marginTop: "20px",
-                                  fontWeight: "bold",
-                                }}
-                                onChange={(e) =>
-                                  handleChecklistChange(e, "IncomeVerification")
-                                }
-                                checked={checkedItems.includes(
-                                  "IncomeVerification"
-                                )}
-                              />{" "}
-                              Income verification <br />
-                              <input
-                                type="checkbox"
-                                id="LandlordVerification"
-                                name="LandlordVerification"
-                                value="LandlordVerification"
-                                style={{
-                                  transform: "scale(1.5)",
-                                  marginLeft: "4px",
-                                  marginTop: "20px",
-                                  marginBottom: "20px",
-                                  fontWeight: "bold",
-                                }}
-                                onChange={(e) =>
-                                  handleChecklistChange(
-                                    e,
-                                    "LandlordVerification"
-                                  )
-                                }
-                                checked={checkedItems.includes(
-                                  "LandlordVerification"
-                                )}
-                              />{" "}
-                              Landlord verification <br />
-                            </div>
+                              </div>
 
-                            <Box display="flex" flexDirection="column">
-                              {matchedApplicant?.applicant_checklist?.map(
-                                (item, index) => (
-                                  <div
-                                    key={index}
+                              {matchedApplicant?.applicant_NotesAndFile.length > 0 && (
+                                <>
+                                  <Row
+                                    className="w-100 my-3"
                                     style={{
-                                      paddingTop: "10px",
-                                      margin: "0",
-                                      padding: "0",
+                                      fontSize: "18px",
+                                      textTransform: "capitalize",
+                                      color: "#5e72e4",
+                                      fontWeight: "600",
+                                      borderBottom: "1px solid #ddd",
+                                      paddingTop: "15px",
                                     }}
                                   >
-                                    <FormControlLabel
-                                      control={
-                                        <input
-                                          style={{
-                                            transform: "scale(1.5)",
-                                            marginLeft: "14px",
-                                            // marginTop: "20px",
-                                            fontWeight: "bold",
-                                          }}
-                                          type="checkbox"
-                                          value={item}
-                                          color="success"
-                                          onChange={(e) =>
-                                            handleChecklistChange(e, item)
-                                          }
-                                          checked={checkedItems.includes(item)}
-                                        />
-                                      }
-                                      label={
-                                        <div
-                                          style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            marginLeft: "5px",
+                                    <Col>Updates</Col>
+                                  </Row>
+
+                                  <Row
+                                    className="w-100 mb-1"
+                                    style={{
+                                      fontSize: "15px",
+                                      // textTransform: "uppercase",
+                                      color: "#aaa",
+                                      fontWeight: "bold",
+                                    }}
+                                  >
+                                    <Col>Note</Col>
+                                    <Col>File</Col>
+                                    <Col>Clear</Col>
+                                  </Row>
+                                  {console.log(matchedApplicant, 'matchedApplicnt')}
+
+                                  {matchedApplicant?.applicant_NotesAndFile.map((data, index) => (
+                                    <Row
+                                      className="w-100 mt-1"
+                                      style={{
+                                        fontSize: "12px",
+                                        textTransform: "capitalize",
+                                        color: "#000",
+                                      }}
+                                      key={index} // Ensure to provide a unique key when iterating in React
+                                    >
+                                      <Col>{data.applicant_file && <p>{data.applicant_file}</p>}</Col>
+                                      <Col>
+                                        {data.applicant_notes && (
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              // alignItems: "center",
+                                            }}
+                                          >
+                                            <p
+                                              onClick={() =>
+                                                openFileInNewTab(data.applicant_notes)
+                                              }
+                                            >
+                                              <FileOpenIcon />
+                                              {data.applicant_notes}
+                                            </p>
+                                          </div>
+                                        )}
+                                      </Col>
+                                      <Col>
+                                        <ClearIcon
+                                          onClick={() => {
+                                            handleClearRow(data, matchedApplicant._id);
                                           }}
                                         >
-                                          <span>{item}</span>
-                                          <IconButton
-                                            aria-label="delete"
-                                            onClick={() =>
-                                              handleRemoveItem(item)
-                                            }
-                                          >
-                                            <CloseIcon />
-                                          </IconButton>
-                                        </div>
-                                      }
-                                    />
-                                  </div>
-                                )
+                                          Clear
+                                        </ClearIcon>
+                                      </Col>
+                                    </Row>
+                                  ))}
+                                </>
                               )}
-                            </Box>
-                            {isChecklistVisible && (
-                              <div>
-                                <Box
-                                  display="flex"
-                                  sx={{ width: "40%" }}
-                                  flexDirection="row"
-                                  alignItems="center"
-                                  paddingTop="10px"
-                                >
-                                  <TextField
-                                    type="text"
-                                    size="small"
-                                    fullWidth
-                                    value={newItem}
-                                    onChange={(e) => setNewItem(e.target.value)}
-                                  />
-                                  <CheckIcon
-                                    style={{
-                                      width: "30px",
-                                      height: "30px",
-                                      marginLeft: "5px",
-                                      cursor: "pointer",
-                                      color: "green", // Change color as desired
-                                      border: "2px solid green", // Border for the icon
-                                      borderRadius: "5px", // Makes the border square
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                    }}
-                                    onClick={handleAddItem}
-                                  />
-                                  <CloseIcon
-                                    style={{
-                                      width: "30px",
-                                      height: "30px",
-                                      marginLeft: "5px",
-                                      cursor: "pointer",
-                                      color: "red", // Change color as desired
-                                      border: "2px solid red", // Border for the icon
-                                      borderRadius: "5px", // Makes the border square
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                    }}
-                                    onClick={toggleChecklist}
-                                  />
-                                </Box>
-                              </div>
-                            )}
-                            <br></br>
-                            <Button
-                              variant="body1"
-                              sx={{
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                              }}
-                              onClick={toggleChecklist}
-                            >
-                              + Add checklist
-                            </Button>
-                          </div>
 
-                          {matchedApplicant?.applicant_NotesAndFile.length > 0 && (
-                            <>
-                              <Row
-                                className="w-100 my-3"
-                                style={{
-                                  fontSize: "18px",
-                                  textTransform: "capitalize",
-                                  color: "#5e72e4",
-                                  fontWeight: "600",
-                                  borderBottom: "1px solid #ddd",
-                                  paddingTop: "15px",
-                                }}
-                              >
-                                <Col>Updates</Col>
-                              </Row>
-
-                              <Row
-                                className="w-100 mb-1"
-                                style={{
-                                  fontSize: "15px",
-                                  // textTransform: "uppercase",
-                                  color: "#aaa",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                <Col>Note</Col>
-                                <Col>File</Col>
-                                <Col>Clear</Col>
-                              </Row>
-                              {console.log(matchedApplicant,'matchedApplicnt')}
-
-                              {matchedApplicant?.applicant_NotesAndFile.map((data, index) => (
+                              <>
                                 <Row
-                                  className="w-100 mt-1"
+                                  className="w-100 my-3 "
                                   style={{
-                                    fontSize: "12px",
+                                    fontSize: "18px",
                                     textTransform: "capitalize",
-                                    color: "#000",
+                                    color: "#5e72e4",
+                                    fontWeight: "600",
+                                    borderBottom: "1px solid #ddd",
                                   }}
-                                  key={index} // Ensure to provide a unique key when iterating in React
                                 >
-                                  <Col>{data.applicant_file && <p>{data.applicant_file}</p>}</Col>
-                                  <Col>
-                                    {data.applicant_notes && (
+                                  <Col>Updates</Col>
+                                </Row>
+
+                                {matchedApplicant?.applicant_status?.map(
+                                  (item, index) => (
+                                    <Row
+                                      className="w-100 mt-1  mb-5"
+                                      style={{
+                                        fontSize: "12px",
+                                        textTransform: "capitalize",
+                                        color: "#000",
+                                      }}
+                                      key={index}
+                                    >
+                                      <Col>{item.status || "N/A"}</Col>
+                                      <Col>
+                                        {item?.status
+                                          ? arrayOfStatus.find(
+                                            (x) => x.value === item.status
+                                          )?.label
+                                          : "N/A"}
+                                      </Col>
+                                      <Col>
+                                        {item.statusUpdatedBy +
+                                          " At " +
+                                          item.updateAt || "N/A"}
+                                      </Col>
+                                    </Row>
+                                  )
+                                )}
+                              </>
+                            </Grid>
+
+                            <Grid item xs="12" md="6" lg="4" xl="3">
+                              {isEdit ? (
+                                <Card
+                                  style={{
+                                    background: "#F4F6FF",
+                                    border: "1px solid #ccc",
+                                  }}
+                                >
+                                  <CardBody>
+                                    {/* <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
+                                    <form>
                                       <div
                                         style={{
                                           display: "flex",
-                                          // alignItems: "center",
+                                          flexDirection: "column",
                                         }}
                                       >
-                                        <p
-                                          onClick={() =>
-                                            openFileInNewTab(data.applicant_notes)
+                                        <div>
+                                          <h5>Name</h5>
+                                        </div>
+                                        <TextField
+                                          type="text"
+                                          size="small"
+                                          id="tenant_firstName"
+                                          name="tenant_firstName"
+                                          value={
+                                            applicantFormik.values.tenant_firstName
                                           }
-                                        >
-                                          <FileOpenIcon />
-                                          {data.applicant_notes}
-                                        </p>
+                                          onChange={applicantFormik.handleChange}
+                                          onBlur={applicantFormik.handleBlur}
+                                          placeholder="FirstName"
+                                        />
+                                        <TextField
+                                          type="text"
+                                          size="small"
+                                          style={{ marginTop: "10px" }}
+                                          placeholder="LastName"
+                                          id="tenant_lastName"
+                                          name="tenant_lastName"
+                                          value={
+                                            applicantFormik.values.tenant_lastName
+                                          }
+                                          onChange={applicantFormik.handleChange}
+                                          onBlur={applicantFormik.handleBlur}
+                                        />
                                       </div>
-                                    )}
-                                  </Col>
-                                  <Col>
-                                    <ClearIcon
-                                      onClick={() => {
-                                        handleClearRow(data,matchedApplicant._id);
-                                      }}
-                                    >
-                                      Clear
-                                    </ClearIcon>
-                                  </Col>
-                                </Row>
-                              ))}
-                            </>
-                          )}
-
-                          <>
-                            <Row
-                              className="w-100 my-3 "
-                              style={{
-                                fontSize: "18px",
-                                textTransform: "capitalize",
-                                color: "#5e72e4",
-                                fontWeight: "600",
-                                borderBottom: "1px solid #ddd",
-                              }}
-                            >
-                              <Col>Updates</Col>
-                            </Row>
-
-                            {matchedApplicant?.applicant_status?.map(
-                              (item, index) => (
-                                <Row
-                                  className="w-100 mt-1  mb-5"
-                                  style={{
-                                    fontSize: "12px",
-                                    textTransform: "capitalize",
-                                    color: "#000",
-                                  }}
-                                  key={index}
-                                >
-                                  <Col>{item.status || "N/A"}</Col>
-                                  <Col>
-                                    {item?.status
-                                      ? arrayOfStatus.find(
-                                          (x) => x.value === item.status
-                                        )?.label
-                                      : "N/A"}
-                                  </Col>
-                                  <Col>
-                                    {item.statusUpdatedBy +
-                                      " At " +
-                                      item.updateAt || "N/A"}
-                                  </Col>
-                                </Row>
-                              )
-                            )}
-                          </>
-                        </Grid>
-
-                        <Grid item xs="12" md="6" lg="4" xl="3">
-                          {isEdit ? (
-                            <Card
-                              style={{
-                                background: "#F4F6FF",
-                                border: "1px solid #ccc",
-                              }}
-                            >
-                              <CardBody>
-                                {/* <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
-                                <form>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "column",
-                                    }}
-                                  >
-                                    <div>
-                                      <h5>Name</h5>
-                                    </div>
-                                    <TextField
-                                      type="text"
-                                      size="small"
-                                      id="tenant_firstName"
-                                      name="tenant_firstName"
-                                      value={
-                                        applicantFormik.values.tenant_firstName
-                                      }
-                                      onChange={applicantFormik.handleChange}
-                                      onBlur={applicantFormik.handleBlur}
-                                      placeholder="FirstName"
-                                    />
-                                    <TextField
-                                      type="text"
-                                      size="small"
-                                      style={{ marginTop: "10px" }}
-                                      placeholder="LastName"
-                                      id="tenant_lastName"
-                                      name="tenant_lastName"
-                                      value={
-                                        applicantFormik.values.tenant_lastName
-                                      }
-                                      onChange={applicantFormik.handleChange}
-                                      onBlur={applicantFormik.handleBlur}
-                                    />
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "column",
-                                      marginTop: "10px",
-                                    }}
-                                  >
-                                    <div>
-                                      <h5>Numbers</h5>
-                                    </div>
-                                    <TextField
-                                      type="number"
-                                      size="small"
-                                      placeholder="Mobile"
-                                      id="tenant_mobileNumber"
-                                      name="tenant_mobileNumber"
-                                      value={
-                                        applicantFormik.values
-                                          .tenant_mobileNumber
-                                      }
-                                      onChange={applicantFormik.handleChange}
-                                      onBlur={applicantFormik.handleBlur}
-                                    />
-                                    <TextField
-                                      type="number"
-                                      size="small"
-                                      style={{ marginTop: "10px" }}
-                                      placeholder="Business"
-                                      id="tenant_workNumber"
-                                      name="tenant_workNumber"
-                                      value={
-                                        applicantFormik.values.tenant_workNumber
-                                      }
-                                      onChange={applicantFormik.handleChange}
-                                      onBlur={applicantFormik.handleBlur}
-                                    />
-                                    <TextField
-                                      type="number"
-                                      size="small"
-                                      style={{ marginTop: "10px" }}
-                                      placeholder="Home"
-                                      id="tenant_homeNumber"
-                                      name="tenant_homeNumber"
-                                      value={
-                                        applicantFormik.values.tenant_homeNumber
-                                      }
-                                      onChange={applicantFormik.handleChange}
-                                      onBlur={applicantFormik.handleBlur}
-                                    />
-                                    <TextField
-                                      type="number"
-                                      size="small"
-                                      style={{ marginTop: "10px" }}
-                                      placeholder="Fax"
-                                      id="tenant_faxPhoneNumber"
-                                      name="tenant_faxPhoneNumber"
-                                      value={
-                                        applicantFormik.values
-                                          .tenant_faxPhoneNumber
-                                      }
-                                      onChange={applicantFormik.handleChange}
-                                      onBlur={applicantFormik.handleBlur}
-                                    />
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "column",
-                                    }}
-                                  >
-                                    <div style={{ marginTop: "10px" }}>
-                                      <h5>Email</h5>
-                                    </div>
-                                    <TextField
-                                      type="text"
-                                      size="small"
-                                      placeholder="Email"
-                                      id="tenant_email"
-                                      name="tenant_email"
-                                      value={
-                                        applicantFormik.values.tenant_email
-                                      }
-                                      onChange={applicantFormik.handleChange}
-                                      onBlur={applicantFormik.handleBlur}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label
-                                      className="form-control-label"
-                                      htmlFor="input-property"
-                                      style={{ paddingTop: "15px" }}
-                                    >
-                                      Property
-                                    </label>
-                                    {/* {//console.log(propertyData, "propertyData")} */}
-                                    <FormGroup>
-                                      <Dropdown
-                                        isOpen={userdropdownOpen}
-                                        toggle={toggle9}
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          marginTop: "10px",
+                                        }}
                                       >
-                                        <DropdownToggle
-                                          caret
-                                          style={{
-                                            width: "100%",
-                                            marginRight: "15px",
-                                          }}
+                                        <div>
+                                          <h5>Numbers</h5>
+                                        </div>
+                                        <TextField
+                                          type="number"
+                                          size="small"
+                                          placeholder="Mobile"
+                                          id="tenant_mobileNumber"
+                                          name="tenant_mobileNumber"
+                                          value={
+                                            applicantFormik.values
+                                              .tenant_mobileNumber
+                                          }
+                                          onChange={applicantFormik.handleChange}
+                                          onBlur={applicantFormik.handleBlur}
+                                        />
+                                        <TextField
+                                          type="number"
+                                          size="small"
+                                          style={{ marginTop: "10px" }}
+                                          placeholder="Business"
+                                          id="tenant_workNumber"
+                                          name="tenant_workNumber"
+                                          value={
+                                            applicantFormik.values.tenant_workNumber
+                                          }
+                                          onChange={applicantFormik.handleChange}
+                                          onBlur={applicantFormik.handleBlur}
+                                        />
+                                        <TextField
+                                          type="number"
+                                          size="small"
+                                          style={{ marginTop: "10px" }}
+                                          placeholder="Home"
+                                          id="tenant_homeNumber"
+                                          name="tenant_homeNumber"
+                                          value={
+                                            applicantFormik.values.tenant_homeNumber
+                                          }
+                                          onChange={applicantFormik.handleChange}
+                                          onBlur={applicantFormik.handleBlur}
+                                        />
+                                        <TextField
+                                          type="number"
+                                          size="small"
+                                          style={{ marginTop: "10px" }}
+                                          placeholder="Fax"
+                                          id="tenant_faxPhoneNumber"
+                                          name="tenant_faxPhoneNumber"
+                                          value={
+                                            applicantFormik.values
+                                              .tenant_faxPhoneNumber
+                                          }
+                                          onChange={applicantFormik.handleChange}
+                                          onBlur={applicantFormik.handleBlur}
+                                        />
+                                      </div>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "column",
+                                        }}
+                                      >
+                                        <div style={{ marginTop: "10px" }}>
+                                          <h5>Email</h5>
+                                        </div>
+                                        <TextField
+                                          type="text"
+                                          size="small"
+                                          placeholder="Email"
+                                          id="tenant_email"
+                                          name="tenant_email"
+                                          value={
+                                            applicantFormik.values.tenant_email
+                                          }
+                                          onChange={applicantFormik.handleChange}
+                                          onBlur={applicantFormik.handleBlur}
+                                        />
+                                      </div>
+                                      <div>
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-property"
+                                          style={{ paddingTop: "15px" }}
                                         >
-                                          {selectedPropertyType
-                                            ? selectedPropertyType
-                                            : "Select Property"}
-                                        </DropdownToggle>
-                                        <DropdownMenu
-                                          style={{
-                                            width: "100%",
-                                            maxHeight: "200px",
-                                            overflowY: "auto",
-                                          }}
-                                        >
-                                          <DropdownItem value="">
-                                            Select
-                                          </DropdownItem>
-                                          {propertydata.map((property) => (
-                                            <DropdownItem
-                                              key={property._id}
-                                              onClick={() =>
-                                                handlePropertyTypeSelect(
-                                                  property.rental_adress
-                                                )
-                                              }
+                                          Property
+                                        </label>
+                                        {/* {//console.log(propertyData, "propertyData")} */}
+                                        <FormGroup>
+                                          <Dropdown
+                                            isOpen={userdropdownOpen}
+                                            toggle={toggle9}
+                                          >
+                                            <DropdownToggle
+                                              caret
+                                              style={{
+                                                width: "100%",
+                                                marginRight: "15px",
+                                              }}
                                             >
-                                              {property.rental_adress}
-                                            </DropdownItem>
-                                          ))}
-                                        </DropdownMenu>
-                                        {applicantFormik.errors &&
-                                        applicantFormik.errors?.rental_adress &&
-                                        applicantFormik.touched &&
-                                        applicantFormik.touched
-                                          ?.rental_adress &&
-                                        applicantFormik.values.rental_adress ===
-                                          "" ? (
-                                          <div style={{ color: "red" }}>
-                                            {
-                                              applicantFormik.errors
-                                                .rental_adress
-                                            }
-                                          </div>
-                                        ) : null}
-                                      </Dropdown>
-                                    </FormGroup>
-                                  </div>
-                                  {console.log(unitData,'ubnitFsttvb')}
-                                  {applicantFormik.values.rental_adress && unitData && unitData[0] && unitData[0].rental_units && ( 
-                                  <div>
-                                    <label
-                                      className="form-control-label"
-                                      htmlFor="input-unit"
-                                    >
-                                      Unit
-                                    </label>
-                                    <FormGroup style={{ marginLeft: "15px" }}>
-                                      <Dropdown
-                                        isOpen={unitDropdownOpen}
-                                        toggle={toggle10}
-                                      >
-                                        <DropdownToggle caret>
-                                          {selectedUnit
-                                            ? selectedUnit
-                                            : "Select Unit"}
-                                        </DropdownToggle>
-                                        <DropdownMenu>
-                                          {unitData.length > 0 ? (
-                                            unitData.map((unit) => (
-                                              <DropdownItem
-                                                key={unit._id}
-                                                onClick={() =>
-                                                  handleUnitSelect(
-                                                    unit.rental_units
-                                                  )
-                                                }
-                                              >
-                                                {unit.rental_units}
+                                              {selectedPropertyType
+                                                ? selectedPropertyType
+                                                : "Select Property"}
+                                            </DropdownToggle>
+                                            <DropdownMenu
+                                              style={{
+                                                width: "100%",
+                                                maxHeight: "200px",
+                                                overflowY: "auto",
+                                              }}
+                                            >
+                                              <DropdownItem value="">
+                                                Select
                                               </DropdownItem>
-                                            ))
-                                          ) : (
-                                            <DropdownItem disabled>
-                                              No units available
-                                            </DropdownItem>
-                                          )}
-                                        </DropdownMenu>
-                                        {applicantFormik.errors &&
-                                        applicantFormik.errors?.rental_units &&
-                                        applicantFormik.touched &&
-                                        applicantFormik.touched?.rental_units &&
-                                        applicantFormik.values.rental_units ===
-                                          "" ? (
-                                          <div style={{ color: "red" }}>
-                                            {
-                                              applicantFormik.errors
-                                                .rental_units
-                                            }
-                                          </div>
-                                        ) : null}
-                                      </Dropdown>
-                                    </FormGroup>
-                                  </div>
-                                  )}
-                                  <div style={{ marginTop: "10px" }}>
-                                    <Button
-                                      color="success"
-                                      type="submit"
-                                      // onClick={() => {
-                                      //   handleEdit();
-                                      //   // setIsEdit(false);
-                                      // }}
-                                    >
-                                      Save
-                                    </Button>
-                                    <Button
-                                      onClick={() => {
-                                        setIsEdit(false);
-                                      }}
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </div>
-                                </form>
-                              </CardBody>
+                                              {propertydata.map((property) => (
+                                                <DropdownItem
+                                                  key={property._id}
+                                                  onClick={() =>
+                                                    handlePropertyTypeSelect(
+                                                      property.rental_adress
+                                                    )
+                                                  }
+                                                >
+                                                  {property.rental_adress}
+                                                </DropdownItem>
+                                              ))}
+                                            </DropdownMenu>
+                                            {applicantFormik.errors &&
+                                              applicantFormik.errors?.rental_adress &&
+                                              applicantFormik.touched &&
+                                              applicantFormik.touched
+                                                ?.rental_adress &&
+                                              applicantFormik.values.rental_adress ===
+                                              "" ? (
+                                              <div style={{ color: "red" }}>
+                                                {
+                                                  applicantFormik.errors
+                                                    .rental_adress
+                                                }
+                                              </div>
+                                            ) : null}
+                                          </Dropdown>
+                                        </FormGroup>
+                                      </div>
+                                      {console.log(unitData, 'ubnitFsttvb')}
+                                      {applicantFormik.values.rental_adress && unitData && unitData[0] && unitData[0].rental_units && (
+                                        <div>
+                                          <label
+                                            className="form-control-label"
+                                            htmlFor="input-unit"
+                                          >
+                                            Unit
+                                          </label>
+                                          <FormGroup style={{ marginLeft: "15px" }}>
+                                            <Dropdown
+                                              isOpen={unitDropdownOpen}
+                                              toggle={toggle10}
+                                            >
+                                              <DropdownToggle caret>
+                                                {selectedUnit
+                                                  ? selectedUnit
+                                                  : "Select Unit"}
+                                              </DropdownToggle>
+                                              <DropdownMenu>
+                                                {unitData.length > 0 ? (
+                                                  unitData.map((unit) => (
+                                                    <DropdownItem
+                                                      key={unit._id}
+                                                      onClick={() =>
+                                                        handleUnitSelect(
+                                                          unit.rental_units
+                                                        )
+                                                      }
+                                                    >
+                                                      {unit.rental_units}
+                                                    </DropdownItem>
+                                                  ))
+                                                ) : (
+                                                  <DropdownItem disabled>
+                                                    No units available
+                                                  </DropdownItem>
+                                                )}
+                                              </DropdownMenu>
+                                              {applicantFormik.errors &&
+                                                applicantFormik.errors?.rental_units &&
+                                                applicantFormik.touched &&
+                                                applicantFormik.touched?.rental_units &&
+                                                applicantFormik.values.rental_units ===
+                                                "" ? (
+                                                <div style={{ color: "red" }}>
+                                                  {
+                                                    applicantFormik.errors
+                                                      .rental_units
+                                                  }
+                                                </div>
+                                              ) : null}
+                                            </Dropdown>
+                                          </FormGroup>
+                                        </div>
+                                      )}
+                                      <div style={{ marginTop: "10px" }}>
+                                        <Button
+                                          color="success"
+                                          type="submit"
+                                        // onClick={() => {
+                                        //   handleEdit();
+                                        //   // setIsEdit(false);
+                                        // }}
+                                        >
+                                          Save
+                                        </Button>
+                                        <Button
+                                          onClick={() => {
+                                            setIsEdit(false);
+                                          }}
+                                        >
+                                          Cancel
+                                        </Button>
+                                      </div>
+                                    </form>
+                                  </CardBody>
 
-                              {/* <Button
+                                  {/* <Button
                               color="success"
                               onClick={() => {
                                 setIsEdit(false);
@@ -2216,802 +2230,816 @@ const ApplicantSummary = () => {
                               >
                               Save
                             </Button> */}
-                            </Card>
-                          ) : (
-                            <Card
-                              sx={{ minWidth: 275 }}
-                              style={{
-                                background: "#F4F6FF",
-                                border: "1px solid #ccc",
-                              }}
-                            >
-                              <CardContent>
-                                <div
+                                </Card>
+                              ) : (
+                                <Card
+                                  sx={{ minWidth: 275 }}
                                   style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    alignItems: "center",
+                                    background: "#F4F6FF",
+                                    border: "1px solid #ccc",
                                   }}
                                 >
-                                  <Typography
-                                    style={{
-                                      fontSize: "20px",
-                                      color: "black",
-                                      marginRight: "10px",
-                                    }}
-                                    color="text.secondary"
-                                    gutterBottom
-                                  >
-                                    {matchedApplicant?.tenant_firstName +
-                                      " " +
-                                      matchedApplicant?.tenant_lastName}
-                                  </Typography>
-                                  <Typography
-                                    style={{
-                                      cursor: "pointer",
-                                      textDecoration: "underline",
-                                      marginBottom: "5px",
-                                      // border: "2px solid black", // Example: 5px solid black border
-                                      // borderRadius: "10px", // Example: 10px border-radius
-                                    }}
-                                    onClick={onClickEditButton}
-                                  >
-                                    <EditIcon style={{ fontSize: "large" }} />
-                                  </Typography>
-                                </div>
-                                <Typography variant="caption">
-                                  Applicant
-                                </Typography>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    marginTop: "10px",
-                                  }}
-                                >
-                                  <Typography>
-                                    <HomeIcon />
-                                  </Typography>
-                                  <Typography
-                                    sx={{ fontSize: 14, marginLeft: "10px" }}
-                                    color="text.secondary"
-                                    gutterBottom
-                                  >
-                                    {matchedApplicant?.tenant_homeNumber ||
-                                      "N/A"}
-                                  </Typography>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    marginTop: "10px",
-                                  }}
-                                >
-                                  <Typography>
-                                    <BusinessCenterIcon />
-                                  </Typography>
-                                  <Typography
-                                    sx={{ fontSize: 14, marginLeft: "10px" }}
-                                    color="text.secondary"
-                                    gutterBottom
-                                  >
-                                    {matchedApplicant?.tenant_workNumber ||
-                                      "N/A"}
-                                  </Typography>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    marginTop: "10px",
-                                  }}
-                                >
-                                  <Typography>
-                                    <PhoneAndroidIcon />
-                                  </Typography>
-                                  <Typography
-                                    sx={{ fontSize: 14, marginLeft: "10px" }}
-                                    color="text.secondary"
-                                    gutterBottom
-                                  >
-                                    {matchedApplicant?.tenant_mobileNumber ||
-                                      "N/A"}
-                                  </Typography>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    marginTop: "10px",
-                                  }}
-                                >
-                                  <Typography>
-                                    <EmailIcon />
-                                  </Typography>
-                                  <Typography
-                                    sx={{ fontSize: 14, marginLeft: "10px" }}
-                                    color="text.secondary"
-                                    gutterBottom
-                                  >
-                                    {matchedApplicant?.tenant_email || "N/A"}
-                                  </Typography>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          )}
-                        </Grid>
-                      </Grid>
-                    </Col>
-                  </Row>
-                </TabPanel>
+                                  <CardContent>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <Typography
+                                        style={{
+                                          fontSize: "20px",
+                                          color: "black",
+                                          marginRight: "10px",
+                                        }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        {matchedApplicant?.tenant_firstName +
+                                          " " +
+                                          matchedApplicant?.tenant_lastName}
+                                      </Typography>
+                                      <Typography
+                                        style={{
+                                          cursor: "pointer",
+                                          textDecoration: "underline",
+                                          marginBottom: "5px",
+                                          // border: "2px solid black", // Example: 5px solid black border
+                                          // borderRadius: "10px", // Example: 10px border-radius
+                                        }}
+                                        onClick={onClickEditButton}
+                                      >
+                                        <EditIcon style={{ fontSize: "large" }} />
+                                      </Typography>
+                                    </div>
+                                    <Typography variant="caption">
+                                      Applicant
+                                    </Typography>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Typography>
+                                        <HomeIcon />
+                                      </Typography>
+                                      <Typography
+                                        sx={{ fontSize: 14, marginLeft: "10px" }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        {matchedApplicant?.tenant_homeNumber ||
+                                          "N/A"}
+                                      </Typography>
+                                    </div>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Typography>
+                                        <BusinessCenterIcon />
+                                      </Typography>
+                                      <Typography
+                                        sx={{ fontSize: 14, marginLeft: "10px" }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        {matchedApplicant?.tenant_workNumber ||
+                                          "N/A"}
+                                      </Typography>
+                                    </div>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Typography>
+                                        <PhoneAndroidIcon />
+                                      </Typography>
+                                      <Typography
+                                        sx={{ fontSize: 14, marginLeft: "10px" }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        {matchedApplicant?.tenant_mobileNumber ||
+                                          "N/A"}
+                                      </Typography>
+                                    </div>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Typography>
+                                        <EmailIcon />
+                                      </Typography>
+                                      <Typography
+                                        sx={{ fontSize: 14, marginLeft: "10px" }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        {matchedApplicant?.tenant_email || "N/A"}
+                                      </Typography>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              )}
+                            </Grid>
+                          </Grid>
+                        </Col>
+                      </Row>
+                    </TabPanel>
 
-                <TabPanel value="Application">
-                  <Row style={{ backgroundColor: "" }}>
-                    <Col>
-                      <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                          <Box>
-                            {isApplicantDataEmpty ? (
-                              <section className="">
-                                <div className="row d-flex ">
-                                  <div>
-                                    {/* Emergency Contact Relationship */}
-                                    <div className="form-row pl-2">
-                                      <p>
-                                        A rental application is not associated
-                                        with the applicant. A link to the online
-                                        rental application can be either emailed
-                                        directly to the applicant for completion
-                                        or the application details can be
-                                        entered into Buildium manually.
-                                      </p>
+                    <TabPanel value="Application">
+                      <Row style={{ backgroundColor: "" }}>
+                        <Col>
+                          <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                              <Box>
+                                {isApplicantDataEmpty ? (
+                                  <section className="">
+                                    <div className="row d-flex ">
+                                      <div>
+                                        {/* Emergency Contact Relationship */}
+                                        <div className="form-row pl-2">
+                                          <p>
+                                            A rental application is not associated
+                                            with the applicant. A link to the online
+                                            rental application can be either emailed
+                                            directly to the applicant for completion
+                                            or the application details can be
+                                            entered into Buildium manually.
+                                          </p>
+                                        </div>
+
+                                        {sendApplicantMail?.applicant_emailsend_date ? (
+                                          <div className="d-flex align-items-center">
+                                            <img
+                                              src={greenTick}
+                                              alt="Email send image"
+                                              width="30px"
+                                              height="30px"
+                                            />{" "}
+                                            <span className="ml-2">
+                                              Application emailed{" "}
+                                              {
+                                                sendApplicantMail?.applicant_emailsend_date
+                                              }
+                                            </span>
+                                          </div>
+                                        ) : null}
+                                      </div>
+
+                                      <div className="mt-4 d-flex flex-column flex-sm-row align-items-center">
+                                        <button
+                                          type="button"
+                                          className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0"
+                                          style={{
+                                            borderRadius: "10px",
+                                            transition:
+                                              "border-color 0.3s ease-in-out, background-color 0.3s ease-in-out",
+                                          }}
+                                          onClick={sendApplicantMailData}
+                                          disabled={sendApplicantMailLoader}
+                                        >
+                                          {sendApplicantMailLoader
+                                            ? "Sending..."
+                                            : "Email link to online rental application"}
+                                        </button>
+
+                                        <Link
+                                          to={`/admin/applicant-form/${id}`}
+                                          target="_blank"
+                                          className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0"
+                                          style={{
+                                            borderRadius: "10px",
+                                            transition:
+                                              "border-color 0.3s ease-in-out, background-color 0.3s ease-in-out",
+                                          }}
+                                        >
+                                          Manually enter application details
+                                        </Link>
+                                      </div>
+                                    </div>
+                                  </section>
+                                ) : (
+                                  <>
+                                    <div className="applicant-info mt-3">
+                                      <div className="d-flex">
+                                        <h2>Rental history</h2>
+                                        <Link
+                                          to={`/admin/applicant-form/${id}`}
+                                          target="_blank"
+                                          className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0"
+                                          style={{
+                                            borderRadius: "10px",
+                                            transition:
+                                              "border-color 0.3s ease-in-out, background-color 0.3s ease-in-out",
+                                          }}
+                                        >
+                                          Edit
+                                        </Link>
+                                      </div>
+                                      <hr
+                                        style={{
+                                          border: "1px solid black",
+                                          marginTop: "5px",
+                                        }}
+                                      />
+                                      <table>
+                                        <tbody>
+                                          <tr>
+                                            <td>APPLICANT NAME:</td>
+                                            <td>
+                                              <strong>
+                                                {`${applicantDatas?.applicant_firstName
+                                                  } ${" "} ${applicantDatas?.applicant_lastName
+                                                  }`}
+                                              </strong>
+                                            </td>
+                                          </tr>
+
+                                          <tr>
+                                            <td>
+                                              APPLICANT SOCIAL SECURITY NUMBER:
+                                            </td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.applicant_socialSecurityNumber
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>APPLICANT BIRTH DATE:</td>
+                                            <td>
+                                              <strong>
+                                                {applicantDatas?.applicant_dob}
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>APPLICANT CURRENT ADDRESS:</td>
+                                            <td>
+                                              <strong>
+                                                {`${applicantDatas?.applicant_country}, ${applicantDatas?.applicant_adress}, ${applicantDatas?.applicant_city}, ${applicantDatas?.applicant_state}, ${applicantDatas?.applicant_zipcode}`}
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>APPLICANT EMAIL:</td>
+                                            <td>
+                                              <strong>
+                                                {applicantDatas?.applicant_email}
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>APPLICANT CELL PHONE:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.applicant_cellPhone
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>APPLICANT HOME PHONE:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.applicant_homePhone
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>EMERGENCY CONTACT NAME:</td>
+                                            <td>
+                                              <strong>
+                                                {`${applicantDatas?.applicant_emergencyContact_firstName}, ${applicantDatas?.applicant_emergencyContact_lasttName}`}
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>EMERGENCY CONTACT RELATIONSHIP:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.applicant_emergencyContact_relationship
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>EMERGENCY CONTACT EMAIL:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.applicant_emergencyContact_email
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>EMERGENCY CONTACT PHONE:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.applicant_emergencyContact_phone
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
                                     </div>
 
-                                    {sendApplicantMail?.applicant_emailsend_date ? (
-                                      <div className="d-flex align-items-center">
-                                        <img
-                                          src={greenTick}
-                                          alt="Email send image"
-                                          width="30px"
-                                          height="30px"
-                                        />{" "}
-                                        <span className="ml-2">
-                                          Application emailed{" "}
-                                          {
-                                            sendApplicantMail?.applicant_emailsend_date
-                                          }
-                                        </span>
-                                      </div>
-                                    ) : null}
-                                  </div>
+                                    <div className="applicant-info mt-3">
+                                      <h2>Applicant Information</h2>
+                                      <hr
+                                        style={{
+                                          border: "1px solid black",
+                                          marginTop: "5px",
+                                        }}
+                                      />
+                                      <table>
+                                        <tbody>
+                                          <tr>
+                                            <td>RENTAL ADDRESS:</td>
+                                            <td>
+                                              <strong>
+                                                {`${applicantDatas?.rental_country}, ${applicantDatas?.rental_adress}, ${applicantDatas?.rental_city}, ${applicantDatas?.rental_state}, ${applicantDatas?.rental_zipcode}`}
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                  <div className="mt-4 d-flex flex-column flex-sm-row align-items-center">
-                                    <button
-                                      type="button"
-                                      className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0"
-                                      style={{
-                                        borderRadius: "10px",
-                                        transition:
-                                          "border-color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                                      }}
-                                      onClick={sendApplicantMailData}
-                                      disabled={sendApplicantMailLoader}
-                                    >
-                                      {sendApplicantMailLoader
-                                        ? "Sending..."
-                                        : "Email link to online rental application"}
-                                    </button>
+                                          <tr>
+                                            <td>RENTAL DATES:</td>
+                                            <td>
+                                              <strong>
+                                                {`${applicantDatas?.rental_data_from
+                                                  } ${"-"} ${applicantDatas?.rental_date_to
+                                                  }`}
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                    <Link
-                                      to={`/admin/applicant-form/${id}`}
-                                      target="_blank"
-                                      className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0"
-                                      style={{
-                                        borderRadius: "10px",
-                                        transition:
-                                          "border-color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                                      }}
-                                    >
-                                      Manually enter application details
-                                    </Link>
-                                  </div>
-                                </div>
-                              </section>
-                            ) : (
-                              <>
-                                <div className="applicant-info mt-3">
-                                  <div className="d-flex">
-                                    <h2>Rental history</h2>
-                                    <Link
-                                      to={`/admin/applicant-form/${id}`}
-                                      target="_blank"
-                                      className="btn btn-secondary ml-sm-3 mt-3 mt-sm-0"
-                                      style={{
-                                        borderRadius: "10px",
-                                        transition:
-                                          "border-color 0.3s ease-in-out, background-color 0.3s ease-in-out",
-                                      }}
-                                    >
-                                      Edit
-                                    </Link>
-                                  </div>
-                                  <hr
-                                    style={{
-                                      border: "1px solid black",
-                                      marginTop: "5px",
-                                    }}
-                                  />
-                                  <table>
-                                    <tbody>
-                                      <tr>
-                                        <td>APPLICANT NAME:</td>
-                                        <td>
-                                          <strong>
-                                            {`${
-                                              applicantDatas?.applicant_firstName
-                                            } ${" "} ${
-                                              applicantDatas?.applicant_lastName
-                                            }`}
-                                          </strong>
-                                        </td>
-                                      </tr>
+                                          <tr>
+                                            <td>MONTHLY RENT:</td>
+                                            <td>
+                                              <strong>
+                                                {applicantDatas?.rental_monthlyRent}
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                      <tr>
-                                        <td>
-                                          APPLICANT SOCIAL SECURITY NUMBER:
-                                        </td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.applicant_socialSecurityNumber
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>APPLICANT BIRTH DATE:</td>
-                                        <td>
-                                          <strong>
-                                            {applicantDatas?.applicant_dob}
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>APPLICANT CURRENT ADDRESS:</td>
-                                        <td>
-                                          <strong>
-                                            {`${applicantDatas?.applicant_country}, ${applicantDatas?.applicant_adress}, ${applicantDatas?.applicant_city}, ${applicantDatas?.applicant_state}, ${applicantDatas?.applicant_zipcode}`}
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>APPLICANT EMAIL:</td>
-                                        <td>
-                                          <strong>
-                                            {applicantDatas?.applicant_email}
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>APPLICANT CELL PHONE:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.applicant_cellPhone
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>APPLICANT HOME PHONE:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.applicant_homePhone
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>EMERGENCY CONTACT NAME:</td>
-                                        <td>
-                                          <strong>
-                                            {`${applicantDatas?.applicant_emergencyContact_firstName}, ${applicantDatas?.applicant_emergencyContact_lasttName}`}
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>EMERGENCY CONTACT RELATIONSHIP:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.applicant_emergencyContact_relationship
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>EMERGENCY CONTACT EMAIL:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.applicant_emergencyContact_email
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>EMERGENCY CONTACT PHONE:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.applicant_emergencyContact_phone
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
+                                          <tr>
+                                            <td>REASON FOR LEAVING:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.rental_resaonForLeaving
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                <div className="applicant-info mt-3">
-                                  <h2>Applicant Information</h2>
-                                  <hr
-                                    style={{
-                                      border: "1px solid black",
-                                      marginTop: "5px",
-                                    }}
-                                  />
-                                  <table>
-                                    <tbody>
-                                      <tr>
-                                        <td>RENTAL ADDRESS:</td>
-                                        <td>
-                                          <strong>
-                                            {`${applicantDatas?.rental_country}, ${applicantDatas?.rental_adress}, ${applicantDatas?.rental_city}, ${applicantDatas?.rental_state}, ${applicantDatas?.rental_zipcode}`}
-                                          </strong>
-                                        </td>
-                                      </tr>
+                                          <tr>
+                                            <td>LANDLORD NAME:</td>
+                                            <td>
+                                              <strong>
+                                                {`${applicantDatas?.rental_landlord_firstName
+                                                  } ${"-"} ${applicantDatas?.rental_landlord_lasttName
+                                                  }`}
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                      <tr>
-                                        <td>RENTAL DATES:</td>
-                                        <td>
-                                          <strong>
-                                            {`${
-                                              applicantDatas?.rental_data_from
-                                            } ${"-"} ${
-                                              applicantDatas?.rental_date_to
-                                            }`}
-                                          </strong>
-                                        </td>
-                                      </tr>
+                                          <tr>
+                                            <td>LANDLORD PHONE NUMBER:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.rental_landlord_phoneNumber
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>LANDLORD EMAIL:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.rental_landlord_email
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
 
-                                      <tr>
-                                        <td>MONTHLY RENT:</td>
-                                        <td>
-                                          <strong>
-                                            {applicantDatas?.rental_monthlyRent}
-                                          </strong>
-                                        </td>
-                                      </tr>
+                                    <div className="applicant-info mt-3">
+                                      <h2 className="hr">Employment</h2>
+                                      <hr
+                                        style={{
+                                          border: "1px solid black",
+                                          marginTop: "5px",
+                                        }}
+                                      />
+                                      <hr />
+                                      <table>
+                                        <tbody>
+                                          <tr>
+                                            <td>EMPLOYER NAME:</td>
+                                            <td>
+                                              <strong>
+                                                {applicantDatas?.employment_name}
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                      <tr>
-                                        <td>REASON FOR LEAVING:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.rental_resaonForLeaving
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
+                                          <tr>
+                                            <td>EMPLOYER ADDRESS:</td>
+                                            <td>
+                                              <strong>
+                                                {`${applicantDatas?.employment_country}, ${applicantDatas?.employment_adress}, ${applicantDatas?.employment_city}, ${applicantDatas?.employment_state}, ${applicantDatas?.employment_zipcode}`}
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                      <tr>
-                                        <td>LANDLORD NAME:</td>
-                                        <td>
-                                          <strong>
-                                            {`${
-                                              applicantDatas?.rental_landlord_firstName
-                                            } ${"-"} ${
-                                              applicantDatas?.rental_landlord_lasttName
-                                            }`}
-                                          </strong>
-                                        </td>
-                                      </tr>
+                                          <tr>
+                                            <td>EMPLOYER PHONE NUMBER:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.employment_phoneNumber
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                      <tr>
-                                        <td>LANDLORD PHONE NUMBER:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.rental_landlord_phoneNumber
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>LANDLORD EMAIL:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.rental_landlord_email
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
+                                          <tr>
+                                            <td>EMPLOYER EMAIL:</td>
+                                            <td>
+                                              <strong>
+                                                {applicantDatas?.employment_email}
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>POSITION HELD:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.employment_position
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                <div className="applicant-info mt-3">
-                                  <h2 className="hr">Employment</h2>
-                                  <hr
-                                    style={{
-                                      border: "1px solid black",
-                                      marginTop: "5px",
-                                    }}
-                                  />
-                                  <hr />
-                                  <table>
-                                    <tbody>
-                                      <tr>
-                                        <td>EMPLOYER NAME:</td>
-                                        <td>
-                                          <strong>
-                                            {applicantDatas?.employment_name}
-                                          </strong>
-                                        </td>
-                                      </tr>
+                                          <tr>
+                                            <td>EMPLOYMENT DATES:</td>
+                                            <td>
+                                              <strong>
+                                                {`${applicantDatas?.employment_date_from}, ${applicantDatas?.employment_date_to}`}
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                      <tr>
-                                        <td>EMPLOYER ADDRESS:</td>
-                                        <td>
-                                          <strong>
-                                            {`${applicantDatas?.employment_country}, ${applicantDatas?.employment_adress}, ${applicantDatas?.employment_city}, ${applicantDatas?.employment_state}, ${applicantDatas?.employment_zipcode}`}
-                                          </strong>
-                                        </td>
-                                      </tr>
+                                          <tr>
+                                            <td>MONTHLY GROSS SALARY:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.employment_monthlyGrossSalary
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                      <tr>
-                                        <td>EMPLOYER PHONE NUMBER:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.employment_phoneNumber
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
+                                          <tr>
+                                            <td>SUPERVISOR NAME:</td>
+                                            <td>
+                                              <strong>
+                                                {`${applicantDatas?.employment_supervisor_first
+                                                  } ${" "} ${applicantDatas?.employment_supervisor_last
+                                                  }`}
+                                              </strong>
+                                            </td>
+                                          </tr>
 
-                                      <tr>
-                                        <td>EMPLOYER EMAIL:</td>
-                                        <td>
-                                          <strong>
-                                            {applicantDatas?.employment_email}
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                      <tr>
-                                        <td>POSITION HELD:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.employment_position
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
+                                          <tr>
+                                            <td>SUPERVISOR TITLE:</td>
+                                            <td>
+                                              <strong>
+                                                {
+                                                  applicantDatas?.employment_supervisor_title
+                                                }
+                                              </strong>
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </>
+                                )}
+                              </Box>
+                            </Grid>
+                          </Grid>
+                        </Col>
+                      </Row>
+                    </TabPanel>
 
-                                      <tr>
-                                        <td>EMPLOYMENT DATES:</td>
-                                        <td>
-                                          <strong>
-                                            {`${applicantDatas?.employment_date_from}, ${applicantDatas?.employment_date_to}`}
-                                          </strong>
-                                        </td>
-                                      </tr>
-
-                                      <tr>
-                                        <td>MONTHLY GROSS SALARY:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.employment_monthlyGrossSalary
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
-
-                                      <tr>
-                                        <td>SUPERVISOR NAME:</td>
-                                        <td>
-                                          <strong>
-                                            {`${
-                                              applicantDatas?.employment_supervisor_first
-                                            } ${" "} ${
-                                              applicantDatas?.employment_supervisor_last
-                                            }`}
-                                          </strong>
-                                        </td>
-                                      </tr>
-
-                                      <tr>
-                                        <td>SUPERVISOR TITLE:</td>
-                                        <td>
-                                          <strong>
-                                            {
-                                              applicantDatas?.employment_supervisor_title
-                                            }
-                                          </strong>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </>
-                            )}
-                          </Box>
-                        </Grid>
-                      </Grid>
-                    </Col>
-                  </Row>
-                </TabPanel>
-
-                <TabPanel value="Approved">
-                  <CardHeader className="border-0">
-                    {/* <span>
+                    <TabPanel value="Approved">
+                      <CardHeader className="border-0">
+                        {/* <span>
                         <span>Property :</span>
                         <h2 style={{ color: "blue" }}> {rental}</h2>
                       </span> */}
-                  </CardHeader>
-                  <Row>
-                    <Col>
-                      {/* {Array.isArray(rentaldata) ? ( */}
-                      <Grid container spacing={2}>
-                        {console.log(rentaldata, "rentaldata")}
-                        {rentaldata.map((tenant, index) => (
-                          <Grid
-                            item
-                            xs={12}
-                            sm={6}
-                            // key={index}
-                          >
-                            {/* {tenant.entries.map((entry) => ( */}
-                            <Box
-                              // key={index}
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              padding="16px"
-                              maxWidth="400px"
-                              margin="20px"
-                            >
-                              <Row>
-                                <Col lg="2">
+                      </CardHeader>
+                      <Row>
+                        {loader2 ? (
+                          <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                            <RotatingLines
+                              strokeColor="grey"
+                              strokeWidth="5"
+                              animationDuration="0.75"
+                              width="50"
+                              visible={loader2}
+                            />
+                          </div>) :
+                          <Col>
+                            {/* {Array.isArray(rentaldata) ? ( */}
+                            <Grid container spacing={2}>
+                              {console.log(rentaldata, "rentaldata")}
+                              {rentaldata.map((tenant, index) => (
+                                <Grid
+                                  item
+                                  xs={12}
+                                  sm={6}
+                                // key={index}
+                                >
+                                  {/* {tenant.entries.map((entry) => ( */}
                                   <Box
-                                    width="40px"
-                                    height="40px"
-                                    display="flex"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    backgroundColor="grey"
+                                    // key={index}
+                                    border="1px solid #ccc"
                                     borderRadius="8px"
-                                    color="white"
-                                    fontSize="24px"
+                                    padding="16px"
+                                    maxWidth="400px"
+                                    margin="20px"
                                   >
-                                    <AssignmentIndIcon />
+                                    <Row>
+                                      <Col lg="2">
+                                        <Box
+                                          width="40px"
+                                          height="40px"
+                                          display="flex"
+                                          alignItems="center"
+                                          justifyContent="center"
+                                          backgroundColor="grey"
+                                          borderRadius="8px"
+                                          color="white"
+                                          fontSize="24px"
+                                        >
+                                          <AssignmentIndIcon />
+                                        </Box>
+                                      </Col>
+
+                                      <Col lg="5">
+                                        <div
+                                          style={{
+                                            color: "blue",
+                                            height: "40px",
+                                            fontWeight: "bold",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "start",
+                                          }}
+                                        >
+                                          {tenant.tenant_firstName || "N/A"}{" "}
+                                          {/* Jadeja Yash */}
+                                          {tenant.tenant_lastName || "N/A"}
+                                        </div>
+
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            paddingTop: "3px",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                          }}
+                                        >
+                                          <Typography
+                                            style={{
+                                              paddingRight: "3px",
+                                              fontSize: "2px",
+                                              color: "black",
+                                            }}
+                                          >
+                                            <PhoneAndroidIcon />
+                                          </Typography>
+                                          {tenant.tenant_mobileNumber || "N/A"}
+                                        </div>
+
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                          }}
+                                        >
+                                          <Typography
+                                            style={{
+                                              paddingRight: "3px",
+                                              fontSize: "7px",
+                                              color: "black",
+                                            }}
+                                          >
+                                            <HomeIcon />
+                                          </Typography>
+                                          {tenant.rental_adress || "N/A"}
+                                          {/* property1 */}
+                                        </div>
+
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            paddingTop: "3px",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                            color: "green",
+                                          }}
+                                        >
+                                          {/* {tenant.tenant_mobileNumber || "N/A"} */}
+                                          Approved
+                                        </div>
+                                      </Col>
+                                    </Row>
                                   </Box>
-                                </Col>
-
-                                <Col lg="5">
-                                  <div
-                                    style={{
-                                      color: "blue",
-                                      height: "40px",
-                                      fontWeight: "bold",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "start",
-                                    }}
-                                  >
-                                    {tenant.tenant_firstName || "N/A"}{" "}
-                                    {/* Jadeja Yash */}
-                                    {tenant.tenant_lastName || "N/A"}
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      paddingTop: "3px",
-                                      flexDirection: "row",
-                                      marginTop: "10px",
-                                    }}
-                                  >
-                                    <Typography
-                                      style={{
-                                        paddingRight: "3px",
-                                        fontSize: "2px",
-                                        color: "black",
-                                      }}
-                                    >
-                                      <PhoneAndroidIcon />
-                                    </Typography>
-                                    {tenant.tenant_mobileNumber || "N/A"}
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      marginTop: "10px",
-                                    }}
-                                  >
-                                    <Typography
-                                      style={{
-                                        paddingRight: "3px",
-                                        fontSize: "7px",
-                                        color: "black",
-                                      }}
-                                    >
-                                      <HomeIcon />
-                                    </Typography>
-                                    {tenant.rental_adress || "N/A"}
-                                    {/* property1 */}
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      paddingTop: "3px",
-                                      flexDirection: "row",
-                                      marginTop: "10px",
-                                      color: "green",
-                                    }}
-                                  >
-                                    {/* {tenant.tenant_mobileNumber || "N/A"} */}
-                                    Approved
-                                  </div>
-                                </Col>
-                              </Row>
-                            </Box>
-                            {/* ))} */}
-                          </Grid>
-                        ))}
-                      </Grid>
-                      {/* ) : (
+                                  {/* ))} */}
+                                </Grid>
+                              ))}
+                            </Grid>
+                            {/* ) : (
                           <h3>No data available....</h3>
                         )} */}
-                    </Col>
-                  </Row>
-                </TabPanel>
-                <TabPanel value="Rejected">
-                  <CardHeader className="border-0">
-                    {/* <span>
+                          </Col>
+                        }
+                      </Row>
+                    </TabPanel>
+                    <TabPanel value="Rejected">
+                      <CardHeader className="border-0">
+                        {/* <span>
                         <span>Property :</span>
                         <h2 style={{ color: "blue" }}> {rental}</h2>
                       </span> */}
-                  </CardHeader>
-                  <Row>
-                    <Col>
-                      {/* {Array.isArray(rentaldata) ? ( */}
-                      <Grid container spacing={2}>
-                        {rentaldata.map((tenant, index) => (
-                          <Grid
-                            item
-                            xs={12}
-                            sm={6}
-                            // key={index}
-                          >
-                            {/* {tenant.entries.map((entry) => ( */}
-                            <Box
-                              // key={index}
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              padding="16px"
-                              maxWidth="400px"
-                              margin="20px"
-                            >
-                              <Row>
-                                <Col lg="2">
+                      </CardHeader>
+                      <Row>
+                        {loader3 ? (
+                          <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                            <RotatingLines
+                              strokeColor="grey"
+                              strokeWidth="5"
+                              animationDuration="0.75"
+                              width="50"
+                              visible={loader3}
+                            />
+                          </div>) :
+                          <Col>
+                            {/* {Array.isArray(rentaldata) ? ( */}
+                            <Grid container spacing={2}>
+                              {rentaldata.map((tenant, index) => (
+                                <Grid
+                                  item
+                                  xs={12}
+                                  sm={6}
+                                // key={index}
+                                >
+                                  {/* {tenant.entries.map((entry) => ( */}
                                   <Box
-                                    width="40px"
-                                    height="40px"
-                                    display="flex"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    backgroundColor="grey"
+                                    // key={index}
+                                    border="1px solid #ccc"
                                     borderRadius="8px"
-                                    color="white"
-                                    fontSize="24px"
+                                    padding="16px"
+                                    maxWidth="400px"
+                                    margin="20px"
                                   >
-                                    <AssignmentIndIcon />
+                                    <Row>
+                                      <Col lg="2">
+                                        <Box
+                                          width="40px"
+                                          height="40px"
+                                          display="flex"
+                                          alignItems="center"
+                                          justifyContent="center"
+                                          backgroundColor="grey"
+                                          borderRadius="8px"
+                                          color="white"
+                                          fontSize="24px"
+                                        >
+                                          <AssignmentIndIcon />
+                                        </Box>
+                                      </Col>
+
+                                      <Col lg="5">
+                                        <div
+                                          style={{
+                                            color: "blue",
+                                            height: "40px",
+                                            fontWeight: "bold",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "start",
+                                          }}
+                                        >
+                                          {tenant.tenant_firstName || "N/A"}{" "}
+                                          {/* Jadeja Yash */}
+                                          {tenant.tenant_lastName || "N/A"}
+                                        </div>
+
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            paddingTop: "3px",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                          }}
+                                        >
+                                          <Typography
+                                            style={{
+                                              paddingRight: "3px",
+                                              fontSize: "2px",
+                                              color: "black",
+                                            }}
+                                          >
+                                            <PhoneAndroidIcon />
+                                          </Typography>
+                                          {tenant.tenant_mobileNumber || "N/A"}
+                                        </div>
+
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                          }}
+                                        >
+                                          <Typography
+                                            style={{
+                                              paddingRight: "3px",
+                                              fontSize: "7px",
+                                              color: "black",
+                                            }}
+                                          >
+                                            <HomeIcon />
+                                          </Typography>
+                                          {tenant.rental_adress || "N/A"}
+                                          {/* property1 */}
+                                        </div>
+
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            paddingTop: "3px",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                            color: "red",
+                                          }}
+                                        >
+                                          {/* {tenant.tenant_mobileNumber || "N/A"} */}
+                                          Rejected
+                                        </div>
+                                      </Col>
+                                    </Row>
                                   </Box>
-                                </Col>
-
-                                <Col lg="5">
-                                  <div
-                                    style={{
-                                      color: "blue",
-                                      height: "40px",
-                                      fontWeight: "bold",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "start",
-                                    }}
-                                  >
-                                    {tenant.tenant_firstName || "N/A"}{" "}
-                                    {/* Jadeja Yash */}
-                                    {tenant.tenant_lastName || "N/A"}
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      paddingTop: "3px",
-                                      flexDirection: "row",
-                                      marginTop: "10px",
-                                    }}
-                                  >
-                                    <Typography
-                                      style={{
-                                        paddingRight: "3px",
-                                        fontSize: "2px",
-                                        color: "black",
-                                      }}
-                                    >
-                                      <PhoneAndroidIcon />
-                                    </Typography>
-                                    {tenant.tenant_mobileNumber || "N/A"}
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      marginTop: "10px",
-                                    }}
-                                  >
-                                    <Typography
-                                      style={{
-                                        paddingRight: "3px",
-                                        fontSize: "7px",
-                                        color: "black",
-                                      }}
-                                    >
-                                      <HomeIcon />
-                                    </Typography>
-                                    {tenant.rental_adress || "N/A"}
-                                    {/* property1 */}
-                                  </div>
-
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      paddingTop: "3px",
-                                      flexDirection: "row",
-                                      marginTop: "10px",
-                                      color: "red",
-                                    }}
-                                  >
-                                    {/* {tenant.tenant_mobileNumber || "N/A"} */}
-                                    Rejected
-                                  </div>
-                                </Col>
-                              </Row>
-                            </Box>
-                            {/* ))} */}
-                          </Grid>
-                        ))}
-                      </Grid>
-                      {/* ) : (
+                                  {/* ))} */}
+                                </Grid>
+                              ))}
+                            </Grid>
+                            {/* ) : (
                           <h3>No data available....</h3>
                         )} */}
-                    </Col>
-                  </Row>
-                </TabPanel>
-              </TabContext>
-            </Col>
-          </Row></>)}
+                          </Col>
+                        }
+                      </Row>
+                    </TabPanel>
+                  </TabContext>
+                </Col>
+              </Row></>)}
         </Card>
       </Container>
     </>
