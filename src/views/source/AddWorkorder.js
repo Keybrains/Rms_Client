@@ -260,8 +260,8 @@ const AddWorkorder = () => {
           );
 
           const vendorData = response.data.data;
-          setWorkOrderData(vendorData); 
- 
+          setWorkOrderData(vendorData);
+
           const formattedDueDate = vendorData.due_date
             ? new Date(vendorData.due_date).toISOString().split("T")[0]
             : "";
@@ -387,24 +387,24 @@ const AddWorkorder = () => {
         }));
         const object = {
           properties: {
-            rental_adress:WorkFormik.values.rental_adress,
-            property_id: WorkFormik.values.rental_id, 
+            rental_adress: WorkFormik.values.rental_adress,
+            property_id: WorkFormik.values.rental_id,
           },
           unit: [
             {
-              unit:WorkFormik.values.rental_units,
-              unit_id:WorkFormik.values.unit_id,
-              property_expense: entry, 
+              unit: WorkFormik.values.rental_units,
+              unit_id: WorkFormik.values.unit_id,
+              property_expense: entry,
             },
-          ], 
+          ],
         };
         const chargework = await axios.post(
           `${baseUrl}/payment_charge/property_expense`,
           object).then((res) => {
-          console.log(res)
-        }).catch((err) => {
-          console.log(err)
-        })
+            console.log(res)
+          }).catch((err) => {
+            console.log(err)
+          })
       }
       else if (selectedCharge === "Tenant") {
         const entry = WorkFormik.values.entries.map((entry) => ({
@@ -415,13 +415,13 @@ const AddWorkorder = () => {
         }));
         const object = {
           properties: {
-            rental_adress:WorkFormik.values.rental_adress,
+            rental_adress: WorkFormik.values.rental_adress,
             property_id: WorkFormik.values.rental_id,
-          }, 
+          },
           unit: [
             {
-              unit:WorkFormik.values.rental_units,
-              unit_id:WorkFormik.values.unit_id,
+              unit: WorkFormik.values.rental_units,
+              unit_id: WorkFormik.values.unit_id,
               paymentAndCharges: entry,
             },
           ],
@@ -429,13 +429,13 @@ const AddWorkorder = () => {
         const chargework = await axios.post(
           `${baseUrl}/payment_charge/payment_charge`,
           object).then((res) => {
-          console.log(res)
-        }).catch((err) => {
-          console.log(err)
-        })
+            console.log(res)
+          }).catch((err) => {
+            console.log(err)
+          })
       }
 
-      
+
 
       const work_subject = values.work_subject;
       if (id === undefined) {
@@ -472,7 +472,7 @@ const AddWorkorder = () => {
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }
-    }catch (error) {
+    } catch (error) {
       console.error("Error:", error);
       if (error.response) {
         console.error("Response Data:", error.response.data);
@@ -676,6 +676,16 @@ const AddWorkorder = () => {
       console.error("Error updating workorder:", error);
     }
   };
+
+  const [isDisplay, setIsDisplay] = useState("false");
+  useEffect(() => {
+    if (WorkFormik?.values?.entries[0]?.account_type) {
+      setIsDisplay("true");
+    } else {
+      setIsDisplay("false");
+    }
+  }, [WorkFormik]);
+
   return (
     <>
       <AddWorkorderHeader />
@@ -1776,42 +1786,42 @@ const AddWorkorder = () => {
                     </Row>
                     <br />
                   </div>
-
-                  <Col lg="4">
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-desg"
-                      >
-                        Charge Work To
-                      </label>
-                      <br />
-                      <br />
-                      <Dropdown isOpen={chargedropdownOpen} toggle={toggle7}>
-                        <DropdownToggle caret style={{ width: "100%" }}>
-                          {selectedCharge} &nbsp;&nbsp;&nbsp;&nbsp;
-                        </DropdownToggle>
-                        <DropdownMenu style={{ width: "100%" }}>
-                          <DropdownItem
-                            onClick={() => handleChargeSelect("Property")}
-                          >
-                            Property
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => handleChargeSelect("Tenant")}
-                          >
-                            Tenant
-                          </DropdownItem>
-                        </DropdownMenu>
-                        {WorkFormik.touched.work_charge &&
-                        WorkFormik.errors.work_charge ? (
-                          <div style={{ color: "red" }}>
-                            {WorkFormik.errors.work_charge}
-                          </div>
-                        ) : null}
-                      </Dropdown>
-                    </FormGroup>
-                  </Col>
+                  {isDisplay === "true" ?
+                    <Col lg="4">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-desg"
+                        >
+                          Charge Work To
+                        </label>
+                        <br />
+                        <br />
+                        <Dropdown isOpen={chargedropdownOpen} toggle={toggle7}>
+                          <DropdownToggle caret style={{ width: "100%" }}>
+                            {selectedCharge} &nbsp;&nbsp;&nbsp;&nbsp;
+                          </DropdownToggle>
+                          <DropdownMenu style={{ width: "100%" }}>
+                            <DropdownItem
+                              onClick={() => handleChargeSelect("Property")}
+                            >
+                              Property
+                            </DropdownItem>
+                            <DropdownItem
+                              onClick={() => handleChargeSelect("Tenant")}
+                            >
+                              Tenant
+                            </DropdownItem>
+                          </DropdownMenu>
+                          {WorkFormik.touched.work_charge &&
+                            WorkFormik.errors.work_charge ? (
+                            <div style={{ color: "red" }}>
+                              {WorkFormik.errors.work_charge}
+                            </div>
+                          ) : null}
+                        </Dropdown>
+                      </FormGroup>
+                    </Col> : null}
 
                   <div className="pl-lg-4">
                     <Row>

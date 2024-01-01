@@ -114,8 +114,8 @@ useEffect(() => {
                                   <div className="row g-0">
                                     <div className="col-md-4">
                                       <img
-                                        // src={entry.prop_image}
-                                        src={PropImage}
+                                        src={entry.prop_image}
+                                        // src={PropImage}
                                         alt="Property Details"
                                         style={{ maxWidth: "8rem" }}
                                       />

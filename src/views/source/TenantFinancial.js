@@ -650,7 +650,7 @@ const TenantFinancial = () => {
                                     <td>{data?.paymentAndCharges.type}</td>
                                     <td>
                                       {data?.paymentAndCharges.type === "Charge"
-                                        ? data?.paymentAndCharges.charge_type
+                                        ? data?.paymentAndCharges.account
                                         : data?.paymentAndCharges.account}
                                     </td>
                                     <td>
