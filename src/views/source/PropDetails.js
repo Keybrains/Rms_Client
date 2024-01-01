@@ -281,6 +281,7 @@ const PropDetails = () => {
   const [propSummary, setPropSummary] = useState(false);
   const [rentalId, setRentalId] = useState("");
   const [propId, setPropId] = useState("");
+  console.log(propId,"propertyId")
   const [addAppliances, setAddAppliances] = useState(false);
 
   const handleFinancialSelection = (value) => {
@@ -333,14 +334,18 @@ const PropDetails = () => {
   };
 
   useEffect(() => {
-    getUnitProperty(rentalId, propId);
-  }, [rentalId, propId]);
+    getUnitProperty(propId);
+  }, [propId]);
 
-  const getUnitProperty = async (rentalId) => {
+  
+
+  const getUnitProperty = async (propId) => {
+    const propertyId = propId;
     await axios
-      .get(`${baseUrl}/propertyunit/propertyunit/` + rentalId)
-      .then((res) => {
+      .get(`${baseUrl}/propertyunit/propertyunits/${entryIndex}`)
+      .then((res) => {  
         // setUnitProperty(res.data.data);
+        console.log(entryIndex,"mina-----------")
         console.log(res.data.data, "property unit");
         setPropertyUnit(res.data.data);
         const matchedUnit = res.data.data.filter((item) => item._id === propId);
@@ -895,6 +900,7 @@ const PropDetails = () => {
               <Col>
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                    {console.log(propertyUnit,'propertyUnnot')}
                     <TabList
                       onChange={handleChange}
                       aria-label="lab API tabs example"
@@ -910,7 +916,7 @@ const PropDetails = () => {
                         value="financial"
                       />
                       <Tab
-                        label={`Units (${propertyUnit.length})`}
+                        label={`Units (${propertyUnit?.length})`}
                         style={{ textTransform: "none" }}
                         value="units"
                       />
@@ -2851,7 +2857,7 @@ const PropDetails = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {propertyUnit.map((unit, index) => (
+                            { propertyUnit && propertyUnit.length>0 && propertyUnit.map((unit, index) => (
                               <tr
                                 key={index}
                                 onClick={() => {
@@ -3001,7 +3007,6 @@ const PropDetails = () => {
                               <div className="col-md-4 mt-2">
                                 <label htmlFor="unit_image">
                                   <img
-                                    // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
                                     src={
                                       clickedObject && (clickedObject.property_image.length > 0 || clickedObject.propertyres_image.length > 0)
                                         ? clickedObject.property_image[0] ? clickedObject.property_image[0][0] : clickedObject.propertyres_image[0] ?

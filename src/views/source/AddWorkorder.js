@@ -365,7 +365,6 @@ const AddWorkorder = () => {
       values["rental_units"] = selectedUnit;
       values["workOrderImage"] = image.prop_image;
 
-
       const entries = WorkFormik.values.entries.map((entry) => ({
         part_qty: entry.part_qty,
         account_type: entry.account_type,
