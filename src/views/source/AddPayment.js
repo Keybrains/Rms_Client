@@ -294,7 +294,7 @@ const AddPayment = () => {
         const imageData = new FormData();
         imageData.append(`files`, files.upload_file);
 
-        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+        const url = `${baseUrl}/images/upload`;
 
         try {
           const result = await axios.post(url, imageData, {
@@ -721,7 +721,7 @@ const AddPayment = () => {
         const imageData = new FormData();
         imageData.append(`files`, files.upload_file);
 
-        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+        const url = `${baseUrl}/images/upload`;
 
         try {
           const result = await axios.post(url, imageData, {

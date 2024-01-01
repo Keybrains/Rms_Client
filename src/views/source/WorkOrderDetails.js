@@ -20,8 +20,12 @@ import {
 } from "reactstrap";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faCheckCircle, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCalendarAlt,
+  faCheckCircle,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { styled } from "@material-ui/core";
 
 const WorkOrderDetails = () => {
@@ -54,7 +58,7 @@ const WorkOrderDetails = () => {
       );
       setoutstandDetails(response.data.data);
       setLoading(false);
-      setImageDetails(response.data.data.workOrderImage)
+      setImageDetails(response.data.data.workOrderImage);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
@@ -63,12 +67,18 @@ const WorkOrderDetails = () => {
   };
   const SmallSummaryCard = ({ label, value, textTruncate }) => {
     return (
-      <div className="small-summary-card p-3"> {/* Added padding with the p-3 class */}
+      <div className="small-summary-card p-3">
+        {" "}
+        {/* Added padding with the p-3 class */}
         <h6 className="text-uppercase text-muted mb-0">{label}</h6>
-        <span className={`font-weight-bold ${textTruncate ? 'text-truncate' : ''}`}>{value}</span>
+        <span
+          className={`font-weight-bold ${textTruncate ? "text-truncate" : ""}`}
+        >
+          {value}
+        </span>
       </div>
     );
-  }
+  };
   const detailstyle = {
     fontSize: "15px",
     color: "#525f7f",
@@ -101,7 +111,7 @@ const WorkOrderDetails = () => {
   }, [workorder_id]);
 
   const [propertyDetails, setPropertyDetails] = useState({});
-  
+
   const getPropertyData = async () => {
     if (outstandDetails.rental_adress && outstandDetails.rental_units) {
       try {
@@ -113,7 +123,7 @@ const WorkOrderDetails = () => {
         console.error("Error fetching tenant details:", error);
         setError(error);
       }
-    } 
+    }
   };
 
   React.useEffect(() => {
@@ -140,18 +150,23 @@ const WorkOrderDetails = () => {
           const edate = new Date(item.end_date);
 
           // Compare the current date with start and end dates
-          if (currentDate >= sdate && currentDate < edate && item.rental_adress === propertyDetails?.rental_adress && item.rental_units === propertyDetails?.rental_units) {
+          if (
+            currentDate >= sdate &&
+            currentDate < edate &&
+            item.rental_adress === propertyDetails?.rental_adress &&
+            item.rental_units === propertyDetails?.rental_units
+          ) {
             // console.log('Response is OK');
             console.log(data, "yashu");
             setTenantsDetails(data);
           }
-        })
-      })
+        });
+      });
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
     }
-  }
+  };
 
   React.useEffect(() => {
     getTenantsData();
@@ -180,9 +195,9 @@ const WorkOrderDetails = () => {
     let total = 0;
     outstandDetails?.entries.map((item) => {
       total = total + item.total_amount;
-    })
+    });
     return total;
-  }
+  };
 
   return (
     <>
@@ -273,7 +288,11 @@ const WorkOrderDetails = () => {
                               maxWidth="700px"
                               margin="20px"
                             >
-                              <Box display="flex" alignItems="center" marginBottom="20px">
+                              <Box
+                                display="flex"
+                                alignItems="center"
+                                marginBottom="20px"
+                              >
                                 <Box
                                   width="40px"
                                   height="40px"
@@ -292,22 +311,40 @@ const WorkOrderDetails = () => {
                                   <h2 className="text-primary text-lg">
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
-                                  <span>{outstandDetails.rental_adress || "N/A"}</span>
+                                  <span>
+                                    {outstandDetails.rental_adress || "N/A"}
+                                  </span>
                                 </Box>
                               </Box>
-                              <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="stretch">
-
+                              <Box
+                                display="flex"
+                                flexDirection={{ xs: "column", md: "row" }}
+                                alignItems="stretch"
+                              >
                                 {/* Left side */}
-                                <Box flex="1" className={{ xs: 'col-12', md: 'col-7' }} marginBottom={{ xs: '20px', md: '0' }}>
+                                <Box
+                                  flex="1"
+                                  className={{ xs: "col-12", md: "col-7" }}
+                                  marginBottom={{ xs: "20px", md: "0" }}
+                                >
                                   <FormGroup marginBottom="20px">
                                     <label
                                       className="form-control-label"
                                       htmlFor="input-property"
-                                      style={{ marginBottom: "10px", fontWeight: "bold" }}
+                                      style={{
+                                        marginBottom: "10px",
+                                        fontWeight: "bold",
+                                      }}
                                     >
                                       Description
                                     </label>
-                                    <span style={{ fontSize: "13px", display: "block", marginTop: "5px" }}>
+                                    <span
+                                      style={{
+                                        fontSize: "13px",
+                                        display: "block",
+                                        marginTop: "5px",
+                                      }}
+                                    >
                                       {outstandDetails.work_performed || "N/A"}
                                     </span>
                                   </FormGroup>
@@ -315,11 +352,20 @@ const WorkOrderDetails = () => {
                                     <label
                                       className="form-control-label"
                                       htmlFor="input-property"
-                                      style={{ marginBottom: "10px", fontWeight: "bold" }}
+                                      style={{
+                                        marginBottom: "10px",
+                                        fontWeight: "bold",
+                                      }}
                                     >
                                       Permission to enter
                                     </label>
-                                    <span style={{ fontSize: "13px", display: "block", marginTop: "5px" }}>
+                                    <span
+                                      style={{
+                                        fontSize: "13px",
+                                        display: "block",
+                                        marginTop: "5px",
+                                      }}
+                                    >
                                       {outstandDetails.entry_allowed || "N/A"}
                                     </span>
                                   </FormGroup>
@@ -327,11 +373,20 @@ const WorkOrderDetails = () => {
                                     <label
                                       className="form-control-label"
                                       htmlFor="input-property"
-                                      style={{ marginBottom: "10px", fontWeight: "bold" }}
+                                      style={{
+                                        marginBottom: "10px",
+                                        fontWeight: "bold",
+                                      }}
                                     >
                                       Vendor Notes
                                     </label>
-                                    <span style={{ fontSize: "13px", display: "block", marginTop: "5px" }}>
+                                    <span
+                                      style={{
+                                        fontSize: "13px",
+                                        display: "block",
+                                        marginTop: "5px",
+                                      }}
+                                    >
                                       {outstandDetails.vendor_note || "N/A"}
                                     </span>
                                   </FormGroup>
@@ -340,7 +395,14 @@ const WorkOrderDetails = () => {
                                 {/* Right side */}
 
                                 <Box flex="1" className="d-flex flex-column">
-                                  <Row style={{ border: "1px solid #ccc", borderRadius: "8px", margin: "15px auto", width: "100%" }}>
+                                  <Row
+                                    style={{
+                                      border: "1px solid #ccc",
+                                      borderRadius: "8px",
+                                      margin: "15px auto",
+                                      width: "100%",
+                                    }}
+                                  >
                                     <Col style={{ padding: "0 8px" }}>
                                       <SmallSummaryCard
                                         label="Status"
@@ -349,20 +411,39 @@ const WorkOrderDetails = () => {
                                       />
                                     </Col>
                                   </Row>
-                                  <Row style={{ border: "1px solid #ccc", borderRadius: "8px", margin: "15px auto", width: "100%" }}>
+                                  <Row
+                                    style={{
+                                      border: "1px solid #ccc",
+                                      borderRadius: "8px",
+                                      margin: "15px auto",
+                                      width: "100%",
+                                    }}
+                                  >
                                     <Col style={{ padding: "0 8px" }}>
                                       <SmallSummaryCard
                                         label="Due Date"
-                                        value={outstandDetails.due_date || "N/A"}
+                                        value={
+                                          outstandDetails.due_date || "N/A"
+                                        }
                                         textTruncate // add this prop to enable text truncation
                                       />
                                     </Col>
                                   </Row>
-                                  <Row style={{ border: "1px solid #ccc", borderRadius: "8px", margin: "15px auto", width: "100%" }}>
+                                  <Row
+                                    style={{
+                                      border: "1px solid #ccc",
+                                      borderRadius: "8px",
+                                      margin: "15px auto",
+                                      width: "100%",
+                                    }}
+                                  >
                                     <Col style={{ padding: "0 8px" }}>
                                       <SmallSummaryCard
                                         label="Assignees"
-                                        value={outstandDetails.staffmember_name || "N/A"}
+                                        value={
+                                          outstandDetails.staffmember_name ||
+                                          "N/A"
+                                        }
                                         textTruncate // add this prop to enable text truncation
                                       />
                                     </Col>
@@ -370,50 +451,99 @@ const WorkOrderDetails = () => {
                                 </Box>
                               </Box>
                             </Box>
-                            {outstandDetails?.entries?.length > 0 && outstandDetails?.entries[0].part_qty
-                              ? (
-                                <Box
-                                  border="1px solid #ccc"
-                                  borderRadius="8px"
-                                  padding="16px"
-                                  maxWidth="700px"
-                                  margin="20px"
-                                  style={{ marginLeft: "auto", marginRight: "auto", overflowX: 'auto' }} // Center the box horizontally
-                                >
-                                  <h2 className="text-primary text-lg">Parts and Labor</h2>
-                                  <Box overflowX="auto">
-                                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                                      <thead>
-                                        <tr>
-                                          <th style={tableHeaderStyle}>QTY</th>
-                                          <th style={tableHeaderStyle}>ACCOUNT</th>
-                                          <th style={tableHeaderStyle}>DESCRIPTION</th>
-                                          <th style={tableHeaderStyle}>PRICE</th>
-                                          <th style={tableHeaderStyle}>AMOUNT</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {/* Add your table rows dynamically here */}
-                                        {outstandDetails?.entries.map((item, index) => (
+                            {outstandDetails?.entries?.length > 0 &&
+                            outstandDetails?.entries[0].part_qty ? (
+                              <Box
+                                border="1px solid #ccc"
+                                borderRadius="8px"
+                                padding="16px"
+                                maxWidth="700px"
+                                margin="20px"
+                                style={{
+                                  marginLeft: "auto",
+                                  marginRight: "auto",
+                                  overflowX: "auto",
+                                }} // Center the box horizontally
+                              >
+                                <h2 className="text-primary text-lg">
+                                  Parts and Labor
+                                </h2>
+                                <Box overflowX="auto">
+                                  <table
+                                    style={{
+                                      width: "100%",
+                                      borderCollapse: "collapse",
+                                    }}
+                                  >
+                                    <thead>
+                                      <tr>
+                                        <th style={tableHeaderStyle}>QTY</th>
+                                        <th style={tableHeaderStyle}>
+                                          ACCOUNT
+                                        </th>
+                                        <th style={tableHeaderStyle}>
+                                          DESCRIPTION
+                                        </th>
+                                        <th style={tableHeaderStyle}>PRICE</th>
+                                        <th style={tableHeaderStyle}>AMOUNT</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {/* Add your table rows dynamically here */}
+                                      {outstandDetails?.entries.map(
+                                        (item, index) => (
                                           <tr key={index}>
-                                            <td style={tableCellStyle}>{item.part_qty}</td>
-                                            <td style={tableCellStyle}>{item.account_type}</td>
-                                            <td style={tableCellStyle}>{item.description}</td>
-                                            <td style={{ ...tableCellStyle, textAlign: "right" }}>${item.part_price}</td>
-                                            <td style={{ ...tableCellStyle, textAlign: "right" }}>${item.total_amount}</td>
+                                            <td style={tableCellStyle}>
+                                              {item.part_qty}
+                                            </td>
+                                            <td style={tableCellStyle}>
+                                              {item.account_type}
+                                            </td>
+                                            <td style={tableCellStyle}>
+                                              {item.description}
+                                            </td>
+                                            <td
+                                              style={{
+                                                ...tableCellStyle,
+                                                textAlign: "right",
+                                              }}
+                                            >
+                                              ${item.part_price}
+                                            </td>
+                                            <td
+                                              style={{
+                                                ...tableCellStyle,
+                                                textAlign: "right",
+                                              }}
+                                            >
+                                              ${item.total_amount}
+                                            </td>
                                           </tr>
-                                        ))}
-                                      </tbody>
-                                      <tfoot>
-                                        <tr>
-                                          <td colSpan="4" style={tableHeaderStyle}>Total</td>
-                                          <td style={{ ...tableFooterStyle, textAlign: "right" }}>${total()}</td>
-                                        </tr>
-                                      </tfoot>
-                                    </table>
-                                  </Box>
+                                        )
+                                      )}
+                                    </tbody>
+                                    <tfoot>
+                                      <tr>
+                                        <td
+                                          colSpan="4"
+                                          style={tableHeaderStyle}
+                                        >
+                                          Total
+                                        </td>
+                                        <td
+                                          style={{
+                                            ...tableFooterStyle,
+                                            textAlign: "right",
+                                          }}
+                                        >
+                                          ${total()}
+                                        </td>
+                                      </tr>
+                                    </tfoot>
+                                  </table>
                                 </Box>
-                              ) : null}
+                              </Box>
+                            ) : null}
                           </>
                         ) : (
                           <div>No details found.</div>
@@ -427,12 +557,24 @@ const WorkOrderDetails = () => {
                             maxWidth="100%" // Use 100% to make it responsive
                             margin="20px"
                           >
-                            <Box borderBottom="1px solid #ccc" style={{ minWidth: "100%", padding: "16px 16px 5px 16px", color: "#5e72e4" }}>
+                            <Box
+                              borderBottom="1px solid #ccc"
+                              style={{
+                                minWidth: "100%",
+                                padding: "16px 16px 5px 16px",
+                                color: "#5e72e4",
+                              }}
+                            >
                               <h2 className="text-primary">Contacts</h2>
                             </Box>
                             <Box
                               borderBottom="1px solid #ccc"
-                              style={{ display: "flex", alignItems: "center", minWidth: "100%", padding: "16px 16px 5px 16px" }}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                minWidth: "100%",
+                                padding: "16px 16px 5px 16px",
+                              }}
                             >
                               <Box width="16px" marginRight="10px">
                                 {/* SVG icon */}
@@ -447,14 +589,25 @@ const WorkOrderDetails = () => {
                                   <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
                                 </svg>
                               </Box>
-                              <Box width="100%" style={{ minWidth: "100%", padding: "0 16px" }}>
+                              <Box
+                                width="100%"
+                                style={{ minWidth: "100%", padding: "0 16px" }}
+                              >
                                 <span style={detailstyle}>Vendor</span> <br />
-                                <span>{outstandDetails?.vendor_name || "N/A"}</span>
+                                <span>
+                                  {outstandDetails?.vendor_name || "N/A"}
+                                </span>
                               </Box>
                             </Box>
-                            {tenantsDetails && typeof tenantsDetails === 'object' ? (
+                            {tenantsDetails &&
+                            typeof tenantsDetails === "object" ? (
                               <Box
-                                style={{ display: "flex", alignItems: "center", minWidth: "100%", padding: "16px 16px 5px 16px" }}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  minWidth: "100%",
+                                  padding: "16px 16px 5px 16px",
+                                }}
                               >
                                 <Box width="16px" marginRight="10px">
                                   <svg
@@ -468,51 +621,180 @@ const WorkOrderDetails = () => {
                                     <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
                                   </svg>
                                 </Box>
-                                <Box width="100%" style={{ minWidth: "100%", padding: "0 16px" }}>
+                                <Box
+                                  width="100%"
+                                  style={{
+                                    minWidth: "100%",
+                                    padding: "0 16px",
+                                  }}
+                                >
                                   <span style={detailstyle}>Tenant</span> <br />
-                                  <span>{tenantsDetails.tenant_firstName ? <>{tenantsDetails.tenant_firstName} {tenantsDetails.tenant_lastName}</> : ""}</span>
+                                  <span>
+                                    {tenantsDetails.tenant_firstName ? (
+                                      <>
+                                        {tenantsDetails.tenant_firstName}{" "}
+                                        {tenantsDetails.tenant_lastName}
+                                      </>
+                                    ) : (
+                                      ""
+                                    )}
+                                  </span>
                                 </Box>
                               </Box>
                             ) : null}
                           </Box>
                         ) : null}
-                        {propertyDetails ? <>
-                          <Box
-                            border="1px solid #ccc"
-                            borderRadius="8px"
-                            maxWidth="100%" // Use 100% to make it responsive
-                            margin="20px"
-                            display="flex"
-                            flexDirection="column"
-                            alignItems="center" // Center content horizontally
-                          >
-                            <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
-                              <h2 className="text-primary">Property</h2>
-                            </Box>
-                            {propertyDetails?.propertyres_image || propertyDetails?.property_image ? (
-                              <Box style={{ width: "100%", padding: "16px", display: "flex", alignItems: "center" }}>
-                                <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
-                                  <img
-                                    src={propertyDetails.propertyres_image[0][0] || propertyDetails.property_image[0][0]}
-                                    alt="property"
-                                    style={{ maxWidth: "80%", maxHeight: "100%", borderRadius: "8px", border: "1px solid #ccc" }}
-                                  />
+                        {propertyDetails ? (
+                          <>
+                            <Box
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              maxWidth="100%" // Use 100% to make it responsive
+                              margin="20px"
+                              display="flex"
+                              flexDirection="column"
+                              alignItems="center" // Center content horizontally
+                            >
+                              <Box
+                                borderBottom="1px solid #ccc"
+                                style={{
+                                  width: "100%",
+                                  padding: "16px",
+                                  textAlign: "left",
+                                  color: "#5e72e4",
+                                }}
+                              >
+                                <h2 className="text-primary">Property</h2>
+                              </Box>
+                              {Array.isArray(
+                                propertyDetails?.propertyres_image
+                              ) ||
+                              Array.isArray(propertyDetails?.property_image) ? (
+                                <Box
+                                  style={{
+                                    width: "100%",
+                                    padding: "16px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Box
+                                    width="100%"
+                                    style={{
+                                      minWidth: "100%",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    {propertyDetails?.propertyres_image &&
+                                    propertyDetails
+                                      ?.propertyres_image[0]?.[0] ? (
+                                      <img
+                                        src={
+                                          propertyDetails
+                                            .propertyres_image[0][0]
+                                        }
+                                        alt="property"
+                                        style={{
+                                          maxWidth: "80%",
+                                          maxHeight: "100%",
+                                          borderRadius: "8px",
+                                          border: "1px solid #ccc",
+                                        }}
+                                      />
+                                    ) : propertyDetails?.property_image &&
+                                      propertyDetails
+                                        ?.property_image[0]?.[0] ? (
+                                      <img
+                                        src={
+                                          propertyDetails.property_image[0][0]
+                                        }
+                                        alt="property"
+                                        style={{
+                                          maxWidth: "80%",
+                                          maxHeight: "100%",
+                                          borderRadius: "8px",
+                                          border: "1px solid #ccc",
+                                        }}
+                                      />
+                                    ) : (
+                                      <span>No Image Found</span>
+                                    )}
+                                  </Box>
+                                </Box>
+                              ) : null}
+
+                              <Box
+                                style={{
+                                  width: "100%",
+                                  padding: "5px 16px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Box
+                                  width="100%"
+                                  style={{
+                                    minWidth: "100%",
+                                    textAlign: "center",
+                                    cursor: "pointer",
+                                    color: "blue",
+                                  }}
+                                  onClick={() =>
+                                    navigate(
+                                      `/admin/PropDetails/${propertyDetails.rentalId}/${propertyDetails.propertyId}`
+                                    )
+                                  }
+                                >
+                                  <span>
+                                    {propertyDetails.rental_adress || "N/A"} (
+                                    {propertyDetails.rental_units})
+                                  </span>
                                 </Box>
                               </Box>
-                            ) : null}
-                            <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
-                              <Box width="100%" style={{ minWidth: "100%", textAlign: "center", cursor: 'pointer', color: 'blue' }} onClick={() => navigate(`/admin/PropDetails/${propertyDetails.rentalId}/${propertyDetails.propertyId}`)}>
-                                <span>{propertyDetails.rental_adress || "N/A"} ({propertyDetails.rental_units})</span>
+                              <Box
+                                style={{
+                                  width: "100%",
+                                  padding: "5px 16px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Box
+                                  width="100%"
+                                  style={{
+                                    minWidth: "100%",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  <span>
+                                    {propertyDetails.rental_city ? (
+                                      <>{propertyDetails.rental_city},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}
+                                    {propertyDetails.rental_state ? (
+                                      <>{propertyDetails.rental_state},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}
+                                    {propertyDetails.rental_country ? (
+                                      <>{propertyDetails.rental_country},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}
+                                    {propertyDetails.rental_postcode ? (
+                                      <>{propertyDetails.rental_postcode}.</>
+                                    ) : (
+                                      ""
+                                    )}
+                                  </span>
+                                </Box>
                               </Box>
                             </Box>
-                            <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
-                              <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
-                                <span>{propertyDetails.rental_city ? <>{propertyDetails.rental_city},</> : ""} {propertyDetails.rental_state ? <>{propertyDetails.rental_state},</> : ""} {propertyDetails.rental_country ? <>{propertyDetails.rental_country},</> : ""} {propertyDetails.rental_postcode ? <>{propertyDetails.rental_postcode}.</> : ""}</span>
-                              </Box>
-                            </Box>
-                          </Box>
-                        </> : <></>}
-
+                          </>
+                        ) : (
+                          <></>
+                        )}
                       </Col>
                     </Row>
                   </div>
@@ -521,204 +803,285 @@ const WorkOrderDetails = () => {
                   <div className="container-fluid">
                     <Row className="mb-4">
                       <Col lg="8" md="12">
-                      <Box
-                      border="1px solid #ccc"
-                      borderRadius="8px"
-                      padding="16px"
-                      maxWidth="700px"
-                      margin={"20px"}
-                    >
-                      <Row>
-                        <Col lg="2">
-                          <Box
-                            width="40px"
-                            height="40px"
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            backgroundColor="grey"
-                            borderRadius="8px"
-                            color="white"
-                            fontSize="24px"
-                          >
-                            <AssignmentOutlinedIcon />
-                          </Box>
-                        </Col>
-                        <Col lg="8">
-                          <span
-                            style={{
-                              border: "2px solid",
-                              borderColor:
-                                outstandDetails.priority === "High"
-                                  ? "red"
-                                  : outstandDetails.priority === "Medium"
-                                    ? "green"
-                                    : outstandDetails.priority === "Low"
+                        <Box
+                          border="1px solid #ccc"
+                          borderRadius="8px"
+                          padding="16px"
+                          maxWidth="700px"
+                          margin={"20px"}
+                        >
+                          <Row>
+                            <Col lg="2">
+                              <Box
+                                width="40px"
+                                height="40px"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                backgroundColor="grey"
+                                borderRadius="8px"
+                                color="white"
+                                fontSize="24px"
+                              >
+                                <AssignmentOutlinedIcon />
+                              </Box>
+                            </Col>
+                            <Col lg="8">
+                              <span
+                                style={{
+                                  border: "2px solid",
+                                  borderColor:
+                                    outstandDetails.priority === "High"
+                                      ? "red"
+                                      : outstandDetails.priority === "Medium"
+                                      ? "green"
+                                      : outstandDetails.priority === "Low"
                                       ? "#FFD700"
                                       : "inherit",
-                              borderRadius: "15px",
-                              padding: "2px",
-                              fontSize: "15px",
-                              color:
-                                outstandDetails.priority === "High"
-                                  ? "red"
-                                  : outstandDetails.priority === "Medium"
-                                    ? "green"
-                                    : outstandDetails.priority === "Low"
+                                  borderRadius: "15px",
+                                  padding: "2px",
+                                  fontSize: "15px",
+                                  color:
+                                    outstandDetails.priority === "High"
+                                      ? "red"
+                                      : outstandDetails.priority === "Medium"
+                                      ? "green"
+                                      : outstandDetails.priority === "Low"
                                       ? "#FFD700"
                                       : "inherit",
-                            }}
-                          >
-                            &nbsp;{outstandDetails.priority}&nbsp;
-                          </span>
-                          <h2 className="text-primary text-lg">
-                            {outstandDetails.work_subject || "N/A"}
-                          </h2>
+                                }}
+                              >
+                                &nbsp;{outstandDetails.priority}&nbsp;
+                              </span>
+                              <h2 className="text-primary text-lg">
+                                {outstandDetails.work_subject || "N/A"}
+                              </h2>
 
-                          <span className="">
-                            {outstandDetails.rental_adress || "N/A"}
-                          </span>
-                        </Col>
-                      </Row>
-                      <br />
-                      <Row>
-                        <Col lg="6">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-property"
-                            >
-                              Description
-                            </label>
-                            <br />
-                            <span style={{ fontSize: "13px" }}>
-                              {outstandDetails.work_performed || "N/A"}
-                            </span>
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col lg="6">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-property"
-                            >
-                              Status
-                            </label>
-                            <br />
-                            <span style={{ fontSize: "13px" }}>
-                              {outstandDetails.status || "N/A"}
-                            </span>
-                          </FormGroup>
-                        </Col>
+                              <span className="">
+                                {outstandDetails.rental_adress || "N/A"}
+                              </span>
+                            </Col>
+                          </Row>
+                          <br />
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Description
+                                </label>
+                                <br />
+                                <span style={{ fontSize: "13px" }}>
+                                  {outstandDetails.work_performed || "N/A"}
+                                </span>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Status
+                                </label>
+                                <br />
+                                <span style={{ fontSize: "13px" }}>
+                                  {outstandDetails.status || "N/A"}
+                                </span>
+                              </FormGroup>
+                            </Col>
 
-                        <Col lg="6">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-property"
-                            >
-                              Due Date
-                            </label>
-                            <br />
-                            <span style={{ fontSize: "13px" }}>
-                              {formatDateWithoutTime(
-                                outstandDetails.due_date
-                              ) || "N/A"}
-                            </span>
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col lg="6">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-property"
-                            >
-                              Assignees
-                            </label>
-                            <br />
-                            <span style={{ fontSize: "13px" }}>
-                              {outstandDetails.staffmember_name || "N/A"}
-                            </span>
-                          </FormGroup>
-                        </Col>
-                        <Col lg="6">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-property"
-                            >
-                              Permission to enter
-                            </label>
-                            <br />
-                            <span style={{ fontSize: "13px" }}>
-                              {outstandDetails.entry_allowed || "N/A"}
-                            </span>
-                          </FormGroup>
-                        </Col>
-                      </Row> 
-                    </Box>
+                            <Col lg="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Due Date
+                                </label>
+                                <br />
+                                <span style={{ fontSize: "13px" }}>
+                                  {formatDateWithoutTime(
+                                    outstandDetails.due_date
+                                  ) || "N/A"}
+                                </span>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col lg="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Assignees
+                                </label>
+                                <br />
+                                <span style={{ fontSize: "13px" }}>
+                                  {outstandDetails.staffmember_name || "N/A"}
+                                </span>
+                              </FormGroup>
+                            </Col>
+                            <Col lg="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Permission to enter
+                                </label>
+                                <br />
+                                <span style={{ fontSize: "13px" }}>
+                                  {outstandDetails.entry_allowed || "N/A"}
+                                </span>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                        </Box>
                       </Col>
 
                       <Col lg="4" md="12">
-                      {/* <Box
+                        {/* <Box
                       border="1px solid #ccc"
                       borderRadius="8px"
                       padding="16px"
                       maxWidth="1000px"
                       margin={"20px"}
                     > */}
-                  
-                  {imagedetails ? (
-                    <>
-                      <Box
-                        border="1px solid #ccc"
-                        borderRadius="8px"
-                        maxWidth="100%" // Use 100% to make it responsive
-                        margin="20px"
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center" // Center content horizontally
-                      >
-                        <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
-                          <h2 className="text-primary">Images</h2>
-                        </Box>
-                        
 
-                        {imagedetails && imagedetails.length > 0 ? (
-                          <Box style={{ width: "100%", padding: "16px",marginTop: "10px",display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
-                            {imagedetails.map((imageUrl, index) => (
-                              <Box key={index} width="48%" style={{ minWidth: "48%", margin: "1%" }}>
-                                <img
-                                  src={imageUrl}
-                                  alt={`propertyimage ${index}`}
-                                  style={{ width: "100%", borderRadius: "8px", border: "1px solid #ccc" }}
-                                />
+                        {imagedetails ? (
+                          <>
+                            <Box
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              maxWidth="100%" // Use 100% to make it responsive
+                              margin="20px"
+                              display="flex"
+                              flexDirection="column"
+                              alignItems="center" // Center content horizontally
+                            >
+                              <Box
+                                borderBottom="1px solid #ccc"
+                                style={{
+                                  width: "100%",
+                                  padding: "16px",
+                                  textAlign: "left",
+                                  color: "#5e72e4",
+                                }}
+                              >
+                                <h2 className="text-primary">Images</h2>
                               </Box>
-                            ))}
-                          </Box>
-                        ) :"No Images Attached" }
-                          <br/>
-                          <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
-                            <Box width="100%" style={{ minWidth: "100%", textAlign: "center", cursor: 'pointer', color: 'blue' }} onClick={() => navigate(`/admin/PropDetails/${propertyDetails.rentalId}/${propertyDetails.propertyId}`)}>
-                              <span>{propertyDetails.rental_adress || "N/A"} ({propertyDetails.rental_units})</span>
-                            </Box>
-                          </Box>
-                          <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
-                            <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
-                              <span>{propertyDetails.rental_city ? <>{propertyDetails.rental_city},</> : ""} {propertyDetails.rental_state ? <>{propertyDetails.rental_state},</> : ""} {propertyDetails.rental_country ? <>{propertyDetails.rental_country},</> : ""} {propertyDetails.rental_postcode ? <>{propertyDetails.rental_postcode}.</> : ""}</span>
-                            </Box>
-                          </Box>
-                        </Box>
-                      </>
-                    ) : (
-                      <>No Details Found</>
-                    )}
 
-                     
+                              {imagedetails && imagedetails.length > 0 ? (
+                                <Box
+                                  style={{
+                                    width: "100%",
+                                    padding: "16px",
+                                    marginTop: "10px",
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  {imagedetails.map((imageUrl, index) => (
+                                    <Box
+                                      key={index}
+                                      width="48%"
+                                      style={{ minWidth: "48%", margin: "1%" }}
+                                    >
+                                      <img
+                                        src={imageUrl}
+                                        alt={`propertyimage ${index}`}
+                                        style={{
+                                          width: "100%",
+                                          borderRadius: "8px",
+                                          border: "1px solid #ccc",
+                                        }}
+                                      />
+                                    </Box>
+                                  ))}
+                                </Box>
+                              ) : (
+                                "No Images Attached"
+                              )}
+                              <br />
+                              <Box
+                                style={{
+                                  width: "100%",
+                                  padding: "5px 16px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Box
+                                  width="100%"
+                                  style={{
+                                    minWidth: "100%",
+                                    textAlign: "center",
+                                    cursor: "pointer",
+                                    color: "blue",
+                                  }}
+                                  onClick={() =>
+                                    navigate(
+                                      `/admin/PropDetails/${propertyDetails.rentalId}/${propertyDetails.propertyId}`
+                                    )
+                                  }
+                                >
+                                  <span>
+                                    {propertyDetails.rental_adress || "N/A"} (
+                                    {propertyDetails.rental_units})
+                                  </span>
+                                </Box>
+                              </Box>
+                              <Box
+                                style={{
+                                  width: "100%",
+                                  padding: "5px 16px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Box
+                                  width="100%"
+                                  style={{
+                                    minWidth: "100%",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  <span>
+                                    {propertyDetails.rental_city ? (
+                                      <>{propertyDetails.rental_city},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}
+                                    {propertyDetails.rental_state ? (
+                                      <>{propertyDetails.rental_state},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}
+                                    {propertyDetails.rental_country ? (
+                                      <>{propertyDetails.rental_country},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}
+                                    {propertyDetails.rental_postcode ? (
+                                      <>{propertyDetails.rental_postcode}.</>
+                                    ) : (
+                                      ""
+                                    )}
+                                  </span>
+                                </Box>
+                              </Box>
+                            </Box>
+                          </>
+                        ) : (
+                          <>No Details Found</>
+                        )}
                       </Col>
                     </Row>
                   </div>

@@ -92,7 +92,10 @@ const PropDetails = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const fileData = (e, type) => {
     // Use the correct state-setting function for setSelectedFiles
-    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...e.target.files]);
+    setSelectedFiles((prevSelectedFiles) => [
+      ...prevSelectedFiles,
+      ...e.target.files,
+    ]);
 
     const newFiles = [
       ...unitImage,
@@ -165,7 +168,7 @@ const PropDetails = () => {
 
   React.useEffect(() => {
     getGeneralLedgerData();
-  }, [matchedProperty])
+  }, [matchedProperty]);
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -218,7 +221,7 @@ const PropDetails = () => {
     // "Next month",
     "Month to date",
     "Three months to date",
-    "All"
+    "All",
     // "Quarter to date",
     // "Year to date",
     // "Last month",
@@ -366,27 +369,26 @@ const PropDetails = () => {
       const imageData = new FormData();
       for (let index = 0; index < selectedFiles.length; index++) {
         const element = selectedFiles[index];
-        console.log(element, "yash")
+        console.log(element, "yash");
         imageData.append(`files`, element);
       }
 
-      const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+      const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
       var image;
       try {
         const result = await axios.post(url, imageData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         });
         console.log(result, "imgs");
-        
+
         image = {
           prop_image: result.data.files.map((data, index) => {
             return data.url;
           }),
         };
-      }
-      catch (error) {
+      } catch (error) {
         console.error(error);
       }
     }
@@ -493,12 +495,12 @@ const PropDetails = () => {
       imageData.append(`files`, element);
     }
 
-    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     var image;
     try {
       const result = await axios.post(url, imageData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(result, "imgs");
@@ -507,8 +509,7 @@ const PropDetails = () => {
           return data.url;
         }),
       };
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
     }
 
@@ -542,7 +543,7 @@ const PropDetails = () => {
         swal("Success!", "Unit Added Successfully", "success");
         setAddUnitDialogOpen(false);
         setPropertyUnit([...propertyUnit, response.data.data]);
-        console.log(response.data.data)
+        console.log(response.data.data);
       } else {
         swal("", response.data.message, "error");
       }
@@ -566,26 +567,24 @@ const PropDetails = () => {
 
     const formData = new FormData();
     formData.append(`files`, files[0]);
-    const url = `https://propertymanager.cloudpress.host/api/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     var image;
     try {
       const result = await axios.post(url, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(result, "imgs");
       image = {
-        prop_image: result.data.files[0].url
+        prop_image: result.data.files[0].url,
       };
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error, "imgs");
     }
     axios
       .put(`${baseUrl}/rentals/proparty_image/${id}/${entryIndex}`, image)
       .then((response) => {
-
         console.log(response.data, "updated data");
         getRentalsData();
       })
@@ -670,7 +669,10 @@ const PropDetails = () => {
             if (responseFinancial.data && responseFinancial.data.data) {
               dataFinancial = responseFinancial.data.data[0] || [{ unit: [] }];
             } else {
-              console.error("Unexpected response format:", responseFinancial.data);
+              console.error(
+                "Unexpected response format:",
+                responseFinancial.data
+              );
             }
           } catch (error) {
             console.error("Error fetching financial data:", error);
@@ -686,7 +688,10 @@ const PropDetails = () => {
             if (responseExpense.data && responseExpense.data.data) {
               dataExpense = responseExpense.data.data[0];
             } else {
-              console.error("Unexpected response format:", responseExpense.data);
+              console.error(
+                "Unexpected response format:",
+                responseExpense.data
+              );
             }
           } catch (error) {
             console.error("Error fetching expense data:", error);
@@ -694,26 +699,33 @@ const PropDetails = () => {
 
           // Merge data from both API calls
           const combinedData = {
-            _id: 'mergedId', // Provide a unique identifier for the merged data if needed
+            _id: "mergedId", // Provide a unique identifier for the merged data if needed
             properties: {},
             unit: [],
             __v: 0,
           };
 
           if (dataFinancial && dataFinancial.unit) {
-            combinedData.unit = dataFinancial.unit.map((financialUnit, index) => {
-              const combinedUnit = {
-                ...financialUnit,
-                paymentAndCharges: financialUnit.paymentAndCharges || [],
-                property_expense: [],
-              };
+            combinedData.unit = dataFinancial.unit.map(
+              (financialUnit, index) => {
+                const combinedUnit = {
+                  ...financialUnit,
+                  paymentAndCharges: financialUnit.paymentAndCharges || [],
+                  property_expense: [],
+                };
 
-              if (dataExpense && dataExpense.unit && dataExpense.unit[index]) {
-                combinedUnit.property_expense = dataExpense.unit[index].property_expense || [];
+                if (
+                  dataExpense &&
+                  dataExpense.unit &&
+                  dataExpense.unit[index]
+                ) {
+                  combinedUnit.property_expense =
+                    dataExpense.unit[index].property_expense || [];
+                }
+
+                return combinedUnit;
               }
-
-              return combinedUnit;
-            });
+            );
           } else if (dataExpense && dataExpense.unit) {
             combinedData.unit = dataExpense.unit.map((expenseUnit) => ({
               paymentAndCharges: [],
@@ -722,7 +734,6 @@ const PropDetails = () => {
           }
 
           setGeneralLedgerData([combinedData]);
-
         } else {
           console.error("Invalid matchedProperty object:", matchedProperty);
         }
@@ -732,7 +743,6 @@ const PropDetails = () => {
     }
     setLoader(false);
   };
-
 
   const calculateTotalIncome = (property) => {
     let totalIncome = 0;
@@ -836,7 +846,6 @@ const PropDetails = () => {
         totals[index] += data.amount || 0;
       });
     }
-
   });
 
   if (monthWiseData[month]) {
@@ -851,7 +860,6 @@ const PropDetails = () => {
         totals2[index] += data.amount || 0;
       });
     }
-
   });
 
   if (monthWiseData2[month]) {
@@ -860,10 +868,16 @@ const PropDetails = () => {
     });
   }
 
-  const totalIncome = monthWiseData[month]?.reduce((total, data) => total + parseFloat(data.amount || 0), 0);
+  const totalIncome = monthWiseData[month]?.reduce(
+    (total, data) => total + parseFloat(data.amount || 0),
+    0
+  );
 
   // Calculate total expenses
-  const totalExpenses = monthWiseData2[month]?.reduce((total, data) => total + parseFloat(data.amount || 0), 0);
+  const totalExpenses = monthWiseData2[month]?.reduce(
+    (total, data) => total + parseFloat(data.amount || 0),
+    0
+  );
 
   // Calculate net income
   const netIncome = totalIncome - totalExpenses;
@@ -946,12 +960,16 @@ const PropDetails = () => {
                               <div className="col-md-4 mt-2">
                                 <label htmlFor="prop_image">
                                   <img
-                                    src={matchedProperty.prop_image ? matchedProperty.prop_image : fone}
+                                    src={
+                                      matchedProperty.prop_image
+                                        ? matchedProperty.prop_image
+                                        : fone
+                                    }
                                     className="img-fluid rounded-start card-image"
                                     alt={"..."}
-                                  // width='260px'
-                                  // height='180px'
-                                  // onClick={handleModalOpen}
+                                    // width='260px'
+                                    // height='180px'
+                                    // onClick={handleModalOpen}
                                   />
                                 </label>
                                 <TextField
@@ -969,7 +987,6 @@ const PropDetails = () => {
                             </>
                           ) : (
                             <div className="col-md-4 mt-2 d-flex justify-content-center">
-
                               <RotatingLines
                                 strokeColor="grey"
                                 strokeWidth="5"
@@ -978,9 +995,7 @@ const PropDetails = () => {
                                 visible={propImageLoader}
                               />
                             </div>
-                          )
-
-                          }
+                          )}
 
                           <div className="col-md-8">
                             <div
@@ -1567,11 +1582,13 @@ const PropDetails = () => {
                                                     <tr className="body">
                                                       <td>
                                                         {/* <Link to=""> */}
-                                                        {`${propertyDetails.rentalOwner_firstName ||
+                                                        {`${
+                                                          propertyDetails.rentalOwner_firstName ||
                                                           "N/A"
-                                                          } ${propertyDetails.rentalOwner_lastName ||
+                                                        } ${
+                                                          propertyDetails.rentalOwner_lastName ||
                                                           "N/A"
-                                                          }`}
+                                                        }`}
 
                                                         {/* </Link> */}
                                                       </td>
@@ -1649,9 +1666,10 @@ const PropDetails = () => {
                                                     <tr className="body">
                                                       <td>
                                                         {/* <Link to=""> */}
-                                                        {`${matchedProperty?.staffMember ||
+                                                        {`${
+                                                          matchedProperty?.staffMember ||
                                                           "No staff member assigned"
-                                                          }`}
+                                                        }`}
 
                                                         {/* </Link> */}
                                                       </td>
@@ -1946,7 +1964,7 @@ const PropDetails = () => {
                               {financialType
                                 ? financialType
                                 : "Month to date" &&
-                                setFinancialType("Month to date")}
+                                  setFinancialType("Month to date")}
                             </DropdownToggle>
                             <DropdownMenu>
                               {financialTypeArray.map((subtype, index) => (
@@ -1993,17 +2011,26 @@ const PropDetails = () => {
                                     <React.Fragment key={index}>
                                       {property.unit.map((unit, unitIndex) => (
                                         <React.Fragment key={unitIndex}>
-                                          {unit.paymentAndCharges && unit.paymentAndCharges
-                                            .sort((a, b) => new Date(b.date) - new Date(a.date))
-                                            .map((charge, chargeIndex) => (
-                                              <React.Fragment key={chargeIndex}>
-                                                <tr>
-                                                  <th>{charge.account}</th>
-                                                  <td>${charge.amount || "0.00"}</td>
-                                                  <td>{charge.date}</td>
-                                                </tr>
-                                              </React.Fragment>
-                                            ))}
+                                          {unit.paymentAndCharges &&
+                                            unit.paymentAndCharges
+                                              .sort(
+                                                (a, b) =>
+                                                  new Date(b.date) -
+                                                  new Date(a.date)
+                                              )
+                                              .map((charge, chargeIndex) => (
+                                                <React.Fragment
+                                                  key={chargeIndex}
+                                                >
+                                                  <tr>
+                                                    <th>{charge.account}</th>
+                                                    <td>
+                                                      ${charge.amount || "0.00"}
+                                                    </td>
+                                                    <td>{charge.date}</td>
+                                                  </tr>
+                                                </React.Fragment>
+                                              ))}
                                         </React.Fragment>
                                       ))}
                                       <tr>
@@ -2043,17 +2070,27 @@ const PropDetails = () => {
                                     <React.Fragment key={index}>
                                       {property.unit.map((unit, unitIndex) => (
                                         <React.Fragment key={unitIndex}>
-                                          {unit.property_expense && unit.property_expense
-                                            .sort((a, b) => new Date(b.date) - new Date(a.date))
-                                            .map((expense, expenseIndex) => (
-                                              <React.Fragment key={expenseIndex}>
-                                                <tr>
-                                                  <th>{expense.account}</th>
-                                                  <td>${expense.amount || "0.00"}</td>
-                                                  <td>{expense.date}</td>
-                                                </tr>
-                                              </React.Fragment>
-                                            ))}
+                                          {unit.property_expense &&
+                                            unit.property_expense
+                                              .sort(
+                                                (a, b) =>
+                                                  new Date(b.date) -
+                                                  new Date(a.date)
+                                              )
+                                              .map((expense, expenseIndex) => (
+                                                <React.Fragment
+                                                  key={expenseIndex}
+                                                >
+                                                  <tr>
+                                                    <th>{expense.account}</th>
+                                                    <td>
+                                                      $
+                                                      {expense.amount || "0.00"}
+                                                    </td>
+                                                    <td>{expense.date}</td>
+                                                  </tr>
+                                                </React.Fragment>
+                                              ))}
                                         </React.Fragment>
                                       ))}
                                       <tr>
@@ -2081,7 +2118,7 @@ const PropDetails = () => {
                                             fontWeight: "bold",
                                             backgroundColor: "#f0f0f0",
                                           }}
-                                        //colSpan="2"
+                                          //colSpan="2"
                                         >
                                           Net income
                                         </th>
@@ -2091,7 +2128,7 @@ const PropDetails = () => {
                                             fontWeight: "bold",
                                             backgroundColor: "#f0f0f0",
                                           }}
-                                        //colSpan="2"
+                                          colSpan="2"
                                         >
                                           ${calculateNetIncome(property)}
                                         </td>
@@ -2122,14 +2159,15 @@ const PropDetails = () => {
                                       Income
                                     </th>
                                   </tr>
-                                  {monthWiseData[month] && monthWiseData[month].map((data, index) => (
-                                    <React.Fragment key={index}>
-                                      <tr>
-                                        <th>{data.account}</th>
-                                        <td>${data.amount || "0.00"}</td>
-                                      </tr>
-                                    </React.Fragment>
-                                  ))}
+                                  {monthWiseData[month] &&
+                                    monthWiseData[month].map((data, index) => (
+                                      <React.Fragment key={index}>
+                                        <tr>
+                                          <th>{data.account}</th>
+                                          <td>${data.amount || "0.00"}</td>
+                                        </tr>
+                                      </React.Fragment>
+                                    ))}
                                   <tr>
                                     <th
                                       style={{
@@ -2139,14 +2177,14 @@ const PropDetails = () => {
                                     >
                                       Total income
                                     </th>
-                                    <td
+                                    <th
                                       style={{
                                         color: "black",
                                         fontWeight: "bold",
                                       }}
                                     >
-                                      {totalIncome}
-                                    </td>
+                                      ${(totalIncome || 0).toFixed(2)}
+                                    </th>
                                   </tr>
                                   <tr>
                                     <th
@@ -2161,15 +2199,15 @@ const PropDetails = () => {
                                     </th>
                                     <td></td>
                                   </tr>
-                                  {monthWiseData2[month] && monthWiseData2[month].map((data, index) => (
-                                    <React.Fragment key={index}>
-                                      <tr>
-                                        <th>{data.account}</th>
-                                        <td>${data.amount || "0.00"}</td>
-                                      </tr>
-
-                                    </React.Fragment>
-                                  ))}
+                                  {monthWiseData2[month] &&
+                                    monthWiseData2[month].map((data, index) => (
+                                      <React.Fragment key={index}>
+                                        <tr>
+                                          <th>{data.account}</th>
+                                          <td>${data.amount || "0.00"}</td>
+                                        </tr>
+                                      </React.Fragment>
+                                    ))}
                                   <tr>
                                     <th
                                       style={{
@@ -2179,14 +2217,14 @@ const PropDetails = () => {
                                     >
                                       Total expenses
                                     </th>
-                                    <td
+                                    <th
                                       style={{
                                         color: "black",
                                         fontWeight: "bold",
                                       }}
                                     >
-                                      {totalExpenses}
-                                    </td>
+                                      ${(totalExpenses || 0).toFixed(2)}
+                                    </th>
                                   </tr>
                                   <tr>
                                     <th
@@ -2195,20 +2233,24 @@ const PropDetails = () => {
                                         fontWeight: "bold",
                                         backgroundColor: "#f0f0f0",
                                       }}
-                                    //colSpan="2"
+                                      //colSpan="2"
                                     >
                                       Net income
                                     </th>
-                                    <td
+                                    <th
                                       style={{
                                         color: "black",
                                         fontWeight: "bold",
                                         backgroundColor: "#f0f0f0",
                                       }}
-                                    //colSpan="2"
+                                      //colSpan="2"
                                     >
-                                      {netIncome}
-                                    </td>
+                                      {netIncome && netIncome > 0
+                                        ? `$${netIncome.toFixed(2)}`
+                                        : `$(${Math.abs(netIncome || 0).toFixed(
+                                            2
+                                          )})`}
+                                    </th>
                                   </tr>
                                 </React.Fragment>
                               </tbody>
@@ -2224,46 +2266,54 @@ const PropDetails = () => {
                                     {month} {moment().format("YYYY")}
                                   </th>
                                 ))}
-                                {console.log(monthWiseData, 'yash', monthWiseData2)}
+                                {console.log(
+                                  monthWiseData,
+                                  "yash",
+                                  monthWiseData2
+                                )}
                                 <th>{month} 1 to date</th>
                               </thead>
                               <tbody>
                                 <tr>
                                   <th
                                     style={{
-                                      color: "black",
+                                      color: "blue",
                                       fontWeight: "bold",
+                                      backgroundColor: "#f0f0f0",
                                     }}
+                                    colSpan={4}
                                   >
                                     Income
                                   </th>
                                 </tr>
                                 {threeMonths.map((months, index) => (
                                   <tr key={index}>
-                                    {monthWiseData[months] && monthWiseData[months].map((data) => (
-                                      <>
-                                        <th>{data.account}</th>
-                                        <td>
-                                          {index === 0 ? data.amount : "-"}
-                                        </td>
-                                        <td>
-                                          {index === 1 ? data.amount : "-"}
-                                        </td>
-                                        <td>
-                                          {index === 2 ? data.amount : "-"}
-                                        </td>
-                                      </>
-                                    ))}
-                                  </tr >
-                                ))}
-                                {monthWiseData[month] && monthWiseData[month].map((data, index) => (
-                                  <tr key={index}>
-                                    <th>{data.account}</th>
-                                    <td>{"-"}</td>
-                                    <td>{"-"}</td>
-                                    <td>{data.amount || "-"}</td>
+                                    {monthWiseData[months] &&
+                                      monthWiseData[months].map((data) => (
+                                        <>
+                                          <th>{data.account}</th>
+                                          <td>
+                                            {index === 0 ? data.amount : "-"}
+                                          </td>
+                                          <td>
+                                            {index === 1 ? data.amount : "-"}
+                                          </td>
+                                          <td>
+                                            {index === 2 ? data.amount : "-"}
+                                          </td>
+                                        </>
+                                      ))}
                                   </tr>
                                 ))}
+                                {monthWiseData[month] &&
+                                  monthWiseData[month].map((data, index) => (
+                                    <tr key={index}>
+                                      <th>{data.account}</th>
+                                      <td>{"-"}</td>
+                                      <td>{"-"}</td>
+                                      <td>{data.amount || "-"}</td>
+                                    </tr>
+                                  ))}
                                 <tr>
                                   <th
                                     style={{
@@ -2273,16 +2323,39 @@ const PropDetails = () => {
                                   >
                                     Total income
                                   </th>
-                                  <td>{totals[0]}</td>
-                                  <td>{totals[1]}</td>
-                                  <td>{totals[2]}</td>
-                                </tr>
-                                <tr>
                                   <th
                                     style={{
                                       color: "black",
                                       fontWeight: "bold",
                                     }}
+                                  >
+                                    ${totals[0].toFixed(2)}
+                                  </th>
+                                  <th
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "bold",
+                                    }}
+                                  >
+                                    ${totals[1].toFixed(2)}
+                                  </th>
+                                  <th
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "bold",
+                                    }}
+                                  >
+                                    ${totals[2].toFixed(2)}
+                                  </th>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      color: "blue",
+                                      fontWeight: "bold",
+                                      backgroundColor: "#f0f0f0",
+                                    }}
+                                    colSpan={4}
                                   >
                                     Expenses
                                   </th>
@@ -2292,30 +2365,32 @@ const PropDetails = () => {
                                 </tr>
                                 {threeMonths.map((months, index) => (
                                   <tr key={index}>
-                                    {monthWiseData2[months] && monthWiseData2[months].map((data) => (
-                                      <>
-                                        <th>{data.account}</th>
-                                        <td>
-                                          {index === 0 ? data.amount : "-"}
-                                        </td>
-                                        <td>
-                                          {index === 1 ? data.amount : "-"}
-                                        </td>
-                                        <td>
-                                          {index === 2 ? data.amount : "-"}
-                                        </td>
-                                      </>
-                                    ))}
-                                  </tr >
-                                ))}
-                                {monthWiseData2[month] && monthWiseData2[month].map((data, index) => (
-                                  <tr key={index}>
-                                    <th>{data.account}</th>
-                                    <td>{"-"}</td>
-                                    <td>{"-"}</td>
-                                    <td>{data.amount || "-"}</td>
+                                    {monthWiseData2[months] &&
+                                      monthWiseData2[months].map((data) => (
+                                        <>
+                                          <th>{data.account}</th>
+                                          <td>
+                                            {index === 0 ? data.amount : "-"}
+                                          </td>
+                                          <td>
+                                            {index === 1 ? data.amount : "-"}
+                                          </td>
+                                          <td>
+                                            {index === 2 ? data.amount : "-"}
+                                          </td>
+                                        </>
+                                      ))}
                                   </tr>
                                 ))}
+                                {monthWiseData2[month] &&
+                                  monthWiseData2[month].map((data, index) => (
+                                    <tr key={index}>
+                                      <th>{data.account}</th>
+                                      <td>{"-"}</td>
+                                      <td>{"-"}</td>
+                                      <td>{data.amount || "-"}</td>
+                                    </tr>
+                                  ))}
                                 <tr>
                                   <th
                                     style={{
@@ -2325,22 +2400,86 @@ const PropDetails = () => {
                                   >
                                     Total expenses
                                   </th>
-                                  <td>{totals2[0]}</td>
-                                  <td>{totals2[1]}</td>
-                                  <td>{totals2[2]}</td>
-                                </tr>
-                                <tr>
                                   <th
                                     style={{
                                       color: "black",
                                       fontWeight: "bold",
                                     }}
                                   >
+                                    ${totals2[0].toFixed(2)}
+                                  </th>
+                                  <th
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "bold",
+                                    }}
+                                  >
+                                    ${totals2[1].toFixed(2)}
+                                  </th>
+                                  <th
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "bold",
+                                    }}
+                                  >
+                                    ${totals2[2].toFixed(2)}
+                                  </th>
+                                </tr>
+                                <tr>
+                                  <th
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "bold",
+                                      backgroundColor: "#f0f0f0",
+                                    }}
+                                  >
                                     Net income
                                   </th>
-                                  <td>{totals[0] - totals2[0]}</td>
-                                  <td>{totals[1] - totals2[1]}</td>
-                                  <td>{totals[2] - totals2[2]}</td>
+                                  <th
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "bold",
+                                      backgroundColor: "#f0f0f0",
+                                    }}
+                                  >
+                                    $
+                                    {totals[0] - totals2[0] >= 0
+                                      ? (totals[0] - totals2[0]).toFixed(2)
+                                      : `(${
+                                          -1 *
+                                          (totals[0] - totals2[0]).toFixed(2)
+                                        })`}
+                                  </th>
+                                  <th
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "bold",
+                                      backgroundColor: "#f0f0f0",
+                                    }}
+                                  >
+                                    $
+                                    {totals[1] - totals2[1] >= 0
+                                      ? (totals[1] - totals2[1]).toFixed(2)
+                                      : `(${
+                                          -1 *
+                                          (totals[1] - totals2[1]).toFixed(2)
+                                        })`}
+                                  </th>
+                                  <th
+                                    style={{
+                                      color: "black",
+                                      fontWeight: "bold",
+                                      backgroundColor: "#f0f0f0",
+                                    }}
+                                  >
+                                    $
+                                    {totals[2] - totals2[2] >= 0
+                                      ? (totals[2] - totals2[2]).toFixed(2)
+                                      : `(${
+                                          -1 *
+                                          (totals[2] - totals2[2]).toFixed(2)
+                                        })`}
+                                  </th>
                                 </tr>
                               </tbody>
                             </Table>
@@ -2614,11 +2753,11 @@ const PropDetails = () => {
                                         }}
                                         onChange={addUnitFormik.handleChange}
                                         onBlur={addUnitFormik.handleBlur}
-                                      // onClick={() =>
-                                      //   handlePropSelection(
-                                      //     subtype.propertysub_type
-                                      //   )
-                                      // }
+                                        // onClick={() =>
+                                        //   handlePropSelection(
+                                        //     subtype.propertysub_type
+                                        //   )
+                                        // }
                                       >
                                         {subtype}
                                       </DropdownItem>
@@ -2650,11 +2789,11 @@ const PropDetails = () => {
                                         }}
                                         onChange={addUnitFormik.handleChange}
                                         onBlur={addUnitFormik.handleBlur}
-                                      // onClick={() =>
-                                      //   handlePropSelection(
-                                      //     subtype.propertysub_type
-                                      //   )
-                                      // }
+                                        // onClick={() =>
+                                        //   handlePropSelection(
+                                        //     subtype.propertysub_type
+                                        //   )
+                                        // }
                                       >
                                         {subtype}
                                       </DropdownItem>
@@ -2720,13 +2859,8 @@ const PropDetails = () => {
                                     name={`unit_img`}
                                     onChange={(e) => fileData(e)}
                                   />
-                                  <label
-                                    htmlFor={`unit_img`}
-                                  >
-                                    <b style={{ fontSize: "20px" }}>
-                                      +
-                                    </b>{" "}
-                                    Add
+                                  <label htmlFor={`unit_img`}>
+                                    <b style={{ fontSize: "20px" }}>+</b> Add
                                   </label>
                                   {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
                                 </span>
@@ -2743,7 +2877,7 @@ const PropDetails = () => {
                                     unitImage.length > 0 &&
                                     unitImage.map((unitImg, index) => (
                                       <div
-                                        key={index}  // Use a unique identifier, such as index or image URL
+                                        key={index} // Use a unique identifier, such as index or image URL
                                         style={{
                                           position: "relative",
                                           width: "100px",
@@ -2776,7 +2910,12 @@ const PropDetails = () => {
                                             top: "-12px",
                                             right: "-12px",
                                           }}
-                                          onClick={() => clearSelectedPhoto(index, "propertyres_image")}
+                                          onClick={() =>
+                                            clearSelectedPhoto(
+                                              index,
+                                              "propertyres_image"
+                                            )
+                                          }
                                         />
                                       </div>
                                     ))}
@@ -2869,8 +3008,8 @@ const PropDetails = () => {
                                   {unit.tenant_firstName == null
                                     ? "-"
                                     : unit.tenant_firstName +
-                                    " " +
-                                    unit.tenant_lastName}
+                                      " " +
+                                      unit.tenant_lastName}
                                   {/* {unit.tenant_firstName +
                                     " " +
                                     unit.tenant_lastName} */}
@@ -3005,15 +3144,24 @@ const PropDetails = () => {
                                   <img
                                     // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
                                     src={
-                                      clickedObject && (clickedObject.property_image.length > 0 || clickedObject.propertyres_image.length > 0)
-                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0][0] : clickedObject.propertyres_image[0] ?
-                                          clickedObject.propertyres_image[0][0] : fone : fone
+                                      clickedObject &&
+                                      (clickedObject.property_image.length >
+                                        0 ||
+                                        clickedObject.propertyres_image.length >
+                                          0)
+                                        ? clickedObject.property_image[0]
+                                          ? clickedObject.property_image[0][0]
+                                          : clickedObject.propertyres_image[0]
+                                          ? clickedObject
+                                              .propertyres_image[0][0]
+                                          : fone
+                                        : fone
                                     }
                                     className="img-fluid rounded-start card-image"
                                     alt="..."
-                                  // width='260px'
-                                  // height='18px'
-                                  // onClick={handleModalOpen}
+                                    // width='260px'
+                                    // height='18px'
+                                    // onClick={handleModalOpen}
                                   />
                                 </label>
                                 {/* <TextField
@@ -3355,49 +3503,68 @@ const PropDetails = () => {
                                                       paddingLeft: "10px",
                                                     }}
                                                   >
-
                                                     <div className="d-flex">
                                                       {unitImage &&
                                                         unitImage.length > 0 &&
-                                                        unitImage.map((unitImg, index) => (
-                                                          <div
-                                                            key={index}  // Use a unique identifier, such as index or image URL
-                                                            style={{
-                                                              position: "relative",
-                                                              width: "100px",
-                                                              height: "100px",
-                                                              margin: "10px",
-                                                              display: "flex",
-                                                              flexDirection: "column",
-                                                            }}
-                                                          >
-                                                            <img
-                                                              src={unitImg}
-                                                              alt=""
+                                                        unitImage.map(
+                                                          (unitImg, index) => (
+                                                            <div
+                                                              key={index} // Use a unique identifier, such as index or image URL
                                                               style={{
+                                                                position:
+                                                                  "relative",
                                                                 width: "100px",
                                                                 height: "100px",
-                                                                maxHeight: "100%",
-                                                                maxWidth: "100%",
-                                                                borderRadius: "10px",
+                                                                margin: "10px",
+                                                                display: "flex",
+                                                                flexDirection:
+                                                                  "column",
                                                               }}
-                                                              onClick={() => {
-                                                                setSelectedImage(unitImg);
-                                                                setOpen(true);
-                                                              }}
-                                                            />
-                                                            <ClearIcon
-                                                              style={{
-                                                                cursor: "pointer",
-                                                                alignSelf: "flex-start",
-                                                                position: "absolute",
-                                                                top: "-12px",
-                                                                right: "-12px",
-                                                              }}
-                                                              onClick={() => clearSelectedPhoto(index, "propertyres_image")}
-                                                            />
-                                                          </div>
-                                                        ))}
+                                                            >
+                                                              <img
+                                                                src={unitImg}
+                                                                alt=""
+                                                                style={{
+                                                                  width:
+                                                                    "100px",
+                                                                  height:
+                                                                    "100px",
+                                                                  maxHeight:
+                                                                    "100%",
+                                                                  maxWidth:
+                                                                    "100%",
+                                                                  borderRadius:
+                                                                    "10px",
+                                                                }}
+                                                                onClick={() => {
+                                                                  setSelectedImage(
+                                                                    unitImg
+                                                                  );
+                                                                  setOpen(true);
+                                                                }}
+                                                              />
+                                                              <ClearIcon
+                                                                style={{
+                                                                  cursor:
+                                                                    "pointer",
+                                                                  alignSelf:
+                                                                    "flex-start",
+                                                                  position:
+                                                                    "absolute",
+                                                                  top: "-12px",
+                                                                  right:
+                                                                    "-12px",
+                                                                }}
+                                                                onClick={() =>
+                                                                  clearSelectedPhoto(
+                                                                    index,
+                                                                    "propertyres_image"
+                                                                  )
+                                                                }
+                                                              />
+                                                            </div>
+                                                          )
+                                                        )}
                                                       <OpenImageDialog
                                                         open={open}
                                                         setOpen={setOpen}
@@ -3697,8 +3864,8 @@ const PropDetails = () => {
                                       clickedObject
                                     )}
                                     {clickedObject &&
-                                      clickedObject.tenant_firstName &&
-                                      clickedObject.tenant_lastName ? (
+                                    clickedObject.tenant_firstName &&
+                                    clickedObject.tenant_lastName ? (
                                       <>
                                         <tr className="body">
                                           <td>
@@ -3708,7 +3875,7 @@ const PropDetails = () => {
                                           </td>
                                           <td>
                                             {clickedObject.start_date &&
-                                              clickedObject.end_date ? (
+                                            clickedObject.end_date ? (
                                               <>
                                                 <Link
                                                   to={`/admin/tenantdetail/${clickedObject._id}`}
@@ -3739,10 +3906,10 @@ const PropDetails = () => {
                                           </td>
                                           <td>
                                             {clickedObject.tenant_firstName &&
-                                              clickedObject.tenant_lastName
+                                            clickedObject.tenant_lastName
                                               ? clickedObject.tenant_firstName +
-                                              " " +
-                                              clickedObject.tenant_lastName
+                                                " " +
+                                                clickedObject.tenant_lastName
                                               : "N/A"}
                                           </td>
                                           <td>
