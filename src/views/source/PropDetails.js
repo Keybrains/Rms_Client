@@ -377,6 +377,7 @@ const PropDetails = () => {
       const imageData = new FormData();
       for (let index = 0; index < selectedFiles.length; index++) {
         const element = selectedFiles[index];
+        console.log(element, "yash")
         imageData.append(`files`, element);
       }
 
@@ -391,6 +392,7 @@ const PropDetails = () => {
           },
         });
         console.log(result, "imgs");
+        
         image = {
           prop_image: result.data.files.map((data, index) => {
             return data.url;
@@ -542,7 +544,7 @@ const PropDetails = () => {
       market_rent: addUnitFormik.values.market_rent,
       rental_bed: addUnitFormik.values.rooms,
       rental_bath: addUnitFormik.values.baths,
-      propertyres_image: propType === "Residential" ? image.prop_image : "",
+      propertyres_image: propType === "Residential" ? [image.prop_image] : "",
       rental_sqft: addUnitFormik.values.size,
       rental_units: addUnitFormik.values.unit_number,
       rental_unitsAdress: addUnitFormik.values.address1,
@@ -554,7 +556,7 @@ const PropDetails = () => {
       rental_city: addUnitFormik.values.city,
       rental_postcode: addUnitFormik.values.zip,
       // property_image: addUnitFormik.values.property_image,
-      property_image: propType === "Residential" ? "" : image.prop_image,
+      property_image: propType === "Residential" ? "" : [image.prop_image],
     };
     try {
       const response = await axios.post(
