@@ -488,17 +488,62 @@ const StaffWorkDetails = () => {
                             <Box borderBottom="1px solid #ccc" style={{ width: "100%", padding: "16px", textAlign: "left", color: "#5e72e4" }}>
                               <h3 className="text" style={{color:'#033E3E'}}>Property</h3>
                             </Box>
-                            {propertyDetails?.propertyres_image || propertyDetails?.property_image ? (
-                              <Box style={{ width: "100%", padding: "16px", display: "flex", alignItems: "center" }}>
-                                <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }}>
-                                  <img
-                                    src={propertyDetails?.propertyres_image || propertyDetails?.property_image}
-                                    alt="property"
-                                    style={{ maxWidth: "80%", maxHeight: "100%", borderRadius: "8px", border: "1px solid #ccc" }}
-                                  />
+                            {Array.isArray(
+                                propertyDetails?.propertyres_image
+                              ) ||
+                              Array.isArray(propertyDetails?.property_image) ? (
+                                <Box
+                                  style={{
+                                    width: "100%",
+                                    padding: "16px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Box
+                                    width="100%"
+                                    style={{
+                                      minWidth: "100%",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    {propertyDetails?.propertyres_image &&
+                                    propertyDetails
+                                      ?.propertyres_image[0]?.[0] ? (
+                                      <img
+                                        src={
+                                          propertyDetails
+                                            .propertyres_image[0][0]
+                                        }
+                                        alt="property"
+                                        style={{
+                                          maxWidth: "80%",
+                                          maxHeight: "100%",
+                                          borderRadius: "8px",
+                                          border: "1px solid #ccc",
+                                        }}
+                                      />
+                                    ) : propertyDetails?.property_image &&
+                                      propertyDetails
+                                        ?.property_image[0]?.[0] ? (
+                                      <img
+                                        src={
+                                          propertyDetails.property_image[0][0]
+                                        }
+                                        alt="property"
+                                        style={{
+                                          maxWidth: "80%",
+                                          maxHeight: "100%",
+                                          borderRadius: "8px",
+                                          border: "1px solid #ccc",
+                                        }}
+                                      />
+                                    ) : (
+                                      <span>No Image Found</span>
+                                    )}
+                                  </Box>
                                 </Box>
-                              </Box>
-                            ) : null}
+                              ) : null}
                             <Box style={{ width: "100%", padding: "5px 16px", display: "flex", alignItems: "center" }}>
                               <Box width="100%" style={{ minWidth: "100%", textAlign: "center" }} >
                                 <span>{propertyDetails.rental_adress || "N/A"} ({propertyDetails.rental_units})</span>

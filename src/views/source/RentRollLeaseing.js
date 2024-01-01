@@ -674,7 +674,7 @@ const RentRollLeaseing = () => {
     //setImgLoader(true);
     // console.log(files, "file");
     const filesArray = [...files];
-    console.log(filesArray, "yash")
+    console.log(filesArray, "yash");
 
     if (filesArray.length <= 10 && file.length === 0) {
       const finalArray = [];
@@ -1267,39 +1267,55 @@ const RentRollLeaseing = () => {
   const [overlapLease, setOverlapLease] = useState(null);
 
   const checkDate = async (dates) => {
-    if (selectedPropertyType && selectedUnit) {
+    if (selectedPropertyType && selectedUnit && selectedTenantData) {
       let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
-      let inputStartDate = entrySchema.values.start_date || "";
-      console.log(inputStartDate, "inputStartDate");
 
       let isUnavailable = false;
       let overlappingLease = null;
 
-      data.forEach((entry) => {
-        if (
-          selectedPropertyType === entry.entries.rental_adress &&
-          selectedUnit === entry.entries.rental_units
-        ) {
-          const sDate = new Date(entry.entries.start_date);
-          const eDate = new Date(entry.entries.end_date);
-          const inputDate = new Date(dates);
-
-          if (
-            (sDate.getTime() < inputDate.getTime() &&
-              inputDate.getTime() < eDate.getTime()) ||
-            (new Date(inputStartDate) &&
-              sDate.getTime() >= new Date(inputStartDate).getTime() &&
-              eDate.getTime() <= inputDate.getTime())
-          ) {
-            isUnavailable = true;
-            overlappingLease = entry.entries;
-          }
+      // Check if the selected tenant's details are the same as any other tenant
+      const isSameTenant = data.find(
+        (entry) => {
+          console.log(entry._id, "yash");
+          return id === entry._id;
         }
-      });
+        // selectedTenantData.lastName === entry.tenant_lastName &&
+        // selectedTenantData.mobileNumber === entry.tenant_mobileNumber
+      );
 
-      setIsDateUnavailable(isUnavailable);
-      setOverlapLease(overlappingLease);
+      if (isSameTenant) {
+        setIsDateUnavailable(false);
+        setOverlapLease(null);
+        console.log("object1", isStartDateUnavailable);
+        return;
+      } else {
+        data.forEach((entry) => {
+          if (
+            selectedPropertyType === entry.entries.rental_adress &&
+            selectedUnit === entry.entries.rental_units
+          ) {
+            const sDate = new Date(entry.entries.start_date);
+            const eDate = new Date(entry.entries.end_date);
+            const inputDate = new Date(dates);
+            const inputStartDate = entrySchema.values.start_date;
+            if (
+              (sDate.getTime() < inputDate.getTime() &&
+                inputDate.getTime() < eDate.getTime()) ||
+              (new Date(inputStartDate) &&
+                sDate.getTime() >= new Date(inputStartDate).getTime() &&
+                eDate.getTime() <= inputDate.getTime())
+            ) {
+              isUnavailable = true;
+              overlappingLease = entry.entries;
+            }
+          }
+        });
+        setIsDateUnavailable(isUnavailable);
+        setOverlapLease(overlappingLease);
+      }
+    } else {
+      return;
     }
   };
 
@@ -1404,9 +1420,12 @@ const RentRollLeaseing = () => {
 
     onSubmit: (values) => {
       if (selectedTenantData.length !== 0) {
-        handleSubmit(values);
+        if (id) {
+          editLease(id);
+        } else {
+          entrySchema.handleSubmit();
+        }
       } else {
-        // console.log("data not ok")
         setDisplay(true);
       }
     },
@@ -1749,7 +1768,7 @@ const RentRollLeaseing = () => {
             isrenton: matchedLease.isrenton,
             rent_paid: matchedLease.rent_paid,
             propertyOnRent: matchedLease.propertyOnRent,
-
+            paymentMethod: matchedLease.paymentMethod,
             //security deposite
             Due_date: matchedLease.Due_date,
             Security_amount: matchedLease.Security_amount,
@@ -1781,7 +1800,7 @@ const RentRollLeaseing = () => {
             cash_flow: matchedLease.cash_flow,
             notes: matchedLease.notes,
           });
-
+          console.log(matchedLease, "yashu");
           tenantsSchema.setValues({
             tenant_id: laesingdata.tenant_id,
 
@@ -1836,76 +1855,103 @@ const RentRollLeaseing = () => {
   const [overlapStartDateLease, setOverlapStartDateLease] = useState(null);
 
   const checkStartDate = async (date) => {
-    if (selectedPropertyType && selectedUnit) {
+    if (selectedPropertyType && selectedUnit && selectedTenantData) {
       let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
 
       let isStartDateUnavailable = false;
       let overlappingLease = null;
 
-      data.forEach((entry) => {
-        if (
-          selectedPropertyType === entry.entries.rental_adress &&
-          selectedUnit === entry.entries.rental_units
-        ) {
-          const sDate = new Date(entry.entries.start_date);
-          const eDate = new Date(entry.entries.end_date);
-          const inputDate = new Date(date);
-
-          if (
-            sDate.getTime() < inputDate.getTime() &&
-            inputDate.getTime() < eDate.getTime()
-          ) {
-            isStartDateUnavailable = true;
-            overlappingLease = entry.entries;
-          }
+      const isSameTenant = data.find(
+        (entry) => {
+          console.log(entry._id, "yash");
+          return id === entry._id;
         }
-      });
+        // selectedTenantData.lastName === entry.tenant_lastName &&
+        // selectedTenantData.mobileNumber === entry.tenant_mobileNumber
+      );
 
-      setIsStartDateUnavailable(isStartDateUnavailable);
-      setOverlapStartDateLease(overlappingLease);
-
-      // Additional validation logic can be added here
-      if (isStartDateUnavailable) {
-        entrySchema.setFieldError(
-          "start_date",
-          "Start date overlaps with an existing lease"
-        );
+      if (isSameTenant) {
+        setIsDateUnavailable(false);
+        setOverlapLease(null);
+        console.log("object1", isStartDateUnavailable);
+        return;
       } else {
-        entrySchema.setFieldError("start_date", null);
+        data.forEach((entry) => {
+          if (
+            selectedPropertyType === entry.entries.rental_adress &&
+            selectedUnit === entry.entries.rental_units
+          ) {
+            const sDate = new Date(entry.entries.start_date);
+            const eDate = new Date(entry.entries.end_date);
+            const inputDate = new Date(date);
+
+            if (
+              (sDate.getTime() <= inputDate.getTime() &&
+                inputDate.getTime() < eDate.getTime()) ||
+              (sDate.getTime() < inputDate.getTime() &&
+                inputDate.getTime() <= eDate.getTime()) ||
+              (inputDate.getTime() <= sDate.getTime() &&
+                eDate.getTime() <= inputDate.getTime())
+            ) {
+              isStartDateUnavailable = true;
+              overlappingLease = entry.entries;
+            }
+          }
+        });
+
+        setIsStartDateUnavailable(isStartDateUnavailable);
+        setOverlapStartDateLease(overlappingLease);
+
+        // Additional validation logic can be added here
+        if (isStartDateUnavailable) {
+          entrySchema.setFieldError(
+            "start_date",
+            "Start date overlaps with an existing lease"
+          );
+        } else {
+          entrySchema.setFieldError("start_date", null);
+        }
       }
+    } else {
+      return;
     }
   };
 
   const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
     setLoader(true);
+    if (
+      entrySchema.values.upload_file &&
+      Array.isArray(entrySchema.values.upload_file)
+    ) {
+      for (const [index, files] of entrySchema.values.upload_file.entries()) {
+        if (files.upload_file instanceof File) {
+          console.log(files.upload_file, "myfile");
 
-    for (const [index, files] of entrySchema.values.upload_file.entries()) {
-      if (files.upload_file instanceof File) {
-        console.log(files.upload_file, "myfile");
+          const imageData = new FormData();
+          imageData.append(`files`, files.upload_file);
 
-        const imageData = new FormData();
-        imageData.append(`files`, files.upload_file);
+          const url = `${baseUrl}/images/upload`;
 
-        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+          try {
+            const result = await axios.post(url, imageData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
 
-        try {
-          const result = await axios.post(url, imageData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
+            console.log(result, "imgs");
 
-          console.log(result, "imgs");
-
-          // Update the original array with the uploaded file URL
-          entrySchema.values.upload_file[index].upload_file = result.data.files[0].url;
-        } catch (error) {
-          console.error(error);
+            // Update the original array with the uploaded file URL
+            entrySchema.values.upload_file[index].upload_file =
+              result.data.files[0].url;
+          } catch (error) {
+            console.error(error);
+          }
+        } else {
+          console.log(files.upload_file, "myfile");
         }
-      } else {
-        console.log(files.upload_file, "myfile");
       }
     }
 
@@ -2584,31 +2630,37 @@ const RentRollLeaseing = () => {
 
     const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
-    for (const [index, files] of entrySchema.values.upload_file.entries()) {
-      if (files.upload_file instanceof File) {
-        console.log(files.upload_file, "myfile");
+    if (
+      entrySchema.values.upload_file &&
+      Array.isArray(entrySchema.values.upload_file)
+    ) {
+      for (const [index, files] of entrySchema.values.upload_file.entries()) {
+        if (files.upload_file instanceof File) {
+          console.log(files.upload_file, "myfile");
 
-        const imageData = new FormData();
-        imageData.append(`files`, files.upload_file);
+          const imageData = new FormData();
+          imageData.append(`files`, files.upload_file);
 
-        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+          const url = `${baseUrl}/images/upload`;
 
-        try {
-          const result = await axios.post(url, imageData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
+          try {
+            const result = await axios.post(url, imageData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
 
-          console.log(result, "imgs");
+            console.log(result, "imgs");
 
-          // Update the original array with the uploaded file URL
-          entrySchema.values.upload_file[index].upload_file = result.data.files[0].url;
-        } catch (error) {
-          console.error(error);
+            // Update the original array with the uploaded file URL
+            entrySchema.values.upload_file[index].upload_file =
+              result.data.files[0].url;
+          } catch (error) {
+            console.error(error);
+          }
+        } else {
+          console.log(files.upload_file, "myfile");
         }
-      } else {
-        console.log(files.upload_file, "myfile");
       }
     }
 
@@ -2679,6 +2731,7 @@ const RentRollLeaseing = () => {
       rentalOwner_businessNumber: ownerData.rentalOwner_businessNumber,
       rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
       rentalOwner_companyName: ownerData.rentalOwner_companyName,
+      paymentMethod: entrySchema.paymentMethod,
     };
     entriesArray.push(entriesObject);
 
@@ -6429,12 +6482,16 @@ const RentRollLeaseing = () => {
                               </p>
                             ) : (
                               <p
-                                onClick={() => handleOpenFile(singleFile.upload_file)}
+                                onClick={() =>
+                                  handleOpenFile(singleFile.upload_file)
+                                }
                                 style={{ cursor: "pointer" }}
                               >
                                 {/* {console.log(file, "file 5803")} */}
                                 {singleFile?.file_name?.substr(0, 5)}
-                                {singleFile?.file_name?.length > 5 ? "..." : null}
+                                {singleFile?.file_name?.length > 5
+                                  ? "..."
+                                  : null}
                               </p>
                             )}
                             <CloseIcon
@@ -6701,7 +6758,13 @@ const RentRollLeaseing = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                        editLease(id);
+                        if (selectedTenantData.length !== 0) {
+                          entrySchema.handleSubmit(entrySchema.values);
+                        } else {
+                          // console.log("data not ok")
+                          entrySchema.handleSubmit(entrySchema.values);
+                          setDisplay(true);
+                        }
                       }}
                     >
                       Update Lease
@@ -6742,8 +6805,7 @@ const RentRollLeaseing = () => {
                     Cancel
                   </Button>
                   {tenantsSchema.errors &&
-                  tenantsSchema.errors?.tenant_password &&
-                  entrySchema.submitCount > 0 ? (
+                  tenantsSchema.errors?.tenant_password ? (
                     <div style={{ color: "red" }}>
                       {/* {console.log(tenantsFormik.errors.tenant_password)} */}
                       Tenant Password is missing

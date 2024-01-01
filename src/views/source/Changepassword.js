@@ -28,30 +28,58 @@ const Changepassword = () => {
   const [showPassword1, setShowPassword1] = React.useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [tokenExpired, setTokenExpired] = useState(false);
   let navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Extract the token from the URL
     const searchParams = new URLSearchParams(location.search);
     const token = searchParams.get("token");
 
-    // Decode the token to get the email
-    const decodedEmail = decodeURIComponent(token);
+    // Make a request to check the token's expiration status
+    fetch(`${baseUrl}/tenant/check_token_status/${token}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setIsLoading(false);
 
-    // Set the email state
-    setEmail(decodedEmail);
-    
+        if (data.expired) {
+          setTokenExpired(true);
+        }
+        else{
+          setEmail(token);
+        }
+      })
+      .catch((error) => {
+        console.error("Error checking token status:", error);
+        setIsLoading(false);
+      });
   }, [location.search]);
-console.log(email,"mansi---------------------");
-  const handleChangePassword = async () => { 
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  
+
+  // useEffect(() => {
+  //   // Extract the token from the URL
+  //   const searchParams = new URLSearchParams(location.search);
+  //   const token = searchParams.get("token");
+
+  //   // Set the email state
+  //   setEmail(token);
+  // }, [location.search]);
+  
+
+  const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
     } else if (!isStrongPassword(newPassword)) {
-      setError("Password must be strong. Include uppercase, lowercase, numbers, and special characters.");
+      setError(
+        "Password must be strong. Include uppercase, lowercase, numbers, and special characters."
+      );
     } else {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         const response = await fetch(
           `${baseUrl}/tenant/reset_password/${email}`,
           {
@@ -62,23 +90,22 @@ console.log(email,"mansi---------------------");
             body: JSON.stringify({ tenant_password: newPassword }),
           }
         );
-  
+
         const data = await response.json();
-  
+
         if (response.ok) {
           swal("Success!", "Password Changed Successfully", "success");
-          navigate(`/auth/login`)
+          navigate(`/auth/login`);
         } else {
           setError(data.message);
           swal("error!", "Failed To Change Password", "error");
-          
         }
       } catch (error) {
         setError("An error occurred while changing the password");
-      }finally {
+      } finally {
         setIsLoading(false); // Set loading state to false after API call completes
       }
-    } 
+    }
   };
 
   const handleSubmit = (event) => {
@@ -87,20 +114,28 @@ console.log(email,"mansi---------------------");
   };
 
   const isStrongPassword = (password) => {
-    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const strongPasswordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return strongPasswordRegex.test(password);
   };
 
   return (
     <Col lg="5" md="7">
-      <Card className="bg-secondary shadow border-0">
+        <Card className="bg-secondary shadow border-0">
         <CardBody className="px-lg-5 py-lg-5">
-          {/* <div className="forms"> */}
-            <div className="text-center text-muted mb-4">
-              <big>Change Password</big>
+        
+          {tokenExpired ? (
+            <div className="text-danger">
+              The password reset link has expired. Please request a new one.
             </div>
-            <Form role="form" onSubmit={handleSubmit}>
-              {/* <FormGroup className="mb-3">
+          ) : (
+          <div>
+          <div className="text-center text-muted mb-4">
+            <big>Change Password</big>
+          </div>
+        
+          <Form role="form" onSubmit={handleSubmit}>
+            {/* <FormGroup className="mb-3">
                 <InputGroup className="input-group-alternative">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
@@ -117,14 +152,14 @@ console.log(email,"mansi---------------------");
                 />
                 </InputGroup>
               </FormGroup> */}
-              <FormGroup>
-                <InputGroup className="input-group-alternative">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      <i className="ni ni-lock-circle-open" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input
+            <FormGroup>
+              <InputGroup className="input-group-alternative">
+                <InputGroupAddon addonType="prepend">
+                  <InputGroupText>
+                    <i className="ni ni-lock-circle-open" />
+                  </InputGroupText>
+                </InputGroupAddon>
+                <Input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="New Password"
@@ -133,23 +168,23 @@ console.log(email,"mansi---------------------");
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
-                    <IconButton
-                    type="button"
-                    style={{ padding: "7px" }}
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {<VisibilityIcon />}
-                  </IconButton>
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup className="input-group-alternative">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      <i className="ni ni-lock-circle-open" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input
+                <IconButton
+                  type="button"
+                  style={{ padding: "7px" }}
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <VisibilityIcon />
+                </IconButton>
+              </InputGroup>
+            </FormGroup>
+            <FormGroup>
+              <InputGroup className="input-group-alternative">
+                <InputGroupAddon addonType="prepend">
+                  <InputGroupText>
+                    <i className="ni ni-lock-circle-open" />
+                  </InputGroupText>
+                </InputGroupAddon>
+                <Input
                   type={showPassword1 ? "text" : "password"}
                   placeholder="Confirm Password"
                   className="form-control"
@@ -157,38 +192,39 @@ console.log(email,"mansi---------------------");
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                     <IconButton
-                    type="button"
-                    style={{ padding: "7px" }}
-                    onClick={() => setShowPassword1(!showPassword1)}
-                  >
-                    {<VisibilityIcon />}
-                  </IconButton>
-            
-                  </InputGroup>
-                  </FormGroup>
-              {error && <div className="text-danger">{error}</div>}
-              <div className="text-center">
-                <Button
-                  type="submit"
-                  variant="contained"
-                  size="large"
-                  disabled={isLoading}
-                  color="primary"
-                  //onClick={handleChangePassword}
+                <IconButton
+                  type="button"
+                  style={{ padding: "7px" }}
+                  onClick={() => setShowPassword1(!showPassword1)}
                 >
-                 {isLoading ? <CircularProgress size={24} /> : "Change Password"}
-                </Button>
-                <Button
-                  variant="contained"
-                  size="large"
-                  color="grey"
-                  onClick={()=>navigate(`/auth/login`)}
-                >
-                 Cancel
-                </Button>
-              </div>
-            </Form>
+                  <VisibilityIcon />
+                </IconButton>
+              </InputGroup>
+            </FormGroup>
+            {error && <div className="text-danger">{error}</div>}
+            <div className="text-center">
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={isLoading}
+                color="primary"
+                //onClick={handleChangePassword}
+              >
+                {isLoading ? <CircularProgress size={24} /> : "Change Password"}
+              </Button>
+              <Button
+                variant="contained"
+                size="large"
+                color="grey"
+                onClick={() => navigate(`/auth/login`)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </Form>
+          </div>
+           )}
         </CardBody>
       </Card>
     </Col>

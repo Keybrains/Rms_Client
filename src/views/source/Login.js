@@ -330,7 +330,7 @@ const Login = () => {
                     <label
                       className=""
                       href="#rms"
-                      onClick={ () => navigate(`/auth/changepassword`)}
+                      onClick={ () => navigate(`/auth/forgetpassword`)}
                     >
                       <span className="text-muted mb-4" style={{fontSize:"14px"}}>Forgot password?</span>
                     </label>

@@ -629,7 +629,7 @@ const Leaseing = () => {
       if (isSameTenant) {
         setIsDateUnavailable(false);
         setOverlapLease(null);
-        console.log("object1", isStartDateUnavailable)
+        console.log("object1", isStartDateUnavailable);
         return;
       } else {
         data.forEach((entry) => {
@@ -667,10 +667,10 @@ const Leaseing = () => {
         } else {
           entrySchema.setFieldError("start_date", null);
         }
+      }
+    } else {
+      return;
     }
-  } else{
-    return;
-  }
   };
   const handleAdd = async (values) => {
     values["account_name "] = selectedAccount;
@@ -1016,7 +1016,7 @@ const Leaseing = () => {
       if (isSameTenant) {
         setIsDateUnavailable(false);
         setOverlapLease(null);
-        console.log("object1", isStartDateUnavailable)
+        console.log("object1", isStartDateUnavailable);
         return;
       } else {
         data.forEach((entry) => {
@@ -1151,11 +1151,14 @@ const Leaseing = () => {
         : null),
     }),
 
-    onSubmit: (values) => {
+    onSubmit: () => {
       if (selectedTenantData.length !== 0) {
-        handleSubmit(values);
+        if (id) {
+          editLease(id);
+        } else {
+          handleSubmit();
+        }
       } else {
-        // console.log("data not ok")
         setDisplay(true);
       }
     },
@@ -1532,33 +1535,37 @@ const Leaseing = () => {
   const [loader, setLoader] = useState(false);
   const handleSubmit = async (values) => {
     setLoader(true);
+    if (
+      entrySchema.values.upload_file &&
+      Array.isArray(entrySchema.values.upload_file)
+    ) {
+      for (const [index, files] of entrySchema.values.upload_file.entries()) {
+        if (files.upload_file instanceof File) {
+          console.log(files.upload_file, "myfile");
 
-    for (const [index, files] of entrySchema.values.upload_file.entries()) {
-      if (files.upload_file instanceof File) {
-        console.log(files.upload_file, "myfile");
+          const imageData = new FormData();
+          imageData.append(`files`, files.upload_file);
 
-        const imageData = new FormData();
-        imageData.append(`files`, files.upload_file);
+          const url = `${baseUrl}/images/upload`;
 
-        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+          try {
+            const result = await axios.post(url, imageData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
 
-        try {
-          const result = await axios.post(url, imageData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
+            console.log(result, "imgs");
 
-          console.log(result, "imgs");
-
-          // Update the original array with the uploaded file URL
-          entrySchema.values.upload_file[index].upload_file =
-            result.data.files[0].url;
-        } catch (error) {
-          console.error(error);
+            // Update the original array with the uploaded file URL
+            entrySchema.values.upload_file[index].upload_file =
+              result.data.files[0].url;
+          } catch (error) {
+            console.error(error);
+          }
+        } else {
+          console.log(files.upload_file, "myfile");
         }
-      } else {
-        console.log(files.upload_file, "myfile");
       }
     }
 
@@ -2218,32 +2225,37 @@ const Leaseing = () => {
     // const arrayOfNames = file.map((item) => item.name);
     const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
-    for (const [index, files] of entrySchema.values.upload_file.entries()) {
-      if (files.upload_file instanceof File) {
-        console.log(files.upload_file, "myfile");
+    if (
+      entrySchema.values.upload_file &&
+      Array.isArray(entrySchema.values.upload_file)
+    ) {
+      for (const [index, files] of entrySchema.values.upload_file.entries()) {
+        if (files.upload_file instanceof File) {
+          console.log(files.upload_file, "myfile");
 
-        const imageData = new FormData();
-        imageData.append(`files`, files.upload_file);
+          const imageData = new FormData();
+          imageData.append(`files`, files.upload_file);
 
-        const url = `https://propertymanager.cloudpress.host/api/images/upload`;
+          const url = `${baseUrl}/images/upload`;
 
-        try {
-          const result = await axios.post(url, imageData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
+          try {
+            const result = await axios.post(url, imageData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
 
-          console.log(result, "imgs");
+            console.log(result, "imgs");
 
-          // Update the original array with the uploaded file URL
-          entrySchema.values.upload_file[index].upload_file =
-            result.data.files[0].url;
-        } catch (error) {
-          console.error(error);
+            // Update the original array with the uploaded file URL
+            entrySchema.values.upload_file[index].upload_file =
+              result.data.files[0].url;
+          } catch (error) {
+            console.error(error);
+          }
+        } else {
+          console.log(files.upload_file, "myfile");
         }
-      } else {
-        console.log(files.upload_file, "myfile");
       }
     }
     console.log(
@@ -2310,6 +2322,7 @@ const Leaseing = () => {
 
       recurring_charges: recurringData,
       one_time_charges: oneTimeData,
+      paymentMethod: entrySchema.paymentMethod,
     };
     entriesArray.push(entriesObject);
 
@@ -6166,7 +6179,13 @@ const Leaseing = () => {
                       style={{ background: "green", cursor: "pointer" }}
                       onClick={(e) => {
                         e.preventDefault();
-                        editLease(id);
+                        if (selectedTenantData.length !== 0) {
+                          entrySchema.handleSubmit(entrySchema.values);
+                        } else {
+                          // console.log("data not ok")
+                          entrySchema.handleSubmit(entrySchema.values);
+                          setDisplay(true);
+                        }
                       }}
                     >
                       Update Lease
@@ -6179,7 +6198,7 @@ const Leaseing = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         if (selectedTenantData.length !== 0) {
-                          handleSubmit(entrySchema.values);
+                          entrySchema.handleSubmit();
                         } else {
                           // console.log("data not ok")
                           entrySchema.handleSubmit();
