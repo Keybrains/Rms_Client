@@ -79,7 +79,7 @@ const PropDetails = () => {
   const [RentAdd, setRentAdd] = useState({});
   const [propType, setPropType] = useState("");
   const [selectedProp, setSelectedProp] = useState("");
-  const [balance, setBalance] = useState("");
+  // const [balance, setBalance] = useState("");
 
   const [multiUnit, setMultiUnit] = useState(null);
   const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
@@ -90,9 +90,14 @@ const PropDetails = () => {
   };
 
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [unitImageLoader, setUnitImageLoader] = useState(false);
   const fileData = (e, type) => {
+    // setUnitImageLoader(true);
     // Use the correct state-setting function for setSelectedFiles
-    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...e.target.files]);
+    setSelectedFiles((prevSelectedFiles) => [
+      ...prevSelectedFiles,
+      ...e.target.files,
+    ]);
 
     const newFiles = [
       ...unitImage,
@@ -107,6 +112,7 @@ const PropDetails = () => {
   const clearSelectedPhoto = (index, name) => {
     if (name === "propertyres_image") {
       const filteredImage = unitImage.filter((item, i) => i !== index);
+
       const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
       setSelectedFiles(filteredImage2);
       setUnitImage(filteredImage);
@@ -126,10 +132,12 @@ const PropDetails = () => {
       );
 
       setMatchedProperty(matchedProperty);
+      getTasks(matchedProperty.rental_adress);
       setRentAdd(matchedProperty.rental_adress);
       console.log(matchedProperty, `matched property`);
       setLoading(false);
       setPropImageLoader(false);
+      setUnitImageLoader(false);
 
       const resp = await axios.get(
         `
@@ -145,6 +153,8 @@ const PropDetails = () => {
       });
       console.log(selectedType, "selectedType");
       setSelectedProp(matchedProperty.property_type);
+      console.log(resp.matchedProperty, "mansi");
+
       setPropType(selectedType);
       const isMultiUnits = resp.data.data[selectedType].filter((item) => {
         return item.propertysub_type === matchedProperty.property_type;
@@ -275,6 +285,7 @@ const PropDetails = () => {
       console.log(values);
     },
   });
+
   const [financialType, setFinancialType] = React.useState("");
   const [month, setMonth] = useState([]);
   const [threeMonths, setThreeMonths] = useState([]);
@@ -375,7 +386,9 @@ const PropDetails = () => {
       try {
         const result = await axios.post(url, imageData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+
+            "Content-Type": "multipart/form-data",
+
           },
         });
         console.log(result, "imgs");
@@ -385,14 +398,14 @@ const PropDetails = () => {
             return data.url;
           }),
         };
-      }
+      } 
       catch (error) {
         console.error(error);
       }
     }
     if (propType === "Residential") {
       const updatedValues = {
-        rental_adress: addUnitFormik.values.rental_adress,
+        rental_unitsAdress: addUnitFormik.values.address1,
         rental_units: addUnitFormik.values.unit_number,
         rental_city: addUnitFormik.values.city,
         rental_state: addUnitFormik.values.state,
@@ -413,7 +426,7 @@ const PropDetails = () => {
       console.log(clickedObject, "clickedObject after update");
     } else {
       const updatedValues = {
-        rental_adress: addUnitFormik.values.address,
+        rental_unitsAdress: addUnitFormik.values.address1,
         rental_units: addUnitFormik.values.unit_number,
         rental_city: addUnitFormik.values.city,
         rental_state: addUnitFormik.values.state,
@@ -427,6 +440,7 @@ const PropDetails = () => {
           console.log(response.data.data, "updated data");
           getUnitProperty(rentalId);
           getRentalsData();
+
           // setAddUnitDialogOpen(false);
           // setAddUnitDialogOpen(false);
         })
@@ -436,6 +450,18 @@ const PropDetails = () => {
       console.log(clickedObject, "clickedObject after update");
     }
   };
+  const [tasks, setTasks] = useState([]);
+  const getTasks = async (rentalAddress) => {
+    await axios
+      .get(`${baseUrl}/workorder/workorder/${rentalAddress}`)
+      .then((res) => {
+        console.log(res, "tasks");
+        setTasks(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   const handleListingEdit = async (id, rentalId) => {
     const updatedValues = {
@@ -498,7 +524,7 @@ const PropDetails = () => {
     try {
       const result = await axios.post(url, imageData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(result, "imgs");
@@ -507,8 +533,7 @@ const PropDetails = () => {
           return data.url;
         }),
       };
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
     }
 
@@ -542,7 +567,7 @@ const PropDetails = () => {
         swal("Success!", "Unit Added Successfully", "success");
         setAddUnitDialogOpen(false);
         setPropertyUnit([...propertyUnit, response.data.data]);
-        console.log(response.data.data)
+        console.log(response.data.data);
       } else {
         swal("", response.data.message, "error");
       }
@@ -571,21 +596,19 @@ const PropDetails = () => {
     try {
       const result = await axios.post(url, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(result, "imgs");
       image = {
-        prop_image: result.data.files[0].url
+        prop_image: result.data.files[0].url,
       };
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error, "imgs");
     }
     axios
       .put(`${baseUrl}/rentals/proparty_image/${id}/${entryIndex}`, image)
       .then((response) => {
-
         console.log(response.data, "updated data");
         getRentalsData();
       })
@@ -594,8 +617,10 @@ const PropDetails = () => {
       });
     setPropImageLoader(false);
 
+
     // Wait for all Axios requests to complete before logging the data
     // await Promise.all(axiosRequests);
+
   };
 
   const filterRentalsBySearch = () => {
@@ -916,11 +941,11 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="units"
                       />
-                      {/* <Tab
+                      <Tab
                         label="Task"
                         style={{ textTransform: "none" }}
                         value="task"
-                      /> */}
+                      />
                       {/* <Tab
                         label="Event history"
                         style={{ textTransform: "none" }}
@@ -946,12 +971,16 @@ const PropDetails = () => {
                               <div className="col-md-4 mt-2">
                                 <label htmlFor="prop_image">
                                   <img
-                                    src={matchedProperty.prop_image ? matchedProperty.prop_image : fone}
+                                    src={
+                                      matchedProperty.prop_image
+                                        ? matchedProperty.prop_image
+                                        : fone
+                                    }
                                     className="img-fluid rounded-start card-image"
                                     alt={"..."}
-                                  // width='260px'
-                                  // height='180px'
-                                  // onClick={handleModalOpen}
+                                    // width='260px'
+                                    // height='180px'
+                                    // onClick={handleModalOpen}
                                   />
                                 </label>
                                 <TextField
@@ -969,7 +998,6 @@ const PropDetails = () => {
                             </>
                           ) : (
                             <div className="col-md-4 mt-2 d-flex justify-content-center">
-
                               <RotatingLines
                                 strokeColor="grey"
                                 strokeWidth="5"
@@ -978,9 +1006,7 @@ const PropDetails = () => {
                                 visible={propImageLoader}
                               />
                             </div>
-                          )
-
-                          }
+                          )}
 
                           <div className="col-md-8">
                             <div
@@ -1567,11 +1593,13 @@ const PropDetails = () => {
                                                     <tr className="body">
                                                       <td>
                                                         {/* <Link to=""> */}
-                                                        {`${propertyDetails.rentalOwner_firstName ||
+                                                        {`${
+                                                          propertyDetails.rentalOwner_firstName ||
                                                           "N/A"
-                                                          } ${propertyDetails.rentalOwner_lastName ||
+                                                        } ${
+                                                          propertyDetails.rentalOwner_lastName ||
                                                           "N/A"
-                                                          }`}
+                                                        }`}
 
                                                         {/* </Link> */}
                                                       </td>
@@ -1649,9 +1677,10 @@ const PropDetails = () => {
                                                     <tr className="body">
                                                       <td>
                                                         {/* <Link to=""> */}
-                                                        {`${matchedProperty?.staffMember ||
+                                                        {`${
+                                                          matchedProperty?.staffMember ||
                                                           "No staff member assigned"
-                                                          }`}
+                                                        }`}
 
                                                         {/* </Link> */}
                                                       </td>
@@ -1925,7 +1954,6 @@ const PropDetails = () => {
                       </Table>
                     </div>
                   </TabPanel>
-
                   <TabPanel value="financial">
                     <>
                       <Col
@@ -2349,7 +2377,6 @@ const PropDetails = () => {
                       )}
                     </>
                   </TabPanel>
-
                   <TabPanel value="units">
                     {addUnitDialogOpen ? (
                       <>
@@ -2614,11 +2641,11 @@ const PropDetails = () => {
                                         }}
                                         onChange={addUnitFormik.handleChange}
                                         onBlur={addUnitFormik.handleBlur}
-                                      // onClick={() =>
-                                      //   handlePropSelection(
-                                      //     subtype.propertysub_type
-                                      //   )
-                                      // }
+                                        // onClick={() =>
+                                        //   handlePropSelection(
+                                        //     subtype.propertysub_type
+                                        //   )
+                                        // }
                                       >
                                         {subtype}
                                       </DropdownItem>
@@ -2650,11 +2677,11 @@ const PropDetails = () => {
                                         }}
                                         onChange={addUnitFormik.handleChange}
                                         onBlur={addUnitFormik.handleBlur}
-                                      // onClick={() =>
-                                      //   handlePropSelection(
-                                      //     subtype.propertysub_type
-                                      //   )
-                                      // }
+                                        // onClick={() =>
+                                        //   handlePropSelection(
+                                        //     subtype.propertysub_type
+                                        //   )
+                                        // }
                                       >
                                         {subtype}
                                       </DropdownItem>
@@ -2720,13 +2747,8 @@ const PropDetails = () => {
                                     name={`unit_img`}
                                     onChange={(e) => fileData(e)}
                                   />
-                                  <label
-                                    htmlFor={`unit_img`}
-                                  >
-                                    <b style={{ fontSize: "20px" }}>
-                                      +
-                                    </b>{" "}
-                                    Add
+                                  <label htmlFor={`unit_img`}>
+                                    <b style={{ fontSize: "20px" }}>+</b> Add
                                   </label>
                                   {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
                                 </span>
@@ -2743,7 +2765,7 @@ const PropDetails = () => {
                                     unitImage.length > 0 &&
                                     unitImage.map((unitImg, index) => (
                                       <div
-                                        key={index}  // Use a unique identifier, such as index or image URL
+                                        key={index} // Use a unique identifier, such as index or image URL
                                         style={{
                                           position: "relative",
                                           width: "100px",
@@ -2776,7 +2798,12 @@ const PropDetails = () => {
                                             top: "-12px",
                                             right: "-12px",
                                           }}
-                                          onClick={() => clearSelectedPhoto(index, "propertyres_image")}
+                                          onClick={() =>
+                                            clearSelectedPhoto(
+                                              index,
+                                              "propertyres_image"
+                                            )
+                                          }
                                         />
                                       </div>
                                     ))}
@@ -2821,12 +2848,13 @@ const PropDetails = () => {
                               background: "white",
                               color: "blue",
                               display: multiUnit ? "block" : "none",
+                              display: multiUnit ? "block" : "none",
                             }}
                             size="l"
                             onClick={() => {
                               addUnitFormik.setValues({
                                 address1:
-                                  propertyDetails.entries[0].rental_adress,
+                                  propertyDetails.entries[0].rental_unitsAdress,
                                 city: propertyDetails.entries[0].rental_city,
                                 state: propertyDetails.entries[0].rental_state,
                                 zip: propertyDetails.entries[0].rental_postcode,
@@ -2869,8 +2897,8 @@ const PropDetails = () => {
                                   {unit.tenant_firstName == null
                                     ? "-"
                                     : unit.tenant_firstName +
-                                    " " +
-                                    unit.tenant_lastName}
+                                      " " +
+                                      unit.tenant_lastName}
                                   {/* {unit.tenant_firstName +
                                     " " +
                                     unit.tenant_lastName} */}
@@ -3002,19 +3030,45 @@ const PropDetails = () => {
                             <div className="din d-flex">
                               <div className="col-md-4 mt-2">
                                 <label htmlFor="unit_image">
-                                  <img
-                                    // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
-                                    src={
-                                      clickedObject && (clickedObject.property_image.length > 0 || clickedObject.propertyres_image.length > 0)
-                                        ? clickedObject.property_image[0] ? clickedObject.property_image[0][0] : clickedObject.propertyres_image[0] ?
-                                          clickedObject.propertyres_image[0][0] : fone : fone
-                                    }
-                                    className="img-fluid rounded-start card-image"
-                                    alt="..."
-                                  // width='260px'
-                                  // height='18px'
-                                  // onClick={handleModalOpen}
-                                  />
+                                  {unitImageLoader ? (
+                                    <>
+                                      <RotatingLines
+                                        strokeColor="grey"
+                                        strokeWidth="5"
+                                        animationDuration="0.75"
+                                        width="50"
+                                        visible={true}
+                                      />
+                                    </>
+                                  ) : (
+                                    <>
+                                      {" "}
+                                      <img
+                                        // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
+                                        src={
+                                          clickedObject &&
+                                          (clickedObject.property_image.length >
+                                            0 ||
+                                            clickedObject.propertyres_image
+                                              .length > 0)
+                                            ? clickedObject.property_image[0]
+                                              ? clickedObject
+                                                  .property_image[0][0]
+                                              : clickedObject
+                                                  .propertyres_image[0]
+                                              ? clickedObject
+                                                  .propertyres_image[0][0]
+                                              : fone
+                                            : fone
+                                        }
+                                        className="img-fluid rounded-start card-image"
+                                        alt="..."
+                                        // width='260px'
+                                        // height='18px'
+                                        // onClick={handleModalOpen}
+                                      />
+                                    </>
+                                  )}
                                 </label>
                                 {/* <TextField
                                   id="unit_image"
@@ -3065,7 +3119,7 @@ const PropDetails = () => {
                                         addUnitFormik.setValues({
                                           unit_number:
                                             clickedObject.rental_units,
-                                          address: clickedObject.rental_adress,
+                                          address1: clickedObject.rental_unitsAdress,
                                           city: clickedObject.rental_city,
                                           state: clickedObject.rental_state,
                                           zip: clickedObject.rental_postcode,
@@ -3178,10 +3232,10 @@ const PropDetails = () => {
                                               <TextField
                                                 type="text"
                                                 size="small"
-                                                id="address"
-                                                name="address"
+                                                id="address1"
+                                                name="address1"
                                                 value={
-                                                  addUnitFormik.values.address
+                                                  addUnitFormik.values.address1
                                                 }
                                                 onChange={
                                                   addUnitFormik.handleChange
@@ -3313,6 +3367,7 @@ const PropDetails = () => {
                                                       onClick={
                                                         togglePhotoresDialog
                                                       }
+                                                      
                                                       style={{
                                                         cursor: "pointer",
                                                         fontSize: "14px",
@@ -3331,11 +3386,13 @@ const PropDetails = () => {
                                                         name={`unit_img`}
                                                         onChange={(e) => {
                                                           fileData(e);
+                                                          fileData(e);
                                                         }}
                                                       />
                                                       <label
                                                         htmlFor={`unit_img`}
                                                       >
+                                                        
                                                         <b
                                                           style={{
                                                             fontSize: "20px",
@@ -3424,6 +3481,10 @@ const PropDetails = () => {
                                                   setEditUnitDialogOpen(
                                                     !editUnitDialogOpen
                                                   );
+
+                                                  setUnitImageLoader(
+                                                    !unitImageLoader
+                                                  )
                                                 }}
                                               >
                                                 Save
@@ -3697,8 +3758,8 @@ const PropDetails = () => {
                                       clickedObject
                                     )}
                                     {clickedObject &&
-                                      clickedObject.tenant_firstName &&
-                                      clickedObject.tenant_lastName ? (
+                                    clickedObject.tenant_firstName &&
+                                    clickedObject.tenant_lastName ? (
                                       <>
                                         <tr className="body">
                                           <td>
@@ -3708,7 +3769,7 @@ const PropDetails = () => {
                                           </td>
                                           <td>
                                             {clickedObject.start_date &&
-                                              clickedObject.end_date ? (
+                                            clickedObject.end_date ? (
                                               <>
                                                 <Link
                                                   to={`/admin/tenantdetail/${clickedObject._id}`}
@@ -3739,10 +3800,10 @@ const PropDetails = () => {
                                           </td>
                                           <td>
                                             {clickedObject.tenant_firstName &&
-                                              clickedObject.tenant_lastName
+                                            clickedObject.tenant_lastName
                                               ? clickedObject.tenant_firstName +
-                                              " " +
-                                              clickedObject.tenant_lastName
+                                                " " +
+                                                clickedObject.tenant_lastName
                                               : "N/A"}
                                           </td>
                                           <td>
@@ -4015,6 +4076,43 @@ const PropDetails = () => {
                       // </div>
                     )}
                   </TabPanel>
+                  <TabPanel value="task">
+                    <Table
+                      className="align-items-center table-flush"
+                      responsive
+                    >
+                      <thead className="thead-light">
+                        <tr>
+                          <th scope="col">Task</th>
+                          <th scope="col">Category</th>
+                          <th scope="col">Assigned To</th>
+                          <th scope="col">Status</th>
+                          <th scope="col">Due Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tasks && tasks.length>0 ?(tasks.map((task, index) => (
+                          <tr
+                          onClick={() => {
+                            navigate(`/admin/workorderdetail/${task.workorder_id}`);
+                          }}
+                          >
+                          <td>{task.work_subject}</td>
+                          <td>{task.work_category}</td>
+                          <td>{task.staffmember_name}</td>
+                          <td>{task.status}</td>
+                          <td>{task.due_date}</td>
+                        </tr>
+                          ))):(
+                            <tr>
+                              <td colSpan="5" className="text-center">
+                                No tasks found
+                              </td>
+                            </tr>
+                          )}
+                      </tbody>
+                    </Table>
+                  </TabPanel>                    
                 </TabContext>
                 {/* <h3 className="mb-0">Summary</h3> */}
               </Col>
