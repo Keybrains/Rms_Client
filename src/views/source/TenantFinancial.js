@@ -381,7 +381,7 @@ const TenantFinancial = () => {
       console.log(response.data, "response.data");
 
       if (response.data && response.data.statusCode === 100) {
-        swal("Success", response.data.message, "success"); // Adjust the swal parameters as needed
+        swal("Success","Payment Added Successfull", "success"); // Adjust the swal parameters as needed
         // window.location.reload()
         await getGeneralLedgerData();
         console.log("Payment successful");
@@ -394,7 +394,7 @@ const TenantFinancial = () => {
         }
       } else {
         console.error("Unexpected response format:", response.data);
-        swal("", response.data.message, "error");
+        swal("Error", response.data.message, "error");
         // Handle other status codes or show an error message
       }
     } catch (error) {

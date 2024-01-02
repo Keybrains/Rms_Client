@@ -748,15 +748,15 @@ const WorkOrderDetails = () => {
                                       />
 
                                       <Grid container>
-                                        {item.status !== (" " || "")  ||
-                                        item.due_date !== (" " || "")  ||
-                                        item.staffmember_name !== (" " || "")  ? (
+                                        {!Object.keys(item).includes("status") || !Object.keys(item).includes("due_date") || item.status !== ("" || " ")  ||
+                                        item.due_date !== ("" || " ")  ||
+                                        item.staffmember_name !== ("" || " ")  ? (
                                           <>
                                             <Grid
                                               item
                                               xs={4}
                                               style={
-                                                item.status === (" " || "") 
+                                                !Object.keys(item).includes("status") || item.status === ("" || " ") 
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -767,7 +767,7 @@ const WorkOrderDetails = () => {
                                               item
                                               xs={4}
                                               style={
-                                                item.due_date === (" " || null) 
+                                                !Object.keys(item).includes("due_date") || item.due_date === ("" || " ") 
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -777,11 +777,10 @@ const WorkOrderDetails = () => {
                                             <Grid
                                               item
                                               xs={4}
-                                              style={
-                                                item.staffmember_name === (" " || "") 
-                                                  ? { display: "none" }
-                                                  : { display: "block" }
-                                              }
+                                              style={{
+                                                display: item.staffmember_name && item.staffmember_name.trim() !== "" ? "block" : "none"
+                                              }}
+                                              
                                             >
                                               Assigned To:{" "}
                                               {item.staffmember_name}

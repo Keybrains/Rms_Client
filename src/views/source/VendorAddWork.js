@@ -230,7 +230,28 @@ const VendorAddWork = () => {
   };
 
   let cookies = new Cookies();
+  let cookie_id = localStorage.getItem("Vendor ID");
+
   const [accessType, setAccessType] = useState(null);
+  // const [vendorDetails, setVendorDetails] = useState({});
+  const [vendorname, setVendorname] = useState("");
+
+
+  const getVendorDetails = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/vendor/vendor_summary/${cookie_id}`
+      );
+      // console.log(response.data.data);
+      // setVendorDetails(response.data.data);
+      setVendorname(response.data.data.vendor_name);
+      // setLoading(false);
+    } catch (error) {
+      console.error("Error fetching vendor details:", error);
+      // setError(error);
+      // setLoading(false);
+    }
+  };
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -282,6 +303,35 @@ const VendorAddWork = () => {
   };
 
   const [selectedAccount, setSelectedAccount] = useState("");
+  const [outstandDetails, setoutstandDetails] = useState({});
+  const getOutstandData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/workorder/workorder_summary/${id}`
+      );
+      console.log(response.data.data, "yug console");
+      setoutstandDetails(response.data.data);
+      // setWorkOrderStatus(response.data.data.workorder_status.reverse());
+      setSelectedStatus(response.data.data.status);
+      setSelecteduser(response.data.data.staffmember_name);
+      // updateWorkorderFormik.setValues({
+      //   status: response.data.data.status,
+      //   // staffmember_name: response.data.data.staffmember_name,
+      //   due_date: response.data.data.due_date,
+      //   assigned_to: response.data.data.staffmember_name,
+      //   message: response.data.data.message ? response.data.data.message : "",
+      //   statusUpdatedBy: response.data.data.statusUpdatedBy
+      //     ? response.data.data.statusUpdatedBy
+      //     : "Admin",
+      // });
+      // setLoading(false);
+      // setImageDetails(response.data.data.workOrderImage);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+      // setError(error);
+      // setLoading(false);
+    }
+  };
 
   const handleAccountSelection = (value, index) => {
     const updatedEntries = [...WorkFormik.values.entries];
@@ -299,6 +349,8 @@ const VendorAddWork = () => {
   const [workOrderData, setWorkOrderData] = useState(null);
 
   useEffect(() => {
+    getVendorDetails()
+    getOutstandData()
     fetch(`${baseUrl}/addaccount/find_accountname`)
       .then((response) => response.json())
       .then((data) => {
@@ -403,9 +455,11 @@ const VendorAddWork = () => {
         // Create the work order
         const workOrderRes = await axios.post(
           `${baseUrl}/workorder/workorder`,
-          values
+          {...values,
+          statusUpdatedBy:vendorname,
+          }
         );
-
+          
         // Check if the work order was created successfully
         if (workOrderRes.status === 200) {
           const notificationRes = await axios.post(
@@ -427,6 +481,7 @@ const VendorAddWork = () => {
         } else {
           console.error("Work Order Error:", workOrderRes.data);
         }
+
       } else {
         const editUrl = `${baseUrl}/workorder/workorder/${id}`;
         const res = await axios.put(editUrl, values);
@@ -448,7 +503,21 @@ const VendorAddWork = () => {
         } else {
           console.error("Work Order Error:", res.data);
         }
-
+        
+        await axios
+        .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
+          statusUpdatedBy: vendorname + "(Vendor)",
+          status:
+            selectedStatus,
+          // updateAt: updatedAt,
+        })
+        .then((res) => {
+          console.log(res.data, "the status put");
+          // getOutstandData();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
         //console.log("ID", id);
         //console.log("Workorderid", workorder_id);
       }
@@ -1924,7 +1993,7 @@ const VendorAddWork = () => {
                     className="btn btn-primary ml-4"
                     style={{ background: "green" }}
                   >
-                    Save Work Order"
+                    Save Work Order
                   </button>
                     ) : (
                       <button
@@ -1933,7 +2002,7 @@ const VendorAddWork = () => {
                       className="btn btn-primary ml-4"
                       style={{ background: "green" }}
                     >
-                      Add Work Order"
+                      Add Work Order
                     </button>
                     )}
                   <button

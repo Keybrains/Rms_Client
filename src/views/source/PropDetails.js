@@ -437,7 +437,7 @@ const PropDetails = () => {
         rental_state: addUnitFormik.values.state,
         rental_postcode: addUnitFormik.values.zip,
         rental_country: addUnitFormik.values.country,
-        property_image: [image.prop_image],
+        property_image: [...image.prop_image],
       };
       await axios
         .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
