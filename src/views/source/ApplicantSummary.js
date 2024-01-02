@@ -776,7 +776,6 @@ const ApplicantSummary = () => {
     }
 
     const updatedApplicant = {
-      ...matchedApplicant,
       tenant_firstName: values.tenant_firstName,
       tenant_lastName: values.tenant_lastName,
       tenant_unitNumber: values.tenant_unitNumber,
