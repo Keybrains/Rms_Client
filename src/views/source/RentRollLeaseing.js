@@ -1920,6 +1920,7 @@ const RentRollLeaseing = () => {
   };
 
   const [loader, setLoader] = useState(false);
+
   const handleSubmit = async (values) => {
     setLoader(true);
     if (
@@ -1928,7 +1929,7 @@ const RentRollLeaseing = () => {
     ) {
       for (const [index, files] of entrySchema.values.upload_file.entries()) {
         if (files.upload_file instanceof File) {
-          console.log(files.upload_file, "myfile");
+          //console.log(files.upload_file, "myfile");
 
           const imageData = new FormData();
           imageData.append(`files`, files.upload_file);
@@ -2522,6 +2523,7 @@ const RentRollLeaseing = () => {
         console.log(err);
       });
   };
+
   const postDeposit = async (unit, unitId, tenantId, Security_amount) => {
     const chargeObject = {
       properties: {
@@ -2626,9 +2628,10 @@ const RentRollLeaseing = () => {
       console.log(err);
     }
   };
+
   const editLease = async (id) => {
     // const arrayOfNames = file.map((item) => item.name);
-
+    setLoader(true);
     const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
     if (
@@ -2637,7 +2640,7 @@ const RentRollLeaseing = () => {
     ) {
       for (const [index, files] of entrySchema.values.upload_file.entries()) {
         if (files.upload_file instanceof File) {
-          console.log(files.upload_file, "myfile");
+          //console.log(files.upload_file, "myfile");
 
           const imageData = new FormData();
           imageData.append(`files`, files.upload_file);
@@ -2651,7 +2654,7 @@ const RentRollLeaseing = () => {
               },
             });
 
-            console.log(result, "imgs");
+            //console.log(result, "imgs");
 
             // Update the original array with the uploaded file URL
             entrySchema.values.upload_file[index].upload_file =
@@ -2778,6 +2781,7 @@ const RentRollLeaseing = () => {
       .catch((error) => {
         console.error("Error:", error);
       });
+      setLoader(false);
   };
 
   function handleResponse(response) {
@@ -2803,6 +2807,8 @@ const RentRollLeaseing = () => {
       alert(response.data.message);
     }
   }
+
+
   // const getNextMonthFirstDay = () => {
   //   const now = new Date();
   //   let current;

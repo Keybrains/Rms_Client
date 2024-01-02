@@ -137,18 +137,7 @@ const RentRollDetail = () => {
 
   const [unitId, setUnitId] = useState(null);
   const [propertyId, setPropertyId] = useState(null);
-  // const [unitName, setUnitName] = useState(null);
 
-  // const handleClick = () => {
-  //   navigate(`../AddPayment/${tenantId}/${entryIndex}`);
-  // };
-  // const handleClick1 = () => {
-  //   if (type === "charge") {
-  //     navigate(`../AddPayment/${mainId}/charge/${chargeIndex}`);
-  //   } else if (type === "payment") {
-  //     navigate("/payment-page");
-  //   }
-  // };
   const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
 
   const id = tenantId;
@@ -158,24 +147,20 @@ const RentRollDetail = () => {
     try {
       const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
       const response = await axios.get(apiUrl);
-      console.log(response.data.data, "huihyui");
       setTenantDetails(response.data.data);
-      //console.log(response.data.data, "hiiii");
       const rental = response.data.data.entries.rental_adress;
       const unit = response.data.data.entries.rental_units;
       const unitId = response.data.data.entries.unit_id;
       const propertysId = response.data.data.entries.property_id;
-      console.log(propertysId, "propertysId");
 
       setRental(rental);
       // setUnit(unit);
       // setUnitId(unitId);
       setPropertyId(propertysId);
-      console.log(response.data.data.entries.rental_units, "res.daya dhstab");
+
       if (unitId && unit) {
-        console.log("1");
         const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${propertysId}&unit=${unit}&tenant_id=${tenantId}`;
-        console.log(url, "huewfjnmk");
+
         axios
           .get(url)
           .then((response) => {
@@ -183,7 +168,6 @@ const RentRollDetail = () => {
 
             if (response.data && response.data.data) {
               const mergedData = response.data.data;
-              console.log(mergedData, "mergedData1");
 
               setGeneralLedgerData(mergedData[0]?.unit[0]);
             } else {
@@ -194,11 +178,8 @@ const RentRollDetail = () => {
             console.error("Error fetching data:", error);
           });
       } else {
-        console.log("2");
 
         const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${tenantId}`;
-
-        console.log(url, "huewfjnmk");
 
         axios
           .get(url)
@@ -207,7 +188,6 @@ const RentRollDetail = () => {
 
             if (response.data && response.data.data) {
               const mergedData = response.data.data;
-              console.log(mergedData, "mergedData2");
 
               setGeneralLedgerData(mergedData[0]?.unit[0]);
             } else {
