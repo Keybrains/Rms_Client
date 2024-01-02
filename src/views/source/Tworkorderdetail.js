@@ -62,7 +62,7 @@ const TWorkOrderDetails = () => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
-      setUser(jwt.userName);
+      // setUser(jwt.userName);
 
     } else {
       navigate("/auth/login");
@@ -191,7 +191,7 @@ const TWorkOrderDetails = () => {
 
     await axios
       .put(`${baseUrl}/workorder/workorder/${outstandDetails._id}/status`, {
-        statusUpdatedBy: "Tenant",
+        statusUpdatedBy: tenantsDetails.tenant_firstName + " " + tenantsDetails.tenant_lastName + "(Tenant)",
         status:
           selectedStatus !== outstandDetails.status ? selectedStatus : " ",
         due_date:
@@ -586,17 +586,18 @@ const TWorkOrderDetails = () => {
                                           marginBottom: "0px",
                                         }}
                                       />
+                                      
                                       {console.log(item,'item')}
                                       <Grid container>
-                                        {item.status !== (" " || "")  ||
+                                        {!Object.keys(item).includes("status") || Object.keys(item).includes("due_date") || item.status !== (" " || "")  ||
                                         item.due_date !== (" " || "")  ||
-                                        item.staffmember_name !== (" " || "")  ? (
+                                        item.staffmember_name !== (" " || "")   ? (
                                           <>
                                             <Grid
                                               item
                                               xs={4}
                                               style={
-                                                item.status === (" " || "") 
+                                                !Object.keys(item).includes("status") || item.status === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -604,10 +605,10 @@ const TWorkOrderDetails = () => {
                                               Status: {item.status}
                                             </Grid>
                                             <Grid
-                                              item
+                                              itemx
                                               xs={4}
                                               style={
-                                                item.due_date === (" " || null) 
+                                                !Object.keys(item).includes("due_date") || item.due_date === (" " || null) 
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -617,11 +618,9 @@ const TWorkOrderDetails = () => {
                                             <Grid
                                               item
                                               xs={4}
-                                              style={
-                                                item.staffmember_name === (" " || null )
-                                                  ? { display: "none" }
-                                                  : { display: "block" }
-                                              }
+                                              style={{
+                                                display: item.staffmember_name && item.staffmember_name.trim() !== "" ? "block" : "none"
+                                              }}
                                             >
                                               Assigned To:{" "}
                                               {item.staffmember_name}

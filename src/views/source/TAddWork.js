@@ -166,6 +166,27 @@ const TAddWork = () => {
       return [];
     }
   };
+  const [vendorDetails, setVendorDetails] = useState([]);
+  const getVendorDetails = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
+      );
+      const entries = response.data.data.entries;
+
+      if (entries.length > 0) {
+        setVendorDetails(response.data.data);
+        // getRentalData(rentalAddresses, rentalUnits);
+      } else {
+        console.error("No rental addresses found.");
+      }
+
+      setLoader(false);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+      setLoader(false);
+    }
+  };
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -185,7 +206,6 @@ const TAddWork = () => {
           work_category: getWorkData[0].work_category || "",
           entry_allowed: getWorkData[0].entry_allowed || "",
           work_performed: getWorkData[0].work_performed || "",
-
         });
         setSelectedUnit(getWorkData[0].rental_units || "Select");
         setSelectedProp(getWorkData[0].rental_adress);
@@ -197,7 +217,10 @@ const TAddWork = () => {
       }
     };
     fetchData();
+    getVendorDetails();
   }, [baseUrl, id]);
+
+  console.log(vendorDetails, "vendorDetails");
 
   const { v4: uuidv4 } = require("uuid");
   const [loader, setLoader] = useState(false);
@@ -245,9 +268,10 @@ const TAddWork = () => {
         // Create the work order
         const workOrderRes = await axios.post(
           `${baseUrl}/workorder/workorder`,
-          values
+          {...values,
+            statusUpdatedBy: vendorDetails.tenant_firstName + " " + vendorDetails.tenant_lastName,
+          }
         );
-
         // Check if the work order was created successfully
         if (workOrderRes.status === 200) {
           //console.log(workOrderRes.data, "fjalkjflsk");
@@ -263,6 +287,7 @@ const TAddWork = () => {
                 work_subject: work_subject,
                 workorder_id: workorder_id,
               },
+              // statusUpdatedBy: vendorDetails.tenant_firstName + " " + vendorDetails.tenant_lastName,
               notification: {},
             }
           );
@@ -418,7 +443,7 @@ const TAddWork = () => {
         entry_allowed: selectedEntry,
         work_performed: WorkFormik.values.work_performed,
         workOrderImage: WorkFormik.values.workOrderImage,
-        statusUpdatedBy: accessType.userName,
+        statusUpdatedBy: vendorDetails.tenant_firstName + " " + vendorDetails.tenant_lastName ,
 
         // Add other fields as needed
       });

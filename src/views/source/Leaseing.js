@@ -50,7 +50,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Leaseing.css";
 import swal from "sweetalert";
-// import CloseIcon from "@material-ui/icons/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -610,7 +609,7 @@ const Leaseing = () => {
   const [overlapStartDateLease, setOverlapStartDateLease] = useState(null);
 
   const checkStartDate = async (date) => {
-    if (selectedPropertyType && selectedUnit && selectedTenantData) {
+    if (selectedPropertyType && selectedTenantData) {
       let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
 
@@ -1253,6 +1252,7 @@ const Leaseing = () => {
       // console.log(values, "values");
     },
   });
+
   const formatDateForInput = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -1316,6 +1316,8 @@ const Leaseing = () => {
           rent_paid: applicantData.rent_paid,
           propertyOnRent: applicantData.propertyOnRent,
           paymentMethod: applicantData.paymentMethod,
+          card_number: applicantData.card_number,
+          exp_date: applicantData.exp_date,
 
           //security deposite
           Due_date: applicantData.Due_date,
@@ -1464,6 +1466,8 @@ const Leaseing = () => {
             //security deposite
             Due_date: matchedLease.Due_date,
             Security_amount: matchedLease.Security_amount,
+            card_number: matchedLease.card_number,
+            exp_date: matchedLease.exp_date,
 
             // add cosigner
             cosigner_firstName: matchedLease.cosigner_firstName,
@@ -1532,7 +1536,9 @@ const Leaseing = () => {
     };
     fetchData();
   }, [id, entryIndex]);
+
   const [loader, setLoader] = useState(false);
+
   const handleSubmit = async (values) => {
     setLoader(true);
     if (
@@ -1597,6 +1603,8 @@ const Leaseing = () => {
       entries: [
         {
           paymentMethod: entrySchema.values.paymentMethod,
+          card_number: entrySchema.values.ccvNu || "",
+          exp_date: entrySchema.values.ccvEx || "",
           rental_units: entrySchema.values.rental_units,
           entryIndex: entrySchema.values.entryIndex,
           rental_adress: entrySchema.values.rental_adress,
@@ -1675,8 +1683,6 @@ const Leaseing = () => {
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
     };
-
-    console.log("..............paymentDetails.............", paymentDetails);
 
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
@@ -2063,8 +2069,7 @@ const Leaseing = () => {
     console.log(values, "values to check");
     try {
       console.log(id, "id from parameter");
-
-      // values["property_type"] = localStorage.getItem("propertyType");
+  
     } catch (error) {
       console.log(error);
     }
@@ -2222,7 +2227,7 @@ const Leaseing = () => {
   };
 
   const editLease = async (id) => {
-    // const arrayOfNames = file.map((item) => item.name);
+    setLoader(true);
     const editUrl = `${baseUrl}/tenant/tenants/${id}/entry/${entryIndex}`;
     const entriesArray = [];
     if (
@@ -2323,6 +2328,8 @@ const Leaseing = () => {
       recurring_charges: recurringData,
       one_time_charges: oneTimeData,
       paymentMethod: entrySchema.paymentMethod,
+      card_number: entrySchema.values.ccvNu,
+      exp_date: entrySchema.values.ccvEx,
     };
     entriesArray.push(entriesObject);
 
@@ -2364,6 +2371,7 @@ const Leaseing = () => {
       .catch((error) => {
         console.error("Error:", error);
       });
+      setLoader(false);
   };
   // { console.log(leaseFormik.values) }
 
@@ -6051,7 +6059,7 @@ const Leaseing = () => {
                                   id="creditcard_number"
                                   placeholder="0000 0000 0000"
                                   name="creditcard_number"
-                                  value={CCVNU}
+                                  value={entrySchema.values.card_number}
                                   onChange={(e) => {
                                     const inputValue = e.target.value;
                                     const numericValue = inputValue.replace(
@@ -6116,11 +6124,12 @@ const Leaseing = () => {
                                   setCCVEX(inputValue);
                                   entrySchema.values.ccvEx = inputValue;
                                 }}
-                                value={
-                                  CCVEX instanceof Date
-                                    ? formatDateForInput(CCVEX)
-                                    : CCVEX
-                                }
+                                // value={
+                                //   CCVEX instanceof Date
+                                //     ? formatDateForInput(CCVEX)
+                                //     : CCVEX
+                                // }
+                                value={entrySchema.values.exp_date}
                                 placeholder="MM/YYYY"
                               />
                               {entrySchema.errors &&
