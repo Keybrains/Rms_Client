@@ -1855,7 +1855,7 @@ const RentRollLeaseing = () => {
   const [overlapStartDateLease, setOverlapStartDateLease] = useState(null);
 
   const checkStartDate = async (date) => {
-    if (selectedPropertyType && selectedUnit && selectedTenantData) {
+    if (selectedPropertyType && selectedTenantData) {
       let response = await axios.get(`${baseUrl}/tenant/tenants`);
       const data = response.data.data;
 
@@ -1869,7 +1869,8 @@ const RentRollLeaseing = () => {
         }
         // selectedTenantData.lastName === entry.tenant_lastName &&
         // selectedTenantData.mobileNumber === entry.tenant_mobileNumber
-      );
+        );
+        console.log(isSameTenant, "isSameTenant");
 
       if (isSameTenant) {
         setIsDateUnavailable(false);
@@ -1885,7 +1886,7 @@ const RentRollLeaseing = () => {
             const sDate = new Date(entry.entries.start_date);
             const eDate = new Date(entry.entries.end_date);
             const inputDate = new Date(date);
-
+            console.log(sDate, "sDate", eDate, "eDate", inputDate, "inputDate");
             if (
               (sDate.getTime() <= inputDate.getTime() &&
                 inputDate.getTime() < eDate.getTime()) ||

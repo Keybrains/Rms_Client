@@ -149,11 +149,12 @@ const TenantWork = () => {
   };
 
   const getRentalData = async (addresses,units) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/workorder/workorder/tenant/${addresses}/${units}`
-      );
-      //console.log(response, "abc");
+    if(units===""){
+      try {
+        const response = await axios.get(
+          `${baseUrl}/workorder/workorder/tenant/${addresses}`
+          );
+      console.log(`${baseUrl}/workorder/workorder/tenant/${addresses}/${units}`, "abc");
 
       if (Array.isArray(response.data.data)) {
         // Response is an array of work orders
@@ -172,7 +173,30 @@ const TenantWork = () => {
     } catch (error) {
       console.error("Error fetching work order data:", error);
     }
-  };
+  }else{
+    try {
+      const response = await axios.get(
+        `${baseUrl}/workorder/workorder/tenant/${addresses}/${units}`
+      );
+      if (Array.isArray(response.data.data)) {
+        // Response is an array of work orders
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+        setWorkData((prevData) => [...prevData, ...response.data.data]);
+      } else if (typeof response.data.data === "object") {
+        // Response is a single work order object
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+        setWorkData((prevData) => [...prevData, response.data.data]);
+      } else {
+        console.error(
+          "Response data is not an array or object:",
+          response.data.data
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching work order data:", error);
+  }
+  }
+}
 
   React.useEffect(() => {
     if (rentalAddress && rentalAddress.length > 0) {
@@ -234,7 +258,7 @@ const TenantWork = () => {
   const getRentalDataAfterDelete = async (addresses,units) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/workorder/workorder/tenant/${addresses}/${units}`
+        `${baseUrl}/workorder/workorder/tenant/${addresses}`
       );
       //console.log(response, "abc");
       if (Array.isArray(response.data.data)) {
