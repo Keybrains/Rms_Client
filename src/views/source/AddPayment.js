@@ -1226,7 +1226,7 @@ const AddPayment = () => {
                                 Amount *
                               </label>
                               <Input
-                                type="number"
+                                type="text"
                                 id="amount"
                                 placeholder="Enter amount"
                                 name="amount"
@@ -1382,7 +1382,7 @@ const AddPayment = () => {
                                         className="form-control-alternative"
                                         id="input-unitadd"
                                         placeholder="$0.00"
-                                        type="number"
+                                        type="text"
                                         name={`entries[${index}].amount`}
                                         onBlur={
                                           formikForAnotherData.handleBlur
@@ -1390,7 +1390,7 @@ const AddPayment = () => {
                                         onChange={
                                           formikForAnotherData.handleChange
                                         }
-                                        value={entries.amount}
+                                        value={entries.amount===0 ? "" : entries.amount}
                                         onInput={(e) => {
                                           const inputValue = e.target.value;
                                           const numericValue =
