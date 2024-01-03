@@ -6124,12 +6124,11 @@ const Leaseing = () => {
                                   setCCVEX(inputValue);
                                   entrySchema.values.ccvEx = inputValue;
                                 }}
-                                // value={
-                                //   CCVEX instanceof Date
-                                //     ? formatDateForInput(CCVEX)
-                                //     : CCVEX
-                                // }
-                                value={entrySchema.values.exp_date}
+                                value={
+                                  CCVEX instanceof Date
+                                    ? formatDateForInput(CCVEX)
+                                    : entrySchema.values.exp_date
+                                }
                                 placeholder="MM/YYYY"
                               />
                               {entrySchema.errors &&
