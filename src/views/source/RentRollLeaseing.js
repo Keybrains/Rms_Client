@@ -294,8 +294,8 @@ const RentRollLeaseing = () => {
     setSelectPaymentMethodDropdawn(paymentMethod);
   };
 
-  const [CCVNU, setCCVNU] = useState(null);
-  const [CCVEX, setCCVEX] = useState(null);
+  const [card_number, setcard_number] = useState(null);
+  const [exp_date, setexp_date] = useState(null);
 
   const [selectedRentCycle, setselectedRentCycle] = useState("");
   const [selectedDayFrequency, setselectedDayFrequency] = useState("");
@@ -1394,8 +1394,8 @@ const RentRollLeaseing = () => {
       cash_flow: "",
       notes: "",
       paymentMethod: "",
-      ccvEx: "",
-      ccvNu: "",
+      exp_date: "",
+      card_number: "",
     },
 
     validationSchema: yup.object({
@@ -1407,8 +1407,11 @@ const RentRollLeaseing = () => {
       paymentMethod: yup.string().required("Required"),
       ...(selectPaymentMethodDropdawn === "AutoPayment"
         ? {
-            ccvEx: yup.string().required("Required"),
-            ccvNu: yup.string().required("Required"),
+            exp_date: yup.string().required("Required"),
+            card_number: yup
+              .string()
+              .matches(/^\d{16}$/, "Card number must be a 16-digit number")
+              .required("Required"),
           }
         : null),
       ...(unitData[0]?.rental_units
@@ -1525,7 +1528,7 @@ const RentRollLeaseing = () => {
   const formatDateForInput = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    entrySchema.values.ccvEx = `${month}/${year}`;
+    entrySchema.values.exp_date = `${month}/${year}`;
     return `${month}/${year}`;
   };
 
@@ -1873,8 +1876,8 @@ const RentRollLeaseing = () => {
         }
         // selectedTenantData.lastName === entry.tenant_lastName &&
         // selectedTenantData.mobileNumber === entry.tenant_mobileNumber
-        );
-        console.log(isSameTenant, "isSameTenant");
+      );
+      console.log(isSameTenant, "isSameTenant");
 
       if (isSameTenant) {
         setIsDateUnavailable(false);
@@ -1991,8 +1994,8 @@ const RentRollLeaseing = () => {
         {
           entryIndex: entrySchema.values.entryIndex,
           paymentMethod: entrySchema.values.paymentMethod,
-          card_number: entrySchema.values.ccvNu || "",
-          exp_date: entrySchema.values.ccvEx || "",
+          card_number: entrySchema.values.card_number || "",
+          exp_date: entrySchema.values.exp_date || "",
           rental_units: entrySchema.values.rental_units,
           rental_adress: entrySchema.values.rental_adress,
           lease_type: entrySchema.values.lease_type,
@@ -2064,9 +2067,9 @@ const RentRollLeaseing = () => {
       plan_payments: 0,
       plan_amount: entrySchema.values.amount,
       dayFrequency: selectedDayFrequency,
-      ccnumber: CCVNU || "",
+      ccnumber: card_number || "",
       email: tenantsSchema.values.tenant_email,
-      ccexp: CCVEX ? formatDateForInput(CCVEX) : "",
+      ccexp: exp_date ? formatDateForInput(exp_date) : "",
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
@@ -2743,8 +2746,8 @@ const RentRollLeaseing = () => {
       rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
       rentalOwner_companyName: ownerData.rentalOwner_companyName,
       paymentMethod: entrySchema.paymentMethod,
-      card_number: entrySchema.values.ccvNu,
-      exp_date: entrySchema.values.ccvEx,
+      card_number: entrySchema.values.card_number,
+      exp_date: entrySchema.values.exp_date,
     };
     entriesArray.push(entriesObject);
 
@@ -2790,7 +2793,7 @@ const RentRollLeaseing = () => {
       .catch((error) => {
         console.error("Error:", error);
       });
-      setLoader(false);
+    setLoader(false);
   };
 
   function handleResponse(response) {
@@ -2816,7 +2819,6 @@ const RentRollLeaseing = () => {
       alert(response.data.message);
     }
   }
-
 
   // const getNextMonthFirstDay = () => {
   //   const now = new Date();
@@ -6644,6 +6646,7 @@ const RentRollLeaseing = () => {
                                   type="number"
                                   id="creditcard_number"
                                   placeholder="0000 0000 0000"
+                                  className="no-spinner"
                                   name="creditcard_number"
                                   value={entrySchema.values.card_number}
                                   onChange={(e) => {
@@ -6656,19 +6659,18 @@ const RentRollLeaseing = () => {
                                       0,
                                       16
                                     ); // Limit to 12 digits
-                                    setCCVNU(parseInt(limitValue));
-                                    entrySchema.values.ccvNu =
+                                    setcard_number(parseInt(limitValue));
+                                    entrySchema.values.card_number =
                                       parseInt(limitValue);
                                   }}
                                 />
                               </InputGroup>
                               {entrySchema.errors &&
-                              entrySchema.errors?.ccvNu &&
+                              entrySchema.errors?.card_number &&
                               entrySchema.touched &&
-                              entrySchema.touched?.ccvNu &&
-                              entrySchema.values.ccvNu === "" ? (
+                              entrySchema.touched?.card_number ? (
                                 <div style={{ color: "red" }}>
-                                  {entrySchema.errors.ccvNu}
+                                  {entrySchema.errors.card_number}
                                 </div>
                               ) : null}
                             </FormGroup>
@@ -6693,37 +6695,22 @@ const RentRollLeaseing = () => {
                                     /\D/g,
                                     ""
                                   );
-                                  if (numericValue.length >= 2) {
-                                    const month = numericValue.substring(0, 2);
-                                    if (numericValue.length > 2) {
-                                      const year = numericValue.substring(2, 6);
-                                      // Convert the formatted string to a Date object
-                                      const formattedDate = new Date(
-                                        `${year}-${month}-01`
-                                      );
-                                      // Set the state with the Date object
-                                      setCCVEX(formattedDate);
-                                      return;
-                                    }
-                                  }
-                                  // If the input is incomplete or invalid, set the state with the raw string
-                                  setCCVEX(inputValue);
-                                  entrySchema.values.ccvEx = inputValue;
+                                  setexp_date(inputValue);
+                                  entrySchema.values.exp_date = inputValue;
                                 }}
                                 value={
-                                  CCVEX instanceof Date
-                                    ? formatDateForInput(CCVEX)
+                                  exp_date instanceof Date
+                                    ? formatDateForInput(exp_date)
                                     : entrySchema.values.exp_date
                                 }
                                 placeholder="MM/YYYY"
                               />
                               {entrySchema.errors &&
-                              entrySchema.errors?.ccvEx &&
+                              entrySchema.errors?.exp_date &&
                               entrySchema.touched &&
-                              entrySchema.touched?.ccvEx &&
-                              entrySchema.values.ccvEx === "" ? (
+                              entrySchema.touched?.exp_date ? (
                                 <div style={{ color: "red" }}>
-                                  {entrySchema.errors.ccvEx}
+                                  {entrySchema.errors.exp_date}
                                 </div>
                               ) : null}
                             </FormGroup>
