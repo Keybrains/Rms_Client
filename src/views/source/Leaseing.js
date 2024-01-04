@@ -1709,6 +1709,7 @@ const Leaseing = () => {
               `${baseUrl}/nmipayment/custom-add-subscription`,
               paymentDetails
             );
+            console.log("object=======",res2)
             if (res2.status === 200) {
               const res = await axios.put(
                 `${baseUrl}/tenant/tenant/${tenantId}`,
@@ -2099,7 +2100,7 @@ const Leaseing = () => {
               memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
               isPaid: false,
-              // tenant_lastName: tenantsSchema.values.tenant_lastName,
+              islatefee: false,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
                 " " +
@@ -2327,9 +2328,9 @@ const Leaseing = () => {
 
       recurring_charges: recurringData,
       one_time_charges: oneTimeData,
-      paymentMethod: entrySchema.paymentMethod,
-      card_number: entrySchema.values.ccvNu,
-      exp_date: entrySchema.values.ccvEx,
+      paymentMethod: entrySchema.values.paymentMethod,
+      card_number: entrySchema.values.card_number,
+      exp_date: entrySchema.values.exp_date,
     };
     entriesArray.push(entriesObject);
 
