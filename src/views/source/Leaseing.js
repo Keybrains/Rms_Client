@@ -1759,7 +1759,8 @@ const Leaseing = () => {
               `${baseUrl}/nmipayment/custom-add-subscription`,
               paymentDetails
             );
-            console.log("object=======",res2)
+            console.log("mansi***********",res2);
+            console.log("vrinda***********",paymentDetails);
             if (res2.status === 200) {
               const res = await axios.put(
                 `${baseUrl}/tenant/tenant/${tenantId}`,
