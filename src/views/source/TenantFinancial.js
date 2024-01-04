@@ -141,6 +141,7 @@ const TenantFinancial = () => {
       email_name: "",
       card_number: "",
       amount: "",
+      account: "",
       expiration_date: "",
       cvv: "",
       tenantId: "",
@@ -153,6 +154,7 @@ const TenantFinancial = () => {
       email_name: yup.string().required("Email is required"),
       card_number: yup.number().required("Card number is required"),
       amount: yup.number().required("Amount is required"),
+      account: yup.string().required("Amount is required"),
       expiration_date: yup.string().required("Expiration date is required"),
       cvv: yup.number().required("CVV is required"),
     }),
@@ -371,7 +373,15 @@ const TenantFinancial = () => {
 
   const handleFinancialSubmit = async (values, action) => {
     const url = `${baseUrl}/nmipayment/purchase`;
-    console.log(values);
+    const dateParts = values.expiration_date.split("/");
+    if (dateParts.length !== 2) {
+      console.log("Invalid date format");
+    }
+    const month = dateParts[0].padStart(2, "0");
+    const year = dateParts[1].slice(-2);
+
+    values.expiration_date = `${month}${year}`;
+
     try {
       setPaymentLoader(true);
       const response = await axios.post(url, {
@@ -381,14 +391,14 @@ const TenantFinancial = () => {
       console.log(response.data, "response.data");
 
       if (response.data && response.data.statusCode === 100) {
-        swal("Success","Payment Added Successfull", "success"); // Adjust the swal parameters as needed
+        swal("Success", "Payment Added Successfull", "success"); // Adjust the swal parameters as needed
         // window.location.reload()
         await getGeneralLedgerData();
         console.log("Payment successful");
         closeModal();
 
         if (financialFormik.values.unitId) {
-          await postCharge(unit, financialFormik.values.unitId);
+          await postCharge(financialFormik.values.unitId);
         } else {
           await postCharge("", "");
         }
@@ -399,14 +409,14 @@ const TenantFinancial = () => {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      // swal("", error, "error");
+      swal("", error.message, "error");
       // Handle the error (e.g., show an error message)
     } finally {
       setPaymentLoader(false); // Reset loader when the request completes (whether success or failure)
     }
   };
 
-  const postCharge = async (unitName, unit_id) => {
+  const postCharge = async (unit_id) => {
     const chargeObject = {
       properties: {
         rental_adress: selectedPropertyType,
@@ -420,7 +430,7 @@ const TenantFinancial = () => {
             {
               type: "Payment",
               charge_type: "",
-              account: "",
+              account: selectedAccount,
               amount: financialFormik.values.amount,
               rental_adress: selectedPropertyType,
               rent_cycle: "",
@@ -535,6 +545,68 @@ const TenantFinancial = () => {
   React.useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
+
+  const [oneTimeCharges, setOneTimeCharges] = useState([]);
+  const [RecAccountNames, setRecAccountNames] = useState([]);
+  const [accountData, setAccountData] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState("");
+
+  useEffect(() => {
+    fetch(`${baseUrl}/addaccount/find_accountname`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.statusCode === 200) {
+          setAccountData(data.data);
+        } else {
+          console.error("Error:", data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Network error:", error);
+      });
+  }, []);
+
+  const fetchingRecAccountNames = async () => {
+    fetch(`${baseUrl}/recurringAcc/find_accountname`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.statusCode === 200) {
+          setRecAccountNames(data.data);
+        } else {
+          console.error("Error:", data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Network error:", error);
+      });
+  };
+
+  const fetchingOneTimeCharges = async () => {
+    fetch(`${baseUrl}/onetimecharge/find_accountname`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.statusCode === 200) {
+          setOneTimeCharges(data.data);
+        } else {
+          console.error("Error:", data.message);
+        }
+      });
+  };
+
+  useEffect(() => {
+    fetchingRecAccountNames();
+    fetchingOneTimeCharges();
+  }, []);
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
+  const handleAccountSelection = (value) => {
+    setSelectedAccount(value);
+    financialFormik.values.account = value;
+  };
 
   return (
     <>
@@ -928,6 +1000,135 @@ const TenantFinancial = () => {
                                   className="form-control-label"
                                   htmlFor="input-property"
                                 >
+                                  Account *
+                                </label>
+                                <FormGroup>
+                                  <Dropdown
+                                    isOpen={dropdownOpen}
+                                    toggle={toggleDropdown}
+                                  >
+                                    <DropdownToggle caret>
+                                      {selectedAccount
+                                        ? selectedAccount
+                                        : "Select"}
+                                    </DropdownToggle>
+                                    <DropdownMenu
+                                      style={{
+                                        zIndex: 999,
+                                        maxHeight: "200px",
+                                        overflowY: "auto",
+                                      }}
+                                    >
+                                      <DropdownItem
+                                        header
+                                        style={{ color: "blue" }}
+                                      >
+                                        Liability Account
+                                      </DropdownItem>
+                                      <DropdownItem
+                                        onClick={() =>
+                                          handleAccountSelection(
+                                            "Last Month's Rent"
+                                          )
+                                        }
+                                      >
+                                        Last Month's Rent
+                                      </DropdownItem>
+                                      <DropdownItem
+                                        onClick={() =>
+                                          handleAccountSelection("Prepayments")
+                                        }
+                                      >
+                                        Prepayments
+                                      </DropdownItem>
+                                      <DropdownItem
+                                        onClick={() =>
+                                          handleAccountSelection(
+                                            "Security Deposit Liability"
+                                          )
+                                        }
+                                      >
+                                        Security Deposit Liability
+                                      </DropdownItem>
+
+                                      <DropdownItem
+                                        header
+                                        style={{ color: "blue" }}
+                                      >
+                                        Income Account
+                                      </DropdownItem>
+                                      {accountData?.map((item) => (
+                                        <DropdownItem
+                                          key={item._id}
+                                          onClick={() =>
+                                            handleAccountSelection(
+                                              item.account_name
+                                            )
+                                          }
+                                        >
+                                          {item.account_name}
+                                        </DropdownItem>
+                                      ))}
+                                      {RecAccountNames ? (
+                                        <>
+                                          <DropdownItem
+                                            header
+                                            style={{ color: "blue" }}
+                                          >
+                                            Reccuring Charges
+                                          </DropdownItem>
+                                          {RecAccountNames?.map((item) => (
+                                            <DropdownItem
+                                              key={item._id}
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  item.account_name
+                                                )
+                                              }
+                                            >
+                                              {item.account_name}
+                                            </DropdownItem>
+                                          ))}
+                                        </>
+                                      ) : (
+                                        <></>
+                                      )}
+                                      {oneTimeCharges ? (
+                                        <>
+                                          <DropdownItem
+                                            header
+                                            style={{ color: "blue" }}
+                                          >
+                                            One Time Charges
+                                          </DropdownItem>
+                                          {oneTimeCharges?.map((item) => (
+                                            <DropdownItem
+                                              key={item._id}
+                                              onClick={() =>
+                                                handleAccountSelection(
+                                                  item.account_name
+                                                )
+                                              }
+                                            >
+                                              {item.account_name}
+                                            </DropdownItem>
+                                          ))}
+                                        </>
+                                      ) : (
+                                        <></>
+                                      )}
+                                    </DropdownMenu>
+                                  </Dropdown>
+                                </FormGroup>
+                              </FormGroup>
+                            </Col>
+
+                            <Col md="6">
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
                                   First Name *
                                 </label>
                                 <Input
@@ -1097,9 +1298,15 @@ const TenantFinancial = () => {
                         </div>
                       </ModalBody>
                       <ModalFooter>
-                        <Button color="success" type="submit">
-                          Make Payment
-                        </Button>
+                        {paymentLoader ? (
+                          <Button disabled color="success" type="submit">
+                            Loading
+                          </Button>
+                        ) : (
+                          <Button color="success" type="submit">
+                            Make Payment
+                          </Button>
+                        )}
                         <Button onClick={closeModal}>Cancel</Button>
                       </ModalFooter>
                     </Form>

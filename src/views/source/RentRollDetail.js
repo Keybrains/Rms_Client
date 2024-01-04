@@ -61,7 +61,7 @@ import jsPDF from "jspdf";
 import Img from "assets/img/theme/team-4-800x800.jpg";
 import { useLocation } from "react-router-dom";
 import moment from "moment";
-import './Leaseing.css'
+import "./Leaseing.css";
 
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -178,7 +178,6 @@ const RentRollDetail = () => {
             console.error("Error fetching data:", error);
           });
       } else {
-
         const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${tenantId}`;
 
         axios
@@ -532,7 +531,7 @@ const RentRollDetail = () => {
   }, [tenantId]);
 
   const deleteCharge = async (Id) => {
-    console.log(Id, 'chargeId');
+    console.log(Id, "chargeId");
 
     swal({
       title: "Are you sure?",
@@ -540,10 +539,13 @@ const RentRollDetail = () => {
       icon: "warning",
       buttons: ["Cancel", "Delete"],
       dangerMode: true,
-    }).then(async (willDelete) => { // Make the callback function async
+    }).then(async (willDelete) => {
+      // Make the callback function async
       if (willDelete) {
         try {
-          const response = await axios.delete(`${baseUrl}/payment_charge/delete_entry/${Id}`);
+          const response = await axios.delete(
+            `${baseUrl}/payment_charge/delete_entry/${Id}`
+          );
           if (response.data.statusCode === 200) {
             swal("Success!", "Entry deleted successfully!", "success");
             getGeneralLedgerData();
@@ -563,12 +565,16 @@ const RentRollDetail = () => {
 
   const editcharge = (chargeId) => {
     // console.log(tenantDetails,'tenant_firstName')
-    navigate(`/admin/AddCharge/${chargeId}`, { state: { tenantDetails: tenantDetails } });
+    navigate(`/admin/AddCharge/${chargeId}`, {
+      state: { tenantDetails: tenantDetails },
+    });
 
     // console.log(id);
   };
   const editpayment = (paymentId) => {
-    navigate(`/admin/AddPayment/${paymentId}`, { state: { tenantDetails: tenantDetails } });
+    navigate(`/admin/AddPayment/${paymentId}`, {
+      state: { tenantDetails: tenantDetails },
+    });
     // console.log(id);
   };
 
@@ -594,44 +600,52 @@ const RentRollDetail = () => {
     const currentDate = new Date().toISOString().split("T")[0];
     setNoticeGivenDate(currentDate);
   }, []);
-
+  console.log(tenantId, "yash");
   const handleMoveout = () => {
-    const updatedApplicant = {
-      moveout_date: moveOutDate,
-      moveout_notice_given_date: noticeGivenDate,
-      end_date: moveOutDate,
-    };
+    if (moveOutDate && noticeGivenDate) {
+      const updatedApplicant = {
+        moveout_date: moveOutDate,
+        moveout_notice_given_date: noticeGivenDate,
+        end_date: moveOutDate,
+      };
 
-    axios
-      .put(
-        `${baseUrl}/tenant/moveout/${tenantId}/${entryIndex}`,
-        updatedApplicant
-      )
-      .then((res) => {
-        console.log(res, "res");
-        if (res.data.statusCode === 200) {
-          swal("Success!", "Move-out Successfully", "success");
-          // Close the modal if the status code is 200
-          handleModalClose();
-          getTenantData();
-          tenantsData();
-        }
-      })
-      .catch((err) => {
-        swal("Error", "An error occurred while Move-out", "error");
-        console.error(err);
-      });
+      axios
+        .put(
+          `${baseUrl}/tenant/moveout/${tenantId}/${entryIndex}`,
+          updatedApplicant
+        )
+        .then((res) => {
+          console.log(res, "res");
+          if (res.data.statusCode === 200) {
+            swal("Success!", "Move-out Successfully", "success");
+            // Close the modal if the status code is 200
+            handleModalClose();
+            getTenantData();
+            tenantsData();
+          }
+        })
+        .catch((err) => {
+          swal("Error", "An error occurred while Move-out", "error");
+          console.error(err);
+        });
+    } else {
+      swal(
+        "Error",
+        "NOTICE GIVEN DATE && MOVE-OUT DATE must be required",
+        "error"
+      );
+    }
   };
 
   // Function to generate PDF from table data
   const generatePDF = (selectedOption) => {
     const doc = new jsPDF();
-  
+
     doc.setFontSize(20);
     doc.text("Tenant Statement", 75, 16);
     // set moment based on selected option
     let dateBasedOnOption;
-  
+
     switch (selectedOption) {
       case "Last 30 days":
         dateBasedOnOption =
@@ -658,7 +672,7 @@ const RentRollDetail = () => {
         // Handle default case here
         break;
     }
-    console.log(dateBasedOnOption,'datebased on option ')
+    console.log(dateBasedOnOption, "datebased on option ");
     doc.setFontSize(11);
     doc.text(`${dateBasedOnOption}`, 83, 22);
     doc.addImage(Img, "JPEG", 166, 10, 30, 15);
@@ -678,10 +692,10 @@ const RentRollDetail = () => {
     doc.setFontSize(15);
     doc.text("Statement", 15, 72);
     const tableStartY = 75;
-  
+
     const today = new Date(); // Get current date
     let startDate;
-  
+
     // Calculate the start date based on the selected option
     switch (selectedOption) {
       case "Last 30 days":
@@ -706,49 +720,52 @@ const RentRollDetail = () => {
 
     let filteredData = GeneralLedgerData && GeneralLedgerData.paymentAndCharges;
     console.log(filteredData, "vaibhav");
-  
+
     if (startDate) {
-      filteredData = GeneralLedgerData.paymentAndCharges.filter((generalledger) => {
-        const ledgerDate = new Date(generalledger.date).toISOString().split('T')[0];
-        const start = startDate.toISOString().split('T')[0];
-        const end = today.toISOString().split('T')[0];
-        return ledgerDate >= start && ledgerDate <= end;
-      });
+      filteredData = GeneralLedgerData.paymentAndCharges.filter(
+        (generalledger) => {
+          const ledgerDate = new Date(generalledger.date)
+            .toISOString()
+            .split("T")[0];
+          const start = startDate.toISOString().split("T")[0];
+          const end = today.toISOString().split("T")[0];
+          return ledgerDate >= start && ledgerDate <= end;
+        }
+      );
 
       console.log(filteredData, "filteredData");
     }
 
+    const tableData = filteredData && [
+      ...filteredData.reverse().map((entry) => {
+        return [
+          entry.date || "N/A",
+          entry.type || "N/A",
+          entry.account
+            ? entry.account
+            : entry.charge_type
+            ? entry.charge_type
+            : "N/A",
+          entry.memo || "N/A",
+          entry.type === "Charge" ? "$" + entry.amount : "-",
+          entry.type === "Payment" ? "$" + entry.amount : "-",
+          entry.Total ? "$" + entry.Total : "-",
+        ];
+      }),
+      [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Total Balance:",
+        "$" + filteredData.reverse()[0]?.Total,
+      ],
+    ];
 
-    const tableData = filteredData &&  [
-        ...filteredData.reverse().map((entry) => {
-          return [
-            entry.date || "N/A",
-            entry.type || "N/A",
-            entry.account
-              ? entry.account
-              : entry.charge_type
-              ? entry.charge_type
-              : "N/A",
-            entry.memo || "N/A",
-            entry.type === "Charge" ? "$" + entry.amount : "-",
-            entry.type === "Payment" ? "$" + entry.amount : "-",
-            entry.Total ? "$" + entry.Total : "-",
-          ];
-        }),
-        [
-          "",
-          "",
-          "",
-          "",
-          "",
-          "Total Balance:",
-          "$" + filteredData.reverse()[0]?.Total,
-        ],
-      ];
-  
     // .flat();
     console.log(tableData, "tableData");
-  
+
     doc.autoTable({
       startY: tableStartY,
       head: [
@@ -776,7 +793,6 @@ const RentRollDetail = () => {
     });
     doc.save("general_ledger.pdf");
   };
-  
 
   const getStatus1 = (startDate, endDate) => {
     const today = new Date();
@@ -801,9 +817,9 @@ const RentRollDetail = () => {
   // Check if the entry exists and then display the status
   const status = selectedEntry
     ? getStatus1(
-      selectedEntry.entries.start_date,
-      selectedEntry.entries.end_date
-    )
+        selectedEntry.entries.start_date,
+        selectedEntry.entries.end_date
+      )
     : "-";
 
   return (
@@ -819,23 +835,27 @@ const RentRollDetail = () => {
                     <td></td>
                   </tr>
                 </tbody>
-              ) : (<>
-                <h1 style={{ color: "white" }}>
-                  {tenantDetails.tenant_firstName +
-                    " " +
-                    tenantDetails.tenant_lastName}
-                </h1>
-                <h5 style={{ color: "white" }}>
-                  {status} |{" "}
-                  {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
-                  {tenantDetails._id &&
+              ) : (
+                <>
+                  <h1 style={{ color: "white" }}>
+                    {tenantDetails.tenant_firstName +
+                      " " +
+                      tenantDetails.tenant_lastName}
+                  </h1>
+                  <h5 style={{ color: "white" }}>
+                    {status} |{" "}
+                    {tenantDetails._id
+                      ? tenantDetails.entries.rental_adress
+                      : " "}
+                    {tenantDetails._id &&
                     tenantDetails.entries.rental_units !== undefined &&
                     tenantDetails.entries.rental_units !== ""
-                    ? ` - ${tenantDetails.entries.rental_units}`
-                    : ""}
-                </h5></>)}
+                      ? ` - ${tenantDetails.entries.rental_units}`
+                      : ""}
+                  </h5>
+                </>
+              )}
             </FormGroup>
-
           </Col>
           <Col className="text-right" xs="12" sm="6">
             <Button
@@ -894,7 +914,10 @@ const RentRollDetail = () => {
                       <div className="col">
                         <Card className="shadow">
                           <div className="table-responsive">
-                            <div className="row m-3" style={{ overflow: 'hidden' }}>
+                            <div
+                              className="row m-3"
+                              style={{ overflow: "hidden" }}
+                            >
                               <div className="col-md-8">
                                 <div
                                   className="align-items-center table-flush"
@@ -958,10 +981,10 @@ const RentRollDetail = () => {
                                           {tenantDetails.entries
                                             .rentalOwner_firstName
                                             ? tenantDetails.entries
-                                              .rentalOwner_firstName +
-                                            " " +
-                                            tenantDetails.entries
-                                              .rentalOwner_lastName
+                                                .rentalOwner_firstName +
+                                              " " +
+                                              tenantDetails.entries
+                                                .rentalOwner_lastName
                                             : "N/A"}
                                         </Col>
                                         <Col>
@@ -1012,10 +1035,10 @@ const RentRollDetail = () => {
                                           GeneralLedgerData.paymentAndCharges
                                             .length > 0 &&
                                           "$" +
-                                          Math.abs(
-                                            GeneralLedgerData
-                                              .paymentAndCharges[0].Total
-                                          )}
+                                            Math.abs(
+                                              GeneralLedgerData
+                                                .paymentAndCharges[0].Total
+                                            )}
                                       </Typography>
                                     </div>
                                     <hr
@@ -1156,30 +1179,30 @@ const RentRollDetail = () => {
                                         marginTop: "10px",
                                       }}
                                     >
-                                    <Button
-                            color="primary"
-                            ////  href="#rms"
-                            onClick={() =>
-                              navigate(
-                                `/admin/AddPayment/${tenantId}/${entryIndex}`,
-                                {
-                                  state: {
-                                    unit_name: unit,
-                                    unit_id: unitId,
-                                    property_id: propertyId,
-                                    rental_adress: rental,
-                                  },
-                                }
-                              )
-                            }
-                            style={{
-                              background: "white",
-                              color: "blue",
-                              marginRight: "10px",
-                            }}
-                          >
-                            Receive Payment
-                          </Button>
+                                      <Button
+                                        color="primary"
+                                        ////  href="#rms"
+                                        onClick={() =>
+                                          navigate(
+                                            `/admin/AddPayment/${tenantId}/${entryIndex}`,
+                                            {
+                                              state: {
+                                                unit_name: unit,
+                                                unit_id: unitId,
+                                                property_id: propertyId,
+                                                rental_adress: rental,
+                                              },
+                                            }
+                                          )
+                                        }
+                                        style={{
+                                          background: "white",
+                                          color: "blue",
+                                          marginRight: "10px",
+                                        }}
+                                      >
+                                        Receive Payment
+                                      </Button>
                                       {myData1.map((item) => (
                                         <>
                                           <Typography
@@ -1190,9 +1213,9 @@ const RentRollDetail = () => {
                                               cursor: "pointer",
                                               color: "blue",
                                             }}
-                                          // onClick={() => handleChange("Financial")}
+                                            // onClick={() => handleChange("Financial")}
                                           >
-                                             <Link
+                                            <Link
                                               to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
                                               onClick={() => {
                                                 setValue(`Financial`);
@@ -1207,7 +1230,10 @@ const RentRollDetail = () => {
                                   </CardContent>
                                 </Card>
                               </div>
-                              <div className="row m-3" style={{ overflow: 'auto' }}>
+                              <div
+                                className="row m-3"
+                                style={{ overflow: "auto" }}
+                              >
                                 <Row
                                   className="w-100 my-3 "
                                   style={{
@@ -1281,7 +1307,8 @@ const RentRollDetail = () => {
                                                     "N/A"}
                                                 </td>
                                                 <td>
-                                                  {item.entries.lease_type || "N/A"}
+                                                  {item.entries.lease_type ||
+                                                    "N/A"}
                                                 </td>
                                                 <td>{item.entries.amount}</td>
                                               </tr>
@@ -1434,12 +1461,14 @@ const RentRollDetail = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
-
                                   {GeneralLedgerData &&
                                     GeneralLedgerData?.paymentAndCharges?.map(
                                       (generalledger) => (
                                         <>
-                                          {console.log(GeneralLedgerData, "GeneralLedgerData")}
+                                          {console.log(
+                                            GeneralLedgerData,
+                                            "GeneralLedgerData"
+                                          )}
                                           <tr key={`${generalledger._id}`}>
                                             <td>{generalledger.date || "-"}</td>
                                             <td>{generalledger.type || "-"}</td>
@@ -1462,8 +1491,8 @@ const RentRollDetail = () => {
                                                 ? generalledger.Total >= 0
                                                   ? `$${generalledger.Total}`
                                                   : `$(${Math.abs(
-                                                    generalledger.Total
-                                                  )})`
+                                                      generalledger.Total
+                                                    )})`
                                                 : "0"}
                                               {/* {calculateBalance(
                                                   generalledger.type,
@@ -1480,10 +1509,10 @@ const RentRollDetail = () => {
                                               >
                                                 {generalledger.type ===
                                                   "Charge" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
+                                                  <div
+                                                    style={{
+                                                      cursor: "pointer",
+                                                    }}
                                                     // onClick={(e) => {
                                                     // e.stopPropagation();
                                                     // console.log(
@@ -1503,49 +1532,44 @@ const RentRollDetail = () => {
                                                     //   "dsgdg"
                                                     // );
                                                     // }}
-                                                    >
-                                                      <DeleteIcon onClick={() => {
-                                                        console.log(generalledger, 'geennennene')
-                                                        deleteCharge(generalledger._id)
-                                                      }} />
-                                                    </div>
-                                                  )}
+                                                  >
+                                                    <DeleteIcon
+                                                      onClick={() => {
+                                                        console.log(
+                                                          generalledger,
+                                                          "geennennene"
+                                                        );
+                                                        deleteCharge(
+                                                          generalledger._id
+                                                        );
+                                                      }}
+                                                    />
+                                                  </div>
+                                                )}
 
                                                 {generalledger.type ===
                                                   "Charge" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        editcharge(
-                                                          generalledger._id,
-
-                                                        );
-                                                      }}
-                                                    >
-                                                      <EditIcon />
-                                                    </div>
-                                                  )}
+                                                  <div
+                                                    style={{
+                                                      cursor: "pointer",
+                                                    }}
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      editcharge(
+                                                        generalledger._id
+                                                      );
+                                                    }}
+                                                  >
+                                                    <EditIcon />
+                                                  </div>
+                                                )}
 
                                                 {generalledger.type ===
                                                   "Payment" && (
-                                                    <div
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        editpayment(
-                                                          generalledger._id,
-                                                          entry
-                                                        );
-                                                      }}
-                                                    >
-                                                      <EditIcon />
-                                                    </div>
-                                                  )}
+                                                  <>
+                                                    <div>-</div>
+                                                  </>
+                                                )}
                                               </div>
                                             </td>
                                           </tr>
@@ -1600,7 +1624,7 @@ const RentRollDetail = () => {
                                     ) : (
                                       <div
                                         className="d-flex justify-content-end h5"
-                                      // style={{ cursor: "pointer" }}
+                                        // style={{ cursor: "pointer" }}
                                       >
                                         <DoneIcon fontSize="small" /> Move Out
                                       </div>
@@ -1720,13 +1744,13 @@ const RentRollDetail = () => {
                                       </Modal.Body>
                                       <Modal.Footer>
                                         <Button
-                                          style={{ backgroundColor: "#25d559" }}
+                                          style={{ backgroundColor: "#008000" }}
                                           onClick={handleMoveout}
                                         >
                                           Move out
                                         </Button>
                                         <Button
-                                          style={{ backgroundColor: "#25d559" }}
+                                          style={{ backgroundColor: "#ffffff" }}
                                           onClick={handleModalClose}
                                         >
                                           Close
@@ -1764,7 +1788,7 @@ const RentRollDetail = () => {
                                           <br></br>
                                           {entry.rental_adress}
                                           {entry.rental_units !== "" &&
-                                            entry.rental_units !== undefined
+                                          entry.rental_units !== undefined
                                             ? ` - ${entry.rental_units}`
                                             : null}
                                         </div>
@@ -1773,6 +1797,10 @@ const RentRollDetail = () => {
                                           {" "}
                                           {formatDateWithoutTime(
                                             entry.start_date
+                                          ) || "N/A"}{" "}
+                                          to{" "}
+                                          {formatDateWithoutTime(
+                                            entry.end_date
                                           ) || "N/A"}
                                         </div>
 
@@ -1817,14 +1845,14 @@ const RentRollDetail = () => {
                                           style={
                                             entry.moveout_notice_given_date
                                               ? {
-                                                // display:"block",
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                marginTop: "10px",
-                                              }
+                                                  // display:"block",
+                                                  display: "flex",
+                                                  flexDirection: "row",
+                                                  marginTop: "10px",
+                                                }
                                               : {
-                                                display: "none",
-                                              }
+                                                  display: "none",
+                                                }
                                           }
                                         >
                                           <Typography
@@ -1843,14 +1871,14 @@ const RentRollDetail = () => {
                                           style={
                                             entry.moveout_date
                                               ? {
-                                                // display:"block",
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                marginTop: "10px",
-                                              }
+                                                  // display:"block",
+                                                  display: "flex",
+                                                  flexDirection: "row",
+                                                  marginTop: "10px",
+                                                }
                                               : {
-                                                display: "none",
-                                              }
+                                                  display: "none",
+                                                }
                                           }
                                         >
                                           <Typography
@@ -1908,12 +1936,12 @@ const RentRollDetail = () => {
                                 {GeneralLedgerData &&
                                   GeneralLedgerData.paymentAndCharges &&
                                   GeneralLedgerData.paymentAndCharges.length >
-                                  0 &&
+                                    0 &&
                                   "$" +
-                                  Math.abs(
-                                    GeneralLedgerData.paymentAndCharges[0]
-                                      .Total
-                                  )}
+                                    Math.abs(
+                                      GeneralLedgerData.paymentAndCharges[0]
+                                        .Total
+                                    )}
                               </Typography>
                             </div>
                             <hr
@@ -2054,30 +2082,30 @@ const RentRollDetail = () => {
                                 marginTop: "10px",
                               }}
                             >
-                          <Button
-                            color="primary"
-                            ////  href="#rms"
-                            onClick={() =>
-                              navigate(
-                                `/admin/AddPayment/${tenantId}/${entryIndex}`,
-                                {
-                                  state: {
-                                    unit_name: unit,
-                                    unit_id: unitId,
-                                    property_id: propertyId,
-                                    rental_adress: rental,
-                                  },
+                              <Button
+                                color="primary"
+                                ////  href="#rms"
+                                onClick={() =>
+                                  navigate(
+                                    `/admin/AddPayment/${tenantId}/${entryIndex}`,
+                                    {
+                                      state: {
+                                        unit_name: unit,
+                                        unit_id: unitId,
+                                        property_id: propertyId,
+                                        rental_adress: rental,
+                                      },
+                                    }
+                                  )
                                 }
-                              )
-                            }
-                            style={{
-                              background: "white",
-                              color: "blue",
-                              marginRight: "10px",
-                            }}
-                          >
-                            Receive Payment
-                          </Button>
+                                style={{
+                                  background: "white",
+                                  color: "blue",
+                                  marginRight: "10px",
+                                }}
+                              >
+                                Receive Payment
+                              </Button>
 
                               {myData1.map((item) => (
                                 <>
@@ -2089,7 +2117,7 @@ const RentRollDetail = () => {
                                       cursor: "pointer",
                                       color: "blue",
                                     }}
-                                  // onClick={() => handleChange("Financial")}
+                                    // onClick={() => handleChange("Financial")}
                                   >
                                     <Link
                                       to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
