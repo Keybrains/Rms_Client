@@ -1586,6 +1586,8 @@ const RentRollLeaseing = () => {
           rent_paid: applicantData.rent_paid,
           propertyOnRent: applicantData.propertyOnRent,
           paymentMethod: applicantData.paymentMethod,
+          card_number: applicantData.card_number,
+          exp_date: applicantData.exp_date,
 
           //security deposite
           Due_date: applicantData.Due_date,
@@ -1772,6 +1774,8 @@ const RentRollLeaseing = () => {
             //security deposite
             Due_date: matchedLease.Due_date,
             Security_amount: matchedLease.Security_amount,
+            card_number: matchedLease.card_number,
+            exp_date: matchedLease.exp_date,
 
             // add cosigner
             cosigner_firstName: matchedLease.cosigner_firstName,
@@ -1987,6 +1991,8 @@ const RentRollLeaseing = () => {
         {
           entryIndex: entrySchema.values.entryIndex,
           paymentMethod: entrySchema.values.paymentMethod,
+          card_number: entrySchema.values.ccvNu || "",
+          exp_date: entrySchema.values.ccvEx || "",
           rental_units: entrySchema.values.rental_units,
           rental_adress: entrySchema.values.rental_adress,
           lease_type: entrySchema.values.lease_type,
@@ -2736,6 +2742,8 @@ const RentRollLeaseing = () => {
       rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
       rentalOwner_companyName: ownerData.rentalOwner_companyName,
       paymentMethod: entrySchema.paymentMethod,
+      card_number: entrySchema.values.ccvNu,
+      exp_date: entrySchema.values.ccvEx,
     };
     entriesArray.push(entriesObject);
 
@@ -6636,7 +6644,7 @@ const RentRollLeaseing = () => {
                                   id="creditcard_number"
                                   placeholder="0000 0000 0000"
                                   name="creditcard_number"
-                                  value={CCVNU}
+                                  value={entrySchema.values.card_number}
                                   onChange={(e) => {
                                     const inputValue = e.target.value;
                                     const numericValue = inputValue.replace(
@@ -6704,7 +6712,7 @@ const RentRollLeaseing = () => {
                                 value={
                                   CCVEX instanceof Date
                                     ? formatDateForInput(CCVEX)
-                                    : CCVEX
+                                    : entrySchema.values.exp_date
                                 }
                                 placeholder="MM/YYYY"
                               />
