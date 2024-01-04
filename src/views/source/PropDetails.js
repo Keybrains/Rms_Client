@@ -21,8 +21,17 @@ import {
   DropdownItem,
   CardBody,
 } from "reactstrap";
-import { CardContent } from "@mui/material";
+import {
+  CardContent,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
+import EditIcon from "@mui/icons-material/Edit";
+import DoneIcon from "@mui/icons-material/Done";
+import LogoutIcon from "@mui/icons-material/Logout";
 // import * as React from 'react';
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -30,7 +39,8 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import CloseIcon from "@mui/icons-material/Close";
-
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import Cookies from "universal-cookie";
 // import { Grid, Modal } from "@mui/material";
 import { BedSharp, Clear, Image } from "@mui/icons-material";
@@ -45,6 +55,7 @@ import { Modal } from "react-bootstrap";
 import { RotatingLines } from "react-loader-spinner";
 // import "bootstrap/dist/css/bootstrap.min.css";
 // import CardActions from "../../../../../rms-y/Rms_client/images";
+import MailIcon from "@mui/icons-material/Mail";
 
 const bull = (
   <Box
@@ -118,7 +129,7 @@ const PropDetails = () => {
       setUnitImage(filteredImage);
     }
   };
-  const getRentalsData = async (propertyType) => {
+  const getRentalsData = async () => {
     try {
       const response = await axios.get(
         `${baseUrl}/rentals/rentals_summary/${id}`
@@ -290,9 +301,12 @@ const PropDetails = () => {
   const [month, setMonth] = useState([]);
   const [threeMonths, setThreeMonths] = useState([]);
   const [propSummary, setPropSummary] = useState(false);
-  const [rentalId, setRentalId] = useState("");
+  const [openEdite, setOpenEdite] = useState("");
+  const closeModal = () => {
+    setOpenEdite(false);
+  };
   const [propId, setPropId] = useState("");
-  console.log(propId,"propertyId")
+  console.log(propId, "propertyId");
   const [addAppliances, setAddAppliances] = useState(false);
 
   const handleFinancialSelection = (value) => {
@@ -344,30 +358,35 @@ const PropDetails = () => {
     }
   };
 
-  useEffect(() => {
-    getUnitProperty(propId);
-  }, [propId]);
-
-  
-
   const getUnitProperty = async (propId) => {
-    const propertyId = propId;
     await axios
       .get(`${baseUrl}/propertyunit/propertyunits/${entryIndex}`)
-      .then((res) => {  
+      .then((res) => {
         // setUnitProperty(res.data.data);
-        console.log(entryIndex,"mina-----------")
+        console.log(entryIndex, "mina-----------");
         console.log(res.data.data, "property unit");
         setPropertyUnit(res.data.data);
         const matchedUnit = res.data.data.filter((item) => item._id === propId);
         console.log(matchedUnit, "matchedUnit");
         setClickedObject(matchedUnit[0]);
+        const propertyresImage = matchedUnit[0].propertyres_image || [];
+        const propertyImage = matchedUnit[0].property_image || [];
+
+        // Check for the first non-empty value among propertyres_image and property_image
+        const firstNonEmptyImage =
+          propertyresImage.length > 0
+            ? propertyresImage
+            : propertyImage.length > 0
+            ? propertyImage
+            : [];
+        console.log(firstNonEmptyImage, "yashujs");
+        setUnitImage(firstNonEmptyImage);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-
+  console.log(unitImage, "yash");
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -382,18 +401,15 @@ const PropDetails = () => {
       const imageData = new FormData();
       for (let index = 0; index < selectedFiles.length; index++) {
         const element = selectedFiles[index];
-        console.log(element, "yash");
         imageData.append(`files`, element);
       }
 
-      const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+      const url = `${baseUrl}/images/upload`;
       var image;
       try {
         const result = await axios.post(url, imageData, {
           headers: {
-
             "Content-Type": "multipart/form-data",
-
           },
         });
         console.log(result, "imgs");
@@ -403,56 +419,100 @@ const PropDetails = () => {
             return data.url;
           }),
         };
-      } 
-      catch (error) {
+        if (result.status === 200) {
+          if (propType === "Residential") {
+            const updatedValues = {
+              rental_unitsAdress: addUnitFormik.values.address1,
+              rental_units: addUnitFormik.values.unit_number,
+              rental_city: addUnitFormik.values.city,
+              rental_state: addUnitFormik.values.state,
+              rental_postcode: addUnitFormik.values.zip,
+              rental_country: addUnitFormik.values.country,
+              propertyres_image: [...image.prop_image],
+            };
+            await axios
+              .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+              .then((response) => {
+                console.log(response.data, "updated data");
+                getUnitProperty(id);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            console.log(clickedObject, "clickedObject after update");
+          } else {
+            const updatedValues = {
+              rental_unitsAdress: addUnitFormik.values.address1,
+              rental_units: addUnitFormik.values.unit_number,
+              rental_city: addUnitFormik.values.city,
+              rental_state: addUnitFormik.values.state,
+              rental_postcode: addUnitFormik.values.zip,
+              rental_country: addUnitFormik.values.country,
+              property_image: [...image.prop_image],
+            };
+            await axios
+              .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+              .then((response) => {
+                console.log(response.data, "updated data");
+                getUnitProperty(id);
+
+                // setAddUnitDialogOpen(false);
+                // setAddUnitDialogOpen(false);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            console.log(clickedObject, "clickedObject after update");
+          }
+        }
+      } catch (error) {
         console.error(error);
       }
-    }
-    if (propType === "Residential") {
-      const updatedValues = {
-        rental_unitsAdress: addUnitFormik.values.address1,
-        rental_units: addUnitFormik.values.unit_number,
-        rental_city: addUnitFormik.values.city,
-        rental_state: addUnitFormik.values.state,
-        rental_postcode: addUnitFormik.values.zip,
-        rental_country: addUnitFormik.values.country,
-        propertyres_image: [image.prop_image],
-      };
-      await axios
-        .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-        .then((response) => {
-          console.log(response.data, "updated data");
-          getUnitProperty(rentalId);
-          getRentalsData();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      console.log(clickedObject, "clickedObject after update");
     } else {
-      const updatedValues = {
-        rental_unitsAdress: addUnitFormik.values.address1,
-        rental_units: addUnitFormik.values.unit_number,
-        rental_city: addUnitFormik.values.city,
-        rental_state: addUnitFormik.values.state,
-        rental_postcode: addUnitFormik.values.zip,
-        rental_country: addUnitFormik.values.country,
-        property_image: [...image.prop_image],
-      };
-      await axios
-        .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-        .then((response) => {
-          console.log(response.data.data, "updated data");
-          getUnitProperty(rentalId);
-          getRentalsData();
+      if (propType === "Residential") {
+        const updatedValues = {
+          rental_unitsAdress: addUnitFormik.values.address1,
+          rental_units: addUnitFormik.values.unit_number,
+          rental_city: addUnitFormik.values.city,
+          rental_state: addUnitFormik.values.state,
+          rental_postcode: addUnitFormik.values.zip,
+          rental_country: addUnitFormik.values.country,
+          propertyres_image: unitImage,
+        };
+        await axios
+          .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+          .then((response) => {
+            console.log(response.data, "updated data");
+            getUnitProperty(id);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        console.log(clickedObject, "clickedObject after update");
+      } else {
+        const updatedValues = {
+          rental_unitsAdress: addUnitFormik.values.address1,
+          rental_units: addUnitFormik.values.unit_number,
+          rental_city: addUnitFormik.values.city,
+          rental_state: addUnitFormik.values.state,
+          rental_postcode: addUnitFormik.values.zip,
+          rental_country: addUnitFormik.values.country,
+          property_image: unitImage,
+        };
+        await axios
+          .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+          .then((response) => {
+            console.log(response.data.data, "updated data");
+            getUnitProperty(id);
 
-          // setAddUnitDialogOpen(false);
-          // setAddUnitDialogOpen(false);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      console.log(clickedObject, "clickedObject after update");
+            // setAddUnitDialogOpen(false);
+            // setAddUnitDialogOpen(false);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        console.log(clickedObject, "clickedObject after update");
+      }
     }
   };
   const [tasks, setTasks] = useState([]);
@@ -466,7 +526,7 @@ const PropDetails = () => {
       .catch((err) => {
         console.log(err);
       });
-  }
+  };
 
   const handleListingEdit = async (id, rentalId) => {
     const updatedValues = {
@@ -479,7 +539,7 @@ const PropDetails = () => {
       .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
       .then((response) => {
         console.log(response.data.data, "updated data");
-        getUnitProperty(rentalId);
+        getUnitProperty(id);
         getRentalsData();
         // setAddUnitDialogOpen(false);
         // setAddUnitDialogOpen(false);
@@ -622,10 +682,8 @@ const PropDetails = () => {
       });
     setPropImageLoader(false);
 
-
     // Wait for all Axios requests to complete before logging the data
     // await Promise.all(axiosRequests);
-
   };
 
   const filterRentalsBySearch = () => {
@@ -912,6 +970,91 @@ const PropDetails = () => {
 
   // Calculate net income
   const netIncome = totalIncome - totalExpenses;
+  const [showModal, setShowModal] = useState(false);
+  const [moveOutDate, setMoveOutDate] = useState("");
+  const [noticeGivenDate, setNoticeGivenDate] = useState("");
+  const [rentaldata, setRentaldata] = useState([]);
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  const handleMoveOutClick = () => {
+    setShowModal(true);
+  };
+
+  const handleMoveout = (id, index) => {
+    if (moveOutDate && noticeGivenDate) {
+      const updatedApplicant = {
+        moveout_date: moveOutDate,
+        moveout_notice_given_date: noticeGivenDate,
+        end_date: moveOutDate,
+      };
+
+      axios
+        .put(`${baseUrl}/tenant/moveout/${id}/${index}`, updatedApplicant)
+        .then((res) => {
+          console.log(res, "res");
+          if (res.data.statusCode === 200) {
+            swal("Success!", "Move-out Successfully", "success");
+            handleModalClose();
+            tenantsData();
+          }
+        })
+        .catch((err) => {
+          swal("Error", "An error occurred while Move-out", "error");
+          console.error(err);
+        });
+    } else {
+      swal(
+        "Error",
+        "NOTICE GIVEN DATE && MOVE-OUT DATE must be required",
+        "error"
+      );
+    }
+  };
+
+  const tenantsData = async () => {
+    // Construct the API URL
+    setLoading(true);
+    let apiUrl;
+    apiUrl = `${baseUrl}/tenant/tenant-detail/tenants/${matchedProperty.rental_adress}`;
+
+    try {
+      // Fetch tenant data
+      const response = await axios.get(apiUrl);
+      const tenantData = response.data.data;
+      setTimeout(() => {
+        setRentaldata(tenantData);
+        setLoading(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+      setError(error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    tenantsData();
+  }, [matchedProperty]);
+
+  const openEditeTab = (event, unit) => {
+    event.stopPropagation();
+    setOpenEdite(true);
+    setPropId(unit._id);
+    getUnitProperty(unit._id);
+    setClickedObject(unit);
+    console.log(unit, "yashu");
+    addUnitFormik.setValues({
+      unit_number: unit?.rental_units,
+      address1: unit?.rental_unitsAdress,
+      city: unit?.rental_city,
+      state: unit?.rental_state,
+      zip: unit?.rental_postcode,
+      country: unit?.rental_country,
+    });
+  };
 
   return (
     <>
@@ -942,7 +1085,7 @@ const PropDetails = () => {
               <Col>
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    {console.log(propertyUnit,'propertyUnnot')}
+                    {console.log(propertyUnit, "propertyUnnot")}
                     <TabList
                       onChange={handleChange}
                       aria-label="lab API tabs example"
@@ -967,12 +1110,13 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="task"
                       />
-                      {/* <Tab
-                        label="Event history"
+                      <Tab
+                        label={`Tenant (${
+                          Array.isArray(rentaldata) ? rentaldata?.length : 0
+                        })`}
                         style={{ textTransform: "none" }}
-                        value="eventhistory"
-                      /> */}
-                      {console.log(propertyUnit, "property unit")}
+                        value="Tenant"
+                      />
                     </TabList>
                   </Box>
 
@@ -2297,11 +2441,6 @@ const PropDetails = () => {
                                     {month} {moment().format("YYYY")}
                                   </th>
                                 ))}
-                                {console.log(
-                                  monthWiseData,
-                                  "yash",
-                                  monthWiseData2
-                                )}
                                 <th>{month} 1 to date</th>
                               </thead>
                               <tbody>
@@ -2990,7 +3129,6 @@ const PropDetails = () => {
                               background: "white",
                               color: "blue",
                               display: multiUnit ? "block" : "none",
-                              display: multiUnit ? "block" : "none",
                             }}
                             size="l"
                             onClick={() => {
@@ -3019,35 +3157,38 @@ const PropDetails = () => {
                               <th scope="col">Unit</th>
                               <th scope="col">Address</th>
                               <th scope="col">Tenants</th>
+                              <th scope="col">Action</th>
                               {/* <th scope="col">Most Recent Events</th> */}
                             </tr>
                           </thead>
                           <tbody>
-                            { propertyUnit && propertyUnit.length>0 && propertyUnit.map((unit, index) => (
-                              <tr
-                                key={index}
-                                onClick={() => {
-                                  setPropSummary(true);
-                                  setPropId(unit._id);
-                                  setClickedObject(unit);
-                                }}
-                                style={{ cursor: "pointer" }}
-                              >
-                                <td>{unit.rental_units || "N/A"}</td>
-                                <td>{unit.rental_adress || "N/A"}</td>
-                                <td>
-                                  {unit.tenant_firstName == null
-                                    ? "-"
-                                    : unit.tenant_firstName +
-                                      " " +
-                                      unit.tenant_lastName}
-                                  {/* {unit.tenant_firstName +
-                                    " " +
-                                    unit.tenant_lastName} */}
-                                </td>
-                                {/* <td>{"N/A"}</td> */}
-                              </tr>
-                            ))}
+                            {propertyUnit &&
+                              propertyUnit.length > 0 &&
+                              propertyUnit.map((unit, index) => (
+                                <tr
+                                  key={index}
+                                  onClick={() => {
+                                    setPropSummary(true);
+                                    setPropId(unit._id);
+                                    setClickedObject(unit);
+                                  }}
+                                  style={{ cursor: "pointer" }}
+                                  className="w-100"
+                                >
+                                  <td>{unit.rental_units || "N/A"}</td>
+                                  <td>{unit.rental_adress || "N/A"}</td>
+                                  <td>
+                                    {unit.tenant_firstName == null
+                                      ? "-"
+                                      : unit.tenant_firstName +
+                                        " " +
+                                        unit.tenant_lastName}
+                                  </td>
+                                  <td onClick={(e) => openEditeTab(e, unit)}>
+                                    <EditIcon />
+                                  </td>
+                                </tr>
+                              ))}
                           </tbody>
                         </Table>
                         <></>
@@ -3084,7 +3225,7 @@ const PropDetails = () => {
                           }}
                           size="sm"
                           onClick={() => {
-                            handleDeleteUnit(clickedObject._id);
+                            handleDeleteUnit(clickedObject?._id);
                           }}
                         >
                           Delete unit
@@ -3099,15 +3240,15 @@ const PropDetails = () => {
                                   flexWrap: "wrap",
                                 }}
                               >
-                                {clickedObject.propertyres_image &&
-                                  clickedObject.propertyres_image.length >
+                                {clickedObject?.propertyres_image &&
+                                  clickedObject?.propertyres_image.length >
                                     0 && (
                                     <div
                                       style={{
                                         width: "100%", // Expands to full width by default
                                       }}
                                     >
-                                      {clickedObject.propertyres_image.map(
+                                      {clickedObject?.propertyres_image.map(
                                         (propertyres_image, index) => (
                                           <img
                                             key={index}
@@ -3139,14 +3280,14 @@ const PropDetails = () => {
                                       />
                                     </div>
                                   )}
-                                {clickedObject.property_image &&
-                                  clickedObject.property_image.length > 0 && (
+                                {clickedObject?.property_image &&
+                                  clickedObject?.property_image.length > 0 && (
                                     <div
                                       style={{
                                         width: "100%", // Expands to full width by default
                                       }}
                                     >
-                                      {clickedObject.property_image.map(
+                                      {clickedObject?.property_image.map(
                                         (property_image, index) => (
                                           <img
                                             key={index}
@@ -3169,7 +3310,7 @@ const PropDetails = () => {
                                   )}
                               </div>
                             </Grid> */}
-                            <div className="din d-flex">
+                            <div className="din d-flex justify-content-between">
                               <div className="col-md-4 mt-2">
                                 <label htmlFor="unit_image">
                                   {unitImageLoader ? (
@@ -3184,23 +3325,15 @@ const PropDetails = () => {
                                     </>
                                   ) : (
                                     <>
-                                      {" "}
                                       <img
                                         // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
                                         src={
                                           clickedObject &&
-                                          (clickedObject.property_image.length >
-                                            0 ||
-                                            clickedObject.propertyres_image
-                                              .length > 0)
-                                            ? clickedObject.property_image[0]
-                                              ? clickedObject
-                                                  .property_image[0][0]
-                                              : clickedObject
-                                                  .propertyres_image[0]
-                                              ? clickedObject
-                                                  .propertyres_image[0][0]
-                                              : fone
+                                          clickedObject?.propertyres_image[0]
+                                            ? clickedObject
+                                                ?.propertyres_image[0]
+                                            : clickedObject?.property_image[0]
+                                            ? clickedObject?.property_image[0]
                                             : fone
                                         }
                                         className="img-fluid rounded-start card-image"
@@ -3212,17 +3345,6 @@ const PropDetails = () => {
                                     </>
                                   )}
                                 </label>
-                                {/* <TextField
-                                  id="unit_image"
-                                  name="unit_image"
-                                  type="file"
-                                  inputProps={{
-                                    accept: "image/*",
-                                    multiple: true,
-                                  }}
-                                  onChange={handleImageChange}
-                                  style={{ display: "none" }}
-                                /> */}
                               </div>
                               <Grid
                                 item
@@ -3232,61 +3354,26 @@ const PropDetails = () => {
                                   marginLeft: "20px",
                                 }}
                               >
-                                <div>
+                                <div className="d-flex align-self-end">
                                   <Typography
                                     variant="h6"
                                     sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
                                       fontSize: "18px",
                                       textTransform: "capitalize",
                                       color: "#5E72E4",
                                       fontWeight: "600",
                                     }}
                                   >
-                                    {clickedObject.rental_unitsAdress}
-                                    <span
-                                      className="text-sm"
+                                    <div>{clickedObject?.rental_units}</div>
+                                    <hr
                                       style={{
-                                        cursor: "pointer",
-                                        color: "black",
-                                        marginLeft: "10px",
+                                        marginTop: "10px",
+                                        width: "calc(100% - 100px)",
                                       }}
-                                      onClick={() => {
-                                        setEditUnitDialogOpen(
-                                          !editUnitDialogOpen
-                                        );
-                                        console.log(
-                                          clickedObject,
-                                          "clicked object 1438"
-                                        );
-                                        addUnitFormik.setValues({
-                                          unit_number:
-                                            clickedObject.rental_units,
-                                          address1: clickedObject.rental_unitsAdress,
-                                          city: clickedObject.rental_city,
-                                          state: clickedObject.rental_state,
-                                          zip: clickedObject.rental_postcode,
-                                          country: clickedObject.rental_country,
-                                        });
-                                      }}
-                                    >
-                                      {" "}
-                                      <Button
-                                        size="sm"
-                                        style={{
-                                          background: "white",
-                                          color: "blue",
-                                          // marginRight: "10px",
-                                        }}
-                                        onClick={() => {
-                                          setEditUnitDialogOpen(
-                                            !editUnitDialogOpen
-                                          );
-                                        }}
-                                      >
-                                        Edit
-                                      </Button>
-                                    </span>
-                                    <hr style={{ marginTop: "10px" }} />
+                                    />
                                   </Typography>
                                 </div>
                                 <span style={{ marginTop: "0px" }}>
@@ -3308,366 +3395,6 @@ const PropDetails = () => {
                               </Grid>
                             </div>
 
-                            <Grid item xs={3}></Grid>
-                            <Grid item xs={9}>
-                              {editUnitDialogOpen ? (
-                                <>
-                                  <Row>
-                                    <Col md={11}>
-                                      <Card style={{ position: "relative" }}>
-                                        <CloseIcon
-                                          style={{
-                                            position: "absolute",
-                                            top: "10px",
-                                            right: "10px",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setEditUnitDialogOpen(
-                                              !editUnitDialogOpen
-                                            );
-                                          }}
-                                        />
-                                        <CardBody>
-                                          {/* <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
-                                          <form
-                                            onSubmit={
-                                              addUnitFormik.handleSubmit
-                                            }
-                                          >
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                              }}
-                                            >
-                                              <div>
-                                                <h5>Unit Number</h5>
-                                              </div>
-                                              <TextField
-                                                type="text"
-                                                size="small"
-                                                id="unit_number"
-                                                name="unit_number"
-                                                value={
-                                                  addUnitFormik.values
-                                                    .unit_number
-                                                }
-                                                onChange={
-                                                  addUnitFormik.handleChange
-                                                }
-                                                onBlur={
-                                                  addUnitFormik.handleBlur
-                                                }
-                                              />
-                                            </div>
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                marginTop: "10px",
-                                              }}
-                                            >
-                                              <div>
-                                                <h5>Street Address</h5>
-                                              </div>
-                                              <TextField
-                                                type="text"
-                                                size="small"
-                                                id="address1"
-                                                name="address1"
-                                                value={
-                                                  addUnitFormik.values.address1
-                                                }
-                                                onChange={
-                                                  addUnitFormik.handleChange
-                                                }
-                                                onBlur={
-                                                  addUnitFormik.handleBlur
-                                                }
-                                              />
-                                            </div>
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                marginTop: "10px",
-                                              }}
-                                            >
-                                              <div>
-                                                <div>
-                                                  <h5>City</h5>
-                                                </div>
-                                                <TextField
-                                                  type="text"
-                                                  size="small"
-                                                  id="city"
-                                                  name="city"
-                                                  value={
-                                                    addUnitFormik.values.city
-                                                  }
-                                                  onChange={
-                                                    addUnitFormik.handleChange
-                                                  }
-                                                  onBlur={
-                                                    addUnitFormik.handleBlur
-                                                  }
-                                                />
-                                              </div>
-                                              <div
-                                                style={{ marginLeft: "10px" }}
-                                              >
-                                                <div>
-                                                  <h5>State</h5>
-                                                </div>
-                                                <TextField
-                                                  type="text"
-                                                  size="small"
-                                                  id="state"
-                                                  name="state"
-                                                  value={
-                                                    addUnitFormik.values.state
-                                                  }
-                                                  onChange={
-                                                    addUnitFormik.handleChange
-                                                  }
-                                                  onBlur={
-                                                    addUnitFormik.handleBlur
-                                                  }
-                                                />
-                                              </div>
-                                              <div
-                                                style={{ marginLeft: "10px" }}
-                                              >
-                                                <div>
-                                                  <h5>Zip</h5>
-                                                </div>
-                                                <TextField
-                                                  type="text"
-                                                  size="small"
-                                                  id="zip"
-                                                  name="zip"
-                                                  value={
-                                                    addUnitFormik.values.zip
-                                                  }
-                                                  onChange={
-                                                    addUnitFormik.handleChange
-                                                  }
-                                                  onBlur={
-                                                    addUnitFormik.handleBlur
-                                                  }
-                                                />
-                                              </div>
-                                            </div>
-
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                              }}
-                                            >
-                                              <div
-                                                style={{ marginTop: "10px" }}
-                                              >
-                                                <h5>Country</h5>
-                                              </div>
-                                              <TextField
-                                                type="text"
-                                                size="small"
-                                                id="country"
-                                                name="country"
-                                                value={
-                                                  addUnitFormik.values.country
-                                                }
-                                                onChange={
-                                                  addUnitFormik.handleChange
-                                                }
-                                                onBlur={
-                                                  addUnitFormik.handleBlur
-                                                }
-                                              />
-                                              <Col lg="5">
-                                                <div
-                                                  style={{
-                                                    display: "flex",
-                                                    flexDirection: "row",
-                                                  }}
-                                                >
-                                                  <FormGroup
-                                                    style={{
-                                                      display: "flex",
-                                                      flexDirection: "column",
-                                                    }}
-                                                  >
-                                                    <label
-                                                      className="form-control-label"
-                                                      htmlFor="input-unitadd"
-                                                    >
-                                                      Photo
-                                                    </label>
-                                                    <span
-                                                      onClick={
-                                                        togglePhotoresDialog
-                                                      }
-                                                      
-                                                      style={{
-                                                        cursor: "pointer",
-                                                        fontSize: "14px",
-                                                        fontFamily: "monospace",
-                                                        color: "blue",
-                                                      }}
-                                                    >
-                                                      {" "}
-                                                      <br />
-                                                      <input
-                                                        type="file"
-                                                        className="form-control-file d-none"
-                                                        accept="image/*"
-                                                        multiple
-                                                        id={`unit_img`}
-                                                        name={`unit_img`}
-                                                        onChange={(e) => {
-                                                          fileData(e);
-                                                          fileData(e);
-                                                        }}
-                                                      />
-                                                      <label
-                                                        htmlFor={`unit_img`}
-                                                      >
-                                                        
-                                                        <b
-                                                          style={{
-                                                            fontSize: "20px",
-                                                          }}
-                                                        >
-                                                          +
-                                                        </b>{" "}
-                                                        Add
-                                                      </label>
-                                                      {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
-                                                    </span>
-                                                  </FormGroup>
-                                                  <FormGroup
-                                                    style={{
-                                                      display: "flex",
-                                                      flexWrap: "wrap",
-                                                      paddingLeft: "10px",
-                                                    }}
-                                                  >
-                                                    <div className="d-flex">
-                                                      {unitImage &&
-                                                        unitImage.length > 0 &&
-                                                        unitImage.map(
-                                                          (unitImg, index) => (
-                                                            <div
-                                                              key={index} // Use a unique identifier, such as index or image URL
-                                                              style={{
-                                                                position:
-                                                                  "relative",
-                                                                width: "100px",
-                                                                height: "100px",
-                                                                margin: "10px",
-                                                                display: "flex",
-                                                                flexDirection:
-                                                                  "column",
-                                                              }}
-                                                            >
-                                                              <img
-                                                                src={unitImg}
-                                                                alt=""
-                                                                style={{
-                                                                  width:
-                                                                    "100px",
-                                                                  height:
-                                                                    "100px",
-                                                                  maxHeight:
-                                                                    "100%",
-                                                                  maxWidth:
-                                                                    "100%",
-                                                                  borderRadius:
-                                                                    "10px",
-                                                                }}
-                                                                onClick={() => {
-                                                                  setSelectedImage(
-                                                                    unitImg
-                                                                  );
-                                                                  setOpen(true);
-                                                                }}
-                                                              />
-                                                              <ClearIcon
-                                                                style={{
-                                                                  cursor:
-                                                                    "pointer",
-                                                                  alignSelf:
-                                                                    "flex-start",
-                                                                  position:
-                                                                    "absolute",
-                                                                  top: "-12px",
-                                                                  right:
-                                                                    "-12px",
-                                                                }}
-                                                                onClick={() =>
-                                                                  clearSelectedPhoto(
-                                                                    index,
-                                                                    "propertyres_image"
-                                                                  )
-                                                                }
-                                                              />
-                                                            </div>
-                                                          )
-                                                        )}
-                                                      <OpenImageDialog
-                                                        open={open}
-                                                        setOpen={setOpen}
-                                                        selectedImage={
-                                                          selectedImage
-                                                        }
-                                                      />
-                                                    </div>
-                                                  </FormGroup>
-                                                </div>
-                                              </Col>
-                                            </div>
-
-                                            <div style={{ marginTop: "10px" }}>
-                                              <Button
-                                                color="success"
-                                                type="submit"
-                                                onClick={() => {
-                                                  handleUnitDetailsEdit(
-                                                    clickedObject._id,
-                                                    clickedObject.rentalId
-                                                  );
-                                                  // setIsEdit(false);
-                                                  setEditUnitDialogOpen(
-                                                    !editUnitDialogOpen
-                                                  );
-
-                                                  setUnitImageLoader(
-                                                    !unitImageLoader
-                                                  )
-                                                }}
-                                              >
-                                                Save
-                                              </Button>
-                                              <Button
-                                                onClick={() => {
-                                                  setEditUnitDialogOpen(
-                                                    !editUnitDialogOpen
-                                                  );
-                                                }}
-                                              >
-                                                Cancel
-                                              </Button>
-                                            </div>
-                                          </form>
-                                        </CardBody>
-                                      </Card>
-                                    </Col>
-                                  </Row>
-                                </>
-                              ) : null}
-                            </Grid>
                             <Grid item xs="12" style={{ marginTop: "20px" }}>
                               <>
                                 <Row
@@ -3696,10 +3423,10 @@ const PropDetails = () => {
                                         );
                                         addUnitFormik.setValues({
                                           market_rent:
-                                            clickedObject.market_rent,
-                                          size: clickedObject.rental_sqft,
+                                            clickedObject?.market_rent,
+                                          size: clickedObject?.rental_sqft,
                                           description:
-                                            clickedObject.description,
+                                            clickedObject?.description,
                                         });
                                         setEditListingData(!editListingData);
                                       }}
@@ -3721,7 +3448,6 @@ const PropDetails = () => {
                                   <Col>Description</Col>
                                   <Col></Col>
                                 </Row>
-                                {console.log(clickedObject.values, "clduhjik")}
                                 <Row
                                   className="w-100 mt-1  mb-5"
                                   style={{
@@ -3731,13 +3457,13 @@ const PropDetails = () => {
                                   }}
                                 >
                                   <Col>
-                                    {clickedObject.market_rent || "N/A"}
+                                    {clickedObject?.market_rent || "N/A"}
                                   </Col>
                                   <Col>
-                                    {clickedObject.rental_sqft || "N/A"}
+                                    {clickedObject?.rental_sqft || "N/A"}
                                   </Col>
                                   <Col style={{ textTransform: "lowercase" }}>
-                                    {clickedObject.description || "N/A"}
+                                    {clickedObject?.description || "N/A"}
                                   </Col>
                                   <Col></Col>
                                 </Row>
@@ -3778,7 +3504,8 @@ const PropDetails = () => {
                                               id="market_rent"
                                               name="market_rent"
                                               value={
-                                                addUnitFormik.values.market_rent
+                                                addUnitFormik.values
+                                                  ?.market_rent
                                               }
                                               onChange={
                                                 addUnitFormik.handleChange
@@ -3846,15 +3573,15 @@ const PropDetails = () => {
                                               type="submit"
                                               onClick={() => {
                                                 // handleUnitDetailsEdit(
-                                                //   clickedObject._id
+                                                //   clickedObject?._id
                                                 // );
                                                 // // setIsEdit(false);
                                                 // setEditUnitDialogOpen(
                                                 //   !editUnitDialogOpen
                                                 // );
                                                 handleListingEdit(
-                                                  clickedObject._id,
-                                                  clickedObject.rentalId
+                                                  clickedObject?._id,
+                                                  clickedObject?.rentalId
                                                 );
 
                                                 setEditListingData(
@@ -3919,21 +3646,21 @@ const PropDetails = () => {
                                       clickedObject
                                     )}
                                     {clickedObject &&
-                                    clickedObject.tenant_firstName &&
-                                    clickedObject.tenant_lastName ? (
+                                    clickedObject?.tenant_firstName &&
+                                    clickedObject?.tenant_lastName ? (
                                       <>
                                         <tr className="body">
                                           <td>
-                                            {clickedObject.start_date
+                                            {clickedObject?.start_date
                                               ? "Active"
                                               : "Inactive"}
                                           </td>
                                           <td>
-                                            {clickedObject.start_date &&
-                                            clickedObject.end_date ? (
+                                            {clickedObject?.start_date &&
+                                            clickedObject?.end_date ? (
                                               <>
                                                 <Link
-                                                  to={`/admin/tenantdetail/${clickedObject._id}`}
+                                                  to={`/admin/tenantdetail/${clickedObject?._id}`}
                                                   onClick={(e) => {
                                                     // Handle any additional actions onClick if needed
                                                     // console.log(
@@ -3947,11 +3674,11 @@ const PropDetails = () => {
                                                   }}
                                                 >
                                                   {formatDateWithoutTime(
-                                                    clickedObject.start_date
+                                                    clickedObject?.start_date
                                                   ) +
                                                     "-" +
                                                     formatDateWithoutTime(
-                                                      clickedObject.end_date
+                                                      clickedObject?.end_date
                                                     )}
                                                 </Link>
                                               </>
@@ -3960,18 +3687,18 @@ const PropDetails = () => {
                                             )}
                                           </td>
                                           <td>
-                                            {clickedObject.tenant_firstName &&
-                                            clickedObject.tenant_lastName
-                                              ? clickedObject.tenant_firstName +
+                                            {clickedObject?.tenant_firstName &&
+                                            clickedObject?.tenant_lastName
+                                              ? clickedObject?.tenant_firstName +
                                                 " " +
-                                                clickedObject.tenant_lastName
+                                                clickedObject?.tenant_lastName
                                               : "N/A"}
                                           </td>
                                           <td>
-                                            {clickedObject.lease_type || "N/A"}
+                                            {clickedObject?.lease_type || "N/A"}
                                           </td>
                                           <td>
-                                            {clickedObject.amount || "N/A"}
+                                            {clickedObject?.amount || "N/A"}
                                           </td>
                                         </tr>
                                       </>
@@ -4124,9 +3851,9 @@ const PropDetails = () => {
                                 </>
                               ) : (
                                 <>
-                                  {clickedObject.appliances ? (
+                                  {clickedObject?.appliances ? (
                                     <>
-                                      {clickedObject.appliances.map(
+                                      {clickedObject?.appliances.map(
                                         (appliance, index) => {
                                           <Row key={index}>
                                             <Col>{appliance}</Col>
@@ -4177,7 +3904,7 @@ const PropDetails = () => {
                                     >
                                       Listing
                                     </span>
-                                    <span>{clickedObject.unitCreatedAt}</span>
+                                    <span>{clickedObject?.unitCreatedAt}</span>
                                     <span style={{ margin: "5px 0" }}>
                                       $900 available {moment().format("DD/MM/YYYY ")}
                                     </span> */}
@@ -4252,28 +3979,336 @@ const PropDetails = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {tasks && tasks.length>0 ?(tasks.map((task, index) => (
-                          <tr
-                          onClick={() => {
-                            navigate(`/admin/workorderdetail/${task.workorder_id}`);
-                          }}
-                          >
-                          <td>{task.work_subject}</td>
-                          <td>{task.work_category}</td>
-                          <td>{task.staffmember_name}</td>
-                          <td>{task.status}</td>
-                          <td>{task.due_date}</td>
-                        </tr>
-                          ))):(
-                            <tr>
-                              <td colSpan="5" className="text-center">
-                                No tasks found
-                              </td>
+                        {tasks && tasks.length > 0 ? (
+                          tasks.map((task, index) => (
+                            <tr
+                              onClick={() => {
+                                navigate(
+                                  `/admin/workorderdetail/${task.workorder_id}`
+                                );
+                              }}
+                            >
+                              <td>{task.work_subject}</td>
+                              <td>{task.work_category}</td>
+                              <td>{task.staffmember_name}</td>
+                              <td>{task.status}</td>
+                              <td>{task.due_date}</td>
                             </tr>
-                          )}
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="5" className="text-center">
+                              No tasks found
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </Table>
-                  </TabPanel>                    
+                  </TabPanel>
+                  <TabPanel value="Tenant">
+                    <Row>
+                      <Col>
+                        {Array.isArray(rentaldata) ? (
+                          <Grid container spacing={2}>
+                            {rentaldata.map((tenant, index) => (
+                              <Grid item xs={12} sm={4} key={index}>
+                                {tenant.entries.map((entry) => (
+                                  <Box
+                                    key={index}
+                                    border="1px solid #ccc"
+                                    borderRadius="8px"
+                                    padding="16px"
+                                    maxWidth="700px"
+                                    margin="20px"
+                                  >
+                                    {!entry.moveout_notice_given_date ? (
+                                      <div
+                                        className="d-flex justify-content-end h5"
+                                        onClick={handleMoveOutClick}
+                                        style={{ cursor: "pointer" }}
+                                      >
+                                        <LogoutIcon fontSize="small" /> Move out
+                                      </div>
+                                    ) : (
+                                      <div
+                                        className="d-flex justify-content-end h5"
+                                        // style={{ cursor: "pointer" }}
+                                      >
+                                        <DoneIcon fontSize="small" /> Moved Out
+                                      </div>
+                                    )}
+
+                                    <Modal
+                                      show={showModal}
+                                      onHide={handleModalClose}
+                                    >
+                                      <Modal.Header>
+                                        <Modal.Title>
+                                          Move out tenants
+                                        </Modal.Title>
+                                      </Modal.Header>
+                                      <Modal.Body>
+                                        <div>
+                                          Select tenants to move out. If
+                                          everyone is moving, the lease will end
+                                          on the last move-out date. If some
+                                          tenants are staying, you’ll need to
+                                          renew the lease. Note: Renters
+                                          insurance policies will be permanently
+                                          deleted upon move-out.
+                                        </div>
+                                        <hr />
+                                        <React.Fragment>
+                                          <Table striped bordered responsive>
+                                            <thead>
+                                              <tr>
+                                                <th>Address / Unit</th>
+                                                <th>LEASE TYPE</th>
+                                                <th>START - END</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <td>
+                                                  {entry.rental_adress
+                                                    ? entry.rental_adress
+                                                    : ""}{" "}
+                                                  {entry.rental_units
+                                                    ? entry.rental_units
+                                                    : ""}
+                                                </td>
+                                                <td>Fixed</td>
+                                                <td>
+                                                  {entry.start_date
+                                                    ? entry.start_date
+                                                    : ""}{" "}
+                                                  {entry.end_date
+                                                    ? entry.end_date
+                                                    : ""}
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </Table>
+                                          <Table striped bordered responsive>
+                                            <thead>
+                                              <tr>
+                                                <th>TENANT</th>
+                                                <th>NOTICE GIVEN DATE</th>
+                                                <th>MOVE-OUT DATE</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <td>
+                                                  {tenant.tenant_firstName +
+                                                    " "}{" "}
+                                                  {tenant.tenant_lastName}
+                                                </td>
+                                                <td>
+                                                  <div className="col">
+                                                    <input
+                                                      type="date"
+                                                      className="form-control"
+                                                      placeholder="Notice Given Date"
+                                                      value={noticeGivenDate}
+                                                      onChange={(e) =>
+                                                        setNoticeGivenDate(
+                                                          e.target.value
+                                                        )
+                                                      }
+                                                      required
+                                                    />
+                                                  </div>
+                                                </td>
+                                                <td>
+                                                  <div className="col">
+                                                    <input
+                                                      type="date"
+                                                      className="form-control"
+                                                      placeholder="Move-out Date"
+                                                      value={moveOutDate}
+                                                      onChange={(e) =>
+                                                        setMoveOutDate(
+                                                          e.target.value
+                                                        )
+                                                      }
+                                                      required
+                                                    />
+                                                  </div>
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </Table>
+                                        </React.Fragment>
+                                      </Modal.Body>
+                                      <Modal.Footer>
+                                        <Button
+                                          style={{ backgroundColor: "#008000" }}
+                                          onClick={() =>
+                                            handleMoveout(
+                                              tenant._id,
+                                              entry.entryIndex
+                                            )
+                                          }
+                                        >
+                                          Move out
+                                        </Button>
+                                        <Button
+                                          style={{ backgroundColor: "#ffffff" }}
+                                          onClick={handleModalClose}
+                                        >
+                                          Close
+                                        </Button>
+                                      </Modal.Footer>
+                                    </Modal>
+
+                                    <Row>
+                                      <Col lg="2">
+                                        <Box
+                                          width="40px"
+                                          height="40px"
+                                          display="flex"
+                                          alignItems="center"
+                                          justifyContent="center"
+                                          backgroundColor="grey"
+                                          borderRadius="8px"
+                                          color="white"
+                                          fontSize="24px"
+                                        >
+                                          <AssignmentIndIcon />
+                                        </Box>
+                                      </Col>
+
+                                      <Col lg="7">
+                                        <div
+                                          style={{
+                                            color: "blue",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          {tenant.tenant_firstName || "N/A"}{" "}
+                                          {tenant.tenant_lastName || "N/A"}
+                                          <br></br>
+                                          {entry.rental_adress}
+                                          {entry.rental_units !== "" &&
+                                          entry.rental_units !== undefined
+                                            ? ` - ${entry.rental_units}`
+                                            : null}
+                                        </div>
+
+                                        <div>
+                                          {" "}
+                                          {formatDateWithoutTime(
+                                            entry.start_date
+                                          ) || "N/A"}{" "}
+                                          to{" "}
+                                          {formatDateWithoutTime(
+                                            entry.end_date
+                                          ) || "N/A"}
+                                        </div>
+
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                          }}
+                                        >
+                                          <Typography
+                                            style={{
+                                              paddingRight: "3px",
+                                              fontSize: "2px",
+                                              color: "black",
+                                            }}
+                                          >
+                                            <PhoneAndroidIcon />
+                                          </Typography>
+                                          {tenant.tenant_mobileNumber || "N/A"}
+                                        </div>
+
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                          }}
+                                        >
+                                          <Typography
+                                            style={{
+                                              paddingRight: "3px",
+                                              fontSize: "7px",
+                                              color: "black",
+                                            }}
+                                          >
+                                            <MailIcon />
+                                          </Typography>
+                                          {tenant.tenant_email || "N/A"}
+                                        </div>
+                                        <div
+                                          style={
+                                            entry.moveout_notice_given_date
+                                              ? {
+                                                  // display:"block",
+                                                  display: "flex",
+                                                  flexDirection: "row",
+                                                  marginTop: "10px",
+                                                }
+                                              : {
+                                                  display: "none",
+                                                }
+                                          }
+                                        >
+                                          <Typography
+                                            style={{
+                                              paddingRight: "3px",
+                                              // fontSize: "7px",
+                                              color: "black",
+                                            }}
+                                          >
+                                            Notice date:
+                                          </Typography>
+                                          {entry.moveout_notice_given_date ||
+                                            "N/A"}
+                                        </div>
+                                        <div
+                                          style={
+                                            entry.moveout_date
+                                              ? {
+                                                  // display:"block",
+                                                  display: "flex",
+                                                  flexDirection: "row",
+                                                  marginTop: "10px",
+                                                }
+                                              : {
+                                                  display: "none",
+                                                }
+                                          }
+                                        >
+                                          <Typography
+                                            style={{
+                                              paddingRight: "3px",
+                                              // fontSize: "7px",
+                                              color: "black",
+                                            }}
+                                          >
+                                            Move out:
+                                          </Typography>
+                                          {entry.moveout_date || "N/A"}
+                                        </div>
+                                      </Col>
+                                    </Row>
+                                  </Box>
+                                ))}
+                              </Grid>
+                            ))}
+                          </Grid>
+                        ) : (
+                          <h3>No data available....</h3>
+                        )}
+                      </Col>
+                    </Row>
+                    <Row></Row>
+                  </TabPanel>
                 </TabContext>
                 {/* <h3 className="mb-0">Summary</h3> */}
               </Col>
@@ -4283,6 +4318,285 @@ const PropDetails = () => {
         <br />
         <br />
       </Container>
+      <Dialog open={openEdite} onClose={closeModal}>
+        <DialogTitle>Edit Unit Details</DialogTitle>
+        <Row>
+          <Col md={11}>
+            <Card style={{ position: "relative" }}>
+              <CloseIcon
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  setOpenEdite(!openEdite);
+                }}
+              />
+              <CardBody>
+                {console.log(addUnitFormik.values, "yash")}
+                <form onSubmit={addUnitFormik.handleSubmit}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <div>
+                      <h5>Unit Number</h5>
+                    </div>
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="unit_number"
+                      name="unit_number"
+                      value={addUnitFormik.values.unit_number}
+                      onChange={addUnitFormik.handleChange}
+                      onBlur={addUnitFormik.handleBlur}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <div>
+                      <h5>Street Address</h5>
+                    </div>
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="address1"
+                      name="address1"
+                      value={addUnitFormik.values.address1}
+                      onChange={addUnitFormik.handleChange}
+                      onBlur={addUnitFormik.handleBlur}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <div>
+                      <div>
+                        <h5>City</h5>
+                      </div>
+                      <TextField
+                        type="text"
+                        size="small"
+                        id="city"
+                        name="city"
+                        value={addUnitFormik.values.city}
+                        onChange={addUnitFormik.handleChange}
+                        onBlur={addUnitFormik.handleBlur}
+                      />
+                    </div>
+                    <div style={{ marginLeft: "10px" }}>
+                      <div>
+                        <h5>State</h5>
+                      </div>
+                      <TextField
+                        type="text"
+                        size="small"
+                        id="state"
+                        name="state"
+                        value={addUnitFormik.values.state}
+                        onChange={addUnitFormik.handleChange}
+                        onBlur={addUnitFormik.handleBlur}
+                      />
+                    </div>
+                    <div style={{ marginLeft: "10px" }}>
+                      <div>
+                        <h5>Zip</h5>
+                      </div>
+                      <TextField
+                        type="text"
+                        size="small"
+                        id="zip"
+                        name="zip"
+                        value={addUnitFormik.values.zip}
+                        onChange={addUnitFormik.handleChange}
+                        onBlur={addUnitFormik.handleBlur}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <div style={{ marginTop: "10px" }}>
+                      <h5>Country</h5>
+                    </div>
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="country"
+                      name="country"
+                      value={addUnitFormik.values.country}
+                      onChange={addUnitFormik.handleChange}
+                      onBlur={addUnitFormik.handleBlur}
+                    />
+                    <Col lg="5">
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                        }}
+                      >
+                        <FormGroup
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-unitadd"
+                          >
+                            Photo
+                          </label>
+                          <span
+                            onClick={togglePhotoresDialog}
+                            style={{
+                              cursor: "pointer",
+                              fontSize: "14px",
+                              fontFamily: "monospace",
+                              color: "blue",
+                            }}
+                          >
+                            {" "}
+                            <br />
+                            <input
+                              type="file"
+                              className="form-control-file d-none"
+                              accept="image/*"
+                              multiple
+                              id={`unit_img`}
+                              name={`unit_img`}
+                              onChange={(e) => {
+                                fileData(e);
+                                fileData(e);
+                              }}
+                            />
+                            <label htmlFor={`unit_img`}>
+                              <b
+                                style={{
+                                  fontSize: "20px",
+                                }}
+                              >
+                                +
+                              </b>{" "}
+                              Add
+                            </label>
+                            {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
+                          </span>
+                        </FormGroup>
+                        <FormGroup
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            paddingLeft: "10px",
+                          }}
+                        >
+                          {console.log(unitImage, "yashuj")}
+                          <div className="d-flex">
+                            {unitImage &&
+                              unitImage.length > 0 &&
+                              unitImage.map((unitImg, index) => (
+                                <div
+                                  key={index} // Use a unique identifier, such as index or image URL
+                                  style={{
+                                    position: "relative",
+                                    width: "100px",
+                                    height: "100px",
+                                    margin: "10px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                  }}
+                                >
+                                  <img
+                                    src={unitImg}
+                                    alt=""
+                                    style={{
+                                      width: "100px",
+                                      height: "100px",
+                                      maxHeight: "100%",
+                                      maxWidth: "100%",
+                                      borderRadius: "10px",
+                                    }}
+                                    onClick={() => {
+                                      setSelectedImage(unitImg);
+                                      setOpen(true);
+                                    }}
+                                  />
+                                  <ClearIcon
+                                    style={{
+                                      cursor: "pointer",
+                                      alignSelf: "flex-start",
+                                      position: "absolute",
+                                      top: "-12px",
+                                      right: "-12px",
+                                    }}
+                                    onClick={() =>
+                                      clearSelectedPhoto(
+                                        index,
+                                        "propertyres_image"
+                                      )
+                                    }
+                                  />
+                                </div>
+                              ))}
+                            <OpenImageDialog
+                              open={open}
+                              setOpen={setOpen}
+                              selectedImage={selectedImage}
+                            />
+                          </div>
+                        </FormGroup>
+                      </div>
+                    </Col>
+                  </div>
+
+                  <div style={{ marginTop: "10px" }}>
+                    <Button
+                      color="success"
+                      type="submit"
+                      onClick={() => {
+                        handleUnitDetailsEdit(
+                          clickedObject?._id,
+                          clickedObject?.rentalId
+                        );
+                        // setIsEdit(false);
+                        setOpenEdite(!openEdite);
+                        setUnitImageLoader(!unitImageLoader);
+                      }}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setOpenEdite(!openEdite);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </Dialog>
+      {console.log(clickedObject, "yashuj")}
     </>
   );
 };
