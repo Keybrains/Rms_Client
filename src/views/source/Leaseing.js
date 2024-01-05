@@ -1256,12 +1256,12 @@ const Leaseing = () => {
     },
   });
 
-  const formatDateForInput = (date) => {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    entrySchema.values.exp_date = `${month}/${year}`;
-    return `${month}/${year}`;
-  };
+  // const formatDateForInput = (date) => {
+  //   const year = date.getFullYear();
+  //   const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  //   entrySchema.values.exp_date = `${month}/${year}`;
+  //   return `${month}/${year}`;
+  // };
 
   // const applicantData = state && state.applicantData;
 
