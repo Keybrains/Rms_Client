@@ -1713,8 +1713,8 @@ const Leaseing = () => {
             const transaction_id = res2.data.data.substring(
               res2.data.data.indexOf("TransactionId:") + "TransactionId:".length
             );
-            putObject.entries.subscription_id = transaction_id;
-            console.log(transaction_id, "yashu");
+            putObject.entries[0].subscription_id = transaction_id;
+            console.log(transaction_id, putObject, "yashu");
             if (res2.status === 200) {
               const res = await axios.put(
                 `${baseUrl}/tenant/tenant/${tenantId}`,
@@ -1887,12 +1887,12 @@ const Leaseing = () => {
                 paymentDetails
               );
 
-              console.log(res2.data, "yashu");
               const transaction_id = res2.data.data.substring(
                 res2.data.data.indexOf("TransactionId:") +
                   "TransactionId:".length
               );
-              tenantObject.entries.subscription_id = transaction_id;
+              tenantObject.entries[0].subscription_id = transaction_id;
+              console.log(transaction_id, tenantObject, "yashu");
 
               if (res2.status === 200) {
                 const transaction_id = res2.data.substring(

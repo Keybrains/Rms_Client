@@ -103,13 +103,6 @@ const PropDetails = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [unitImageLoader, setUnitImageLoader] = useState(false);
   const fileData = (e, type) => {
-    // setUnitImageLoader(true);
-    // Use the correct state-setting function for setSelectedFiles
-    setSelectedFiles((prevSelectedFiles) => [
-      ...prevSelectedFiles,
-      ...e.target.files,
-    ]);
-
     const newFiles = [
       ...unitImage,
       ...Array.from(e.target.files).map((file) => URL.createObjectURL(file)),
@@ -123,9 +116,6 @@ const PropDetails = () => {
   const clearSelectedPhoto = (index, name) => {
     if (name === "propertyres_image") {
       const filteredImage = unitImage.filter((item, i) => i !== index);
-
-      const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
-      setSelectedFiles(filteredImage2);
       setUnitImage(filteredImage);
     }
   };
@@ -379,14 +369,12 @@ const PropDetails = () => {
             : propertyImage.length > 0
             ? propertyImage
             : [];
-        console.log(firstNonEmptyImage, "yashujs");
         setUnitImage(firstNonEmptyImage);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-  console.log(unitImage, "yash");
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -397,122 +385,169 @@ const PropDetails = () => {
   }
 
   const handleUnitDetailsEdit = async (id, rentalId) => {
-    if (selectedFiles) {
-      const imageData = new FormData();
-      for (let index = 0; index < selectedFiles.length; index++) {
-        const element = selectedFiles[index];
-        imageData.append(`files`, element);
-      }
+    // if (selectedFiles) {
+    //   const imageData = new FormData();
+    //   for (let index = 0; index < selectedFiles.length; index++) {
+    //     const element = selectedFiles[index];
+    //     imageData.append(`files`, element);
+    //   }
 
-      const url = `${baseUrl}/images/upload`;
-      var image;
-      try {
-        const result = await axios.post(url, imageData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        console.log(result, "imgs");
+    //   const url = `${baseUrl}/images/upload`;
+    //   var image;
+    //   try {
+    //     const result = await axios.post(url, imageData, {
+    //       headers: {
+    //         "Content-Type": "multipart/form-data",
+    //       },
+    //     });
+    //     console.log(result, "imgs");
 
-        image = {
-          prop_image: result.data.files.map((data, index) => {
-            return data.url;
-          }),
-        };
-        if (result.status === 200) {
-          if (propType === "Residential") {
-            const updatedValues = {
-              rental_unitsAdress: addUnitFormik.values.address1,
-              rental_units: addUnitFormik.values.unit_number,
-              rental_city: addUnitFormik.values.city,
-              rental_state: addUnitFormik.values.state,
-              rental_postcode: addUnitFormik.values.zip,
-              rental_country: addUnitFormik.values.country,
-              propertyres_image: [...image.prop_image],
-            };
-            await axios
-              .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-              .then((response) => {
-                console.log(response.data, "updated data");
-                getUnitProperty(id);
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-            console.log(clickedObject, "clickedObject after update");
-          } else {
-            const updatedValues = {
-              rental_unitsAdress: addUnitFormik.values.address1,
-              rental_units: addUnitFormik.values.unit_number,
-              rental_city: addUnitFormik.values.city,
-              rental_state: addUnitFormik.values.state,
-              rental_postcode: addUnitFormik.values.zip,
-              rental_country: addUnitFormik.values.country,
-              property_image: [...image.prop_image],
-            };
-            await axios
-              .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-              .then((response) => {
-                console.log(response.data, "updated data");
-                getUnitProperty(id);
+    //     image = {
+    //       prop_image: result.data.files.map((data, index) => {
+    //         return data.url;
+    //       }),
+    //     };
+    //     if (result.status === 200) {
+    //       if (propType === "Residential") {
+    //         const updatedValues = {
+    //           rental_unitsAdress: addUnitFormik.values.address1,
+    //           rental_units: addUnitFormik.values.unit_number,
+    //           rental_city: addUnitFormik.values.city,
+    //           rental_state: addUnitFormik.values.state,
+    //           rental_postcode: addUnitFormik.values.zip,
+    //           rental_country: addUnitFormik.values.country,
+    //           propertyres_image: [...image.prop_image],
+    //         };
+    //         await axios
+    //           .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+    //           .then((response) => {
+    //             console.log(response.data, "updated data");
+    //             getUnitProperty(id);
+    //           })
+    //           .catch((err) => {
+    //             console.log(err);
+    //           });
+    //         console.log(clickedObject, "clickedObject after update");
+    //       } else {
+    //         const updatedValues = {
+    //           rental_unitsAdress: addUnitFormik.values.address1,
+    //           rental_units: addUnitFormik.values.unit_number,
+    //           rental_city: addUnitFormik.values.city,
+    //           rental_state: addUnitFormik.values.state,
+    //           rental_postcode: addUnitFormik.values.zip,
+    //           rental_country: addUnitFormik.values.country,
+    //           property_image: [...image.prop_image],
+    //         };
+    //         await axios
+    //           .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+    //           .then((response) => {
+    //             console.log(response.data, "updated data");
+    //             getUnitProperty(id);
 
-                // setAddUnitDialogOpen(false);
-                // setAddUnitDialogOpen(false);
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-            console.log(clickedObject, "clickedObject after update");
+    //             // setAddUnitDialogOpen(false);
+    //             // setAddUnitDialogOpen(false);
+    //           })
+    //           .catch((err) => {
+    //             console.log(err);
+    //           });
+    //         console.log(clickedObject, "clickedObject after update");
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // } else {
+    //   if (propType === "Residential") {
+    //     const updatedValues = {
+    //       rental_unitsAdress: addUnitFormik.values.address1,
+    //       rental_units: addUnitFormik.values.unit_number,
+    //       rental_city: addUnitFormik.values.city,
+    //       rental_state: addUnitFormik.values.state,
+    //       rental_postcode: addUnitFormik.values.zip,
+    //       rental_country: addUnitFormik.values.country,
+    //       propertyres_image: unitImage,
+    //     };
+    //     await axios
+    //       .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+    //       .then((response) => {
+    //         console.log(response.data, "updated data");
+    //         getUnitProperty(id);
+    //       })
+    //       .catch((err) => {
+    //         console.log(err);
+    //       });
+    //     console.log(clickedObject, "clickedObject after update");
+    //   } else {
+    //     const updatedValues = {
+    //       rental_unitsAdress: addUnitFormik.values.address1,
+    //       rental_units: addUnitFormik.values.unit_number,
+    //       rental_city: addUnitFormik.values.city,
+    //       rental_state: addUnitFormik.values.state,
+    //       rental_postcode: addUnitFormik.values.zip,
+    //       rental_country: addUnitFormik.values.country,
+    //       property_image: unitImage,
+    //     };
+    //     await axios
+    //       .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+    //       .then((response) => {
+    //         console.log(response.data.data, "updated data");
+    //         getUnitProperty(id);
+
+    //         // setAddUnitDialogOpen(false);
+    //         // setAddUnitDialogOpen(false);
+    //       })
+    //       .catch((err) => {
+    //         console.log(err);
+    //       });
+    //     console.log(clickedObject, "clickedObject after update");
+    //   }
+    // }
+    // Assuming unitImage is your array containing blob links
+    const convertBlobToOriginalLinks = async (unitImage) => {
+      const originalLinks = [];
+
+      for (const link of unitImage) {
+        if (link.startsWith("blob:")) {
+          try {
+            const response = await fetch(`${baseUrl}/images/upload`, {
+              method: "POST", // or 'GET', 'PUT', etc. depending on your API
+              body: JSON.stringify({ blobLink: link }),
+              headers: {
+                "Content-Type": "application/json",
+                // Add any necessary headers (e.g., authorization token)
+              },
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              // Assuming your API returns the original link in the 'originalLink' property
+              originalLinks.push(data.originalLink);
+            } else {
+              console.error(`Failed to convert blob link: ${link}`);
+              originalLinks.push(link); // Pushing original blob link if conversion fails
+            }
+          } catch (error) {
+            console.error("Error converting blob link:", error);
+            originalLinks.push(link); // Pushing original blob link if an error occurs
           }
+        } else {
+          originalLinks.push(link); // If it's not a blob link, push the original link directly
         }
-      } catch (error) {
-        console.error(error);
       }
-    } else {
-      if (propType === "Residential") {
-        const updatedValues = {
-          rental_unitsAdress: addUnitFormik.values.address1,
-          rental_units: addUnitFormik.values.unit_number,
-          rental_city: addUnitFormik.values.city,
-          rental_state: addUnitFormik.values.state,
-          rental_postcode: addUnitFormik.values.zip,
-          rental_country: addUnitFormik.values.country,
-          propertyres_image: unitImage,
-        };
-        await axios
-          .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-          .then((response) => {
-            console.log(response.data, "updated data");
-            getUnitProperty(id);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        console.log(clickedObject, "clickedObject after update");
-      } else {
-        const updatedValues = {
-          rental_unitsAdress: addUnitFormik.values.address1,
-          rental_units: addUnitFormik.values.unit_number,
-          rental_city: addUnitFormik.values.city,
-          rental_state: addUnitFormik.values.state,
-          rental_postcode: addUnitFormik.values.zip,
-          rental_country: addUnitFormik.values.country,
-          property_image: unitImage,
-        };
-        await axios
-          .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-          .then((response) => {
-            console.log(response.data.data, "updated data");
-            getUnitProperty(id);
 
-            // setAddUnitDialogOpen(false);
-            // setAddUnitDialogOpen(false);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        console.log(clickedObject, "clickedObject after update");
-      }
+      return originalLinks;
+    };
+
+    // Usage:
+    if (unitImage.length > 0) {
+      convertBlobToOriginalLinks(unitImage)
+        .then((originalLinks) => {
+          console.log(originalLinks, "Converted original links");
+          // Use the 'originalLinks' array as needed in your application
+        })
+        .catch((error) => {
+          console.error("Error converting blob links:", error);
+        });
     }
   };
   const [tasks, setTasks] = useState([]);
@@ -1045,7 +1080,6 @@ const PropDetails = () => {
     setPropId(unit._id);
     getUnitProperty(unit._id);
     setClickedObject(unit);
-    console.log(unit, "yashu");
     addUnitFormik.setValues({
       unit_number: unit?.rental_units,
       address1: unit?.rental_unitsAdress,
@@ -4335,7 +4369,6 @@ const PropDetails = () => {
                 }}
               />
               <CardBody>
-                {console.log(addUnitFormik.values, "yash")}
                 <form onSubmit={addUnitFormik.handleSubmit}>
                   <div
                     style={{
@@ -4507,7 +4540,6 @@ const PropDetails = () => {
                             paddingLeft: "10px",
                           }}
                         >
-                          {console.log(unitImage, "yashuj")}
                           <div className="d-flex">
                             {unitImage &&
                               unitImage.length > 0 &&
@@ -4576,8 +4608,8 @@ const PropDetails = () => {
                           clickedObject?.rentalId
                         );
                         // setIsEdit(false);
-                        setOpenEdite(!openEdite);
-                        setUnitImageLoader(!unitImageLoader);
+                        // setOpenEdite(!openEdite);
+                        // setUnitImageLoader(!unitImageLoader);
                       }}
                     >
                       Save
@@ -4596,7 +4628,6 @@ const PropDetails = () => {
           </Col>
         </Row>
       </Dialog>
-      {console.log(clickedObject, "yashuj")}
     </>
   );
 };
