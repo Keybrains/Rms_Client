@@ -1732,6 +1732,7 @@ const Leaseing = () => {
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
+      address2: entrySchema.values.rental_units,
     };
 
     try {
@@ -1931,6 +1932,10 @@ const Leaseing = () => {
                 paymentDetails
               );
               if (res2.status === 200) {
+                const transaction_id = res2.data.substring(
+                  res2.data.indexOf("TransactionId:") + "TransactionId:".length
+                );
+                tenantObject.entries.subscription_id = transaction_id;
                 const res = await axios.post(
                   `${baseUrl}/tenant/tenant`,
                   tenantObject
