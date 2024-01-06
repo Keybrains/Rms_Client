@@ -140,8 +140,8 @@ const Leaseing = () => {
     "Yearly",
   ];
 
-  const [card_number, setCard_number] = useState(null);
-  const [exp_date, setExp_date] = useState(null);
+  const [CCVNU, setCCVNU] = useState(null);
+  const [CCVEX, setCCVEX] = useState(null);
 
   const selectPaymentMethod = ["Manually", "AutoPayment"];
   const handleSearch = (e) => {
@@ -1126,8 +1126,8 @@ const Leaseing = () => {
       cash_flow: "",
       notes: "",
       paymentMethod: "",
-      exp_date: "",
-      card_number: "",
+      ccvEx: "",
+      ccvNu: "",
     },
 
     validationSchema: yup.object({
@@ -1139,11 +1139,8 @@ const Leaseing = () => {
       paymentMethod: yup.string().required("Required"),
       ...(selectPaymentMethodDropdawn === "AutoPayment"
         ? {
-            exp_date: yup.string().required("Required"),
-            card_number: yup
-              .string()
-              .matches(/^\d{16}$/, "Card number must be a 16-digit number")
-              .required("Required"),
+            ccvEx: yup.string().required("Required"),
+            ccvNu: yup.string().required("Required"),
           }
         : null),
       ...(unitData[0]?.rental_units
@@ -1256,162 +1253,149 @@ const Leaseing = () => {
     },
   });
 
-  // const formatDateForInput = (date) => {
-  //   const year = date.getFullYear();
-  //   const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  //   entrySchema.values.exp_date = `${month}/${year}`;
-  //   return `${month}/${year}`;
-  // };
+  const formatDateForInput = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    entrySchema.values.ccvEx = `${month}/${year}`;
+    return `${month}/${year}`;
+  };
 
-  // const formatDateForInput = (date) => {
-  //   if (!(date instanceof Date)) {
-  //     console.error("Invalid date object:", date);
-  //     return ""; // or handle the error in an appropriate way
-  //   }
-  
-  //   const year = date.getFullYear();
-  //   const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  //   entrySchema.values.exp_date = `${month}/${year}`;
-  //   return `${month}/${year}`;
-  // };
+  const applicantData = state && state.applicantData;
 
+  useEffect(() => {
+    const setData = async () => {
+      if (state && state.applicantData) {
+        try {
+          const units = await fetchUnitsByProperty(applicantData.rental_adress);
+          console.log(units, "unitssssssssssssss"); // Check the received units in the console
 
-  // const applicantData = state && state.applicantData;
+          setUnitData(units);
+        } catch (error) {
+          console.log(error, "error");
+        }
 
-  // useEffect(() => {
-  //   const setData = async () => {
-  //     if (state && state.applicantData) {
-  //       try {
-  //         const units = await fetchUnitsByProperty(applicantData.rental_adress);
-  //         console.log(units, "unitssssssssssssss"); // Check the received units in the console
+        setSelectedTenantData({
+          firstName: applicantData.tenant_firstName || "",
+          lastName: applicantData.tenant_lastName || "",
+          mobileNumber: applicantData.tenant_mobileNumber || "",
+        });
 
-  //         setUnitData(units);
-  //       } catch (error) {
-  //         console.log(error, "error");
-  //       }
+        console.log(applicantData, "applicantData from 1526");
+        setPropertyId(applicantData.property_id);
+        setSelectPaymentMethodDropdawn(applicantData.paymentMethod || "Select");
 
-  //       setSelectedTenantData({
-  //         firstName: applicantData.tenant_firstName || "",
-  //         lastName: applicantData.tenant_lastName || "",
-  //         mobileNumber: applicantData.tenant_mobileNumber || "",
-  //       });
+        setSelectedPropertyType(applicantData.rental_adress || "Select");
+        setselectedLeaseType(applicantData.lease_type || "Select");
+        setselectedRentCycle(applicantData.rent_cycle || "Select");
+        setselectedAccount(applicantData.account || "Select");
+        setselectedAccount(applicantData.account_name || "Select");
+        setselectedOneTimeAccount(applicantData.onetime_account || "Select");
+        setselectedRecuringAccount(applicantData.recuring_account);
+        setselectedFrequency(applicantData.recuringfrequency || "Select");
+        setselectedAccountType(applicantData.account_type || "Select");
+        setselectedAccountLevel(applicantData.parent_account || "Select");
+        setselectedFundType(applicantData.fund_type || "Select");
+        setSelectedAgent(applicantData.leasing_agent || "Select");
+        setSelectedUnit(applicantData.rental_units || "");
 
-  //       console.log(applicantData, "applicantData from 1526");
-  //       setPropertyId(applicantData.property_id);
-  //       setSelectPaymentMethodDropdawn(applicantData.paymentMethod || "Select");
+        entrySchema.setValues({
+          entryIndex: applicantData.entryIndex,
+          rental_adress: applicantData.rental_adress,
+          rental_units: applicantData.rental_units,
+          lease_type: applicantData.lease_type,
+          start_date: applicantData.start_date,
+          end_date: applicantData.end_date,
+          leasing_agent: applicantData.leasing_agent,
+          rent_cycle: applicantData.rent_cycle,
+          amount: applicantData.amount,
+          account: applicantData.account,
+          nextDue_date: applicantData.nextDue_date,
+          memo: applicantData.memo || "Rent",
+          upload_file: applicantData.upload_file,
+          isrenton: applicantData.isrenton,
+          rent_paid: applicantData.rent_paid,
+          propertyOnRent: applicantData.propertyOnRent,
+          paymentMethod: applicantData.paymentMethod,
+          card_number: applicantData.card_number,
+          exp_date: applicantData.exp_date,
 
-  //       setSelectedPropertyType(applicantData.rental_adress || "Select");
-  //       setselectedLeaseType(applicantData.lease_type || "Select");
-  //       setselectedRentCycle(applicantData.rent_cycle || "Select");
-  //       setselectedAccount(applicantData.account || "Select");
-  //       setselectedAccount(applicantData.account_name || "Select");
-  //       setselectedOneTimeAccount(applicantData.onetime_account || "Select");
-  //       setselectedRecuringAccount(applicantData.recuring_account);
-  //       setselectedFrequency(applicantData.recuringfrequency || "Select");
-  //       setselectedAccountType(applicantData.account_type || "Select");
-  //       setselectedAccountLevel(applicantData.parent_account || "Select");
-  //       setselectedFundType(applicantData.fund_type || "Select");
-  //       setSelectedAgent(applicantData.leasing_agent || "Select");
-  //       setSelectedUnit(applicantData.rental_units || "");
+          //security deposite
+          Due_date: applicantData.Due_date,
+          Security_amount: applicantData.Security_amount,
 
-  //       entrySchema.setValues({
-  //         entryIndex: applicantData.entryIndex,
-  //         rental_adress: applicantData.rental_adress,
-  //         rental_units: applicantData.rental_units,
-  //         lease_type: applicantData.lease_type,
-  //         start_date: applicantData.start_date,
-  //         end_date: applicantData.end_date,
-  //         leasing_agent: applicantData.leasing_agent,
-  //         rent_cycle: applicantData.rent_cycle,
-  //         amount: applicantData.amount,
-  //         account: applicantData.account,
-  //         nextDue_date: applicantData.nextDue_date,
-  //         memo: applicantData.memo || "Rent",
-  //         upload_file: applicantData.upload_file,
-  //         isrenton: applicantData.isrenton,
-  //         rent_paid: applicantData.rent_paid,
-  //         propertyOnRent: applicantData.propertyOnRent,
-  //         paymentMethod: applicantData.paymentMethod,
-  //         card_number: applicantData.card_number,
-  //         exp_date: applicantData.exp_date,
+          // add cosigner
+          cosigner_firstName: applicantData.cosigner_firstName,
+          cosigner_lastName: applicantData.cosigner_lastName,
+          cosigner_mobileNumber: applicantData.cosigner_mobileNumber,
+          cosigner_workNumber: applicantData.cosigner_workNumber,
+          cosigner_homeNumber: applicantData.cosigner_homeNumber,
+          cosigner_faxPhoneNumber: applicantData.cosigner_faxPhoneNumber,
+          cosigner_email: applicantData.cosigner_email,
+          cosigner_alternateemail: applicantData.cosigner_alternateemail,
+          cosigner_streetAdress: applicantData.cosigner_streetAdress,
+          cosigner_city: applicantData.cosigner_city,
+          cosigner_state: applicantData.cosigner_state,
+          cosigner_zip: applicantData.cosigner_zip,
+          cosigner_country: applicantData.cosigner_country,
+          cosigner_postalcode: applicantData.cosigner_postalcode,
 
-  //         //security deposite
-  //         Due_date: applicantData.Due_date,
-  //         Security_amount: applicantData.Security_amount,
+          // add account
+          account_name: applicantData.account_name,
+          account_type: applicantData.account_type,
 
-  //         // add cosigner
-  //         cosigner_firstName: applicantData.cosigner_firstName,
-  //         cosigner_lastName: applicantData.cosigner_lastName,
-  //         cosigner_mobileNumber: applicantData.cosigner_mobileNumber,
-  //         cosigner_workNumber: applicantData.cosigner_workNumber,
-  //         cosigner_homeNumber: applicantData.cosigner_homeNumber,
-  //         cosigner_faxPhoneNumber: applicantData.cosigner_faxPhoneNumber,
-  //         cosigner_email: applicantData.cosigner_email,
-  //         cosigner_alternateemail: applicantData.cosigner_alternateemail,
-  //         cosigner_streetAdress: applicantData.cosigner_streetAdress,
-  //         cosigner_city: applicantData.cosigner_city,
-  //         cosigner_state: applicantData.cosigner_state,
-  //         cosigner_zip: applicantData.cosigner_zip,
-  //         cosigner_country: applicantData.cosigner_country,
-  //         cosigner_postalcode: applicantData.cosigner_postalcode,
+          //account level (sub account)
+          parent_account: applicantData.parent_account,
+          account_number: applicantData.account_number,
+          fund_type: applicantData.fund_type,
+          cash_flow: applicantData.cash_flow,
+          notes: applicantData.notes,
+          unit_id: applicantData.unit_id,
+          property_id: applicantData.property_id,
+          // rental_units: applicantData.rental_units
+        });
 
-  //         // add account
-  //         account_name: applicantData.account_name,
-  //         account_type: applicantData.account_type,
+        tenantsSchema.setValues({
+          tenant_id: applicantData.tenant_id,
 
-  //         //account level (sub account)
-  //         parent_account: applicantData.parent_account,
-  //         account_number: applicantData.account_number,
-  //         fund_type: applicantData.fund_type,
-  //         cash_flow: applicantData.cash_flow,
-  //         notes: applicantData.notes,
-  //         unit_id: applicantData.unit_id,
-  //         property_id: applicantData.property_id,
-  //         // rental_units: applicantData.rental_units
-  //       });
+          //   Add tenants
+          tenant_firstName: applicantData.tenant_firstName,
+          tenant_lastName: applicantData.tenant_lastName,
+          tenant_unitNumber: applicantData.tenant_unitNumber,
+          // tenant_phoneNumber: { type: Number },
+          tenant_mobileNumber: applicantData.tenant_mobileNumber,
+          tenant_workNumber: applicantData.tenant_workNumber,
+          tenant_homeNumber: applicantData.tenant_homeNumber,
+          tenant_faxPhoneNumber: applicantData.tenant_faxPhoneNumber,
+          tenant_email: applicantData.tenant_email,
+          tenant_password: applicantData.tenant_password,
+          alternate_email: applicantData.alternate_email,
+          tenant_residentStatus: applicantData.tenant_residentStatus,
 
-  //       tenantsSchema.setValues({
-  //         tenant_id: applicantData.tenant_id,
+          // personal information
+          birth_date: applicantData.birth_date,
+          textpayer_id: applicantData.textpayer_id,
+          comments: applicantData.comments,
 
-  //         //   Add tenants
-  //         tenant_firstName: applicantData.tenant_firstName,
-  //         tenant_lastName: applicantData.tenant_lastName,
-  //         tenant_unitNumber: applicantData.tenant_unitNumber,
-  //         // tenant_phoneNumber: { type: Number },
-  //         tenant_mobileNumber: applicantData.tenant_mobileNumber,
-  //         tenant_workNumber: applicantData.tenant_workNumber,
-  //         tenant_homeNumber: applicantData.tenant_homeNumber,
-  //         tenant_faxPhoneNumber: applicantData.tenant_faxPhoneNumber,
-  //         tenant_email: applicantData.tenant_email,
-  //         tenant_password: applicantData.tenant_password,
-  //         alternate_email: applicantData.alternate_email,
-  //         tenant_residentStatus: applicantData.tenant_residentStatus,
+          //Emergency contact
 
-  //         // personal information
-  //         birth_date: applicantData.birth_date,
-  //         textpayer_id: applicantData.textpayer_id,
-  //         comments: applicantData.comments,
-
-  //         //Emergency contact
-
-  //         contact_name: applicantData.contact_name,
-  //         relationship_tenants: applicantData.relationship_tenants,
-  //         email: applicantData.email,
-  //         emergency_PhoneNumber: applicantData.emergency_PhoneNumber,
-  //       });
-  //       setOwnerData({
-  //         rentalOwner_firstName: applicantData.rentalOwner_firstName,
-  //         rentalOwner_lastName: applicantData.rentalOwner_lastName,
-  //         rentalOwner_primaryemail: applicantData.rentalOwner_email,
-  //         rentalOwner_phoneNumber: applicantData.rentalOwner_phoneNumber,
-  //         rentalOwner_businessNumber: applicantData.rentalOwner_businessNumber,
-  //         rentalOwner_homeNumber: applicantData.rentalOwner_homeNumber,
-  //         rentalOwner_companyName: applicantData.rentalOwner_companyName,
-  //       });
-  //     }
-  //   };
-  //   setData();
-  // }, []);
+          contact_name: applicantData.contact_name,
+          relationship_tenants: applicantData.relationship_tenants,
+          email: applicantData.email,
+          emergency_PhoneNumber: applicantData.emergency_PhoneNumber,
+        });
+        setOwnerData({
+          rentalOwner_firstName: applicantData.rentalOwner_firstName,
+          rentalOwner_lastName: applicantData.rentalOwner_lastName,
+          rentalOwner_primaryemail: applicantData.rentalOwner_email,
+          rentalOwner_phoneNumber: applicantData.rentalOwner_phoneNumber,
+          rentalOwner_businessNumber: applicantData.rentalOwner_businessNumber,
+          rentalOwner_homeNumber: applicantData.rentalOwner_homeNumber,
+          rentalOwner_companyName: applicantData.rentalOwner_companyName,
+        });
+      }
+    };
+    setData();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1420,7 +1404,7 @@ const Leaseing = () => {
         try {
           const response = await axios.get(url);
           const laesingdata = response.data.data;
-
+          console.log(laesingdata, "laesingdata");
           setTenantData(laesingdata);
           setSelectedTenantData({
             firstName: laesingdata.tenant_firstName || "",
@@ -1443,38 +1427,6 @@ const Leaseing = () => {
             console.log(error, "error");
           }
 
-          // handleAddTenant();
-
-          // const formattedStartDate = matchedLease.start_date
-          //   ? new Date(matchedLease.start_date).toISOString().split("T")[0]
-          //   : "";
-          // const formattedEndDate = matchedLease.end_date
-          //   ? new Date(matchedLease.end_date).toISOString().split("T")[0]
-          //   : "";
-          // const formattedNextDueDate = matchedLease.nextDue_date
-          //   ? new Date(matchedLease.nextDue_date).toISOString().split("T")[0]
-          //   : "";
-
-          // const formattedBirthDate = laesingdata.birth_date
-          //   ? new Date(laesingdata.birth_date).toISOString().split("T")[0]
-          //   : "";
-
-          // const formattedDueDate = matchedLease.Due_date
-          //   ? new Date(matchedLease.Due_date).toISOString().split("T")[0]
-          //   : "";
-
-          // const formattedRecuringNextDueDate = matchedLease.recuringnextDue_date
-          //   ? new Date(matchedLease.recuringnextDue_date)
-          //     .toISOString()
-          //     .split("T")[0]
-          //   : "";
-
-          // const formattedOnetimeDueDate = matchedLease.onetime_Due_date
-          //   ? new Date(matchedLease.onetime_Due_date)
-          //     .toISOString()
-          //     .split("T")[0]
-          //   : "";
-
           setSelectedPropertyType(matchedLease.rental_adress || "Select");
           setselectedLeaseType(matchedLease.lease_type || "Select");
           setselectedRentCycle(matchedLease.rent_cycle || "Select");
@@ -1491,12 +1443,6 @@ const Leaseing = () => {
           setSelectPaymentMethodDropdawn(
             matchedLease.paymentMethod || "Select"
           );
-          // setSelectedUnit(matchedLease.rental_units || "Select");
-          // console.log(laesingdata, "yashraj")
-          // setFile(arrayOfObjects || "Select");
-          // console.log(matchedLease.upload_file, "upload_fileeee");
-
-          // console.log(data, "data");
           setFile(matchedLease.upload_file);
           entrySchema.setValues({
             entryIndex: matchedLease.entryIndex,
@@ -1515,7 +1461,8 @@ const Leaseing = () => {
             isrenton: matchedLease.isrenton,
             rent_paid: matchedLease.rent_paid,
             propertyOnRent: matchedLease.propertyOnRent,
-            paymentMethod: matchedLease.paymentMethod,
+            ownerDetail: matchedLease.ownerDetail,
+
             //security deposite
             Due_date: matchedLease.Due_date,
             Security_amount: matchedLease.Security_amount,
@@ -1549,7 +1496,7 @@ const Leaseing = () => {
             cash_flow: matchedLease.cash_flow,
             notes: matchedLease.notes,
           });
-          
+
           tenantsSchema.setValues({
             tenant_id: laesingdata.tenant_id,
 
@@ -1579,16 +1526,6 @@ const Leaseing = () => {
             email: laesingdata.email,
             emergency_PhoneNumber: laesingdata.emergency_PhoneNumber,
           });
-          setOwnerData({
-            rentalOwner_firstName: matchedLease.rentalOwner_firstName,
-            rentalOwner_lastName: matchedLease.rentalOwner_lastName,
-            rentalOwner_primaryemail: matchedLease.rentalOwner_email,
-            rentalOwner_phoneNumber: matchedLease.rentalOwner_phoneNumber,
-            rentalOwner_businessNumber: matchedLease.rentalOwner_businessNumber,
-            rentalOwner_homeNumber: matchedLease.rentalOwner_homeNumber,
-            rentalOwner_companyName: matchedLease.rentalOwner_companyName,
-          });
-          // setPropertyId(matchedLease.property_id);
 
           setRecurringData(matchedLease.recurring_charges);
           setOneTimeData(matchedLease.one_time_charges);
@@ -1666,8 +1603,8 @@ const Leaseing = () => {
       entries: [
         {
           paymentMethod: entrySchema.values.paymentMethod,
-          card_number: entrySchema.values.card_number || "",
-          exp_date: entrySchema.values.exp_date || "",
+          card_number: entrySchema.values.ccvNu || "",
+          exp_date: entrySchema.values.ccvEx || "",
           rental_units: entrySchema.values.rental_units,
           entryIndex: entrySchema.values.entryIndex,
           rental_adress: entrySchema.values.rental_adress,
@@ -1739,13 +1676,12 @@ const Leaseing = () => {
       plan_payments: 0,
       plan_amount: entrySchema.values.amount,
       dayFrequency: selectedDayFrequency,
-      ccnumber: card_number || "",
+      ccnumber: CCVNU || "",
       email: tenantsSchema.values.tenant_email,
-      //ccexp: exp_date ? formatDateForInput(exp_date) : "",
-      ccexp: exp_date,
+      ccexp: CCVEX ? formatDateForInput(CCVEX) : "",
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
-      address1: entrySchema.values.rental_adress,
+      address: entrySchema.values.rental_adress,
       address2: entrySchema.values.rental_units,
     };
 
@@ -1774,8 +1710,11 @@ const Leaseing = () => {
               `${baseUrl}/nmipayment/custom-add-subscription`,
               paymentDetails
             );
-            console.log("mansi***********",res2);
-            console.log("vrinda***********",paymentDetails);
+            const transaction_id = res2.data.data.substring(
+              res2.data.data.indexOf("TransactionId:") + "TransactionId:".length
+            );
+            putObject.entries.subscription_id = transaction_id;
+            console.log(transaction_id, "yashu");
             if (res2.status === 200) {
               const res = await axios.put(
                 `${baseUrl}/tenant/tenant/${tenantId}`,
@@ -1947,6 +1886,14 @@ const Leaseing = () => {
                 `${baseUrl}/nmipayment/custom-add-subscription`,
                 paymentDetails
               );
+
+              console.log(res2.data, "yashu");
+              const transaction_id = res2.data.data.substring(
+                res2.data.data.indexOf("TransactionId:") +
+                  "TransactionId:".length
+              );
+              tenantObject.entries.subscription_id = transaction_id;
+
               if (res2.status === 200) {
                 const res = await axios.post(
                   `${baseUrl}/tenant/tenant`,
@@ -2165,7 +2112,7 @@ const Leaseing = () => {
               memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
               isPaid: false,
-              islatefee: false,
+              // tenant_lastName: tenantsSchema.values.tenant_lastName,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
                 " " +
@@ -2394,8 +2341,8 @@ const Leaseing = () => {
       recurring_charges: recurringData,
       one_time_charges: oneTimeData,
       paymentMethod: entrySchema.paymentMethod,
-      card_number: entrySchema.values.card_number,
-      exp_date: entrySchema.values.exp_date,
+      card_number: entrySchema.values.ccvNu,
+      exp_date: entrySchema.values.ccvEx,
     };
     entriesArray.push(entriesObject);
 
@@ -6131,22 +6078,24 @@ const Leaseing = () => {
                                     const numericValue = inputValue.replace(
                                       /\D/g,
                                       ""
-                                    );
+                                    ); // Remove non-numeric characters
                                     const limitValue = numericValue.slice(
                                       0,
                                       16
-                                    );
-                                    setCard_number(limitValue);
-                                    entrySchema.values.card_number = limitValue;
+                                    ); // Limit to 12 digits
+                                    setCCVNU(parseInt(limitValue));
+                                    entrySchema.values.ccvNu =
+                                      parseInt(limitValue);
                                   }}
                                 />
                               </InputGroup>
                               {entrySchema.errors &&
-                              entrySchema.errors?.card_number &&
+                              entrySchema.errors?.ccvNu &&
                               entrySchema.touched &&
-                              entrySchema.touched?.card_number ? (
+                              entrySchema.touched?.ccvNu &&
+                              entrySchema.values.ccvNu === "" ? (
                                 <div style={{ color: "red" }}>
-                                  {entrySchema.errors.card_number}
+                                  {entrySchema.errors.ccvNu}
                                 </div>
                               ) : null}
                             </FormGroup>
@@ -6171,19 +6120,37 @@ const Leaseing = () => {
                                     /\D/g,
                                     ""
                                   );
-                                  setExp_date(inputValue);
-                                  entrySchema.values.exp_date = inputValue;
+                                  if (numericValue.length >= 2) {
+                                    const month = numericValue.substring(0, 2);
+                                    if (numericValue.length > 2) {
+                                      const year = numericValue.substring(2, 6);
+                                      // Convert the formatted string to a Date object
+                                      const formattedDate = new Date(
+                                        `${year}-${month}-01`
+                                      );
+                                      // Set the state with the Date object
+                                      setCCVEX(formattedDate);
+                                      return;
+                                    }
+                                  }
+                                  // If the input is incomplete or invalid, set the state with the raw string
+                                  setCCVEX(inputValue);
+                                  entrySchema.values.ccvEx = inputValue;
                                 }}
-                                value={entrySchema.values.exp_date}
+                                value={
+                                  CCVEX instanceof Date
+                                    ? formatDateForInput(CCVEX)
+                                    : entrySchema.values.exp_date
+                                }
                                 placeholder="MM/YYYY"
                               />
                               {entrySchema.errors &&
-                              entrySchema.errors?.exp_date &&
+                              entrySchema.errors?.ccvEx &&
                               entrySchema.touched &&
-                              entrySchema.touched?.exp_date &&
-                              entrySchema.values.exp_date === "" ? (
+                              entrySchema.touched?.ccvEx &&
+                              entrySchema.values.ccvEx === "" ? (
                                 <div style={{ color: "red" }}>
-                                  {entrySchema.errors.exp_date}
+                                  {entrySchema.errors.ccvEx}
                                 </div>
                               ) : null}
                             </FormGroup>
@@ -6192,6 +6159,31 @@ const Leaseing = () => {
                       </>
                     ) : null}
                   </Col>
+                  {/* <Button
+                  color="primary"
+                 //  href="#rms"
+                  onClick={(e) => e.preventDefault()}
+                  size="sm"
+                  style={{ background: "green" }}
+                >
+                  Save
+
+                </Button> */}
+                  {/* <Button
+                    type="submit"
+                    className="btn btn-primary"
+                    style={{
+                      background: "green",
+                      color: "white",
+                      cursor: "pointer",
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      leaseFormik.handleSubmit();
+                    }}
+                  >
+                    {id ? "Update Lease" : "Add Lease"}
+                  </Button> */}
                   {loader ? (
                     <button
                       type="submit"
