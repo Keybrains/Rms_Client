@@ -2511,6 +2511,7 @@ const RentRollLeaseing = () => {
               memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
               isPaid: false,
+              islatefee: false,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
                 " " +
