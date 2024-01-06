@@ -1713,7 +1713,7 @@ const Leaseing = () => {
             const transaction_id = res2.data.data.substring(
               res2.data.data.indexOf("TransactionId:") + "TransactionId:".length
             );
-            tenantObject.entries.subscription_id = transaction_id;
+            putObject.entries.subscription_id = transaction_id;
             console.log(transaction_id, "yashu");
             if (res2.status === 200) {
               const res = await axios.put(
