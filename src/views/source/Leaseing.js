@@ -1256,12 +1256,25 @@ const Leaseing = () => {
     },
   });
 
-  const formatDateForInput = (date) => {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    entrySchema.values.exp_date = `${month}/${year}`;
-    return `${month}/${year}`;
-  };
+  // const formatDateForInput = (date) => {
+  //   const year = date.getFullYear();
+  //   const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  //   entrySchema.values.exp_date = `${month}/${year}`;
+  //   return `${month}/${year}`;
+  // };
+
+  // const formatDateForInput = (date) => {
+  //   if (!(date instanceof Date)) {
+  //     console.error("Invalid date object:", date);
+  //     return ""; // or handle the error in an appropriate way
+  //   }
+  
+  //   const year = date.getFullYear();
+  //   const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  //   entrySchema.values.exp_date = `${month}/${year}`;
+  //   return `${month}/${year}`;
+  // };
+
 
   // const applicantData = state && state.applicantData;
 
@@ -1728,10 +1741,12 @@ const Leaseing = () => {
       dayFrequency: selectedDayFrequency,
       ccnumber: card_number || "",
       email: tenantsSchema.values.tenant_email,
-      ccexp: exp_date ? formatDateForInput(exp_date) : "",
+      //ccexp: exp_date ? formatDateForInput(exp_date) : "",
+      ccexp: exp_date,
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
-      address: entrySchema.values.rental_adress,
+      address1: entrySchema.values.rental_adress,
+      address2: entrySchema.values.rental_units,
     };
 
     try {
