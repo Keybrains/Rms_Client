@@ -237,15 +237,15 @@ const Login = () => {
 
   return (
     <>
-      <Col lg="5" md="7">
-        <Card
-          className="bg-secondary shadow border-0"
-          onSubmit={loginFormik.handleSubmit}
-        >
-          <CardBody className="px-lg-5 py-lg-5">
-            <div className="text-center text-muted mb-4">
-              <small>Sign in with your credentials</small>
-            </div>
+        <Col lg="5" md="7">
+          <Card
+            className="bg-secondary shadow border-0"
+            onSubmit={loginFormik.handleSubmit}
+          >
+            <CardBody className="px-lg-5 py-lg-5">
+              <div className="text-center text-muted mb-4">
+                <small>Sign in with your credentials</small>
+              </div>
             <Form role="form">
               <FormGroup className="mb-3">
                 <InputGroup className="input-group-alternative">
@@ -329,7 +329,7 @@ const Login = () => {
                   <Col xs="6">
                     <label
                       className=""
-                      href="#rms"
+                      // href="#rms"
                       onClick={ () => navigate(`/auth/forgetpassword`)}
                     >
                       <span className="text-muted mb-4" style={{fontSize:"14px"}}>Forgot password?</span>

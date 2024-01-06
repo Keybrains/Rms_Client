@@ -59,6 +59,7 @@ import TenantFinancial from "views/source/TenantFinancial";
 import ApplicantForm from "views/source/ApplicantForm";
 import Changepassword from "views/source/Changepassword";
 import Forgetmail from "views/source/forgetmail";
+import TrialLogin from "views/source/TrialLogin";
 
 var routes = [
   {
@@ -612,5 +613,10 @@ var routes = [
     component: <ApplicantForm />,
     layout: "/admin",
   },
+  {
+    path:"/trial-login",
+    component: <TrialLogin />,
+    layout: "/trial"
+  }
 ];
 export default routes;

@@ -16,6 +16,7 @@ import Tenant from "layouts/Tenant";
 import Agent from "layouts/Agent";
 import Staff from "layouts/Staff";
 import Vendor from "layouts/Vendor";
+import Trial from "layouts/Trial";
 // import SumProperties from "views/source/SumProperties";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -30,6 +31,7 @@ root.render(
       <Route path="/agent/*" element={<Agent/>} />
       <Route path="/staff/*" element={<Staff/>} />
       <Route path="/vendor/*" element={<Vendor/>} />
+      <Route path="/trial/*" element={<Trial/>} />
       {/* <Route path="/" exact component={PropertyType} /> */}
       <Route path="/AddPropertyType" exact component={AddPropertyType} />
       {/* <Route path="/SumProperties/:id" exact component={SumProperties} /> */}
