@@ -142,6 +142,7 @@ const Leaseing = () => {
 
   const [CCVNU, setCCVNU] = useState(null);
   const [CCVEX, setCCVEX] = useState(null);
+  const [subscriptionId, setSubscriptionId] = useState(null);
 
   const selectPaymentMethod = ["Manually", "AutoPayment"];
   const handleSearch = (e) => {
@@ -360,9 +361,6 @@ const Leaseing = () => {
     oneTimeChargeSchema.values.onetime_account = account;
     // localStorage.setItem("leasetype", leasetype);
   };
-
-  const [rIndex, setRIndex] = useState(0);
-  const [cIndex, setCIndex] = useState(0);
 
   const [selectedRecuringAccount, setselectedRecuringAccount] = useState("");
   const hadleselectedRecuringAccount = (account) => {
@@ -940,6 +938,7 @@ const Leaseing = () => {
       });
     }
   };
+ 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
     fetch(`${baseUrl}/tenant/existing/tenant`)
@@ -958,6 +957,7 @@ const Leaseing = () => {
         console.error("Network error:", error);
       });
   }, []);
+  
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -993,6 +993,8 @@ const Leaseing = () => {
   });
 
   const [overlapLease, setOverlapLease] = useState(null);
+  const [card_number, setcard_number] = useState(null);
+  const [exp_date, setexp_date] = useState(null);
 
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit && selectedTenantData) {
@@ -1125,9 +1127,10 @@ const Leaseing = () => {
       fund_type: "",
       cash_flow: "",
       notes: "",
+      subscription_id:"",
       paymentMethod: "",
-      ccvEx: "",
-      ccvNu: "",
+      exp_date: "",
+      card_number: "",
     },
 
     validationSchema: yup.object({
@@ -1138,10 +1141,13 @@ const Leaseing = () => {
       amount: yup.string().required("Required"),
       paymentMethod: yup.string().required("Required"),
       ...(selectPaymentMethodDropdawn === "AutoPayment"
-        ? {
-            ccvEx: yup.string().required("Required"),
-            ccvNu: yup.string().required("Required"),
-          }
+        ?{
+          exp_date: yup.string().required("Required"),
+          card_number: yup
+            .string()
+            .matches(/^\d{16}$/, "Card number must be a 16-digit number")
+            .required("Required"),
+        }
         : null),
       ...(unitData[0]?.rental_units
         ? {
@@ -1267,7 +1273,6 @@ const Leaseing = () => {
       if (state && state.applicantData) {
         try {
           const units = await fetchUnitsByProperty(applicantData.rental_adress);
-          console.log(units, "unitssssssssssssss"); // Check the received units in the console
 
           setUnitData(units);
         } catch (error) {
@@ -1404,7 +1409,6 @@ const Leaseing = () => {
         try {
           const response = await axios.get(url);
           const laesingdata = response.data.data;
-          console.log(laesingdata, "laesingdata");
           setTenantData(laesingdata);
           setSelectedTenantData({
             firstName: laesingdata.tenant_firstName || "",
@@ -1415,14 +1419,12 @@ const Leaseing = () => {
           const matchedLease = laesingdata.entries.find(
             (entry) => entry.entryIndex === entryIndex
           );
-          console.log(matchedLease, "matchedLease");
           try {
             const units = await fetchUnitsByProperty(
               matchedLease.rental_adress
             );
-            console.log(units, "unitssssssssssssss"); // Check the received units in the console
-
             setUnitData(units);
+            setSubscriptionId(matchedLease.subscription_id)
           } catch (error) {
             console.log(error, "error");
           }
@@ -1465,9 +1467,11 @@ const Leaseing = () => {
 
             //security deposite
             Due_date: matchedLease.Due_date,
+            paymentMethod: matchedLease.paymentMethod,
             Security_amount: matchedLease.Security_amount,
             card_number: matchedLease.card_number,
             exp_date: matchedLease.exp_date,
+            subscription_id: matchedLease.subscription_id,
 
             // add cosigner
             cosigner_firstName: matchedLease.cosigner_firstName,
@@ -1602,9 +1606,10 @@ const Leaseing = () => {
       emergency_PhoneNumber: tenantsSchema.values.emergency_PhoneNumber,
       entries: [
         {
+          subscription_id: entrySchema.values.transaction_id,
           paymentMethod: entrySchema.values.paymentMethod,
-          card_number: entrySchema.values.ccvNu || "",
-          exp_date: entrySchema.values.ccvEx || "",
+          card_number: entrySchema.values.card_number || "",
+          exp_date: entrySchema.values.exp_date || "",
           rental_units: entrySchema.values.rental_units,
           entryIndex: entrySchema.values.entryIndex,
           rental_adress: entrySchema.values.rental_adress,
@@ -1621,7 +1626,6 @@ const Leaseing = () => {
           isrenton: entrySchema.values.isrenton,
           rent_paid: entrySchema.values.rent_paid,
           propertyOnRent: entrySchema.values.propertyOnRent,
-          // rentalOwner_name: "",
           unit_id: entrySchema.values.unit_id,
           //security deposite
           Due_date: entrySchema.values.Due_date,
@@ -1676,9 +1680,9 @@ const Leaseing = () => {
       plan_payments: 0,
       plan_amount: entrySchema.values.amount,
       dayFrequency: selectedDayFrequency,
-      ccnumber: CCVNU || "",
+      ccnumber: card_number || "",
       email: tenantsSchema.values.tenant_email,
-      ccexp: CCVEX ? formatDateForInput(CCVEX) : "",
+      ccexp: exp_date ? formatDateForInput(exp_date) : "",
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
@@ -1703,7 +1707,6 @@ const Leaseing = () => {
           };
 
           const tenantId = filteredData._id;
-          console.log(tenantId, "tenantId");
 
           if (selectPaymentMethodDropdawn === "AutoPayment") {
             const res2 = await axios.post(
@@ -1713,8 +1716,7 @@ const Leaseing = () => {
             const transaction_id = res2.data.data.substring(
               res2.data.data.indexOf("TransactionId:") + "TransactionId:".length
             );
-            putObject.entries[0].subscription_id = transaction_id;
-            console.log(transaction_id, putObject, "yashu");
+            putObject.entries[0].subscription_id = transaction_id; 
             if (res2.status === 200) {
               const res = await axios.put(
                 `${baseUrl}/tenant/tenant/${tenantId}`,
@@ -1879,7 +1881,6 @@ const Leaseing = () => {
           }
         } else {
           if (id === undefined) {
-            console.log(tenantObject, "leaseObject");
 
             if (selectPaymentMethodDropdawn === "AutoPayment") {
               const res2 = await axios.post(
@@ -1892,7 +1893,6 @@ const Leaseing = () => {
                   "TransactionId:".length
               );
               tenantObject.entries[0].subscription_id = transaction_id;
-              console.log(transaction_id, tenantObject, "yashu");
 
               if (res2.status === 200) {
                 const transaction_id = res2.data.substring(
@@ -1904,8 +1904,6 @@ const Leaseing = () => {
                   tenantObject
                 );
                 if (res.data.statusCode === 200) {
-                  console.log(res.data.data, "response after adding data");
-
                   const delay = (ms) =>
                     new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -2116,6 +2114,7 @@ const Leaseing = () => {
               memo: entrySchema.values.memo ? entrySchema.values.memo : "Rent",
               tenant_id: tenantId,
               isPaid: false,
+              islatefee: false,
               // tenant_lastName: tenantsSchema.values.tenant_lastName,
               tenant_firstName:
                 tenantsSchema.values.tenant_firstName +
@@ -2183,16 +2182,6 @@ const Leaseing = () => {
   };
 
   const postRecOneCharge = async (unit, unitId, tenantId, item, chargeType) => {
-    console.log(
-      unit,
-      unitId,
-      tenantId,
-      item,
-      chargeType,
-      "unit, unitId, tenantId, item, chargeType"
-    );
-    // debugger;
-
     const chargeObject = {
       properties: {
         rental_adress: entrySchema.values.rental_adress,
@@ -2280,14 +2269,9 @@ const Leaseing = () => {
         }
       }
     }
-    console.log(
-      "..............paymentDetails.............",
-      entrySchema.values.upload_file
-    );
 
     try {
       const units = await fetchUnitsByProperty(entrySchema.values.rental_units);
-      //console.log(units, "units"); // Check the received units in the console
       setUnitData(units);
     } catch (error) {
       console.log(error, "error");
@@ -2310,6 +2294,7 @@ const Leaseing = () => {
       isrenton: entrySchema.values.isrenton,
       rent_paid: entrySchema.values.rent_paid,
       propertyOnRent: entrySchema.values.propertyOnRent,
+      subscription_id: entrySchema.values.subscription_id,
 
       //security deposite
       Due_date: entrySchema.values.Due_date,
@@ -2345,8 +2330,8 @@ const Leaseing = () => {
       recurring_charges: recurringData,
       one_time_charges: oneTimeData,
       paymentMethod: entrySchema.paymentMethod,
-      card_number: entrySchema.values.ccvNu,
-      exp_date: entrySchema.values.ccvEx,
+      card_number: entrySchema.values.card_number,
+      exp_date: entrySchema.values.exp_date,
     };
     entriesArray.push(entriesObject);
 
@@ -2379,18 +2364,33 @@ const Leaseing = () => {
       entries: entriesArray,
     };
 
-    console.log(leaseObject, "updated values");
     await axios
       .put(editUrl, leaseObject)
-      .then((response) => {
+      .then(async (response)=> {
         handleResponse(response);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-    setLoader(false);
+        const updateUrl = `${baseUrl}/nmipayment/custom-update-subscription`;
+                const subscriptionData = {
+                    first_name : leaseObject.tenant_firstName,
+                    last_name : leaseObject.tenant_lastName,
+                    email : leaseObject.tenant_email,
+                    subscription_id : subscriptionId,
+                    ccnumber : entriesObject.card_number,
+                    ccexp : entriesObject.exp_date,
+                    address : entriesObject.rental_adress,
+                };
+                await axios.post(updateUrl, subscriptionData)
+                .then((customUpdateResponse) => {
+                    console.log(customUpdateResponse.data);
+                })
+                .catch((customUpdateError) => {
+                    console.error("Error in custom-update-subscription:", customUpdateError);
+                });
+              })
+              .catch((error) => {
+                  console.error("Error:", error);
+              });
+      setLoader(false);
   };
-  // { console.log(leaseFormik.values) }
 
   function handleResponse(response) {
     if (response.status === 200) {
@@ -6071,10 +6071,11 @@ const Leaseing = () => {
                                 Card Number *
                               </label>
                               <InputGroup>
-                                <Input
+                              <Input
                                   type="number"
                                   id="creditcard_number"
                                   placeholder="0000 0000 0000"
+                                  className="no-spinner"
                                   name="creditcard_number"
                                   value={entrySchema.values.card_number}
                                   onChange={(e) => {
@@ -6087,19 +6088,18 @@ const Leaseing = () => {
                                       0,
                                       16
                                     ); // Limit to 12 digits
-                                    setCCVNU(parseInt(limitValue));
-                                    entrySchema.values.ccvNu =
+                                    setcard_number(parseInt(limitValue));
+                                    entrySchema.values.card_number =
                                       parseInt(limitValue);
                                   }}
                                 />
                               </InputGroup>
                               {entrySchema.errors &&
-                              entrySchema.errors?.ccvNu &&
+                              entrySchema.errors?.card_number &&
                               entrySchema.touched &&
-                              entrySchema.touched?.ccvNu &&
-                              entrySchema.values.ccvNu === "" ? (
+                              entrySchema.touched?.card_number ? (
                                 <div style={{ color: "red" }}>
-                                  {entrySchema.errors.ccvNu}
+                                  {entrySchema.errors.card_number}
                                 </div>
                               ) : null}
                             </FormGroup>
@@ -6124,37 +6124,22 @@ const Leaseing = () => {
                                     /\D/g,
                                     ""
                                   );
-                                  if (numericValue.length >= 2) {
-                                    const month = numericValue.substring(0, 2);
-                                    if (numericValue.length > 2) {
-                                      const year = numericValue.substring(2, 6);
-                                      // Convert the formatted string to a Date object
-                                      const formattedDate = new Date(
-                                        `${year}-${month}-01`
-                                      );
-                                      // Set the state with the Date object
-                                      setCCVEX(formattedDate);
-                                      return;
-                                    }
-                                  }
-                                  // If the input is incomplete or invalid, set the state with the raw string
-                                  setCCVEX(inputValue);
-                                  entrySchema.values.ccvEx = inputValue;
+                                  setexp_date(inputValue);
+                                  entrySchema.values.exp_date = inputValue;
                                 }}
                                 value={
-                                  CCVEX instanceof Date
-                                    ? formatDateForInput(CCVEX)
+                                  exp_date instanceof Date
+                                    ? formatDateForInput(exp_date)
                                     : entrySchema.values.exp_date
                                 }
                                 placeholder="MM/YYYY"
                               />
-                              {entrySchema.errors &&
-                              entrySchema.errors?.ccvEx &&
+                               {entrySchema.errors &&
+                              entrySchema.errors?.exp_date &&
                               entrySchema.touched &&
-                              entrySchema.touched?.ccvEx &&
-                              entrySchema.values.ccvEx === "" ? (
+                              entrySchema.touched?.exp_date ? (
                                 <div style={{ color: "red" }}>
-                                  {entrySchema.errors.ccvEx}
+                                  {entrySchema.errors.exp_date}
                                 </div>
                               ) : null}
                             </FormGroup>
