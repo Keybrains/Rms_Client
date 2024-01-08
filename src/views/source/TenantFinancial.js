@@ -306,12 +306,14 @@ const TenantFinancial = () => {
         setGeneralLedgerData((prevData) => [...validResults]);
         const data = [...validResults];
         const allPaymentAndCharges = data.flatMap((item) => {
-          return item.paymentAndCharges.map((payment) => ({
-            paymentAndCharges: payment,
-            unit: item.unit,
-            unit_id: item.unit_id,
-            _id: item._id,
-          }));
+          if (item !== undefined) {
+            return item?.paymentAndCharges?.map((payment) => ({
+              paymentAndCharges: payment,
+              unit: item.unit,
+              unit_id: item.unit_id,
+              _id: item._id,
+            }));
+          }
         });
         setTotalPages(Math.ceil(allPaymentAndCharges.length / pageItem));
       } catch (error) {
@@ -458,18 +460,21 @@ const TenantFinancial = () => {
         console.log(err);
       });
   };
-
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
   var paginatedData;
   if (GeneralLedgerData) {
     const allPaymentAndCharges = GeneralLedgerData.flatMap((item) => {
-      return item.paymentAndCharges.map((payment) => ({
-        paymentAndCharges: payment,
-        unit: item.unit,
-        unit_id: item.unit_id,
-        _id: item._id,
-      }));
+      if (item !== undefined) {
+        return item?.paymentAndCharges?.map((payment) => ({
+          paymentAndCharges: payment,
+          unit: item.unit,
+          unit_id: item.unit_id,
+          _id: item._id,
+        }));
+      } else {
+        return;
+      }
     });
     paginatedData = allPaymentAndCharges.slice(startIndex, endIndex);
   }
@@ -477,17 +482,10 @@ const TenantFinancial = () => {
     setCurrentPage(page);
   };
 
-  // const [filterData, setFilterData] = useState([]);
-
-  // useEffect(() => {
-  //   // setTotalPages(Math.ceil(filterData.length / pageItem));
-  //   setCurrentPage(1);
-  // }, [searchQuery])
-
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
       return GeneralLedgerData.flatMap((item) => {
-        return item.paymentAndCharges.map((payment) => ({
+        return item?.paymentAndCharges?.map((payment) => ({
           paymentAndCharges: payment,
           unit: item.unit,
           unit_id: item.unit_id,
@@ -981,11 +979,13 @@ const TenantFinancial = () => {
                                   placeholder="Enter amount"
                                   name="amount"
                                   onBlur={financialFormik.handleBlur}
-                                  // only input number
-                                  onKeyDown={(event) => {
-                                    if (!/[0-9]/.test(event.key)) {
-                                      event.preventDefault();
-                                    }
+                                  onInput={(e) => {
+                                    const inputValue = e.target.value;
+                                    const numericValue = inputValue.replace(
+                                      /\D/g,
+                                      ""
+                                    );
+                                    e.target.value = numericValue;
                                   }}
                                   onChange={financialFormik.handleChange}
                                   value={financialFormik.values.amount}
