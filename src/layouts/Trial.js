@@ -26,7 +26,7 @@ import AuthFooter from "components/Footers/AuthFooter.js";
 
 import routes from "routes.js";
 
-const Auth = (props) => {
+const Trial = (props) => {
   const mainContent = React.useRef(null);
   const location = useLocation();
 
@@ -45,7 +45,7 @@ const Auth = (props) => {
 
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/auth") {
+      if (prop.layout === "/trial") {
         return (
           <Route path={prop.path} element={prop.component} key={key} exact />
         );
@@ -74,14 +74,11 @@ const Auth = (props) => {
                     <br/>
 
                   <h1 className="text-white">Welcome To 302 Rentals</h1>
-                  <p className="text-lead text-light">
-                    Please Login 
-                  </p>
                 </Col>
               </Row>
             </div>
           </Container>
-          <div className="separator separator-bottom separator-skew zindex-100">
+          {/* <div className="separator separator-bottom separator-skew zindex-100">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               preserveAspectRatio="none"
@@ -95,14 +92,14 @@ const Auth = (props) => {
                 points="2560 0 2560 100 0 100"
               />
             </svg>
-          </div>
+          </div> */}
         </div>
         {/* Page content */}
         <Container className="mt--8 pb-5">
           <Row className="justify-content-center">
             <Routes>
               {getRoutes(routes)}
-              <Route path="*" element={<Navigate to="/auth/login" replace />} />
+              <Route path="*" element={<Navigate to="/trial/trial-login" replace />} />
             </Routes>
           </Row>
         </Container>
@@ -112,4 +109,4 @@ const Auth = (props) => {
   );
 };
 
-export default Auth;
+export default Trial;

@@ -993,6 +993,8 @@ const Leaseing = () => {
   });
 
   const [overlapLease, setOverlapLease] = useState(null);
+  const [card_number, setcard_number] = useState(null);
+  const [exp_date, setexp_date] = useState(null);
 
   const checkDate = async (dates) => {
     if (selectedPropertyType && selectedUnit && selectedTenantData) {
@@ -1127,8 +1129,8 @@ const Leaseing = () => {
       notes: "",
       subscription_id:"",
       paymentMethod: "",
-      ccvEx: "",
-      ccvNu: "",
+      exp_date: "",
+      card_number: "",
     },
 
     validationSchema: yup.object({
@@ -1139,10 +1141,13 @@ const Leaseing = () => {
       amount: yup.string().required("Required"),
       paymentMethod: yup.string().required("Required"),
       ...(selectPaymentMethodDropdawn === "AutoPayment"
-        ? {
-            ccvEx: yup.string().required("Required"),
-            ccvNu: yup.string().required("Required"),
-          }
+        ?{
+          exp_date: yup.string().required("Required"),
+          card_number: yup
+            .string()
+            .matches(/^\d{16}$/, "Card number must be a 16-digit number")
+            .required("Required"),
+        }
         : null),
       ...(unitData[0]?.rental_units
         ? {
@@ -1462,6 +1467,7 @@ const Leaseing = () => {
 
             //security deposite
             Due_date: matchedLease.Due_date,
+            paymentMethod: matchedLease.paymentMethod,
             Security_amount: matchedLease.Security_amount,
             card_number: matchedLease.card_number,
             exp_date: matchedLease.exp_date,
@@ -1602,8 +1608,8 @@ const Leaseing = () => {
         {
           subscription_id: entrySchema.values.transaction_id,
           paymentMethod: entrySchema.values.paymentMethod,
-          card_number: entrySchema.values.ccvNu || "",
-          exp_date: entrySchema.values.ccvEx || "",
+          card_number: entrySchema.values.card_number || "",
+          exp_date: entrySchema.values.exp_date || "",
           rental_units: entrySchema.values.rental_units,
           entryIndex: entrySchema.values.entryIndex,
           rental_adress: entrySchema.values.rental_adress,
@@ -1674,9 +1680,9 @@ const Leaseing = () => {
       plan_payments: 0,
       plan_amount: entrySchema.values.amount,
       dayFrequency: selectedDayFrequency,
-      ccnumber: CCVNU || "",
+      ccnumber: card_number || "",
       email: tenantsSchema.values.tenant_email,
-      ccexp: CCVEX ? formatDateForInput(CCVEX) : "",
+      ccexp: exp_date ? formatDateForInput(exp_date) : "",
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
@@ -2320,8 +2326,8 @@ const Leaseing = () => {
       recurring_charges: recurringData,
       one_time_charges: oneTimeData,
       paymentMethod: entrySchema.paymentMethod,
-      card_number: entrySchema.values.ccvNu,
-      exp_date: entrySchema.values.ccvEx,
+      card_number: entrySchema.values.card_number,
+      exp_date: entrySchema.values.exp_date,
     };
     entriesArray.push(entriesObject);
 
@@ -2368,7 +2374,6 @@ const Leaseing = () => {
                     ccexp : entriesObject.exp_date,
                     address : entriesObject.rental_adress,
                 };
-                console.log(subscriptionData,"subscription")
                 await axios.post(updateUrl, subscriptionData)
                 .then((customUpdateResponse) => {
                     console.log(customUpdateResponse.data);
@@ -6062,10 +6067,11 @@ const Leaseing = () => {
                                 Card Number *
                               </label>
                               <InputGroup>
-                                <Input
+                              <Input
                                   type="number"
                                   id="creditcard_number"
                                   placeholder="0000 0000 0000"
+                                  className="no-spinner"
                                   name="creditcard_number"
                                   value={entrySchema.values.card_number}
                                   onChange={(e) => {
@@ -6078,19 +6084,18 @@ const Leaseing = () => {
                                       0,
                                       16
                                     ); // Limit to 12 digits
-                                    setCCVNU(parseInt(limitValue));
-                                    entrySchema.values.ccvNu =
+                                    setcard_number(parseInt(limitValue));
+                                    entrySchema.values.card_number =
                                       parseInt(limitValue);
                                   }}
                                 />
                               </InputGroup>
                               {entrySchema.errors &&
-                              entrySchema.errors?.ccvNu &&
+                              entrySchema.errors?.card_number &&
                               entrySchema.touched &&
-                              entrySchema.touched?.ccvNu &&
-                              entrySchema.values.ccvNu === "" ? (
+                              entrySchema.touched?.card_number ? (
                                 <div style={{ color: "red" }}>
-                                  {entrySchema.errors.ccvNu}
+                                  {entrySchema.errors.card_number}
                                 </div>
                               ) : null}
                             </FormGroup>
@@ -6115,37 +6120,22 @@ const Leaseing = () => {
                                     /\D/g,
                                     ""
                                   );
-                                  if (numericValue.length >= 2) {
-                                    const month = numericValue.substring(0, 2);
-                                    if (numericValue.length > 2) {
-                                      const year = numericValue.substring(2, 6);
-                                      // Convert the formatted string to a Date object
-                                      const formattedDate = new Date(
-                                        `${year}-${month}-01`
-                                      );
-                                      // Set the state with the Date object
-                                      setCCVEX(formattedDate);
-                                      return;
-                                    }
-                                  }
-                                  // If the input is incomplete or invalid, set the state with the raw string
-                                  setCCVEX(inputValue);
-                                  entrySchema.values.ccvEx = inputValue;
+                                  setexp_date(inputValue);
+                                  entrySchema.values.exp_date = inputValue;
                                 }}
                                 value={
-                                  CCVEX instanceof Date
-                                    ? formatDateForInput(CCVEX)
+                                  exp_date instanceof Date
+                                    ? formatDateForInput(exp_date)
                                     : entrySchema.values.exp_date
                                 }
                                 placeholder="MM/YYYY"
                               />
-                              {entrySchema.errors &&
-                              entrySchema.errors?.ccvEx &&
+                               {entrySchema.errors &&
+                              entrySchema.errors?.exp_date &&
                               entrySchema.touched &&
-                              entrySchema.touched?.ccvEx &&
-                              entrySchema.values.ccvEx === "" ? (
+                              entrySchema.touched?.exp_date ? (
                                 <div style={{ color: "red" }}>
-                                  {entrySchema.errors.ccvEx}
+                                  {entrySchema.errors.exp_date}
                                 </div>
                               ) : null}
                             </FormGroup>
