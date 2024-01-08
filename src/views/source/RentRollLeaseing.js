@@ -258,6 +258,7 @@ const RentRollLeaseing = () => {
   };
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [propertyId, setPropertyId] = useState("");
+  const [subscriptionId, setSubscriptionId] = useState(null);
   const [ownerData, setOwnerData] = useState({});
   // console.log(ownerData, "ownerData");
   // console.log(selectedPropertyType, "selectedPropertyType")
@@ -612,6 +613,7 @@ const RentRollLeaseing = () => {
     const value = event.target.value;
     setselectedAccountLevel(value);
   };
+
   const [isDateUnavailable, setIsDateUnavailable] = useState(false);
   const handleDateChange = (date) => {
     const nextDate = moment(date).add(1, "months").format("YYYY-MM-DD");
@@ -629,8 +631,6 @@ const RentRollLeaseing = () => {
     values["account_type"] = selectedAccountType;
     values["parent_account"] = selectedAccountLevel;
     values["fund_type"] = selectedFundType;
-
-    // console.log(values, "values");
     try {
       // values["property_type"] = localStorage.getItem("propertyType");
       const res = await axios.post(`${baseUrl}/addaccount/addaccount`, values);
@@ -674,7 +674,6 @@ const RentRollLeaseing = () => {
     //setImgLoader(true);
     // console.log(files, "file");
     const filesArray = [...files];
-    console.log(filesArray, "yash");
 
     if (filesArray.length <= 10 && file.length === 0) {
       const finalArray = [];
@@ -954,6 +953,7 @@ const RentRollLeaseing = () => {
         console.error("Network error:", error);
       });
   }, []);
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -1394,6 +1394,7 @@ const RentRollLeaseing = () => {
       cash_flow: "",
       notes: "",
       paymentMethod: "",
+      subscription_id:"",
       exp_date: "",
       card_number: "",
     },
@@ -1528,7 +1529,7 @@ const RentRollLeaseing = () => {
   const formatDateForInput = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    entrySchema.values.exp_date = `${month}/${year}`;
+    entrySchema.values.ccvEx = `${month}/${year}`;
     return `${month}/${year}`;
   };
 
@@ -1689,13 +1690,11 @@ const RentRollLeaseing = () => {
           const matchedLease = laesingdata.entries.find(
             (entry) => entry.entryIndex === entryIndex
           );
-          console.log(matchedLease, "matchedLease");
           try {
             const units = await fetchUnitsByProperty(
               matchedLease.rental_adress
             );
-            console.log(units, "unitssssssssssssss"); // Check the received units in the console
-
+            setSubscriptionId(matchedLease.subscription_id)
             setUnitData(units);
           } catch (error) {
             console.log(error, "error");
@@ -1779,6 +1778,7 @@ const RentRollLeaseing = () => {
             Security_amount: matchedLease.Security_amount,
             card_number: matchedLease.card_number,
             exp_date: matchedLease.exp_date,
+            subscription_id: matchedLease.subscription_id,
 
             // add cosigner
             cosigner_firstName: matchedLease.cosigner_firstName,
@@ -1992,6 +1992,7 @@ const RentRollLeaseing = () => {
       emergency_PhoneNumber: tenantsSchema.values.emergency_PhoneNumber,
       entries: [
         {
+          subscription_id: entrySchema.values.transaction_id,
           entryIndex: entrySchema.values.entryIndex,
           paymentMethod: entrySchema.values.paymentMethod,
           card_number: entrySchema.values.card_number || "",
@@ -2100,6 +2101,10 @@ const RentRollLeaseing = () => {
               `${baseUrl}/nmipayment/custom-add-subscription`,
               paymentDetails
             );
+            const transaction_id = res2.data.data.substring(
+              res2.data.data.indexOf("TransactionId:") + "TransactionId:".length
+            );
+            putObject.entries[0].subscription_id = transaction_id; 
             if (res2.status === 200) {
               const res = await axios.put(
                 `${baseUrl}/tenant/tenant/${tenantId}`,
@@ -2274,13 +2279,17 @@ const RentRollLeaseing = () => {
                 `${baseUrl}/nmipayment/custom-add-subscription`,
                 paymentDetails
               );
+              const transaction_id = res2.data.data.substring(
+                res2.data.data.indexOf("TransactionId:") +
+                  "TransactionId:".length
+              );
+              tenantObject.entries[0].subscription_id = transaction_id;
               if (res2.status === 200) {
                 const res = await axios.post(
                   `${baseUrl}/tenant/tenant`,
                   tenantObject
                 );
                 if (res.data.statusCode === 200) {
-                  console.log(res.data.data, "response after adding data");
                   updateApplicants();
                   const delay = (ms) =>
                     new Promise((resolve) => setTimeout(resolve, ms));
@@ -2521,7 +2530,6 @@ const RentRollLeaseing = () => {
         },
       ],
     };
-    console.log(chargeObject, "from post charge");
 
     const url = `${baseUrl}/payment_charge/payment_charge`;
     await axios
@@ -2680,7 +2688,6 @@ const RentRollLeaseing = () => {
 
     try {
       const units = await fetchUnitsByProperty(entrySchema.values.rental_units);
-      //console.log(units, "units"); // Check the received units in the console
       setUnitData(units);
     } catch (error) {
       console.log(error, "error");
@@ -2702,6 +2709,7 @@ const RentRollLeaseing = () => {
       isrenton: entrySchema.values.isrenton,
       rent_paid: entrySchema.values.rent_paid,
       propertyOnRent: entrySchema.values.propertyOnRent,
+      subscription_id: entrySchema.values.subscription_id,
 
       //security deposite
       Due_date: entrySchema.values.Due_date,
@@ -2780,16 +2788,34 @@ const RentRollLeaseing = () => {
       entries: entriesArray,
     };
 
-    console.log(entriesObject.upload_file, "updated values");
     await axios
       .put(editUrl, leaseObject)
-      .then((response) => {
-        // console.log(response, "response1111");
+      .then(async (response)=> {
         handleResponse(response);
-        if (id && entryIndex) {
-          navigate(`/admin/rentrolldetail/${id}/${entryIndex}`);
-        }
-      })
+        const updateUrl = `${baseUrl}/nmipayment/custom-update-subscription`;
+                const subscriptionData = {
+                    first_name : leaseObject.tenant_firstName,
+                    last_name : leaseObject.tenant_lastName,
+                    email : leaseObject.tenant_email,
+                    subscription_id : subscriptionId,
+                    ccnumber : entriesObject.card_number,
+                    ccexp : entriesObject.exp_date,
+                    address : entriesObject.rental_adress,
+                };
+
+                await axios.post(updateUrl, subscriptionData)
+                .then((customUpdateResponse) => {
+                    console.log(customUpdateResponse.data);
+                })
+                .catch((customUpdateError) => {
+                    console.error("Error in custom-update-subscription:", customUpdateError);
+                });
+                if (id && entryIndex) {
+                  navigate(`/admin/rentrolldetail/${id}/${entryIndex}`);
+                }
+              })
+      
+    
       .catch((error) => {
         console.error("Error:", error);
       });
