@@ -162,15 +162,12 @@ const PropDetails = () => {
           // setSelectedProp
         );
       });
-      console.log(selectedType, "selectedType");
       setSelectedProp(matchedProperty.property_type);
-      console.log(resp.matchedProperty, "mansi");
 
       setPropType(selectedType);
       const isMultiUnits = resp.data.data[selectedType].filter((item) => {
         return item.propertysub_type === matchedProperty.property_type;
       });
-      console.log(isMultiUnits, "isMultiUnit");
       setMultiUnit(isMultiUnits[0].ismultiunit);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -1340,13 +1337,7 @@ const PropDetails = () => {
                               <td>Loading Property details...</td>
                             </tr>
                           </tbody>
-                        ) : error ? (
-                          <tbody>
-                            <tr>
-                              <td>Error: {error.message}</td>
-                            </tr>
-                          </tbody>
-                        ) : propertyDetails._id ? (
+                        ) : propertyDetails ? (
                           //     <>
                           //       <tbody>
                           //         <tr>
@@ -1699,12 +1690,6 @@ const PropDetails = () => {
                                       <tbody>
                                         <tr>
                                           <td>Loading tenant details...</td>
-                                        </tr>
-                                      </tbody>
-                                    ) : error ? (
-                                      <tbody>
-                                        <tr>
-                                          <td>Error: {error.message}</td>
                                         </tr>
                                       </tbody>
                                     ) : (
@@ -2109,6 +2094,12 @@ const PropDetails = () => {
                               </div>
                             </div>
                           </>
+                        ) : error ? (
+                          <tbody>
+                            <tr>
+                              <td>Error: {error.message}</td>
+                            </tr>
+                          </tbody>
                         ) : (
                           <tbody>
                             <tr>
@@ -4011,7 +4002,7 @@ const PropDetails = () => {
                         {Array.isArray(rentaldata) ? (
                           <Grid container spacing={2}>
                             {rentaldata.map((tenant, index) => (
-                              <Grid item xs={12} sm={4} key={index}>
+                              <Grid item xs={12} sm={5} key={index}>
                                 {tenant.entries.map((entry) => (
                                   <Box
                                     key={index}
