@@ -1895,6 +1895,10 @@ const Leaseing = () => {
               tenantObject.entries[0].subscription_id = transaction_id;
 
               if (res2.status === 200) {
+                const transaction_id = res2.data.substring(
+                  res2.data.indexOf("TransactionId:") + "TransactionId:".length
+                );
+                tenantObject.entries.subscription_id = transaction_id;
                 const res = await axios.post(
                   `${baseUrl}/tenant/tenant`,
                   tenantObject

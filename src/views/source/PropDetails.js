@@ -164,7 +164,6 @@ const PropDetails = () => {
       });
       console.log(selectedType, "selectedType");
       setSelectedProp(matchedProperty.property_type);
-      console.log(resp.matchedProperty, "mansi");
 
       setPropType(selectedType);
       const isMultiUnits = resp.data.data[selectedType].filter((item) => {
@@ -358,6 +357,10 @@ const PropDetails = () => {
     }
   };
 
+  useEffect(() => {
+    getUnitProperty(propId);
+  }, [propId]);
+
   const getUnitProperty = async (propId) => {
     await axios
       .get(`${baseUrl}/propertyunit/propertyunits/${entryIndex}`)
@@ -379,14 +382,12 @@ const PropDetails = () => {
             : propertyImage.length > 0
             ? propertyImage
             : [];
-        console.log(firstNonEmptyImage, "yashujs");
         setUnitImage(firstNonEmptyImage);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-  console.log(unitImage, "yash");
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -1045,7 +1046,6 @@ const PropDetails = () => {
     setPropId(unit._id);
     getUnitProperty(unit._id);
     setClickedObject(unit);
-    console.log(unit, "yashu");
     addUnitFormik.setValues({
       unit_number: unit?.rental_units,
       address1: unit?.rental_unitsAdress,
@@ -1340,352 +1340,7 @@ const PropDetails = () => {
                               <td>Loading Property details...</td>
                             </tr>
                           </tbody>
-                        ) : error ? (
-                          <tbody>
-                            <tr>
-                              <td>Error: {error.message}</td>
-                            </tr>
-                          </tbody>
-                        ) : propertyDetails._id ? (
-                          //     <>
-                          //       <tbody>
-                          //         <tr>
-                          //           <th
-                          //             colSpan="2"
-                          //             className="text-primary text-lg"
-                          //           >
-                          //             Property Details
-                          //           </th>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Image
-                          //           </td>
-                          //           <td>
-                          //             <div
-                          //               style={{
-                          //                 display: "flex",
-                          //                 flexWrap: "wrap",
-                          //               }}
-                          //             >
-                          //               {matchedProperty?.propertyres_image &&
-                          //                 matchedProperty?.propertyres_image.length >
-                          //                   0 && (
-                          //                   <div
-                          //                     style={{
-                          //                       width: "100%", // Expands to full width by default
-                          //                     }}
-                          //                   >
-                          //                     Residential:
-                          //                     {matchedProperty?.propertyres_image.map(
-                          //                       (propertyres_image, index) => (
-                          //                         <img
-                          //                           key={index}
-                          //                           src={propertyres_image}
-                          //                           alt="Property Details"
-                          //                           onClick={() => {
-                          //                             setSelectedImage(
-                          //                               propertyres_image
-                          //                             );
-                          //                             setOpen(true);
-                          //                           }}
-                          //                           style={{
-                          //                             width: "100px",
-                          //                             height: "100px",
-                          //                             // objectFit: "cover",
-                          //                             margin: "10px",
-                          //                             borderRadius: "10px",
-                          //                             "@media (max-width: 768px)": {
-                          //                               width: "100%", // Full-width on smaller screens
-                          //                             },
-                          //                           }}
-                          //                         />
-                          //                       )
-                          //                     )}
-                          //                     {/* <Modal
-                          //                 open={open}
-                          //                 onClose={handleClose}
-                          //                 aria-labelledby="modal-modal-title"
-                          //                 aria-describedby="modal-modal-description"
-                          //               >
-                          //                 <div
-                          //                   style={{
-                          //                     position: "absolute",
-                          //                     top: "50%",
-                          //                     left: "50%",
-                          //                     transform: "translate(-50%, -50%)",
-                          //                     backgroundColor: "white",
-                          //                     border: "2px solid #000",
-                          //                     padding: "2rem",
-                          //                   }}
-                          //                 >
-                          //                   <img
-                          //                     style={style}
-                          //                     src={selectedImage}
-                          //                     alt="Image"
-                          //                   />
-                          //                   <ClearIcon
-                          //                     style={{
-                          //                       cursor: "pointer",
-                          //                       position: "absolute",
-                          //                       top: "-99px",
-                          //                       right: "-171px",
-                          //                     }}
-                          //                     onClick={handleClose}
-                          //                   />
-                          //                 </div>
-                          //               </Modal> */}
-                          //                     <OpenImageDialog
-                          //                       open={open}
-                          //                       setOpen={setOpen}
-                          //                       selectedImage={selectedImage}
-                          //                     />
-                          //                   </div>
-                          //                 )}
-                          //               {matchedProperty?.property_image &&
-                          //                 matchedProperty?.property_image.length >
-                          //                   0 && (
-                          //                   <div
-                          //                     style={{
-                          //                       width: "100%", // Expands to full width by default
-                          //                     }}
-                          //                   >
-                          //                     Commercial:
-                          //                     {matchedProperty?.property_image.map(
-                          //                       (property_image, index) => (
-                          //                         <img
-                          //                           key={index}
-                          //                           src={property_image}
-                          //                           alt="Property Details"
-                          //                           style={{
-                          //                             width: "100px",
-                          //                             height: "100px",
-                          //                             // objectFit: "cover",
-                          //                             margin: "10px",
-                          //                             borderRadius: "10px",
-                          //                             "@media (max-width: 768px)": {
-                          //                               width: "100%", // Full-width on smaller screens
-                          //                             },
-                          //                           }}
-                          //                         />
-                          //                       )
-                          //                     )}
-                          //                   </div>
-                          //                 )}
-                          //             </div>
-                          //           </td>
-                          //         </tr>
-
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Property Type
-                          //           </td>
-                          //           <td>
-                          //             {matchedProperty?.property_type || "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Address
-                          //           </td>
-                          //           <td>
-                          //             {matchedProperty?.rental_adress || "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             City
-                          //           </td>
-                          //           <td>{matchedProperty.rental_city || "N/A"}</td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Country
-                          //           </td>
-                          //           <td>
-                          //             {matchedProperty.rental_country || "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Postcode
-                          //           </td>
-                          //           <td>
-                          //             {matchedProperty.rental_postcode || "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //       </tbody>
-
-                          //       <tbody>
-                          //         <tr>
-                          //           <th
-                          //             colSpan="2"
-                          //             className="text-primary text-lg"
-                          //           >
-                          //             Rental Owner Details
-                          //           </th>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             First Name
-                          //           </td>
-                          //           <td>
-                          //             {propertyDetails.rentalOwner_firstName ||
-                          //               "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Last Name
-                          //           </td>
-                          //           <td>
-                          //             {propertyDetails.rentalOwner_lastName ||
-                          //               "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Company Name
-                          //           </td>
-                          //           <td>
-                          //             {propertyDetails.rentalOwner_companyName ||
-                          //               "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             E-Mail
-                          //           </td>
-                          //           <td>
-                          //             {propertyDetails.rentalOwner_primaryEmail ||
-                          //               "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Phone Number
-                          //           </td>
-                          //           <td>
-                          //             {propertyDetails.rentalOwner_phoneNumber ||
-                          //               "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Home Number
-                          //           </td>
-                          //           <td>
-                          //             {propertyDetails.rentalOwner_homeNumber ||
-                          //               "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Business Number
-                          //           </td>
-                          //           <td>
-                          //             {propertyDetails.rentalOwner_businessNumber ||
-                          //               "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //       </tbody>
-
-                          //       {/* <tbody>
-                          //   <tr>
-                          //     <th colSpan="2" className="text-primary text-lg">
-                          //       Account Details
-                          //     </th>
-                          //   </tr>
-                          //   <tr>
-                          //     <td className="font-weight-bold text-md">
-                          //       Operating Account
-                          //     </td>
-                          //     <td>
-                          //       {propertyDetails.rentalOwner_operatingAccount ||
-                          //         "N/A"}
-                          //     </td>
-                          //   </tr>
-                          //   <tr>
-                          //     <td className="font-weight-bold text-md">
-                          //       Property Reserve
-                          //     </td>
-                          //     <td>
-                          //       {propertyDetails.rentalOwner_propertyReserve ||
-                          //         "N/A"}
-                          //     </td>
-                          //   </tr>
-                          // </tbody> */}
-
-                          //       <tbody>
-                          //         <tr>
-                          //           <th
-                          //             colSpan="2"
-                          //             className="text-primary text-lg"
-                          //           >
-                          //             Staff Details
-                          //           </th>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Staff Member
-                          //           </td>
-                          //           <td>{matchedProperty.staffMember || "N/A"}</td>
-                          //         </tr>
-                          //       </tbody>
-
-                          //       {/* <tbody>
-                          //         <tr>
-                          //           <th
-                          //             colSpan="2"
-                          //             className="text-primary text-lg"
-                          //           >
-                          //             Unit Details
-                          //           </th>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Unit
-                          //           </td>
-                          //           <td>
-                          //             {matchedProperty.rental_units ||
-                          //               matchedProperty.rentalcom_units ||
-                          //               "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Unit Address
-                          //           </td>
-                          //           <td>
-                          //             {matchedProperty.rental_unitsAdress ||
-                          //               matchedProperty.rentalcom_unitsAdress ||
-                          //               "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Bed
-                          //           </td>
-                          //           <td>{matchedProperty.rental_bed || "N/A"}</td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             Bath
-                          //           </td>
-                          //           <td>{matchedProperty.rental_bath || "N/A"}</td>
-                          //         </tr>
-                          //         <tr>
-                          //           <td className="font-weight-bold text-md">
-                          //             SQFT
-                          //           </td>
-                          //           <td>
-                          //             {matchedProperty.rental_soft ||
-                          //               matchedProperty.rentalcom_soft ||
-                          //               "N/A"}
-                          //           </td>
-                          //         </tr>
-                          //       </tbody> */}
-                          //     </>
+                        ) : propertyDetails ? (
                           <>
                             <div className="table-responsive">
                               <div className="row m-3">
@@ -1699,12 +1354,6 @@ const PropDetails = () => {
                                       <tbody>
                                         <tr>
                                           <td>Loading tenant details...</td>
-                                        </tr>
-                                      </tbody>
-                                    ) : error ? (
-                                      <tbody>
-                                        <tr>
-                                          <td>Error: {error.message}</td>
                                         </tr>
                                       </tbody>
                                     ) : (
@@ -1862,246 +1511,6 @@ const PropDetails = () => {
                                             </tbody>
                                           </Table>
                                         </Row>
-
-                                        {/* <Row
-                                          className="w-100 my-3 "
-                                          style={{
-                                            fontSize: "18px",
-                                            textTransform: "capitalize",
-                                            color: "#000",
-                                            fontWeight: "600",
-                                            borderBottom: "1px solid #ddd",
-                                          }}
-                                        >
-                                          <Col>
-                                            Listing information{" "}
-                                            <Link to="">Edit</Link>{" "}
-                                          </Col>
-                                        </Row>
-                                        <h8 className="dec-head">
-                                          DESCRIPTION
-                                        </h8>
-                                        <p className="des-para">
-                                          Three 2000 sqft garage spaces. Easy
-                                          access to highways and local roads.
-                                        </p>
-                                        <h8 className="dec-head">AMENITIES</h8>
-                                        <p className="des-para">--</p>
-                                        <h8 className="dec-head">
-                                          INCLUDED IN RENT
-                                        </h8>
-                                        <p className="des-para">--</p>
-                                        <Row
-                                          className="w-100 my-3 "
-                                          style={{
-                                            fontSize: "18px",
-                                            textTransform: "capitalize",
-                                            color: "#000",
-                                            fontWeight: "600",
-                                            borderBottom: "1px solid #ddd",
-                                          }}
-                                        >
-                                          <Col>
-                                            Tenant website settings{" "}
-                                            <Link to="">Edit</Link>{" "}
-                                          </Col>
-                                        </Row>
-                                        <div className="web-detail d-flex">
-                                          <div className="col-6 ">
-                                            <h8 className="dec-head">
-                                              PAYMENT HISTORY
-                                            </h8>
-                                            <p className="des-para">
-                                              Tenant can view all transactions
-                                            </p>
-                                          </div>
-                                          <div className="col-6 ">
-                                            <h8 className="dec-head">
-                                              PAYMENT HISTORY
-                                            </h8>
-                                            <p className="des-para">
-                                              Tenant can view all transactions
-                                            </p>
-                                          </div>
-                                        </div>
-                                        <div className="col-6 my-3 ">
-                                          <h8 className="dec-head">
-                                            PAYMENT HISTORY
-                                          </h8>
-                                          <p className="des-para">
-                                            Tenant can view all transactions
-                                          </p>
-                                        </div>
-                                        <Row
-                                          className="w-100 my-3 "
-                                          style={{
-                                            fontSize: "18px",
-                                            textTransform: "capitalize",
-                                            color: "#000",
-                                            fontWeight: "600",
-                                            borderBottom: "1px solid #ddd",
-                                          }}
-                                        >
-                                          <Col>
-                                            Appliances <Link to="">Edit</Link>{" "}
-                                          </Col>
-                                        </Row>
-                                        <Row
-                                          className="mb-1 m-0 p-0"
-                                          style={{
-                                            fontSize: "12px",
-                                            color: "#000",
-                                          }}
-                                        >
-                                          <Table>
-                                            <tbody
-                                              className="tbbody p-0 m-0"
-                                              style={{
-                                                borderTopRightRadius: "5px",
-                                                borderTopLeftRadius: "5px",
-                                                borderBottomLeftRadius: "5px",
-                                                borderBottomRightRadius: "5px",
-                                              }}
-                                            >
-                                              {myData ? (
-                                                <>
-                                                  <>
-                                                    <tr className="body">
-                                                      <td>Washing machine</td>
-                                                      <td>A</td>
-                                                      <td>INSTALLED</td>
-                                                    </tr>
-                                                  </>
-                                                </>
-                                              ) : null}
-                                            </tbody>
-                                          </Table>
-                                        </Row>
-                                        <Row
-                                          className="w-100 my-3 "
-                                          style={{
-                                            fontSize: "18px",
-                                            textTransform: "capitalize",
-                                            color: "#000",
-                                            fontWeight: "600",
-                                            borderBottom: "1px solid #ddd",
-                                          }}
-                                        >
-                                          <Col>
-                                            Appliances <Link to="">Add</Link>{" "}
-                                          </Col>
-                                        </Row>
-                                        <Row
-                                          className="mb-1 m-0 p-0"
-                                          style={{
-                                            fontSize: "12px",
-                                            color: "#000",
-                                          }}
-                                        >
-                                          <Table>
-                                            <tbody
-                                              className="tbbody p-0 m-0"
-                                              style={{
-                                                borderTopRightRadius: "5px",
-                                                borderTopLeftRadius: "5px",
-                                                borderBottomLeftRadius: "5px",
-                                                borderBottomRightRadius: "5px",
-                                              }}
-                                            >
-                                              {myData ? (
-                                                <>
-                                                  <>
-                                                    <tr className="body">
-                                                      <td>
-                                                        Property Manager: Andrew
-                                                        Martin
-                                                      </td>
-                                                      <td>A</td>
-                                                      <td>RENTAL</td>
-                                                      <td>
-                                                        11/18/2023 1:40 AM
-                                                      </td>
-                                                      <td>Sahil ajmeri</td>
-                                                    </tr>
-                                                    <tr className="body">
-                                                      <td>
-                                                        Email:
-                                                        andrew@buildium.com
-                                                      </td>
-                                                      <td></td>
-                                                      <td></td>
-                                                      <td>INSTALLED</td>
-                                                    </tr>
-                                                    <tr className="body">
-                                                      <td>
-                                                        Phone: 555-555-1212
-                                                      </td>
-                                                      <td></td>
-                                                      <td></td>
-                                                      <td>INSTALLED</td>
-                                                    </tr>
-                                                    <tr className="body">
-                                                      <td>Fax: 555-555-1212</td>
-                                                      <td></td>
-                                                      <td></td>
-                                                      <td>INSTALLED</td>
-                                                    </tr>
-                                                  </>
-                                                </>
-                                              ) : null}
-                                            </tbody>
-                                          </Table>
-                                        </Row>
-                                        <Row
-                                          className="w-100 my-3 "
-                                          style={{
-                                            fontSize: "18px",
-                                            textTransform: "capitalize",
-                                            color: "#000",
-                                            fontWeight: "600",
-                                            borderBottom: "1px solid #ddd",
-                                          }}
-                                        >
-                                          <Col>
-                                            Recent files <Link to="">Add</Link>{" "}
-                                          </Col>
-                                        </Row>
-                                        <Row
-                                          className="mb-1 m-0 p-0"
-                                          style={{
-                                            fontSize: "12px",
-                                            color: "#000",
-                                          }}
-                                        >
-                                          <Table>
-                                            <tbody
-                                              className="tbbody p-0 m-0"
-                                              style={{
-                                                borderTopRightRadius: "5px",
-                                                borderTopLeftRadius: "5px",
-                                                borderBottomLeftRadius: "5px",
-                                                borderBottomRightRadius: "5px",
-                                              }}
-                                            >
-                                              {myData ? (
-                                                <>
-                                                  <>
-                                                    <tr className="body">
-                                                      <td>
-                                                        Property Manager: Andrew
-                                                        Martin{" "}
-                                                        <Link to="">
-                                                          Upload your first
-                                                          file.
-                                                        </Link>
-                                                      </td>
-                                                    </tr>
-                                                  </>
-                                                </>
-                                              ) : null}
-                                            </tbody>
-                                          </Table>
-                                        </Row> */}
                                       </div>
                                     )}
                                   </div>
@@ -2109,6 +1518,12 @@ const PropDetails = () => {
                               </div>
                             </div>
                           </>
+                        ) : error ? (
+                          <tbody>
+                            <tr>
+                              <td>Error: {error.message}</td>
+                            </tr>
+                          </tbody>
                         ) : (
                           <tbody>
                             <tr>
@@ -4335,7 +3750,6 @@ const PropDetails = () => {
                 }}
               />
               <CardBody>
-                {console.log(addUnitFormik.values, "yash")}
                 <form onSubmit={addUnitFormik.handleSubmit}>
                   <div
                     style={{
@@ -4507,7 +3921,6 @@ const PropDetails = () => {
                             paddingLeft: "10px",
                           }}
                         >
-                          {console.log(unitImage, "yashuj")}
                           <div className="d-flex">
                             {unitImage &&
                               unitImage.length > 0 &&
@@ -4596,7 +4009,6 @@ const PropDetails = () => {
           </Col>
         </Row>
       </Dialog>
-      {console.log(clickedObject, "yashuj")}
     </>
   );
 };
