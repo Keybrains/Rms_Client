@@ -280,6 +280,13 @@ const AddPayment = () => {
   // console.log(property,'proeprty')
   const [loader, setLoader] = useState(false);
 
+  const formatExpirationDate = (date) => {
+    // Assuming date is in the format "MM/YYYY"
+    const [month, year] = date.split('/');
+    return `${month}${year}`;
+  };
+  
+  
   const handleSubmit = async (values) => {
     setLoader(true);
 
@@ -366,7 +373,7 @@ const AddPayment = () => {
               email_name: tenantData.tenant_email,
               card_number: generalledgerFormik.values.creditcard_number,
               amount: values.amount,
-              expiration_date: values.expiration_date,
+              expiration_date: formatExpirationDate(values.expiration_date),
               cvv: values.cvv,
               tenantId: tenantData._id,
               propertyId: tenantData?.entries?.property_id,
@@ -1168,26 +1175,45 @@ const AddPayment = () => {
                                   required
                                   onInput={(e) => {
                                     let inputValue = e.target.value;
-
+                                  
                                     // Remove non-numeric characters
-                                    const numericValue = inputValue.replace(
-                                      /\D/g,
-                                      ""
-                                    );
-
-                                    // Set the input value to the sanitized value (numeric only)
-                                    e.target.value = numericValue;
-
+                                    const numericValue = inputValue.replace(/\D/g, "");
+                                  
                                     // Format the date as "MM/YYYY"
                                     if (numericValue.length > 2) {
-                                      const month = numericValue.substring(
-                                        0,
-                                        2
-                                      );
+                                      const month = numericValue.substring(0, 2);
                                       const year = numericValue.substring(2, 6);
                                       e.target.value = `${month}/${year}`;
+                                    } else {
+                                      e.target.value = numericValue;
                                     }
+                                  
+                                    // Update the Formik values as strings
+                                    generalledgerFormik.setFieldValue('expiration_date', e.target.value);
                                   }}
+                                  
+                                  // onInput={(e) => {
+                                  //   let inputValue = e.target.value;
+
+                                  //   // Remove non-numeric characters
+                                  //   const numericValue = inputValue.replace(
+                                  //     /\D/g,
+                                  //     ""
+                                  //   );
+
+                                  //   // Set the input value to the sanitized value (numeric only)
+                                  //   e.target.value = numericValue;
+
+                                  //   // Format the date as "MM/YYYY"
+                                  //   if (numericValue.length > 2) {
+                                  //     const month = numericValue.substring(
+                                  //       0,
+                                  //       2
+                                  //     );
+                                  //     const year = numericValue.substring(2, 6);
+                                  //     e.target.value = `${month}/${year}`;
+                                  //   }
+                                  // }}
                                 />
                               </FormGroup>
                             </Col>

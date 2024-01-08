@@ -162,14 +162,12 @@ const PropDetails = () => {
           // setSelectedProp
         );
       });
-      console.log(selectedType, "selectedType");
       setSelectedProp(matchedProperty.property_type);
 
       setPropType(selectedType);
       const isMultiUnits = resp.data.data[selectedType].filter((item) => {
         return item.propertysub_type === matchedProperty.property_type;
       });
-      console.log(isMultiUnits, "isMultiUnit");
       setMultiUnit(isMultiUnits[0].ismultiunit);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -3426,7 +3424,7 @@ const PropDetails = () => {
                         {Array.isArray(rentaldata) ? (
                           <Grid container spacing={2}>
                             {rentaldata.map((tenant, index) => (
-                              <Grid item xs={12} sm={4} key={index}>
+                              <Grid item xs={12} sm={5} key={index}>
                                 {tenant.entries.map((entry) => (
                                   <Box
                                     key={index}
