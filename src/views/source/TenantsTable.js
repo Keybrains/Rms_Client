@@ -73,8 +73,6 @@ const TenantsTable = ({ tenantDetails }) => {
     }
   };
 
-
-
   React.useEffect(() => {
     getTenantsDate();
   }, [pageItem]);
@@ -82,9 +80,11 @@ const TenantsTable = ({ tenantDetails }) => {
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
   const paginatedData = tentalsData.slice(startIndex, endIndex);
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = React.useState(null);
 
@@ -98,7 +98,7 @@ const TenantsTable = ({ tenantDetails }) => {
   }, [navigate]);
 
   // Delete selected
-  const deleteTenants = (tenantId, entryIndex) => {
+  const deleteTenants = (tenantId, entryIndex, subscription_id) => {
     swal({
       title: "Are you sure?",
       text: "Once deleted, you will not be able to recover this tenant!",
@@ -108,14 +108,23 @@ const TenantsTable = ({ tenantDetails }) => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(
-            `${baseUrl}/tenant/tenant/${tenantId}/entry/${entryIndex}`
-          )
+          .delete(`${baseUrl}/tenant/tenant/${tenantId}/entry/${entryIndex}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
               swal("Success!", "Tenant deleted successfully!", "success");
               getTenantsDate();
-              // Optionally, you can refresh your tenant data here.
+  
+              const subscription_id_to_send = subscription_id
+              axios
+                .post(`${baseUrl}/nmipayment/custom-delete-subscription`, {
+                  subscription_id: subscription_id_to_send,
+                })
+                .then((secondApiResponse) => {
+                  console.log("Second API Response:", secondApiResponse.data);
+                })
+                .catch((secondApiError) => {
+                  console.error("Error calling second API:", secondApiError);
+                });
             } else {
               swal("", response.data.message, "error");
             }
@@ -128,7 +137,7 @@ const TenantsTable = ({ tenantDetails }) => {
       }
     });
   };
-
+  
   React.useEffect(() => {
     // Fetch initial data
     getTenantsDate();
@@ -193,7 +202,6 @@ const TenantsTable = ({ tenantDetails }) => {
     return filteredData;
   };
   
-
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterTenantsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
@@ -204,6 +212,7 @@ const TenantsTable = ({ tenantDetails }) => {
     navigate(`/admin/Leaseing/${id}/${entryIndex}`);
     //console.log(id, entryIndex, "fsdfsdfhdiuysdifusdyiuf");
   };
+
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -348,6 +357,7 @@ const TenantsTable = ({ tenantDetails }) => {
       console.error("Error generating PDF:", error);
     }
   };
+
   const getStatus = (startDate, endDate) => {
     const today = new Date();
     const start = new Date(startDate);
@@ -595,9 +605,9 @@ const TenantsTable = ({ tenantDetails }) => {
                                   e.stopPropagation();
                                   deleteTenants(
                                     tenant._id,
-                                    tenant.entries.entryIndex
+                                    tenant.entries.entryIndex,
+                                    tenant.entries.subscription_id
                                   );
-                                  // console.log(entry.entryIndex,"dsgdg")
                                 }}
                               >
                                 <DeleteIcon />
