@@ -200,7 +200,7 @@ const RentRoll = () => {
     return paginatedData;
   };
 
-  const deleteTenant = (tenantId, entryIndex) => {
+  const deleteTenant = (tenantId, entryIndex, subscription_id) => {
     swal({
       title: "Are you sure?",
       text: "Once deleted, you will not be able to recover this tenant!",
@@ -215,8 +215,17 @@ const RentRoll = () => {
             if (response.data.statusCode === 200) {
               swal("Success!", "Tenant deleted successfully!", "success");
               fetchData();
-              // getTenantsDate();
-              // Optionally, you can refresh your tenant data here.
+              const subscription_id_to_send = subscription_id
+              axios
+                .post(`${baseUrl}/nmipayment/custom-delete-subscription`, {
+                  subscription_id: subscription_id_to_send,
+                })
+                .then((secondApiResponse) => {
+                  console.log("Second API Response:", secondApiResponse.data);
+                })
+                .catch((secondApiError) => {
+                  console.error("Error calling second API:", secondApiError);
+                });
             } else {
               swal("", response.data.message, "error");
             }
@@ -496,7 +505,8 @@ const RentRoll = () => {
                                   e.stopPropagation();
                                   deleteTenant(
                                     tenant._id,
-                                    tenant.entries.entryIndex
+                                    tenant.entries.entryIndex,
+                                    tenant.entries.subscription_id
                                   );
                                   // console.log(entry.entryIndex,"dsgdg")
                                 }}
