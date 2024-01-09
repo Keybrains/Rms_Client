@@ -156,7 +156,6 @@ const fetchNotification = async () => {
 const getRentalData = async (addresses) => {
   try {
     const response = await axios.get(`${baseUrl}/notification/tenantnotification/tenant/${addresses}`);
-    // console.log(response, "abc");
 
     if (Array.isArray(response.data.data)) {
       // Filter the notifications with isTenantread set to false
@@ -190,7 +189,6 @@ const getRentalData = async (addresses) => {
   
       if (entries.length > 0) {
         const rentalAddresses = entries.map(entry => entry.rental_adress).join('-');
-        //console.log(rentalAddresses, "mansi");
         setVendorDetails(response.data.data);
         getRentalData(rentalAddresses);
         //getVendorDetails(rentalAddresses);

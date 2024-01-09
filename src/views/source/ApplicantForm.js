@@ -465,10 +465,8 @@ const ApplicantForm = () => {
       // Fetch tenant data
       const response = await axios.get(apiUrl);
       const tenantData = response.data.data;
-      //console.log(tenantData.tenant_firstName, "abcd");
       // setTenantDetails(tenantData);
       setRentaldata(tenantData);
-      console.log(response.data, "mansi");
       // setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);

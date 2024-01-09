@@ -124,7 +124,6 @@ const VendorWorkDetail = () => {
           rental_units: propertyDetails?.rental_units,
         },
       });
-      console.log(response.data, "yash");
       response.data.map((data) => {
         data.entries.map((item) => {
           const currentDate = new Date();
@@ -134,7 +133,6 @@ const VendorWorkDetail = () => {
           // Compare the current date with start and end dates
           if (currentDate >= sdate && currentDate < edate && item.rental_adress === propertyDetails?.rental_adress && item.rental_units === propertyDetails?.rental_units) {
             // console.log('Response is OK');
-            console.log(data, "yashu");
             setTenantsDetails(data);
           }
         })
@@ -844,7 +842,7 @@ const VendorWorkDetail = () => {
                       margin={"20px"}
                     > */}
                   
-                  {imagedetails ? (
+                  {propertyDetails ? (
                     <>
                       <Box
                         border="1px solid #ccc"

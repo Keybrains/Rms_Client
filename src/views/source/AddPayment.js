@@ -44,8 +44,7 @@ import { OverlayTrigger } from "react-bootstrap";
 
 const AddPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { tenantId, entryIndex } = useParams();
-  const { mainId, paymentIndex } = useParams();
+  const { tenantId, entryIndex, paymentId } = useParams();
   const [id, setId] = useState("");
   const [index, setIndex] = useState("");
   const [file, setFile] = useState([]);
@@ -282,11 +281,10 @@ const AddPayment = () => {
 
   const formatExpirationDate = (date) => {
     // Assuming date is in the format "MM/YYYY"
-    const [month, year] = date.split('/');
+    const [month, year] = date.split("/");
     return `${month}${year}`;
   };
-  
-  
+
   const handleSubmit = async (values) => {
     setLoader(true);
 
@@ -319,7 +317,7 @@ const AddPayment = () => {
             console.error(error);
           }
         } else {
-          console.log(files.upload_file, "myfile");
+          console.log(files.upload_file, "myfile2");
         }
       }
     } else {
@@ -647,85 +645,41 @@ const AddPayment = () => {
       window.open(item, "_blank");
     }
   };
-  const [paymentData, setpaymentData] = useState(null);
 
-  useEffect(() => {
-    //console.log(mainId, paymentIndex, "mainid && payment Id");
-    if (mainId && paymentIndex) {
-      axios
-        .get(
-          `${baseUrl}/payment/payment_summary/${mainId}/payment/${paymentIndex}`
-        )
-        .then((response) => {
-          const paymentData = response.data.data;
-          setpaymentData(paymentData);
-          //console.log(paymentData, "paymentData");
-          //console.log(paymentData.entries, "entries data");
-          const id = paymentData.tenant_id;
-          setId(id);
-          //console.log(id, "abcd");
-          const index = paymentData.entryIndex;
-          setIndex(index);
-          //console.log(index, "xyz");
+  useEffect(async () => {
+    await axios
+      .get(`${baseUrl}/payment_charge/get_entry/${paymentId}`)
+      .then((response) => {
+        if (response.data.statusCode === 200) {
+          setFile(response.data.data.charges_attachment);
+          generalledgerFormik.setValues({
+            date: response.data.data.date,
+            amount: response.data.data.amount,
+            charges_attachment: response.data.data.charges_attachment,
+            memo: response.data.data.memo,
+            entries: [
+              {
+                account: response.data.data.account || "",
+                amount: response.data.data.amount || "",
+                balance: response.data.data.amount || "",
+              },
+            ],
+          });
+        } else {
+          console.error("Error:", response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Network error:", error);
+      });
+  }, [paymentId]);
 
-          const formattedDate =
-            paymentData && paymentData.date
-              ? new Date(paymentData.date).toISOString().split("T")[0]
-              : "";
-          //console.log(formattedDate, "formattedDate");
-
-          setSelectedRec(paymentData.tenant_firstName || "Select");
-          setSelectedProp(paymentData.payment_method || "Select");
-
-          const entriesData = paymentData.entries || [];
-
-          if (Array.isArray(entriesData)) {
-            // Handling when entriesData is an array
-            generalledgerFormik.setValues({
-              date: formattedDate,
-              amount: paymentData.amount || "",
-              memo: paymentData.memo || "",
-              entries: entriesData.map((entry) => ({
-                account: entry.account || "",
-                balance: entry.balance || "",
-                amount: entry.amount || "",
-                total_amount: entry.total_amount || "",
-              })),
-            });
-          } else if (typeof entriesData === "object") {
-            // Handling when entriesData is an object
-            console.error("entriesData is not an array:", entriesData);
-            // Here, handle the single object scenario, you can convert it to an array or handle it accordingly.
-            generalledgerFormik.setValues({
-              date: formattedDate,
-              amount: paymentData.amount || "",
-              memo: paymentData.memo || "",
-              entries: [
-                {
-                  account: entriesData.account || "",
-                  balance: entriesData.balance || "",
-                  amount: entriesData.amount || "",
-                  total_amount: entriesData.total_amount || "",
-                },
-              ],
-            });
-          } else {
-            console.error("Invalid entriesData format:", entriesData);
-            // Handle other unexpected formats here if needed
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching vendor data:", error);
-        });
-    }
-  }, [mainId, paymentIndex]);
-
-  const editpayment = async (mainId, paymentIndex, values) => {
+  const editpayment = async (id, values) => {
     const arrayOfNames = file.map((item) => item.name);
-    for (const [
-      index,
-      files,
-    ] of generalledgerFormik.values.attachment.entries()) {
+    const attachmentEntries =
+      generalledgerFormik?.values?.attachment?.entries() || [];
+
+    for (const [index, files] of attachmentEntries) {
       if (files.upload_file instanceof File) {
         console.log(files.upload_file, "myfile");
 
@@ -778,12 +732,12 @@ const AddPayment = () => {
 
       //console.log(updatedValues, "updatedValues");
 
-      const putUrl = `${baseUrl}/payment/payments/${mainId}/payment/${paymentIndex}`;
+      const putUrl = `${baseUrl}/payment_charge/edit_entry/${paymentId}`;
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
         swal("Success", "Payments Update Successfully", "success");
-        navigate(`/admin/rentrolldetail/${id}/${index}`);
+        navigate(`/admin/rentrolldetail/${tenantid}/${"01"}`);
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -794,21 +748,6 @@ const AddPayment = () => {
         console.error("Response Data:", error.response.data);
       }
     }
-  };
-
-  console.log(generalledgerFormik.values, "sdfyggvbhjnkml");
-
-  const formatCardNumber = (inputValue) => {
-    if (typeof inputValue !== "string") {
-      return ""; // Return an empty string if inputValue is not a string
-    }
-
-    const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-    const formattedValue = numericValue
-      .replace(/(\d{4})/g, "$1 ") // Add a space after every four digits
-      .trim(); // Remove any trailing space
-
-    return formattedValue;
   };
 
   const formikForAnotherData = useFormik({
@@ -924,12 +863,17 @@ const AddPayment = () => {
 
   let total_amount = totalamount();
 
+  const amount = generalledgerFormik?.values?.amount;
+  const difference =
+    amount !== undefined && total_amount !== undefined
+      ? Math.abs(amount - total_amount).toFixed(2)
+      : 0; // Default value if amount or total_amount is undefined
+
   const popoverContent = (
     <Popover id="popover-content">
       <Popover.Content>
         The payment's amount must match the total applied to balance. The
-        difference is $
-        {Math.abs(generalledgerFormik.values.amount - total_amount).toFixed(2)}
+        difference is {difference}
       </Popover.Content>
     </Popover>
   );
@@ -989,7 +933,9 @@ const AddPayment = () => {
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">New Payment</h3>
+                    <h3 className="mb-0">
+                      {paymentId ? "Edit Payment" : "New Payment"}
+                    </h3>
                   </Col>
                 </Row>
               </CardHeader>
@@ -1175,23 +1121,32 @@ const AddPayment = () => {
                                   required
                                   onInput={(e) => {
                                     let inputValue = e.target.value;
-                                  
+
                                     // Remove non-numeric characters
-                                    const numericValue = inputValue.replace(/\D/g, "");
-                                  
+                                    const numericValue = inputValue.replace(
+                                      /\D/g,
+                                      ""
+                                    );
+
                                     // Format the date as "MM/YYYY"
                                     if (numericValue.length > 2) {
-                                      const month = numericValue.substring(0, 2);
+                                      const month = numericValue.substring(
+                                        0,
+                                        2
+                                      );
                                       const year = numericValue.substring(2, 6);
                                       e.target.value = `${month}/${year}`;
                                     } else {
                                       e.target.value = numericValue;
                                     }
-                                  
+
                                     // Update the Formik values as strings
-                                    generalledgerFormik.setFieldValue('expiration_date', e.target.value);
+                                    generalledgerFormik.setFieldValue(
+                                      "expiration_date",
+                                      e.target.value
+                                    );
                                   }}
-                                  
+
                                   // onInput={(e) => {
                                   //   let inputValue = e.target.value;
 
@@ -1861,7 +1816,7 @@ const AddPayment = () => {
                           >
                             Loading...
                           </button>
-                        ) : mainId && paymentIndex ? (
+                        ) : paymentId ? (
                           <button
                             type="submit"
                             className="btn btn-primary"
@@ -1869,8 +1824,7 @@ const AddPayment = () => {
                             onClick={(e) => {
                               e.preventDefault();
                               editpayment(
-                                mainId,
-                                paymentIndex,
+                                paymentId,
                                 generalledgerFormik.values
                               );
                             }}

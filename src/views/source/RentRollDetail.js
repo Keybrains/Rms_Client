@@ -312,10 +312,8 @@ const RentRollDetail = () => {
   //     // Fetch tenant data
   //     const response = await axios.get(apiUrl);
   //     const tenantData = response.data.data;
-  //     //console.log(tenantData.tenant_firstName, "abcd");
   //     setTenantDetails(tenantData);
   //     setRentaldata(tenantData);
-  //     //console.log(tenantData, "mansi");
   //     setLoading(false);
   //   } catch (error) {
   //     console.error("Error fetching tenant details:", error);
@@ -338,7 +336,6 @@ const RentRollDetail = () => {
       const response = await axios.get(apiUrl);
       const tenantData = response.data.data;
       setTimeout(() => {
-        //console.log(tenantData.tenant_firstName, "abcd");
         //setTenantDetails(tenantData);
         setRentaldata(tenantData);
         console.log(tenantData, "tenantsdata");
@@ -457,7 +454,6 @@ const RentRollDetail = () => {
         return item._id === tenantId && item.entries.entryIndex === entryIndex;
       });
 
-      console.log(filteredData, "yashr");
       setMyData1(filteredData);
     } catch (error) {
       // Handle errors here
@@ -600,7 +596,6 @@ const RentRollDetail = () => {
     const currentDate = new Date().toISOString().split("T")[0];
     setNoticeGivenDate(currentDate);
   }, []);
-  console.log(tenantId, "yash");
   const handleMoveout = () => {
     if (moveOutDate && noticeGivenDate) {
       const updatedApplicant = {
@@ -1513,25 +1508,6 @@ const RentRollDetail = () => {
                                                     style={{
                                                       cursor: "pointer",
                                                     }}
-                                                    // onClick={(e) => {
-                                                    // e.stopPropagation();
-                                                    // console.log(
-                                                    //   "Entry Object:",
-                                                    //   entry
-                                                    // );
-                                                    // deleteCharge(
-                                                    //   generalledger._id,
-                                                    //   entry.chargeIndex
-                                                    // );
-                                                    // console.log(
-                                                    //   generalledger._id,
-                                                    //   "dsgdg"
-                                                    // );
-                                                    // console.log(
-                                                    //   entry.chargeIndex,
-                                                    //   "dsgdg"
-                                                    // );
-                                                    // }}
                                                   >
                                                     <DeleteIcon
                                                       onClick={() => {
@@ -1567,7 +1543,19 @@ const RentRollDetail = () => {
                                                 {generalledger.type ===
                                                   "Payment" && (
                                                   <>
-                                                    <div>-</div>
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        editpayment(
+                                                          generalledger._id
+                                                        );
+                                                      }}
+                                                    >
+                                                      <EditIcon />
+                                                    </div>
                                                   </>
                                                 )}
                                               </div>

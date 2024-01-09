@@ -376,7 +376,6 @@ const TAddWork = () => {
         const uniqueAddresses = [...new Set(data.rentalAddresses.map(item => item[0].rental_adress))];
         setPropertyData(uniqueAddresses);
         setUnitData(data.rentalUnits);
-        console.log(data, "mansi")// Correct the property data source
       })
       .catch((error) => {
         console.error("Error:", error);
