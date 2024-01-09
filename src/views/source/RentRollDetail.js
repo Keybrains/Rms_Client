@@ -1541,24 +1541,7 @@ const RentRollDetail = () => {
                                                 )}
                                                   
 
-                                                // {generalledger.type ===
-                                                //   "Payment" && (
-                                                //   <> -
-                                                //     // <div
-                                                //     //   style={{
-                                                //     //     cursor: "pointer",
-                                                //     //   }}
-                                                //     //   onClick={(e) => {
-                                                //     //     e.stopPropagation();
-                                                //     //     editpayment(
-                                                //     //       generalledger._id
-                                                //     //     );
-                                                //     //   }}
-                                                //     // >
-                                                //     //   <EditIcon />
-                                                //     // </div>
-                                                //   </>
-                                                // )}
+                                                
                                               </div>
                                             </td>
                                           </tr>
