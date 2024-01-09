@@ -50,7 +50,6 @@ const TenantDashBoard = (props) => {
   };
 
   // let cookies = new Cookies();
-  // //console.log(localStorage.getItem("token"), "abc")
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);

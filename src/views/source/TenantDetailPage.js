@@ -205,7 +205,6 @@ const TenantDetailPage = () => {
     );
     const data = responce.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
-    console.log(filteredData, "yashr");
     setMyData(filteredData);
   };
 
@@ -225,7 +224,6 @@ const TenantDetailPage = () => {
         return item._id === tenantId && item.entries.entryIndex === entryIndex;
       });
 
-      console.log(filteredData, "yashr");
       setMyData1(filteredData);
     } catch (error) {
       // Handle errors here
