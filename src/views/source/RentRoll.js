@@ -52,7 +52,7 @@ const RentRoll = () => {
   // }
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
-  const [pageItem, setPageItem] = React.useState(6);
+  const [pageItem, setPageItem] = React.useState(10);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
@@ -540,27 +540,35 @@ const RentRoll = () => {
                         <DropdownMenu>
                           <DropdownItem
                             onClick={() => {
-                              setPageItem(6);
+                              setPageItem(10);
                               setCurrentPage(1);
                             }}
                           >
-                            6
+                            10
                           </DropdownItem>
                           <DropdownItem
                             onClick={() => {
-                              setPageItem(12);
+                              setPageItem(25);
                               setCurrentPage(1);
                             }}
                           >
-                            12
+                            25
                           </DropdownItem>
                           <DropdownItem
                             onClick={() => {
-                              setPageItem(18);
+                              setPageItem(50);
                               setCurrentPage(1);
                             }}
                           >
-                            18
+                            50
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(100);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            100
                           </DropdownItem>
                         </DropdownMenu>
                       </Dropdown>
