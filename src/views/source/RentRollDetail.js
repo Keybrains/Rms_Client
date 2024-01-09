@@ -1539,6 +1539,7 @@ const RentRollDetail = () => {
                                                     <EditIcon />
                                                   </div>
                                                 )}
+                                                  
 
                                                 // {generalledger.type ===
                                                 //   "Payment" && (
