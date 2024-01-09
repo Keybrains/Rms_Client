@@ -13,8 +13,6 @@ import {
   FormGroup,
   Form,
   Input,
-  InputGroup,
-  InputGroupAddon,
   Container,
   Table,
   Row,
@@ -23,45 +21,28 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Label,
   Popover,
 } from "reactstrap";
 import ChargeHeader from "components/Headers/ChargeHeader";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CloseIcon from "@mui/icons-material/Close";
-import { Check, CheckBox } from "@mui/icons-material";
-import Checkbox from "@mui/material/Checkbox";
-import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { values } from "pdf-lib";
-import Img from "assets/img/theme/team-4-800x800.jpg";
 import "jspdf-autotable";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import moment from "moment";
-import { DIALOG_WIDTH } from "@mui/x-date-pickers/internals";
-import GeneralLedger from "./GeneralLedger";
 import { OverlayTrigger } from "react-bootstrap";
 
 const AddCharge = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, entryIndex } = useParams();
-  const { mainId, chargeIndex } = useParams();
-  const [id, setId] = useState("");
-  const [index, setIndex] = useState("");
   const [file, setFile] = useState([]);
   const [accountData, setAccountData] = useState([]);
   const [propertyData, setPropertyData] = useState([]);
-  const [checkedCheckbox, setCheckedCheckbox] = useState();
-  const [prodropdownOpen, setproDropdownOpen] = useState(false);
   const [recdropdownOpen, setrecDropdownOpen] = useState(false);
   const [rentAddress, setRentAddress] = useState([]);
   const [tenantid, setTenantid] = useState("");
   const [tenantentryIndex, setTenantentryindex] = useState("");
-  const [printReceipt, setPrintReceipt] = useState(false);
-
-  const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
   const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
 
   const [selectedProp, setSelectedProp] = useState("Select Payment Method");
@@ -116,7 +97,6 @@ const AddCharge = () => {
     },
   });
   let navigate = useNavigate();
-  console.log(generalledgerFormik.values, "yash");
 
   const handleCloseButtonClick = () => {
     navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
@@ -206,7 +186,6 @@ const AddCharge = () => {
     });
   };
   const [propertyId, setPropertyId] = useState("");
-  console.log("sahill", propertyId);
   const fetchTenantData = async () => {
     fetch(`${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`)
       .then((response) => response.json())
@@ -497,7 +476,6 @@ const AddCharge = () => {
     //setImgLoader(true);
     // console.log(files, "file");
     const filesArray = [...files];
-    console.log(filesArray, "yash");
 
     if (filesArray.length <= 10 && file.length === 0) {
       const finalArray = [];
@@ -584,7 +562,6 @@ const AddCharge = () => {
   //         console.log(formattedDate, "formattedDate");
   //         const id = chargeData.tenant_id;
   //         setId(id);
-  //         //console.log(id, "abcd");
   //         const index = chargeData.entryIndex;
   //         setIndex(index);
   //         //console.log(index, "xyz");
@@ -744,7 +721,7 @@ const AddCharge = () => {
                 <Row className="align-items-center">
                   <Col xs="8">
                     <h3 className="mb-0">
-                      {mainId ? "Edit Charge" : "New Charge"}
+                      {chargeId ? "Edit Charge" : "New Charge"}
                     </h3>
                   </Col>
                 </Row>

@@ -455,7 +455,6 @@ const Leaseing = () => {
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
-    // console.log(newRecurring, "yash")
     if (mode === "update") {
       setRecurringData((prevData) => {
         // Use map to update the element at the specified index
@@ -488,7 +487,6 @@ const Leaseing = () => {
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
-    // console.log(newRecurring, "yash")
     if (mode === "update") {
       setOneTimeData((prevData) => {
         // Use map to update the element at the specified index
@@ -616,7 +614,6 @@ const Leaseing = () => {
 
       const isSameTenant = data.find(
         (entry) => {
-          console.log(entry._id, "yash");
           return id === entry._id;
         }
         // selectedTenantData.lastName === entry.tenant_lastName &&
@@ -694,7 +691,6 @@ const Leaseing = () => {
     //setImgLoader(true);
     // console.log(files, "file");
     const filesArray = [...files];
-    console.log(filesArray, "yash");
 
     if (filesArray.length <= 10 && file.length === 0) {
       const finalArray = [];
@@ -1007,7 +1003,6 @@ const Leaseing = () => {
       // Check if the selected tenant's details are the same as any other tenant
       const isSameTenant = data.find(
         (entry) => {
-          console.log(entry._id, "yash");
           return id === entry._id;
         }
         // selectedTenantData.lastName === entry.tenant_lastName &&
@@ -3106,7 +3101,6 @@ const Leaseing = () => {
                                             <br />
                                           </div>
                                         )}
-                                      {/* {console.log(tenantData, "yash")} */}
                                       {/* {console.log(tenantsFormik.values)} */}
                                       {!showTenantTable && (
                                         <div

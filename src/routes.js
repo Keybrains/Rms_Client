@@ -571,11 +571,6 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/AddPayment/:id",
-    component: <AddPayment />,
-    layout: "/admin",
-  },
-  {
     path: "/AddPayment",
     component: <AddPayment />,
     layout: "/admin",

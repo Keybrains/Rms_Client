@@ -257,7 +257,6 @@ const TWorkOrderDetails = () => {
       );
       // console.log(response.data.data);
       setTenantsDetails(response.data.data[0]);
-      console.log(response.data.data[0], "jaye");
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -366,7 +365,6 @@ const TWorkOrderDetails = () => {
 
               </CardHeader>
               <div className="table-responsive" >
-                {console.log(tenantsDetails, "yash")}
 
                 {activeButton === "Summary" && (
                   <div className="container-fluid">
@@ -1117,7 +1115,7 @@ const TWorkOrderDetails = () => {
                       margin={"20px"}
                     > */}
 
-                        {imagedetails ? (
+                        {propertyDetails ? (
                           <>
                             <Box
                               border="1px solid #ccc"

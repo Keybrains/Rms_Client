@@ -328,7 +328,6 @@ const AddWorkorder = () => {
     setLoader(true);
     var image;
     const imageData = new FormData();
-    console.log(selectedFiles, "yashu");
     for (let index = 0; index < selectedFiles.length; index++) {
       const element = selectedFiles[index];
       imageData.append(`files`, element);
@@ -646,7 +645,6 @@ const AddWorkorder = () => {
     setLoader(true);
     var image;
     const imageData = new FormData();
-    console.log(selectedFiles, "yashu");
     for (let index = 0; index < selectedFiles.length; index++) {
       const element = selectedFiles[index];
       imageData.append(`files`, element);
@@ -940,7 +938,6 @@ const AddWorkorder = () => {
                                   overflowX: "hidden",
                                 }}
                               >
-                                {console.log(propertyData, "mansi")}
                                 {propertyData.map((property, index) => (
                                   <DropdownItem
                                     key={index}
@@ -950,7 +947,6 @@ const AddWorkorder = () => {
                                   >
                                     {property.rental_adress}
 
-                                    {/* {console.log(selectedProp, "abcd")} */}
                                   </DropdownItem>
                                 ))}
                               </DropdownMenu>
@@ -973,7 +969,6 @@ const AddWorkorder = () => {
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="4">
-                        {console.log(unitData, "sahil")}
                         <Row>
                           {selectedProp &&
                             unitData &&
