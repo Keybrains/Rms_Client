@@ -119,7 +119,6 @@ const TenantWork = () => {
         const rentalUnits = entries
           .map((entry) => entry.rental_units)
           .join("^");
-        ////console.log(rentalAddresses, "mansi");
         setTenantDetails(response.data.data);
         getRentalData(rentalAddresses,rentalUnits);
         //getVendorDetails(rentalAddresses);
@@ -154,7 +153,6 @@ const TenantWork = () => {
         const response = await axios.get(
           `${baseUrl}/workorder/workorder/tenant/${addresses}`
           );
-      console.log(`${baseUrl}/workorder/workorder/tenant/${addresses}/${units}`, "abc");
 
       if (Array.isArray(response.data.data)) {
         // Response is an array of work orders
@@ -260,7 +258,6 @@ const TenantWork = () => {
       const response = await axios.get(
         `${baseUrl}/workorder/workorder/tenant/${addresses}`
       );
-      //console.log(response, "abc");
       if (Array.isArray(response.data.data)) {
         // Response is an array of work orders
         setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -292,7 +289,6 @@ const TenantWork = () => {
         const rentalUnits = entries
           .map((entry) => entry.rental_units)
           .join("^");
-        ////console.log(rentalAddresses, "mansi");
         setTenantDetails(response.data.data);
         getRentalDataAfterDelete(rentalAddresses, rentalUnits);
         //getVendorDetails(rentalAddresses);

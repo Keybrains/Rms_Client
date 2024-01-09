@@ -309,7 +309,6 @@ const VendorAddWork = () => {
       const response = await axios.get(
         `${baseUrl}/workorder/workorder_summary/${id}`
       );
-      console.log(response.data.data, "yug console");
       setoutstandDetails(response.data.data);
       // setWorkOrderStatus(response.data.data.workorder_status.reverse());
       setSelectedStatus(response.data.data.status);

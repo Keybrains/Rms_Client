@@ -277,10 +277,8 @@ const ApplicantSummary = () => {
       const tenantData = response.data.data;
       console.log(response, "response.data");
       console.log(tenantData, "tenantData");
-      ////console.log(tenantData.tenant_firstName, "abcd");
       // setTenantDetails(tenantData);
       setRentaldata(tenantData);
-      //console.log(response.data, "mansi");
       // setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -1088,7 +1086,6 @@ const ApplicantSummary = () => {
       console.log(formData, 'formData')
       // formData.append('applicant_notes', newNote);
       // formData.append('applicant_file', newFile);
-      console.log((formData.applicant_file), "yash")
       const response = await axios.put(`${baseUrl}/applicant/applicant/note_attachment/${id}`, formData);
       if (response.data) {
         console.log(response.data, "response.data")

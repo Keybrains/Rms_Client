@@ -476,7 +476,6 @@ const RentRollLeaseing = () => {
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
-    // console.log(newRecurring, "yash")
     if (mode === "update") {
       setRecurringData((prevData) => {
         // Use map to update the element at the specified index
@@ -509,7 +508,6 @@ const RentRollLeaseing = () => {
       // recuringfrequency: leaseFormik.values.recuringfrequency,
     };
 
-    // console.log(newRecurring, "yash")
     if (mode === "update") {
       setOneTimeData((prevData) => {
         // Use map to update the element at the specified index
@@ -1277,7 +1275,6 @@ const RentRollLeaseing = () => {
       // Check if the selected tenant's details are the same as any other tenant
       const isSameTenant = data.find(
         (entry) => {
-          console.log(entry._id, "yash");
           return id === entry._id;
         }
         // selectedTenantData.lastName === entry.tenant_lastName &&
@@ -1749,7 +1746,6 @@ const RentRollLeaseing = () => {
             matchedLease.paymentMethod || "Select"
           );
           // setSelectedUnit(matchedLease.rental_units || "Select");
-          // console.log(laesingdata, "yashraj")
           // setFile(arrayOfObjects || "Select");
           // console.log(matchedLease.upload_file, "upload_fileeee");
 
@@ -1807,7 +1803,6 @@ const RentRollLeaseing = () => {
             cash_flow: matchedLease.cash_flow,
             notes: matchedLease.notes,
           });
-          console.log(matchedLease, "yashu");
           tenantsSchema.setValues({
             tenant_id: laesingdata.tenant_id,
 
@@ -1871,7 +1866,6 @@ const RentRollLeaseing = () => {
 
       const isSameTenant = data.find(
         (entry) => {
-          console.log(entry._id, "yash");
           return id === entry._id;
         }
         // selectedTenantData.lastName === entry.tenant_lastName &&

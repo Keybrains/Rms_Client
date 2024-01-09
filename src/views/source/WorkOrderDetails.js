@@ -88,7 +88,6 @@ const WorkOrderDetails = () => {
       const response = await axios.get(
         `${baseUrl}/workorder/workorder_summary/${workorder_id}`
       );
-      console.log(response.data.data, "yug console");
       setoutstandDetails(response.data.data);
       setWorkOrderStatus(response.data.data.workorder_status.reverse());
       setSelectedStatus(response.data.data.status);
@@ -283,7 +282,6 @@ const WorkOrderDetails = () => {
           rental_units: propertyDetails?.rental_units,
         },
       });
-      console.log(response.data, "yash");
       response.data.map((data) => {
         data.entries.map((item) => {
           const currentDate = new Date();
@@ -298,7 +296,6 @@ const WorkOrderDetails = () => {
             item.rental_units === propertyDetails?.rental_units
           ) {
             // console.log('Response is OK');
-            console.log(data, "yashu");
             setTenantsDetails(data);
           }
         });
@@ -732,9 +729,10 @@ const WorkOrderDetails = () => {
                                         }}
                                       >
                                         <div style={{ fontWeight: "bold" }}>
-                                          {item.statusUpdatedBy} {item.createdAt ? 
-                                            "Created this work order" : "Updated this work order"
-                                           }
+                                          {item.statusUpdatedBy}{" "}
+                                          {item.createdAt
+                                            ? "Created this work order"
+                                            : "Updated this work order"}
                                           <span style={{ fontSize: "13px" }}>
                                             &nbsp;({item.updateAt})
                                           </span>
@@ -748,15 +746,24 @@ const WorkOrderDetails = () => {
                                       />
 
                                       <Grid container>
-                                        {!Object.keys(item).includes("status") || !Object.keys(item).includes("due_date") || item.status !== ("" || " ")  ||
-                                        item.due_date !== ("" || " ")  ||
-                                        item.staffmember_name !== ("" || " ")  ? (
+                                        {!Object.keys(item).includes(
+                                          "status"
+                                        ) ||
+                                        !Object.keys(item).includes(
+                                          "due_date"
+                                        ) ||
+                                        item.status !== ("" || " ") ||
+                                        item.due_date !== ("" || " ") ||
+                                        item.staffmember_name !==
+                                          ("" || " ") ? (
                                           <>
                                             <Grid
                                               item
                                               xs={4}
                                               style={
-                                                !Object.keys(item).includes("status") || item.status === ("" || " ") 
+                                                !Object.keys(item).includes(
+                                                  "status"
+                                                ) || item.status === ("" || " ")
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -767,7 +774,10 @@ const WorkOrderDetails = () => {
                                               item
                                               xs={4}
                                               style={
-                                                !Object.keys(item).includes("due_date") || item.due_date === ("" || " ") 
+                                                !Object.keys(item).includes(
+                                                  "due_date"
+                                                ) ||
+                                                item.due_date === ("" || " ")
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -778,9 +788,13 @@ const WorkOrderDetails = () => {
                                               item
                                               xs={4}
                                               style={{
-                                                display: item.staffmember_name && item.staffmember_name.trim() !== "" ? "block" : "none"
+                                                display:
+                                                  item.staffmember_name &&
+                                                  item.staffmember_name.trim() !==
+                                                    ""
+                                                    ? "block"
+                                                    : "none",
                                               }}
-                                              
                                             >
                                               Assigned To:{" "}
                                               {item.staffmember_name}
@@ -961,7 +975,7 @@ const WorkOrderDetails = () => {
                                         ?.property_image[0]?.[0] ? (
                                       <img
                                         src={
-                                          propertyDetails.property_image[0][0]
+                                          propertyDetails?.property_image[0][0]
                                         }
                                         alt="property"
                                         style={{
@@ -996,13 +1010,13 @@ const WorkOrderDetails = () => {
                                   }}
                                   onClick={() =>
                                     navigate(
-                                      `/admin/PropDetails/${propertyDetails.rentalId}/${propertyDetails.propertyId}`
+                                      `/admin/PropDetails/${propertyDetails?.rentalId}/${propertyDetails?.propertyId}`
                                     )
                                   }
                                 >
                                   <span>
-                                    {propertyDetails.rental_adress || "N/A"} (
-                                    {propertyDetails.rental_units})
+                                    {propertyDetails?.rental_adress || "N/A"} (
+                                    {propertyDetails?.rental_units})
                                   </span>
                                 </Box>
                               </Box>
@@ -1022,23 +1036,23 @@ const WorkOrderDetails = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails.rental_city ? (
-                                      <>{propertyDetails.rental_city},</>
+                                    {propertyDetails?.rental_city ? (
+                                      <>{propertyDetails?.rental_city},</>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_state ? (
-                                      <>{propertyDetails.rental_state},</>
+                                    {propertyDetails?.rental_state ? (
+                                      <>{propertyDetails?.rental_state},</>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_country ? (
-                                      <>{propertyDetails.rental_country},</>
+                                    {propertyDetails?.rental_country ? (
+                                      <>{propertyDetails?.rental_country},</>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_postcode ? (
-                                      <>{propertyDetails.rental_postcode}.</>
+                                    {propertyDetails?.rental_postcode ? (
+                                      <>{propertyDetails?.rental_postcode}.</>
                                     ) : (
                                       ""
                                     )}
@@ -1407,8 +1421,7 @@ const WorkOrderDetails = () => {
                       maxWidth="1000px"
                       margin={"20px"}
                     > */}
-
-                        {imagedetails ? (
+                        {propertyDetails ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -1482,13 +1495,13 @@ const WorkOrderDetails = () => {
                                   }}
                                   onClick={() =>
                                     navigate(
-                                      `/admin/PropDetails/${propertyDetails.rentalId}/${propertyDetails.propertyId}`
+                                      `/admin/PropDetails/${propertyDetails?.rentalId}/${propertyDetails?.propertyId}`
                                     )
                                   }
                                 >
                                   <span>
-                                    {propertyDetails.rental_adress || "N/A"} (
-                                    {propertyDetails.rental_units})
+                                    {propertyDetails?.rental_adress || "N/A"} (
+                                    {propertyDetails?.rental_units})
                                   </span>
                                 </Box>
                               </Box>
@@ -1508,23 +1521,23 @@ const WorkOrderDetails = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails.rental_city ? (
-                                      <>{propertyDetails.rental_city},</>
+                                    {propertyDetails?.rental_city ? (
+                                      <>{propertyDetails?.rental_city},</>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_state ? (
-                                      <>{propertyDetails.rental_state},</>
+                                    {propertyDetails?.rental_state ? (
+                                      <>{propertyDetails?.rental_state},</>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_country ? (
-                                      <>{propertyDetails.rental_country},</>
+                                    {propertyDetails?.rental_country ? (
+                                      <>{propertyDetails?.rental_country},</>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_postcode ? (
-                                      <>{propertyDetails.rental_postcode}.</>
+                                    {propertyDetails?.rental_postcode ? (
+                                      <>{propertyDetails?.rental_postcode}.</>
                                     ) : (
                                       ""
                                     )}
