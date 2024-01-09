@@ -18,8 +18,11 @@ import {
   Table,
   Button,
 } from "reactstrap";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
+
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
+// import { Grid } from "react-loader-spinner";
 
 const VendorWorkDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -32,6 +35,13 @@ const VendorWorkDetail = () => {
   const [hoveredButton, setHoveredButton] = useState(null);
   const [activeButton, setActiveButton] = useState("Summary");
   const [imagedetails, setImageDetails] = useState([]);
+  const [updateButton, setUpdateButton] = useState(false);
+  const [workOrderStatus, setWorkOrderStatus] = useState("");
+
+  const handleUpdateButtonClick = () => {
+    // Add any logic or state changes you need before opening the dialog
+    setUpdateButton(true);
+  };
   let navigate = useNavigate();
 
   const getOutstandData = async () => {
@@ -41,6 +51,7 @@ const VendorWorkDetail = () => {
       );
       setoutstandDetails(response.data.data);
       setLoading(false);
+      setWorkOrderStatus(response.data.data.workorder_status.reverse());
       setImageDetails(response.data.data.workOrderImage)
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -423,7 +434,113 @@ const VendorWorkDetail = () => {
                                   </Box>
                                 </Box>
                               ) : null}
-                          </>
+                              <Grid
+                              container
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              padding="16px"
+                              maxWidth="700px"
+                              margin="20px"
+                              style={{
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                overflowX: "auto",
+                              }} // Center the box horizontally
+                            >
+                              <Grid item xs={3} sm={3.5} md={3} lg={2} xl={2}>
+                                <h2 className="text-primary text-lg">
+                                  Updates
+                                </h2>
+                              </Grid>
+
+                              {outstandDetails.workorder_status &&
+                                outstandDetails.workorder_status.length > 0 &&
+                                workOrderStatus.map((item, index) => (
+                                  <Grid item xs={12}>
+                                    <Box
+                                      padding="12px"
+                                      maxWidth="700px"
+                                      style={{
+                                        marginLeft: "auto",
+                                        marginRight: "auto",
+                                        overflowX: "auto",
+                                      }} // Center the box horizontally
+                                    >
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "space-between",
+                                        }}
+                                      >
+                                        <div style={{ fontWeight: "bold" }}>
+                                          {item.statusUpdatedBy} {item.createdAt ? 
+                                            "Created this work order" : "Updated this work order"
+                                           }
+                                          <span style={{ fontSize: "13px" }}>
+                                            &nbsp;({item.updateAt})
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <hr
+                                        style={{
+                                          marginTop: "0px",
+                                          marginBottom: "0px",
+                                        }}
+                                      />
+                                      
+                                      {console.log(item,'item')}
+                                      <Grid container>
+                                        {!Object.keys(item).includes("status") || Object.keys(item).includes("due_date") || item.status !== (" " || "")  ||
+                                        item.due_date !== (" " || "")  ||
+                                        item.staffmember_name !== (" " || "")   ? (
+                                          <>
+                                            <Grid
+                                              item
+                                              xs={4}
+                                              style={
+                                                !Object.keys(item).includes("status") || item.status === (" " || null)
+                                                  ? { display: "none" }
+                                                  : { display: "block" }
+                                              }
+                                            >
+                                              Status: {item.status}
+                                            </Grid>
+                                            <Grid
+                                              itemx
+                                              xs={4}
+                                              style={
+                                                !Object.keys(item).includes("due_date") || item.due_date === (" " || null) 
+                                                  ? { display: "none" }
+                                                  : { display: "block" }
+                                              }
+                                            >
+                                              Due Date: {item.due_date}
+                                            </Grid>
+                                            <Grid
+                                              item
+                                              xs={4}
+                                              style={{
+                                                display: item.staffmember_name && item.staffmember_name.trim() !== "" ? "block" : "none"
+                                              }}
+                                            >
+                                              Assigned To:{" "}
+                                              {item.staffmember_name}
+                                            </Grid>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Grid item>
+                                              {" "}
+                                              Work Order Is Updated
+                                            </Grid>
+                                          </>
+                                        )}
+                                      </Grid>
+                                    </Box>
+                                  </Grid>
+                                ))}
+                            </Grid>                         
+                             </>
                         ) : (
                           <div>No details found.</div>
                         )}

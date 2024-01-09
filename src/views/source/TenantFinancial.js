@@ -57,8 +57,8 @@ const TenantFinancial = () => {
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [searchQueryy, setSearchQueryy] = useState("");
-  const [unit, setUnit] = useState("")
-  const [propertyId, setPropertyId] = useState("")
+  const [unit, setUnit] = useState("");
+  const [propertyId, setPropertyId] = useState("");
   // const [cookie_id, setCookieId] = useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
@@ -78,7 +78,6 @@ const TenantFinancial = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
 
-
   const fetchUnitsByProperty = async (propertyType) => {
     try {
       const response = await fetch(
@@ -95,8 +94,11 @@ const TenantFinancial = () => {
   };
   // Step 2: Event handler to open the modal
   const openModal = () => {
-    setIsModalOpen(true);
     financialFormik.setFieldValue("tenantId", cookie_id);
+    financialFormik.setFieldValue("first_name", tenantDetails.tenant_firstName);
+    financialFormik.setFieldValue("last_name", tenantDetails.tenant_lastName);
+    financialFormik.setFieldValue("email_name", tenantDetails.tenant_email);
+    setIsModalOpen(true);
   };
 
   // Event handler to close the modal
@@ -134,7 +136,6 @@ const TenantFinancial = () => {
   };
   const financialFormik = useFormik({
     initialValues: {
-
       first_name: "",
       last_name: "",
       email_name: "",
@@ -144,31 +145,16 @@ const TenantFinancial = () => {
       cvv: "",
       tenantId: "",
       propertyId: "",
-      unitId: ""
-
+      unitId: "",
     },
     validationSchema: yup.object({
-      first_name: yup
-        .string()
-        .required("First name is required"),
-      last_name: yup
-        .string()
-        .required("Last name is required"),
-      email_name: yup
-        .string()
-        .required("Email is required"),
-      card_number: yup
-        .number()
-        .required("Card number is required"),
-      amount: yup
-        .number()
-        .required("Amount is required"),
-      expiration_date: yup
-        .string()
-        .required("Expiration date is required"),
-      cvv: yup
-        .number()
-        .required("CVV is required"),
+      first_name: yup.string().required("First name is required"),
+      last_name: yup.string().required("Last name is required"),
+      email_name: yup.string().required("Email is required"),
+      card_number: yup.number().required("Card number is required"),
+      amount: yup.number().required("Amount is required"),
+      expiration_date: yup.string().required("Expiration date is required"),
+      cvv: yup.number().required("CVV is required"),
     }),
     onSubmit: (values, action) => {
       // handleFormSubmit(values, action);
@@ -177,13 +163,13 @@ const TenantFinancial = () => {
     },
   });
   const handlePropertyTypeSelect = async (property) => {
-    console.log(property, 'peropjihbjmn.................')
+    console.log(property, "peropjihbjmn.................");
     setSelectedPropertyType(property.rental_adress);
     financialFormik.setFieldValue("propertyId", property.property_id || "");
     financialFormik.setFieldValue("unitId", property.unit_id || "");
     setSelectedUnit(""); // Reset selected unit when a new property is selected
-    setUnit(property.rental_unit)
-    setPropertyId(property.property_id)
+    setUnit(property.rental_unit);
+    setPropertyId(property.property_id);
     setSelectedUnit(""); // Reset selected unit when a new property is selected
     try {
       const units = await fetchUnitsByProperty(property.rental_adress);
@@ -269,13 +255,9 @@ const TenantFinancial = () => {
     }
   };
   // console.log(tenantDetails, "tenantDetails");
-  useEffect(() => {
+  React.useEffect(() => {
     getTenantData();
-    // console.log(
-    //   `${baseUrl}/tenant/tenant_rental_addresses/${cookie_id}`
-    // );
-  }, [cookie_id, pageItem]);
-
+  }, [cookie_id]);
   const getGeneralLedgerData = async () => {
     if (tenantDetails) {
       try {
@@ -285,7 +267,7 @@ const TenantFinancial = () => {
           const unit = data?.rental_units;
           if (rental && property_id && unit) {
             const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${property_id}&unit=${unit}&tenant_id=${cookie_id}`;
-            console.log(url, "==================")
+            console.log(url, "==================");
             try {
               const response = await axios.get(url);
               if (response.data && response.data.data) {
@@ -327,7 +309,7 @@ const TenantFinancial = () => {
             unit: item.unit,
             unit_id: item.unit_id,
             _id: item._id,
-          }))
+          }));
         });
         setTotalPages(Math.ceil(allPaymentAndCharges.length / pageItem));
       } catch (error) {
@@ -389,7 +371,7 @@ const TenantFinancial = () => {
 
   const handleFinancialSubmit = async (values, action) => {
     const url = `${baseUrl}/nmipayment/purchase`;
-
+    console.log(values);
     try {
       setPaymentLoader(true);
       const response = await axios.post(url, {
@@ -399,7 +381,7 @@ const TenantFinancial = () => {
       console.log(response.data, "response.data");
 
       if (response.data && response.data.statusCode === 100) {
-        swal("Success", response.data.message, "success"); // Adjust the swal parameters as needed
+        swal("Success","Payment Added Successfull", "success"); // Adjust the swal parameters as needed
         // window.location.reload()
         await getGeneralLedgerData();
         console.log("Payment successful");
@@ -412,12 +394,12 @@ const TenantFinancial = () => {
         }
       } else {
         console.error("Unexpected response format:", response.data);
-        swal("", response.data.message, "error");
+        swal("Error", response.data.message, "error");
         // Handle other status codes or show an error message
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      swal("", error, "error");
+      // swal("", error, "error");
       // Handle the error (e.g., show an error message)
     } finally {
       setPaymentLoader(false); // Reset loader when the request completes (whether success or failure)
@@ -477,7 +459,7 @@ const TenantFinancial = () => {
         unit: item.unit,
         unit_id: item.unit_id,
         _id: item._id,
-      }))
+      }));
     });
     paginatedData = allPaymentAndCharges.slice(startIndex, endIndex);
   }
@@ -500,7 +482,7 @@ const TenantFinancial = () => {
           unit: item.unit,
           unit_id: item.unit_id,
           _id: item._id,
-        }))
+        }));
       });
     }
 
@@ -510,19 +492,36 @@ const TenantFinancial = () => {
         unit: item.unit,
         unit_id: item.unit_id,
         _id: item._id,
-      }))
+      }));
     });
 
     return allPaymentAndCharges.filter((rental) => {
       // const lowerCaseQuery = searchQuery.toLowerCase();
-      console.log(searchQuery, "yash", rental);
       return (
-        (rental.paymentAndCharges.charges_account && rental.paymentAndCharges.charges_account.includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.account && rental.paymentAndCharges.account.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.type && rental.paymentAndCharges.type.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.charges_memo && rental.paymentAndCharges.charges_memo.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.memo && rental.paymentAndCharges.memo.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.amount && rental.paymentAndCharges.amount.toString().includes(searchQuery.toLowerCase()))
+        (rental.paymentAndCharges.charges_account &&
+          rental.paymentAndCharges.charges_account.includes(
+            searchQuery.toLowerCase()
+          )) ||
+        (rental.paymentAndCharges.account &&
+          rental.paymentAndCharges.account
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.type &&
+          rental.paymentAndCharges.type
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.charges_memo &&
+          rental.paymentAndCharges.charges_memo
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.memo &&
+          rental.paymentAndCharges.memo
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (rental.paymentAndCharges.amount &&
+          rental.paymentAndCharges.amount
+            .toString()
+            .includes(searchQuery.toLowerCase()))
       );
     });
   };
@@ -609,7 +608,9 @@ const TenantFinancial = () => {
                                     type="text"
                                     placeholder="Search"
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) =>
+                                      setSearchQuery(e.target.value)
+                                    }
                                     style={{
                                       width: "100%",
                                       maxWidth: "200px",
@@ -637,63 +638,79 @@ const TenantFinancial = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              {filterTenantsBySearchAndPage().map((data, dataIndex) => (
-                                <React.Fragment key={dataIndex}>
-                                  <tr key={`${data?.paymentAndCharges._id}_${dataIndex}`}>
-                                    <td>
-                                      {formatDateWithoutTime(
-                                        data?.paymentAndCharges.type === "Charge"
-                                          ? data?.paymentAndCharges.date
-                                          : data?.paymentAndCharges.date
-                                      ) || "N/A"}
-                                    </td>
-                                    <td>{data?.paymentAndCharges.type}</td>
-                                    <td>
-                                      {data?.paymentAndCharges.type === "Charge"
-                                        ? data?.paymentAndCharges.account
-                                        : data?.paymentAndCharges.account}
-                                    </td>
-                                    <td>
-                                      {data?.paymentAndCharges.type === "Charge"
-                                        ? data?.paymentAndCharges.charges_memo
-                                        : data?.paymentAndCharges.memo}
-                                    </td>
-                                    <td>
-                                      {data?.paymentAndCharges.type === "Charge"
-                                        ? `$${data?.paymentAndCharges.amount}`
-                                        : "-"}
-                                    </td>
-                                    <td>
-                                      {data?.paymentAndCharges.type === "Payment"
-                                        ? `$${data?.paymentAndCharges.amount}`
-                                        : "-"}
-                                    </td>
-                                    <td>
-                                      {data?.paymentAndCharges.Total !==
+                              {filterTenantsBySearchAndPage().map(
+                                (data, dataIndex) => (
+                                  <React.Fragment key={dataIndex}>
+                                    <tr
+                                      key={`${data?.paymentAndCharges._id}_${dataIndex}`}
+                                    >
+                                      <td>
+                                        {formatDateWithoutTime(
+                                          data?.paymentAndCharges.type ===
+                                            "Charge"
+                                            ? data?.paymentAndCharges.date
+                                            : data?.paymentAndCharges.date
+                                        ) || "N/A"}
+                                      </td>
+                                      <td>{data?.paymentAndCharges.type}</td>
+                                      <td>
+                                        {data?.paymentAndCharges.type ===
+                                        "Charge"
+                                          ? data?.paymentAndCharges.account
+                                          : data?.paymentAndCharges.account}
+                                      </td>
+                                      <td>
+                                        {data?.paymentAndCharges.type ===
+                                        "Charge"
+                                          ? data?.paymentAndCharges.charges_memo
+                                          : data?.paymentAndCharges.memo}
+                                      </td>
+                                      <td>
+                                        {data?.paymentAndCharges.type ===
+                                        "Charge"
+                                          ? `$${data?.paymentAndCharges.amount}`
+                                          : "-"}
+                                      </td>
+                                      <td>
+                                        {data?.paymentAndCharges.type ===
+                                        "Payment"
+                                          ? `$${data?.paymentAndCharges.amount}`
+                                          : "-"}
+                                      </td>
+                                      <td>
+                                        {data?.paymentAndCharges.Total !==
                                         undefined ? (
-                                        data?.paymentAndCharges.Total === null ? (
-                                          <>0</>
-                                        ) : data?.paymentAndCharges.Total >= 0 ? (
-                                          `$${data?.paymentAndCharges.Total}`
+                                          data?.paymentAndCharges.Total ===
+                                          null ? (
+                                            <>0</>
+                                          ) : data?.paymentAndCharges.Total >=
+                                            0 ? (
+                                            `$${data?.paymentAndCharges.Total}`
+                                          ) : (
+                                            `$(${Math.abs(
+                                              data?.paymentAndCharges.Total
+                                            )})`
+                                          )
                                         ) : (
-                                          `$(${Math.abs(
-                                            data?.paymentAndCharges.Total
-                                          )})`
-                                        )
-                                      ) : (
-                                        "0"
-                                      )}
-                                    </td>
-                                  </tr>
-                                </React.Fragment>
-                              ))}
+                                          "0"
+                                        )}
+                                      </td>
+                                    </tr>
+                                  </React.Fragment>
+                                )
+                              )}
                             </tbody>
                           </Table>
                           {paginatedData.length > 0 ? (
                             <Row>
                               <Col className="text-right m-3">
-                                <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
-                                  <DropdownToggle caret>{pageItem}</DropdownToggle>
+                                <Dropdown
+                                  isOpen={leasedropdownOpen}
+                                  toggle={toggle2}
+                                >
+                                  <DropdownToggle caret>
+                                    {pageItem}
+                                  </DropdownToggle>
                                   <DropdownMenu>
                                     <DropdownItem
                                       onClick={() => {
@@ -724,7 +741,9 @@ const TenantFinancial = () => {
                                 <Button
                                   className="p-0"
                                   style={{ backgroundColor: "#d0d0d0" }}
-                                  onClick={() => handlePageChange(currentPage - 1)}
+                                  onClick={() =>
+                                    handlePageChange(currentPage - 1)
+                                  }
                                   disabled={currentPage === 1}
                                 >
                                   <svg
@@ -744,7 +763,9 @@ const TenantFinancial = () => {
                                 <Button
                                   className="p-0"
                                   style={{ backgroundColor: "#d0d0d0" }}
-                                  onClick={() => handlePageChange(currentPage + 1)}
+                                  onClick={() =>
+                                    handlePageChange(currentPage + 1)
+                                  }
                                   disabled={currentPage === totalPages}
                                 >
                                   <svg
@@ -780,11 +801,8 @@ const TenantFinancial = () => {
 
                       <ModalBody>
                         <div>
-
                           <Row>
                             <Col md="6">
-
-
                               <label
                                 className="form-control-label"
                                 htmlFor="input-property"
@@ -792,8 +810,14 @@ const TenantFinancial = () => {
                                 Property*
                               </label>
                               <FormGroup>
-                                <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
-                                  <DropdownToggle caret style={{ width: "100%" }}>
+                                <Dropdown
+                                  isOpen={userdropdownOpen}
+                                  toggle={toggle9}
+                                >
+                                  <DropdownToggle
+                                    caret
+                                    style={{ width: "100%" }}
+                                  >
                                     {selectedPropertyType
                                       ? selectedPropertyType
                                       : "Select Property"}
@@ -805,25 +829,25 @@ const TenantFinancial = () => {
                                       overflowY: "auto",
                                     }}
                                   >
-                                    {tenantDetails?.entries?.map((property, index) => (
-                                      <DropdownItem
-                                        key={index}
-                                        onClick={() => {
-                                          handlePropertyTypeSelect(property);
-                                          financialFormik.setFieldValue(
-                                            "propertyId",
-                                            property.property_id
-                                          );
-
-                                        }}
-                                      >
-                                        {property.rental_adress}
-                                      </DropdownItem>
-                                    ))}
+                                    {tenantDetails?.entries?.map(
+                                      (property, index) => (
+                                        <DropdownItem
+                                          key={index}
+                                          onClick={() => {
+                                            handlePropertyTypeSelect(property);
+                                            financialFormik.setFieldValue(
+                                              "propertyId",
+                                              property.property_id
+                                            );
+                                          }}
+                                        >
+                                          {property.rental_adress}
+                                        </DropdownItem>
+                                      )
+                                    )}
                                   </DropdownMenu>
                                 </Dropdown>
                               </FormGroup>
-
                             </Col>
                             <Col md="6">
                               {unitData.length !== 0 ? (
@@ -835,8 +859,14 @@ const TenantFinancial = () => {
                                     Unit *
                                   </label>
                                   <FormGroup>
-                                    <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
-                                      <DropdownToggle caret style={{ width: "100%" }}>
+                                    <Dropdown
+                                      isOpen={unitDropdownOpen}
+                                      toggle={toggle10}
+                                    >
+                                      <DropdownToggle
+                                        caret
+                                        style={{ width: "100%" }}
+                                      >
                                         {selectedUnit
                                           ? selectedUnit
                                           : "Select Unit"}
@@ -863,7 +893,6 @@ const TenantFinancial = () => {
                                   </FormGroup>
                                 </>
                               ) : null}
-
                             </Col>
 
                             <Col md="6">
@@ -908,9 +937,7 @@ const TenantFinancial = () => {
                                   name="first_name"
                                   onBlur={financialFormik.handleBlur}
                                   onChange={financialFormik.handleChange}
-                                  value={
-                                    financialFormik.values.first_name
-                                  }
+                                  value={financialFormik.values.first_name}
                                   required
                                 />
                               </FormGroup>
@@ -981,7 +1008,7 @@ const TenantFinancial = () => {
                                 onChange={(e) => {
                                   // const inputValue = e.target.value;
                                   // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-                                  // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits 
+                                  // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
                                   // // const formattedValue = formatCardNumber(limitedValue);
                                   // e.target.value = limitedValue;
                                   financialFormik.handleChange(e);
@@ -1010,39 +1037,30 @@ const TenantFinancial = () => {
                                   required
                                   onInput={(e) => {
                                     let inputValue = e.target.value;
-
-                                    // Remove non-numeric characters
                                     const numericValue = inputValue.replace(
                                       /\D/g,
                                       ""
                                     );
 
-                                    // Set the input value to the sanitized value (numeric only)
-                                    e.target.value = numericValue;
-
-                                    // Format the date as "MM/YY"
                                     if (numericValue.length > 2) {
                                       const month = numericValue.substring(
                                         0,
                                         2
                                       );
                                       const year = numericValue.substring(2, 6);
-                                      e.target.value = `${month}${year}`;
+                                      e.target.value = `${month}/${year}`;
+                                    } else {
+                                      e.target.value = numericValue;
                                     }
 
-                                    // Restrict the year to be 4 digits starting from the current year
-                                    const currentYear = new Date()
-                                      .getFullYear()
-                                      .toString();
-                                    if (numericValue.length > 5) {
+                                    // Format the year to have a 4-digit length if more than 2 digits are entered
+                                    if (numericValue.length >= 3) {
                                       const enteredYear =
-                                        numericValue.substring(3, 7);
-                                      if (enteredYear < currentYear) {
-                                        e.target.value = `${numericValue.substring(
-                                          0,
-                                          2
-                                        )}/${currentYear.substring(2, 4)}`;
-                                      }
+                                        numericValue.substring(2, 6);
+                                      e.target.value = `${numericValue.substring(
+                                        0,
+                                        2
+                                      )}/${enteredYear}`;
                                     }
                                   }}
                                 />
