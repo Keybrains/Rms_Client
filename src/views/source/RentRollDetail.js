@@ -1542,8 +1542,8 @@ const RentRollDetail = () => {
 
                                                 {generalledger.type ===
                                                   "Payment" && (
-                                                  <>
-                                                    <div
+                                                  <> -
+                                                    {/* <div
                                                       style={{
                                                         cursor: "pointer",
                                                       }}
@@ -1555,7 +1555,7 @@ const RentRollDetail = () => {
                                                       }}
                                                     >
                                                       <EditIcon />
-                                                    </div>
+                                                    </div> */}
                                                   </>
                                                 )}
                                               </div>
