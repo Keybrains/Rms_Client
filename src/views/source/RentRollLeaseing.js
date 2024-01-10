@@ -6801,7 +6801,7 @@ const RentRollLeaseing = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           if (selectedTenantData.length !== 0) {
-                            handleSubmit(entrySchema.values);
+                            entrySchema.handleSubmit();
                           } else {
                             // console.log("data not ok")
                             entrySchema.handleSubmit();
