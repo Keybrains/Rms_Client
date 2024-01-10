@@ -1424,7 +1424,7 @@ const RentRollLeaseing = () => {
         if (id) {
           editLease(id);
         } else {
-          entrySchema.handleSubmit();
+          handleSubmit();
         }
       } else {
         setDisplay(true);
