@@ -30,15 +30,13 @@ const VendorWorkTable = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
-  const [pageItem, setPageItem] = React.useState(6);
+  const [pageItem, setPageItem] = React.useState(10);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
   const getWorkData = async () => {
     try {
-      const response = await axios.get(
-        `${baseUrl}/workorder/workorder`
-      );
+      const response = await axios.get(`${baseUrl}/workorder/workorder`);
       setLoader(false);
       setWorkData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -57,7 +55,7 @@ const VendorWorkTable = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -204,27 +202,35 @@ const VendorWorkTable = () => {
                         <DropdownMenu>
                           <DropdownItem
                             onClick={() => {
-                              setPageItem(6);
+                              setPageItem(10);
                               setCurrentPage(1);
                             }}
                           >
-                            6
+                            10
                           </DropdownItem>
                           <DropdownItem
                             onClick={() => {
-                              setPageItem(12);
+                              setPageItem(25);
                               setCurrentPage(1);
                             }}
                           >
-                            12
+                            25
                           </DropdownItem>
                           <DropdownItem
                             onClick={() => {
-                              setPageItem(18);
+                              setPageItem(50);
                               setCurrentPage(1);
                             }}
                           >
-                            18
+                            50
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setPageItem(100);
+                              setCurrentPage(1);
+                            }}
+                          >
+                            100
                           </DropdownItem>
                         </DropdownMenu>
                       </Dropdown>
