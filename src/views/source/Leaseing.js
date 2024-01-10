@@ -1677,7 +1677,7 @@ const Leaseing = () => {
       dayFrequency: selectedDayFrequency,
       ccnumber: card_number || "",
       email: tenantsSchema.values.tenant_email,
-      ccexp: exp_date ? formatDateForInput(exp_date) : "",
+      ccexp: exp_date ,
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
