@@ -679,81 +679,81 @@ const AddPayment = () => {
     fetchData();
   }, [paymentId]);
 
-  const editpayment = async (id, values) => {
-    const arrayOfNames = file.map((item) => item.name);
-    const attachmentEntries =
-      generalledgerFormik?.values?.attachment?.entries() || [];
+  // const editpayment = async (id, values) => {
+  //   const arrayOfNames = file.map((item) => item.name);
+  //   const attachmentEntries =
+  //     generalledgerFormik?.values?.attachment?.entries() || [];
 
-    for (const [index, files] of attachmentEntries) {
-      if (files.upload_file instanceof File) {
-        console.log(files.upload_file, "myfile");
+  //   for (const [index, files] of attachmentEntries) {
+  //     if (files.upload_file instanceof File) {
+  //       console.log(files.upload_file, "myfile");
 
-        const imageData = new FormData();
-        imageData.append(`files`, files.upload_file);
+  //       const imageData = new FormData();
+  //       imageData.append(`files`, files.upload_file);
 
-        const url = `${baseUrl}/images/upload`;
+  //       const url = `${baseUrl}/images/upload`;
 
-        try {
-          const result = await axios.post(url, imageData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
+  //       try {
+  //         const result = await axios.post(url, imageData, {
+  //           headers: {
+  //             "Content-Type": "multipart/form-data",
+  //           },
+  //         });
 
-          console.log(result, "imgs");
+  //         console.log(result, "imgs");
 
-          // Update the original array with the uploaded file URL
-          generalledgerFormik.values.attachment[index].upload_file =
-            result.data.files[0].url;
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        console.log(files.upload_file, "myfile");
-      }
-    }
-    const rentalAddress = generalledgerFormik.values.rental_adress;
-    values["total_amount"] = total_amount;
+  //         // Update the original array with the uploaded file URL
+  //         generalledgerFormik.values.attachment[index].upload_file =
+  //           result.data.files[0].url;
+  //       } catch (error) {
+  //         console.error(error);
+  //       }
+  //     } else {
+  //       console.log(files.upload_file, "myfile");
+  //     }
+  //   }
+  //   const rentalAddress = generalledgerFormik.values.rental_adress;
+  //   values["total_amount"] = total_amount;
 
-    try {
-      const updatedValues = {
-        date: values.date,
-        amount: values.amount,
-        payment_method: selectedProp,
-        debitcard_number: values.debitcard_number,
-        tenant_firstName: selectedRec,
-        attachment: generalledgerFormik.values.attachment,
-        rental_adress: rentalAddress,
-        tenant_id: tenantid,
-        entryIndex: tenantentryIndex,
+  //   try {
+  //     const updatedValues = {
+  //       date: values.date,
+  //       amount: values.amount,
+  //       payment_method: selectedProp,
+  //       debitcard_number: values.debitcard_number,
+  //       tenant_firstName: selectedRec,
+  //       attachment: generalledgerFormik.values.attachment,
+  //       rental_adress: rentalAddress,
+  //       tenant_id: tenantid,
+  //       entryIndex: tenantentryIndex,
 
-        entries: generalledgerFormik.values.entries.map((entry) => ({
-          account: entry.account,
-          balance: parseFloat(entry.balance),
-          amount: parseFloat(entry.amount),
-          total_amount: total_amount,
-        })),
-      };
+  //       entries: generalledgerFormik.values.entries.map((entry) => ({
+  //         account: entry.account,
+  //         balance: parseFloat(entry.balance),
+  //         amount: parseFloat(entry.amount),
+  //         total_amount: total_amount,
+  //       })),
+  //     };
 
-      //console.log(updatedValues, "updatedValues");
+  //     //console.log(updatedValues, "updatedValues");
 
-      const putUrl = `${baseUrl}/payment_charge/edit_entry/${paymentId}`;
-      const response = await axios.put(putUrl, updatedValues);
+  //     const putUrl = `${baseUrl}/payment_charge/edit_entry/${paymentId}`;
+  //     const response = await axios.put(putUrl, updatedValues);
 
-      if (response.data.statusCode === 200) {
-        swal("Success", "Payments Update Successfully", "success");
-        navigate(`/admin/rentrolldetail/${tenantid}/${"01"}`);
-      } else {
-        swal("Error", response.data.message, "error");
-        console.error("Server Error:", response.data.message);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      if (error.response) {
-        console.error("Response Data:", error.response.data);
-      }
-    }
-  };
+  //     if (response.data.statusCode === 200) {
+  //       swal("Success", "Payments Update Successfully", "success");
+  //       navigate(`/admin/rentrolldetail/${tenantid}/${"01"}`);
+  //     } else {
+  //       swal("Error", response.data.message, "error");
+  //       console.error("Server Error:", response.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     if (error.response) {
+  //       console.error("Response Data:", error.response.data);
+  //     }
+  //   }
+  // };
 
   const formikForAnotherData = useFormik({
     initialValues: {
@@ -1828,10 +1828,10 @@ const AddPayment = () => {
                             style={{ background: "green", cursor: "pointer" }}
                             onClick={(e) => {
                               e.preventDefault();
-                              editpayment(
-                                paymentId,
-                                generalledgerFormik.values
-                              );
+                              // editpayment(
+                              //   paymentId,
+                              //   generalledgerFormik.values
+                              // );
                             }}
                           >
                             Edit Payment
