@@ -6665,7 +6665,7 @@ const RentRollLeaseing = () => {
                                 <Input
                                   type="number"
                                   id="creditcard_number"
-                                  placeholder="0000 0000 0000"
+                                  placeholder="0000 0000 0000 0000"
                                   className="no-spinner"
                                   name="creditcard_number"
                                   value={entrySchema.values.card_number}
