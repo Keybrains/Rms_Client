@@ -44,7 +44,8 @@ import { OverlayTrigger } from "react-bootstrap";
 
 const AddPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { tenantId, entryIndex, paymentId } = useParams();
+  const { tenantId, entryIndex } = useParams();
+  const { paymentId } = useParams();
   const [id, setId] = useState("");
   const [index, setIndex] = useState("");
   const [file, setFile] = useState([]);
@@ -646,10 +647,12 @@ const AddPayment = () => {
     }
   };
 
-  useEffect(async () => {
-    await axios
-      .get(`${baseUrl}/payment_charge/get_entry/${paymentId}`)
-      .then((response) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/payment_charge/get_entry/${paymentId}`
+        );
         if (response.data.statusCode === 200) {
           setFile(response.data.data.charges_attachment);
           generalledgerFormik.setValues({
@@ -668,10 +671,12 @@ const AddPayment = () => {
         } else {
           console.error("Error:", response.data.message);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Network error:", error);
-      });
+      }
+    };
+
+    fetchData();
   }, [paymentId]);
 
   const editpayment = async (id, values) => {
