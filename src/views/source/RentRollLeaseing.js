@@ -1536,7 +1536,6 @@ const RentRollLeaseing = () => {
       if (state && state.applicantData) {
         try {
           const units = await fetchUnitsByProperty(applicantData.rental_adress);
-          console.log(units, "unitssssssssssssss"); // Check the received units in the console
 
           setUnitData(units);
         } catch (error) {
@@ -1740,26 +1739,33 @@ const RentRollLeaseing = () => {
           setselectedFundType(matchedLease.fund_type || "");
           setSelectedAgent(matchedLease.leasing_agent || "");
           setSelectedUnit(matchedLease.rental_units || "");
-          setSelectPaymentMethodDropdawn(matchedLease.paymentMethod || "");
-          setFile(matchedLease.upload_file || "");
+          setSelectPaymentMethodDropdawn(
+            matchedLease.paymentMethod || "Select"
+          );
+          // setSelectedUnit(matchedLease.rental_units || "Select");
+          // setFile(arrayOfObjects || "Select");
+          // console.log(matchedLease.upload_file, "upload_fileeee");
+
+          // console.log(data, "data");
+          setFile(matchedLease.upload_file);
           entrySchema.setValues({
-            entryIndex: matchedLease.entryIndex || "",
-            rental_adress: matchedLease.rental_adress || "",
-            rental_units: matchedLease.rental_units || "",
-            lease_type: matchedLease.lease_type || "",
-            start_date: matchedLease.start_date || "",
-            end_date: matchedLease.end_date || "",
-            leasing_agent: matchedLease.leasing_agent || "",
-            rent_cycle: matchedLease.rent_cycle || "",
-            amount: matchedLease.amount || "",
-            account: matchedLease.account || "",
-            nextDue_date: matchedLease.nextDue_date || "",
-            memo: matchedLease.memo || "",
-            upload_file: matchedLease.upload_file || "",
-            isrenton: matchedLease.isrenton || "",
-            rent_paid: matchedLease.rent_paid || "",
-            propertyOnRent: matchedLease.propertyOnRent || "",
-            paymentMethod: matchedLease.paymentMethod || "",
+            entryIndex: matchedLease.entryIndex,
+            rental_adress: matchedLease.rental_adress,
+            rental_units: matchedLease.rental_units,
+            lease_type: matchedLease.lease_type,
+            start_date: matchedLease.start_date,
+            end_date: matchedLease.end_date,
+            leasing_agent: matchedLease.leasing_agent,
+            rent_cycle: matchedLease.rent_cycle,
+            amount: matchedLease.amount,
+            account: matchedLease.account,
+            nextDue_date: matchedLease.nextDue_date,
+            memo: matchedLease.memo,
+            upload_file: matchedLease.upload_file,
+            isrenton: matchedLease.isrenton,
+            rent_paid: matchedLease.rent_paid,
+            propertyOnRent: matchedLease.propertyOnRent,
+            paymentMethod: matchedLease.paymentMethod,
             //security deposite
             Due_date: matchedLease.Due_date || "",
             Security_amount: matchedLease.Security_amount || "",
@@ -6659,7 +6665,7 @@ const RentRollLeaseing = () => {
                                 <Input
                                   type="number"
                                   id="creditcard_number"
-                                  placeholder="0000 0000 0000"
+                                  placeholder="0000 0000 0000 0000"
                                   className="no-spinner"
                                   name="creditcard_number"
                                   value={entrySchema.values.card_number}
@@ -6795,7 +6801,7 @@ const RentRollLeaseing = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           if (selectedTenantData.length !== 0) {
-                            entrySchema.handleSubmit(entrySchema.values);
+                            handleSubmit(entrySchema.values);
                           } else {
                             // console.log("data not ok")
                             entrySchema.handleSubmit();
