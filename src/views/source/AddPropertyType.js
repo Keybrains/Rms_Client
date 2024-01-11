@@ -31,7 +31,7 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
-import Cookies from 'universal-cookie';
+import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import Checkbox from "@mui/material/Checkbox";
 
@@ -132,11 +132,8 @@ const AddPropertyType = () => {
       //console.log(values, "values");
     },
   });
-  
+
   const [propertyType, setpropertyType] = useState(null);
-
-
-
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -176,8 +173,8 @@ const AddPropertyType = () => {
 
   async function handleSubmit(values) {
     try {
-       // Include isMultiUnit in the values to be sent to the server
-       values.ismultiunit = isMultiUnit;
+      // Include isMultiUnit in the values to be sent to the server
+      values.ismultiunit = isMultiUnit;
       // values["property_type"] = selectedProperty;
       if (id === undefined) {
         const res = await axios.post(
@@ -235,59 +232,61 @@ const AddPropertyType = () => {
               <CardBody>
                 <Form>
                   <div className="pl-lg-4">
-                  <Row>
-                    <Col lg="6">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Property Type *
-                        </label>
-                        <br />
-                        <br />
+                    <Row>
+                      <Col lg="6">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            Property Type *
+                          </label>
+                          <br />
+                          <br />
 
-                        <Dropdown isOpen={prodropdownOpen} toggle={toggle}>
-                          <DropdownToggle caret>
-                            {propertyFormik.values.property_type || "Property Type"}
-                          </DropdownToggle>
-                          <DropdownMenu>
-                          
-                            <DropdownItem
-                              onClick={() =>
-                                propertyFormik.handleChange({
-                                  target: {
-                                    name: "property_type",
-                                    value: "Residential",
-                                  },
-                                })
-                              }
-                            >
-                              Residential
-                            </DropdownItem>
-                            <DropdownItem
-                              onClick={() =>
-                                propertyFormik.handleChange({
-                                  target: {
-                                    name: "property_type",
-                                    value: "Commercial",
-                                  },
-                                })
-                              }
-                            >
-                              Commercial
-                            </DropdownItem>
-                          </DropdownMenu>
-                          {propertyFormik.touched.property_type &&
+                          <Dropdown isOpen={prodropdownOpen} toggle={toggle}>
+                            <DropdownToggle caret>
+                              {propertyFormik.values.property_type ||
+                                "Property Type"}
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              <DropdownItem
+                                onClick={() =>
+                                  propertyFormik.handleChange({
+                                    target: {
+                                      name: "property_type",
+                                      value: "Residential",
+                                    },
+                                  })
+                                }
+                              >
+                                Residential
+                              </DropdownItem>
+                              <DropdownItem
+                                onClick={() =>
+                                  propertyFormik.handleChange({
+                                    target: {
+                                      name: "property_type",
+                                      value: "Commercial",
+                                    },
+                                  })
+                                }
+                              >
+                                Commercial
+                              </DropdownItem>
+                            </DropdownMenu>
+                            {propertyFormik.touched.property_type &&
                             propertyFormik.errors.property_type ? (
-                              <div style={{ color: "red", marginBottom: "10px" }}>
+                              <div
+                                style={{ color: "red", marginBottom: "10px" }}
+                              >
                                 {propertyFormik.errors.property_type}
                               </div>
                             ) : null}
-                        </Dropdown>
-                      </FormGroup>
-                    </Col>
-                  </Row>
+                          </Dropdown>
+                        </FormGroup>
+                      </Col>
+                    </Row>
 
                     <br />
                   </div>
@@ -312,44 +311,43 @@ const AddPropertyType = () => {
                             name="propertysub_type"
                             onBlur={propertyFormik.handleBlur}
                             onChange={propertyFormik.handleChange}
-                            value={propertyFormik.values.propertysub_type}
+                            value={propertyFormik.values.propertysub_type.trim()}
                             required
                           />
                           <br></br>
-                           <Checkbox
-                                      onChange={handleChangecheck}
-                                      checked={isMultiUnit}
-                                      style={{ marginRight: "10px" }}
-                                    />
-                                    <label className="form-control-label">
-                                      Multi unit 
-                                    </label>
+                          <Checkbox
+                            onChange={handleChangecheck}
+                            checked={isMultiUnit}
+                            style={{ marginRight: "10px" }}
+                          />
+                          <label className="form-control-label">
+                            Multi unit
+                          </label>
                         </FormGroup>
-                      </Col>                                           
+                      </Col>
                     </Row>
                     <br />
                   </div>
                   <Row>
-                  <button
-                    type="submit"
-                    className="btn btn-primary ml-4"
-                    style={{ background: "green" }}
-                    // onClick={handleCloseButtonClick}
-                  >
-                    {id ? "Update Property Type" : "Add Property Type"}
-                  </button>
-                  <button
-                    color="primary"
-                   //  href="#rms"
-                    className="btn btn-primary"
-                    onClick={handleCloseButtonClick}
-                    size="sm"
-                    style={{ background: "white", color: "black" }}
-                  >
-                    Cancel
-                  </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary ml-4"
+                      style={{ background: "green" }}
+                      // onClick={handleCloseButtonClick}
+                    >
+                      {id ? "Update Property Type" : "Add Property Type"}
+                    </button>
+                    <button
+                      color="primary"
+                      //  href="#rms"
+                      className="btn btn-primary"
+                      onClick={handleCloseButtonClick}
+                      size="sm"
+                      style={{ background: "white", color: "black" }}
+                    >
+                      Cancel
+                    </button>
                   </Row>
-                  
                 </Form>
               </CardBody>
             </Card>
