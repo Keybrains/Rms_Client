@@ -1538,7 +1538,6 @@ const RentRollLeaseing = () => {
       if (state && state.applicantData) {
         try {
           const units = await fetchUnitsByProperty(applicantData.rental_adress);
-          console.log(units, "unitssssssssssssss"); // Check the received units in the console
 
           setUnitData(units);
         } catch (error) {

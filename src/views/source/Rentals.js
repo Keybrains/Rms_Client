@@ -2793,15 +2793,6 @@ const Rentals = () => {
                                             .rental_unitsAdress
                                         }
                                       />
-                                      {/* {rentalsFormik.touched.rental_unitsAdress &&
-                                    rentalsFormik.errors.rental_unitsAdress ? (
-                                      <div style={{ color: "red" }}>
-                                        {
-                                          rentalsFormik.errors
-                                            .rental_unitsAdress
-                                        }
-                                      </div>
-                                    ) : null} */}
                                     </FormGroup>
                                   </Col>
                                   <Col lg="3">

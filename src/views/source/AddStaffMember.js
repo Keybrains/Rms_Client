@@ -231,7 +231,7 @@ const AddStaffMember = () => {
                               // Update the state or Formik values with the new input value
                               StaffMemberFormik.handleChange(e);
                             }}
-                            value={StaffMemberFormik.values.staffmember_name}
+                            value={StaffMemberFormik.values.staffmember_name.trim()}
                             required
                           />
                         </FormGroup>
@@ -261,7 +261,7 @@ const AddStaffMember = () => {
                             onBlur={StaffMemberFormik.handleBlur}
                             onChange={StaffMemberFormik.handleChange}
                             value={
-                              StaffMemberFormik.values.staffmember_designation
+                              StaffMemberFormik.values.staffmember_designation.trim()
                             }
                           />
                         </FormGroup>
@@ -325,11 +325,11 @@ const AddStaffMember = () => {
                             className="form-control-alternative"
                             id="staffmember_email"
                             placeholder="Email"
-                            type="text"
+                            type="email"
                             name="staffmember_email"
                             onBlur={StaffMemberFormik.handleBlur}
                             onChange={StaffMemberFormik.handleChange}
-                            value={StaffMemberFormik.values.staffmember_email}
+                            value={StaffMemberFormik.values.staffmember_email.toLowerCase()}
                             required
                           />
                         </FormGroup>
