@@ -364,7 +364,6 @@ const AddPayment = () => {
         if (selectedProp === "Credit Card") {
           try {
             const url = `${baseUrl}/nmipayment/purchase`;
-            console.log(url, "nmi api -----------");
             const postObject = {
               first_name: tenantData.tenant_firstName,
               last_name: tenantData.tenant_lastName,
@@ -382,7 +381,7 @@ const AddPayment = () => {
               paymentDetails: postObject,
             });
             if (response.data && response.data.statusCode === 100) {
-              console.log(response.data, "response.data");
+              console.log(response, "response.data");
             } else {
               console.error("Unexpected response format:", response.data);
               swal("", response.data.message, "error");
@@ -640,7 +639,6 @@ const AddPayment = () => {
       const url = URL.createObjectURL(item);
       window.open(url, "_blank");
     }
-    // console.log(item, "item");
     else {
       window.open(item, "_blank");
     }
@@ -758,7 +756,6 @@ const AddPayment = () => {
         amount: 0,
       }, // Assuming entries is the name of your array
     },
-    // Other Formik configurations and validation functions as needed
   });
 
   console.log(tenantid, "tenantid");
