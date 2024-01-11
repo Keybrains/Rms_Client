@@ -292,6 +292,7 @@ const RentRollLeaseing = () => {
     setSelectPaymentMethodDropdawn(paymentMethod);
     // localStorage.setItem("leasetype", leasetype);
     entrySchema.setFieldValue("paymentMethod", paymentMethod);
+    setSelectPaymentMethodDropdawn(paymentMethod);
   };
 
   const [card_number, setcard_number] = useState(null);
@@ -1390,7 +1391,7 @@ const RentRollLeaseing = () => {
       cash_flow: "",
       notes: "",
       paymentMethod: "",
-      subscription_id: "",
+      subscription_id:"",
       exp_date: "",
       card_number: "",
     },
@@ -1402,7 +1403,7 @@ const RentRollLeaseing = () => {
       start_date: yup.string().required("Required"),
       amount: yup.string().required("Required"),
       paymentMethod: yup.string().required("Required"),
-      ...(setSelectPaymentMethodDropdawn === "AutoPayment"
+      ...(selectPaymentMethodDropdawn === "AutoPayment"
         ? {
             exp_date: yup.string().required("Required"),
             card_number: yup
@@ -1417,7 +1418,8 @@ const RentRollLeaseing = () => {
           }
         : null),
     }),
-    onSubmit: () => {
+
+    onSubmit: (values) => {
       if (selectedTenantData.length !== 0) {
         if (id) {
           editLease(id);
@@ -1688,7 +1690,7 @@ const RentRollLeaseing = () => {
             const units = await fetchUnitsByProperty(
               matchedLease.rental_adress
             );
-            setSubscriptionId(matchedLease.subscription_id);
+            setSubscriptionId(matchedLease.subscription_id)
             setUnitData(units);
           } catch (error) {
             console.log(error, "error");
@@ -1740,9 +1742,9 @@ const RentRollLeaseing = () => {
           setSelectedAgent(matchedLease.leasing_agent || "");
           setSelectedUnit(matchedLease.rental_units || "");
           setSelectPaymentMethodDropdawn(
-            matchedLease.paymentMethod || "Select"
+            matchedLease.paymentMethod || ""
           );
-          // setSelectedUnit(matchedLease.rental_units || "Select");
+          // setSelectedUnit(matchedLease.rental_units || "");
           // setFile(arrayOfObjects || "Select");
           // console.log(matchedLease.upload_file, "upload_fileeee");
 
@@ -1750,22 +1752,22 @@ const RentRollLeaseing = () => {
           setFile(matchedLease.upload_file);
           entrySchema.setValues({
             entryIndex: matchedLease.entryIndex,
-            rental_adress: matchedLease.rental_adress,
-            rental_units: matchedLease.rental_units,
-            lease_type: matchedLease.lease_type,
-            start_date: matchedLease.start_date,
-            end_date: matchedLease.end_date,
-            leasing_agent: matchedLease.leasing_agent,
-            rent_cycle: matchedLease.rent_cycle,
-            amount: matchedLease.amount,
-            account: matchedLease.account,
-            nextDue_date: matchedLease.nextDue_date,
-            memo: matchedLease.memo,
-            upload_file: matchedLease.upload_file,
-            isrenton: matchedLease.isrenton,
-            rent_paid: matchedLease.rent_paid,
-            propertyOnRent: matchedLease.propertyOnRent,
-            paymentMethod: matchedLease.paymentMethod,
+            rental_adress: matchedLease.rental_adress || "",
+            rental_units: matchedLease.rental_units || "",
+            lease_type: matchedLease.lease_type || "",
+            start_date: matchedLease.start_date || "",
+            end_date: matchedLease.end_date || "",
+            leasing_agent: matchedLease.leasing_agent || "",
+            rent_cycle: matchedLease.rent_cycle || "",
+            amount: matchedLease.amount || "",
+            account: matchedLease.account || "",
+            nextDue_date: matchedLease.nextDue_date || "",
+            memo: matchedLease.memo || "",
+            upload_file: matchedLease.upload_file || "",
+            isrenton: matchedLease.isrenton || "",
+            rent_paid: matchedLease.rent_paid || "",
+            propertyOnRent: matchedLease.propertyOnRent || "",
+            paymentMethod: matchedLease.paymentMethod || "",
             //security deposite
             Due_date: matchedLease.Due_date || "",
             Security_amount: matchedLease.Security_amount || "",
@@ -1801,43 +1803,42 @@ const RentRollLeaseing = () => {
             notes: matchedLease.notes || "",
           });
           tenantsSchema.setValues({
-            tenant_id: laesingdata.tenant_id || "",
+            tenant_id: laesingdata.tenant_id,
 
             //   Add tenants
-            tenant_firstName: laesingdata.tenant_firstName || "",
-            tenant_lastName: laesingdata.tenant_lastName || "",
-            tenant_unitNumber: laesingdata.tenant_unitNumber || "",
+            tenant_firstName: laesingdata.tenant_firstName,
+            tenant_lastName: laesingdata.tenant_lastName,
+            tenant_unitNumber: laesingdata.tenant_unitNumber,
             // tenant_phoneNumber: { type: Number },
-            tenant_mobileNumber: laesingdata.tenant_mobileNumber || "",
-            tenant_workNumber: laesingdata.tenant_workNumber || "",
-            tenant_homeNumber: laesingdata.tenant_homeNumber || "",
-            tenant_faxPhoneNumber: laesingdata.tenant_faxPhoneNumber || "",
-            tenant_email: laesingdata.tenant_email || "",
-            tenant_password: laesingdata.tenant_password || "",
-            alternate_email: laesingdata.alternate_email || "",
-            tenant_residentStatus: laesingdata.tenant_residentStatus || "",
+            tenant_mobileNumber: laesingdata.tenant_mobileNumber,
+            tenant_workNumber: laesingdata.tenant_workNumber,
+            tenant_homeNumber: laesingdata.tenant_homeNumber,
+            tenant_faxPhoneNumber: laesingdata.tenant_faxPhoneNumber,
+            tenant_email: laesingdata.tenant_email,
+            tenant_password: laesingdata.tenant_password,
+            alternate_email: laesingdata.alternate_email,
+            tenant_residentStatus: laesingdata.tenant_residentStatus,
 
             // personal information
-            birth_date: laesingdata.birth_date || "",
-            textpayer_id: laesingdata.textpayer_id || "",
-            comments: laesingdata.comments || "",
+            birth_date: laesingdata.birth_date,
+            textpayer_id: laesingdata.textpayer_id,
+            comments: laesingdata.comments,
 
             //Emergency contact
 
-            contact_name: laesingdata.contact_name || "",
-            relationship_tenants: laesingdata.relationship_tenants || "",
-            email: laesingdata.email || "",
-            emergency_PhoneNumber: laesingdata.emergency_PhoneNumber || "",
+            contact_name: laesingdata.contact_name,
+            relationship_tenants: laesingdata.relationship_tenants,
+            email: laesingdata.email,
+            emergency_PhoneNumber: laesingdata.emergency_PhoneNumber,
           });
           setOwnerData({
-            rentalOwner_firstName: matchedLease.rentalOwner_firstName || "",
-            rentalOwner_lastName: matchedLease.rentalOwner_lastName || "",
-            rentalOwner_primaryemail: matchedLease.rentalOwner_email || "",
-            rentalOwner_phoneNumber: matchedLease.rentalOwner_phoneNumber || "",
-            rentalOwner_businessNumber:
-              matchedLease.rentalOwner_businessNumber || "",
-            rentalOwner_homeNumber: matchedLease.rentalOwner_homeNumber || "",
-            rentalOwner_companyName: matchedLease.rentalOwner_companyName || "",
+            rentalOwner_firstName: matchedLease.rentalOwner_firstName,
+            rentalOwner_lastName: matchedLease.rentalOwner_lastName,
+            rentalOwner_primaryemail: matchedLease.rentalOwner_email,
+            rentalOwner_phoneNumber: matchedLease.rentalOwner_phoneNumber,
+            rentalOwner_businessNumber: matchedLease.rentalOwner_businessNumber,
+            rentalOwner_homeNumber: matchedLease.rentalOwner_homeNumber,
+            rentalOwner_companyName: matchedLease.rentalOwner_companyName,
           });
           // setPropertyId(matchedLease.property_id);
 
@@ -2096,7 +2097,7 @@ const RentRollLeaseing = () => {
             const transaction_id = res2.data.data.substring(
               res2.data.data.indexOf("TransactionId:") + "TransactionId:".length
             );
-            putObject.entries[0].subscription_id = transaction_id;
+            putObject.entries[0].subscription_id = transaction_id; 
             if (res2.status === 200) {
               const res = await axios.put(
                 `${baseUrl}/tenant/tenant/${tenantId}`,
@@ -2462,6 +2463,7 @@ const RentRollLeaseing = () => {
     setLoader(false);
   };
   // console.log(entrySchema.values, "entry cahsdkajl;");
+
   const updateApplicants = async () => {
     if (applicantData) {
       // debugger
@@ -2781,35 +2783,32 @@ const RentRollLeaseing = () => {
 
     await axios
       .put(editUrl, leaseObject)
-      .then(async (response) => {
+      .then(async (response)=> {
         handleResponse(response);
         const updateUrl = `${baseUrl}/nmipayment/custom-update-subscription`;
-        const subscriptionData = {
-          first_name: leaseObject.tenant_firstName,
-          last_name: leaseObject.tenant_lastName,
-          email: leaseObject.tenant_email,
-          subscription_id: subscriptionId,
-          ccnumber: entriesObject.card_number,
-          ccexp: entriesObject.exp_date,
-          address: entriesObject.rental_adress,
-        };
+                const subscriptionData = {
+                    first_name : leaseObject.tenant_firstName,
+                    last_name : leaseObject.tenant_lastName,
+                    email : leaseObject.tenant_email,
+                    subscription_id : subscriptionId,
+                    ccnumber : entriesObject.card_number,
+                    ccexp : entriesObject.exp_date,
+                    address : entriesObject.rental_adress,
+                };
 
-        await axios
-          .post(updateUrl, subscriptionData)
-          .then((customUpdateResponse) => {
-            console.log(customUpdateResponse.data);
-          })
-          .catch((customUpdateError) => {
-            console.error(
-              "Error in custom-update-subscription:",
-              customUpdateError
-            );
-          });
-        if (id && entryIndex) {
-          navigate(`/admin/rentrolldetail/${id}/${entryIndex}`);
-        }
-      })
-
+                await axios.post(updateUrl, subscriptionData)
+                .then((customUpdateResponse) => {
+                    console.log(customUpdateResponse.data);
+                })
+                .catch((customUpdateError) => {
+                    console.error("Error in custom-update-subscription:", customUpdateError);
+                });
+                if (id && entryIndex) {
+                  navigate(`/admin/rentrolldetail/${id}/${entryIndex}`);
+                }
+              })
+      
+    
       .catch((error) => {
         console.error("Error:", error);
       });
@@ -6801,7 +6800,7 @@ const RentRollLeaseing = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           if (selectedTenantData.length !== 0) {
-                            handleSubmit(entrySchema.values);
+                            entrySchema.handleSubmit();
                           } else {
                             // console.log("data not ok")
                             entrySchema.handleSubmit();
