@@ -1424,7 +1424,7 @@ const RentRollLeaseing = () => {
         if (id) {
           editLease(id);
         } else {
-          entrySchema.handleSubmit();
+          handleSubmit();
         }
       } else {
         setDisplay(true);
@@ -1538,7 +1538,6 @@ const RentRollLeaseing = () => {
       if (state && state.applicantData) {
         try {
           const units = await fetchUnitsByProperty(applicantData.rental_adress);
-          console.log(units, "unitssssssssssssss"); // Check the received units in the console
 
           setUnitData(units);
         } catch (error) {
@@ -1729,23 +1728,23 @@ const RentRollLeaseing = () => {
           //     .split("T")[0]
           //   : "";
 
-          setSelectedPropertyType(matchedLease.rental_adress || "Select");
-          setselectedLeaseType(matchedLease.lease_type || "Select");
-          setselectedRentCycle(matchedLease.rent_cycle || "Select");
-          setselectedAccount(matchedLease.account || "Select");
-          setselectedAccount(matchedLease.account_name || "Select");
-          setselectedOneTimeAccount(matchedLease.onetime_account || "Select");
+          setSelectedPropertyType(matchedLease.rental_adress || "");
+          setselectedLeaseType(matchedLease.lease_type || "");
+          setselectedRentCycle(matchedLease.rent_cycle || "");
+          setselectedAccount(matchedLease.account || "");
+          setselectedAccount(matchedLease.account_name || "");
+          setselectedOneTimeAccount(matchedLease.onetime_account || "");
           setselectedRecuringAccount(matchedLease.recuring_account);
-          setselectedFrequency(matchedLease.recuringfrequency || "Select");
-          setselectedAccountType(matchedLease.account_type || "Select");
-          setselectedAccountLevel(matchedLease.parent_account || "Select");
-          setselectedFundType(matchedLease.fund_type || "Select");
-          setSelectedAgent(matchedLease.leasing_agent || "Select");
+          setselectedFrequency(matchedLease.recuringfrequency || "");
+          setselectedAccountType(matchedLease.account_type || "");
+          setselectedAccountLevel(matchedLease.parent_account || "");
+          setselectedFundType(matchedLease.fund_type || "");
+          setSelectedAgent(matchedLease.leasing_agent || "");
           setSelectedUnit(matchedLease.rental_units || "");
           setSelectPaymentMethodDropdawn(
-            matchedLease.paymentMethod || "Select"
+            matchedLease.paymentMethod || ""
           );
-          // setSelectedUnit(matchedLease.rental_units || "Select");
+          // setSelectedUnit(matchedLease.rental_units || "");
           // setFile(arrayOfObjects || "Select");
           // console.log(matchedLease.upload_file, "upload_fileeee");
 
@@ -1753,55 +1752,55 @@ const RentRollLeaseing = () => {
           setFile(matchedLease.upload_file);
           entrySchema.setValues({
             entryIndex: matchedLease.entryIndex,
-            rental_adress: matchedLease.rental_adress,
-            rental_units: matchedLease.rental_units,
-            lease_type: matchedLease.lease_type,
-            start_date: matchedLease.start_date,
-            end_date: matchedLease.end_date,
-            leasing_agent: matchedLease.leasing_agent,
-            rent_cycle: matchedLease.rent_cycle,
-            amount: matchedLease.amount,
-            account: matchedLease.account,
-            nextDue_date: matchedLease.nextDue_date,
-            memo: matchedLease.memo,
-            upload_file: matchedLease.upload_file,
-            isrenton: matchedLease.isrenton,
-            rent_paid: matchedLease.rent_paid,
-            propertyOnRent: matchedLease.propertyOnRent,
-            paymentMethod: matchedLease.paymentMethod,
+            rental_adress: matchedLease.rental_adress || "",
+            rental_units: matchedLease.rental_units || "",
+            lease_type: matchedLease.lease_type || "",
+            start_date: matchedLease.start_date || "",
+            end_date: matchedLease.end_date || "",
+            leasing_agent: matchedLease.leasing_agent || "",
+            rent_cycle: matchedLease.rent_cycle || "",
+            amount: matchedLease.amount || "",
+            account: matchedLease.account || "",
+            nextDue_date: matchedLease.nextDue_date || "",
+            memo: matchedLease.memo || "",
+            upload_file: matchedLease.upload_file || "",
+            isrenton: matchedLease.isrenton || "",
+            rent_paid: matchedLease.rent_paid || "",
+            propertyOnRent: matchedLease.propertyOnRent || "",
+            paymentMethod: matchedLease.paymentMethod || "",
             //security deposite
-            Due_date: matchedLease.Due_date,
-            Security_amount: matchedLease.Security_amount,
-            card_number: matchedLease.card_number,
-            exp_date: matchedLease.exp_date,
-            subscription_id: matchedLease.subscription_id,
+            Due_date: matchedLease.Due_date || "",
+            Security_amount: matchedLease.Security_amount || "",
+            card_number: matchedLease.card_number || "",
+            exp_date: matchedLease.exp_date || "",
+            subscription_id: matchedLease.subscription_id || "",
 
             // add cosigner
-            cosigner_firstName: matchedLease.cosigner_firstName,
-            cosigner_lastName: matchedLease.cosigner_lastName,
-            cosigner_mobileNumber: matchedLease.cosigner_mobileNumber,
-            cosigner_workNumber: matchedLease.cosigner_workNumber,
-            cosigner_homeNumber: matchedLease.cosigner_homeNumber,
-            cosigner_faxPhoneNumber: matchedLease.cosigner_faxPhoneNumber,
-            cosigner_email: matchedLease.cosigner_email,
-            cosigner_alternateemail: matchedLease.cosigner_alternateemail,
-            cosigner_streetAdress: matchedLease.cosigner_streetAdress,
-            cosigner_city: matchedLease.cosigner_city,
-            cosigner_state: matchedLease.cosigner_state,
-            cosigner_zip: matchedLease.cosigner_zip,
-            cosigner_country: matchedLease.cosigner_country,
-            cosigner_postalcode: matchedLease.cosigner_postalcode,
+            cosigner_firstName: matchedLease.cosigner_firstName || "",
+            cosigner_lastName: matchedLease.cosigner_lastName || "",
+            cosigner_mobileNumber: matchedLease.cosigner_mobileNumber || "",
+            cosigner_workNumber: matchedLease.cosigner_workNumber || "",
+            cosigner_homeNumber: matchedLease.cosigner_homeNumber || "",
+            cosigner_faxPhoneNumber: matchedLease.cosigner_faxPhoneNumber || "",
+            cosigner_email: matchedLease.cosigner_email || "",
+            cosigner_alternateemail: matchedLease.cosigner_alternateemail || "",
+            cosigner_streetAdress: matchedLease.cosigner_streetAdress || "",
+            cosigner_city: matchedLease.cosigner_city || "",
+            cosigner_state: matchedLease.cosigner_state || "",
+            cosigner_zip: matchedLease.cosigner_zip || "",
+            cosigner_country: matchedLease.cosigner_country || "",
+            cosigner_postalcode: matchedLease.cosigner_postalcode || "",
 
             // add account
-            account_name: matchedLease.account_name,
-            account_type: matchedLease.account_type,
+            account_name: matchedLease.account_name || "",
+            account_type: matchedLease.account_type || "",
 
             //account level (sub account)
-            parent_account: matchedLease.parent_account,
-            account_number: matchedLease.account_number,
-            fund_type: matchedLease.fund_type,
-            cash_flow: matchedLease.cash_flow,
-            notes: matchedLease.notes,
+            parent_account: matchedLease.parent_account || "",
+            account_number: matchedLease.account_number || "",
+            fund_type: matchedLease.fund_type || "",
+            cash_flow: matchedLease.cash_flow || "",
+            notes: matchedLease.notes || "",
           });
           tenantsSchema.setValues({
             tenant_id: laesingdata.tenant_id,
@@ -2064,7 +2063,7 @@ const RentRollLeaseing = () => {
       dayFrequency: selectedDayFrequency,
       ccnumber: card_number || "",
       email: tenantsSchema.values.tenant_email,
-      ccexp: exp_date ? formatDateForInput(exp_date) : "",
+      ccexp: exp_date,
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
@@ -6665,7 +6664,7 @@ const RentRollLeaseing = () => {
                                 <Input
                                   type="number"
                                   id="creditcard_number"
-                                  placeholder="0000 0000 0000"
+                                  placeholder="0000 0000 0000 0000"
                                   className="no-spinner"
                                   name="creditcard_number"
                                   value={entrySchema.values.card_number}
@@ -6801,7 +6800,7 @@ const RentRollLeaseing = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           if (selectedTenantData.length !== 0) {
-                            handleSubmit(entrySchema.values);
+                            entrySchema.handleSubmit();
                           } else {
                             // console.log("data not ok")
                             entrySchema.handleSubmit();
