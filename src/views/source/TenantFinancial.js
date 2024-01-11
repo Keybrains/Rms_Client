@@ -619,7 +619,6 @@ const TenantFinancial = () => {
       );
       if (response.data.statusCode === 200) {
         const responseData = response.data.data;
-        console.log(responseData, "yashu");
 
         // Find the corresponding propertyId based on rental_adress
         const matchingEntry = tenantDetails?.entries?.find(
@@ -648,7 +647,6 @@ const TenantFinancial = () => {
       console.error("Network error:", error);
     }
   };
-  console.log(financialFormik.values, "yashu");
 
   const editpayment = async (id) => {
     const rentalAddress = financialFormik.values.rental_adress;

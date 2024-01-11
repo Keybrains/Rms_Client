@@ -253,7 +253,16 @@ const WorkOrderDetails = () => {
   const [propertyDetails, setPropertyDetails] = useState({});
 
   const getPropertyData = async () => {
-    if (outstandDetails.rental_adress && outstandDetails.rental_units) {
+    if (outstandDetails.rental_units === "") {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}`
+        );
+        setPropertyDetails(response.data[0]);
+      } catch (error) {
+        console.error("Error fetching tenant details:", error);
+      }
+    } else if (outstandDetails.rental_adress && outstandDetails.rental_units) {
       try {
         const response = await axios.get(
           `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
@@ -261,7 +270,6 @@ const WorkOrderDetails = () => {
         setPropertyDetails(response.data[0]);
       } catch (error) {
         console.error("Error fetching tenant details:", error);
-        setError(error);
       }
     }
   };
@@ -598,7 +606,6 @@ const WorkOrderDetails = () => {
                                 maxWidth="700px"
                                 margin="20px"
                                 style={{
-                                  marginLeft: "auto",
                                   marginRight: "auto",
                                   overflowX: "auto",
                                 }} // Center the box horizontally
@@ -691,7 +698,6 @@ const WorkOrderDetails = () => {
                               maxWidth="700px"
                               margin="20px"
                               style={{
-                                marginLeft: "auto",
                                 marginRight: "auto",
                                 overflowX: "auto",
                               }} // Center the box horizontally
@@ -1015,8 +1021,12 @@ const WorkOrderDetails = () => {
                                   }
                                 >
                                   <span>
-                                    {propertyDetails?.rental_adress || "N/A"} (
-                                    {propertyDetails?.rental_units})
+                                    {propertyDetails?.rental_adress || "N/A"}
+                                    {propertyDetails?.rental_units ? (
+                                      " (" + propertyDetails?.rental_units + ")"
+                                    ) : (
+                                      <></>
+                                    )}
                                   </span>
                                 </Box>
                               </Box>

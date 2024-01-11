@@ -1429,7 +1429,6 @@ const RentRollLeaseing = () => {
       }
     },
   });
-  console.log(entrySchema.error, "yashu")
 
   let tenantsSchema = useFormik({
     //   Add tenants

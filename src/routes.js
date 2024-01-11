@@ -423,6 +423,11 @@ var routes = [
     component: <AddWorkorder />,
     layout: "/admin",
   },
+  {
+    path: "/addworkorder/addtask/:rental_id",
+    component: <AddWorkorder />,
+    layout: "/admin",
+  },
 
   {
     path: "/rentals/:id/:entryIndex",
