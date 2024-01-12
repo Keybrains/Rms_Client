@@ -60,9 +60,11 @@ import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import { useLocation } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
+import { ClearIcon } from "@mui/x-date-pickers";
 
 const RentRollLeaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_URL;
   const { id, entryIndex } = useParams();
   const location = useLocation();
   const { state } = location;
@@ -1391,7 +1393,7 @@ const RentRollLeaseing = () => {
       cash_flow: "",
       notes: "",
       paymentMethod: "",
-      subscription_id:"",
+      subscription_id: "",
       exp_date: "",
       card_number: "",
     },
@@ -1403,20 +1405,6 @@ const RentRollLeaseing = () => {
       start_date: yup.string().required("Required"),
       amount: yup.string().required("Required"),
       paymentMethod: yup.string().required("Required"),
-      ...(selectPaymentMethodDropdawn === "AutoPayment"
-        ? {
-            exp_date: yup.string().required("Required"),
-            card_number: yup
-              .string()
-              .matches(/^\d{16}$/, "Card number must be a 16-digit number")
-              .required("Required"),
-          }
-        : null),
-      ...(unitData[0]?.rental_units
-        ? {
-            rental_units: yup.string().required("Required"),
-          }
-        : null),
     }),
 
     onSubmit: (values) => {
@@ -1484,6 +1472,25 @@ const RentRollLeaseing = () => {
       // handleDialogClose();
       // console.log(values, "values");
     },
+  });
+
+  let paymentSchema = useFormik({
+    initialValues: { card_number: "", exp_date: "" },
+    validationSchema: yup.object({
+      card_number: yup
+        .number()
+        .required("Required")
+        .typeError("Must be a number")
+        .test(
+          "is-size-16",
+          "Card Number must be 16 digits",
+          (val) => val?.toString().length === 16
+        ),
+      exp_date: yup
+        .string()
+        .matches(/^(0[1-9]|1[0-2])\/[0-9]{4}$/, "Invalid date format (MM/YYYY)")
+        .required("Required"),
+    }),
   });
 
   let cosignerSchema = useFormik({
@@ -1690,7 +1697,7 @@ const RentRollLeaseing = () => {
             const units = await fetchUnitsByProperty(
               matchedLease.rental_adress
             );
-            setSubscriptionId(matchedLease.subscription_id)
+            setSubscriptionId(matchedLease.subscription_id);
             setUnitData(units);
           } catch (error) {
             console.log(error, "error");
@@ -1741,9 +1748,7 @@ const RentRollLeaseing = () => {
           setselectedFundType(matchedLease.fund_type || "");
           setSelectedAgent(matchedLease.leasing_agent || "");
           setSelectedUnit(matchedLease.rental_units || "");
-          setSelectPaymentMethodDropdawn(
-            matchedLease.paymentMethod || ""
-          );
+          setSelectPaymentMethodDropdawn(matchedLease.paymentMethod || "");
           // setSelectedUnit(matchedLease.rental_units || "");
           // setFile(arrayOfObjects || "Select");
           // console.log(matchedLease.upload_file, "upload_fileeee");
@@ -1934,7 +1939,7 @@ const RentRollLeaseing = () => {
           const imageData = new FormData();
           imageData.append(`files`, files.upload_file);
 
-          const url = `${baseUrl}/images/upload`;
+          const url = `${imageUrl}/images/upload`;
 
           try {
             const result = await axios.post(url, imageData, {
@@ -1970,7 +1975,6 @@ const RentRollLeaseing = () => {
       tenant_email: tenantsSchema.values.tenant_email,
       tenant_password: tenantsSchema.values.tenant_password,
       alternate_email: tenantsSchema.values.alternate_email,
-      tenant_residentStatus: tenantsSchema.values.tenant_residentStatus,
 
       // personal information
       birth_date: tenantsSchema.values.birth_date,
@@ -1978,19 +1982,25 @@ const RentRollLeaseing = () => {
       comments: tenantsSchema.values.comments,
 
       //Emergency contact
-
       contact_name: tenantsSchema.values.contact_name,
       relationship_tenants: tenantsSchema.values.relationship_tenants,
       email: tenantsSchema.values.email,
       emergency_PhoneNumber: tenantsSchema.values.emergency_PhoneNumber,
+
+      //paymentData
+      card_detail: [
+        {
+          card_number: paymentSchema.values.card_number,
+          exp_date: paymentSchema.values.exp_date,
+        },
+      ],
+      //entry
       entries: [
         {
           subscription_id: entrySchema.values.transaction_id,
-          entryIndex: entrySchema.values.entryIndex,
           paymentMethod: entrySchema.values.paymentMethod,
-          card_number: entrySchema.values.card_number || "",
-          exp_date: entrySchema.values.exp_date || "",
           rental_units: entrySchema.values.rental_units,
+          entryIndex: entrySchema.values.entryIndex,
           rental_adress: entrySchema.values.rental_adress,
           lease_type: entrySchema.values.lease_type,
           start_date: entrySchema.values.start_date,
@@ -2000,14 +2010,12 @@ const RentRollLeaseing = () => {
           amount: entrySchema.values.amount,
           account: entrySchema.values.account,
           nextDue_date: entrySchema.values.nextDue_date,
-          property_id: propertyId,
           memo: entrySchema.values.memo || "Rent",
           upload_file: entrySchema.values.upload_file,
           isrenton: entrySchema.values.isrenton,
           rent_paid: entrySchema.values.rent_paid,
-          isMovedin: true,
           propertyOnRent: entrySchema.values.propertyOnRent,
-
+          unit_id: entrySchema.values.unit_id,
           //security deposite
           Due_date: entrySchema.values.Due_date,
           Security_amount: entrySchema.values.Security_amount,
@@ -2040,10 +2048,10 @@ const RentRollLeaseing = () => {
           fund_type: entrySchema.values.fund_type,
           cash_flow: entrySchema.values.cash_flow,
           notes: entrySchema.values.notes,
-          unit_id: entrySchema.values.unit_id,
+          property_id: propertyId,
+
           recurring_charges: recurringData,
           one_time_charges: oneTimeData,
-
           tenant_residentStatus:
             entrySchema.values.tenant_residentStatus || false,
           rentalOwner_firstName: ownerData.rentalOwner_firstName,
@@ -2061,9 +2069,9 @@ const RentRollLeaseing = () => {
       plan_payments: 0,
       plan_amount: entrySchema.values.amount,
       dayFrequency: selectedDayFrequency,
-      ccnumber: card_number || "",
+      ccnumber: paymentSchema.values.card_number || "",
+      ccexp: paymentSchema.values.exp_date,
       email: tenantsSchema.values.tenant_email,
-      ccexp: exp_date,
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
@@ -2097,7 +2105,7 @@ const RentRollLeaseing = () => {
             const transaction_id = res2.data.data.substring(
               res2.data.data.indexOf("TransactionId:") + "TransactionId:".length
             );
-            putObject.entries[0].subscription_id = transaction_id; 
+            putObject.entries[0].subscription_id = transaction_id;
             if (res2.status === 200) {
               const res = await axios.put(
                 `${baseUrl}/tenant/tenant/${tenantId}`,
@@ -2656,7 +2664,7 @@ const RentRollLeaseing = () => {
           const imageData = new FormData();
           imageData.append(`files`, files.upload_file);
 
-          const url = `${baseUrl}/images/upload`;
+          const url = `${imageUrl}/images/upload`;
 
           try {
             const result = await axios.post(url, imageData, {
@@ -2747,8 +2755,6 @@ const RentRollLeaseing = () => {
       rentalOwner_homeNumber: ownerData.rentalOwner_homeNumber,
       rentalOwner_companyName: ownerData.rentalOwner_companyName,
       paymentMethod: entrySchema.paymentMethod,
-      card_number: entrySchema.values.card_number,
-      exp_date: entrySchema.values.exp_date,
     };
     entriesArray.push(entriesObject);
 
@@ -2779,36 +2785,47 @@ const RentRollLeaseing = () => {
       email: tenantsSchema.values.email,
       emergency_PhoneNumber: tenantsSchema.values.emergency_PhoneNumber,
       entries: entriesArray,
+
+      //paymentData
+      card_detail: [
+        {
+          card_number: paymentSchema.values.card_number,
+          exp_date: paymentSchema.values.exp_date,
+        },
+      ],
     };
 
     await axios
       .put(editUrl, leaseObject)
-      .then(async (response)=> {
+      .then(async (response) => {
         handleResponse(response);
         const updateUrl = `${baseUrl}/nmipayment/custom-update-subscription`;
-                const subscriptionData = {
-                    first_name : leaseObject.tenant_firstName,
-                    last_name : leaseObject.tenant_lastName,
-                    email : leaseObject.tenant_email,
-                    subscription_id : subscriptionId,
-                    ccnumber : entriesObject.card_number,
-                    ccexp : entriesObject.exp_date,
-                    address : entriesObject.rental_adress,
-                };
+        const subscriptionData = {
+          first_name: leaseObject.tenant_firstName,
+          last_name: leaseObject.tenant_lastName,
+          email: leaseObject.tenant_email,
+          subscription_id: subscriptionId,
+          ccnumber: entriesObject.card_number,
+          ccexp: entriesObject.exp_date,
+          address: entriesObject.rental_adress,
+        };
 
-                await axios.post(updateUrl, subscriptionData)
-                .then((customUpdateResponse) => {
-                    console.log(customUpdateResponse.data);
-                })
-                .catch((customUpdateError) => {
-                    console.error("Error in custom-update-subscription:", customUpdateError);
-                });
-                if (id && entryIndex) {
-                  navigate(`/admin/rentrolldetail/${id}/${entryIndex}`);
-                }
-              })
-      
-    
+        await axios
+          .post(updateUrl, subscriptionData)
+          .then((customUpdateResponse) => {
+            console.log(customUpdateResponse.data);
+          })
+          .catch((customUpdateError) => {
+            console.error(
+              "Error in custom-update-subscription:",
+              customUpdateError
+            );
+          });
+        if (id && entryIndex) {
+          navigate(`/admin/rentrolldetail/${id}/${entryIndex}`);
+        }
+      })
+
       .catch((error) => {
         console.error("Error:", error);
       });
@@ -6651,88 +6668,71 @@ const RentRollLeaseing = () => {
                   <Col sm="12">
                     {selectPaymentMethodDropdawn === "AutoPayment" ? (
                       <>
-                        <Row>
-                          <Col sm="4">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-property"
-                              >
-                                Card Number *
-                              </label>
-                              <InputGroup>
-                                <Input
-                                  type="number"
-                                  id="creditcard_number"
-                                  placeholder="0000 0000 0000 0000"
-                                  className="no-spinner"
-                                  name="creditcard_number"
-                                  value={entrySchema.values.card_number}
-                                  onChange={(e) => {
-                                    const inputValue = e.target.value;
-                                    const numericValue = inputValue.replace(
-                                      /\D/g,
-                                      ""
-                                    ); // Remove non-numeric characters
-                                    const limitValue = numericValue.slice(
-                                      0,
-                                      16
-                                    ); // Limit to 12 digits
-                                    setcard_number(parseInt(limitValue));
-                                    entrySchema.values.card_number =
-                                      parseInt(limitValue);
-                                  }}
-                                />
-                              </InputGroup>
-                              {entrySchema.errors &&
-                              entrySchema.errors?.card_number &&
-                              entrySchema.touched &&
-                              entrySchema.touched?.card_number ? (
-                                <div style={{ color: "red" }}>
-                                  {entrySchema.errors.card_number}
-                                </div>
-                              ) : null}
-                            </FormGroup>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col sm="2">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-property"
-                              >
-                                Expiration Date *
-                              </label>
-                              <Input
-                                type="text"
-                                id="expiration_date"
-                                name="expiration_date"
-                                onChange={(e) => {
-                                  const inputValue = e.target.value;
-                                  const numericValue = inputValue.replace(
-                                    /\D/g,
-                                    ""
-                                  );
-                                  setexp_date(inputValue);
-                                  entrySchema.values.exp_date = inputValue;
-                                }}
-                                value={
-                                  exp_date instanceof Date
-                                    ? formatDateForInput(exp_date)
-                                    : entrySchema.values.exp_date
-                                }
-                                placeholder="MM/YYYY"
-                              />
-                              {entrySchema.errors &&
-                              entrySchema.errors?.exp_date &&
-                              entrySchema.touched &&
-                              entrySchema.touched?.exp_date ? (
-                                <div style={{ color: "red" }}>
-                                  {entrySchema.errors.exp_date}
-                                </div>
-                              ) : null}
-                            </FormGroup>
+                        <Row className="mb-3">
+                          <Col xs="12" sm="7">
+                            <Row>
+                              <Col xs="12" sm="5">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor={`card_number`}
+                                  >
+                                    Card Number *
+                                  </label>
+                                  <Input
+                                    type="text"
+                                    id={`card_number`}
+                                    placeholder="0000 0000 0000 0000"
+                                    className="no-spinner"
+                                    name={`card_number`}
+                                    value={paymentSchema.values.card_number}
+                                    onChange={(e) => {
+                                      const inputValue = e.target.value;
+                                      paymentSchema.setFieldValue(
+                                        `card_number`,
+                                        inputValue
+                                      );
+                                    }}
+                                  />
+                                  {paymentSchema.errors &&
+                                  paymentSchema.errors.card_number ? (
+                                    <div style={{ color: "red" }}>
+                                      {paymentSchema.errors.card_number}
+                                    </div>
+                                  ) : null}
+                                </FormGroup>
+                              </Col>
+                              <Col xs="12" sm="5">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor={`exp_date`}
+                                  >
+                                    Expiration Date *
+                                  </label>
+                                  <Input
+                                    type="text"
+                                    id={`exp_date`}
+                                    name={`exp_date`}
+                                    onChange={(e) => {
+                                      const inputValue = e.target.value;
+                                      paymentSchema.setFieldValue(
+                                        `exp_date`,
+                                        inputValue
+                                      );
+                                    }}
+                                    value={paymentSchema.values.exp_date}
+                                    placeholder="MM/YYYY"
+                                  />
+                                  {paymentSchema.errors &&
+                                  paymentSchema.errors.exp_date ? (
+                                    <div style={{ color: "red" }}>
+                                      {paymentSchema.errors.exp_date}
+                                    </div>
+                                  ) : null}
+                                </FormGroup>
+                              </Col>
+                            </Row>
                           </Col>
                         </Row>
                       </>
@@ -6782,9 +6782,14 @@ const RentRollLeaseing = () => {
                         e.preventDefault();
                         if (selectedTenantData.length !== 0) {
                           entrySchema.handleSubmit(entrySchema.values);
+                          if (selectPaymentMethodDropdawn === "AutoPayment") {
+                            paymentSchema.handleSubmit();
+                          }
                         } else {
-                          // console.log("data not ok")
                           entrySchema.handleSubmit(entrySchema.values);
+                          if (selectPaymentMethodDropdawn === "AutoPayment") {
+                            paymentSchema.handleSubmit();
+                          }
                           setDisplay(true);
                         }
                       }}
@@ -6792,25 +6797,28 @@ const RentRollLeaseing = () => {
                       Update Lease
                     </button>
                   ) : (
-                    <>
-                      <button
-                        type="submit"
-                        className="btn btn-primary"
-                        style={{ background: "green", cursor: "pointer" }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (selectedTenantData.length !== 0) {
-                            entrySchema.handleSubmit();
-                          } else {
-                            // console.log("data not ok")
-                            entrySchema.handleSubmit();
-                            setDisplay(true);
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (selectedTenantData.length !== 0) {
+                          entrySchema.handleSubmit();
+                          if (selectPaymentMethodDropdawn === "AutoPayment") {
+                            paymentSchema.handleSubmit();
                           }
-                        }}
-                      >
-                        Create Lease
-                      </button>
-                    </>
+                        } else {
+                          entrySchema.handleSubmit();
+                          if (selectPaymentMethodDropdawn === "AutoPayment") {
+                            paymentSchema.handleSubmit();
+                          }
+                          setDisplay(true);
+                        }
+                      }}
+                    >
+                      Create Lease
+                    </button>
                   )}
                   <Button
                     color="primary"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "components/Headers/Header";
@@ -57,26 +57,12 @@ import { RotatingLines } from "react-loader-spinner";
 // import CardActions from "../../../../../rms-y/Rms_client/images";
 import MailIcon from "@mui/icons-material/Mail";
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
 const PropDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_URL;
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const source = queryParams.get("source");
   const { id, entryIndex } = useParams();
   const [propertyDetails, setpropertyDetails] = useState({});
   const [loading, setLoading] = useState(true);
@@ -399,7 +385,7 @@ const PropDetails = () => {
           const imageData = new FormData();
           imageData.append(`files`, files);
 
-          const url = `${baseUrl}/images/upload`;
+          const url = `${imageUrl}/images/upload`;
 
           try {
             const result = await axios.post(url, imageData, {
@@ -531,7 +517,7 @@ const PropDetails = () => {
       imageData.append(`files`, element);
     }
 
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `${imageUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     var image;
     try {
       const result = await axios.post(url, imageData, {
@@ -603,7 +589,7 @@ const PropDetails = () => {
 
     const formData = new FormData();
     formData.append(`files`, files[0]);
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `${imageUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     var image;
     try {
       const result = await axios.post(url, formData, {
@@ -1001,6 +987,14 @@ const PropDetails = () => {
       country: unit?.rental_country,
     });
   };
+
+  useEffect(() => {
+    if (source) {
+      setValue(source);
+    } else {
+      setValue("summary");
+    }
+  }, [source]);
 
   return (
     <>
@@ -3170,7 +3164,7 @@ const PropDetails = () => {
                         }}
                         size="l"
                         onClick={() => {
-                          navigate(`/admin/addworkorder/addtask/${entryIndex}`)
+                          navigate(`/admin/addworkorder/addtask/${entryIndex}`);
                         }}
                       >
                         <span className="btn-inner--text">Add Task</span>
