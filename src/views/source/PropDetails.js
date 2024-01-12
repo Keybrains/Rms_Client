@@ -3170,7 +3170,7 @@ const PropDetails = () => {
                         }}
                         size="l"
                         onClick={() => {
-                          navigate(`/admin/addworkorder/addtask/${"659fad988c342fa29e54b2f1"}`)
+                          navigate(`/admin/addworkorder/addtask/${entryIndex}`)
                         }}
                       >
                         <span className="btn-inner--text">Add Task</span>

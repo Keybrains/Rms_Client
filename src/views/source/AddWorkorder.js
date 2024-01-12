@@ -35,6 +35,7 @@ import { OpenImageDialog } from "components/OpenImageDialog";
 const AddWorkorder = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
+  const { rental_id } = useParams();
   const [propdropdownOpen, setpropdropdownOpen] = React.useState(false);
   const [categorydropdownOpen, setcategorydropdownOpen] = React.useState(false);
   const [vendordropdownOpen, setvendordropdownOpen] = React.useState(false);
