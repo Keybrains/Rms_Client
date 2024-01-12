@@ -57,9 +57,11 @@ import Cookies from "universal-cookie";
 import AccountDialog from "components/AccountDialog";
 import moment from "moment";
 import { useLocation } from "react-router-dom";
+import { ClearIcon } from "@mui/x-date-pickers";
 
 const Leaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_URL;
   const { id, entryIndex } = useParams();
   const [tenantData, setTenantData] = useState([]);
   const [selectedTenantData, setSelectedTenantData] = useState([]);
@@ -934,7 +936,7 @@ const Leaseing = () => {
       });
     }
   };
- 
+
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
     fetch(`${baseUrl}/tenant/existing/tenant`)
@@ -953,7 +955,7 @@ const Leaseing = () => {
         console.error("Network error:", error);
       });
   }, []);
-  
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -1122,7 +1124,7 @@ const Leaseing = () => {
       fund_type: "",
       cash_flow: "",
       notes: "",
-      subscription_id:"",
+      subscription_id: "",
       paymentMethod: "",
       exp_date: "",
       card_number: "",
@@ -1135,20 +1137,6 @@ const Leaseing = () => {
       start_date: yup.string().required("Required"),
       amount: yup.string().required("Required"),
       paymentMethod: yup.string().required("Required"),
-      ...(selectPaymentMethodDropdawn === "AutoPayment"
-        ?{
-          exp_date: yup.string().required("Required"),
-          card_number: yup
-            .string()
-            .matches(/^\d{16}$/, "Card number must be a 16-digit number")
-            .required("Required"),
-        }
-        : null),
-      ...(unitData[0]?.rental_units
-        ? {
-            rental_units: yup.string().required("Required"),
-          }
-        : null),
     }),
 
     onSubmit: () => {
@@ -1216,6 +1204,25 @@ const Leaseing = () => {
       // handleDialogClose();
       // console.log(values, "values");
     },
+  });
+
+  let paymentSchema = useFormik({
+    initialValues: { card_number: "", exp_date: "" },
+    validationSchema: yup.object({
+      card_number: yup
+        .number()
+        .required("Required")
+        .typeError("Must be a number")
+        .test(
+          "is-size-16",
+          "Card Number must be 16 digits",
+          (val) => val?.toString().length === 16
+        ),
+      exp_date: yup
+        .string()
+        .matches(/^(0[1-9]|1[0-2])\/[0-9]{4}$/, "Invalid date format (MM/YYYY)")
+        .required("Required"),
+    }),
   });
 
   let cosignerSchema = useFormik({
@@ -1410,7 +1417,6 @@ const Leaseing = () => {
             lastName: laesingdata.tenant_lastName || "",
             mobileNumber: laesingdata.tenant_mobileNumber || "",
           });
-
           const matchedLease = laesingdata.entries.find(
             (entry) => entry.entryIndex === entryIndex
           );
@@ -1419,7 +1425,7 @@ const Leaseing = () => {
               matchedLease.rental_adress
             );
             setUnitData(units);
-            setSubscriptionId(matchedLease.subscription_id)
+            setSubscriptionId(matchedLease.subscription_id);
           } catch (error) {
             console.log(error, "error");
           }
@@ -1464,8 +1470,6 @@ const Leaseing = () => {
             Due_date: matchedLease.Due_date,
             paymentMethod: matchedLease.paymentMethod,
             Security_amount: matchedLease.Security_amount,
-            card_number: matchedLease.card_number,
-            exp_date: matchedLease.exp_date,
             subscription_id: matchedLease.subscription_id,
 
             // add cosigner
@@ -1494,6 +1498,11 @@ const Leaseing = () => {
             fund_type: matchedLease.fund_type,
             cash_flow: matchedLease.cash_flow,
             notes: matchedLease.notes,
+          });
+
+          paymentSchema.setValues({
+            card_number: laesingdata.card_detail.card_number,
+            exp_date: laesingdata.card_detail.exp_date,
           });
 
           tenantsSchema.setValues({
@@ -1551,7 +1560,7 @@ const Leaseing = () => {
           const imageData = new FormData();
           imageData.append(`files`, files.upload_file);
 
-          const url = `${baseUrl}/images/upload`;
+          const url = `${imageUrl}/images/upload`;
 
           try {
             const result = await axios.post(url, imageData, {
@@ -1594,17 +1603,24 @@ const Leaseing = () => {
       comments: tenantsSchema.values.comments,
 
       //Emergency contact
-
       contact_name: tenantsSchema.values.contact_name,
       relationship_tenants: tenantsSchema.values.relationship_tenants,
       email: tenantsSchema.values.email,
       emergency_PhoneNumber: tenantsSchema.values.emergency_PhoneNumber,
+
+      //paymentData
+      card_detail: [
+        {
+          card_number: paymentSchema.values.card_number,
+          exp_date: paymentSchema.values.exp_date,
+        },
+      ],
+
+      //entry
       entries: [
         {
           subscription_id: entrySchema.values.transaction_id,
           paymentMethod: entrySchema.values.paymentMethod,
-          card_number: entrySchema.values.card_number || "",
-          exp_date: entrySchema.values.exp_date || "",
           rental_units: entrySchema.values.rental_units,
           entryIndex: entrySchema.values.entryIndex,
           rental_adress: entrySchema.values.rental_adress,
@@ -1671,18 +1687,23 @@ const Leaseing = () => {
       ],
     };
 
+    const date = paymentSchema.values.exp_date.split("/");
+    const month = date[0];
+    const year = date[1].slice(-2);
+
     const paymentDetails = {
       plan_payments: 0,
       plan_amount: entrySchema.values.amount,
       dayFrequency: selectedDayFrequency,
-      ccnumber: card_number || "",
+      ccnumber: paymentSchema.values.card_number || "",
+      ccexp: month + year,
       email: tenantsSchema.values.tenant_email,
-      ccexp: exp_date ,
       first_name: tenantsSchema.values.tenant_firstName,
       last_name: tenantsSchema.values.tenant_lastName,
       address: entrySchema.values.rental_adress,
       address2: entrySchema.values.rental_units,
     };
+
 
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
@@ -1700,7 +1721,6 @@ const Leaseing = () => {
           const putObject = {
             entries: tenantObject.entries,
           };
-
           const tenantId = filteredData._id;
 
           if (selectPaymentMethodDropdawn === "AutoPayment") {
@@ -1711,7 +1731,7 @@ const Leaseing = () => {
             const transaction_id = res2.data.data.substring(
               res2.data.data.indexOf("TransactionId:") + "TransactionId:".length
             );
-            putObject.entries[0].subscription_id = transaction_id; 
+            putObject.entries[0].subscription_id = transaction_id;
             if (res2.status === 200) {
               const res = await axios.put(
                 `${baseUrl}/tenant/tenant/${tenantId}`,
@@ -1876,24 +1896,17 @@ const Leaseing = () => {
           }
         } else {
           if (id === undefined) {
-
             if (selectPaymentMethodDropdawn === "AutoPayment") {
               const res2 = await axios.post(
                 `${baseUrl}/nmipayment/custom-add-subscription`,
                 paymentDetails
               );
 
-              const transaction_id = res2.data.data.substring(
-                res2.data.data.indexOf("TransactionId:") +
-                  "TransactionId:".length
+              const transaction_id = res2.data.substring(
+                res2.data.indexOf("TransactionId:") + "TransactionId:".length
               );
               tenantObject.entries[0].subscription_id = transaction_id;
-
               if (res2.status === 200) {
-                const transaction_id = res2.data.substring(
-                  res2.data.indexOf("TransactionId:") + "TransactionId:".length
-                );
-                tenantObject.entries.subscription_id = transaction_id;
                 const res = await axios.post(
                   `${baseUrl}/tenant/tenant`,
                   tenantObject
@@ -1973,7 +1986,6 @@ const Leaseing = () => {
                 }
                 handleResponse(res);
               }
-              console.log(res2, "response of subscription");
             } else {
               const res = await axios.post(
                 `${baseUrl}/tenant/tenant`,
@@ -2066,26 +2078,25 @@ const Leaseing = () => {
       console.log(error);
     }
 
-    if (Array.isArray(file)) {
-      const arrayOfNames = file.map((item) => {
-        return item.name;
-      });
-      // console.log("array of names", arrayOfNames);
-      tenantObject.entries[0].upload_file = arrayOfNames;
-    } else {
-      console.error("file is not an array");
+    // if (Array.isArray(file)) {
+    //   const arrayOfNames = file.map((item) => {
+    //     return item.name;
+    //   });
+    //   // console.log("array of names", arrayOfNames);
+    //   tenantObject.entries[0].upload_file = arrayOfNames;
+    // } else {
+    //   console.error("file is not an array");
 
-      // console.log(values, "values");
-    }
-    console.log(values, "values to check");
-    try {
-      console.log(id, "id from parameter");
-    } catch (error) {
-      console.log(error);
-    }
+    //   // console.log(values, "values");
+    // }
+    // console.log(values, "values to check");
+    // try {
+    //   console.log(id, "id from parameter");
+    // } catch (error) {
+    //   console.log(error);
+    // }
     setLoader(false);
   };
-
   const postCharge = async (unit, unitId, tenantId) => {
     const chargeObject = {
       properties: {
@@ -2242,7 +2253,7 @@ const Leaseing = () => {
           const imageData = new FormData();
           imageData.append(`files`, files.upload_file);
 
-          const url = `${baseUrl}/images/upload`;
+          const url = `${imageUrl}/images/upload`;
 
           try {
             const result = await axios.post(url, imageData, {
@@ -2356,35 +2367,48 @@ const Leaseing = () => {
       relationship_tenants: tenantsSchema.values.relationship_tenants,
       email: tenantsSchema.values.email,
       emergency_PhoneNumber: tenantsSchema.values.emergency_PhoneNumber,
+
+      //paymentData
+      card_detail: [
+        {
+          card_number: paymentSchema.values.card_number,
+          exp_date: paymentSchema.values.exp_date,
+        },
+      ],
+
       entries: entriesArray,
     };
 
     await axios
       .put(editUrl, leaseObject)
-      .then(async (response)=> {
+      .then(async (response) => {
         handleResponse(response);
         const updateUrl = `${baseUrl}/nmipayment/custom-update-subscription`;
-                const subscriptionData = {
-                    first_name : leaseObject.tenant_firstName,
-                    last_name : leaseObject.tenant_lastName,
-                    email : leaseObject.tenant_email,
-                    subscription_id : subscriptionId,
-                    ccnumber : entriesObject.card_number,
-                    ccexp : entriesObject.exp_date,
-                    address : entriesObject.rental_adress,
-                };
-                await axios.post(updateUrl, subscriptionData)
-                .then((customUpdateResponse) => {
-                    console.log(customUpdateResponse.data);
-                })
-                .catch((customUpdateError) => {
-                    console.error("Error in custom-update-subscription:", customUpdateError);
-                });
-              })
-              .catch((error) => {
-                  console.error("Error:", error);
-              });
-      setLoader(false);
+        const subscriptionData = {
+          first_name: leaseObject.tenant_firstName,
+          last_name: leaseObject.tenant_lastName,
+          email: leaseObject.tenant_email,
+          subscription_id: subscriptionId,
+          ccnumber: entriesObject.card_number,
+          ccexp: entriesObject.exp_date,
+          address: entriesObject.rental_adress,
+        };
+        await axios
+          .post(updateUrl, subscriptionData)
+          .then((customUpdateResponse) => {
+            console.log(customUpdateResponse.data);
+          })
+          .catch((customUpdateError) => {
+            console.error(
+              "Error in custom-update-subscription:",
+              customUpdateError
+            );
+          });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    setLoader(false);
   };
 
   function handleResponse(response) {
@@ -2451,55 +2475,7 @@ const Leaseing = () => {
               </CardHeader>
               <CardBody>
                 <Form>
-                  {/* <h6 className="heading-small text-muted mb-4">Signature</h6> */}
-                  {/* <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
-                          >
-                            Signature Status
-                          </label>
-                          <br />
-                          <div
-                            style={{ display: "flex", alignItems: "center" }}
-                          >
-                            <ToggleButtonGroup
-                              color="primary"
-                              value={signature}
-                              exclusive
-                              onChange={handleSignatureChange}
-                              aria-label="Platform"
-                              style={{ width: "100%" }}
-                            >
-                              <ToggleButton
-                                value="Signed"
-                                style={{
-                                  width: "100rem",
-                                  textTransform: "capitalize",
-                                }}
-                              >
-                                Signed
-                              </ToggleButton>
-                              <ToggleButton
-                                value="Unsigned"
-                                style={{
-                                  width: "100rem",
-                                  textTransform: "capitalize",
-                                }}
-                              >
-                                Unsigned
-                              </ToggleButton>
-                            </ToggleButtonGroup>
-                          </div>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </div> */}
                   <br />
-
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
@@ -6055,118 +6031,76 @@ const Leaseing = () => {
                   <Col sm="12">
                     {selectPaymentMethodDropdawn === "AutoPayment" ? (
                       <>
-                        <Row>
-                          <Col sm="4">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-property"
-                              >
-                                Card Number *
-                              </label>
-                              <InputGroup>
-                              <Input
-                                  type="number"
-                                  id="creditcard_number"
-                                  placeholder="0000 0000 0000 0000"
-                                  className="no-spinner"
-                                  name="creditcard_number"
-                                  value={entrySchema.values.card_number}
-                                  onChange={(e) => {
-                                    const inputValue = e.target.value;
-                                    const numericValue = inputValue.replace(
-                                      /\D/g,
-                                      ""
-                                    ); // Remove non-numeric characters
-                                    const limitValue = numericValue.slice(
-                                      0,
-                                      16
-                                    ); // Limit to 12 digits
-                                    setcard_number(parseInt(limitValue));
-                                    entrySchema.values.card_number =
-                                      parseInt(limitValue);
-                                  }}
-                                />
-                              </InputGroup>
-                              {entrySchema.errors &&
-                              entrySchema.errors?.card_number &&
-                              entrySchema.touched &&
-                              entrySchema.touched?.card_number ? (
-                                <div style={{ color: "red" }}>
-                                  {entrySchema.errors.card_number}
-                                </div>
-                              ) : null}
-                            </FormGroup>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col sm="2">
-                            <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-property"
-                              >
-                                Expiration Date *
-                              </label>
-                              <Input
-                                type="text"
-                                id="expiration_date"
-                                name="expiration_date"
-                                onChange={(e) => {
-                                  const inputValue = e.target.value;
-                                  const numericValue = inputValue.replace(
-                                    /\D/g,
-                                    ""
-                                  );
-                                  setexp_date(inputValue);
-                                  entrySchema.values.exp_date = inputValue;
-                                }}
-                                value={
-                                  exp_date instanceof Date
-                                    ? formatDateForInput(exp_date)
-                                    : entrySchema.values.exp_date
-                                }
-                                placeholder="MM/YYYY"
-                              />
-                               {entrySchema.errors &&
-                              entrySchema.errors?.exp_date &&
-                              entrySchema.touched &&
-                              entrySchema.touched?.exp_date ? (
-                                <div style={{ color: "red" }}>
-                                  {entrySchema.errors.exp_date}
-                                </div>
-                              ) : null}
-                            </FormGroup>
+                        <Row className="mb-3">
+                          <Col xs="12" sm="7">
+                            <Row>
+                              <Col xs="12" sm="5">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor={`card_number`}
+                                  >
+                                    Card Number *
+                                  </label>
+                                  <Input
+                                    type="text"
+                                    id={`card_number`}
+                                    placeholder="0000 0000 0000 0000"
+                                    className="no-spinner"
+                                    name={`card_number`}
+                                    value={paymentSchema.values.card_number}
+                                    onChange={(e) => {
+                                      const inputValue = e.target.value;
+                                      paymentSchema.setFieldValue(
+                                        `card_number`,
+                                        inputValue
+                                      );
+                                    }}
+                                  />
+                                  {paymentSchema.errors &&
+                                  paymentSchema.errors.card_number ? (
+                                    <div style={{ color: "red" }}>
+                                      {paymentSchema.errors.card_number}
+                                    </div>
+                                  ) : null}
+                                </FormGroup>
+                              </Col>
+                              <Col xs="12" sm="5">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor={`exp_date`}
+                                  >
+                                    Expiration Date *
+                                  </label>
+                                  <Input
+                                    type="text"
+                                    id={`exp_date`}
+                                    name={`exp_date`}
+                                    onChange={(e) => {
+                                      const inputValue = e.target.value;
+                                      paymentSchema.setFieldValue(
+                                        `exp_date`,
+                                        inputValue
+                                      );
+                                    }}
+                                    value={paymentSchema.values.exp_date}
+                                    placeholder="MM/YYYY"
+                                  />
+                                  {paymentSchema.errors &&
+                                  paymentSchema.errors.exp_date ? (
+                                    <div style={{ color: "red" }}>
+                                      {paymentSchema.errors.exp_date}
+                                    </div>
+                                  ) : null}
+                                </FormGroup>
+                              </Col>
+                            </Row>
                           </Col>
                         </Row>
                       </>
                     ) : null}
                   </Col>
-                  {/* <Button
-                  color="primary"
-                 //  href="#rms"
-                  onClick={(e) => e.preventDefault()}
-                  size="sm"
-                  style={{ background: "green" }}
-                >
-                  Save
-
-                </Button> */}
-                  {/* <Button
-                    type="submit"
-                    className="btn btn-primary"
-                    style={{
-                      background: "green",
-                      color: "white",
-                      cursor: "pointer",
-                    }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      leaseFormik.handleSubmit();
-                    }}
-                  >
-                    {id ? "Update Lease" : "Add Lease"}
-                  </Button> */}
                   {loader ? (
                     <button
                       type="submit"
@@ -6185,9 +6119,14 @@ const Leaseing = () => {
                         e.preventDefault();
                         if (selectedTenantData.length !== 0) {
                           entrySchema.handleSubmit(entrySchema.values);
+                          if (selectPaymentMethodDropdawn === "AutoPayment") {
+                            paymentSchema.handleSubmit();
+                          }
                         } else {
-                          // console.log("data not ok")
                           entrySchema.handleSubmit(entrySchema.values);
+                          if (selectPaymentMethodDropdawn === "AutoPayment") {
+                            paymentSchema.handleSubmit();
+                          }
                           setDisplay(true);
                         }
                       }}
@@ -6203,9 +6142,14 @@ const Leaseing = () => {
                         e.preventDefault();
                         if (selectedTenantData.length !== 0) {
                           entrySchema.handleSubmit();
+                          if (selectPaymentMethodDropdawn === "AutoPayment") {
+                            paymentSchema.handleSubmit();
+                          }
                         } else {
-                          // console.log("data not ok")
                           entrySchema.handleSubmit();
+                          if (selectPaymentMethodDropdawn === "AutoPayment") {
+                            paymentSchema.handleSubmit();
+                          }
                           setDisplay(true);
                         }
                       }}
@@ -6215,7 +6159,6 @@ const Leaseing = () => {
                   )}
                   <Button
                     color="primary"
-                    ////  href="#rms"
                     onClick={handleCloseButtonClick}
                     className="btn btn-primary"
                     style={{
@@ -6230,7 +6173,6 @@ const Leaseing = () => {
                   tenantsSchema.errors?.tenant_password &&
                   entrySchema.submitCount > 0 ? (
                     <div style={{ color: "red" }}>
-                      {/* {console.log(tenantsFormik.errors.tenant_password)} */}
                       Tenant Password is missing
                     </div>
                   ) : null}

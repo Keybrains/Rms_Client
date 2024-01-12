@@ -49,6 +49,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 const Rentals = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_URL;
   const [prodropdownOpen, setproDropdownOpen] = React.useState(null);
   const [bankdropdownOpen, setbankDropdownOpen] = React.useState(false);
   const [userdropdownOpen, setuserDropdownOpen] = React.useState(false);
@@ -793,7 +794,7 @@ const Rentals = () => {
 
                 const formData = new FormData();
                 formData.append("files", file);
-                const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+                const url = `${imageUrl}/images/upload`; // Use the correct endpoint for multiple files upload
                 try {
                   const result = await axios.post(url, formData, {
                     headers: {
@@ -887,7 +888,7 @@ const Rentals = () => {
 
                 const formData = new FormData();
                 formData.append("files", file);
-                const url = `${baseUrl}/images/upload`;
+                const url = `${imageUrl}/images/upload`;
                 try {
                   const result = await axios.post(url, formData, {
                     headers: {
@@ -2793,15 +2794,6 @@ const Rentals = () => {
                                             .rental_unitsAdress
                                         }
                                       />
-                                      {/* {rentalsFormik.touched.rental_unitsAdress &&
-                                    rentalsFormik.errors.rental_unitsAdress ? (
-                                      <div style={{ color: "red" }}>
-                                        {
-                                          rentalsFormik.errors
-                                            .rental_unitsAdress
-                                        }
-                                      </div>
-                                    ) : null} */}
                                     </FormGroup>
                                   </Col>
                                   <Col lg="3">
