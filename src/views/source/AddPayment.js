@@ -44,6 +44,7 @@ import { OverlayTrigger } from "react-bootstrap";
 
 const AddPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_URL;
   const { tenantId, entryIndex } = useParams();
   const { paymentId } = useParams();
   const [id, setId] = useState("");
@@ -300,7 +301,7 @@ const AddPayment = () => {
           const imageData = new FormData();
           imageData.append(`files`, files.upload_file);
 
-          const url = `${baseUrl}/images/upload`;
+          const url = `${imageUrl}/images/upload`;
 
           try {
             const result = await axios.post(url, imageData, {
@@ -689,7 +690,7 @@ const AddPayment = () => {
         const imageData = new FormData();
         imageData.append(`files`, files.upload_file);
 
-        const url = `${baseUrl}/images/upload`;
+        const url = `${imageUrl}/images/upload`;
 
         try {
           const result = await axios.post(url, imageData, {

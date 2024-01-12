@@ -34,7 +34,9 @@ import { OpenImageDialog } from "components/OpenImageDialog";
 
 const AddWorkorder = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_URL;
   const { id } = useParams();
+  const { rental_id } = useParams();
   const [propdropdownOpen, setpropdropdownOpen] = React.useState(false);
   const [categorydropdownOpen, setcategorydropdownOpen] = React.useState(false);
   const [vendordropdownOpen, setvendordropdownOpen] = React.useState(false);
@@ -337,7 +339,7 @@ const AddWorkorder = () => {
       imageData.append(`files`, element);
     }
 
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `${imageUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     try {
       const result = await axios.post(url, imageData, {
         headers: {
@@ -488,7 +490,13 @@ const AddWorkorder = () => {
 
   function handleResponse(response) {
     if (response.status === 200) {
-      navigate("/admin/Workorder");
+      if (rental_id) {
+        navigate(
+          `/admin/PropDetails/${WorkFormik.values.rental_id}/${rental_id}?source=task`
+        );
+      } else {
+        navigate("/admin/Workorder");
+      }
       swal(
         "Success!",
         id ? "Workorder Updated Successfully" : "Workorder Added Successfully!",
@@ -657,7 +665,7 @@ const AddWorkorder = () => {
       imageData.append(`files`, element);
     }
 
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `${imageUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     try {
       const result = await axios.post(url, imageData, {
         headers: {
@@ -753,7 +761,7 @@ const AddWorkorder = () => {
 
   const getTenantData = async () => {
     setSelectedTenant("Select");
-    if (selectedCharge === "Tenant" && selectedUnit && selectedProp) {
+    if (selectedCharge === "Tenant" && selectedProp) {
       const data = getPropertyData();
     } else {
       setTenantsDetails([]);
@@ -763,6 +771,39 @@ const AddWorkorder = () => {
   useEffect(() => {
     getTenantData();
   }, [selectedCharge, selectedUnit, selectedProp]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/rentals/rentals_workorder/${rental_id}`
+        );
+
+        setSelectedProp(response.data.data.entry.rental_adress);
+        WorkFormik.setFieldValue(
+          "rental_adress",
+          response.data.data.entry.rental_adress
+        );
+        WorkFormik.setFieldValue(
+          "rental_id",
+          response.data.data.rentalOwner._id
+        );
+        setSelectedUnit("");
+        try {
+          const units = await fetchUnitsByProperty(
+            response.data.data.entry.rental_adress
+          );
+          setUnitData(units);
+        } catch (error) {
+          console.error("Error handling selected property:", error);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, [rental_id]);
 
   return (
     <>
@@ -945,6 +986,7 @@ const AddWorkorder = () => {
 
                   <div className="pl-lg-4">
                     <Row>
+                      {/* Property Dropdown */}
                       <Col lg="4">
                         <FormGroup>
                           <label
@@ -960,6 +1002,7 @@ const AddWorkorder = () => {
                               isOpen={propdropdownOpen}
                               toggle={toggle1}
                               onBlur={WorkFormik.handleBlur}
+                              disabled={rental_id ? true : false}
                             >
                               <DropdownToggle caret style={{ width: "100%" }}>
                                 {selectedProp
@@ -999,78 +1042,73 @@ const AddWorkorder = () => {
                           </FormGroup>
                         </FormGroup>
                       </Col>
-                    </Row>
-                  </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
+                      {/* Unit Dropdown */}
                       <Col lg="4">
-                        <Row>
-                          {selectedProp &&
-                            unitData &&
-                            unitData[0] &&
-                            unitData[0].rental_units && (
+                        {selectedProp &&
+                          unitData &&
+                          unitData[0] &&
+                          unitData[0].rental_units && (
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-unit"
+                              >
+                                Unit *
+                              </label>
                               <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-unit"
-                                  style={{ marginLeft: "15px" }}
+                                <Dropdown
+                                  isOpen={unitDropdownOpen}
+                                  toggle={toggle11}
                                 >
-                                  Unit *
-                                </label>
-                                <FormGroup style={{ marginLeft: "15px" }}>
-                                  <Dropdown
-                                    isOpen={unitDropdownOpen}
-                                    toggle={toggle11}
-                                  >
-                                    <DropdownToggle caret>
-                                      {selectedUnit
-                                        ? selectedUnit
-                                        : "Select Unit"}
-                                    </DropdownToggle>
-                                    <DropdownMenu>
-                                      {unitData.length > 0 ? (
-                                        unitData.map((unit) => (
-                                          <DropdownItem
-                                            key={unit._id}
-                                            onClick={() =>
-                                              handleUnitSelect(
-                                                unit.rental_units,
-                                                unit._id
-                                              )
-                                            }
-                                          >
-                                            {unit.rental_units}
-                                          </DropdownItem>
-                                        ))
-                                      ) : (
-                                        <DropdownItem disabled>
-                                          No units available
+                                  <DropdownToggle caret>
+                                    {selectedUnit
+                                      ? selectedUnit
+                                      : "Select Unit"}
+                                  </DropdownToggle>
+                                  <DropdownMenu>
+                                    {unitData.length > 0 ? (
+                                      unitData.map((unit) => (
+                                        <DropdownItem
+                                          key={unit._id}
+                                          onClick={() =>
+                                            handleUnitSelect(
+                                              unit.rental_units,
+                                              unit._id
+                                            )
+                                          }
+                                        >
+                                          {unit.rental_units}
                                         </DropdownItem>
-                                      )}
-                                    </DropdownMenu>
-                                    {WorkFormik.errors &&
-                                    WorkFormik.errors?.rental_units &&
-                                    WorkFormik.touched &&
-                                    WorkFormik.touched?.rental_units &&
-                                    WorkFormik.values.rental_units === "" ? (
-                                      <div style={{ color: "red" }}>
-                                        {WorkFormik.errors.rental_units}
-                                      </div>
-                                    ) : null}
-                                  </Dropdown>
-                                </FormGroup>
+                                      ))
+                                    ) : (
+                                      <DropdownItem disabled>
+                                        No units available
+                                      </DropdownItem>
+                                    )}
+                                  </DropdownMenu>
+                                  {WorkFormik.errors &&
+                                  WorkFormik.errors?.rental_units &&
+                                  WorkFormik.touched &&
+                                  WorkFormik.touched?.rental_units &&
+                                  WorkFormik.values.rental_units === "" ? (
+                                    <div style={{ color: "red" }}>
+                                      {WorkFormik.errors.rental_units}
+                                    </div>
+                                  ) : null}
+                                </Dropdown>
                               </FormGroup>
-                            )}
-                        </Row>
+                            </FormGroup>
+                          )}
                       </Col>
                     </Row>
-
                     <br />
                   </div>
+
                   <div className="pl-lg-4">
                     <Row>
-                      <Col lg="6">
+                      {/* First Column - Category Dropdown */}
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -1143,8 +1181,10 @@ const AddWorkorder = () => {
                           </Dropdown>
                         </FormGroup>
                       </Col>
+
+                      {/* Second Column - Other Category Input */}
                       <Col
-                        lg="3"
+                        lg="4"
                         style={
                           selectedCategory === "Other"
                             ? { display: "block" }
@@ -1166,33 +1206,19 @@ const AddWorkorder = () => {
                             placeholder="Enter Other Category"
                             type="text"
                             name="work_category"
-                            //name="nput-staffmember-name"
                             onBlur={WorkFormik.handleBlur}
                             onChange={(e) => {
-                              // Update the state or Formik values with the new input value
-                              // WorkFormik.handleChange(e);
                               WorkFormik.setFieldValue(
                                 "work_category",
                                 e.target.value
                               );
                             }}
                             value={WorkFormik.values.work_category}
-                            // required
                           />
-                          {/* {WorkFormik.touched.work_subject &&
-                          WorkFormik.errors.work_subject ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.work_subject}
-                            </div>
-                          ) : null} */}
                         </FormGroup>
                       </Col>
-                    </Row>
-                    <br />
-                  </div>
 
-                  <div className="pl-lg-4">
-                    <Row>
+                      {/* Third Column - Vendor Dropdown */}
                       <Col lg="6">
                         <FormGroup>
                           <label
@@ -1211,18 +1237,6 @@ const AddWorkorder = () => {
                               {selectedVendor} &nbsp;&nbsp;&nbsp;&nbsp;
                             </DropdownToggle>
                             <DropdownMenu style={{ width: "100%" }}>
-                              {/* <DropdownItem
-                                onClick={() =>
-                                  handleVendorSelect("302 properties")
-                                }
-                              >
-                                302 properties
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => handleVendorSelect("Other")}
-                              >
-                                Other
-                              </DropdownItem> */}
                               {allVendors.map((vendor, index) => (
                                 <DropdownItem
                                   key={index}
@@ -1247,6 +1261,7 @@ const AddWorkorder = () => {
                     </Row>
                     <br />
                   </div>
+
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="4">
