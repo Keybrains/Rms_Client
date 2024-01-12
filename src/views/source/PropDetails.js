@@ -85,7 +85,6 @@ const PropDetails = () => {
   const [matchedProperty, setMatchedProperty] = useState({});
   // const [propertyId, setPropertyId] = useState(null);
   const [propertyUnit, setPropertyUnit] = useState([]);
-  const [editUnitDialogOpen, setEditUnitDialogOpen] = useState(false);
   const [editListingData, setEditListingData] = useState(false);
   const [RentAdd, setRentAdd] = useState({});
   const [propType, setPropType] = useState("");
@@ -103,8 +102,6 @@ const PropDetails = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [unitImageLoader, setUnitImageLoader] = useState(false);
   const fileData = (e, type) => {
-    // setUnitImageLoader(true);
-    // Use the correct state-setting function for setSelectedFiles
     setSelectedFiles((prevSelectedFiles) => [
       ...prevSelectedFiles,
       ...e.target.files,
@@ -115,7 +112,6 @@ const PropDetails = () => {
       ...Array.from(e.target.files).map((file) => URL.createObjectURL(file)),
     ];
 
-    // Update the state with the new files
     setUnitImage(newFiles);
   };
 
@@ -381,6 +377,7 @@ const PropDetails = () => {
             ? propertyImage
             : [];
         setUnitImage(firstNonEmptyImage);
+        setSelectedFiles(firstNonEmptyImage);
       })
       .catch((err) => {
         console.log(err);
@@ -396,124 +393,75 @@ const PropDetails = () => {
   }
 
   const handleUnitDetailsEdit = async (id, rentalId) => {
-    if (selectedFiles) {
-      const imageData = new FormData();
-      for (let index = 0; index < selectedFiles.length; index++) {
-        const element = selectedFiles[index];
-        imageData.append(`files`, element);
-      }
+    if (Array.isArray(selectedFiles)) {
+      for (const [index, files] of selectedFiles.entries()) {
+        if (files instanceof File) {
+          const imageData = new FormData();
+          imageData.append(`files`, files);
 
-      const url = `${baseUrl}/images/upload`;
-      var image;
-      try {
-        const result = await axios.post(url, imageData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        console.log(result, "imgs");
+          const url = `${baseUrl}/images/upload`;
 
-        image = {
-          prop_image: result.data.files.map((data, index) => {
-            return data.url;
-          }),
-        };
-        if (result.status === 200) {
-          if (propType === "Residential") {
-            const updatedValues = {
-              rental_unitsAdress: addUnitFormik.values.address1,
-              rental_units: addUnitFormik.values.unit_number,
-              rental_city: addUnitFormik.values.city,
-              rental_state: addUnitFormik.values.state,
-              rental_postcode: addUnitFormik.values.zip,
-              rental_country: addUnitFormik.values.country,
-              propertyres_image: [...image.prop_image],
-            };
-            await axios
-              .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-              .then((response) => {
-                console.log(response.data, "updated data");
-                getUnitProperty(id);
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-            console.log(clickedObject, "clickedObject after update");
-          } else {
-            const updatedValues = {
-              rental_unitsAdress: addUnitFormik.values.address1,
-              rental_units: addUnitFormik.values.unit_number,
-              rental_city: addUnitFormik.values.city,
-              rental_state: addUnitFormik.values.state,
-              rental_postcode: addUnitFormik.values.zip,
-              rental_country: addUnitFormik.values.country,
-              property_image: [...image.prop_image],
-            };
-            await axios
-              .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-              .then((response) => {
-                console.log(response.data, "updated data");
-                getUnitProperty(id);
-
-                // setAddUnitDialogOpen(false);
-                // setAddUnitDialogOpen(false);
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-            console.log(clickedObject, "clickedObject after update");
+          try {
+            const result = await axios.post(url, imageData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
+            selectedFiles[index] = result.data.files[0].url;
+          } catch (error) {
+            console.error(error);
           }
+        } else {
+          console.log(selectedFiles, "imgs");
         }
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      if (propType === "Residential") {
-        const updatedValues = {
-          rental_unitsAdress: addUnitFormik.values.address1,
-          rental_units: addUnitFormik.values.unit_number,
-          rental_city: addUnitFormik.values.city,
-          rental_state: addUnitFormik.values.state,
-          rental_postcode: addUnitFormik.values.zip,
-          rental_country: addUnitFormik.values.country,
-          propertyres_image: unitImage,
-        };
-        await axios
-          .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-          .then((response) => {
-            console.log(response.data, "updated data");
-            getUnitProperty(id);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        console.log(clickedObject, "clickedObject after update");
-      } else {
-        const updatedValues = {
-          rental_unitsAdress: addUnitFormik.values.address1,
-          rental_units: addUnitFormik.values.unit_number,
-          rental_city: addUnitFormik.values.city,
-          rental_state: addUnitFormik.values.state,
-          rental_postcode: addUnitFormik.values.zip,
-          rental_country: addUnitFormik.values.country,
-          property_image: unitImage,
-        };
-        await axios
-          .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
-          .then((response) => {
-            console.log(response.data.data, "updated data");
-            getUnitProperty(id);
-
-            // setAddUnitDialogOpen(false);
-            // setAddUnitDialogOpen(false);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        console.log(clickedObject, "clickedObject after update");
       }
     }
+    if (propType === "Residential") {
+      const updatedValues = {
+        rental_unitsAdress: addUnitFormik.values.address1,
+        rental_units: addUnitFormik.values.unit_number,
+        rental_city: addUnitFormik.values.city,
+        rental_state: addUnitFormik.values.state,
+        rental_postcode: addUnitFormik.values.zip,
+        rental_country: addUnitFormik.values.country,
+        propertyres_image: selectedFiles,
+      };
+      await axios
+        .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+        .then((response) => {
+          console.log(response.data, "updated data");
+          getUnitProperty(id);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      console.log(clickedObject, "clickedObject after update");
+    } else {
+      const updatedValues = {
+        rental_unitsAdress: addUnitFormik.values.address1,
+        rental_units: addUnitFormik.values.unit_number,
+        rental_city: addUnitFormik.values.city,
+        rental_state: addUnitFormik.values.state,
+        rental_postcode: addUnitFormik.values.zip,
+        rental_country: addUnitFormik.values.country,
+        property_image: selectedFiles,
+      };
+      await axios
+        .put(`${baseUrl}/propertyunit/propertyunit/` + id, updatedValues)
+        .then((response) => {
+          console.log(response.data.data, "updated data");
+          getUnitProperty(id);
+
+          // setAddUnitDialogOpen(false);
+          // setAddUnitDialogOpen(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      console.log(clickedObject, "clickedObject after update");
+    }
   };
+
   const [tasks, setTasks] = useState([]);
   const getTasks = async (rentalAddress) => {
     await axios
@@ -968,7 +916,7 @@ const PropDetails = () => {
   );
 
   // Calculate net income
-  const netIncome = totalIncome - totalExpenses;
+  const netIncome = totalIncome - totalExpenses || 0;
   const [showModal, setShowModal] = useState(false);
   const [moveOutDate, setMoveOutDate] = useState("");
   const [noticeGivenDate, setNoticeGivenDate] = useState("");
@@ -1122,17 +1070,16 @@ const PropDetails = () => {
                     <div className="main d-flex justify-content-between">
                       <div className="card mb-3 col-8">
                         <div className="row g-0 border-none">
-                          {/* <div className="col-md-4">
-                            <img
-                              src={fone}
-                              className="img-fluid rounded-start card-image"
-                              alt="..."
-                            />
-                          </div> */}
                           {!propImageLoader ? (
                             <>
                               <div className="col-md-4 mt-2">
-                                <label htmlFor="prop_image">
+                                <label
+                                  htmlFor="prop_image"
+                                  style={{
+                                    width: "260px",
+                                    height: "180px",
+                                  }}
+                                >
                                   <img
                                     src={
                                       matchedProperty.prop_image
@@ -1141,9 +1088,11 @@ const PropDetails = () => {
                                     }
                                     className="img-fluid rounded-start card-image"
                                     alt={"..."}
-                                    // width='260px'
-                                    // height='180px'
-                                    // onClick={handleModalOpen}
+                                    style={{
+                                      width: "260px",
+                                      aspectRatio: "3/2",
+                                      objectFit: "contain",
+                                    }}
                                   />
                                 </label>
                                 <TextField
@@ -1176,10 +1125,7 @@ const PropDetails = () => {
                               className="card-body mt-1"
                               style={{ padding: "0" }}
                             >
-                              <h5 className="">
-                                Property details
-                                {/* <Link to="/">Edit</Link> */}
-                              </h5>
+                              <h5 className="">Property details</h5>
                               <div className="h6" style={{ color: "#767676" }}>
                                 ADDRESS
                               </div>
@@ -1188,143 +1134,61 @@ const PropDetails = () => {
                                 style={{ fontSize: "14px" }}
                               >
                                 {" "}
-                                {matchedProperty?.property_type}
+                                {matchedProperty?.property_type
+                                  ? matchedProperty?.property_type + ","
+                                  : ""}
                               </span>
                               <span
                                 className="address"
                                 style={{ fontSize: "14px" }}
                               >
                                 {" "}
-                                {matchedProperty?.rental_adress}
+                                {matchedProperty?.rental_adress
+                                  ? matchedProperty?.rental_adress + ","
+                                  : ""}
+                              </span>
+                              <br />
+                              <span
+                                className="address"
+                                style={{ fontSize: "14px" }}
+                              >
+                                {" "}
+                                {matchedProperty?.rental_city
+                                  ? matchedProperty?.rental_city + ","
+                                  : ""}
                               </span>
                               <span
                                 className="address"
                                 style={{ fontSize: "14px" }}
                               >
                                 {" "}
-                                {matchedProperty?.rental_city}
+                                {matchedProperty?.rental_state
+                                  ? matchedProperty?.rental_state + ","
+                                  : ""}
+                              </span>
+                              <br />
+                              <span
+                                className="address"
+                                style={{ fontSize: "14px" }}
+                              >
+                                {" "}
+                                {matchedProperty?.rental_country
+                                  ? matchedProperty?.rental_country + ","
+                                  : ""}
                               </span>
                               <span
                                 className="address"
                                 style={{ fontSize: "14px" }}
                               >
                                 {" "}
-                                {matchedProperty?.rental_country}
+                                {matchedProperty?.rental_postcode
+                                  ? matchedProperty?.rental_postcode
+                                  : ""}
                               </span>
-                              <span
-                                className="address"
-                                style={{ fontSize: "14px" }}
-                              >
-                                {" "}
-                                {matchedProperty?.rental_postcode}
-                              </span>
-                              {/* <p className="address">OPERATING ACCOUNT </p> */}
-                              {/* <p className="address">3 Industrial Road Boston, MA 02210 <Link to="/">Map it</Link></p> */}
-                              {/* <div className="con-main d-flex justify-content-between">
-          <div className="con-sec">
-          <p>opening acconunt</p>
-        <Link to="/">Trust account</Link>
-        </div>
-        <div className="con-third">
-          <p>PROPERTY RESERVE</p>
-          <p>$200.00</p>
-        </div>
-        </div> */}
                             </div>
                           </div>
                         </div>
                       </div>
-
-                      {/* <div className="col-4 mt-4">
-                        <Card style={{ background: "#F4F6FF" }}>
-                          <CardContent>
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                              }}
-                            >
-                              <Typography
-                                sx={{
-                                  fontSize: 14,
-                                  fontWeight: "bold",
-                                }}
-                                color="text.secondary"
-                                gutterBottom
-                              >
-                                Property Manager:
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  fontSize: 14,
-                                  marginLeft: "10px",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                              </Typography>
-                            </div>
-                            <hr
-                              style={{
-                                marginTop: "2px",
-                                marginBottom: "6px",
-                              }}
-                            />
-
-
-                            <>
-                              <div>
-                                <div className="entry-container">
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                      marginBottom: "5px",
-                                    }}
-                                  >
-                                    <Typography
-                                      sx={{
-                                        fontSize: 14,
-                                        fontWeight: "bold",
-                                        marginRight: "10px",
-                                      }}
-                                      color="text.secondary"
-                                      gutterBottom
-                                    >
-                                      No manager assigned
-                                    </Typography>
-                                  </div>
-                                </div>
-                             
-                              </div>
-                           
-                            </>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                marginTop: "10px",
-                              }}
-                            >
-                              <Button
-                                color="success"
-                                style={{
-                                  fontSize: "13px",
-                                  background: "white",
-                                  color: "green",
-                                  "&:hover": {
-                                    background: "green",
-                                    color: "white",
-                                  },
-                                }}
-                              >
-                                Asign a manager
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div> */}
                     </div>
                     <div className="table-responsive d-flex">
                       <Table
@@ -1833,7 +1697,7 @@ const PropDetails = () => {
                                       }}
                                       //colSpan="2"
                                     >
-                                      {netIncome && netIncome > 0
+                                      {netIncome >= 0
                                         ? `$${netIncome.toFixed(2)}`
                                         : `$(${Math.abs(netIncome || 0).toFixed(
                                             2
@@ -2173,28 +2037,6 @@ const PropDetails = () => {
                                   onBlur={addUnitFormik.handleBlur}
                                   style={{ marginBottom: "10px" }}
                                 />
-                                {/* <Input
-                                  className="form-control-alternative"
-                                  id="address2"
-                                  placeholder="Address"
-                                  type="text"
-                                  name="address2"
-                                  value={addUnitFormik.values.address2}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                  style={{ marginBottom: "10px" }}
-                                />
-                                <Input
-                                  className="form-control-alternative"
-                                  id="address3"
-                                  placeholder="Address"
-                                  type="text"
-                                  name="address3"
-                                  value={addUnitFormik.values.address3}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                  style={{ marginBottom: "10px" }}
-                                /> */}
                               </FormGroup>
                             </Col>
                           </Row>
@@ -2646,83 +2488,6 @@ const PropDetails = () => {
 
                         <Grid container>
                           <Grid container md={9} style={{ display: "flex" }}>
-                            {/* <Grid item md={3}>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexWrap: "wrap",
-                                }}
-                              >
-                                {clickedObject?.propertyres_image &&
-                                  clickedObject?.propertyres_image.length >
-                                    0 && (
-                                    <div
-                                      style={{
-                                        width: "100%", // Expands to full width by default
-                                      }}
-                                    >
-                                      {clickedObject?.propertyres_image.map(
-                                        (propertyres_image, index) => (
-                                          <img
-                                            key={index}
-                                            src={propertyres_image}
-                                            alt="Property Details"
-                                            onClick={() => {
-                                              setSelectedImage(
-                                                propertyres_image
-                                              );
-                                              setOpen(true);
-                                            }}
-                                            style={{
-                                              width: "200px",
-                                              height: "150px",
-                                              // objectFit: "cover",
-                                              margin: "10px",
-                                              borderRadius: "20px",
-                                              "@media (max-width: 768px)": {
-                                                width: "100%", // Full-width on smaller screens
-                                              },
-                                            }}
-                                          />
-                                        )
-                                      )}
-                                      <OpenImageDialog
-                                        open={open}
-                                        setOpen={setOpen}
-                                        selectedImage={selectedImage}
-                                      />
-                                    </div>
-                                  )}
-                                {clickedObject?.property_image &&
-                                  clickedObject?.property_image.length > 0 && (
-                                    <div
-                                      style={{
-                                        width: "100%", // Expands to full width by default
-                                      }}
-                                    >
-                                      {clickedObject?.property_image.map(
-                                        (property_image, index) => (
-                                          <img
-                                            key={index}
-                                            src={property_image}
-                                            alt="Property Details"
-                                            style={{
-                                              width: "100px",
-                                              height: "100px",
-                                              // objectFit: "cover",
-                                              margin: "10px",
-                                              borderRadius: "10px",
-                                              "@media (max-width: 768px)": {
-                                                width: "100%", // Full-width on smaller screens
-                                              },
-                                            }}
-                                          />
-                                        )
-                                      )}
-                                    </div>
-                                  )}
-                              </div>
-                            </Grid> */}
                             <div className="din d-flex justify-content-between">
                               <div className="col-md-4 mt-2">
                                 <label htmlFor="unit_image">
@@ -2739,7 +2504,6 @@ const PropDetails = () => {
                                   ) : (
                                     <>
                                       <img
-                                        // src="https://gecbhavnagar.managebuilding.com/manager/client/static-images/photo-sprite-property.png"
                                         src={
                                           clickedObject &&
                                           clickedObject?.propertyres_image[0]
@@ -2751,9 +2515,8 @@ const PropDetails = () => {
                                         }
                                         className="img-fluid rounded-start card-image"
                                         alt="..."
-                                        // width='260px'
-                                        // height='18px'
-                                        // onClick={handleModalOpen}
+                                        width="400px"
+                                        height="400px"
                                       />
                                     </>
                                   )}
@@ -2767,42 +2530,55 @@ const PropDetails = () => {
                                   marginLeft: "20px",
                                 }}
                               >
-                                <div className="d-flex align-self-end">
-                                  <Typography
-                                    variant="h6"
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "space-between",
-                                      fontSize: "18px",
-                                      textTransform: "capitalize",
-                                      color: "#5E72E4",
-                                      fontWeight: "600",
-                                    }}
-                                  >
-                                    <div>{clickedObject?.rental_units}</div>
-                                    <hr
-                                      style={{
-                                        marginTop: "10px",
-                                        width: "calc(100% - 100px)",
+                                {clickedObject?.rental_units ? (
+                                  <div className="d-flex align-self-end">
+                                    <Typography
+                                      variant="h6"
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                        fontSize: "18px",
+                                        textTransform: "capitalize",
+                                        color: "#5E72E4",
+                                        fontWeight: "600",
                                       }}
-                                    />
-                                  </Typography>
-                                </div>
+                                    >
+                                      <div>{clickedObject?.rental_units}</div>
+                                      <hr
+                                        style={{
+                                          marginTop: "10px",
+                                          width: "calc(100% - 100px)",
+                                        }}
+                                      />
+                                    </Typography>
+                                  </div>
+                                ) : (
+                                  ""
+                                )}
                                 <span style={{ marginTop: "0px" }}>
                                   ADDRESS
                                   <br />
-                                  {clickedObject?.rental_units +
-                                    ", " +
-                                    clickedObject?.rental_adress +
-                                    ", " +
-                                    clickedObject?.rental_city || "N/A"}
+                                  {clickedObject?.rental_units
+                                    ? clickedObject?.rental_units + ", "
+                                    : ""}
+                                  {clickedObject?.rental_adress
+                                    ? clickedObject?.rental_adress + ", "
+                                    : ""}
                                   <br />
-                                  {clickedObject?.rental_state +
-                                    ", " +
-                                    clickedObject?.rental_postcode +
-                                    ", " +
-                                    clickedObject?.rental_country || "N/A"}
+                                  {clickedObject?.rental_city
+                                    ? clickedObject?.rental_city + ", "
+                                    : ""}
+                                  {clickedObject?.rental_state
+                                    ? clickedObject?.rental_state + ", "
+                                    : ""}
+                                  <br />
+                                  {clickedObject?.rental_country
+                                    ? clickedObject?.rental_country + ", "
+                                    : ""}
+                                  {clickedObject?.rental_postcode
+                                    ? clickedObject?.rental_postcode
+                                    : ""}
                                 </span>
                                 {/* i want to put this div to the extreme rigth of main div */}
                               </Grid>
@@ -3378,6 +3154,28 @@ const PropDetails = () => {
                     )}
                   </TabPanel>
                   <TabPanel value="task">
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      <Button
+                        className="btn-icon btn-2"
+                        color="primary"
+                        style={{
+                          background: "white",
+                          color: "blue",
+                        }}
+                        size="l"
+                        onClick={() => {
+                          navigate(`/admin/addworkorder/addtask/${"659fad988c342fa29e54b2f1"}`)
+                        }}
+                      >
+                        <span className="btn-inner--text">Add Task</span>
+                      </Button>
+                    </div>
                     <Table
                       className="align-items-center table-flush"
                       responsive
@@ -3733,22 +3531,22 @@ const PropDetails = () => {
       </Container>
       <Dialog open={openEdite} onClose={closeModal}>
         <DialogTitle>Edit Unit Details</DialogTitle>
+        <CloseIcon
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            setOpenEdite(!openEdite);
+          }}
+        />
         <Row>
           <Col md={11}>
             <Card style={{ position: "relative" }}>
-              <CloseIcon
-                style={{
-                  position: "absolute",
-                  top: "10px",
-                  right: "10px",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  setOpenEdite(!openEdite);
-                }}
-              />
-              <CardBody>
-                <form onSubmit={addUnitFormik.handleSubmit}>
+              {clickedObject?.rental_units ? (
+                <>
                   <div
                     style={{
                       display: "flex",
@@ -3788,6 +3586,12 @@ const PropDetails = () => {
                       onBlur={addUnitFormik.handleBlur}
                     />
                   </div>
+                </>
+              ) : (
+                ""
+              )}
+              <CardBody>
+                <form onSubmit={addUnitFormik.handleSubmit}>
                   <div
                     style={{
                       display: "flex",
@@ -3896,7 +3700,6 @@ const PropDetails = () => {
                               name={`unit_img`}
                               onChange={(e) => {
                                 fileData(e);
-                                fileData(e);
                               }}
                             />
                             <label htmlFor={`unit_img`}>
@@ -3909,7 +3712,6 @@ const PropDetails = () => {
                               </b>{" "}
                               Add
                             </label>
-                            {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
                           </span>
                         </FormGroup>
                         <FormGroup
@@ -3987,8 +3789,7 @@ const PropDetails = () => {
                           clickedObject?.rentalId
                         );
                         // setIsEdit(false);
-                        setOpenEdite(!openEdite);
-                        setUnitImageLoader(!unitImageLoader);
+                        // setOpenEdite(!openEdite);
                       }}
                     >
                       Save

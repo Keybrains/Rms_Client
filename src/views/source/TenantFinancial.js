@@ -161,7 +161,11 @@ const TenantFinancial = () => {
     onSubmit: (values, action) => {
       // handleFormSubmit(values, action);
       //console.log(values, "values");
-      handleFinancialSubmit(values, action);
+      if (isEditable && paymentId) {
+        editpayment(paymentId);
+      } else {
+        handleFinancialSubmit(values, action);
+      }
     },
   });
   const handlePropertyTypeSelect = async (property) => {
@@ -350,24 +354,24 @@ const TenantFinancial = () => {
   //   //console.log(rental_adress)
   // }, [rental_adress]);
 
-  function navigateToTenantsDetails(rental_adress) {
-    navigate(`/tenant/tenantpropertydetail/${rental_adress}`);
-    // const tenantsDetailsURL = `/tenant/tenantpropertydetail/${rental_adress}`;
-    // window.location.href = tenantsDetailsURL;
-    // console.log("Rental Address", rental_adress);
-  }
-  const formatCardNumber = (inputValue) => {
-    if (typeof inputValue !== "string") {
-      return ""; // Return an empty string if inputValue is not a string
-    }
+  // function navigateToTenantsDetails(rental_adress) {
+  //   navigate(`/tenant/tenantpropertydetail/${rental_adress}`);
+  //   // const tenantsDetailsURL = `/tenant/tenantpropertydetail/${rental_adress}`;
+  //   // window.location.href = tenantsDetailsURL;
+  //   // console.log("Rental Address", rental_adress);
+  // }
+  // const formatCardNumber = (inputValue) => {
+  //   if (typeof inputValue !== "string") {
+  //     return ""; // Return an empty string if inputValue is not a string
+  //   }
 
-    const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-    const formattedValue = numericValue
-      .replace(/(\d{4})/g, "$1 ") // Add a space after every four digits
-      .trim(); // Remove any trailing space
+  //   const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+  //   const formattedValue = numericValue
+  //     .replace(/(\d{4})/g, "$1 ") // Add a space after every four digits
+  //     .trim(); // Remove any trailing space
 
-    return formattedValue;
-  };
+  //   return formattedValue;
+  // };
 
   // console.log(financialFormik.values,'financialFormik.values')
 
@@ -606,6 +610,90 @@ const TenantFinancial = () => {
     financialFormik.values.account = value;
   };
 
+  const [isEditable, setIsEditable] = useState(false);
+  const [paymentId, setPaymentId] = useState("");
+  const getEditeData = async (id) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/payment_charge/get_entry/${id}`
+      );
+      if (response.data.statusCode === 200) {
+        const responseData = response.data.data;
+
+        // Find the corresponding propertyId based on rental_adress
+        const matchingEntry = tenantDetails?.entries?.find(
+          (item) => item.rental_adress === responseData.rental_adress
+        );
+
+        // Set propertyId if matching entry is found
+        financialFormik.setValues((prevValues) => ({
+          ...prevValues,
+          account: responseData.account || "",
+          amount: responseData.amount || "",
+          propertyId: matchingEntry.property_id,
+        }));
+
+        // Update other selected values
+        setSelectedPropertyType(responseData.rental_adress);
+        setSelectedUnit(responseData.rental_unit);
+        setSelectedAccount(responseData.account);
+        setIsEditable(true);
+        setPaymentId(id);
+        openModal();
+      } else {
+        console.error("Error:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
+  const editpayment = async (id) => {
+    const rentalAddress = financialFormik.values.rental_adress;
+
+    try {
+      const updatedValues = {
+        month_year: moment().format("MM-YYYY"),
+        date: moment().format("YYYY-MM-DD"),
+        amount: financialFormik.values.amount,
+        tenant_firstName: financialFormik.values.first_name,
+        tenant_lastName: financialFormik.values.last_name,
+        attachment: financialFormik.values.attachment,
+        rental_adress: financialFormik.values.rental_adress,
+        tenant_id: cookie_id,
+
+        entries: [
+          {
+            account: financialFormik.values.account,
+            balance: parseFloat(financialFormik.values.amount),
+            amount: parseFloat(financialFormik.values.amount),
+          },
+        ],
+      };
+
+      //console.log(updatedValues, "updatedValues");
+
+      const putUrl = `${baseUrl}/payment_charge/edit_entry/${id}`;
+      const response = await axios.put(putUrl, updatedValues);
+
+      if (response.data.statusCode === 200) {
+        closeModal();
+        console.log("Response Data:", response.data);
+        swal("Success", "Payments Update Successfully", "success");
+        navigate(`/tenant/tenantFinancial`);
+      } else {
+        swal("Error", response.data.message, "error");
+        console.error("Server Error:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+      }
+    }
+  };
+
+  console.log(paymentId ? paymentId : "");
   return (
     <>
       <TenantsHeader />
@@ -705,6 +793,7 @@ const TenantFinancial = () => {
                                 <th scope="col">Increase</th>
                                 <th scope="col">Decrease</th>
                                 <th scope="col">Balance</th>
+                                <th scope="col">Action</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -763,6 +852,23 @@ const TenantFinancial = () => {
                                           )
                                         ) : (
                                           "0"
+                                        )}
+                                      </td>
+                                      <td>
+                                        {data?.paymentAndCharges.type ===
+                                        "Payment" ? (
+                                          <div
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => {
+                                              getEditeData(
+                                                data?.paymentAndCharges?._id
+                                              );
+                                            }}
+                                          >
+                                            <EditIcon />
+                                          </div>
+                                        ) : (
+                                          <div>-</div>
                                         )}
                                       </td>
                                     </tr>
