@@ -90,7 +90,7 @@ const Index = (props) => {
     const fetchData = async () => {
       try {
         let response1 = await axios.get(
-          `http://localhost:4000/api/tenant/tenants/count`
+          `https://propertymanager.cloudpress.host/api/tenant/tenants/count`
         );
         setData((prevData) => ({
           ...prevData,
@@ -101,7 +101,7 @@ const Index = (props) => {
       }
       try {
         let response2 = await axios.get(
-          `http://localhost:4000/api/rentals/rentals/count`
+          `https://propertymanager.cloudpress.host/api/rentals/rentals/count`
         );
         setData((prevData) => ({
           ...prevData,
@@ -112,7 +112,7 @@ const Index = (props) => {
       }
       try {
         let response3 = await axios.get(
-          `http://localhost:4000/api/rentals/rentalowner/count`
+          `https://propertymanager.cloudpress.host/api/rentals/rentalowner/count`
         );
         setData((prevData) => ({
           ...prevData,
@@ -123,7 +123,7 @@ const Index = (props) => {
       }
       try {
         let response4 = await axios.get(
-          `http://localhost:4000/api/addstaffmember/staff/count`
+          `https://propertymanager.cloudpress.host/api/addstaffmember/staff/count`
         );
         setData((prevData) => ({
           ...prevData,
