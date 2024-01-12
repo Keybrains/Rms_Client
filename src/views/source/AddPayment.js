@@ -14,7 +14,6 @@ import {
   Form,
   Input,
   InputGroup,
-  InputGroupAddon,
   Container,
   Table,
   Row,
@@ -94,7 +93,9 @@ const AddPayment = () => {
     setTenantid(property._id); // Set the selected tenant's ID
     setTenantentryindex(property.entryIndex); // Set the selected tenant's entry index
   };
+
   const navigate = useNavigate();
+
   const generalledgerFormik = useFormik({
     initialValues: {
       date: "",
@@ -136,6 +137,7 @@ const AddPayment = () => {
       }
     },
   });
+
   const handleCloseButtonClick = () => {
     navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
   };
@@ -758,7 +760,6 @@ const AddPayment = () => {
     },
   });
 
-  console.log(tenantid, "tenantid");
   const getAllCharges = async () => {
     try {
       const response = await axios.get(

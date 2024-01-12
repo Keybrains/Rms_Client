@@ -269,7 +269,7 @@ const TenantFinancial = () => {
           const unit = data?.rental_units;
           if (rental && property_id && unit) {
             const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${property_id}&unit=${unit}&tenant_id=${cookie_id}`;
-            console.log(url, "==================");
+           
             try {
               const response = await axios.get(url);
               if (response.data && response.data.data) {
