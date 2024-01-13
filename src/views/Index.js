@@ -54,6 +54,7 @@ import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 
 const Index = (props) => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   let navigate = useNavigate();
@@ -89,46 +90,23 @@ const Index = (props) => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        let response1 = await axios.get(
-          `https://propertymanager.cloudpress.host/api/tenant/tenants/count`
+        const response1 = await axios.get(`${baseUrl}/tenant/tenants/count`);
+        const response2 = await axios.get(`${baseUrl}/rentals/rentals/count`);
+        const response3 = await axios.get(
+          `${baseUrl}/rentals/rentalowner/count`
         );
-        setData((prevData) => ({
-          ...prevData,
+        const response4 = await axios.get(
+          `${baseUrl}/addstaffmember/staff/count`
+        );
+
+        const newData = {
           tenants: response1.data.totalCount,
-        }));
-      } catch (error) {
-        console.log(error);
-      }
-      try {
-        let response2 = await axios.get(
-          `https://propertymanager.cloudpress.host/api/rentals/rentals/count`
-        );
-        setData((prevData) => ({
-          ...prevData,
           rentals: response2.data.totalCount,
-        }));
-      } catch (error) {
-        console.log(error);
-      }
-      try {
-        let response3 = await axios.get(
-          `https://propertymanager.cloudpress.host/api/rentals/rentalowner/count`
-        );
-        setData((prevData) => ({
-          ...prevData,
           rentalowner: response3.data.totalCount,
-        }));
-      } catch (error) {
-        console.log(error);
-      }
-      try {
-        let response4 = await axios.get(
-          `https://propertymanager.cloudpress.host/api/addstaffmember/staff/count`
-        );
-        setData((prevData) => ({
-          ...prevData,
           staff: response4.data.totalCount,
-        }));
+        };
+
+        setData(newData);
       } catch (error) {
         console.log(error);
       }
@@ -150,7 +128,7 @@ const Index = (props) => {
           >
             <Card
               className="shadow h-100 mx-2 mt-3 pt-3"
-              style={{ backgroundColor: "#d1e9fc", cursor: 'pointer' }}
+              style={{ backgroundColor: "#d1e9fc", cursor: "pointer" }}
             >
               <CardBody className="d-flex flex-column justify-content-center  text-center">
                 <div className="d-flex align-items-center flex-column p-3">
@@ -192,7 +170,7 @@ const Index = (props) => {
           >
             <Card
               className="shadow h-100 mx-2 mt-3 pt-3"
-              style={{ backgroundColor: "#000080", cursor: 'pointer' }}
+              style={{ backgroundColor: "#000080", cursor: "pointer" }}
             >
               <CardBody className="d-flex flex-column justify-content-center  text-center">
                 <div className="d-flex align-items-center flex-column p-3">
@@ -234,7 +212,7 @@ const Index = (props) => {
           >
             <Card
               className="shadow h-100 mx-2 mt-3 pt-3"
-              style={{ backgroundColor: "#d1e9fc", cursor: 'pointer' }}
+              style={{ backgroundColor: "#d1e9fc", cursor: "pointer" }}
             >
               <CardBody className="d-flex flex-column justify-content-center  text-center">
                 <div className="d-flex align-items-center flex-column p-3">
@@ -276,7 +254,7 @@ const Index = (props) => {
           >
             <Card
               className="shadow h-100 mx-2 mt-3 pt-3"
-              style={{ backgroundColor: "#000080", cursor: 'pointer' }}
+              style={{ backgroundColor: "#000080", cursor: "pointer" }}
             >
               <CardBody className="d-flex flex-column justify-content-center  text-center">
                 <div className="d-flex align-items-center flex-column p-3">
