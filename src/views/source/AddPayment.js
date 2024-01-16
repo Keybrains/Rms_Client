@@ -14,7 +14,6 @@ import {
   Form,
   Input,
   InputGroup,
-  InputGroupAddon,
   Container,
   Table,
   Row,
@@ -96,7 +95,9 @@ const AddPayment = () => {
     setTenantid(property._id); // Set the selected tenant's ID
     setTenantentryindex(property.entryIndex); // Set the selected tenant's entry index
   };
+
   const navigate = useNavigate();
+
   const generalledgerFormik = useFormik({
     initialValues: {
       date: "",
@@ -138,6 +139,7 @@ const AddPayment = () => {
       }
     },
   });
+
   const handleCloseButtonClick = () => {
     navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
   };
@@ -237,6 +239,7 @@ const AddPayment = () => {
   const [tenantData, setTenantData] = useState([]);
   const [propertyId, setPropertyId] = useState("");
   // const [propertyData, setPropertyData] = useState([]);
+
   const fetchTenantData = async () => {
     fetch(`${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`)
       .then((response) => response.json())
@@ -310,8 +313,6 @@ const AddPayment = () => {
               },
             });
 
-            console.log(result, "imgs");
-
             // Update the original array with the uploaded file URL
             generalledgerFormik.values.attachment[index].upload_file =
               result.data.files[0].url;
@@ -324,7 +325,6 @@ const AddPayment = () => {
       }
     } else {
       console.error("Attachment is not an array");
-      // Handle the case where attachment is not an array
     }
     const rentalAddress = generalledgerFormik.values.rental_adress;
     values["total_amount"] = total_amount;
@@ -685,8 +685,6 @@ const AddPayment = () => {
 
     for (const [index, files] of attachmentEntries) {
       if (files.upload_file instanceof File) {
-        console.log(files.upload_file, "myfile");
-
         const imageData = new FormData();
         imageData.append(`files`, files.upload_file);
 
@@ -698,9 +696,6 @@ const AddPayment = () => {
               "Content-Type": "multipart/form-data",
             },
           });
-
-          console.log(result, "imgs");
-
           // Update the original array with the uploaded file URL
           generalledgerFormik.values.attachment[index].upload_file =
             result.data.files[0].url;
@@ -764,7 +759,6 @@ const AddPayment = () => {
     },
   });
 
-  console.log(tenantid, "tenantid");
   const getAllCharges = async () => {
     try {
       const response = await axios.get(
