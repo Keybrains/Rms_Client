@@ -310,7 +310,7 @@ const WorkOrderDetails = () => {
       });
     } catch (error) {
       console.error("Error fetching tenant details:", error);
-      setError(error);
+      //setError(error);
     }
   };
 
