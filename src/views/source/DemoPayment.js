@@ -25,7 +25,6 @@ import {
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import Cookies from "universal-cookie";
 import { RotatingLines } from "react-loader-spinner";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -36,6 +35,7 @@ import Header from "components/Headers/Header";
 import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
 import moment from "moment";
+import axios from "axios";
 
 const DemoPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -153,29 +153,31 @@ const DemoPayment = () => {
     initialValues: {
       first_name: "",
       last_name: "",
+      check_number: "",
       email_name: "",
       card_number: "",
       amount: "",
+      date: "",
+      memo: "",
+      paymentType: "",
       account: "",
       expiration_date: "",
       cvv: "",
       tenantId: "",
       propertyId: "",
       unitId: "",
+      type2: "Payment",
     },
     validationSchema: yup.object({
       first_name: yup.string().required("First name is required"),
       last_name: yup.string().required("Last name is required"),
       email_name: yup.string().required("Email is required"),
-      card_number: yup.number().required("Card number is required"),
       amount: yup.number().required("Amount is required"),
+      date: yup.date().required("Date is required"),
       account: yup.string().required("Amount is required"),
-      expiration_date: yup.string().required("Expiration date is required"),
-      cvv: yup.number().required("CVV is required"),
+      paymentType: yup.string().required("Payment type is required"),
     }),
     onSubmit: (values, action) => {
-      // handleFormSubmit(values, action);
-      //console.log(values, "values");
       if (isEditable && paymentId) {
         editpayment(paymentId);
       } else {
@@ -195,7 +197,11 @@ const DemoPayment = () => {
     try {
       const units = await fetchUnitsByProperty(property.rental_adress);
       //console.log(units, "units"); // Check the received units in the console
-      setUnitData(units); // Set the received units in the unitData state
+      setUnitData(
+        units.filter(
+          (item) => item.rental_units !== undefined && item.rental_units !== ""
+        )
+      ); // Set the received units in the unitData state
     } catch (error) {
       console.error("Error handling selected property:", error);
     }
@@ -204,33 +210,7 @@ const DemoPayment = () => {
     setSelectedUnit(property.rental_units);
     financialFormik.setFieldValue("unitId", property._id || "");
     financialFormik.setFieldValue("unit", property.rental_units || "");
-    // financialFormik.setFieldValue("rental_units", selectedUnit); // Update the formik state here
   };
-
-  // const getGeneralLedgerData = async () => {
-  //   const apiUrl = `${baseUrl}/payment/merge_payment_charge/${cookie_id}`;
-
-  //   try {
-  //     const response = await axios.get(apiUrl);
-  //     setLoader(false);
-
-  //     if (response.data && response.data.data) {
-  //       const mergedData = response.data.data;
-  //       mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
-  //       const dataWithBalance = calculateBalance(mergedData);
-  //       console.log('first', response.data.data)
-  //       setGeneralLedgerData(dataWithBalance);
-  //     } else {
-  //       console.error("Unexpected response format:", response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getGeneralLedgerData();
-  // }, [cookie_id]);
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -258,6 +238,7 @@ const DemoPayment = () => {
       try {
         const response = await axios.get(url);
         setGeneralLedgerData(response.data.data);
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -284,7 +265,7 @@ const DemoPayment = () => {
   const [paymentLoader, setPaymentLoader] = useState(false);
 
   const handleFinancialSubmit = async (values, action) => {
-    const url = `${baseUrl}/nmipayment/purchase`;
+    const url = `${baseUrl}/nmipayment/sale`;
     const dateParts = values.expiration_date.split("/");
     if (dateParts.length !== 2) {
       console.log("Invalid date format");
@@ -293,7 +274,7 @@ const DemoPayment = () => {
     const year = dateParts[1].slice(-2);
 
     values.expiration_date = `${month}${year}`;
-
+    values.account = selectedAccount;
     try {
       setPaymentLoader(true);
       const response = await axios.post(url, {
@@ -303,7 +284,7 @@ const DemoPayment = () => {
       console.log(response.data, "response.data");
 
       if (response.data && response.data.statusCode === 100) {
-        swal("Success!", "Payment Successfull", "success");
+        swal("Success!", "Payment Successful", "success");
         await getGeneralLedgerData();
         closeModal();
 
@@ -426,7 +407,14 @@ const DemoPayment = () => {
   const [RecAccountNames, setRecAccountNames] = useState([]);
   const [accountData, setAccountData] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen2, setDropdownOpen2] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState("");
+  const [selectedPaymentType, setSelectedPaymentType] = useState("");
+
+  const handlePaymentTypeChange = (type) => {
+    setSelectedPaymentType(type);
+    financialFormik.setFieldValue("paymentType", type);
+  };
 
   useEffect(() => {
     fetch(`${baseUrl}/addaccount/find_accountname`)
@@ -477,6 +465,9 @@ const DemoPayment = () => {
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
+  };
+  const toggleDropdown2 = () => {
+    setDropdownOpen2(!dropdownOpen2);
   };
 
   const handleAccountSelection = (value) => {
@@ -568,6 +559,7 @@ const DemoPayment = () => {
     }
   };
 
+  // console.log(filterTenantsBySearchAndPage(), "yash");
   return (
     <>
       <Header />
@@ -581,15 +573,6 @@ const DemoPayment = () => {
           </Col>
 
           <Col className="text-right" xs="12" sm="6">
-            {/* <Button
-                        color="primary"
-                       //  href="#rms"
-                        onClick={() => navigate("/tenant/taddwork")}
-                        size="sm"
-                        style={{ background: "white", color: "black" }}
-                      >
-                        Payment
-                      </Button> */}
             <Button
               color="primary"
               // href="#rms"
@@ -666,7 +649,6 @@ const DemoPayment = () => {
                                 <th scope="col">Memo</th>
                                 <th scope="col">Increase</th>
                                 <th scope="col">Decrease</th>
-                                <th scope="col">Balance</th>
                                 <th scope="col">Action</th>
                               </tr>
                             </thead>
@@ -751,19 +733,36 @@ const DemoPayment = () => {
                               )} */}
                               {filterTenantsBySearchAndPage().map(
                                 (item, index) => (
-                                  <tr key={item?._id}>
-                                    <td>{item?.date || "N/A"}</td>
-                                    <td>
-                                      {item?.type === "Payment"
-                                        ? "Payment"
-                                        : item?.type}
-                                    </td>
-                                    <td>{item?.account || "N/A"}</td>
-                                    <td>{item?.memo || "N/A"}</td>
-                                    <td>{"0"}</td>
-                                    <td>{item?.amount || "0"}</td>
-                                    <td></td>
-                                  </tr>
+                                  <React.Fragment key={index}>
+                                    <tr key={item._id}>
+                                      <td>{item?.date || "N/A"}</td>
+                                      <td>{item?.type || "Payment"}</td>
+                                      <td>{item?.account || "N/A"}</td>
+                                      <td>{item?.memo || "N/A"}</td>
+                                      <td>
+                                        {item?.type !== "Payment" ? "0" : "-"}
+                                      </td>
+                                      <td>
+                                        {item?.type !== "Payment"
+                                          ? item?.amount
+                                          : "-"}
+                                      </td>
+                                      <td>
+                                        {item?.type !== "Payment" ? (
+                                          <div
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() => {
+                                              getEditeData(item?._id);
+                                            }}
+                                          >
+                                            <EditIcon />
+                                          </div>
+                                        ) : (
+                                          <div>-</div>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  </React.Fragment>
                                 )
                               )}
                             </tbody>
@@ -919,8 +918,13 @@ const DemoPayment = () => {
                     </Dropdown>
                   </FormGroup>
                 </Col>
+                {console.log(
+                  financialFormik.errors,
+                  "yash",
+                  selectedPaymentType
+                )}
                 <Col md="6">
-                  {unitData.length !== 0 ? (
+                  {unitData && unitData.length !== 0 ? (
                     <>
                       <label
                         className="form-control-label"
@@ -940,16 +944,17 @@ const DemoPayment = () => {
                               overflowY: "auto",
                             }}
                           >
-                            {unitData?.map((property, index) => (
-                              <DropdownItem
-                                key={index}
-                                onClick={() => {
-                                  handleUnitSelect(property);
-                                }}
-                              >
-                                {property.rental_units}
-                              </DropdownItem>
-                            ))}
+                            {unitData.length !== 0 &&
+                              unitData?.map((property, index) => (
+                                <DropdownItem
+                                  key={index}
+                                  onClick={() => {
+                                    handleUnitSelect(property);
+                                  }}
+                                >
+                                  {property.rental_units}
+                                </DropdownItem>
+                              ))}
                           </DropdownMenu>
                         </Dropdown>
                       </FormGroup>
@@ -1152,69 +1157,21 @@ const DemoPayment = () => {
                 </InputGroup>
               </FormGroup>
 
-              <FormGroup>
-                <label className="form-control-label" htmlFor="input-property">
-                  Card Number *
-                </label>
-                <InputGroup>
-                  <Input
-                    type="number"
-                    id="card_number"
-                    placeholder="0000 0000 0000"
-                    name="card_number"
-                    value={financialFormik.values.card_number}
-                    onBlur={financialFormik.handleBlur}
-                    onChange={(e) => {
-                      // const inputValue = e.target.value;
-                      // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-                      // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
-                      // // const formattedValue = formatCardNumber(limitedValue);
-                      // e.target.value = limitedValue;
-                      financialFormik.handleChange(e);
-                    }}
-                    required
-                  />
-                </InputGroup>
-              </FormGroup>
               <Row>
                 <Col>
                   <FormGroup>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-property"
-                    >
-                      Expiration Date *
+                    <label className="form-control-label" htmlFor="date">
+                      Date *
                     </label>
                     <Input
-                      type="text"
-                      id="expiration_date"
-                      name="expiration_date"
+                      className="form-control-alternative"
+                      id="input-unitadd1"
+                      placeholder="3000"
+                      type="date"
+                      name="date"
+                      value={financialFormik.values.date}
                       onBlur={financialFormik.handleBlur}
                       onChange={financialFormik.handleChange}
-                      value={financialFormik.values.expiration_date}
-                      placeholder="MM/YY"
-                      required
-                      onInput={(e) => {
-                        let inputValue = e.target.value;
-                        const numericValue = inputValue.replace(/\D/g, "");
-
-                        if (numericValue.length > 2) {
-                          const month = numericValue.substring(0, 2);
-                          const year = numericValue.substring(2, 6);
-                          e.target.value = `${month}/${year}`;
-                        } else {
-                          e.target.value = numericValue;
-                        }
-
-                        // Format the year to have a 4-digit length if more than 2 digits are entered
-                        if (numericValue.length >= 3) {
-                          const enteredYear = numericValue.substring(2, 6);
-                          e.target.value = `${numericValue.substring(
-                            0,
-                            2
-                          )}/${enteredYear}`;
-                        }
-                      }}
                     />
                   </FormGroup>
                 </Col>
@@ -1222,30 +1179,184 @@ const DemoPayment = () => {
                   <FormGroup>
                     <label
                       className="form-control-label"
-                      htmlFor="input-property"
+                      htmlFor="input-unitadd"
                     >
-                      CVV *
+                      Memo
                     </label>
                     <Input
-                      type="number"
-                      id="cvv"
-                      placeholder="123"
-                      name="cvv"
+                      className="form-control-alternative"
+                      id="input-unitadd"
+                      placeholder="Payment"
+                      type="text"
+                      name="memo"
                       onBlur={financialFormik.handleBlur}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        if (/^\d{0,3}$/.test(inputValue)) {
-                          // Only allow up to 3 digits
-                          financialFormik.handleChange(e);
-                        }
-                      }}
-                      value={financialFormik.values.cvv}
-                      maxLength={3}
-                      required
+                      onChange={financialFormik.handleChange}
+                      value={financialFormik.values.memo}
                     />
                   </FormGroup>
                 </Col>
+                <Col></Col>
               </Row>
+
+              <FormGroup>
+                <label className="form-control-label" htmlFor="paymentType">
+                  Payment Method *
+                </label>
+                <FormGroup>
+                  <Dropdown isOpen={dropdownOpen2} toggle={toggleDropdown2}>
+                    <DropdownToggle caret>
+                      {selectedPaymentType ? selectedPaymentType : "Select"}
+                    </DropdownToggle>
+                    <DropdownMenu
+                      style={{
+                        zIndex: 999,
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                      }}
+                    >
+                      <DropdownItem
+                        onClick={() => handlePaymentTypeChange("Case")}
+                      >
+                        Case
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => handlePaymentTypeChange("Credit Card")}
+                      >
+                        Credit Card
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => handlePaymentTypeChange("Check")}
+                      >
+                        Check
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </FormGroup>
+              </FormGroup>
+
+              {selectedPaymentType === "Credit Card" ? (
+                <>
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-property"
+                    >
+                      Card Number *
+                    </label>
+                    <InputGroup>
+                      <Input
+                        type="number"
+                        id="card_number"
+                        placeholder="0000 0000 0000"
+                        name="card_number"
+                        value={financialFormik.values.card_number}
+                        onBlur={financialFormik.handleBlur}
+                        onChange={(e) => {
+                          // const inputValue = e.target.value;
+                          // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                          // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
+                          // // const formattedValue = formatCardNumber(limitedValue);
+                          // e.target.value = limitedValue;
+                          financialFormik.handleChange(e);
+                        }}
+                        required
+                      />
+                    </InputGroup>
+                  </FormGroup>
+
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Expiration Date *
+                        </label>
+                        <Input
+                          type="text"
+                          id="expiration_date"
+                          name="expiration_date"
+                          onBlur={financialFormik.handleBlur}
+                          onChange={financialFormik.handleChange}
+                          value={financialFormik.values.expiration_date}
+                          placeholder="MM/YY"
+                          required
+                          onInput={(e) => {
+                            let inputValue = e.target.value;
+                            const numericValue = inputValue.replace(/\D/g, "");
+
+                            if (numericValue.length > 2) {
+                              const month = numericValue.substring(0, 2);
+                              const year = numericValue.substring(2, 6);
+                              e.target.value = `${month}/${year}`;
+                            } else {
+                              e.target.value = numericValue;
+                            }
+
+                            // Format the year to have a 4-digit length if more than 2 digits are entered
+                            if (numericValue.length >= 3) {
+                              const enteredYear = numericValue.substring(2, 6);
+                              e.target.value = `${numericValue.substring(
+                                0,
+                                2
+                              )}/${enteredYear}`;
+                            }
+                          }}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          CVV *
+                        </label>
+                        <Input
+                          type="number"
+                          id="cvv"
+                          placeholder="123"
+                          name="cvv"
+                          onBlur={financialFormik.handleBlur}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            if (/^\d{0,3}$/.test(inputValue)) {
+                              // Only allow up to 3 digits
+                              financialFormik.handleChange(e);
+                            }
+                          }}
+                          value={financialFormik.values.cvv}
+                          maxLength={3}
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </>
+              ) : selectedPaymentType === "Check" ? (
+                <>
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-property"
+                    >
+                      Check Number *
+                    </label>
+                    <Input
+                      type="text"
+                      id="check_number"
+                      placeholder="Enter check number"
+                      name="check_number"
+                      onBlur={financialFormik.handleBlur}
+                      onChange={financialFormik.handleChange}
+                      value={financialFormik.values.check_number}
+                      required
+                    />
+                  </FormGroup>
+                </>
+              ) : null}
             </div>
           </ModalBody>
           <ModalFooter>
@@ -1262,17 +1373,6 @@ const DemoPayment = () => {
           </ModalFooter>
         </Form>
       </Modal>
-
-      {/* <Modal isOpen={isModalOpen} toggle={closeModal}> 
-                <ModalHeader 
-                    toggle={closeModal}>Sample Modal Title</ModalHeader> 
-                <ModalBody> 
-                    Sample Modal Body Text to display... 
-                </ModalBody> 
-                <ModalFooter> 
-                    <Button color="primary" onClick={closeModal}>Okay</Button> 
-                </ModalFooter> 
-            </Modal>  */}
     </>
   );
 };
