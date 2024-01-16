@@ -115,7 +115,7 @@ const TrialLogin = () => {
               )
               .required("Required"),
           }),
-    onSubmit: (activeStep) => {
+    onSubmit: () => {
       if (activeStep === 0) {
         setActiveStep(1);
       }

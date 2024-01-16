@@ -24,6 +24,9 @@ import {
   DropdownItem,
   Label,
   Table,
+  ModalHeader,
+  ModalBody,
+  Modal,
 } from "reactstrap";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -56,12 +59,12 @@ import {
 import { BloodtypeOutlined } from "@mui/icons-material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DoneIcon from "@mui/icons-material/Done";
-import { Modal } from "react-bootstrap";
 import jsPDF from "jspdf";
 import Img from "assets/img/theme/team-4-800x800.jpg";
 import { useLocation } from "react-router-dom";
 import moment from "moment";
 import "./Leaseing.css";
+import CreditCardForm from "./CreditCardForm";
 
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -70,8 +73,6 @@ const RentRollDetail = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const source = queryParams.get("source");
-  //console.log(tenant_firstName, "tenant_firstName");
-  const { tenant_firstName } = useParams();
   const [tenantDetails, setTenantDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -817,6 +818,31 @@ const RentRollDetail = () => {
       )
     : "-";
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log(isModalOpen, "isModalOpen");
+
+  const openCardForm = () => {
+    console.log("Opening card form"); // Add this line
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const [cardDetalis, setCardDetails] = useState([]);
+  const getCreditCard = async () => {
+    const response = await axios.get(
+      `http://localhost:4000/api/creditcard/getCreditCard/${tenantId}`
+    );
+    setCardDetails(response.data);
+    console.log(response, "yashu");
+  };
+
+  useEffect(() => {
+    getCreditCard();
+  }, [tenantId]);
+
   return (
     <div>
       <Header />
@@ -825,7 +851,7 @@ const RentRollDetail = () => {
           <Col xs="12" sm="6">
             <FormGroup className="">
               {loading ? (
-                <tbody>
+                <tbody> 
                   <tr>
                     <td></td>
                   </tr>
@@ -867,17 +893,7 @@ const RentRollDetail = () => {
         <Row>
           <div className="col">
             <Card className="shadow">
-              <CardHeader className="border-0">
-                {/* <div className="ml-3">
-                  <h1>
-                    {tenantDetails?.entries.rental_adress}
-                    {"-"}
-                    {tenantDetails?.entries.rental_units}
-                    {"●"}
-                    {tenantDetails?.tenant_firstName}
-                  </h1>
-                </div> */}
-              </CardHeader>
+              <CardHeader className="border-0"></CardHeader>
               <Col>
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -903,7 +919,6 @@ const RentRollDetail = () => {
                       />
                     </TabList>
                   </Box>
-
                   <TabPanel value="Summary">
                     <Row>
                       <div className="col">
@@ -916,7 +931,6 @@ const RentRollDetail = () => {
                               <div className="col-md-8">
                                 <div
                                   className="align-items-center table-flush"
-                                  responsive
                                   style={{ width: "100%" }}
                                 >
                                   {loading ? (
@@ -934,7 +948,7 @@ const RentRollDetail = () => {
                                   ) : tenantDetails._id ? (
                                     <div className="w-100">
                                       <Row
-                                        className="w-100 my-3 "
+                                        className="w-100 my-3"
                                         style={{
                                           fontSize: "18px",
                                           textTransform: "capitalize",
@@ -946,7 +960,7 @@ const RentRollDetail = () => {
                                         <Col>Tenant Details</Col>
                                       </Row>
                                       <Row
-                                        className="w-100 mb-1 "
+                                        className="w-100 mb-1"
                                         style={{
                                           fontSize: "10px",
                                           textTransform: "uppercase",
@@ -998,7 +1012,88 @@ const RentRollDetail = () => {
                                     </tbody>
                                   )}
                                 </div>
+                                <div
+                                  className="row mt-3"
+                                  style={{ overflow: "auto" }}
+                                >
+                                  <Row
+                                    className="w-100 my-3"
+                                    style={{
+                                      fontSize: "18px",
+                                      textTransform: "capitalize",
+                                      color: "#5e72e4",
+                                      fontWeight: "600",
+                                      borderBottom: "1px solid #ddd",
+                                    }}
+                                  >
+                                    <Col>Lease Details</Col>
+                                  </Row>
+                                  <Row
+                                    className="mb-1 m-0 p-0"
+                                    style={{ fontSize: "12px", color: "#000" }}
+                                  >
+                                    <Table>
+                                      <tbody
+                                        className="tbbody p-0 m-0"
+                                        style={{
+                                          borderTopRightRadius: "5px",
+                                          borderTopLeftRadius: "5px",
+                                          borderBottomLeftRadius: "5px",
+                                          borderBottomRightRadius: "5px",
+                                        }}
+                                      >
+                                        <tr className="header">
+                                          <th>Status</th>
+                                          <th>Start - End</th>
+                                          <th>Property</th>
+                                          <th>Type</th>
+                                          <th>Rent</th>
+                                        </tr>
+                                        {myData ? (
+                                          <>
+                                            {myData.map((item) => (
+                                              <tr
+                                                key={item._id}
+                                                className="body"
+                                              >
+                                                <td>
+                                                  {getStatus(
+                                                    item.entries.start_date,
+                                                    item.entries.end_date
+                                                  )}
+                                                </td>
+                                                <td>
+                                                  <Link
+                                                    to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                                  >
+                                                    {formatDateWithoutTime(
+                                                      item.entries.start_date
+                                                    ) +
+                                                      " To " +
+                                                      formatDateWithoutTime(
+                                                        item.entries.end_date
+                                                      ) || "N/A"}
+                                                  </Link>
+                                                </td>
+                                                <td>
+                                                  {item.entries.rental_adress ||
+                                                    "N/A"}
+                                                </td>
+                                                <td>
+                                                  {item.entries.lease_type ||
+                                                    "N/A"}
+                                                </td>
+                                                <td>{item.entries.amount}</td>
+                                              </tr>
+                                            ))}
+                                          </>
+                                        ) : null}
+                                      </tbody>
+                                    </Table>
+                                  </Row>
+                                </div>
                               </div>
+
                               <div className="col-md-4 mt-3">
                                 <Card style={{ background: "#F4F6FF" }}>
                                   <CardContent>
@@ -1042,57 +1137,10 @@ const RentRollDetail = () => {
                                         marginBottom: "6px",
                                       }}
                                     />
-                                    {/* Display entries data */}
-                                    {/* {paymentData.entries &&
-                          paymentData.entries.length > 0 && ( */}
+
                                     <>
                                       <div>
-                                        {/* {paymentData.entries.map(
-                                  (entry, index) => ( */}
                                         <div className="entry-container">
-                                          {/* <div
-                                            style={{
-                                              display: "flex",
-                                              flexDirection: "row",
-                                              alignItems: "center",
-                                              marginBottom: "5px",
-                                            }}
-                                          >
-                                            <Typography
-                                              sx={{
-                                                fontSize: 14,
-                                                fontWeight: "bold",
-                                                marginRight: "10px",
-                                              }}
-                                              color="text.secondary"
-                                              gutterBottom
-                                            >
-                                              Prepayments:
-                                            </Typography>
-                                            <Typography sx={{ fontSize: 14 }}>
-                                                entry.amount 
-                                            </Typography>
-                                          </div>
-                                          <div
-                                            style={{
-                                              display: "flex",
-                                              flexDirection: "row",
-                                              alignItems: "center",
-                                              marginBottom: "5px",
-                                            }}
-                                          >
-                                            <Typography
-                                              sx={{
-                                                fontSize: 14,
-                                                fontWeight: "bold",
-                                                marginRight: "10px",
-                                              }}
-                                              color="text.secondary"
-                                              gutterBottom
-                                            >
-                                              Deposite held:
-                                            </Typography>
-                                          </div> */}
                                           <div
                                             style={{
                                               display: "flex",
@@ -1112,46 +1160,42 @@ const RentRollDetail = () => {
                                             >
                                               Rent:
                                             </Typography>
-                                            {myData1.map((item) => (
-                                              <>
-                                                <Typography
-                                                  sx={{
-                                                    fontSize: 14,
-                                                    fontWeight: "bold",
-                                                    marginRight: "10px",
-                                                  }}
-                                                  color="text.secondary"
-                                                  gutterBottom
-                                                >
-                                                  ${item.entries.amount}
-                                                </Typography>
-                                              </>
+                                            {myData1.map((item, index) => (
+                                              <Typography
+                                                key={index}
+                                                sx={{
+                                                  fontSize: 14,
+                                                  fontWeight: "bold",
+                                                  marginRight: "10px",
+                                                }}
+                                                color="text.secondary"
+                                                gutterBottom
+                                              >
+                                                ${item.entries.amount}
+                                              </Typography>
                                             ))}
                                           </div>
                                         </div>
-                                        {/* )
-                                )} */}
-                                      </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "row",
-                                          marginTop: "10px",
-                                        }}
-                                      >
-                                        <Typography
-                                          sx={{
-                                            fontSize: 14,
-                                            fontWeight: "bold",
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
                                           }}
-                                          color="text.secondary"
-                                          gutterBottom
                                         >
-                                          Due date :
-                                        </Typography>
-                                        {myData1.map((item) => (
-                                          <>
+                                          <Typography
+                                            sx={{
+                                              fontSize: 14,
+                                              fontWeight: "bold",
+                                            }}
+                                            color="text.secondary"
+                                            gutterBottom
+                                          >
+                                            Due date :
+                                          </Typography>
+                                          {myData1.map((item, index) => (
                                             <Typography
+                                              key={index}
                                               sx={{
                                                 fontSize: 14,
                                                 fontWeight: "bold",
@@ -1162,11 +1206,11 @@ const RentRollDetail = () => {
                                             >
                                               {item.entries.nextDue_date}
                                             </Typography>
-                                          </>
-                                        ))}
+                                          ))}
+                                        </div>
                                       </div>
                                     </>
-                                    {/* )} */}
+
                                     <div
                                       style={{
                                         display: "flex",
@@ -1176,18 +1220,9 @@ const RentRollDetail = () => {
                                     >
                                       <Button
                                         color="primary"
-                                        ////  href="#rms"
                                         onClick={() =>
                                           navigate(
-                                            `/admin/AddPayment/${tenantId}/${entryIndex}`,
-                                            {
-                                              state: {
-                                                unit_name: unit,
-                                                unit_id: unitId,
-                                                property_id: propertyId,
-                                                rental_adress: rental,
-                                              },
-                                            }
+                                            `/admin/AddPayment/${tenantId}/${entryIndex}`
                                           )
                                         }
                                         style={{
@@ -1198,137 +1233,134 @@ const RentRollDetail = () => {
                                       >
                                         Receive Payment
                                       </Button>
-                                      {myData1.map((item) => (
-                                        <>
-                                          <Typography
-                                            sx={{
-                                              fontSize: 14,
-                                              marginLeft: "10px",
-                                              paddingTop: "10px",
-                                              cursor: "pointer",
-                                              color: "blue",
-                                            }}
-                                            // onClick={() => handleChange("Financial")}
+                                      {myData1.map((item, index) => (
+                                        <Typography
+                                          key={index}
+                                          sx={{
+                                            fontSize: 14,
+                                            marginLeft: "10px",
+                                            paddingTop: "10px",
+                                            cursor: "pointer",
+                                            color: "blue",
+                                          }}
+                                        >
+                                          <Link
+                                            to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
+                                            onClick={() =>
+                                              setValue(`Financial`)
+                                            }
                                           >
-                                            <Link
-                                              to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
-                                              onClick={() => {
-                                                setValue(`Financial`);
-                                              }}
-                                            >
-                                              Lease Ledger
-                                            </Link>
-                                          </Typography>
-                                        </>
+                                            Lease Ledger
+                                          </Link>
+                                        </Typography>
                                       ))}
                                     </div>
                                   </CardContent>
                                 </Card>
-                              </div>
-                              <div
-                                className="row m-3"
-                                style={{ overflow: "auto" }}
-                              >
-                                <Row
-                                  className="w-100 my-3 "
-                                  style={{
-                                    fontSize: "18px",
-                                    textTransform: "capitalize",
-                                    color: "#5e72e4",
-                                    fontWeight: "600",
-                                    borderBottom: "1px solid #ddd",
-                                  }}
+                                <Card
+                                  className="w-100 mt-3"
+                                  style={{ background: "#F4F6FF" }}
                                 >
-                                  <Col>Lease Details</Col>
-                                </Row>
-                                <Row
-                                  className="mb-1 m-0 p-0"
-                                  style={{ fontSize: "12px", color: "#000" }}
-                                >
-                                  <Table>
-                                    <tbody
-                                      className="tbbody p-0 m-0"
+                                  <CardContent>
+                                    <div
                                       style={{
-                                        borderTopRightRadius: "5px",
-                                        borderTopLeftRadius: "5px",
-                                        borderBottomLeftRadius: "5px",
-                                        borderBottomRightRadius: "5px",
+                                        display: "flex",
+                                        flexDirection: "column",
                                       }}
                                     >
-                                      <tr className="header">
-                                        <th>Status</th>
-                                        <th>Start - End</th>
-                                        <th>Property</th>
-                                        <th>Type</th>
-                                        <th>Rent</th>
-                                      </tr>
-                                      {myData ? (
-                                        <>
-                                          {myData.map((item) => (
-                                            <>
-                                              <tr className="body">
-                                                <td>
-                                                  {getStatus(
-                                                    item.entries.start_date,
-                                                    item.entries.end_date
-                                                  )}
-                                                </td>
-                                                <td>
-                                                  <Link
-                                                    to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
-                                                    onClick={(e) => {
-                                                      // Handle any additional actions onClick if needed
-                                                      console.log(
-                                                        item._id,
-                                                        "Tenant Id"
-                                                      );
-                                                      console.log(
-                                                        item.entries.entryIndex,
-                                                        "Entry Index"
-                                                      );
-                                                    }}
-                                                  >
-                                                    {formatDateWithoutTime(
-                                                      item.entries.start_date
-                                                    ) +
-                                                      " To " +
-                                                      formatDateWithoutTime(
-                                                        item.entries.end_date
-                                                      ) || "N/A"}
-                                                  </Link>
-                                                </td>
-                                                <td>
-                                                  {item.entries.rental_adress ||
-                                                    "N/A"}
-                                                </td>
-                                                <td>
-                                                  {item.entries.lease_type ||
-                                                    "N/A"}
-                                                </td>
-                                                <td>{item.entries.amount}</td>
-                                              </tr>
-                                            </>
+                                      <Typography
+                                        sx={{
+                                          fontSize: 18,
+                                          fontWeight: "bold",
+                                          fontFamily: "Arial",
+                                          textTransform: "capitalize",
+                                          marginRight: "10px",
+                                        }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        Credit Cards
+                                      </Typography>
+                                    </div>
+                                    {cardDetalis && cardDetalis.length > 0 && (
+                                      <Table responsive>
+                                        <tbody>
+                                          <tr>
+                                            <th>Card Number</th>
+                                            <th>Expiration Date</th>
+                                          </tr>
+                                          {cardDetalis.map((item, index) => (
+                                            <tr
+                                              key={index}
+                                              style={{ marginBottom: "10px" }}
+                                            >
+                                              <td>
+                                                <Typography
+                                                  sx={{
+                                                    fontSize: 14,
+                                                    fontWeight: "bold",
+                                                    fontStyle: "italic",
+                                                    fontFamily: "Arial",
+                                                    textTransform: "capitalize",
+                                                    marginRight: "10px",
+                                                  }}
+                                                  color="text.secondary"
+                                                  gutterBottom
+                                                >
+                                                  {item.card_number.slice(
+                                                    0,
+                                                    4
+                                                  ) +
+                                                    "*".repeat(8) +
+                                                    item.card_number.slice(-4)}
+                                                </Typography>
+                                              </td>
+                                              <td>
+                                                <Typography
+                                                  sx={{
+                                                    fontSize: 14,
+                                                    marginRight: "10px",
+                                                  }}
+                                                  color="text.secondary"
+                                                  gutterBottom
+                                                >
+                                                  {item.exp_date}
+                                                </Typography>
+                                              </td>
+                                            </tr>
                                           ))}
-                                        </>
-                                      ) : null}
-                                    </tbody>
-                                  </Table>
-                                </Row>
+                                        </tbody>
+                                      </Table>
+                                    )}
+
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Button
+                                        color="primary"
+                                        onClick={() => openCardForm()}
+                                        style={{
+                                          background: "white",
+                                          color: "blue",
+                                          marginRight: "10px",
+                                        }}
+                                      >
+                                        Add Credit Card
+                                      </Button>
+                                    </div>
+                                  </CardContent>
+                                </Card>
                               </div>
-                              {/* <div className="row m-3" style={{ overflow: 'hidden' }}>
-                                <Row className="w-100 my-3 text-left">
-                                  <Col>
-                                    <a href="#">Reset Pasword</a>
-                                  </Col>
-                                </Row>
-                              </div> */}
                             </div>
                           </div>
                         </Card>
                       </div>
                     </Row>
                   </TabPanel>
-
                   <TabPanel value="Financial">
                     <Container className="mt--10" fluid>
                       <Row>
@@ -1571,7 +1603,6 @@ const RentRollDetail = () => {
                       <br />
                     </Container>
                   </TabPanel>
-
                   <TabPanel value="Tenant">
                     <CardHeader className="border-0">
                       <span>
@@ -2130,6 +2161,19 @@ const RentRollDetail = () => {
         <br />
         <br />
       </Container>
+
+      <Modal isOpen={isModalOpen} toggle={closeModal}>
+        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
+        </ModalHeader>
+        <ModalBody>
+          <CreditCardForm
+            tenantId={tenantId}
+            closeModal={closeModal}
+            getCreditCard={getCreditCard}
+          />
+        </ModalBody>
+      </Modal>
     </div>
   );
 };
