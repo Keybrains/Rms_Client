@@ -60,6 +60,7 @@ import ApplicantForm from "views/source/ApplicantForm";
 import Changepassword from "views/source/Changepassword";
 import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
+import DemoPayment from "views/source/DemoPayment";
 
 var routes = [
   {
@@ -181,6 +182,13 @@ var routes = [
     name: "RentRoll",
     icon: "ni ni-home-3 text-orange",
     component: <RentRoll />,
+    layout: "/admin",
+  },
+  {
+    path: "/Payment",
+    name: "Payment",
+    icon: "ni ni-home-3 text-orange",
+    component: <DemoPayment />,
     layout: "/admin",
   },
 
