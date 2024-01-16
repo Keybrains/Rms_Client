@@ -399,9 +399,6 @@ const Sidebar = (props) => {
                 <DropdownItem to="/admin/TenantsTable" tag={Link} onClick={toggleCollapse}>
                   Tenants
                 </DropdownItem>
-                <DropdownItem to="/admin/PaymentForm" tag={Link} onClick={toggleCollapse}>
-                  Payment
-                </DropdownItem>
                 {/* <DropdownItem to="/admin/RentalownerTable" tag={Link}>
                   Rental Owners
                 </DropdownItem> */}
