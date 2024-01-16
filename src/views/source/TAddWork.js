@@ -35,6 +35,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const TAddWork = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_URL;
   const [workOrderData, setWorkOrderData] = useState(null);
   const { id } = useParams();
   const [open, setOpen] = React.useState(false);
@@ -77,7 +78,6 @@ const TAddWork = () => {
   });
   const [selectedPriority, setSelectedPriority] = useState("");
 
-
   const handlePropertyTypeSelect = async (property) => {
     setSelectedProp(property);
     WorkFormik.values.rental_adress = property;
@@ -104,8 +104,7 @@ const TAddWork = () => {
     setcategorydropdownOpen(true);
     if (value === "Other") {
       WorkFormik.values.work_category = "";
-    }
-    else {
+    } else {
       WorkFormik.values.work_category = value;
     }
   };
@@ -141,8 +140,8 @@ const TAddWork = () => {
   };
 
   // Use URLSearchParams to extract parameters from the query string
-  var [getData, setGetData] = useState()
-  const [vid, setVid] = useState('')
+  var [getData, setGetData] = useState();
+  const [vid, setVid] = useState("");
   const location = useLocation();
   const { search } = location;
   const queryParams = new URLSearchParams(search);
@@ -196,7 +195,7 @@ const TAddWork = () => {
         );
         let getWorkData = response.data.data;
         setGetData(getWorkData);
-        setVid(getWorkData[0]._id)
+        setVid(getWorkData[0]._id);
         console.log("empty", response.data.data);
         WorkFormik.setValues({
           work_subject: getWorkData[0].work_subject || "",
@@ -234,11 +233,11 @@ const TAddWork = () => {
       imageData.append(`files`, element);
     }
 
-    const url = `${baseUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+    const url = `${imageUrl}/images/upload`; // Use the correct endpoint for multiple files upload
     try {
       const result = await axios.post(url, imageData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       image = {
@@ -247,14 +246,15 @@ const TAddWork = () => {
         }),
       };
       console.log(image, "imgs");
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
     }
     try {
       values["rental_adress"] = selectedProp;
       values["rental_units"] = selectedUnit;
-      values["work_category"] = WorkFormik.values.work_category ? WorkFormik.values.work_category : selectedCategory;
+      values["work_category"] = WorkFormik.values.work_category
+        ? WorkFormik.values.work_category
+        : selectedCategory;
       values["vendor"] = selectedVendor;
       values["entry_allowed"] = selectedEntry;
       values["workOrderImage"] = image.prop_image;
@@ -268,8 +268,12 @@ const TAddWork = () => {
         // Create the work order
         const workOrderRes = await axios.post(
           `${baseUrl}/workorder/workorder`,
-          {...values,
-            statusUpdatedBy: vendorDetails.tenant_firstName + " " + vendorDetails.tenant_lastName,
+          {
+            ...values,
+            statusUpdatedBy:
+              vendorDetails.tenant_firstName +
+              " " +
+              vendorDetails.tenant_lastName,
           }
         );
         // Check if the work order was created successfully
@@ -373,7 +377,9 @@ const TAddWork = () => {
         return response.json();
       })
       .then((data) => {
-        const uniqueAddresses = [...new Set(data.rentalAddresses.map(item => item[0].rental_adress))];
+        const uniqueAddresses = [
+          ...new Set(data.rentalAddresses.map((item) => item[0].rental_adress)),
+        ];
         setPropertyData(uniqueAddresses);
         setUnitData(data.rentalUnits);
       })
@@ -415,7 +421,10 @@ const TAddWork = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const fileData = (e, type) => {
     // Use the correct state-setting function for setSelectedFiles
-    setSelectedFiles((prevSelectedFiles) => [...prevSelectedFiles, ...e.target.files]);
+    setSelectedFiles((prevSelectedFiles) => [
+      ...prevSelectedFiles,
+      ...e.target.files,
+    ]);
 
     const newFiles = [
       ...workOrderImage,
@@ -428,24 +437,30 @@ const TAddWork = () => {
 
   const editworkorder = async (vid) => {
     try {
-      console.log(baseUrl)
-      const response = await axios.put(`${baseUrl}/workorder/updateworkorder/${vid}`, {
-        // work_subject: response.data.data[0].work_subject,
-        // rental_adress: selectedProp,
-        // work_performed: response.data.data[0].work_performed ,
-        // entry_allowed: selectedEntry,
-        // work_category: selectedCategory,
-        work_subject: WorkFormik.values.work_subject,
-        rental_adress: selectedProp,
-        rental_units: WorkFormik.values.rental_units,
-        work_category: WorkFormik.values.work_category,
-        entry_allowed: selectedEntry,
-        work_performed: WorkFormik.values.work_performed,
-        workOrderImage: WorkFormik.values.workOrderImage,
-        statusUpdatedBy: vendorDetails.tenant_firstName + " " + vendorDetails.tenant_lastName ,
+      console.log(baseUrl);
+      const response = await axios.put(
+        `${baseUrl}/workorder/updateworkorder/${vid}`,
+        {
+          // work_subject: response.data.data[0].work_subject,
+          // rental_adress: selectedProp,
+          // work_performed: response.data.data[0].work_performed ,
+          // entry_allowed: selectedEntry,
+          // work_category: selectedCategory,
+          work_subject: WorkFormik.values.work_subject,
+          rental_adress: selectedProp,
+          rental_units: WorkFormik.values.rental_units,
+          work_category: WorkFormik.values.work_category,
+          entry_allowed: selectedEntry,
+          work_performed: WorkFormik.values.work_performed,
+          workOrderImage: WorkFormik.values.workOrderImage,
+          statusUpdatedBy:
+            vendorDetails.tenant_firstName +
+            " " +
+            vendorDetails.tenant_lastName,
 
-        // Add other fields as needed
-      });
+          // Add other fields as needed
+        }
+      );
       handleResponse(response);
       console.log("Workorder updated successfully", response.data);
     } catch (error) {
@@ -510,7 +525,7 @@ const TAddWork = () => {
                       </Col>
                     </Row>
                     <Row>
-                      <Col >
+                      <Col>
                         <FormGroup
                           style={{
                             display: "flex",
@@ -543,14 +558,8 @@ const TAddWork = () => {
                               name={`workOrderImage`}
                               onChange={(e) => fileData(e)}
                             />
-
-                            <label
-                              htmlFor={`workOrderImage`}
-                            >
-                              <b style={{ fontSize: "20px" }}>
-                                +
-                              </b>{" "}
-                              Add
+                            <label htmlFor={`workOrderImage`}>
+                              <b style={{ fontSize: "20px" }}>+</b> Add
                             </label>
                             {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
                           </span>
@@ -576,7 +585,7 @@ const TAddWork = () => {
                             workOrderImage.length > 0 &&
                             workOrderImage.map((unitImg, index) => (
                               <div
-                                key={index}  // Use a unique identifier, such as index or image URL
+                                key={index} // Use a unique identifier, such as index or image URL
                                 style={{
                                   position: "relative",
                                   width: "100px",
@@ -609,7 +618,12 @@ const TAddWork = () => {
                                     top: "-12px",
                                     right: "-12px",
                                   }}
-                                  onClick={() => clearSelectedPhoto(index, "propertyres_image")}
+                                  onClick={() =>
+                                    clearSelectedPhoto(
+                                      index,
+                                      "propertyres_image"
+                                    )
+                                  }
                                 />
                               </div>
                             ))}
@@ -661,17 +675,17 @@ const TAddWork = () => {
                               >
                                 {/* Check if propertyData is not empty */}
                                 {propertyData.length > 0 ? (
-                                  <div style={{ color: 'blue' }}>
-                                    {
-                                      propertyData.map((property, index) => (
-                                        <DropdownItem
-                                          key={index}
-                                          onClick={() => handlePropertyTypeSelect(property)}
-                                        >
-                                          {property}
-                                        </DropdownItem>
-                                      ))
-                                    }
+                                  <div style={{ color: "blue" }}>
+                                    {propertyData.map((property, index) => (
+                                      <DropdownItem
+                                        key={index}
+                                        onClick={() =>
+                                          handlePropertyTypeSelect(property)
+                                        }
+                                      >
+                                        {property}
+                                      </DropdownItem>
+                                    ))}
                                   </div>
                                 ) : (
                                   <p>No data available</p>
@@ -679,10 +693,10 @@ const TAddWork = () => {
                               </DropdownMenu>
 
                               {WorkFormik.errors &&
-                                WorkFormik.errors?.rental_adress &&
-                                WorkFormik.touched &&
-                                WorkFormik.touched?.rental_adress &&
-                                WorkFormik.values.rental_adress === "" ? (
+                              WorkFormik.errors?.rental_adress &&
+                              WorkFormik.touched &&
+                              WorkFormik.touched?.rental_adress &&
+                              WorkFormik.values.rental_adress === "" ? (
                                 <div style={{ color: "red" }}>
                                   {WorkFormik.errors.rental_adress}
                                 </div>
@@ -691,7 +705,6 @@ const TAddWork = () => {
                           </FormGroup>
                         </FormGroup>
                       </Col>
-
 
                       <Col lg="4">
                         {selectedProp &&
@@ -739,10 +752,10 @@ const TAddWork = () => {
                                     )}
                                   </DropdownMenu>
                                   {WorkFormik.errors &&
-                                    WorkFormik.errors?.rental_units &&
-                                    WorkFormik.touched &&
-                                    WorkFormik.touched?.rental_units &&
-                                    WorkFormik.values.rental_units === "" ? (
+                                  WorkFormik.errors?.rental_units &&
+                                  WorkFormik.touched &&
+                                  WorkFormik.touched?.rental_units &&
+                                  WorkFormik.values.rental_units === "" ? (
                                     <div style={{ color: "red" }}>
                                       {WorkFormik.errors.rental_units}
                                     </div>
@@ -822,7 +835,8 @@ const TAddWork = () => {
                           </Dropdown>
                         </FormGroup>
                       </Col>
-                      <Col lg="3"
+                      <Col
+                        lg="3"
                         style={
                           selectedCategory === "Other"
                             ? { display: "block" }
@@ -850,11 +864,12 @@ const TAddWork = () => {
                               // Update the state or Formik values with the new input value
                               // WorkFormik.handleChange(e);
                               WorkFormik.setFieldValue(
-                                "work_category", e.target.value
-                              )
+                                "work_category",
+                                e.target.value
+                              );
                             }}
                             value={WorkFormik.values.work_category}
-                          // required
+                            // required
                           />
                           {/* {WorkFormik.touched.work_subject &&
                           WorkFormik.errors.work_subject ? (
@@ -952,7 +967,7 @@ const TAddWork = () => {
                             value={WorkFormik.values.work_performed}
                           />
                           {WorkFormik.touched.work_performed &&
-                            WorkFormik.errors.work_performed ? (
+                          WorkFormik.errors.work_performed ? (
                             <div style={{ color: "red" }}>
                               {WorkFormik.errors.work_performed}
                             </div>
@@ -1041,7 +1056,8 @@ const TAddWork = () => {
                       style={{ background: "green" }}
                     >
                       Add Work Order
-                    </button>)}
+                    </button>
+                  )}
                   <button
                     color="primary"
                     //  href="#rms"
@@ -1058,7 +1074,7 @@ const TAddWork = () => {
             </Card>
           </Col>
         </Row>
-      </Container >
+      </Container>
     </>
   );
 };
