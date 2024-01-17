@@ -61,6 +61,11 @@ import Changepassword from "views/source/Changepassword";
 import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
 
+// ==========================  Super Admin =================================================== 
+
+import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
+import SuperAdminPlanList from "components/superadmin/Plan/PlanList"; 
+
 var routes = [
   {
     path: "/index",
@@ -617,6 +622,29 @@ var routes = [
     path:"/trial-login",
     component: <TrialLogin />,
     layout: "/trial"
-  }
+  },
+
+
+
+  // ==========================  Super Admin =================================================== 
+
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    icon: "ni ni-tv-2 text-primary",
+    component: <SuperAdminDashBoard />,
+    layout: "/superadmin",
+  },
+
+  {
+    path: "/plans",
+    name: "Plans",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminPlanList />,
+    layout: "/superadmin",
+  },
+
 ];
+
+
 export default routes;

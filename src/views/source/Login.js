@@ -49,7 +49,6 @@ const Login = () => {
       // Admin login
       const adminRes = await axios.post(
         `${baseUrl}/register/login`,
-        
         values
       );
 

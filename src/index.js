@@ -19,6 +19,10 @@ import Vendor from "layouts/Vendor";
 import Trial from "layouts/Trial";
 // import SumProperties from "views/source/SumProperties";
 
+
+// ==========================  Super Admin =================================================== 
+import SuperAdmin from "../src/components/superadmin/layouts/SuperAdmin"
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
@@ -35,6 +39,9 @@ root.render(
       {/* <Route path="/" exact component={PropertyType} /> */}
       <Route path="/AddPropertyType" exact component={AddPropertyType} />
       {/* <Route path="/SumProperties/:id" exact component={SumProperties} /> */}
+
+      {/* ==========================  Super Admin =================================================== */}
+      <Route path="/superadmin/*" element={<SuperAdmin />} />
 
     </Routes> 
   </BrowserRouter>
