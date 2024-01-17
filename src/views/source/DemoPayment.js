@@ -46,9 +46,7 @@ const DemoPayment = () => {
   const [tenantDetails, setTenantDetails] = useState({});
   const { id } = useParams();
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
-  // console.log(id, tenantDetails);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [propertyData, setPropertyData] = useState([]);
   const [unitData, setUnitData] = useState([]);
   const [selectedUnit, setSelectedUnit] = useState("");
@@ -58,11 +56,11 @@ const DemoPayment = () => {
   const [searchQueryy, setSearchQueryy] = useState("");
   const [unit, setUnit] = useState("");
   const [propertyId, setPropertyId] = useState("");
-  // const [cookie_id, setCookieId] = useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
   const [searchQuery, setSearchQuery] = useState("");
+  const [refund, setRefund] = useState("");
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
@@ -116,7 +114,6 @@ const DemoPayment = () => {
   }
 
   const calculateBalance = (data) => {
-    // console.log(data);
     let balance = 0;
     for (let i = data.length - 1; i >= 0; i--) {
       const currentEntry = data[i];
@@ -129,8 +126,6 @@ const DemoPayment = () => {
         data[i].entries[j].balance = balance;
       }
     }
-
-    //console.log("data",data)
     return data;
   };
 
@@ -164,8 +159,8 @@ const DemoPayment = () => {
       expiration_date: "",
       cvv: "",
       tenantId: "",
-      propertyId: "",
-      unitId: "",
+      property: "",
+      unit: "",
       type2: "Payment",
     },
     validationSchema: yup.object({
@@ -186,17 +181,29 @@ const DemoPayment = () => {
     },
   });
 
+  const [showOptions, setShowOptions] = useState(false);
+  const [showOptionsId, setShowOptionsId] = useState("");
+
+  const toggleOptions = (id) => {
+    setShowOptions(!showOptions);
+    setShowOptionsId(id);
+  };
+
   const handlePropertyTypeSelect = async (property) => {
-    setSelectedPropertyType(property.rental_adress);
-    financialFormik.setFieldValue("propertyId", property.property_id || "");
-    financialFormik.setFieldValue("unitId", property.unit_id || "");
-    setSelectedUnit(""); // Reset selected unit when a new property is selected
+    setSelectedPropertyType(property.rental_adress || property.property);
+    financialFormik.setFieldValue(
+      "property",
+      selectedPropertyType || property.property || ""
+    );
+    financialFormik.setFieldValue("unit", selectedUnit || "");
+
     setUnit(property.rental_unit);
     setPropertyId(property.property_id);
-    setSelectedUnit(""); // Reset selected unit when a new property is selected
+    setSelectedUnit("");
     try {
-      const units = await fetchUnitsByProperty(property.rental_adress);
-      //console.log(units, "units"); // Check the received units in the console
+      const units = await fetchUnitsByProperty(
+        property.rental_adress || property.property
+      );
       setUnitData(
         units.filter(
           (item) => item.rental_units !== undefined && item.rental_units !== ""
@@ -206,15 +213,15 @@ const DemoPayment = () => {
       console.error("Error handling selected property:", error);
     }
   };
+
   const handleUnitSelect = (property) => {
     setSelectedUnit(property.rental_units);
-    financialFormik.setFieldValue("unitId", property._id || "");
+    financialFormik.setFieldValue("unit", selectedUnit || "");
     financialFormik.setFieldValue("unit", property.rental_units || "");
   };
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
-  //let cookie_id = localStorage.getItem("Tenant ID");
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -228,13 +235,7 @@ const DemoPayment = () => {
 
   const getGeneralLedgerData = async () => {
     try {
-      // const promises = tenantDetails.entries.map(async (data) => {
-      //   const rental = data?.rental_adress;
-      //   const property_id = data?.property_id;
-
-      //   if (rental && property_id) {
       const url = `${baseUrl}/nmipayment/nmipayments`;
-
       try {
         const response = await axios.get(url);
         setGeneralLedgerData(response.data.data);
@@ -242,15 +243,7 @@ const DemoPayment = () => {
       } catch (error) {
         console.error("Error fetching data:", error);
       }
-
-      //   return null;
-      // });
-
-      // const results = await Promise.all(promises);
-      // const validResults = results.filter((result) => result !== null);
       setLoader(false);
-
-      // Assuming setGeneralLedgerData is used to store the retrieved nmipayments data
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -265,34 +258,38 @@ const DemoPayment = () => {
   const [paymentLoader, setPaymentLoader] = useState(false);
 
   const handleFinancialSubmit = async (values, action) => {
-    const url = `${baseUrl}/nmipayment/sale`;
-    const dateParts = values.expiration_date.split("/");
-    if (dateParts.length !== 2) {
-      console.log("Invalid date format");
-    }
-    const month = dateParts[0].padStart(2, "0");
-    const year = dateParts[1].slice(-2);
+    let url = `${baseUrl}/nmipayment/postnmipayments`;
 
-    values.expiration_date = `${month}${year}`;
+    // Check if the payment method is credit card and expiration_date is provided
+    if (selectedPaymentType === "Credit Card" && values.expiration_date) {
+      const dateParts = values.expiration_date.split("/");
+      if (dateParts.length !== 2) {
+        console.log("Invalid date format");
+        return;
+      }
+
+      const month = dateParts[0].padStart(2, "0");
+      const year = dateParts[1].slice(-2);
+
+      values.expiration_date = `${month}${year}`;
+      url = `${baseUrl}/nmipayment/sale`;
+    }
+
     values.account = selectedAccount;
+
     try {
       setPaymentLoader(true);
       const response = await axios.post(url, {
         paymentDetails: values,
       });
 
-      console.log(response.data, "response.data");
-
-      if (response.data && response.data.statusCode === 100) {
+      if (
+        response.data &&
+        (response.data.statusCode === 100 || response.status === 200)
+      ) {
         swal("Success!", "Payment Successful", "success");
         await getGeneralLedgerData();
         closeModal();
-
-        if (financialFormik.values.unitId) {
-          await postCharge(financialFormik.values.unitId);
-        } else {
-          await postCharge("", "");
-        }
       } else {
         console.error("Unexpected response format:", response.data);
         swal("Error", response.data.message, "error");
@@ -317,7 +314,7 @@ const DemoPayment = () => {
           unit_id: unit_id,
           paymentAndCharges: [
             {
-              type: "Payment",
+              type2: "Payment",
               charge_type: "",
               account: selectedAccount,
               amount: financialFormik.values.amount,
@@ -486,22 +483,30 @@ const DemoPayment = () => {
       if (response.data.statusCode === 200) {
         const responseData = response.data.data;
 
-        // Find the corresponding propertyId based on rental_adress
-        const matchingEntry = tenantDetails?.entries?.find(
-          (item) => item.rental_adress === responseData.rental_adress
-        );
+        // const matchingEntry = propertyData.find(
+        //   (item) => item.rental_adress === responseData.rental_adress
+        // );
+        console.log(responseData, "property data");
 
-        // Set propertyId if matching entry is found
-        financialFormik.setValues((prevValues) => ({
-          ...prevValues,
+        // Set form values directly from the response
+        handlePropertyTypeSelect(responseData);
+        financialFormik.setValues({
           account: responseData.account || "",
           amount: responseData.amount || "",
-          propertyId: matchingEntry.property_id,
-        }));
+          first_name: responseData.first_name || "",
+          last_name: responseData.last_name || "",
+          email_name: responseData.email_name || "",
+          date: responseData.date || "",
+          memo: responseData.memo || "",
+          unit: responseData.unit || "",
+          property: responseData.property || "",
+          paymentType: responseData.paymentType || "",
+        });
 
         // Update other selected values
-        setSelectedPropertyType(responseData.rental_adress);
-        setSelectedUnit(responseData.rental_unit);
+        setSelectedPaymentType(responseData.paymentType);
+        setSelectedPropertyType(responseData.property);
+        setSelectedUnit(responseData.unit);
         setSelectedAccount(responseData.account);
         setIsEditable(true);
         setPaymentId(id);
@@ -515,41 +520,42 @@ const DemoPayment = () => {
   };
 
   const editpayment = async (id) => {
-    const rentalAddress = financialFormik.values.rental_adress;
-
     try {
-      const updatedValues = {
-        month_year: moment().format("MM-YYYY"),
-        date: moment().format("YYYY-MM-DD"),
-        amount: financialFormik.values.amount,
-        tenant_firstName: financialFormik.values.first_name,
-        tenant_lastName: financialFormik.values.last_name,
-        attachment: financialFormik.values.attachment,
-        rental_adress: financialFormik.values.rental_adress,
-        //tenant_id: cookie_id,
-
-        entries: [
-          {
-            account: financialFormik.values.account,
-            balance: parseFloat(financialFormik.values.amount),
-            amount: parseFloat(financialFormik.values.amount),
-          },
-        ],
-      };
-
-      //console.log(updatedValues, "updatedValues");
-
-      const putUrl = `${baseUrl}/nmipayment/updatepayment/${id}`;
-      const response = await axios.put(putUrl, updatedValues);
+      const response = await axios.get(
+        `${baseUrl}/nmipayment/nmipayments/${id}`
+      );
 
       if (response.data.statusCode === 200) {
-        closeModal();
-        console.log("Response Data:", response.data);
-        swal("Success", "Payments Update Successfully", "success");
-        navigate(`/tenant/tenantFinancial`);
+        const responseData = response.data.data;
+
+        const updatedValues = {
+          amount: financialFormik.values.amount,
+          account: financialFormik.values.account,
+          first_name: financialFormik.values.first_name,
+          last_name: financialFormik.values.last_name,
+          property: financialFormik.values.property,
+          unit: financialFormik.values.unit,
+          memo: financialFormik.values.memo,
+          email_name: financialFormik.values.email_name,
+          date: financialFormik.values.date,
+          paymentType: financialFormik.values.paymentType,
+        };
+
+        const putUrl = `${baseUrl}/nmipayment/updatepayment/${id}`;
+        const putResponse = await axios.put(putUrl, updatedValues);
+
+        if (putResponse.data.statusCode === 200) {
+          closeModal();
+          await getGeneralLedgerData();
+          swal("Success", "Payment Updated Successfully", "success");
+          navigate(`/admin/Payment`);
+        } else {
+          swal("Error", putResponse.data.message, "error");
+          console.error("Server Error:", putResponse.data.message);
+        }
       } else {
         swal("Error", response.data.message, "error");
-        console.error("Server Error:", response.data.message);
+        console.error("Error:", response.data.message);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -734,28 +740,79 @@ const DemoPayment = () => {
                               {filterTenantsBySearchAndPage().map(
                                 (item, index) => (
                                   <React.Fragment key={index}>
-                                    <tr key={item._id}>
+                                    <tr key={item._id} style={{position:"relative"}}>
                                       <td>{item?.date || "N/A"}</td>
-                                      <td>{item?.type || "Payment"}</td>
+                                      <td>{item?.type2 || "Payment"}</td>
                                       <td>{item?.account || "N/A"}</td>
                                       <td>{item?.memo || "N/A"}</td>
                                       <td>
-                                        {item?.type !== "Payment" ? "0" : "-"}
+                                        {item?.type !== "Payment"
+                                          ? "$ 0.00"
+                                          : "-"}
                                       </td>
                                       <td>
+                                        ${" "}
                                         {item?.type !== "Payment"
                                           ? item?.amount
                                           : "-"}
                                       </td>
                                       <td>
                                         {item?.type !== "Payment" ? (
-                                          <div
-                                            style={{ cursor: "pointer" }}
-                                            onClick={() => {
-                                              getEditeData(item?._id);
-                                            }}
-                                          >
-                                            <EditIcon />
+                                          <div style={{ position: "relative" }}>
+                                            <div
+                                              style={{ cursor: "pointer" }}
+                                              onClick={() =>
+                                                toggleOptions(item?._id)
+                                              }
+                                            >
+                                              <span>&#8230;</span>
+                                            </div>
+                                            {showOptions &&
+                                              item?._id === showOptionsId && (
+                                                <div
+                                                  style={{
+                                                    display:'block',
+                                                    // top: "20px",
+                                                    // bottom: "30px",
+                                                    left: "0",
+                                                    background: "#333",
+                                                    color:"white",
+                                                    padding:'10px',
+                                                    boxShadow:
+                                                      "0 2px 4px rgba(0,0,0,0.1)",
+                                                  }}
+                                                >
+                                                  {/* Refund Option */}
+                                                  <div style={{marginBottom:"10px",cursor:'pointer'}}
+                                                    onMouseEnter={(e) => {
+                                                      e.target.style.color = '#72bcd4';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                      e.target.style.color = '#fff';
+                                                    }}
+                                                    onClick={() =>
+                                                      getEditeData(item?._id)
+                                                      
+                                                    }
+                                                  >
+                                                    Refund
+                                                  </div>
+                                                  {/* Edit Option */}
+                                                  <div style={{cursor:'pointer'}}
+                                                    onMouseEnter={(e) => {
+                                                      e.target.style.color = '#72bcd4';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                      e.target.style.color = '#fff';
+                                                    }}
+                                                    onClick={() =>
+                                                      getEditeData(item?._id)
+                                                    }
+                                                  >
+                                                    Edit
+                                                  </div>
+                                                </div>
+                                              )}
                                           </div>
                                         ) : (
                                           <div>-</div>
@@ -906,8 +963,8 @@ const DemoPayment = () => {
                             onClick={() => {
                               handlePropertyTypeSelect(property);
                               financialFormik.setFieldValue(
-                                "propertyId",
-                                property.property_id
+                                "property",
+                                property.rental_adress
                               );
                             }}
                           >
@@ -978,8 +1035,13 @@ const DemoPayment = () => {
                       onBlur={financialFormik.handleBlur}
                       onInput={(e) => {
                         const inputValue = e.target.value;
-                        const numericValue = inputValue.replace(/\D/g, "");
-                        e.target.value = numericValue;
+                        // Remove non-numeric and non-dot characters
+                        const numericValue = inputValue.replace(/[^0-9.]/g, "");
+                        const validNumericValue = numericValue.replace(
+                          /(\.\d*\.|\D+)/g,
+                          "$1"
+                        );
+                        e.target.value = validNumericValue;
                       }}
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.amount}
@@ -1215,9 +1277,9 @@ const DemoPayment = () => {
                       }}
                     >
                       <DropdownItem
-                        onClick={() => handlePaymentTypeChange("Case")}
+                        onClick={() => handlePaymentTypeChange("Cash")}
                       >
-                        Case
+                        Cash
                       </DropdownItem>
                       <DropdownItem
                         onClick={() => handlePaymentTypeChange("Credit Card")}

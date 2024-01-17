@@ -822,7 +822,6 @@ const RentRollDetail = () => {
   console.log(isModalOpen, "isModalOpen");
 
   const openCardForm = () => {
-    console.log("Opening card form"); // Add this line
     setIsModalOpen(true);
   };
 
@@ -1270,7 +1269,7 @@ const RentRollDetail = () => {
                                     >
                                       <Typography
                                         sx={{
-                                          fontSize: 18,
+                                          fontSize: 15,
                                           fontWeight: "bold",
                                           fontFamily: "Arial",
                                           textTransform: "capitalize",
@@ -1287,7 +1286,7 @@ const RentRollDetail = () => {
                                         <tbody>
                                           <tr>
                                             <th>Card Number</th>
-                                            <th>Expiration Date</th>
+                                            {/* <th>Expiration Date</th> */}
                                           </tr>
                                           {cardDetalis.map((item, index) => (
                                             <tr
@@ -1316,7 +1315,7 @@ const RentRollDetail = () => {
                                                 </Typography>
                                               </td>
                                               <td>
-                                                <Typography
+                                                {/* <Typography
                                                   sx={{
                                                     fontSize: 14,
                                                     marginRight: "10px",
@@ -1325,7 +1324,7 @@ const RentRollDetail = () => {
                                                   gutterBottom
                                                 >
                                                   {item.exp_date}
-                                                </Typography>
+                                                </Typography> */}
                                               </td>
                                             </tr>
                                           ))}
