@@ -238,7 +238,6 @@ const TenantFinancial = () => {
       );
 
       if (response.data) {
-        console.log("Data fetched successfully:", response.data);
         setTenantDetails(response.data.data);
         setRentalAddress(response.data.rental_adress);
 
@@ -264,6 +263,7 @@ const TenantFinancial = () => {
   React.useEffect(() => {
     getTenantData();
   }, [cookie_id]);
+
   const getGeneralLedgerData = async () => {
     if (tenantDetails) {
       try {
@@ -464,6 +464,7 @@ const TenantFinancial = () => {
         console.log(err);
       });
   };
+  
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
   var paginatedData;
