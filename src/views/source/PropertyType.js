@@ -38,6 +38,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import moment from "moment";
 
 const PropertyType = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -91,7 +92,7 @@ const PropertyType = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -99,66 +100,15 @@ const PropertyType = () => {
 
   const getPropertyData = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/newproparty/newproparty`);
+      const response = await axios.get(
+        `${baseUrl}/propertytype/property_type/${accessType.admin_id}`
+      );
       setLoader(false);
       setPropertyData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
     } catch (error) {
       console.error("Error fetching property data:", error);
     }
-  };
-
-  // if (!id) {
-  //   var handleSubmit = async (values) => {
-  //    // values["createAt"] = moment(new Date()).format("YYYY-MM-DD, HH:mm:ss");
-  //     let response = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty",
-  //       values
-  //     );
-  //     if (response.data.statusCode === 200) {
-  //       setModalShowForPopupForm(false);
-  //       getPropertyData();
-  //       swal("", response.data.message, "success");
-  //     } else {
-  //       swal("", response.data.message, "error");
-  //     }
-  //   };
-  // } else {
-  //   handleSubmit = async (values) => {
-  //     //values["upadateAt"] = moment(new Date()).format("YYYY-MM-DD, HH:mm:ss");
-  //     let response = await axios.put(
-  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty" + id,
-  //       values
-  //     );
-  //     if (response.data.statusCode === 200) {
-  //       setModalShowForPopupForm(false);
-  //       getPropertyData();
-  //       swal("", response.data.message, "success");
-  //     }
-  //   };
-  // }
-  const editPropertyData = async (id, updatedData) => {
-    try {
-      const editUrl = `${baseUrl}/newproparty/proparty-type/${id}`;
-      //console.log("Edit URL:", editUrl);
-      //console.log("Property ID:", id);
-      //console.log("Updated Data:", updatedData); // Log the updated data for debugging
-
-      const response = await axios.put(editUrl, updatedData); // Send the updated data in the request body
-      //console.log("Edit Response:", response);
-
-      if (response.status === 200) {
-        swal("", response.data.message, "success");
-        setEditDialogOpen(false);
-        getPropertyData(); // Refresh the data after successful edit
-      } else {
-        swal("", response.data.message, "error");
-        console.error("Edit request failed with status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error editing property:", error);
-    }
-    // //console.log("object")
   };
 
   // Delete selected
@@ -173,9 +123,7 @@ const PropertyType = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(`${baseUrl}/newproparty/newproparty/`, {
-            data: { _id: id },
-          })
+          .delete(`${baseUrl}/propertytype/property_type/${id}`)
 
           .then((response) => {
             //console.log(response.data);
@@ -206,20 +154,9 @@ const PropertyType = () => {
     });
   };
 
-  //  //   auto form fill up in edit
-  //  let seletedEditData = async (datas) => {
-  //   setModalShowForPopupForm(true);
-  //   setId(datas._id);
-  //   setEditData(datas);
-  // };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   useEffect(() => {
     getPropertyData();
-  }, [pageItem]);
+  }, [accessType]);
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -243,34 +180,48 @@ const PropertyType = () => {
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((property) => {
-        const isPropertyTypeMatch = property.property_type.toLowerCase().includes(lowerCaseSearchQuery);
-        const isPropertySubTypeMatch = property.propertysub_type.toLowerCase().includes(lowerCaseSearchQuery);
+        const isPropertyTypeMatch = property.property_type
+          .toLowerCase()
+          .includes(lowerCaseSearchQuery);
+        const isPropertySubTypeMatch = property.propertysub_type
+          .toLowerCase()
+          .includes(lowerCaseSearchQuery);
         return isPropertyTypeMatch || isPropertySubTypeMatch;
       });
     }
     if (searchQuery2) {
       const lowerCaseSearchQuery = searchQuery2.toLowerCase();
       filteredData = filteredData.filter((property) => {
-        const isPropertyTypeMatch = property.property_type.toLowerCase().includes(lowerCaseSearchQuery);
-        const isPropertySubTypeMatch = property.propertysub_type.toLowerCase().includes(lowerCaseSearchQuery);
+        const isPropertyTypeMatch = property.property_type
+          .toLowerCase()
+          .includes(lowerCaseSearchQuery);
+        const isPropertySubTypeMatch = property.propertysub_type
+          .toLowerCase()
+          .includes(lowerCaseSearchQuery);
         return isPropertyTypeMatch || isPropertySubTypeMatch;
       });
     }
-    console.log(filteredData,"mmmm")
+
     if (upArrow.length > 0) {
       const sortingArrows = upArrow.length > 0 ? upArrow : null;
       sortingArrows.forEach((sort) => {
         switch (sort) {
           case "propertysub_type":
             filteredData.sort((a, b) => {
-              const comparison = a.propertysub_type.localeCompare(b.propertysub_type);
-              return upArrow.includes("propertysub_type") ? comparison : -comparison;
+              const comparison = a.propertysub_type.localeCompare(
+                b.propertysub_type
+              );
+              return upArrow.includes("propertysub_type")
+                ? comparison
+                : -comparison;
             });
             break;
           case "property_type":
             filteredData.sort((a, b) => {
               const comparison = a.property_type.localeCompare(b.property_type);
-              return upArrow.includes("property_type") ? comparison : -comparison;
+              return upArrow.includes("property_type")
+                ? comparison
+                : -comparison;
             });
             break;
           case "createAt":
@@ -288,7 +239,6 @@ const PropertyType = () => {
 
     return filteredData;
   };
-
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterPropertyBySearch();
@@ -364,7 +314,10 @@ const PropertyType = () => {
                         type="text"
                         placeholder="Search"
                         value={searchQuery}
-                        onChange={(e) => { setSearchQuery(e.target.value); setSearchQuery2("") }}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                          setSearchQuery2("");
+                        }}
                         style={{
                           width: "100%",
                           maxWidth: "200px",
@@ -375,12 +328,38 @@ const PropertyType = () => {
                     </FormGroup>
                     <FormGroup className="mr-sm-2">
                       <Dropdown isOpen={search} toggle={toggle3}>
-                        <DropdownToggle caret style={{ boxShadow: "none", border: "1px solid #ced4da", maxWidth: "200px", minWidth: "200px" }}>
-                          {searchQuery2 ? searchQuery ? "Select Type" : searchQuery2 : "Select Type"}
+                        <DropdownToggle
+                          caret
+                          style={{
+                            boxShadow: "none",
+                            border: "1px solid #ced4da",
+                            maxWidth: "200px",
+                            minWidth: "200px",
+                          }}
+                        >
+                          {searchQuery2
+                            ? searchQuery
+                              ? "Select Type"
+                              : searchQuery2
+                            : "Select Type"}
                         </DropdownToggle>
                         <DropdownMenu>
-                          <DropdownItem onClick={() => { setSearchQuery2("Residential"); setSearchQuery("") }}>Residential</DropdownItem>
-                          <DropdownItem onClick={() => { setSearchQuery2("Commercial"); setSearchQuery("") }}>Commercial</DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("Residential");
+                              setSearchQuery("");
+                            }}
+                          >
+                            Residential
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("Commercial");
+                              setSearchQuery("");
+                            }}
+                          >
+                            Commercial
+                          </DropdownItem>
                         </DropdownMenu>
                       </Dropdown>
                     </FormGroup>
@@ -428,19 +407,19 @@ const PropertyType = () => {
                       </th>
                       <th scope="col">
                         Created At
-                        {sortBy.includes("createAt") ? (
-                          upArrow.includes("createAt") ? (
+                        {sortBy.includes("createdAt") ? (
+                          upArrow.includes("createdAt") ? (
                             <ArrowDownwardIcon
-                              onClick={() => sortData("createAt")}
+                              onClick={() => sortData("createdAt")}
                             />
                           ) : (
                             <ArrowUpwardIcon
-                              onClick={() => sortData("createAt")}
+                              onClick={() => sortData("createdAt")}
                             />
                           )
                         ) : (
                           <ArrowUpwardIcon
-                            onClick={() => sortData("createAt")}
+                            onClick={() => sortData("createdAt")}
                           />
                         )}
                       </th>
@@ -453,20 +432,28 @@ const PropertyType = () => {
                       <tr key={property._id}>
                         <td>{property.property_type}</td>
                         <td>{property.propertysub_type}</td>
-                        <td>{property.createAt}</td>
-                        <td>{property.updateAt ? property.updateAt : "-"}</td>
+                        <td>
+                          {moment(property.createdAt).format("DD-MM-YYYY")}
+                        </td>
+                        <td>
+                          {moment(property.updatedAt).format("DD-MM-YYYY")}
+                        </td>
                         <td>
                           <div style={{ display: "flex" }}>
                             <div
                               style={{ cursor: "pointer" }}
-                              onClick={() => deleteProperty(property._id)}
+                              onClick={() =>
+                                deleteProperty(property.property_id)
+                              }
                             >
                               <DeleteIcon />
                             </div>
                             &nbsp; &nbsp; &nbsp;
                             <div
                               style={{ cursor: "pointer" }}
-                              onClick={() => editPropertyType(property._id)}
+                              onClick={() =>
+                                editPropertyType(property.property_id)
+                              }
                             >
                               <EditIcon />
                             </div>

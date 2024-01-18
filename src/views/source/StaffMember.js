@@ -70,7 +70,7 @@ const StaffMember = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -79,7 +79,7 @@ const StaffMember = () => {
   const getStaffMemberData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/addstaffmember/addstaffmember`
+        `${baseUrl}/staffmember/staff_member/${accessType.admin_id}`
       );
       setLoader(false);
       setStaffMemberData(response.data.data);
@@ -125,9 +125,7 @@ const StaffMember = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(`${baseUrl}/addstaffmember/delete_staffmember`, {
-            data: { _id: id },
-          })
+          .delete(`${baseUrl}/staffmember/staff_member/${id}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
               swal("Success!", "Staff Member deleted successfully!", "success");
@@ -172,7 +170,7 @@ const StaffMember = () => {
 
   useEffect(() => {
     getStaffMemberData();
-  }, [pageItem]);
+  }, [accessType]);
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -191,31 +189,42 @@ const StaffMember = () => {
 
   const filterTenantsBySearch = () => {
     let filteredData = StaffMemberData;
-  
+
     if (searchQuery) {
-      filteredData = filteredData
-        .filter((staff) => {
-          const isNameMatch = staff.staffmember_name.toLowerCase().includes(searchQuery.toLowerCase());
-          const isDesignationMatch = staff.staffmember_designation.toLowerCase().includes(searchQuery.toLowerCase());
-          return isNameMatch || isDesignationMatch;
-        });
+      filteredData = filteredData.filter((staff) => {
+        const isNameMatch = staff.staffmember_name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const isDesignationMatch = staff.staffmember_designation
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        return isNameMatch || isDesignationMatch;
+      });
     }
-  
-    if (upArrow.length > 0 ) {
+
+    if (upArrow.length > 0) {
       const sortingArrows = upArrow.length > 0 ? upArrow : null;
-  
+
       sortingArrows.forEach((sort) => {
         switch (sort) {
           case "staffmember_name":
             filteredData.sort((a, b) => {
-              const comparison = a.staffmember_name.localeCompare(b.staffmember_name);
-              return upArrow.includes("staffmember_name") ? comparison : -comparison;
+              const comparison = a.staffmember_name.localeCompare(
+                b.staffmember_name
+              );
+              return upArrow.includes("staffmember_name")
+                ? comparison
+                : -comparison;
             });
             break;
           case "staffmember_designation":
             filteredData.sort((a, b) => {
-              const comparison = a.staffmember_designation.localeCompare(b.staffmember_designation);
-              return upArrow.includes("staffmember_designation") ? comparison : -comparison;
+              const comparison = a.staffmember_designation.localeCompare(
+                b.staffmember_designation
+              );
+              return upArrow.includes("staffmember_designation")
+                ? comparison
+                : -comparison;
             });
             break;
           case "createAt":
@@ -226,14 +235,21 @@ const StaffMember = () => {
             break;
           case "staffmember_phoneNumber":
             filteredData.sort((a, b) => {
-              const comparison = a.staffmember_phoneNumber - b.staffmember_phoneNumber;
-              return upArrow.includes("staffmember_phoneNumber") ? comparison : -comparison;
+              const comparison =
+                a.staffmember_phoneNumber - b.staffmember_phoneNumber;
+              return upArrow.includes("staffmember_phoneNumber")
+                ? comparison
+                : -comparison;
             });
             break;
           case "staffmember_email":
             filteredData.sort((a, b) => {
-              const comparison = a.staffmember_email.localeCompare(b.staffmember_email);
-              return upArrow.includes("staffmember_email") ? comparison : -comparison;
+              const comparison = a.staffmember_email.localeCompare(
+                b.staffmember_email
+              );
+              return upArrow.includes("staffmember_email")
+                ? comparison
+                : -comparison;
             });
             break;
           default:
@@ -242,10 +258,10 @@ const StaffMember = () => {
         }
       });
     }
-  
+
     return filteredData;
   };
-  
+
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterTenantsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
@@ -268,7 +284,7 @@ const StaffMember = () => {
 
   useEffect(() => {
     // setLoader(false);
-    // filterRentalsBySearch(); 
+    // filterRentalsBySearch();
     getStaffMemberData();
   }, [upArrow, sortBy]);
   return (
@@ -336,8 +352,9 @@ const StaffMember = () => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">NAME
-                      {sortBy.includes("staffmember_name") ? (
+                      <th scope="col">
+                        NAME
+                        {sortBy.includes("staffmember_name") ? (
                           upArrow.includes("staffmember_name") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("staffmember_name")}
@@ -353,15 +370,20 @@ const StaffMember = () => {
                           />
                         )}
                       </th>
-                      <th scope="col">DESIGNATION
-                      {sortBy.includes("staffmember_designation") ? (
+                      <th scope="col">
+                        DESIGNATION
+                        {sortBy.includes("staffmember_designation") ? (
                           upArrow.includes("staffmember_designation") ? (
                             <ArrowDownwardIcon
-                              onClick={() => sortData("staffmember_designation")}
+                              onClick={() =>
+                                sortData("staffmember_designation")
+                              }
                             />
                           ) : (
                             <ArrowUpwardIcon
-                              onClick={() => sortData("staffmember_designation")}
+                              onClick={() =>
+                                sortData("staffmember_designation")
+                              }
                             />
                           )
                         ) : (
@@ -370,24 +392,31 @@ const StaffMember = () => {
                           />
                         )}
                       </th>
-                      <th scope="col">Contact
-                      {sortBy.includes("staffmember_phoneNumber") ? (
+                      <th scope="col">
+                        Contact
+                        {sortBy.includes("staffmember_phoneNumber") ? (
                           upArrow.includes("staffmember_phoneNumber") ? (
                             <ArrowDownwardIcon
-                              onClick={() => sortData("staffmember_phoneNumber")}
+                              onClick={() =>
+                                sortData("staffmember_phoneNumber")
+                              }
                             />
                           ) : (
                             <ArrowUpwardIcon
-                              onClick={() => sortData("staffmember_phoneNumber")}
+                              onClick={() =>
+                                sortData("staffmember_phoneNumber")
+                              }
                             />
                           )
                         ) : (
                           <ArrowUpwardIcon
                             onClick={() => sortData("staffmember_phoneNumber")}
                           />
-                        )}</th>
-                      <th scope="col">Mail Id
-                      {sortBy.includes("staffmember_email") ? (
+                        )}
+                      </th>
+                      <th scope="col">
+                        Mail Id
+                        {sortBy.includes("staffmember_email") ? (
                           upArrow.includes("staffmember_email") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("staffmember_email")}
@@ -401,9 +430,11 @@ const StaffMember = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("staffmember_email")}
                           />
-                        )}</th>
-                      <th scope="col">Created at
-                      {sortBy.includes("createAt") ? (
+                        )}
+                      </th>
+                      <th scope="col">
+                        Created at
+                        {sortBy.includes("createAt") ? (
                           upArrow.includes("createAt") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("createAt")}
@@ -417,7 +448,8 @@ const StaffMember = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("createAt")}
                           />
-                        )}</th>
+                        )}
+                      </th>
                       <th scope="col">Updated at</th>
                       <th scope="col">ACTION</th>
                     </tr>
@@ -435,14 +467,18 @@ const StaffMember = () => {
                           <div style={{ display: "flex" }}>
                             <div
                               style={{ cursor: "pointer" }}
-                              onClick={() => deleteStaffMember(staff._id)}
+                              onClick={() =>
+                                deleteStaffMember(staff.staffmember_id)
+                              }
                             >
                               <DeleteIcon />
                             </div>
                             &nbsp; &nbsp; &nbsp;
                             <div
                               style={{ cursor: "pointer" }}
-                              onClick={() => editStaffMember(staff._id)}
+                              onClick={() =>
+                                editStaffMember(staff.staffmember_id)
+                              }
                             >
                               <EditIcon />
                             </div>

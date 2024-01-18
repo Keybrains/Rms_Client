@@ -54,34 +54,13 @@ const AddStaffMember = () => {
     navigate("../StaffMember");
   };
 
-  // const handleSubmit = async (values) => {
-  //   //console.log(values, "values");
-  //   try {
-  //     // values["property_type"] = selectedProperty;
-  //     const res = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/addstaffmember/addstaffmember",
-  //       values
-  //     );
-
-  //     if (res.data.statusCode === 200) {
-  //       navigate("/admin/StaffMember");
-  //       swal("Success!", "Staff Member added successfully!", "success");
-  //       //console.log(`Staffmember: ${values.staffmember_name}`);
-  //     } else {
-  //       alert(res.data.message);
-  //     }
-  //   } catch (error) {
-  //     //console.log("Error", error);
-  //   }
-  // };
- 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -126,9 +105,9 @@ const AddStaffMember = () => {
   React.useEffect(() => {
     if (id) {
       axios
-        .get(`${baseUrl}/addstaffmember/staffmember_summary/${id}`)
+        .get(`${baseUrl}/staffmember/staff/member/${id}`)
         .then((response) => {
-          const staffMamberdata = response.data.data;
+          const staffMamberdata = response.data.data[0];
           setstaffMamberData(staffMamberData);
           //console.log(staffMamberdata);
 
@@ -149,17 +128,34 @@ const AddStaffMember = () => {
   }, [id]);
 
   async function handleSubmit(values) {
+    const object = {
+      admin_id: accessType.admin_id,
+      staffmember_name: values.staffmember_name,
+      staffmember_designation: values.staffmember_designation,
+      staffmember_phoneNumber: values.staffmember_phoneNumber,
+      staffmember_email: values.staffmember_email,
+      staffmember_password: values.staffmember_password,
+    };
     try {
       if (id === undefined) {
         const res = await axios.post(
-          `${baseUrl}/addstaffmember/addstaffmember`,
-          values
+          `${baseUrl}/staffmember/staff_member`,
+          object
         );
-        handleResponse(res);
+        if (res.data.statusCode === 200) {
+          handleResponse(res);
+        } else if (res.data.statusCode === 201) {
+          swal("error", res.data.message, "error");
+        }
       } else {
-        const editUrl = `${baseUrl}/addstaffmember/staffmember/${id}`;
-        const res = await axios.put(editUrl, values);
-        handleResponse(res);
+        const editUrl = `${baseUrl}/staffmember/staff_member/${id}`;
+        const res = await axios.put(editUrl, object);
+        console.log(object, res, "yash");
+        if (res.data.statusCode === 200) {
+          handleResponse(res);
+        } else if (res.data.statusCode === 400) {
+          swal("error", res.data.message, "error");
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -215,7 +211,7 @@ const AddStaffMember = () => {
                             className="form-control-label"
                             htmlFor="input-member"
                           >
-                           Staff Member Name *
+                            Staff Member Name *
                           </label>
                           <br />
                           <br />
@@ -260,9 +256,7 @@ const AddStaffMember = () => {
                             name="staffmember_designation"
                             onBlur={StaffMemberFormik.handleBlur}
                             onChange={StaffMemberFormik.handleChange}
-                            value={
-                              StaffMemberFormik.values.staffmember_designation.trim()
-                            }
+                            value={StaffMemberFormik.values.staffmember_designation.trim()}
                           />
                         </FormGroup>
                       </Col>
@@ -371,39 +365,37 @@ const AddStaffMember = () => {
                             >
                               {<VisibilityIcon />}
                             </Button>
-                         
                           </div>
                           {StaffMemberFormik.touched.staffmember_password &&
-                            StaffMemberFormik.errors.staffmember_password ? (
-                              <div style={{ color: "red" }}>
-                                {StaffMemberFormik.errors.staffmember_password}
-                              </div>
-                            ) : null}
+                          StaffMemberFormik.errors.staffmember_password ? (
+                            <div style={{ color: "red" }}>
+                              {StaffMemberFormik.errors.staffmember_password}
+                            </div>
+                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
                     <br />
                   </div>
                   <Row>
-                  <button
-                    type="submit"
-                    className="btn btn-primary ml-4"
-                    style={{ background: "green" }}
-                  >
-                    {id ? "Update Staff Member" : "Add Staff Member"}
-                  </button>
-                  <button
-                    color="primary"
-                   //  href="#rms"
-                    className="btn btn-primary"
-                    onClick={handleCloseButtonClick}
-                    size="sm"
-                    style={{ background: "white", color: "black" }}
-                  >
-                    Cancel
-                  </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary ml-4"
+                      style={{ background: "green" }}
+                    >
+                      {id ? "Update Staff Member" : "Add Staff Member"}
+                    </button>
+                    <button
+                      color="primary"
+                      //  href="#rms"
+                      className="btn btn-primary"
+                      onClick={handleCloseButtonClick}
+                      size="sm"
+                      style={{ background: "white", color: "black" }}
+                    >
+                      Cancel
+                    </button>
                   </Row>
-                  
                 </Form>
                 <br />
               </CardBody>
