@@ -503,9 +503,9 @@ const Sidebar = (props) => {
                 >
                   General Ledger
                 </DropdownItem>
-                {/* <DropdownItem to="/admin/Payment" tag={Link} onClick={toggleCollapse}>
+                <DropdownItem to="/admin/Payment" tag={Link} onClick={toggleCollapse}>
                   Payment
-                </DropdownItem> */}
+                </DropdownItem>
                 {/* <DropdownItem to="/admin/OutstandingBalance" tag={Link}>
                 Outstanding Balances
               </DropdownItem> */}
