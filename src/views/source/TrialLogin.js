@@ -79,7 +79,6 @@ const TrialLogin = () => {
       businessEmail: "",
       componyName: "",
       phoneNumber: "",
-      number_units: "",
       password: "",
       termsAndConditions: false,
     },
