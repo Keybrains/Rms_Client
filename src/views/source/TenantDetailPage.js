@@ -12,16 +12,19 @@ import {
   Col,
   Table,
   Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
 } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
 import { CardContent, Typography } from "@mui/material";
 import { RotatingLines } from "react-loader-spinner";
+import CreditCardForm from "./CreditCardForm";
 
 const TenantDetailPage = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [loader, setLoader] = React.useState(true);
   const { tenantId, entryIndex } = useParams();
-  const { id } = useParams();
   const [tenantDetails, setTenantDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,7 +46,7 @@ const TenantDetailPage = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-  
+
   // const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
   // const getTenantData = async () => {
   //   try {
@@ -130,7 +133,7 @@ const TenantDetailPage = () => {
             console.error("Error fetching data:", error);
           });
       }
-       setUnitId(unitId);
+      setUnitId(unitId);
 
       // setPropertyId(propertyId);
 
@@ -200,9 +203,7 @@ const TenantDetailPage = () => {
   const [myData, setMyData] = useState([]);
 
   const doSomething = async () => {
-    let responce = await axios.get(
-      `${baseUrl}/tenant/tenants`
-    );
+    let responce = await axios.get(`${baseUrl}/tenant/tenants`);
     const data = responce.data.data;
     const filteredData = data.filter((item) => item._id === tenantId);
     setMyData(filteredData);
@@ -227,7 +228,7 @@ const TenantDetailPage = () => {
       setMyData1(filteredData);
     } catch (error) {
       // Handle errors here
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -241,16 +242,15 @@ const TenantDetailPage = () => {
     const end = new Date(endDate);
 
     if (today >= start && today <= end) {
-      return 'Active';
+      return "Active";
     } else if (today < start) {
-      return 'FUTURE';
+      return "FUTURE";
     } else if (today > end) {
-      return 'EXPIRED';
+      return "EXPIRED";
     } else {
-      return '-';
+      return "-";
     }
   };
-
 
   //sahil20231206
   const getStatus1 = (startDate, endDate) => {
@@ -276,10 +276,33 @@ const TenantDetailPage = () => {
   // Check if the entry exists and then display the status
   const status = selectedEntry
     ? getStatus1(
-      selectedEntry.entries.start_date,
-      selectedEntry.entries.end_date
-    )
+        selectedEntry.entries.start_date,
+        selectedEntry.entries.end_date
+      )
     : "-";
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openCardForm = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const [cardDetalis, setCardDetails] = useState([]);
+  const getCreditCard = async () => {
+    const response = await axios.get(
+      `http://localhost:4000/api/creditcard/getCreditCard/${tenantId}`
+    );
+    setCardDetails(response.data);
+    console.log(response, "yashu");
+  };
+
+  useEffect(() => {
+    getCreditCard();
+  }, [tenantId]);
 
   return (
     <div>
@@ -300,13 +323,14 @@ const TenantDetailPage = () => {
                   {tenantDetails.tenant_firstName +
                     " " +
                     tenantDetails.tenant_lastName}
-                </h1>)}
+                </h1>
+              )}
               <h5 style={{ color: "white" }}>
                 {status} |{" "}
                 {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
                 {tenantDetails._id &&
-                  tenantDetails.entries.rental_units !== undefined &&
-                  tenantDetails.entries.rental_units !== ""
+                tenantDetails.entries.rental_units !== undefined &&
+                tenantDetails.entries.rental_units !== ""
                   ? ` - ${tenantDetails.entries.rental_units}`
                   : ""}
               </h5>
@@ -331,7 +355,7 @@ const TenantDetailPage = () => {
                 <h3 className="mb-0">Summary</h3>
               </CardHeader>
               <div className="table-responsive">
-                <div className="row m-3" style={{ overflow: 'hidden' }}>
+                <div className="row m-3" style={{ overflow: "hidden" }}>
                   <div className="col-md-8">
                     <div
                       className="align-items-center table-flush"
@@ -362,7 +386,7 @@ const TenantDetailPage = () => {
                         <>
                           <div className="w-100">
                             <Row
-                              className="w-100 my-3 "
+                              className="w-100 my-3"
                               style={{
                                 fontSize: "18px",
                                 textTransform: "capitalize",
@@ -374,7 +398,7 @@ const TenantDetailPage = () => {
                               <Col>Contact Information</Col>
                             </Row>
                             <Row
-                              className="w-100 mb-1 "
+                              className="w-100 mb-1"
                               style={{
                                 fontSize: "10px",
                                 textTransform: "uppercase",
@@ -416,7 +440,9 @@ const TenantDetailPage = () => {
                                 </a>
                               </Col>
                               <Col style={{ textTransform: "lowercase" }}>
-                                <a href={`mailto:${tenantDetails.tenant_email}`}>
+                                <a
+                                  href={`mailto:${tenantDetails.tenant_email}`}
+                                >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="15"
@@ -425,14 +451,14 @@ const TenantDetailPage = () => {
                                     className="bi bi-envelope-paper"
                                     viewBox="0 0 16 16"
                                   >
-                                    <path d="M4 0a2 2 0 0 0-2 2v1.133l-.941.502A2 2 0 0 0 0 5.4V14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5.4a2 2 0 0 0-1.059-1.765L14 3.133V2a2 2 0 0 0-2-2zm10 4.267.47.25A1 1 0 0 1 15 5.4v.817l-1 .6zm-1 3.15-3.75 2.25L8 8.917l-1.25.75L3 7.417V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1zm-11-.6-1-.6V5.4a1 1 0 0 1 .53-.882L2 4.267zm13 .566v5.734l-4.778-2.867zm-.035 6.88A1 1 0 0 1 14 15H2a1 1 0 0 1-.965-.738L8 10.083zM1 13.116V7.383l4.778 2.867L1 13.117Z" />
+                                    <path d="M4 0a2 2 0 0 0-2 2v1.133l-.941.502A2 2 0 0 0 0 5.4V14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5.4a2 2 0 0 0-1.059-1.765L14 3.133V2a2 2 0 0 0-2-2zm10 4.267.470.25A1 1 0 0 1 15 5.4v.817l-1 .6zm-1 3.15-3.75 2.25L8 8.917l-1.25.75L3 7.417V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1zm-11-.6-1-.6V5.4a1 1 0 0 1 .53-.882L2 4.267zm13 .566v5.734l-4.778-2.867zm-.035 6.88A1 1 0 0 1 14 15H2a1 1 0 0 1-.965-.738L8 10.083zM1 13.116V7.383l4.778 2.867L1 13.117Z" />
                                   </svg>{" "}
                                   {tenantDetails.tenant_email || "N/A"}
                                 </a>
                               </Col>
                             </Row>
                             <Row
-                              className="w-100 my-3 "
+                              className="w-100 my-3"
                               style={{
                                 fontSize: "18px",
                                 textTransform: "capitalize",
@@ -444,7 +470,7 @@ const TenantDetailPage = () => {
                               <Col>Personal Information</Col>
                             </Row>
                             <Row
-                              className="w-100 mb-1 "
+                              className="w-100 mb-1"
                               style={{
                                 fontSize: "10px",
                                 textTransform: "uppercase",
@@ -456,7 +482,7 @@ const TenantDetailPage = () => {
                               <Col>Comments</Col>
                             </Row>
                             <Row
-                              className="w-100 mt-1  mb-5"
+                              className="w-100 mt-1 mb-5"
                               style={{
                                 fontSize: "12px",
                                 textTransform: "capitalize",
@@ -483,7 +509,7 @@ const TenantDetailPage = () => {
                               <Col>{tenantDetails.comments || "N/A"}</Col>
                             </Row>
                             <Row
-                              className="w-100 my-3 "
+                              className="w-100 my-3"
                               style={{
                                 fontSize: "18px",
                                 textTransform: "capitalize",
@@ -495,7 +521,7 @@ const TenantDetailPage = () => {
                               <Col>Emergency Contact</Col>
                             </Row>
                             <Row
-                              className="w-100 mb-1 "
+                              className="w-100 mb-1"
                               style={{
                                 fontSize: "10px",
                                 textTransform: "uppercase",
@@ -508,7 +534,7 @@ const TenantDetailPage = () => {
                               <Col>Emergency PhoneNumber</Col>
                             </Row>
                             <Row
-                              className="w-100 mt-1  mb-5"
+                              className="w-100 mt-1 mb-5"
                               style={{
                                 fontSize: "12px",
                                 textTransform: "capitalize",
@@ -526,7 +552,6 @@ const TenantDetailPage = () => {
                                 {tenantDetails.emergency_PhoneNumber || "N/A"}
                               </Col>
                             </Row>
-
                           </div>
                         </>
                       ) : (
@@ -537,212 +562,293 @@ const TenantDetailPage = () => {
                         </tbody>
                       )}
                     </div>
+                    <div className="row mt-3" style={{ overflow: "auto" }}>
+                      <Row
+                        className="w-100 my-3 "
+                        style={{
+                          fontSize: "18px",
+                          textTransform: "capitalize",
+                          color: "#5e72e4",
+                          fontWeight: "600",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
+                        <Col>Lease Details</Col>
+                      </Row>
+                      <Row
+                        className="mb-1 m-0 p-0"
+                        style={{ fontSize: "12px", color: "#000" }}
+                      >
+                        <Table>
+                          <tbody
+                            className="tbbody p-0 m-0"
+                            style={{
+                              borderTopRightRadius: "5px",
+                              borderTopLeftRadius: "5px",
+                              borderBottomLeftRadius: "5px",
+                              borderBottomRightRadius: "5px",
+                            }}
+                          >
+                            <tr className="header">
+                              <th>Status</th>
+                              <th>Start - End</th>
+                              <th>Property</th>
+                              <th>Type</th>
+                              <th>Rent</th>
+                            </tr>
+                            {myData ? (
+                              <>
+                                {myData.map((item) => (
+                                  <>
+                                    <tr className="body">
+                                      <td>
+                                        {getStatus(
+                                          item.entries.start_date,
+                                          item.entries.end_date
+                                        )}
+                                      </td>
+                                      <td>
+                                        <Link
+                                          to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
+                                          onClick={(e) => {
+                                            console.log(item._id, "Tenant Id");
+                                            console.log(
+                                              item.entries.entryIndex,
+                                              "Entry Index"
+                                            );
+                                          }}
+                                        >
+                                          {formatDateWithoutTime(
+                                            item.entries.start_date
+                                          ) +
+                                            " To " +
+                                            formatDateWithoutTime(
+                                              item.entries.end_date
+                                            ) || "N/A"}
+                                        </Link>
+                                      </td>
+                                      <td>
+                                        {item.entries.rental_adress || "N/A"}
+                                      </td>
+                                      <td>
+                                        {item.entries.lease_type || "N/A"}
+                                      </td>
+                                      <td>{item.entries.amount}</td>
+                                    </tr>
+                                  </>
+                                ))}
+                              </>
+                            ) : null}
+                          </tbody>
+                        </Table>
+                      </Row>
+                    </div>
                   </div>
                   <div className="col-md-4 mt-3">
                     {loading ? (
                       <tbody className="d-flex flex-direction-column justify-content-center align-items-center">
-                        <tr>
-                        </tr>
+                        <tr></tr>
                       </tbody>
                     ) : (
-                      <Card className="w-100" style={{ background: "#F4F6FF" }}>
-                        <CardContent>
-                          <div
-                            style={{ display: "flex", flexDirection: "column" }}
-                          >
-                            {myData1.map((item, index) => (
-                              <div key={index} style={{ marginBottom: "10px" }}>
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    fontWeight: "bold",
-                                    fontStyle: 'italic',
-                                    fontFamily: "Arial",
-                                    textTransform: "capitalize",
-                                    marginRight: "10px",
-                                  }}
-                                  color="text.secondary"
-                                  gutterBottom
+                      <>
+                        <Card
+                          className="w-100"
+                          style={{ background: "#F4F6FF" }}
+                        >
+                          <CardContent>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
+                              {myData1.map((item, index) => (
+                                <div
+                                  key={index}
+                                  style={{ marginBottom: "10px" }}
                                 >
-                                  {getStatus(
-                                    item.entries.start_date,
-                                    item.entries.end_date
-                                  )
-                                    .charAt(0)
-                                    .toUpperCase() +
-                                    getStatus(
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      fontWeight: "bold",
+                                      fontStyle: "italic",
+                                      fontFamily: "Arial",
+                                      textTransform: "capitalize",
+                                      marginRight: "10px",
+                                    }}
+                                    color="text.secondary"
+                                    gutterBottom
+                                  >
+                                    {getStatus(
                                       item.entries.start_date,
                                       item.entries.end_date
                                     )
-                                      .substring(1)
-                                      .toLowerCase()}
-                                </Typography>
+                                      .charAt(0)
+                                      .toUpperCase() +
+                                      getStatus(
+                                        item.entries.start_date,
+                                        item.entries.end_date
+                                      )
+                                        .substring(1)
+                                        .toLowerCase()}
+                                  </Typography>
 
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    // fontWeight: "bold",
-                                    marginRight: "10px",
-                                  }}
-                                  color="text.secondary"
-                                  gutterBottom
-                                >
-                                  {item.entries.rental_adress || "N/A"}
-                                </Typography>
-                              </div>
-                            ))}
-                          </div>
-                          <div
-                            style={{ display: "flex", flexDirection: "column" }}
-                          >
-                            {myData1.map((item, index) => (
-                              <div key={index}>
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    fontWeight: "bold",
-                                    fontFamily: "Arial",
-                                    fontStyle: 'italic',
-                                    marginRight: "10px",
-                                  }}
-                                  color="text.secondary"
-                                  gutterBottom
-                                >
-                                  {item.entries.lease_type || "N/A"}
-                                </Typography>
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    // fontWeight: "bold",
-                                    marginRight: "10px",
-                                  }}
-                                  color="text.secondary"
-                                  gutterBottom
-                                >
-                                  {formatDateWithoutTime(
-                                    item.entries.start_date
-                                  ) +
-                                    " To " +
-                                    formatDateWithoutTime(
-                                      item.entries.end_date
-                                    ) || "N/A"}
-                                </Typography>
-                              </div>
-                            ))}
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                              marginBottom: "5px",
-                            }}
-                          >
-                          </div>
-                          <hr
-                            style={{
-                              marginTop: "2px",
-                              marginBottom: "6px",
-                            }}
-                          />
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                            }}
-                          >
-                            <Typography
-                              sx={{ fontSize: 14, fontWeight: "bold" }}
-                              color="text.secondary"
-                              gutterBottom
-                            >
-                              Credit balance:
-                            </Typography>
-                            <Typography
-                              sx={{
-                                fontSize: 14,
-                                marginLeft: "10px",
-                                fontWeight: "bold",
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      // fontWeight: "bold",
+                                      marginRight: "10px",
+                                    }}
+                                    color="text.secondary"
+                                    gutterBottom
+                                  >
+                                    {item.entries.rental_adress || "N/A"}
+                                  </Typography>
+                                </div>
+                              ))}
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
                               }}
                             >
-                              {"$" + Math.abs(balance)}
-                            </Typography>
-                          </div>
-                          <hr
-                            style={{
-                              marginTop: "2px",
-                              marginBottom: "6px",
-                            }}
-                          />
-                          {/* Display entries data */}
-                          {/* {paymentData.entries &&
-                          paymentData.entries.length > 0 && ( */}
-                          <>
-                            <div>
-                              {/* {paymentData.entries.map(
-                                  (entry, index) => ( */}
-                            <div className="entry-container">
-                              {/* <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  marginBottom: "5px",
+                              {myData1.map((item, index) => (
+                                <div key={index}>
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      fontWeight: "bold",
+                                      fontFamily: "Arial",
+                                      fontStyle: "italic",
+                                      marginRight: "10px",
+                                    }}
+                                    color="text.secondary"
+                                    gutterBottom
+                                  >
+                                    {item.entries.lease_type || "N/A"}
+                                  </Typography>
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      // fontWeight: "bold",
+                                      marginRight: "10px",
+                                    }}
+                                    color="text.secondary"
+                                    gutterBottom
+                                  >
+                                    {formatDateWithoutTime(
+                                      item.entries.start_date
+                                    ) +
+                                      " To " +
+                                      formatDateWithoutTime(
+                                        item.entries.end_date
+                                      ) || "N/A"}
+                                  </Typography>
+                                </div>
+                              ))}
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginBottom: "5px",
+                              }}
+                            ></div>
+                            <hr
+                              style={{
+                                marginTop: "2px",
+                                marginBottom: "6px",
+                              }}
+                            />
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                              }}
+                            >
+                              <Typography
+                                sx={{ fontSize: 14, fontWeight: "bold" }}
+                                color="text.secondary"
+                                gutterBottom
+                              >
+                                Credit balance:
+                              </Typography>
+                              <Typography
+                                sx={{
+                                  fontSize: 14,
+                                  marginLeft: "10px",
+                                  fontWeight: "bold",
                                 }}
                               >
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    fontWeight: "bold",
-                                    marginRight: "10px",
-                                  }}
-                                  color="text.secondary"
-                                  gutterBottom
-                                >
-                                  Prepayments:
-                                </Typography>
-                                <Typography sx={{ fontSize: 14 }}>
-                                  entry.amount
-                                </Typography>
+                                {"$" + Math.abs(balance)}
+                              </Typography>
+                            </div>
+                            <hr
+                              style={{
+                                marginTop: "2px",
+                                marginBottom: "6px",
+                              }}
+                            />
+                            <>
+                              <div>
+                                <div className="entry-container">
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                      marginBottom: "5px",
+                                    }}
+                                  >
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        fontWeight: "bold",
+                                        marginRight: "10px",
+                                      }}
+                                      color="text.secondary"
+                                      gutterBottom
+                                    >
+                                      Rent:
+                                    </Typography>
+                                    {myData1.map((item) => (
+                                      <>
+                                        <Typography
+                                          sx={{
+                                            fontSize: 14,
+                                            fontWeight: "bold",
+                                            marginRight: "10px",
+                                          }}
+                                          color="text.secondary"
+                                          gutterBottom
+                                        >
+                                          ${item.entries.amount}
+                                        </Typography>
+                                      </>
+                                    ))}
+                                  </div>
+                                </div>
+                                {/* )
+                                )} */}
                               </div>
                               <div
                                 style={{
                                   display: "flex",
                                   flexDirection: "row",
-                                  alignItems: "center",
-                                  marginBottom: "5px",
+                                  marginTop: "10px",
                                 }}
                               >
                                 <Typography
                                   sx={{
                                     fontSize: 14,
                                     fontWeight: "bold",
-                                    marginRight: "10px",
                                   }}
                                   color="text.secondary"
                                   gutterBottom
                                 >
-                                  Deposite held:
-                                </Typography>
-                              </div> */}
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  marginBottom: "5px",
-                                }}
-                              >
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    fontWeight: "bold",
-                                    marginRight: "10px",
-                                  }}
-                                  color="text.secondary"
-                                  gutterBottom
-                                >
-                                  Rent:
+                                  Due date :
                                 </Typography>
                                 {myData1.map((item) => (
                                   <>
@@ -755,207 +861,184 @@ const TenantDetailPage = () => {
                                       color="text.secondary"
                                       gutterBottom
                                     >
-                                      ${item.entries.amount}
+                                      {item.entries.nextDue_date}
                                     </Typography>
                                   </>
                                 ))}
                               </div>
-                            </div>
-                            {/* )
-                                )} */}
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              marginTop: "10px",
-                            }}
-                          >
-                            <Typography
-                              sx={{
-                                fontSize: 14,
-                                fontWeight: "bold",
+                            </>
+                            {/* )} */}
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                marginTop: "10px",
                               }}
-                              color="text.secondary"
-                              gutterBottom
                             >
-                              Due date :
-                            </Typography>
-                            {myData1.map((item) => (
-                              <>
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    fontWeight: "bold",
-                                    marginRight: "10px",
-                                  }}
-                                  color="text.secondary"
-                                  gutterBottom
-                                >
-                                  {item.entries.nextDue_date}
-                                </Typography>
-                              </>
-                            ))}
-                          </div>
-                        </>
-                        {/* )} */}
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            marginTop: "10px",
-                          }}
-                        >
-                         <Button
-                            color="primary"
-                            ////  href="#rms"
-                            onClick={() =>
-                              navigate(
-                                `/admin/AddPayment/${tenantId}/${entryIndex}`,
-                                {
-                                  state: {
-                                    unit_name: unit,
-                                    unit_id: unitId,
-                                    property_id: propertyId,
-                                    rental_adress: rental,
-                                  },
+                              <Button
+                                color="primary"
+                                ////  href="#rms"
+                                onClick={() =>
+                                  navigate(
+                                    `/admin/AddPayment/${tenantId}/${entryIndex}`,
+                                    {
+                                      state: {
+                                        unit_name: unit,
+                                        unit_id: unitId,
+                                        property_id: propertyId,
+                                        rental_adress: rental,
+                                      },
+                                    }
+                                  )
                                 }
-                              )
-                            }
-                            style={{
-                              background: "white",
-                              color: "blue",
-                              marginRight: "10px",
-                            }}
-                          >
-                            Receive Payment
-                          </Button>
-                          {myData1.map((item) => (
-                            <>
+                                style={{
+                                  background: "white",
+                                  color: "blue",
+                                  marginRight: "10px",
+                                }}
+                              >
+                                Receive Payment
+                              </Button>
+                              {myData1.map((item) => (
+                                <>
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      marginLeft: "10px",
+                                      paddingTop: "10px",
+                                      cursor: "pointer",
+                                      color: "blue",
+                                    }}
+                                    // onClick={() => handleChange("Financial")}
+                                  >
+                                    <Link
+                                      to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
+                                      onClick={(e) => {}}
+                                    >
+                                      Lease Ledger
+                                    </Link>
+                                  </Typography>
+                                </>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        <Card
+                          className="w-100 mt-3"
+                          style={{ background: "#F4F6FF" }}
+                        >
+                          <CardContent>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
                               <Typography
                                 sx={{
-                                  fontSize: 14,
-                                  marginLeft: "10px",
-                                  paddingTop: "10px",
-                                  cursor: "pointer",
-                                  color: "blue",
+                                  fontSize: 18,
+                                  fontWeight: "bold",
+                                  fontFamily: "Arial",
+                                  textTransform: "capitalize",
+                                  marginRight: "10px",
                                 }}
-                                // onClick={() => handleChange("Financial")}
-                                >
-                                  <Link
-                                    to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
-                                    onClick={(e) => { }}
+                                color="text.secondary"
+                                gutterBottom
+                              >
+                                Credit Cards
+                              </Typography>
+                            </div>
+                            {cardDetalis && cardDetalis.length > 0 && (
+                              <Table responsive>
+                                <tr>
+                                  <th>Card Number</th>
+                                  <th>expiration Date</th>
+                                </tr>
+                                {cardDetalis.map((item, index) => (
+                                  <tr
+                                    key={index}
+                                    style={{ marginBottom: "10px" }}
                                   >
-                                    Lease Ledger
-                                  </Link>
-                                </Typography>
-                              </>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
+                                    <td>
+                                      <Typography
+                                        sx={{
+                                          fontSize: 14,
+                                          fontWeight: "bold",
+                                          fontStyle: "italic",
+                                          fontFamily: "Arial",
+                                          textTransform: "capitalize",
+                                          marginRight: "10px",
+                                        }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        {item.card_number.slice(0, 4) +
+                                          "*".repeat(8) +
+                                          item.card_number.slice(-4)}
+                                      </Typography>
+                                    </td>
+                                    <td>
+                                      <Typography
+                                        sx={{
+                                          fontSize: 14,
+                                          // fontWeight: "bold",
+                                          marginRight: "10px",
+                                        }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        {item.exp_date}
+                                      </Typography>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </Table>
+                            )}
+
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                marginTop: "10px",
+                              }}
+                            >
+                              <Button
+                                color="primary"
+                                onClick={() => openCardForm()}
+                                style={{
+                                  background: "white",
+                                  color: "blue",
+                                  marginRight: "10px",
+                                }}
+                              >
+                                Add Credit Card
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </>
                     )}
                   </div>
                 </div>
-                <div className="row m-3" style={{ overflow: 'auto' }}>
-                  <Row
-                    className="w-100 my-3 "
-                    style={{
-                      fontSize: "18px",
-                      textTransform: "capitalize",
-                      color: "#5e72e4",
-                      fontWeight: "600",
-                      borderBottom: "1px solid #ddd",
-                    }}
-                  >
-                    <Col>Lease Details</Col>
-                  </Row>
-                  <Row
-                    className="mb-1 m-0 p-0"
-                    style={{ fontSize: "12px", color: "#000" }}
-                  >
-                    <Table>
-                      <tbody
-                        className="tbbody p-0 m-0"
-                        style={{
-                          borderTopRightRadius: "5px",
-                          borderTopLeftRadius: "5px",
-                          borderBottomLeftRadius: "5px",
-                          borderBottomRightRadius: "5px",
-                        }}
-                      >
-                        <tr className="header">
-                          <th>Status</th>
-                          <th>Start - End</th>
-                          <th>Property</th>
-                          <th>Type</th>
-                          <th>Rent</th>
-                        </tr>
-                        {myData ? (
-                          <>
-                            {myData.map((item) => (
-                              <>
-                                <tr className="body">
-                                  <td>
-                                    {getStatus(
-                                      item.entries.start_date,
-                                      item.entries.end_date
-                                    )}
-                                  </td>
-                                  <td>
-                                    <Link
-                                      to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
-                                      onClick={(e) => {
-                                        // Handle any additional actions onClick if needed
-                                        console.log(
-                                          item._id,
-                                          "Tenant Id"
-                                        );
-                                        console.log(
-                                          item.entries.entryIndex,
-                                          "Entry Index"
-                                        );
-                                      }}
-                                    >
-                                      {formatDateWithoutTime(
-                                        item.entries.start_date
-                                      ) +
-                                        " To " +
-                                        formatDateWithoutTime(
-                                          item.entries.end_date
-                                        ) || "N/A"}
-                                    </Link>
-                                  </td>
-                                  <td>
-                                    {item.entries.rental_adress ||
-                                      "N/A"}
-                                  </td>
-                                  <td>
-                                    {item.entries.lease_type || "N/A"}
-                                  </td>
-                                  <td>{item.entries.amount}</td>
-                                </tr>
-                              </>
-                            ))}
-                          </>
-                        ) : null}
-                      </tbody>
-                    </Table>
-                  </Row>
-                </div>
-                {/* <div className="row m-3" style={{ overflow: 'hidden' }}>
-                  <Row className="w-100 my-3 text-left">
-                    <Col>
-                      <div onClick={ () => navigate(`/admin/changepassword`)}>Reset Pasword</div>
-                    </Col>
-                  </Row>
-                </div> */}
               </div>
             </Card>
           </div>
         </Row>
         <br />
         <br />
+        <Modal isOpen={isModalOpen} toggle={closeModal}>
+          <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+            <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
+          </ModalHeader>
+          <ModalBody>
+            <CreditCardForm
+              tenantId={tenantId}
+              closeModal={closeModal}
+              getCreditCard={getCreditCard}
+            />
+          </ModalBody>
+        </Modal>
       </Container>
     </div>
   );

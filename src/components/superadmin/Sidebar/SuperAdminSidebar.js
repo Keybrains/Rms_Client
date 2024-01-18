@@ -168,8 +168,8 @@ const SuperAdminSidebar = (props) => {
   const createLinks = (routes) => {
     const filteredRoutes = routes.filter(
       (prop) =>
-        prop.name === "Plans" ||
-        prop.name === "Dashboard" && prop.layout === "/superadmin"
+        (prop.name === "Plans" || prop.name === "Dashboard") &&
+        prop.layout === "/superadmin"
       // prop.name === "Add Agent"
     );
     return filteredRoutes.map((prop, key) => {
@@ -328,7 +328,6 @@ const SuperAdminSidebar = (props) => {
           </Drawer>
         </Nav>
 
-
         {/* Collapse */}
         <Collapse navbar isOpen={collapseOpen}>
           {/* Collapse header */}
@@ -359,11 +358,7 @@ const SuperAdminSidebar = (props) => {
               </Col>
             </Row>
           </div>
-          <Nav navbar>
-            {createLinks(routes)}
-        
-          </Nav>
-
+          <Nav navbar>{createLinks(routes)}</Nav>
         </Collapse>
       </Container>
     </Navbar>

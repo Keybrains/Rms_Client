@@ -1,5 +1,5 @@
 // import React from 'react'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Stepper,
   Step,
@@ -22,20 +22,20 @@ import { Diversity1Sharp } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const useStyles = makeStyles(() => ({
-  stepper: {
-    // padding: "24px", // Replace with your desired pixel value
-  },
   button: {
-    marginTop: "8px", // Replace with your desired pixel value
-    marginRight: "8px", // Replace with your desired pixel value
+    marginTop: "8px",
+    marginRight: "8px",
   },
 }));
 
 const steps = ["About You", "Customize Trial", "hlo"];
 
 const TrialLogin = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
@@ -67,9 +67,25 @@ const TrialLogin = () => {
     setOpenDialog(false);
   };
 
-  const handleCreateTrial = () => {
-    // Handle create trial logic here
-    setOpenDialog(true);
+  const [loader, setLoader] = useState(false);
+
+  const handleSubmit = async () => {
+    setLoader(true);
+    const object = {
+      first_name: loginformik.values.firstName,
+      last_name: loginformik.values.lastName,
+      email: loginformik.values.businessEmail,
+      compony_name: loginformik.values.componyName,
+      phone_number: loginformik.values.phoneNumber,
+      password: loginformik.values.password,
+    };
+
+    try {
+      const response = await axios.post(`${baseUrl}/admin/register`, object);
+      console.log(response, "yash");
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
   };
 
   const loginformik = useFormik({
@@ -101,7 +117,6 @@ const TrialLogin = () => {
               .required("Required"),
             componyName: yup.string().required("Required"),
             phoneNumber: yup.number().required("Required"),
-            number_units: yup.number().required("Required"),
             termsAndConditions: yup
               .boolean()
               .oneOf([true], "You must accept the terms and conditions"),
@@ -114,12 +129,15 @@ const TrialLogin = () => {
               )
               .required("Required"),
           }),
-    onSubmit: (activeStep) => {
+    onSubmit: () => {
       if (activeStep === 0) {
         setActiveStep(1);
-      }
-      if (activeStep === 1) {
+      } else if (activeStep === 1) {
+        setActiveStep(2);
         setOpenDialog(true);
+      } else if (activeStep === 2) {
+        setActiveStep(3);
+        handleSubmit();
       }
     },
   });
@@ -292,24 +310,6 @@ const TrialLogin = () => {
                             type="number"
                             name="phoneNumber"
                             value={loginformik.values.phoneNumber}
-                            onChange={(e) => {
-                              loginformik.handleChange(e);
-                            }}
-                          />
-                        </div>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <div
-                          className="formInput"
-                          style={{ margin: "10px 10px" }}
-                        >
-                          <Input
-                            className="form-control-alternative"
-                            id="input-unitNumber"
-                            placeholder="Number of units"
-                            type="number"
-                            name="number_units"
-                            value={loginformik.values.number_units}
                             onChange={(e) => {
                               loginformik.handleChange(e);
                             }}
@@ -525,16 +525,22 @@ const TrialLogin = () => {
                     </p>
                   </div>
                   <div className="text-center">
-                    <Button
-                      onClick={() => {
-                        handleDialogClose();
-                        navigate(`/admin/index`);
-                      }}
-                      variant="contained"
-                      color="primary"
-                    >
-                      Get Started
-                    </Button>
+                    {loader ? (
+                      <Button disabled variant="contained" color="primary">
+                        Loading ...
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          setActiveStep(2);
+                          handleSubmit();
+                        }}
+                        variant="contained"
+                        color="primary"
+                      >
+                        Get Started
+                      </Button>
+                    )}
                   </div>
                 </DialogContent>
               </Dialog>

@@ -42,23 +42,11 @@ const AddPropertyType = () => {
   const [isMultiUnit, setIsMultiUnit] = React.useState(false);
 
   const [selectedProperty, setSelectedProperty] = React.useState("");
-  // //console.log(selectedProperty, "selectedProperty")
 
   const toggle = () => setproDropdownOpen((prevState) => !prevState);
 
-  const [open, setOpen] = React.useState(false);
-
-  // const handlePropSelection = (value) => {
-  //   setSelectedProp(value);
-  //   setproDropdownOpen(true);
-  // };
-
-  // const handleClickOpen = () => {
-  //     setOpen(true);
-  //   };
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
-    // Use history.push to navigate to the PropertiesTable page
     navigate("../PropertyType");
   };
 
@@ -66,57 +54,10 @@ const AddPropertyType = () => {
     setIsMultiUnit(e.target.checked);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleChange = (e) => {
-    // setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-  };
-
-  // const handlePropertySelection = (values) => {
-  //   setSelectedProperty(values);
-  //   //console.log(`Selected Property: ${values}`);
-  // };
-
   const handlePropertySelection = (value) => {
     setSelectedProperty(value);
     localStorage.setItem("property", value);
-    //console.log(`Selected Property: ${value}`);
   };
-
-  // let [editData, setEditData] = React.useState({});
-  // let [id, setId] = React.useState();
-
-  // //   auto form fill up in edit
-  // let seletedEditData = async (datas) => {
-  //   // setModalShowForPopupForm(true);
-  //   setId(datas._id);
-  //   setEditData(datas);
-  // };
-
-  //let navigate = useNavigate();
-  // const handleSubmit = async (values) => {
-  //   //console.log(values, "values");
-  //   try {
-  //     values["property_type"] = selectedProperty;
-  //     const res = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/newproparty/newproparty",
-  //       values
-  //     );
-
-  //     if (res.data.statusCode === 200) {
-  //       navigate("/admin/PropertyType");
-  //       swal("Success!", "Property Type added successfully!", "success");
-  //       //console.log(`Selected Property: ${values.property_type}`);
-
-  //     } else {
-  //       alert(res.data.message);
-  //     }
-  //   } catch (error) {
-  //     //console.log("Error", error);
-  //   }
-  // };
 
   const propertyFormik = useFormik({
     initialValues: {
@@ -141,7 +82,7 @@ const AddPropertyType = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -150,11 +91,11 @@ const AddPropertyType = () => {
   React.useEffect(() => {
     if (id) {
       axios
-        .get(`${baseUrl}/newproparty/newproperty_summary/${id}`)
+        .get(`${baseUrl}/propertytype/property/type/${id}`)
         .then((response) => {
-          const propertyData = response.data.data;
+          const propertyData = response.data.data[0];
           setpropertyType(propertyType);
-          setIsMultiUnit(propertyData.ismultiunit);
+          setIsMultiUnit(propertyData.is_multiunit);
           // console.log(propertyData);
 
           setSelectedProperty(propertyData.property_type || "Select");
@@ -162,7 +103,7 @@ const AddPropertyType = () => {
           propertyFormik.setValues({
             property_type: propertyData.property_type || "",
             propertysub_type: propertyData.propertysub_type || "",
-            isMultiUnit: propertyData.ismultiunit,
+            isMultiUnit: propertyData.is_multiunit,
           });
         })
         .catch((error) => {
@@ -174,18 +115,32 @@ const AddPropertyType = () => {
   async function handleSubmit(values) {
     try {
       // Include isMultiUnit in the values to be sent to the server
-      values.ismultiunit = isMultiUnit;
-      // values["property_type"] = selectedProperty;
+      const object = {
+        admin_id: accessType.admin_id,
+        property_type: propertyFormik.values.property_type,
+        propertysub_type: propertyFormik.values.propertysub_type,
+        is_multiunit: isMultiUnit,
+      };
+
       if (id === undefined) {
         const res = await axios.post(
-          `${baseUrl}/newproparty/newproparty`,
-          values
+          `${baseUrl}/propertytype/property_type`,
+          object
         );
-        handleResponse(res);
+        if (res.data.statusCode === 200) {
+          handleResponse(res);
+        } else if (res.data.statusCode === 201) {
+          swal("error", res.data.message, "error");
+        }
       } else {
-        const editUrl = `${baseUrl}/newproparty/proparty-type/${id}`;
-        const res = await axios.put(editUrl, values);
-        handleResponse(res);
+        const editUrl = `${baseUrl}/propertytype/property_type/${id}`;
+        const res = await axios.put(editUrl, object);
+        console.log(object, res, "yash");
+        if (res.data.statusCode === 200) {
+          handleResponse(res);
+        } else if (res.data.statusCode === 400) {
+          swal("error", res.data.message, "error");
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -196,7 +151,7 @@ const AddPropertyType = () => {
     }
   }
   function handleResponse(response) {
-    if (response.status === 200) {
+    if (response.data.statusCode === 200) {
       navigate("/admin/PropertyType");
       swal(
         "Success!",
