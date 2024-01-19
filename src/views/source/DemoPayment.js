@@ -210,9 +210,7 @@ const DemoPayment = () => {
       }
     },
   });
-  console.log(refund, "Refund");
-  console.log(isEditable, "iseditable");
-  console.log(paymentId, "PaymentId");
+
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress || property.property);
     financialFormik.setFieldValue(
@@ -328,44 +326,36 @@ const DemoPayment = () => {
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
-  var paginatedData;
-  if (GeneralLedgerData) {
-    paginatedData = GeneralLedgerData.slice(startIndex, endIndex);
-  }
+  const [paginatedData, setPaginatedData] = useState([]);
+  
+  useEffect(() => {
+    setPaginatedData(GeneralLedgerData.slice(startIndex, endIndex));
+  }, [startIndex, endIndex, GeneralLedgerData]);
+
+  console.log(paginatedData, "yash")
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
-      return paginatedData;
+      return GeneralLedgerData;
     }
 
-    return paginatedData.filter((rental) => {
+    return GeneralLedgerData.filter((rental) => {
       // const lowerCaseQuery = searchQuery.toLowerCase();
       return (
-        (rental.paymentAndCharges.charges_account &&
-          rental.paymentAndCharges.charges_account.includes(
-            searchQuery.toLowerCase()
-          )) ||
-        (rental.paymentAndCharges.account &&
-          rental.paymentAndCharges.account
+        (rental.type2 && rental.type2.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (rental.account &&
+          rental.account
             .toLowerCase()
             .includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.type &&
-          rental.paymentAndCharges.type
+        (rental.paymentType &&
+          rental.paymentType
             .toLowerCase()
             .includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.charges_memo &&
-          rental.paymentAndCharges.charges_memo
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.memo &&
-          rental.paymentAndCharges.memo
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.amount &&
-          rental.paymentAndCharges.amount
+        (rental.amount &&
+          rental.amount
             .toString()
             .includes(searchQuery.toLowerCase()))
       );
@@ -597,20 +587,19 @@ const DemoPayment = () => {
         expiration_date: ResponseData.expiration_date,
         cvv: ResponseData.cvv,
         property: ResponseData.property,
-        unit: ResponseData.unit
+        unit: ResponseData.unit,
       };
-     
+
       if (paymentType === "Credit Card") {
-        const response = await axios.post(
-          `${baseUrl}/nmipayment/refund`,
-          {refundDetails: object}
-        );
+        const response = await axios.post(`${baseUrl}/nmipayment/refund`, {
+          refundDetails: object,
+        });
 
         if (response.data.status === 200) {
           await setRefund(false);
           swal("Success!", response.data.data, "success");
           console.log("Navigating to /admin/Payment");
-          window.location.href = '/admin/Payment';
+          window.location.href = "/admin/Payment";
         } else {
           console.error("Failed to process refund:", response.statusText);
         }
@@ -743,24 +732,25 @@ const DemoPayment = () => {
                                       </td>
                                       <td>
                                         {item?.type2 !== "Refund" ? (
-                                         <UncontrolledDropdown nav>
-                                            <DropdownToggle className="pr-0" nav
+                                          <UncontrolledDropdown nav>
+                                            <DropdownToggle
+                                              className="pr-0"
+                                              nav
                                               style={{ cursor: "pointer" }}
                                               onClick={() =>
                                                 toggleOptions(item?._id)
                                               }
                                             >
-                                               <span className="avatar avatar-sm rounded-circle">
-                                                 ...
-                                                </span>
+                                              <span className="avatar avatar-sm rounded-circle">
+                                                ...
+                                              </span>
                                             </DropdownToggle>
-                                            <DropdownMenu className="dropdown-menu-arrow" >
-                                            {
-                                              item?._id === showOptionsId && (
+                                            <DropdownMenu className="dropdown-menu-arrow">
+                                              {item?._id === showOptionsId && (
                                                 <div>
                                                   {item?.paymentType ===
                                                     "Credit Card" && (
-                                                    <DropdownItem 
+                                                    <DropdownItem
                                                       // style={{color:'black'}}
                                                       onClick={() => {
                                                         getEditData(item?._id);
@@ -771,7 +761,8 @@ const DemoPayment = () => {
                                                     </DropdownItem>
                                                   )}
                                                   <DropdownItem divider />
-                                                  <DropdownItem tag="div"
+                                                  <DropdownItem
+                                                    tag="div"
                                                     onClick={() => {
                                                       getEditData(item?._id);
                                                       setIsEditable(true);
@@ -784,7 +775,7 @@ const DemoPayment = () => {
                                                   </DropdownItem>
                                                 </div>
                                               )}
-                                              </DropdownMenu>
+                                            </DropdownMenu>
                                           </UncontrolledDropdown>
                                         ) : (
                                           ""
