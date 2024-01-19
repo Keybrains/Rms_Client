@@ -19,6 +19,7 @@ import {
   InputGroup,
   Dropdown,
   DropdownToggle,
+  UncontrolledDropdown,
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
@@ -39,6 +40,8 @@ import axios from "axios";
 
 const DemoPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const [isEditable, setIsEditable] = useState(false);
+  const [paymentId, setPaymentId] = useState("");
   const [rental_adress, setRentalAddress] = useState([]);
   const [propertyDetails, setPropertyDetails] = useState([]);
   const [propertyLoading, setPropertyLoading] = useState(true);
@@ -60,7 +63,7 @@ const DemoPayment = () => {
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
   const [searchQuery, setSearchQuery] = useState("");
-  const [refund, setRefund] = useState("");
+  const [refund, setRefund] = useState(false);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
@@ -89,18 +92,43 @@ const DemoPayment = () => {
       return [];
     }
   };
-  // Step 2: Event handler to open the modal
+
   const openModal = () => {
     //   financialFormik.setFieldValue("tenantId", cookie_id);
     //   financialFormik.setFieldValue("first_name", tenantDetails.tenant_firstName);
     //   financialFormik.setFieldValue("last_name", tenantDetails.tenant_lastName);
     //   financialFormik.setFieldValue("email_name", tenantDetails.tenant_email);
+    financialFormik.setValues({
+      account: "",
+      amount: "",
+      first_name: "",
+      last_name: "",
+      email_name: "",
+      date: "",
+      memo: "",
+      unit: "",
+      property: "",
+      paymentType: "",
+      card_number: "",
+      expiration_date: "",
+      check_number: "",
+    });
+
+    // Update other selected values
+    setSelectedPaymentType("");
+    setSelectedPropertyType("");
+    setSelectedUnit("");
+    setSelectedAccount("");
+    setPaymentId("");
     setIsModalOpen(true);
   };
 
-  // Event handler to close the modal
   const closeModal = () => {
     setIsModalOpen(false);
+    if (refund === true) {
+      setRefund(false);
+    }
+    setActionType("");
   };
   const [loader, setLoader] = React.useState(true);
 
@@ -173,22 +201,18 @@ const DemoPayment = () => {
       paymentType: yup.string().required("Payment type is required"),
     }),
     onSubmit: (values, action) => {
-      if (isEditable && paymentId) {
+      if (isEditable === true && paymentId) {
         editpayment(paymentId);
+      } else if (refund === true && paymentId) {
+        handleRefundClick();
       } else {
         handleFinancialSubmit(values, action);
       }
     },
   });
-
-  const [showOptions, setShowOptions] = useState(false);
-  const [showOptionsId, setShowOptionsId] = useState("");
-
-  const toggleOptions = (id) => {
-    setShowOptions(!showOptions);
-    setShowOptionsId(id);
-  };
-
+  console.log(refund, "Refund");
+  console.log(isEditable, "iseditable");
+  console.log(paymentId, "PaymentId");
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress || property.property);
     financialFormik.setFieldValue(
@@ -302,47 +326,6 @@ const DemoPayment = () => {
     }
   };
 
-  const postCharge = async (unit_id) => {
-    const chargeObject = {
-      properties: {
-        rental_adress: selectedPropertyType,
-        property_id: financialFormik.values.propertyId,
-      },
-      unit: [
-        {
-          unit: selectedUnit,
-          unit_id: unit_id,
-          paymentAndCharges: [
-            {
-              type2: "Payment",
-              charge_type: "",
-              account: selectedAccount,
-              amount: financialFormik.values.amount,
-              rental_adress: selectedPropertyType,
-              rent_cycle: "",
-              month_year: moment().format("MM-YYYY"),
-              date: moment().format("YYYY-MM-DD"),
-              memo: "",
-              tenant_firstName:
-                tenantDetails.tenant_firstName +
-                " " +
-                tenantDetails.tenant_lastName,
-            },
-          ],
-        },
-      ],
-    };
-
-    //const url = `${baseUrl}/payment_charge/payment_charge`;
-    await axios
-
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
   var paginatedData;
@@ -472,10 +455,30 @@ const DemoPayment = () => {
     financialFormik.values.account = value;
   };
 
-  const [isEditable, setIsEditable] = useState(false);
-  const [paymentId, setPaymentId] = useState("");
+  const [ResponseData, setResponseData] = useState("");
 
-  const getEditeData = async (id) => {
+  const formatDate = (inputDate) => {
+    const tryFormats = ["MM/YY", "M/YY", "MM/YYYY", "M/YYYY"];
+
+    let formattedDate = null;
+
+    for (const format of tryFormats) {
+      const parsedDate = new Date(
+        inputDate.replace(/(\d{1,2})(\d{2})/, `$1/01/$2`)
+      );
+      if (!isNaN(parsedDate.getTime())) {
+        formattedDate = parsedDate.toLocaleDateString("en-US", {
+          month: "2-digit",
+          year: "2-digit",
+        });
+        break;
+      }
+    }
+
+    return formattedDate || "Invalid Date";
+  };
+
+  const getEditData = async (id) => {
     try {
       const response = await axios.get(
         `${baseUrl}/nmipayment/nmipayments/${id}`
@@ -483,13 +486,9 @@ const DemoPayment = () => {
       if (response.data.statusCode === 200) {
         const responseData = response.data.data;
 
-        // const matchingEntry = propertyData.find(
-        //   (item) => item.rental_adress === responseData.rental_adress
-        // );
-        console.log(responseData, "property data");
-
-        // Set form values directly from the response
+        openModal();
         handlePropertyTypeSelect(responseData);
+
         financialFormik.setValues({
           account: responseData.account || "",
           amount: responseData.amount || "",
@@ -501,6 +500,12 @@ const DemoPayment = () => {
           unit: responseData.unit || "",
           property: responseData.property || "",
           paymentType: responseData.paymentType || "",
+          card_number: responseData.card_number || "",
+          expiration_date: responseData.expiration_date
+            ? formatDate(responseData.expiration_date.toString())
+            : "",
+          cvv: responseData.cvv || "",
+          check_number: responseData.check_number || "",
         });
 
         // Update other selected values
@@ -508,9 +513,9 @@ const DemoPayment = () => {
         setSelectedPropertyType(responseData.property);
         setSelectedUnit(responseData.unit);
         setSelectedAccount(responseData.account);
-        setIsEditable(true);
+        setResponseData(responseData);
+
         setPaymentId(id);
-        openModal();
       } else {
         console.error("Error:", response.data.message);
       }
@@ -526,8 +531,6 @@ const DemoPayment = () => {
       );
 
       if (response.data.statusCode === 200) {
-        const responseData = response.data.data;
-
         const updatedValues = {
           amount: financialFormik.values.amount,
           account: financialFormik.values.account,
@@ -565,7 +568,63 @@ const DemoPayment = () => {
     }
   };
 
-  // console.log(filterTenantsBySearchAndPage(), "yash");
+  const [showOptions, setShowOptions] = useState(false);
+  const [showOptionsId, setShowOptionsId] = useState("");
+  const [actionType, setActionType] = useState("");
+
+  const toggleOptions = (id) => {
+    setShowOptions(!showOptions);
+    setShowOptionsId(id);
+  };
+
+  const handleRefundClick = async () => {
+    try {
+      // Assuming 'item' is a prop or state variable
+      const { _id, paymentType, transactionid } = ResponseData;
+
+      const object = {
+        transactionId: ResponseData.transactionid,
+        amount: financialFormik.values.amount,
+        paymentType: ResponseData.paymentType,
+        date: financialFormik.values.date,
+        first_name: ResponseData.first_name,
+        last_name: ResponseData.last_name,
+        email_name: ResponseData.email_name,
+        card_number: ResponseData.card_number,
+        account: ResponseData.account,
+        type2: ResponseData.type2,
+        memo: ResponseData.memo,
+        expiration_date: ResponseData.expiration_date,
+        cvv: ResponseData.cvv,
+        property: ResponseData.property,
+        unit: ResponseData.unit
+      };
+     
+      if (paymentType === "Credit Card") {
+        const response = await axios.post(
+          `${baseUrl}/nmipayment/refund`,
+          {refundDetails: object}
+        );
+
+        if (response.data.status === 200) {
+          await setRefund(false);
+          swal("Success!", response.data.data, "success");
+          console.log("Navigating to /admin/Payment");
+          window.location.href = '/admin/Payment';
+        } else {
+          console.error("Failed to process refund:", response.statusText);
+        }
+      } else {
+        console.log("Refund is only available for Credit Card payments.");
+      }
+    } catch (error) {
+      if (error?.response?.data?.status === 400) {
+        swal("Warning!", error.response.data.data.error, "warning");
+      }
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <>
       <Header />
@@ -651,171 +710,84 @@ const DemoPayment = () => {
                               <tr>
                                 <th scope="col">Date</th>
                                 <th scope="col">Type</th>
+                                <th scope="col">Payment Method</th>
                                 <th scope="col">Account</th>
-                                <th scope="col">Memo</th>
                                 <th scope="col">Increase</th>
                                 <th scope="col">Decrease</th>
                                 <th scope="col">Action</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {/* {filterTenantsBySearchAndPage().map(
-                                (data, dataIndex) => (
-                                  <React.Fragment key={dataIndex}>
-                                    <tr
-                                      key={`${data?.paymentAndCharges._id}_${dataIndex}`}
-                                    >
-                                      <td>
-                                        {formatDateWithoutTime(
-                                          data?.paymentAndCharges.type ===
-                                            "Charge"
-                                            ? data?.paymentAndCharges.date
-                                            : data?.paymentAndCharges.date
-                                        ) || "N/A"}
-                                      </td>
-                                      <td>{data?.paymentAndCharges.type}</td>
-                                      <td>
-                                        {data?.paymentAndCharges.type ===
-                                        "Charge"
-                                          ? data?.paymentAndCharges.account
-                                          : data?.paymentAndCharges.account}
-                                      </td>
-                                      <td>
-                                        {data?.paymentAndCharges.type ===
-                                        "Charge"
-                                          ? data?.paymentAndCharges.charges_memo
-                                          : data?.paymentAndCharges.memo}
-                                      </td>
-                                      <td>
-                                        {data?.paymentAndCharges.type ===
-                                        "Charge"
-                                          ? `$${data?.paymentAndCharges.amount}`
-                                          : "-"}
-                                      </td>
-                                      <td>
-                                        {data?.paymentAndCharges.type ===
-                                        "Payment"
-                                          ? `$${data?.paymentAndCharges.amount}`
-                                          : "-"}
-                                      </td>
-                                      <td>
-                                        {data?.paymentAndCharges.Total !==
-                                        undefined ? (
-                                          data?.paymentAndCharges.Total ===
-                                          null ? (
-                                            <>0</>
-                                          ) : data?.paymentAndCharges.Total >=
-                                            0 ? (
-                                            `$${data?.paymentAndCharges.Total}`
-                                          ) : (
-                                            `$(${Math.abs(
-                                              data?.paymentAndCharges.Total
-                                            )})`
-                                          )
-                                        ) : (
-                                          "0"
-                                        )}
-                                      </td>
-                                      <td>
-                                        {data?.paymentAndCharges.type ===
-                                        "Payment" ? (
-                                          <div
-                                            style={{ cursor: "pointer" }}
-                                            onClick={() => {
-                                              getEditeData(
-                                                data?.paymentAndCharges?._id
-                                              );
-                                            }}
-                                          >
-                                            <EditIcon />
-                                          </div>
-                                        ) : (
-                                          <div>-</div>
-                                        )}
-                                      </td>
-                                    </tr>
-                                  </React.Fragment>
-                                )
-                              )} */}
                               {filterTenantsBySearchAndPage().map(
                                 (item, index) => (
                                   <React.Fragment key={index}>
-                                    <tr key={item._id} style={{position:"relative"}}>
+                                    <tr
+                                      key={item._id}
+                                      style={{ position: "relative" }}
+                                    >
                                       <td>{item?.date || "N/A"}</td>
                                       <td>{item?.type2 || "Payment"}</td>
+                                      <td>{item?.paymentType || "N/A"}</td>
                                       <td>{item?.account || "N/A"}</td>
-                                      <td>{item?.memo || "N/A"}</td>
                                       <td>
-                                        {item?.type !== "Payment"
-                                          ? "$ 0.00"
-                                          : "-"}
+                                        ${" "}
+                                        {item?.type2 === "Refund"
+                                          ? item?.amount
+                                          : "0"}
                                       </td>
                                       <td>
                                         ${" "}
-                                        {item?.type !== "Payment"
+                                        {item?.type2 !== "Refund"
                                           ? item?.amount
-                                          : "-"}
+                                          : "0"}
                                       </td>
                                       <td>
-                                        {item?.type !== "Payment" ? (
-                                          <div style={{ position: "relative" }}>
-                                            <div
+                                        {item?.type2 !== "Refund" ? (
+                                         <UncontrolledDropdown nav>
+                                            <DropdownToggle className="pr-0" nav
                                               style={{ cursor: "pointer" }}
                                               onClick={() =>
                                                 toggleOptions(item?._id)
                                               }
                                             >
-                                              <span>&#8230;</span>
-                                            </div>
-                                            {showOptions &&
+                                               <span className="avatar avatar-sm rounded-circle">
+                                                 ...
+                                                </span>
+                                            </DropdownToggle>
+                                            <DropdownMenu className="dropdown-menu-arrow" >
+                                            {
                                               item?._id === showOptionsId && (
-                                                <div
-                                                  style={{
-                                                    display:'block',
-                                                    // top: "20px",
-                                                    // bottom: "30px",
-                                                    left: "0",
-                                                    background: "#333",
-                                                    color:"white",
-                                                    padding:'10px',
-                                                    boxShadow:
-                                                      "0 2px 4px rgba(0,0,0,0.1)",
-                                                  }}
-                                                >
-                                                  {/* Refund Option */}
-                                                  <div style={{marginBottom:"10px",cursor:'pointer'}}
-                                                    onMouseEnter={(e) => {
-                                                      e.target.style.color = '#72bcd4';
+                                                <div>
+                                                  {item?.paymentType ===
+                                                    "Credit Card" && (
+                                                    <DropdownItem 
+                                                      // style={{color:'black'}}
+                                                      onClick={() => {
+                                                        getEditData(item?._id);
+                                                        setRefund(true);
+                                                      }}
+                                                    >
+                                                      Refund
+                                                    </DropdownItem>
+                                                  )}
+                                                  <DropdownItem divider />
+                                                  <DropdownItem tag="div"
+                                                    onClick={() => {
+                                                      getEditData(item?._id);
+                                                      setIsEditable(true);
+                                                      setActionType(
+                                                        "Update Payment"
+                                                      );
                                                     }}
-                                                    onMouseLeave={(e) => {
-                                                      e.target.style.color = '#fff';
-                                                    }}
-                                                    onClick={() =>
-                                                      getEditeData(item?._id)
-                                                      
-                                                    }
-                                                  >
-                                                    Refund
-                                                  </div>
-                                                  {/* Edit Option */}
-                                                  <div style={{cursor:'pointer'}}
-                                                    onMouseEnter={(e) => {
-                                                      e.target.style.color = '#72bcd4';
-                                                    }}
-                                                    onMouseLeave={(e) => {
-                                                      e.target.style.color = '#fff';
-                                                    }}
-                                                    onClick={() =>
-                                                      getEditeData(item?._id)
-                                                    }
                                                   >
                                                     Edit
-                                                  </div>
+                                                  </DropdownItem>
                                                 </div>
                                               )}
-                                          </div>
+                                              </DropdownMenu>
+                                          </UncontrolledDropdown>
                                         ) : (
-                                          <div>-</div>
+                                          ""
                                         )}
                                       </td>
                                     </tr>
@@ -930,7 +902,9 @@ const DemoPayment = () => {
       <Modal isOpen={isModalOpen} toggle={closeModal}>
         <Form onSubmit={financialFormik.handleSubmit}>
           <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-            <strong style={{ fontSize: 18 }}>Make Payment</strong>
+            <strong style={{ fontSize: 18 }}>
+              {refund === true ? "Make Refund" : actionType || "Make Payment"}
+            </strong>
           </ModalHeader>
 
           <ModalBody>
@@ -944,7 +918,11 @@ const DemoPayment = () => {
                     Property*
                   </label>
                   <FormGroup>
-                    <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
+                    <Dropdown
+                      isOpen={userdropdownOpen}
+                      toggle={toggle9}
+                      disabled={refund === true}
+                    >
                       <DropdownToggle caret style={{ width: "100%" }}>
                         {selectedPropertyType
                           ? selectedPropertyType
@@ -975,11 +953,7 @@ const DemoPayment = () => {
                     </Dropdown>
                   </FormGroup>
                 </Col>
-                {console.log(
-                  financialFormik.errors,
-                  "yash",
-                  selectedPaymentType
-                )}
+
                 <Col md="6">
                   {unitData && unitData.length !== 0 ? (
                     <>
@@ -990,7 +964,11 @@ const DemoPayment = () => {
                         Unit *
                       </label>
                       <FormGroup>
-                        <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
+                        <Dropdown
+                          isOpen={unitDropdownOpen}
+                          toggle={toggle10}
+                          disabled={refund === true}
+                        >
                           <DropdownToggle caret style={{ width: "100%" }}>
                             {selectedUnit ? selectedUnit : "Select Unit"}
                           </DropdownToggle>
@@ -1059,7 +1037,11 @@ const DemoPayment = () => {
                       Account *
                     </label>
                     <FormGroup>
-                      <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+                      <Dropdown
+                        isOpen={dropdownOpen}
+                        toggle={toggleDropdown}
+                        disabled={refund === true}
+                      >
                         <DropdownToggle caret>
                           {selectedAccount ? selectedAccount : "Select"}
                         </DropdownToggle>
@@ -1171,9 +1153,11 @@ const DemoPayment = () => {
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.first_name}
                       required
+                      disabled={refund === true}
                     />
                   </FormGroup>
                 </Col>
+
                 <Col md="6">
                   <FormGroup>
                     <label
@@ -1191,6 +1175,7 @@ const DemoPayment = () => {
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.last_name}
                       required
+                      disabled={refund === true}
                     />
                   </FormGroup>
                 </Col>
@@ -1215,6 +1200,7 @@ const DemoPayment = () => {
                     onBlur={financialFormik.handleBlur}
                     onChange={financialFormik.handleChange}
                     required
+                    disabled={refund === true}
                   />
                 </InputGroup>
               </FormGroup>
@@ -1254,6 +1240,7 @@ const DemoPayment = () => {
                       onBlur={financialFormik.handleBlur}
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.memo}
+                      disabled={refund === true}
                     />
                   </FormGroup>
                 </Col>
@@ -1265,7 +1252,11 @@ const DemoPayment = () => {
                   Payment Method *
                 </label>
                 <FormGroup>
-                  <Dropdown isOpen={dropdownOpen2} toggle={toggleDropdown2}>
+                  <Dropdown
+                    isOpen={dropdownOpen2}
+                    toggle={toggleDropdown2}
+                    disabled={refund === true}
+                  >
                     <DropdownToggle caret>
                       {selectedPaymentType ? selectedPaymentType : "Select"}
                     </DropdownToggle>
@@ -1309,7 +1300,7 @@ const DemoPayment = () => {
                       <Input
                         type="number"
                         id="card_number"
-                        placeholder="0000 0000 0000"
+                        placeholder="0000 0000 0000 0000"
                         name="card_number"
                         value={financialFormik.values.card_number}
                         onBlur={financialFormik.handleBlur}
@@ -1322,6 +1313,7 @@ const DemoPayment = () => {
                           financialFormik.handleChange(e);
                         }}
                         required
+                        disabled={refund === true}
                       />
                     </InputGroup>
                   </FormGroup>
@@ -1344,6 +1336,7 @@ const DemoPayment = () => {
                           value={financialFormik.values.expiration_date}
                           placeholder="MM/YY"
                           required
+                          disabled={refund === true}
                           onInput={(e) => {
                             let inputValue = e.target.value;
                             const numericValue = inputValue.replace(/\D/g, "");
@@ -1392,6 +1385,7 @@ const DemoPayment = () => {
                           value={financialFormik.values.cvv}
                           maxLength={3}
                           required
+                          disabled={refund === true}
                         />
                       </FormGroup>
                     </Col>
@@ -1427,8 +1421,12 @@ const DemoPayment = () => {
                 Loading
               </Button>
             ) : (
-              <Button color="success" type="submit">
-                Make Payment
+              <Button
+                color="success"
+                type="submit"
+                // onClick={() => setRefund(false)}
+              >
+                {refund === true ? "Make Refund" : actionType || "Make Payment"}
               </Button>
             )}
             <Button onClick={closeModal}>Cancel</Button>
