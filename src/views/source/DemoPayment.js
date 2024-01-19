@@ -1280,6 +1280,7 @@ const DemoPayment = () => {
 
               {selectedPaymentType === "Credit Card" ? (
                 <>
+                 {isEditable === false ? (
                   <FormGroup>
                     <label
                       className="form-control-label"
@@ -1308,7 +1309,8 @@ const DemoPayment = () => {
                       />
                     </InputGroup>
                   </FormGroup>
-
+                   ):('')}
+                  {isEditable === false ? (
                   <Row>
                     <Col>
                       <FormGroup>
@@ -1381,6 +1383,7 @@ const DemoPayment = () => {
                       </FormGroup>
                     </Col>
                   </Row>
+                ):('')}
                 </>
               ) : selectedPaymentType === "Check" ? (
                 <>
