@@ -490,7 +490,7 @@ const DemoPayment = () => {
           unit: responseData.unit || "",
           property: responseData.property || "",
           paymentType: responseData.paymentType || "",
-          card_number: responseData.card_number || "",
+          card_number: responseData.cc_number || "",
           expiration_date: responseData.expiration_date
             ? formatDate(responseData.expiration_date.toString())
             : "",
@@ -1289,7 +1289,7 @@ const DemoPayment = () => {
                     </label>
                     <InputGroup>
                       <Input
-                        type="number"
+                        type="string"
                         id="card_number"
                         placeholder="0000 0000 0000 0000"
                         name="card_number"
