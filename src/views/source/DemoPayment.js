@@ -70,6 +70,7 @@ const DemoPayment = () => {
   const handleSearch = (e) => {
     setSearchQueryy(e.target.value);
   };
+
   const toggle9 = () => {
     setuserDropdownOpen((prevState) => !prevState);
   };
@@ -183,6 +184,7 @@ const DemoPayment = () => {
       date: "",
       memo: "",
       paymentType: "",
+      status: "",
       account: "",
       expiration_date: "",
       cvv: "",
@@ -282,25 +284,39 @@ const DemoPayment = () => {
   const handleFinancialSubmit = async (values, action) => {
     let url = `${baseUrl}/nmipayment/postnmipayments`;
 
-    // Check if the payment method is credit card and expiration_date is provided
     if (selectedPaymentType === "Credit Card" && values.expiration_date) {
       const dateParts = values.expiration_date.split("/");
       if (dateParts.length !== 2) {
-        console.log("Invalid date format");
+        alert("Invalid date format");
         return;
       }
-
       const month = dateParts[0].padStart(2, "0");
       const year = dateParts[1].slice(-2);
-
       values.expiration_date = `${month}${year}`;
-      url = `${baseUrl}/nmipayment/sale`;
+      // url = `${baseUrl}/nmipayment/sale`;
     }
-
     values.account = selectedAccount;
 
     try {
       setPaymentLoader(true);
+
+      const financialDate = new Date(values.date);
+      const currentDate = new Date();
+
+      if (
+        selectedPaymentType === "Credit Card" &&
+        financialDate > currentDate
+      ) {
+        url = `${baseUrl}/nmipayment/postnmipayments`;
+        values.status = "Pending";
+      } else if (selectedPaymentType === "Credit Card") {
+        url = `${baseUrl}/nmipayment/sale`;
+        values.status = "Success";
+      } else {
+        url = `${baseUrl}/nmipayment/postnmipayments`;
+        values.status = "Success";
+      }
+
       const response = await axios.post(url, {
         paymentDetails: values,
       });
@@ -327,12 +343,11 @@ const DemoPayment = () => {
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
   const [paginatedData, setPaginatedData] = useState([]);
-  
+
   useEffect(() => {
     setPaginatedData(GeneralLedgerData.slice(startIndex, endIndex));
   }, [startIndex, endIndex, GeneralLedgerData]);
 
-  console.log(paginatedData, "yash")
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -345,19 +360,16 @@ const DemoPayment = () => {
     return GeneralLedgerData.filter((rental) => {
       // const lowerCaseQuery = searchQuery.toLowerCase();
       return (
-        (rental.type2 && rental.type2.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (rental.type2 &&
+          rental.type2.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (rental.account &&
-          rental.account
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
+          rental.account.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (rental.paymentType &&
           rental.paymentType
             .toLowerCase()
             .includes(searchQuery.toLowerCase())) ||
         (rental.amount &&
-          rental.amount
-            .toString()
-            .includes(searchQuery.toLowerCase()))
+          rental.amount.toString().includes(searchQuery.toLowerCase()))
       );
     });
   };
@@ -436,6 +448,7 @@ const DemoPayment = () => {
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
+
   const toggleDropdown2 = () => {
     setDropdownOpen2(!dropdownOpen2);
   };
@@ -490,14 +503,14 @@ const DemoPayment = () => {
           unit: responseData.unit || "",
           property: responseData.property || "",
           paymentType: responseData.paymentType || "",
-          card_number: responseData.card_number || "",
+          card_number: responseData.cc_number || "",
           expiration_date: responseData.expiration_date
             ? formatDate(responseData.expiration_date.toString())
             : "",
           cvv: responseData.cvv || "",
           check_number: responseData.check_number || "",
         });
-
+        console.log(financialFormik, "ccnum");
         // Update other selected values
         setSelectedPaymentType(responseData.paymentType);
         setSelectedPropertyType(responseData.property);
@@ -516,6 +529,7 @@ const DemoPayment = () => {
 
   const editpayment = async (id) => {
     try {
+      setPaymentLoader(true);
       const response = await axios.get(
         `${baseUrl}/nmipayment/nmipayments/${id}`
       );
@@ -555,6 +569,8 @@ const DemoPayment = () => {
       if (error.response) {
         console.error("Response Data:", error.response.data);
       }
+    } finally {
+      setPaymentLoader(false);
     }
   };
 
@@ -569,6 +585,7 @@ const DemoPayment = () => {
 
   const handleRefundClick = async () => {
     try {
+      setPaymentLoader(true);
       // Assuming 'item' is a prop or state variable
       const { _id, paymentType, transactionid } = ResponseData;
 
@@ -611,6 +628,8 @@ const DemoPayment = () => {
         swal("Warning!", error.response.data.data.error, "warning");
       }
       console.error("Error:", error);
+    } finally {
+      setPaymentLoader(false);
     }
   };
 
@@ -699,6 +718,8 @@ const DemoPayment = () => {
                               <tr>
                                 <th scope="col">Date</th>
                                 <th scope="col">Type</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Transaction Id</th>
                                 <th scope="col">Payment Method</th>
                                 <th scope="col">Account</th>
                                 <th scope="col">Increase</th>
@@ -716,6 +737,8 @@ const DemoPayment = () => {
                                     >
                                       <td>{item?.date || "N/A"}</td>
                                       <td>{item?.type2 || "Payment"}</td>
+                                      <td>{item?.status || "N/A"}</td>
+                                      <td>{item?.transactionid || "No Id"}</td>
                                       <td>{item?.paymentType || "N/A"}</td>
                                       <td>{item?.account || "N/A"}</td>
                                       <td>
@@ -741,7 +764,20 @@ const DemoPayment = () => {
                                                 toggleOptions(item?._id)
                                               }
                                             >
-                                              <span className="avatar avatar-sm rounded-circle">
+                                              <span
+                                                className="avatar avatar-sm rounded-circle"
+                                                style={{
+                                                  margin: "-20px",
+                                                  background: "transparent",
+                                                  color:"lightblue",
+                                                  fontWeight:"bold",
+                                                  border: "2px solid lightblue",  // Set border color to blue
+                                                  padding: "10px",  // Adjust padding as needed
+                                                  display: "flex",
+                                                  alignItems: "center",
+                                                  justifyContent: "center",
+                                                }}
+                                              >
                                                 ...
                                               </span>
                                             </DropdownToggle>
@@ -778,7 +814,7 @@ const DemoPayment = () => {
                                             </DropdownMenu>
                                           </UncontrolledDropdown>
                                         ) : (
-                                          ""
+                                          <div style={{fontSize:'15px',fontWeight:'bolder',paddingLeft:'5px'}}>--</div>
                                         )}
                                       </td>
                                     </tr>
@@ -1280,107 +1316,120 @@ const DemoPayment = () => {
 
               {selectedPaymentType === "Credit Card" ? (
                 <>
-                  <FormGroup>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-property"
-                    >
-                      Card Number *
-                    </label>
-                    <InputGroup>
-                      <Input
-                        type="number"
-                        id="card_number"
-                        placeholder="0000 0000 0000 0000"
-                        name="card_number"
-                        value={financialFormik.values.card_number}
-                        onBlur={financialFormik.handleBlur}
-                        onChange={(e) => {
-                          // const inputValue = e.target.value;
-                          // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-                          // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
-                          // // const formattedValue = formatCardNumber(limitedValue);
-                          // e.target.value = limitedValue;
-                          financialFormik.handleChange(e);
-                        }}
-                        required
-                        disabled={refund === true}
-                      />
-                    </InputGroup>
-                  </FormGroup>
-
-                  <Row>
-                    <Col>
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Expiration Date *
-                        </label>
+                  {isEditable === false ? (
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-property"
+                      >
+                        Card Number *
+                      </label>
+                      <InputGroup>
                         <Input
-                          type="text"
-                          id="expiration_date"
-                          name="expiration_date"
-                          onBlur={financialFormik.handleBlur}
-                          onChange={financialFormik.handleChange}
-                          value={financialFormik.values.expiration_date}
-                          placeholder="MM/YY"
-                          required
-                          disabled={refund === true}
-                          onInput={(e) => {
-                            let inputValue = e.target.value;
-                            const numericValue = inputValue.replace(/\D/g, "");
-
-                            if (numericValue.length > 2) {
-                              const month = numericValue.substring(0, 2);
-                              const year = numericValue.substring(2, 6);
-                              e.target.value = `${month}/${year}`;
-                            } else {
-                              e.target.value = numericValue;
-                            }
-
-                            // Format the year to have a 4-digit length if more than 2 digits are entered
-                            if (numericValue.length >= 3) {
-                              const enteredYear = numericValue.substring(2, 6);
-                              e.target.value = `${numericValue.substring(
-                                0,
-                                2
-                              )}/${enteredYear}`;
-                            }
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col>
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          CVV *
-                        </label>
-                        <Input
-                          type="number"
-                          id="cvv"
-                          placeholder="123"
-                          name="cvv"
+                          type="string"
+                          id="card_number"
+                          placeholder="0000 0000 0000 0000"
+                          name="card_number"
+                          value={financialFormik.values.card_number}
                           onBlur={financialFormik.handleBlur}
                           onChange={(e) => {
-                            const inputValue = e.target.value;
-                            if (/^\d{0,3}$/.test(inputValue)) {
-                              // Only allow up to 3 digits
-                              financialFormik.handleChange(e);
-                            }
+                            // const inputValue = e.target.value;
+                            // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                            // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
+                            // // const formattedValue = formatCardNumber(limitedValue);
+                            // e.target.value = limitedValue;
+                            financialFormik.handleChange(e);
                           }}
-                          value={financialFormik.values.cvv}
-                          maxLength={3}
                           required
                           disabled={refund === true}
                         />
-                      </FormGroup>
-                    </Col>
-                  </Row>
+                      </InputGroup>
+                    </FormGroup>
+                  ) : (
+                    ""
+                  )}
+                  {isEditable === false ? (
+                    <Row>
+                      <Col>
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            Expiration Date *
+                          </label>
+                          <Input
+                            type="text"
+                            id="expiration_date"
+                            name="expiration_date"
+                            onBlur={financialFormik.handleBlur}
+                            onChange={financialFormik.handleChange}
+                            value={financialFormik.values.expiration_date}
+                            placeholder="MM/YY"
+                            required
+                            disabled={refund === true}
+                            onInput={(e) => {
+                              let inputValue = e.target.value;
+                              const numericValue = inputValue.replace(
+                                /\D/g,
+                                ""
+                              );
+
+                              if (numericValue.length > 2) {
+                                const month = numericValue.substring(0, 2);
+                                const year = numericValue.substring(2, 6);
+                                e.target.value = `${month}/${year}`;
+                              } else {
+                                e.target.value = numericValue;
+                              }
+
+                              // Format the year to have a 4-digit length if more than 2 digits are entered
+                              if (numericValue.length >= 3) {
+                                const enteredYear = numericValue.substring(
+                                  2,
+                                  6
+                                );
+                                e.target.value = `${numericValue.substring(
+                                  0,
+                                  2
+                                )}/${enteredYear}`;
+                              }
+                            }}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col>
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            CVV *
+                          </label>
+                          <Input
+                            type="number"
+                            id="cvv"
+                            placeholder="123"
+                            name="cvv"
+                            onBlur={financialFormik.handleBlur}
+                            onChange={(e) => {
+                              const inputValue = e.target.value;
+                              if (/^\d{0,3}$/.test(inputValue)) {
+                                // Only allow up to 3 digits
+                                financialFormik.handleChange(e);
+                              }
+                            }}
+                            value={financialFormik.values.cvv}
+                            maxLength={3}
+                            required
+                            disabled={refund === true}
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  ) : (
+                    ""
+                  )}
                 </>
               ) : selectedPaymentType === "Check" ? (
                 <>
