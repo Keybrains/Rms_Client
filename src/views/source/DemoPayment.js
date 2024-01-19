@@ -504,6 +504,7 @@ const DemoPayment = () => {
           property: responseData.property || "",
           paymentType: responseData.paymentType || "",
           card_number: responseData.cc_number || "",
+          card_number: responseData.cc_number || "",
           expiration_date: responseData.expiration_date
             ? formatDate(responseData.expiration_date.toString())
             : "",
