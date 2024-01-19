@@ -504,7 +504,6 @@ const DemoPayment = () => {
           property: responseData.property || "",
           paymentType: responseData.paymentType || "",
           card_number: responseData.cc_number || "",
-          card_number: responseData.cc_number || "",
           expiration_date: responseData.expiration_date
             ? formatDate(responseData.expiration_date.toString())
             : "",
@@ -650,13 +649,17 @@ const DemoPayment = () => {
             <Button
               color="primary"
               // href="#rms"
-              onClick={openModal}
+              onClick={() => {
+                openModal();
+                setIsEditable(false);
+              }}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
               Make Payment
             </Button>
           </Col>
+          {/* mansi  */}
         </Row>
         <br />
         <Row>
