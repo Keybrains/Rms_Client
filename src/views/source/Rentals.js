@@ -64,8 +64,10 @@ const Rentals = () => {
   const [propertyData, setPropertyData] = useState([]);
   const [rentalownerData, setRentalownerData] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState("");
   const [StaffMemberData, setStaffMemberData] = useState([]);
   const [selectedProp, setSelectedProp] = useState("");
+  const [selectedPropId, setSelectedPropId] = useState("");
   const [selectedBank, setSelectedBank] = useState("");
   const [selectedBad, setSelectedBad] = useState("");
   const [open, setOpen] = React.useState(false);
@@ -127,27 +129,6 @@ const Rentals = () => {
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
-  const [file, setFile] = useState("");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${baseUrl}/rentals/existing/rentals`);
-        const data = await response.json();
-
-        if (response.ok) {
-          setRentalownerData(data.data || []); // Ensure data is an array or handle empty data
-          console.log("Here is the fetched data:", data.data);
-        } else {
-          console.error("Error:", data.message || "Failed to fetch data");
-        }
-      } catch (error) {
-        console.error("Network error:", error);
-      }
-    };
-
-    fetchData();
-  }, [baseUrl, setRentalownerData]); // Add dependencies that trigger a refetch if changed
 
   const handleCheckboxChange = (event, rentalOwnerInfo, phoneNumber) => {
     if (checkedCheckbox === phoneNumber) {
@@ -259,43 +240,9 @@ const Rentals = () => {
   const handlePropSelection = (propertyType) => {
     rentalsFormik.values.entries[0].property_type =
       propertyType.propertysub_type;
-    const propTypes = [];
-    console.log(propertyType, "first");
-    axios
-      .get(`${baseUrl}/newproparty/propropartytype`)
-      .then((data) => {
-        // console.log(data.data, "Data from adding the account");
-        // setPropertyData(data.data.data);
-        setSelectedProp(propertyType);
-        console.log(propertyType, "second");
-        const selectedType = Object.keys(data.data.data).find((item) => {
-          return data.data.data[item].some(
-            (data) => data.propertysub_type === propertyType.propertysub_type
-          );
-        });
-        setPropType(selectedType);
-        console.log(selectedType, "third");
-        console.log(propType, "thirdx");
-        rentalsFormik.setFieldValue("propType", selectedType);
-        // console.error("Error:", data.message);
-      })
-      .catch((error) => {
-        // Handle network error
-        console.error("Network error:", error);
-      });
-  };
-
-  const handleBankSelection = (value) => {
-    setSelectedBank(value);
-    setbankDropdownOpen(true);
-  };
-
-  // const toggleRentalDialog = () => {
-  //   setRentalDialogOpen((prevState) => !prevState);
-  // };
-
-  const toggleAddBankDialog = () => {
-    setAddBankDialogOpen((prevState) => !prevState);
+    setSelectedProp(propertyType);
+    setPropType(propertyType.property_type);
+    setSelectedPropId(propertyType.property_id);
   };
 
   const togglePhotoDialog = () => {
@@ -306,37 +253,10 @@ const Rentals = () => {
     setPhotoresDialogOpen((prevState) => !prevState);
   };
 
-  const handleCloseDialog = () => {
-    setAddBankDialogOpen(false);
-  };
-
-  const handlePhotoCloseDialog = () => {
-    setPhotoDialogOpen(false);
-    setPhotoresDialogOpen(false);
-  };
-
-  const handleUserSelection = (value) => {
+  const handleUserSelection = (value, id) => {
     setSelectedUser(value);
+    setSelectedUserId(id);
     setuserDropdownOpen(true);
-  };
-
-  const handleBadSelection = (value, index) => {
-    rentalsFormik.setFieldValue(
-      `entries[0].residential[${index}].rental_bed`,
-      value
-    );
-    setSelectedBad(value);
-    // setbadDropdownOpen(true);
-    // console.log(rentalsFormik.values, "valuessssswwws");
-  };
-
-  // const handleBathSelection = (value) => {
-  //   setSelectedBath(value);
-  //   setBathDropdownOpen(true);
-  // };
-
-  const handleClickOpen = () => {
-    setOpen(true);
   };
 
   const handleClose = () => {
@@ -365,7 +285,7 @@ const Rentals = () => {
         .string()
         .required("Phone Number is required"),
     }),
-    onSubmit: (values) => {
+    onSubmit: () => {
       // console.log(values, "values");
       setshowRentalOwnerTable(false);
       handleAddrentalOwner();
@@ -403,7 +323,7 @@ const Rentals = () => {
     rental_country: yup.string().required("Required"),
     rental_state: yup.string().required("Required"),
     // Add conditional validations for residential or commercial entries
-    ...(selectedProp.ismultiunit
+    ...(selectedProp.is_multiunit
       ? propType === "Residential"
         ? { residential: yup.array().of(residentialSchema2) }
         : { commercial: yup.array().of(commercialSchema2) }
@@ -513,12 +433,12 @@ const Rentals = () => {
     localStorage.setItem("operatingAccount", operatingAccount);
   };
   let cookies = new Cookies();
-  const [accessType, setAccessType] = useState(null);
+  const [accessType, setAccessType] = useState({});
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -526,9 +446,7 @@ const Rentals = () => {
 
   // ==================================================================
 
-  // navigate(`/admin/rentals/rental/${id}/entry/${propertyIndex}`);
   const { id, entryIndex } = useParams();
-  // console.log(entryIndex, "entryIndex");
   const [residentialImage, setResidentialImage] = useState([]);
   const [commercialImage, setCommercialImage] = useState([]);
 
@@ -564,6 +482,27 @@ const Rentals = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}/rentals/rental-owners/${accessType.admin_id}`
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          setRentalownerData(data || []); // Ensure data is an array or handle empty data
+          console.log("Here is the fetched data:", data);
+        } else {
+          console.error("Error:", data.message || "Failed to fetch data");
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+      }
+    };
+
+    fetchData();
+  }, [accessType]); // Add dependencies that trigger a refetch if changed
   // console.log(commercialImage, "commercialImage");
 
   let navigate = useNavigate();
@@ -597,11 +536,8 @@ const Rentals = () => {
   };
 
   useEffect(() => {
-    const selectedPhotoresPreview = document.getElementById(
-      "selectedPhotoresPreview"
-    );
     // Make an HTTP GET request to your Express API endpoint
-    fetch(`${baseUrl}/newproparty/propropartytype`)
+    fetch(`${baseUrl}/propertytype/property_type/${accessType.admin_id}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -615,11 +551,11 @@ const Rentals = () => {
         // Handle network error
         console.error("Network error:", error);
       });
-  }, []);
+  }, [accessType]);
 
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
-    fetch(`${baseUrl}/addstaffmember/find_staffmember`)
+    fetch(`${baseUrl}/staffmember/staff_member/${accessType.admin_id}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -633,7 +569,8 @@ const Rentals = () => {
         // Handle network error
         console.error("Network error:", error);
       });
-  }, []);
+  }, [accessType]);
+
   // navigate(`/admin/rentals/rental/${id}/entry/${propertyIndex}`);
   // const {id,entryId} = useParams();
   const [unitData, setUnitData] = useState([]);
@@ -775,89 +712,137 @@ const Rentals = () => {
     setLoader(true);
     const entriesArray = [];
     if (propType === "Residential") {
-      if (residentialImage && residentialImage.length > 0) {
-        for (let i = 0; i < residentialImage.length; i++) {
-          const fileArray = residentialImage[i];
+      // if (residentialImage && residentialImage.length > 0) {
+      //   for (let i = 0; i < residentialImage.length; i++) {
+      //     const fileArray = residentialImage[i];
 
-          if (fileArray && fileArray.length > 0) {
-            for (let j = 0; j < fileArray.length; j++) {
-              const fileUrl = fileArray[j];
+      //     if (fileArray && fileArray.length > 0) {
+      //       for (let j = 0; j < fileArray.length; j++) {
+      //         const fileUrl = fileArray[j];
 
-              try {
-                // Fetch the file using the URL
-                const response = await fetch(fileUrl);
-                const blob = await response.blob();
+      //         try {
+      //           // Fetch the file using the URL
+      //           const response = await fetch(fileUrl);
+      //           const blob = await response.blob();
 
-                const file = new File([blob], `residential_${i}_${j}.png`, {
-                  type: blob.type,
-                });
+      //           const file = new File([blob], `residential_${i}_${j}.png`, {
+      //             type: blob.type,
+      //           });
 
-                const formData = new FormData();
-                formData.append("files", file);
-                const url = `${imageUrl}/images/upload`; // Use the correct endpoint for multiple files upload
-                try {
-                  const result = await axios.post(url, formData, {
-                    headers: {
-                      "Content-Type": "multipart/form-data",
-                    },
-                  });
-                  residentialImage[i][j] = result.data.files.map(
-                    (file) => file.url
-                  );
-                } catch (error) {
-                  console.error(error, "error");
-                }
-              } catch (error) {
-                console.error(`Error fetching file at index ${i}-${j}:`, error);
-              }
-            }
+      //           const formData = new FormData();
+      //           formData.append("files", file);
+      //           const url = `${imageUrl}/images/upload`; // Use the correct endpoint for multiple files upload
+      //           try {
+      //             const result = await axios.post(url, formData, {
+      //               headers: {
+      //                 "Content-Type": "multipart/form-data",
+      //               },
+      //             });
+      //             residentialImage[i][j] = result.data.files.map(
+      //               (file) => file.url
+      //             );
+      //           } catch (error) {
+      //             console.error(error, "error");
+      //           }
+      //         } catch (error) {
+      //           console.error(`Error fetching file at index ${i}-${j}:`, error);
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+
+      // entriesArray.push(entriesObject);
+
+      // const leaseObject = {
+      //   //   Add Rental owner
+      //   rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
+      //   rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
+      //   rentalOwner_companyName:
+      //     rentalOwnerFormik.values.rentalOwner_companyName,
+      //   rentalOwner_primaryEmail:
+      //     rentalOwnerFormik.values.rentalOwner_primaryEmail,
+      //   rentalOwner_phoneNumber:
+      //     rentalOwnerFormik.values.rentalOwner_phoneNumber,
+      //   rentalOwner_homeNumber: rentalOwnerFormik.values.rentalOwner_homeNumber,
+      //   rentalOwner_businessNumber:
+      //     rentalOwnerFormik.values.rentalOwner_businessNumber,
+      //   entries: entriesArray,
+      // };
+      // const entriesObject = {
+      //   property_type: selectedProp.propertysub_type,
+      //   rental_adress: rentalsFormik.values.entries[0].rental_adress,
+      //   rental_city: rentalsFormik.values.entries[0].rental_city,
+      //   rental_state: rentalsFormik.values.entries[0].rental_state,
+      //   rental_country: rentalsFormik.values.entries[0].rental_country,
+      //   rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
+      //   rental_sqft: rentalsFormik.values.entries[0].rental_soft,
+      //   rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
+      //   rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
+      //   staffMember: selectedUser,
+      //   //RESIDENTIAL
+      //   residential: rentalsFormik.values.entries[0].residential,
+      // };
+      // residentialImage.map((data, index) => {
+      //   rentalsFormik.values.entries[0].residential[index].propertyres_image =
+      //     data;
+      // });
+      const object = {
+        rentalOwner: {
+          admin_id: accessType.admin_id,
+          rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
+          rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
+          rentalOwner_companyName:
+            rentalOwnerFormik.values.rentalOwner_companyName,
+          rentalOwner_primaryEmail:
+            rentalOwnerFormik.values.rentalOwner_primaryEmail,
+          rentalOwner_phoneNumber:
+            rentalOwnerFormik.values.rentalOwner_phoneNumber,
+          rentalOwner_homeNumber:
+            rentalOwnerFormik.values.rentalOwner_homeNumber,
+          rentalOwner_businessNumber:
+            rentalOwnerFormik.values.rentalOwner_businessNumber,
+        },
+        rental: {
+          admin_id: accessType.admin_id,
+          property_id: selectedPropId,
+          rental_adress: rentalsFormik.values.entries[0].rental_adress,
+          rental_city: rentalsFormik.values.entries[0].rental_city,
+          rental_state: rentalsFormik.values.entries[0].rental_state,
+          rental_country: rentalsFormik.values.entries[0].rental_country,
+          rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
+          staffmember_id: selectedUserId,
+        },
+        units: rentalsFormik.values.entries[0].residential.map(
+          (residentialItem) => {
+            const {
+              rental_units,
+              rental_unitsAdress,
+              rental_sqft,
+              rental_bath,
+              rental_bed,
+              propertyres_image,
+            } = residentialItem;
+
+            return {
+              admin_id: accessType.admin_id,
+              rental_unit: rental_units,
+              rental_unit_adress: rental_unitsAdress,
+              rental_sqft: rental_sqft,
+              rental_bath: rental_bath,
+              rental_bed: rental_bed,
+              rental_images: propertyres_image,
+            };
           }
-        }
-      }
-
-      const entriesObject = {
-        property_type: selectedProp.propertysub_type,
-        rental_adress: rentalsFormik.values.entries[0].rental_adress,
-        rental_city: rentalsFormik.values.entries[0].rental_city,
-        type: propType,
-        rental_state: rentalsFormik.values.entries[0].rental_state,
-        rental_country: rentalsFormik.values.entries[0].rental_country,
-        rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-        rental_sqft: rentalsFormik.values.entries[0].rental_soft,
-        rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
-        rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
-        staffMember: selectedUser,
-        //RESIDENTIAL
-        residential: rentalsFormik.values.entries[0].residential,
+        ),
       };
-      residentialImage.map((data, index) => {
-        rentalsFormik.values.entries[0].residential[index].propertyres_image =
-          data;
-      });
-      entriesArray.push(entriesObject);
+      console.log(object, "leaseObject");
 
-      const leaseObject = {
-        //   Add Rental owner
-        rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
-        rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
-        rentalOwner_companyName:
-          rentalOwnerFormik.values.rentalOwner_companyName,
-        rentalOwner_primaryEmail:
-          rentalOwnerFormik.values.rentalOwner_primaryEmail,
-        rentalOwner_phoneNumber:
-          rentalOwnerFormik.values.rentalOwner_phoneNumber,
-        rentalOwner_homeNumber: rentalOwnerFormik.values.rentalOwner_homeNumber,
-        rentalOwner_businessNumber:
-          rentalOwnerFormik.values.rentalOwner_businessNumber,
-        entries: entriesArray,
-      };
-      console.log(leaseObject, "leaseObject");
-
-      const res = await axios.post(`${baseUrl}/rentals/rentals`, leaseObject);
+      const res = await axios.post(`${baseUrl}/rentals/rentals`, object);
       if (res.data.statusCode === 200) {
         swal("Success!", "Property Added Successfully", "success");
-        navigate("/admin/RentalownerTable");
-        console.log(res.data.data, "res.data.data after post");
+        // navigate("/admin/RentalownerTable");
+        console.log(res.data, "res.data.data after post");
       } else {
         if (res.data.statusCode === 201) {
           swal("Failed!", "Property Name Already Added", "error");
@@ -869,96 +854,153 @@ const Rentals = () => {
       setLoader(false);
       return;
     } else {
-      if (commercialImage && commercialImage.length > 0) {
-        for (let i = 0; i < commercialImage.length; i++) {
-          const fileArray = commercialImage[i];
+      // if (commercialImage && commercialImage.length > 0) {
+      //   for (let i = 0; i < commercialImage.length; i++) {
+      //     const fileArray = commercialImage[i];
 
-          if (fileArray && fileArray.length > 0) {
-            for (let j = 0; j < fileArray.length; j++) {
-              const fileUrl = fileArray[j];
+      //     if (fileArray && fileArray.length > 0) {
+      //       for (let j = 0; j < fileArray.length; j++) {
+      //         const fileUrl = fileArray[j];
 
-              try {
-                // Fetch the file using the URL
-                const response = await fetch(fileUrl);
-                const blob = await response.blob();
+      //         try {
+      //           // Fetch the file using the URL
+      //           const response = await fetch(fileUrl);
+      //           const blob = await response.blob();
 
-                const file = new File([blob], `commercial_${i}_${j}.png`, {
-                  type: blob.type,
-                });
+      //           const file = new File([blob], `commercial_${i}_${j}.png`, {
+      //             type: blob.type,
+      //           });
 
-                const formData = new FormData();
-                formData.append("files", file);
-                const url = `${imageUrl}/images/upload`;
-                try {
-                  const result = await axios.post(url, formData, {
-                    headers: {
-                      "Content-Type": "multipart/form-data",
-                    },
-                  });
-                  commercialImage[i][j] = result.data.files.map(
-                    (file) => file.url
-                  );
-                } catch (error) {
-                  console.error(error, "imgs");
-                }
-              } catch (error) {
-                console.error(`Error fetching file at index ${i}-${j}:`, error);
-              }
-            }
+      //           const formData = new FormData();
+      //           formData.append("files", file);
+      //           const url = `${imageUrl}/images/upload`;
+      //           try {
+      //             const result = await axios.post(url, formData, {
+      //               headers: {
+      //                 "Content-Type": "multipart/form-data",
+      //               },
+      //             });
+      //             commercialImage[i][j] = result.data.files.map(
+      //               (file) => file.url
+      //             );
+      //           } catch (error) {
+      //             console.error(error, "imgs");
+      //           }
+      //         } catch (error) {
+      //           console.error(`Error fetching file at index ${i}-${j}:`, error);
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+      // const entriesObject = {
+      //   property_type: selectedProp.propertysub_type,
+      //   type: propType,
+      //   rental_adress: rentalsFormik.values.entries[0].rental_adress,
+      //   rental_city: rentalsFormik.values.entries[0].rental_city,
+      //   rental_state: rentalsFormik.values.entries[0].rental_state,
+      //   rental_country: rentalsFormik.values.entries[0].rental_country,
+      //   rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
+      //   rental_sqft: rentalsFormik.values.entries[0].rental_soft,
+      //   rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
+      //   rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
+      //   staffMember: selectedUser,
+      //   //RESIDENTIAL
+      //   // residential: rentalsFormik.values.entries[0].residential,
+      //   commercial: rentalsFormik.values.entries[0].commercial,
+      //   // createdAt:moment().format("YYYY-MM-DD"),
+      //   property_image: commercialImage,
+      //   //COMMERCIAL
+      // };
+      // commercialImage.map((data, index) => {
+      //   rentalsFormik.values.entries[0].commercial[index].property_image = data;
+      // });
+      // entriesArray.push(entriesObject);
+      // const leaseObject = {
+      //   //   Add Rental owner
+      //   rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
+      //   rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
+      //   rentalOwner_companyName:
+      //     rentalOwnerFormik.values.rentalOwner_companyName,
+      //   rentalOwner_primaryEmail:
+      //     rentalOwnerFormik.values.rentalOwner_primaryEmail,
+      //   rentalOwner_phoneNumber:
+      //     rentalOwnerFormik.values.rentalOwner_phoneNumber,
+      //   rentalOwner_homeNumber: rentalOwnerFormik.values.rentalOwner_homeNumber,
+      //   rentalOwner_businessNumber:
+      //     rentalOwnerFormik.values.rentalOwner_businessNumber,
+      //   entries: entriesArray,
+      // };
+
+      const object = {
+        rentalOwner: {
+          admin_id: accessType.admin_id,
+          rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
+          rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
+          rentalOwner_companyName:
+            rentalOwnerFormik.values.rentalOwner_companyName,
+          rentalOwner_primaryEmail:
+            rentalOwnerFormik.values.rentalOwner_primaryEmail,
+          rentalOwner_phoneNumber:
+            rentalOwnerFormik.values.rentalOwner_phoneNumber,
+          rentalOwner_homeNumber:
+            rentalOwnerFormik.values.rentalOwner_homeNumber,
+          rentalOwner_businessNumber:
+            rentalOwnerFormik.values.rentalOwner_businessNumber,
+        },
+        rental: {
+          admin_id: accessType.admin_id,
+          property_id: selectedPropId,
+          rental_adress: rentalsFormik.values.entries[0].rental_adress,
+          rental_city: rentalsFormik.values.entries[0].rental_city,
+          rental_state: rentalsFormik.values.entries[0].rental_state,
+          rental_country: rentalsFormik.values.entries[0].rental_country,
+          rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
+          staffmember_id: selectedUserId,
+        },
+        units: rentalsFormik.values.entries[0].commercial.map(
+          (residentialItem) => {
+            const {
+              rentalcom_units,
+              rentalcom_unitsAdress,
+              rentalcom_sqft,
+              property_image,
+            } = residentialItem;
+
+            // Creating the unit object for each residential item
+            return {
+              admin_id: accessType.admin_id,
+              rental_sqft: rentalcom_sqft,
+              rental_images: property_image,
+              rental_unit: rentalcom_units,
+              rental_unit_adress: rentalcom_unitsAdress,
+            };
           }
-        }
-      }
-      const entriesObject = {
-        property_type: selectedProp.propertysub_type,
-        type: propType,
-        rental_adress: rentalsFormik.values.entries[0].rental_adress,
-        rental_city: rentalsFormik.values.entries[0].rental_city,
-        rental_state: rentalsFormik.values.entries[0].rental_state,
-        rental_country: rentalsFormik.values.entries[0].rental_country,
-        rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-        rental_sqft: rentalsFormik.values.entries[0].rental_soft,
-        rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
-        rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
-        staffMember: selectedUser,
-        //RESIDENTIAL
-        // residential: rentalsFormik.values.entries[0].residential,
-        commercial: rentalsFormik.values.entries[0].commercial,
-        // createdAt:moment().format("YYYY-MM-DD"),
-        property_image: commercialImage,
-        //COMMERCIAL
+        ),
       };
-      commercialImage.map((data, index) => {
-        rentalsFormik.values.entries[0].commercial[index].property_image = data;
-      });
-      entriesArray.push(entriesObject);
-      const leaseObject = {
-        //   Add Rental owner
-        rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
-        rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
-        rentalOwner_companyName:
-          rentalOwnerFormik.values.rentalOwner_companyName,
-        rentalOwner_primaryEmail:
-          rentalOwnerFormik.values.rentalOwner_primaryEmail,
-        rentalOwner_phoneNumber:
-          rentalOwnerFormik.values.rentalOwner_phoneNumber,
-        rentalOwner_homeNumber: rentalOwnerFormik.values.rentalOwner_homeNumber,
-        rentalOwner_businessNumber:
-          rentalOwnerFormik.values.rentalOwner_businessNumber,
-        entries: entriesArray,
-      };
-      console.log(leaseObject, "leaseObject");
+      console.log(object, "leaseObject");
 
-      const res = await axios.post(`${baseUrl}/rentals/rentals`, leaseObject);
-      if (res.data.statusCode === 200) {
-        swal("Success!", "Property Added Successfully", "success");
-        // navigate("/admin/RentalownerTable");
-        console.log(res.data.data, "form response");
-        // console.log(res.data.data, "res.data.data after post");
-      } else {
-        swal("", res.data.message, "error");
+      try {
+        const res = await axios.post(`${baseUrl}/rentals/rentals`, object);
+
+        if (res.data.statusCode === 200) {
+          swal("Success!", "Property Added Successfully", "success");
+          // navigate("/admin/RentalownerTable");
+          console.log(res.data.data, "form response");
+          // console.log(res.data.data, "res.data.data after post");
+        } else {
+          swal("", res.data.message, "error");
+        }
+
+        handleResponse(res);
+        setLoader(false);
+      } catch (error) {
+        // Handle errors here
+        console.error("Error:", error);
+        swal("Error", "An error occurred while adding the property", "error");
+        setLoader(false);
       }
-      handleResponse(res);
-      setLoader(false);
+
       return;
     }
   };
@@ -1270,26 +1312,32 @@ const Rentals = () => {
                                 ? selectedProp
                                 : "Select Property Type"}
                             </DropdownToggle>
-                            {/* {console.log(propertyData, "property data")} */}
+                            {console.log(rentalOwnerFormik, "yash")}
                             <DropdownMenu>
-                              {Object.keys(propertyData).map((propertyType) => (
-                                <React.Fragment key={propertyType}>
+                              {Object.values(
+                                propertyData.reduce((acc, item) => {
+                                  if (!acc[item.property_type]) {
+                                    acc[item.property_type] = [item];
+                                  } else {
+                                    acc[item.property_type].push(item);
+                                  }
+                                  return acc;
+                                }, {})
+                              ).map((propertyGroup) => (
+                                <React.Fragment
+                                  key={propertyGroup[0].property_type}
+                                >
                                   <DropdownItem
                                     header
                                     style={{ color: "blue" }}
                                   >
-                                    {propertyType}
+                                    {propertyGroup[0].property_type}
                                   </DropdownItem>
-                                  {propertyData[propertyType].map((subtype) => (
+                                  {propertyGroup.map((subtype) => (
                                     <DropdownItem
                                       key={subtype.propertysub_type}
                                       onClick={() => {
                                         handlePropSelection(subtype);
-
-                                        // rentalsFormik.setFieldValue(
-                                        //   "entries[0].property_type",
-                                        //   subtype.propertysub_type
-                                        // );
                                       }}
                                     >
                                       {subtype.propertysub_type}
@@ -1726,7 +1774,7 @@ const Rentals = () => {
                                                     {
                                                       rentalOwner.rentalOwner_lastName
                                                     }
-                                                    {`(${rentalOwner.rentalOwner_phoneNumber})`}
+                                                    {` (${rentalOwner.rentalOwner_phoneNumber})`}
                                                   </td>
                                                   <td
                                                     style={{
@@ -2633,12 +2681,14 @@ const Rentals = () => {
                                 {selectedUser ? selectedUser : "Select"}
                               </DropdownToggle>
                               <DropdownMenu>
-                                <DropdownItem value="">Select</DropdownItem>
                                 {StaffMemberData.map((user) => (
                                   <DropdownItem
                                     key={user._id}
                                     onClick={() =>
-                                      handleUserSelection(user.staffmember_name)
+                                      handleUserSelection(
+                                        user.staffmember_name,
+                                        user.staffmember_id
+                                      )
                                     }
                                   >
                                     {user.staffmember_name}
@@ -2678,7 +2728,7 @@ const Rentals = () => {
                                       cursor: "pointer",
                                       position: "absolute",
                                       right: "10px",
-                                      display: selectedProp.ismultiunit
+                                      display: selectedProp.is_multiunit
                                         ? "block"
                                         : "none",
                                       marginBottom: "20px",
@@ -2690,7 +2740,7 @@ const Rentals = () => {
                                   <Col
                                     lg="3"
                                     style={
-                                      selectedProp.ismultiunit
+                                      selectedProp.is_multiunit
                                         ? {
                                             display: "block",
                                             marginTop: "20px",
@@ -2759,7 +2809,7 @@ const Rentals = () => {
                                   <Col
                                     lg="4"
                                     style={
-                                      selectedProp.ismultiunit
+                                      selectedProp.is_multiunit
                                         ? { display: "block" }
                                         : { display: "none" }
                                     }
@@ -3105,7 +3155,7 @@ const Rentals = () => {
                             <Button
                               onClick={addResidentialUnits}
                               style={
-                                selectedProp.ismultiunit
+                                selectedProp.is_multiunit
                                   ? { display: "block" }
                                   : { display: "none" }
                               }
@@ -3142,7 +3192,7 @@ const Rentals = () => {
                                       cursor: "pointer",
                                       position: "absolute",
                                       right: "10px",
-                                      display: selectedProp.ismultiunit
+                                      display: selectedProp.is_multiunit
                                         ? "block"
                                         : "none",
                                     }}
@@ -3154,7 +3204,7 @@ const Rentals = () => {
                                   <Col
                                     lg="3"
                                     style={
-                                      selectedProp.ismultiunit
+                                      selectedProp.is_multiunit
                                         ? { display: "block" }
                                         : { display: "none" }
                                     }
@@ -3218,7 +3268,7 @@ const Rentals = () => {
                                   <Col
                                     lg="4"
                                     style={
-                                      selectedProp.ismultiunit
+                                      selectedProp.is_multiunit
                                         ? { display: "block" }
                                         : { display: "none" }
                                     }
@@ -3450,7 +3500,7 @@ const Rentals = () => {
                             <Button
                               onClick={addCommercialUnit}
                               style={
-                                selectedProp.ismultiunit
+                                selectedProp.is_multiunit
                                   ? { display: "block" }
                                   : { display: "none" }
                               }
