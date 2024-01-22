@@ -832,7 +832,7 @@ const RentRollDetail = () => {
   const [cardDetalis, setCardDetails] = useState([]);
   const getCreditCard = async () => {
     const response = await axios.get(
-      `http://localhost:4000/api/creditcard/getCreditCard/${tenantId}`
+      `${baseUrl}/creditcard/getCreditCard/${tenantId}`
     );
     setCardDetails(response.data);
     console.log(response, "yashu");

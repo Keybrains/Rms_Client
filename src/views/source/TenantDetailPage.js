@@ -294,7 +294,7 @@ const TenantDetailPage = () => {
   const [cardDetalis, setCardDetails] = useState([]);
   const getCreditCard = async () => {
     const response = await axios.get(
-      `http://localhost:4000/api/creditcard/getCreditCard/${tenantId}`
+      `https://propertymanager.cloudpress.host/api/creditcard/getCreditCard/${tenantId}`
     );
     setCardDetails(response.data);
     console.log(response, "yashu");

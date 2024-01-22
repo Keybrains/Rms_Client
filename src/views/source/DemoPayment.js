@@ -23,6 +23,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import { CardContent, Typography } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -37,6 +38,7 @@ import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
 import moment from "moment";
 import axios from "axios";
+import CreditCardForm from "./CreditCardForm";
 
 const DemoPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -66,6 +68,17 @@ const DemoPayment = () => {
   const [refund, setRefund] = useState(false);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+
+  const [isModalsOpen, setIsModalsOpen] = useState(false);
+  console.log(isModalsOpen, "isModalOpen");
+
+  const openCardForm = () => {
+    setIsModalsOpen(true);
+  };
+
+  const closeModals = () => {
+    setIsModalsOpen(false);
+  };
 
   const handleSearch = (e) => {
     setSearchQueryy(e.target.value);
@@ -132,6 +145,44 @@ const DemoPayment = () => {
     setActionType("");
   };
   const [loader, setLoader] = React.useState(true);
+  const [cardLogo, setCardLogo] = useState("");
+
+  const fetchCardLogo = async (cardType) => {
+    try {
+      if (!cardType) {
+        throw new Error("Card type is undefined");
+      }
+
+      const response = await axios.get(
+        `https://logo.clearbit.com/${cardType.toLowerCase()}.com`
+      );
+      setCardLogo(response.config.url);
+    } catch (error) {
+      // Handle error (e.g., card type not found)
+      console.error("Error fetching card logo:", error);
+      setCardLogo(""); // Set to a default logo or leave it empty
+    }
+  };
+
+  useEffect(() => {
+    fetchCardLogo();
+  }, []);
+
+  const [cardDetalis, setCardDetails] = useState([]);
+  const getCreditCard = async () => {
+    const response = await axios.get(
+      `${baseUrl}/creditcard/getCreditCard/${tenantId}`
+    );
+    setCardDetails(response.data);
+    //fetchCardLogo(response.data.card_type);
+    console.log(response.data, "yashu");
+  };
+
+  useEffect(() => {
+    getCreditCard();
+  }, [tenantId]);
+
+  const tenantId = "65a136e760b6af72eb259880";
 
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
@@ -273,6 +324,20 @@ const DemoPayment = () => {
     }
   };
 
+  // const myString = "0826";
+
+  // // Assuming a default year (e.g., 2000)
+  // const defaultYear = 2000;
+
+  // // Extract month and day from the string
+  // const month = parseInt(myString.substring(0, 2), 10);
+  // const day = parseInt(myString.substring(2), 10);
+
+  // // Create a Date object
+  // const myDate = new Date(defaultYear, month - 1, day);
+
+  // console.log(myDate, typeof myDate, "manu");
+
   useEffect(() => {
     getGeneralLedgerData();
   }, [pageItem]);
@@ -280,6 +345,16 @@ const DemoPayment = () => {
   const navigate = useNavigate();
 
   const [paymentLoader, setPaymentLoader] = useState(false);
+  const [selectedCreditCard, setSelectedCreditCard] = useState(null);
+
+  const handleCreditCardSelection = (selectedCard) => {
+    if (selectedCreditCard === selectedCard.card_number) {
+      setSelectedCreditCard(null); // Unselect if already selected
+    } else {
+      setSelectedCreditCard(selectedCard.card_number); // Select the clicked card
+    }
+    console.log("22", selectedCard.card_number);
+  };
 
   const handleFinancialSubmit = async (values, action) => {
     let url = `${baseUrl}/nmipayment/postnmipayments`;
@@ -317,9 +392,29 @@ const DemoPayment = () => {
         values.status = "Success";
       }
 
+      const creditCardDetails = cardDetalis.find(
+        (card) => card.card_number === selectedCreditCard,
+        
+        console.log("miu", selectedCreditCard)
+      );
+
+      const [expMonth, expYear] = creditCardDetails.exp_date.split('/');
+
+      // Format the result as "MM/YY"
+      const formattedExpirationDate = `${expMonth}/${expYear.slice(-2)}`;
+
+      values.expiration_date = formattedExpirationDate
+      values.card_number = Number(creditCardDetails.card_number)
+      console.log("mani", formattedExpirationDate);
+
+
       const response = await axios.post(url, {
         paymentDetails: values,
       });
+
+      // const response = await axios.post(url, {
+      //   paymentDetails: values,
+      // });
 
       if (
         response.data &&
@@ -639,16 +734,32 @@ const DemoPayment = () => {
       {/* Page content */}
       <Container className="mt--8 ml--10" fluid>
         <Row>
-          <Col xs="12" sm="6">
+          <Col xs="12" sm="9">
             <FormGroup className="">
               <h1 style={{ color: "white" }}>Ledger</h1>
             </FormGroup>
           </Col>
-
-          <Col className="text-right" xs="12" sm="6">
+          <Col xs="1.5" sm="1.5">
             <Button
               color="primary"
-              // href="#rms"
+              onClick={() => {
+                openCardForm();
+              }}
+              size="sm"
+              style={{
+                background: "white",
+                color: "blue",
+                marginRight: "20px",
+                marginLeft: "10px",
+              }}
+            >
+              Add Cards
+            </Button>
+          </Col>
+
+          <Col xs="1.5" sm="1.8">
+            <Button
+              color="primary"
               onClick={() => {
                 openModal();
                 setIsEditable(false);
@@ -659,8 +770,8 @@ const DemoPayment = () => {
               Make Payment
             </Button>
           </Col>
-          {/* mansi  */}
         </Row>
+
         <br />
         <Row>
           <div className="col">
@@ -675,121 +786,126 @@ const DemoPayment = () => {
                 />
               </div>
             ) : (
-              <Card className="shadow">
-                <Container className="mt--10" fluid>
-                  <Row>
-                    <div className="col">
-                      {loader ? (
-                        <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                          <RotatingLines
-                            strokeColor="grey"
-                            strokeWidth="5"
-                            animationDuration="0.75"
-                            width="50"
-                            visible={loader}
-                          />
-                        </div>
-                      ) : (
-                        <Card className="shadow">
-                          <CardHeader className="border-0">
-                            <Row>
-                              <Col xs="12" sm="6">
-                                <FormGroup>
-                                  <Input
-                                    fullWidth
-                                    type="text"
-                                    placeholder="Search"
-                                    value={searchQuery}
-                                    onChange={(e) =>
-                                      setSearchQuery(e.target.value)
-                                    }
-                                    style={{
-                                      width: "100%",
-                                      maxWidth: "200px",
-                                      minWidth: "200px",
-                                    }}
-                                  />
-                                </FormGroup>
-                              </Col>
-                            </Row>
-                          </CardHeader>
+              // <Card className="shadow">
+              <Container className="mt--10" fluid>
+                <Row>
+                  <div className="col">
+                    {loader ? (
+                      <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                        <RotatingLines
+                          strokeColor="grey"
+                          strokeWidth="5"
+                          animationDuration="0.75"
+                          width="50"
+                          visible={loader}
+                        />
+                      </div>
+                    ) : (
+                      <Card className="shadow">
+                        <CardHeader className="border-0">
+                          <Row>
+                            <Col xs="12" sm="6">
+                              <FormGroup>
+                                <Input
+                                  fullWidth
+                                  type="text"
+                                  placeholder="Search"
+                                  value={searchQuery}
+                                  onChange={(e) =>
+                                    setSearchQuery(e.target.value)
+                                  }
+                                  style={{
+                                    width: "100%",
+                                    maxWidth: "200px",
+                                    minWidth: "200px",
+                                  }}
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                        </CardHeader>
 
-                          <Table
-                            className="align-items-center table-flush"
-                            responsive
-                          >
-                            <thead className="thead-light">
-                              <tr>
-                                <th scope="col">Date</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Transaction Id</th>
-                                <th scope="col">Payment Method</th>
-                                <th scope="col">Account</th>
-                                <th scope="col">Increase</th>
-                                <th scope="col">Decrease</th>
-                                <th scope="col">Action</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {filterTenantsBySearchAndPage().map(
-                                (item, index) => (
-                                  <React.Fragment key={index}>
-                                    <tr
-                                      key={item._id}
-                                      style={{ position: "relative" }}
-                                    >
-                                      <td>{item?.date || "N/A"}</td>
-                                      <td>{item?.type2 || "Payment"}</td>
-                                      <td>{item?.status || "N/A"}</td>
-                                      <td>{item?.transactionid || "No Id"}</td>
-                                      <td>{item?.paymentType || "N/A"}</td>
-                                      <td>{item?.account || "N/A"}</td>
-                                      <td>
-                                        ${" "}
-                                        {item?.type2 === "Refund"
-                                          ? item?.amount
-                                          : "0"}
-                                      </td>
-                                      <td>
-                                        ${" "}
-                                        {item?.type2 !== "Refund"
-                                          ? item?.amount
-                                          : "0"}
-                                      </td>
-                                      <td>
-                                        {item?.type2 !== "Refund" ? (
-                                          <UncontrolledDropdown nav>
-                                            <DropdownToggle
-                                              className="pr-0"
-                                              nav
-                                              style={{ cursor: "pointer" }}
-                                              onClick={() =>
-                                                toggleOptions(item?._id)
-                                              }
+                        <Table
+                          className="align-items-center table-flush"
+                          responsive
+                        >
+                          <thead className="thead-light">
+                            <tr>
+                              <th scope="col">Date</th>
+                              <th scope="col">Type</th>
+                              <th scope="col">Status</th>
+                              <th scope="col">Transaction Id</th>
+                              <th scope="col">Payment Method</th>
+                              <th scope="col">Account</th>
+                              <th scope="col">Increase</th>
+                              <th scope="col">Decrease</th>
+                              <th scope="col">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {filterTenantsBySearchAndPage().map(
+                              (item, index) => (
+                                <React.Fragment key={index}>
+                                  <tr
+                                    key={item._id}
+                                    style={{ position: "relative" }}
+                                  >
+                                    <td>{item?.date || "N/A"}</td>
+                                    <td>{item?.type2 || "Payment"}</td>
+                                    <td>{item?.status || "N/A"}</td>
+                                    <td>
+                                      {item?.transactionid ||
+                                        "- - - - - - - - - -"}
+                                    </td>
+                                    <td>{item?.paymentType || "N/A"}</td>
+                                    <td>{item?.account || "N/A"}</td>
+                                    <td>
+                                      ${" "}
+                                      {item?.type2 === "Refund"
+                                        ? item?.amount
+                                        : "0"}
+                                    </td>
+                                    <td>
+                                      ${" "}
+                                      {item?.type2 !== "Refund"
+                                        ? item?.amount
+                                        : "0"}
+                                    </td>
+                                    <td>
+                                      {item?.type2 !== "Refund" ? (
+                                        <UncontrolledDropdown nav>
+                                          <DropdownToggle
+                                            className="pr-0"
+                                            nav
+                                            style={{ cursor: "pointer" }}
+                                            onClick={() =>
+                                              toggleOptions(item?._id)
+                                            }
+                                          >
+                                            <span
+                                              className="avatar avatar-sm rounded-circle"
+                                              style={{
+                                                margin: "-20px",
+                                                background: "transparent",
+                                                color: "lightblue",
+                                                fontWeight: "bold",
+                                                border: "2px solid lightblue", // Set border color to blue
+                                                padding: "10px", // Adjust padding as needed
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                              }}
                                             >
-                                              <span
-                                                className="avatar avatar-sm rounded-circle"
-                                                style={{
-                                                  margin: "-20px",
-                                                  background: "transparent",
-                                                  color:"lightblue",
-                                                  fontWeight:"bold",
-                                                  border: "2px solid lightblue",  // Set border color to blue
-                                                  padding: "10px",  // Adjust padding as needed
-                                                  display: "flex",
-                                                  alignItems: "center",
-                                                  justifyContent: "center",
-                                                }}
-                                              >
-                                                ...
-                                              </span>
-                                            </DropdownToggle>
-                                            <DropdownMenu className="dropdown-menu-arrow">
-                                              {item?._id === showOptionsId && (
-                                                <div>
-                                                  {item?.paymentType ===
-                                                    "Credit Card" && (
+                                              ...
+                                            </span>
+                                          </DropdownToggle>
+                                          <DropdownMenu className="dropdown-menu-arrow">
+                                            {item?._id === showOptionsId && (
+                                              <div>
+                                                {item?.paymentType ===
+                                                  "Credit Card" &&
+                                                  item?.status ===
+                                                    "Success" && (
                                                     <DropdownItem
                                                       // style={{color:'black'}}
                                                       onClick={() => {
@@ -800,7 +916,7 @@ const DemoPayment = () => {
                                                       Refund
                                                     </DropdownItem>
                                                   )}
-                                                  <DropdownItem divider />
+                                                {item?.status === "Pending" && (
                                                   <DropdownItem
                                                     tag="div"
                                                     onClick={() => {
@@ -813,119 +929,128 @@ const DemoPayment = () => {
                                                   >
                                                     Edit
                                                   </DropdownItem>
-                                                </div>
-                                              )}
-                                            </DropdownMenu>
-                                          </UncontrolledDropdown>
-                                        ) : (
-                                          <div style={{fontSize:'15px',fontWeight:'bolder',paddingLeft:'5px'}}>--</div>
-                                        )}
-                                      </td>
-                                    </tr>
-                                  </React.Fragment>
-                                )
-                              )}
-                            </tbody>
-                          </Table>
-                          {paginatedData.length > 0 ? (
-                            <Row>
-                              <Col className="text-right m-3">
-                                <Dropdown
-                                  isOpen={leasedropdownOpen}
-                                  toggle={toggle2}
-                                >
-                                  <DropdownToggle caret>
-                                    {pageItem}
-                                  </DropdownToggle>
-                                  <DropdownMenu>
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setPageItem(10);
-                                        setCurrentPage(1);
-                                      }}
-                                    >
-                                      10
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setPageItem(25);
-                                        setCurrentPage(1);
-                                      }}
-                                    >
-                                      25
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setPageItem(50);
-                                        setCurrentPage(1);
-                                      }}
-                                    >
-                                      50
-                                    </DropdownItem>
-                                    <DropdownItem
-                                      onClick={() => {
-                                        setPageItem(100);
-                                        setCurrentPage(1);
-                                      }}
-                                    >
-                                      100
-                                    </DropdownItem>
-                                  </DropdownMenu>
-                                </Dropdown>
-                                <Button
-                                  className="p-0"
-                                  style={{ backgroundColor: "#d0d0d0" }}
-                                  onClick={() =>
-                                    handlePageChange(currentPage - 1)
-                                  }
-                                  disabled={currentPage === 1}
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="20"
-                                    height="20"
-                                    fill="currentColor"
-                                    className="bi bi-caret-left"
-                                    viewBox="0 0 16 16"
+                                                )}
+                                              </div>
+                                            )}
+                                          </DropdownMenu>
+                                        </UncontrolledDropdown>
+                                      ) : (
+                                        <div
+                                          style={{
+                                            fontSize: "15px",
+                                            fontWeight: "bolder",
+                                            paddingLeft: "5px",
+                                          }}
+                                        >
+                                          --
+                                        </div>
+                                      )}
+                                    </td>
+                                  </tr>
+                                </React.Fragment>
+                              )
+                            )}
+                          </tbody>
+                        </Table>
+                        {paginatedData.length > 0 ? (
+                          <Row>
+                            <Col className="text-right m-3">
+                              <Dropdown
+                                isOpen={leasedropdownOpen}
+                                toggle={toggle2}
+                              >
+                                <DropdownToggle caret>
+                                  {pageItem}
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  <DropdownItem
+                                    onClick={() => {
+                                      setPageItem(10);
+                                      setCurrentPage(1);
+                                    }}
                                   >
-                                    <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                                  </svg>
-                                </Button>
-                                <span>
-                                  Page {currentPage} of {totalPages}
-                                </span>{" "}
-                                <Button
-                                  className="p-0"
-                                  style={{ backgroundColor: "#d0d0d0" }}
-                                  onClick={() =>
-                                    handlePageChange(currentPage + 1)
-                                  }
-                                  disabled={currentPage === totalPages}
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="20"
-                                    height="20"
-                                    fill="currentColor"
-                                    className="bi bi-caret-right"
-                                    viewBox="0 0 16 16"
+                                    10
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    onClick={() => {
+                                      setPageItem(25);
+                                      setCurrentPage(1);
+                                    }}
                                   >
-                                    <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                                  </svg>
-                                </Button>{" "}
-                              </Col>
-                            </Row>
-                          ) : (
-                            <></>
-                          )}
-                        </Card>
-                      )}
-                    </div>
-                  </Row>
-                  <br />
-                  <br />
-                </Container>
-              </Card>
+                                    25
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    onClick={() => {
+                                      setPageItem(50);
+                                      setCurrentPage(1);
+                                    }}
+                                  >
+                                    50
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    onClick={() => {
+                                      setPageItem(100);
+                                      setCurrentPage(1);
+                                    }}
+                                  >
+                                    100
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </Dropdown>
+                              <Button
+                                className="p-0"
+                                style={{ backgroundColor: "#d0d0d0" }}
+                                onClick={() =>
+                                  handlePageChange(currentPage - 1)
+                                }
+                                disabled={currentPage === 1}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="20"
+                                  height="20"
+                                  fill="currentColor"
+                                  className="bi bi-caret-left"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                                </svg>
+                              </Button>
+                              <span>
+                                Page {currentPage} of {totalPages}
+                              </span>{" "}
+                              <Button
+                                className="p-0"
+                                style={{ backgroundColor: "#d0d0d0" }}
+                                onClick={() =>
+                                  handlePageChange(currentPage + 1)
+                                }
+                                disabled={currentPage === totalPages}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="20"
+                                  height="20"
+                                  fill="currentColor"
+                                  className="bi bi-caret-right"
+                                  viewBox="0 0 16 16"
+                                >
+                                  <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                                </svg>
+                              </Button>{" "}
+                            </Col>
+                          </Row>
+                        ) : (
+                          <></>
+                        )}
+                      </Card>
+                    )}
+                  </div>
+                </Row>
+                <br />
+                <br />
+              </Container>
+              // </Card>
             )}
           </div>
         </Row>
@@ -1319,121 +1444,231 @@ const DemoPayment = () => {
               </FormGroup>
 
               {selectedPaymentType === "Credit Card" ? (
+                // <>
+                //   {isEditable === false ? (
+                //     <FormGroup>
+                //       <label
+                //         className="form-control-label"
+                //         htmlFor="input-property"
+                //       >
+                //         Card Number *
+                //       </label>
+                //       <InputGroup>
+                //         <Input
+                //           type="string"
+                //           id="card_number"
+                //           placeholder="0000 0000 0000 0000"
+                //           name="card_number"
+                //           value={financialFormik.values.card_number}
+                //           onBlur={financialFormik.handleBlur}
+                //           onChange={(e) => {
+                //             // const inputValue = e.target.value;
+                //             // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                //             // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
+                //             // // const formattedValue = formatCardNumber(limitedValue);
+                //             // e.target.value = limitedValue;
+                //             financialFormik.handleChange(e);
+                //           }}
+                //           required
+                //           disabled={refund === true}
+                //         />
+                //       </InputGroup>
+                //     </FormGroup>
+                //   ) : (
+                //     ""
+                //   )}
+                //   {isEditable === false ? (
+                //     <Row>
+                //       <Col>
+                //         <FormGroup>
+                //           <label
+                //             className="form-control-label"
+                //             htmlFor="input-property"
+                //           >
+                //             Expiration Date *
+                //           </label>
+                //           <Input
+                //             type="text"
+                //             id="expiration_date"
+                //             name="expiration_date"
+                //             onBlur={financialFormik.handleBlur}
+                //             onChange={financialFormik.handleChange}
+                //             value={financialFormik.values.expiration_date}
+                //             placeholder="MM/YY"
+                //             required
+                //             disabled={refund === true}
+                //             onInput={(e) => {
+                //               let inputValue = e.target.value;
+                //               const numericValue = inputValue.replace(
+                //                 /\D/g,
+                //                 ""
+                //               );
+
+                //               if (numericValue.length > 2) {
+                //                 const month = numericValue.substring(0, 2);
+                //                 const year = numericValue.substring(2, 6);
+                //                 e.target.value = `${month}/${year}`;
+                //               } else {
+                //                 e.target.value = numericValue;
+                //               }
+
+                //               // Format the year to have a 4-digit length if more than 2 digits are entered
+                //               if (numericValue.length >= 3) {
+                //                 const enteredYear = numericValue.substring(
+                //                   2,
+                //                   6
+                //                 );
+                //                 e.target.value = `${numericValue.substring(
+                //                   0,
+                //                   2
+                //                 )}/${enteredYear}`;
+                //               }
+                //             }}
+                //           />
+                //         </FormGroup>
+                //       </Col>
+                //       <Col>
+                //         <FormGroup>
+                //           <label
+                //             className="form-control-label"
+                //             htmlFor="input-property"
+                //           >
+                //             CVV *
+                //           </label>
+                //           <Input
+                //             type="number"
+                //             id="cvv"
+                //             placeholder="123"
+                //             name="cvv"
+                //             onBlur={financialFormik.handleBlur}
+                //             onChange={(e) => {
+                //               const inputValue = e.target.value;
+                //               if (/^\d{0,3}$/.test(inputValue)) {
+                //                 // Only allow up to 3 digits
+                //                 financialFormik.handleChange(e);
+                //               }
+                //             }}
+                //             value={financialFormik.values.cvv}
+                //             maxLength={3}
+                //             required
+                //             disabled={refund === true}
+                //           />
+                //         </FormGroup>
+                //       </Col>
+                //     </Row>
+                //   ) : (
+                //     ""
+                //   )}
+                // </>
                 <>
-                  {isEditable === false ? (
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-property"
-                      >
-                        Card Number *
-                      </label>
-                      <InputGroup>
-                        <Input
-                          type="string"
-                          id="card_number"
-                          placeholder="0000 0000 0000 0000"
-                          name="card_number"
-                          value={financialFormik.values.card_number}
-                          onBlur={financialFormik.handleBlur}
-                          onChange={(e) => {
-                            // const inputValue = e.target.value;
-                            // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-                            // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
-                            // // const formattedValue = formatCardNumber(limitedValue);
-                            // e.target.value = limitedValue;
-                            financialFormik.handleChange(e);
+                 {isEditable === false && refund === false ? (
+                  <Card
+                    className="w-100 mt-3"
+                    style={{ background: "#F4F6FF" }}
+                  >
+                    <CardContent>
+                      {/* Card Details */}
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <Typography
+                          sx={{
+                            fontSize: 15,
+                            fontWeight: "bold",
+                            fontFamily: "Arial",
+                            textTransform: "capitalize",
+                            marginRight: "10px",
                           }}
-                          required
-                          disabled={refund === true}
-                        />
-                      </InputGroup>
-                    </FormGroup>
-                  ) : (
-                    ""
-                  )}
-                  {isEditable === false ? (
-                    <Row>
-                      <Col>
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
-                          >
-                            Expiration Date *
-                          </label>
-                          <Input
-                            type="text"
-                            id="expiration_date"
-                            name="expiration_date"
-                            onBlur={financialFormik.handleBlur}
-                            onChange={financialFormik.handleChange}
-                            value={financialFormik.values.expiration_date}
-                            placeholder="MM/YY"
-                            required
-                            disabled={refund === true}
-                            onInput={(e) => {
-                              let inputValue = e.target.value;
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ""
-                              );
+                          color="text.secondary"
+                          gutterBottom
+                        >
+                          Credit Cards
+                        </Typography>
+                      </div>
+                      {cardDetalis && cardDetalis.length > 0 && (
+                        <Table responsive>
+                          <tbody>
+                            <tr>
+                              <th>Card Number</th>
+                              <th>Card Type</th>
+                              <th>Select</th>
+                            </tr>
+                            {cardDetalis.map((item, index) => (
+                              <tr key={index} style={{ marginBottom: "10px" }}>
+                                <td>
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      fontWeight: "bold",
+                                      fontStyle: "italic",
+                                      fontFamily: "Arial",
+                                      textTransform: "capitalize",
+                                      marginRight: "10px",
+                                    }}
+                                    color="text.secondary"
+                                    gutterBottom
+                                  >
+                                    {item.card_number.slice(0, 4) +
+                                      "*".repeat(8) +
+                                      item.card_number.slice(-4)}
+                                  </Typography>
+                                </td>
+                                <td>
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      marginRight: "10px",
+                                    }}
+                                    color="text.secondary"
+                                    gutterBottom
+                                  >
+                                    {item.card_type}
+                                    {item.card_type && (
+                                      <img
+                                        src={`https://logo.clearbit.com/${item.card_type.toLowerCase()}.com`}
+                                        alt={`${item.card_type} Logo`}
+                                        style={{
+                                          width: "20%",
+                                          marginLeft: "10%",
+                                        }}
+                                      />
+                                    )}
+                                  </Typography>
+                                </td>
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={
+                                      selectedCreditCard === item.card_number
+                                    }
+                                    onChange={() =>
+                                      handleCreditCardSelection(item)
+                                    }
+                                  />
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      )}
 
-                              if (numericValue.length > 2) {
-                                const month = numericValue.substring(0, 2);
-                                const year = numericValue.substring(2, 6);
-                                e.target.value = `${month}/${year}`;
-                              } else {
-                                e.target.value = numericValue;
-                              }
-
-                              // Format the year to have a 4-digit length if more than 2 digits are entered
-                              if (numericValue.length >= 3) {
-                                const enteredYear = numericValue.substring(
-                                  2,
-                                  6
-                                );
-                                e.target.value = `${numericValue.substring(
-                                  0,
-                                  2
-                                )}/${enteredYear}`;
-                              }
-                            }}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col>
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
-                          >
-                            CVV *
-                          </label>
-                          <Input
-                            type="number"
-                            id="cvv"
-                            placeholder="123"
-                            name="cvv"
-                            onBlur={financialFormik.handleBlur}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-                              if (/^\d{0,3}$/.test(inputValue)) {
-                                // Only allow up to 3 digits
-                                financialFormik.handleChange(e);
-                              }
-                            }}
-                            value={financialFormik.values.cvv}
-                            maxLength={3}
-                            required
-                            disabled={refund === true}
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  ) : (
-                    ""
-                  )}
+                      {/* Add Credit Card Button */}
+                      {/* <div style={{ display: "flex", flexDirection: "row", marginTop: "10px" }}>
+      <Button
+        color="primary"
+        onClick={() => openCardForm()}
+        style={{
+          background: "white",
+          color: "blue",
+          marginRight: "10px",
+        }}
+      >
+        Add Credit Card
+      </Button>
+    </div> */}
+                    </CardContent>
+                  </Card>
+                    ) : (
+                          ""
+                        )}
                 </>
               ) : selectedPaymentType === "Check" ? (
                 <>
@@ -1476,6 +1711,18 @@ const DemoPayment = () => {
             <Button onClick={closeModal}>Cancel</Button>
           </ModalFooter>
         </Form>
+      </Modal>
+      <Modal isOpen={isModalsOpen} toggle={closeModals}>
+        <ModalHeader toggle={closeModals} className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
+        </ModalHeader>
+        <ModalBody>
+          <CreditCardForm
+            tenantId={tenantId}
+            closeModal={closeModals}
+            //getCreditCard={getCreditCard}
+          />
+        </ModalBody>
       </Modal>
     </>
   );

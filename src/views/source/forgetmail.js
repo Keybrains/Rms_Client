@@ -101,7 +101,7 @@ const Forgetmail = () => {
       const data = {
         tenant_email: mail
       }
-      const res = await axios.post("http://localhost:4000/api/tenant/passwordmail", data);
+      const res = await axios.post("https://propertymanager.cloudpress.host/api/tenant/passwordmail", data);
       if (res) {
         swal("Success!","Mail Sent Successfully","success");
         navigate(`/auth/login`)
