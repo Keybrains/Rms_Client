@@ -66,6 +66,8 @@ import DemoPayment from "views/source/DemoPayment";
 
 import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
 import SuperAdminPlanList from "components/superadmin/Plan/PlanList"; 
+import SuperAdminAdmin from "components/superadmin/Admin/Admin"; 
+import SuperAdminRentals from "components/superadmin/Admin/Rentals"; 
 
 var routes = [
   {
@@ -649,6 +651,20 @@ var routes = [
     name: "Plans",
     icon: "ni ni-pin-3 text-orange",
     component: <SuperAdminPlanList />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/admin",
+    name: "Admin",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminAdmin />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/rentals/:admin_id",
+    name: "Rentals",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminRentals />,
     layout: "/superadmin",
   },
 
