@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -15,21 +15,22 @@ import {
   Media,
   FormGroup,
   Row,
-  Col
+  Col,
 } from "reactstrap";
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { makeStyles } from '@mui/styles';
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import Button from "@mui/material/Button";
+import List from "@mui/material/List";
+import Divider from "@mui/material/Divider";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { makeStyles } from "@mui/styles";
+import { jwtDecode } from "jwt-decode";
 
 const AdminNavbar = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -80,7 +81,9 @@ const AdminNavbar = (props) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
-          const unreadNotifications = data.data.filter(notification => !notification.isAdminread);
+          const unreadNotifications = data.data.filter(
+            (notification) => !notification.isAdminread
+          );
           setNotificationData(unreadNotifications);
           setNotificationCount(unreadNotifications.length);
         } else {
@@ -96,29 +99,32 @@ const AdminNavbar = (props) => {
 
   const navigateToDetails = (workorder_id) => {
     // Make a DELETE request to delete the notification
-    axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=admin `)
+    axios
+      .get(`${baseUrl}/notification/notification/${workorder_id}?role=admin `)
       .then((response) => {
         if (response.status === 200) {
-          const updatedNotificationData = notificationData.map(notification => {
-            if (notification.workorder_id === workorder_id) {
-              return { ...notification, isAdminread: true };
+          const updatedNotificationData = notificationData.map(
+            (notification) => {
+              if (notification.workorder_id === workorder_id) {
+                return { ...notification, isAdminread: true };
+              }
+              return notification;
             }
-            return notification;
-          });
+          );
           setNotificationData(updatedNotificationData);
           //console.log("updatedNotificationData", updatedNotificationData)
           setNotificationCount(updatedNotificationData.length);
           //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
           fetchNotification();
-
         } else {
-          console.error(`Failed to delete notification with workorder_id ${workorder_id}.`);
+          console.error(
+            `Failed to delete notification with workorder_id ${workorder_id}.`
+          );
         }
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-
 
     // Continue with navigating to the details page
     navigate(`/admin/addworkorder/${workorder_id}`);
@@ -134,6 +140,17 @@ const AdminNavbar = (props) => {
   //   //console.log(workorder_id);
   // };
 
+  const [accessType, setAccessType] = useState({});
+
+  React.useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
+
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -145,41 +162,60 @@ const AdminNavbar = (props) => {
             {props.brandText}
           </Link>
           <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
-            <FormGroup className="mb-0" onClick={toggleSidebar} style={{ cursor: 'pointer', position: 'relative' }}>
-              <NotificationsIcon style={{ color: 'white', fontSize: '30px' }} />
+            <FormGroup
+              className="mb-0"
+              onClick={toggleSidebar}
+              style={{ cursor: "pointer", position: "relative" }}
+            >
+              <NotificationsIcon style={{ color: "white", fontSize: "30px" }} />
               {notificationCount > 0 && (
-                <div className="notification-circle" style={{ position: 'absolute', top: '-15px', right: '-20px', background: 'red', borderRadius: '50%', padding: '0.1px 8px' }}>
-                  <span className="notification-count" style={{ color: 'white', fontSize: "13px" }}>{notificationCount}</span>
+                <div
+                  className="notification-circle"
+                  style={{
+                    position: "absolute",
+                    top: "-15px",
+                    right: "-20px",
+                    background: "red",
+                    borderRadius: "50%",
+                    padding: "0.1px 8px",
+                  }}
+                >
+                  <span
+                    className="notification-count"
+                    style={{ color: "white", fontSize: "13px" }}
+                  >
+                    {notificationCount}
+                  </span>
                 </div>
               )}
             </FormGroup>
           </Form>
 
           <Nav className="align-items-center d-none d-md-flex" navbar>
-
             <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
               <div
                 role="presentation"
                 onClick={toggleSidebar}
                 onKeyDown={toggleSidebar}
               >
-                <List style={{ width: '350px' }}>
-                  <h2 style={{ color: 'blue', marginLeft: '15px' }}>
+                <List style={{ width: "350px" }}>
+                  <h2 style={{ color: "blue", marginLeft: "15px" }}>
                     Notifications
                   </h2>
                   <Divider />
                   {notificationData.map((data) => {
                     const notificationTitle =
-                      data.notification_title || 'No Title Available';
+                      data.notification_title || "No Title Available";
                     const notificationDetails =
-                      data.notification_details || 'No Details Available';
-                    const notificationTime = new Date(data.notification_time).toLocaleString();
+                      data.notification_details || "No Details Available";
+                    const notificationTime = new Date(
+                      data.notification_time
+                    ).toLocaleString();
 
                     return (
                       <div key={data._id}>
                         <ListItem
-
-                          style={{ cursor: 'pointer' }}
+                          style={{ cursor: "pointer" }}
                           onClick={() => handlePropertySelect(data)}
                         >
                           <div>
@@ -193,8 +229,13 @@ const AdminNavbar = (props) => {
                                 <Button
                                   variant="contained"
                                   color="primary"
-                                  style={{ textTransform: 'none', fontSize: '12px' }}
-                                  onClick={() => navigateToDetails(data.workorder_id)}
+                                  style={{
+                                    textTransform: "none",
+                                    fontSize: "12px",
+                                  }}
+                                  onClick={() =>
+                                    navigateToDetails(data.workorder_id)
+                                  }
                                 >
                                   View
                                 </Button>
@@ -214,14 +255,11 @@ const AdminNavbar = (props) => {
                       </div>
                     );
                   })}
-
                 </List>
 
                 <Divider />
-
               </div>
             </Drawer>
-
           </Nav>
 
           <Nav className="align-items-center d-none d-md-flex" navbar>
@@ -236,7 +274,7 @@ const AdminNavbar = (props) => {
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
-                      Admin
+                      {accessType.first_name} {accessType.last_name}
                     </span>
                   </Media>
                 </Media>
@@ -263,11 +301,13 @@ const AdminNavbar = (props) => {
                 </DropdownItem>*/}
                 <DropdownItem divider />
                 <DropdownItem
-                  //  href="#rms" 
-                  to="/auth/login" onClick={() => {
+                  //  href="#rms"
+                  to="/auth/login"
+                  onClick={() => {
                     Logout();
-                  }} tag={Link} >
-
+                  }}
+                  tag={Link}
+                >
                   <i className="ni ni-user-run" />
                   <span>Logout</span>
                 </DropdownItem>

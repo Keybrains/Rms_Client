@@ -63,6 +63,7 @@ const PropDetails = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const source = queryParams.get("source");
+  const { rentla_id } = useParams();
   const { id, entryIndex } = useParams();
   const [propertyDetails, setpropertyDetails] = useState({});
   const [loading, setLoading] = useState(true);
@@ -114,7 +115,7 @@ const PropDetails = () => {
   const getRentalsData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/rentals/rentals_summary/${id}`
+        `${baseUrl}/rentals/rentals_summary/${rentla_id}`
       );
 
       setpropertyDetails(response.data.data);
@@ -173,7 +174,7 @@ const PropDetails = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -1390,6 +1391,7 @@ const PropDetails = () => {
                       </Table>
                     </div>
                   </TabPanel>
+
                   <TabPanel value="financial">
                     <>
                       <Col

@@ -62,12 +62,13 @@ import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
 import DemoPayment from "views/source/DemoPayment";
 
-// ==========================  Super Admin =================================================== 
+// ==========================  Super Admin ===================================================
 
 import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
-import SuperAdminPlanList from "components/superadmin/Plan/PlanList"; 
+import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
 import SuperAdminAdmin from "components/superadmin/Admin/Admin"; 
 import SuperAdminRentals from "components/superadmin/Admin/Rentals"; 
+import PropDetails2 from "views/source/PropDetails2";
 
 var routes = [
   {
@@ -183,7 +184,6 @@ var routes = [
     layout: "/auth",
   },
 
-
   {
     path: "/RentRoll",
     name: "RentRoll",
@@ -255,6 +255,12 @@ var routes = [
     layout: "/admin",
   },
   {
+    path: "/PropDetails2/:rentla_id",
+    name: "Prop Details",
+    component: <PropDetails2 />,
+    layout: "/admin",
+  },
+  {
     path: "/OutstandDetails/:id",
     name: "OutstandDetails",
     component: <OutstandDetails />,
@@ -299,7 +305,7 @@ var routes = [
     path: "/tenantFinancial",
     name: "Financial",
     icon: "ni ni-money-coins text-purple",
-    component: <TenantFinancial/>,
+    component: <TenantFinancial />,
     layout: "/tenant",
   },
 
@@ -629,14 +635,12 @@ var routes = [
     layout: "/admin",
   },
   {
-    path:"/trial-login",
+    path: "/trial-login",
     component: <TrialLogin />,
-    layout: "/trial"
+    layout: "/trial",
   },
 
-
-
-  // ==========================  Super Admin =================================================== 
+  // ==========================  Super Admin ===================================================
 
   {
     path: "/dashboard",
@@ -669,6 +673,5 @@ var routes = [
   },
 
 ];
-
 
 export default routes;
