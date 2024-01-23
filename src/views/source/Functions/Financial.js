@@ -1,4 +1,8 @@
+import axios from "axios";
 import moment from "moment";
+
+const baseUrl = process.env.REACT_APP_BASE_URL;
+const imageUrl = process.env.REACT_APP_IMAGE_URL;
 
 const financialTypeArray = ["Month to date", "Three months to date", "All"];
 
@@ -42,10 +46,42 @@ const calculateNetIncome = (property) => {
   return netIncome;
 };
 
+const handleImageChange = async (event, rental_id) => {
+  const files = event.target.files;
+
+  const formData = new FormData();
+  formData.append(`files`, files[0]);
+
+  console.log(files, "yashuj");
+  var image;
+  try {
+    const result = await axios.post(`${imageUrl}/images/upload`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log(result, "yashuj");
+    image = {
+      prop_image: result.data.files[0].url,
+    };
+  } catch (error) {
+    console.error(error, "yashuj");
+  }
+  console.log(image, "yashuj");
+  // axios
+  //   .put(`${baseUrl}/rentals/proparty_image/${rental_id}`, image)
+  //   .then((response) => {
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
+};
+
 export {
   financialTypeArray,
   todayDate,
   calculateTotalIncome,
   calculateTotalExpenses,
   calculateNetIncome,
+  handleImageChange,
 };

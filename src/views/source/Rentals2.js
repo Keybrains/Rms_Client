@@ -1,270 +1,180 @@
-import React from "react";
+import RentalHeader from "components/Headers/RentalHeader";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
-  CardHeader,
   CardBody,
-  FormGroup,
+  CardHeader,
+  Col,
+  Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Form,
+  FormGroup,
   Input,
   InputGroup,
   InputGroupAddon,
-  Container,
   Row,
-  Col,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Label,
 } from "reactstrap";
-import { jwtDecode } from "jwt-decode";
-import { useState, useEffect } from "react";
-import RentalHeader from "components/Headers/RentalHeader.js";
-import Checkbox from "@mui/material/Checkbox";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import InputAdornment from "@mui/material/InputAdornment";
-import EmailIcon from "@mui/icons-material/Email";
-import PhoneIcon from "@mui/icons-material/Phone";
-import HomeIcon from "@mui/icons-material/Home";
-import BusinessIcon from "@mui/icons-material/Business";
-import DialogTitle from "@mui/material/DialogTitle";
-import TextField from "@mui/material/TextField";
-import axios from "axios";
 import * as yup from "yup";
-import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
-import swal from "sweetalert";
-import { useMediaQuery } from "@material-ui/core";
 import ClearIcon from "@mui/icons-material/Clear";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Cookies from "universal-cookie";
-import { OpenImageDialog } from "components/OpenImageDialog";
-import { Autocomplete } from "@mui/material";
-import moment from "moment/moment";
-import CircularProgress from "@mui/material/CircularProgress";
+import {
+  Autocomplete,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
+import BusinessIcon from "@mui/icons-material/Business";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
+import HomeIcon from "@mui/icons-material/Home";
+import { useFormik } from "formik";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import swal from "sweetalert";
 
-const Rentals = () => {
+//rentals
+import {
+  dialogPaperStyles,
+  editProperty,
+  handleSubmit,
+} from "./Functions/Rentals";
+
+//units
+import { roomsArray, bathArray } from "./Functions/Units";
+
+const Rentals2 = () => {
+  const { rental_id } = useParams();
+  const navigate = useNavigate();
+
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
-  const [prodropdownOpen, setproDropdownOpen] = React.useState(null);
-  const [bankdropdownOpen, setbankDropdownOpen] = React.useState(false);
-  const [userdropdownOpen, setuserDropdownOpen] = React.useState(false);
-  const [baddropdownOpen, setbadDropdownOpen] = React.useState(null);
-  const [bathdropdownOpen, setBathDropdownOpen] = React.useState(null);
 
-  const [isAddBankDialogOpen, setAddBankDialogOpen] = useState(false);
-  const [isPhotoDialogOpen, setPhotoDialogOpen] = useState(false);
-  const [isRentalDialogOpen, setRentalDialogOpen] = useState(false);
-  const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
-
-  const [propertyData, setPropertyData] = useState([]);
-  const [rentalownerData, setRentalownerData] = useState([]);
-  const [selectedUser, setSelectedUser] = useState("");
-  const [selectedUserId, setSelectedUserId] = useState("");
+  const [loader, setLoader] = useState(false);
+  const [display, setDisplay] = useState(false);
+  const [selectedPropType, setSelectedPropType] = useState("");
+  const [open, setOpen] = useState(false);
+  const [propType, setPropType] = useState("");
   const [StaffMemberData, setStaffMemberData] = useState([]);
-  const [selectedProp, setSelectedProp] = useState("");
-  const [selectedPropId, setSelectedPropId] = useState("");
-  const [selectedBank, setSelectedBank] = useState("");
-  const [selectedBad, setSelectedBad] = useState("");
-  const [open, setOpen] = React.useState(false);
-  // const [open, setOpen] = useState(false);
-  // const [uploadedImage, setUploadedImage] = useState(null);
-  // const [selectedPhoto, setSelectedPhoto] = useState(null);
-
-  // const [selectedCategory, setSelectedCategory] = useState("");
-  // const [selectedSubtype, setSelectedSubtype] = useState("");
+  const [selectedUser, setSelectedUser] = useState("");
+  const [userdropdownOpen, setuserDropdownOpen] = useState(false);
+  const [proDropdownOpen, setproDropdownOpen] = useState(false);
+  const [showRentalOwnerTable, setshowRentalOwnerTable] = useState(false);
+  const [isRentalDialogOpen, setRentalDialogOpen] = useState(false);
+  const [checkedCheckbox, setCheckedCheckbox] = useState();
+  const [selectedRentalOwnerData, setSelectedRentalOwnerData] = useState([]);
+  const [rentalownerData, setRentalownerData] = useState([]);
+  const [propertyData, setPropertyData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [accessType, setAccessType] = useState({});
 
   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
-  const toggle2 = () => setbankDropdownOpen((prevState) => !prevState);
   const toggle3 = () => setuserDropdownOpen((prevState) => !prevState);
-  const toggle4 = (index) =>
-    setbadDropdownOpen((prevIndex) => (prevIndex === index ? null : index));
-  const toggle5 = (index) =>
-    setBathDropdownOpen((prevState) => (prevState === index ? null : index));
 
-  const [openImage, setOpenImage] = React.useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const isSmallScreen = useMediaQuery("(max-width:600px)");
-  const [rentalsData, setRentalsData] = useState(null);
-  const [selectedRentalOwnerData, setSelectedRentalOwnerData] = useState([]);
-  // console.log(selectedRentalOwnerData, "selectedRentalOwnerData");
-  const [selectedrentalOwners, setSelectedrentalOwners] = useState([]);
-  const [showRentalOwnerTable, setshowRentalOwnerTable] = useState(false);
-  const [checkedCheckbox, setCheckedCheckbox] = useState();
-  const [searchQuery, setSearchQuery] = useState("");
+  const residentialSchema = yup.object({
+    rental_sqft: yup.string().required("Required"),
+  });
 
-  const bathArray = [
-    "1 Bath",
-    "1.5 Bath",
-    "2 Bath",
-    "2.5 Bath",
-    "3 Bath",
-    "3.5 Bath",
-    "4 Bath",
-    "4.5 Bath",
-    "5 Bath",
-    "5+ Bath",
-  ];
+  const commercialSchema = yup.object({
+    rental_sqft: yup.string().required("Required"),
+  });
 
-  const roomsArray = [
-    "1 Bed",
-    "2 Bed",
-    "3 Bed",
-    "4 Bed",
-    "5 Bed",
-    "6 Bed",
-    "7 Bed",
-    "8 Bed",
-    "9 Bed",
-    "9+ Bed",
-  ];
+  const residentialSchema2 = yup.object({
+    rental_unit: yup.string().required("Required"),
+    rental_sqft: yup.string().required("Required"),
+  });
 
-  const handleChange = () => {
-    setshowRentalOwnerTable(!showRentalOwnerTable);
-  };
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value);
-  };
+  const commercialSchema2 = yup.object({
+    rental_sqft: yup.string().required("Required"),
+    rental_unit: yup.string().required("Required"),
+  });
 
-  const handleCheckboxChange = (event, rentalOwnerInfo, phoneNumber) => {
-    if (checkedCheckbox === phoneNumber) {
-      // If the checkbox is already checked, uncheck it
-      setCheckedCheckbox(null);
-      rentalOwnerFormik.setValues({
-        rentalOwner_firstName: "",
-        rentalOwner_lastName: "",
-        rentalOwner_phoneNumber: "",
-        rentalOwner_businessNumber: "",
-        rentalOwner_homeNumber: "",
-        rentalOwner_primaryEmail: "",
-        rentalOwner_companyName: "",
-      });
-    } else {
-      // Otherwise, check the checkbox
-      setCheckedCheckbox(phoneNumber);
-    }
+  let rentalsFormik = useFormik({
+    initialValues: {
+      rentalowner_id: "",
+      rental_id: "",
+      rental_adress: "",
+      is_rent_on: false,
+      rental_city: "",
+      rental_state: "",
+      rental_country: "",
+      rental_postcode: "",
+      staffmember_id: "",
+      staffmember_name: "",
+      property_type: "",
 
-    // Toggle the selected rentalOwners in the state when their checkboxes are clicked
-    if (event.target.checked) {
-      console.log(
-        [rentalOwnerInfo, ...selectedrentalOwners],
-        "[rentalOwnerInfo, ...selectedrentalOwners]"
-      );
-      setSelectedrentalOwners([rentalOwnerInfo, ...selectedrentalOwners]);
-    } else {
-      setSelectedrentalOwners(
-        selectedrentalOwners.filter(
-          (rentalOwner) => rentalOwner !== rentalOwnerInfo
-        )
-      );
-    }
-  };
+      //RESIDENTIAL
+      residential: [
+        {
+          rental_bed: "",
+          rental_bath: "",
+          propertyres_image: [],
+          rental_sqft: "",
+          rental_unit: "",
+          rental_unit_adress: "",
+        },
+      ],
 
-  const handleAddrentalOwner = () => {
-    if (selectedrentalOwners.length === 0) {
-      const newrentalOwnerDetails = {
-        firstName: rentalOwnerFormik.values.rentalOwner_firstName,
-        lastName: rentalOwnerFormik.values.rentalOwner_lastName,
-        phoneNumber: rentalOwnerFormik.values.rentalOwner_phoneNumber,
-      };
-      setSelectedRentalOwnerData(newrentalOwnerDetails);
-      if (!id) {
-        swal("Success!", "Rental Owner Added Successfully", "success");
+      //COMMERCIAL
+      commercial: [
+        {
+          rental_sqft: "",
+          rental_unit: "",
+          rental_unit_adress: "",
+          property_image: [],
+        },
+      ],
+    },
+    validationSchema: yup.object({
+      rental_postcode: yup.string().required("Required"),
+      property_type: yup.string().required("Required"),
+      rental_adress: yup.string().required("Required"),
+      rental_city: yup.string().required("Required"),
+      rental_country: yup.string().required("Required"),
+      rental_state: yup.string().required("Required"),
+      ...(selectedPropType.is_multiunit
+        ? propType === "Residential"
+          ? { residential: yup.array().of(residentialSchema2) }
+          : { commercial: yup.array().of(commercialSchema2) }
+        : propType === "Residential"
+        ? { residential: yup.array().of(residentialSchema) }
+        : { commercial: yup.array().of(commercialSchema) }),
+    }),
+    onSubmit: async (values) => {
+      if (selectedRentalOwnerData.length !== 0) {
+        try {
+          const res = await handleSubmit(
+            values,
+            rentalOwnerFormik.values,
+            accessType.admin_id,
+            selectedPropType.property_id
+          );
+          if (res === false) {
+            setLoader(false);
+            navigate("/admin/propertiesTable");
+          } else {
+            setLoader(false);
+          }
+        } catch {
+          setLoader(false);
+        }
+      } else {
+        setDisplay(true);
       }
-    } else {
-      console.log(selectedrentalOwner, "selectedrentalOwner");
-      setSelectedrentalOwners([]);
-      const selectedrentalOwner = selectedrentalOwners[0];
-      console.log(selectedrentalOwners, "selectedrentalOwners");
-      const rentalOwnerParts = selectedrentalOwner
-        .split("-")
-        .map((part) => part.trim());
-      rentalsFormik.setFieldValue(
-        "rentalOwner_firstName",
-        rentalOwnerParts[0] || ""
-      );
-      rentalsFormik.setFieldValue(
-        "rentalOwner_lastName",
-        rentalOwnerParts[1] || ""
-      );
-      rentalsFormik.setFieldValue(
-        "rentalOwner_phoneNumber",
-        rentalOwnerParts[2] || ""
-      );
-      rentalsFormik.setFieldValue(
-        "rentalOwner_companyName",
-        rentalOwnerParts[3] || ""
-      );
-      rentalsFormik.setFieldValue(
-        "rentalOwner_primaryEmail",
-        rentalOwnerParts[4] || ""
-      );
+    },
+  });
 
-      rentalsFormik.setFieldValue(
-        "rentalOwner_homeNumber",
-        rentalOwnerParts[5] || ""
-      );
-      rentalsFormik.setFieldValue(
-        "rentalOwner_businessNumber",
-        rentalOwnerParts[6] || ""
-      );
-      const rentalOwnerDetails = {
-        firstName: rentalOwnerParts[0],
-        lastName: rentalOwnerParts[1],
-        phoneNumber: rentalOwnerParts[2],
-        companyName: rentalOwnerParts[3],
-        primaryEmail: rentalOwnerParts[4],
-        homeNumber: rentalOwnerParts[5],
-        businessNumber: rentalOwnerParts[6],
-      };
-      setSelectedRentalOwnerData(rentalOwnerDetails);
-      // console.log(rentalOwnerParts);
-      if (!id) {
-        swal("Success!", "rentalOwner details Added", "success");
-      }
-    }
-    setDisplay(false);
-  };
-
-  const dialogPaperStyles = {
-    maxWidth: "lg",
-    width: "100%",
-    verflowY: "auto",
-  };
-  const [propType, setPropType] = useState("");
-
-  const handlePropSelection = (propertyType) => {
-    rentalsFormik.values.entries[0].property_type =
-      propertyType.propertysub_type;
-    setSelectedProp(propertyType);
-    setPropType(propertyType.property_type);
-    setSelectedPropId(propertyType.property_id);
-  };
-
-  const togglePhotoDialog = () => {
-    setPhotoDialogOpen((prevState) => !prevState);
-  };
-
-  const togglePhotoresDialog = () => {
-    setPhotoresDialogOpen((prevState) => !prevState);
-  };
-
-  const handleUserSelection = (value, id) => {
-    setSelectedUser(value);
-    setSelectedUserId(id);
-    setuserDropdownOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setRentalDialogOpen(false);
-  };
   let rentalOwnerFormik = useFormik({
     initialValues: {
+      rentalowner_id: "",
       rentalOwner_firstName: "",
       rentalOwner_lastName: "",
       rentalOwner_companyName: "",
@@ -275,895 +185,192 @@ const Rentals = () => {
       chooseExistingOwner: false,
     },
     validationSchema: yup.object({
-      rentalOwner_firstName: yup.string().required("First Name is required"),
-      rentalOwner_lastName: yup.string().required("Last Name is required"),
-      rentalOwner_primaryEmail: yup
-        .string()
-        .email("Invalid email address")
-        .required("Email is required"),
-      rentalOwner_phoneNumber: yup
-        .string()
-        .required("Phone Number is required"),
+      rentalOwner_firstName: yup.string().required("Required"),
+      rentalOwner_lastName: yup.string().required("Required"),
+      rentalOwner_phoneNumber: yup.string().required("Required"),
     }),
     onSubmit: () => {
-      // console.log(values, "values");
       setshowRentalOwnerTable(false);
       handleAddrentalOwner();
       handleClose();
     },
   });
 
-  console.log(selectedRentalOwnerData, "yashuje")
-  const residentialSchema = yup.object({
-    rental_sqft: yup.string().required("Required"),
-    // Add more validations as needed for residential entries
-  });
-
-  // Define a schema for the commercial entry
-  const commercialSchema = yup.object({
-    rentalcom_sqft: yup.string().required("Required"),
-    // Add more validations as needed for commercial entries
-  });
-  const residentialSchema2 = yup.object({
-    rental_units: yup.string().required("Required"),
-    rental_sqft: yup.string().required("Required"),
-    // Add more validations as needed for residential entries
-  });
-
-  // Define a schema for the commercial entry
-  const commercialSchema2 = yup.object({
-    rentalcom_sqft: yup.string().required("Required"),
-    rentalcom_units: yup.string().required("Required"),
-    // Add more validations as needed for commercial entries
-  });
-
-  const entrySchema = yup.object({
-    property_type: yup.string().required("Required"),
-    rental_postcode: yup.string().required("Required"),
-    rental_adress: yup.string().required("Required"),
-    rental_city: yup.string().required("Required"),
-    rental_country: yup.string().required("Required"),
-    rental_state: yup.string().required("Required"),
-    // Add conditional validations for residential or commercial entries
-    ...(selectedProp.is_multiunit
-      ? propType === "Residential"
-        ? { residential: yup.array().of(residentialSchema2) }
-        : { commercial: yup.array().of(commercialSchema2) }
-      : propType === "Residential"
-      ? { residential: yup.array().of(residentialSchema) }
-      : { commercial: yup.array().of(commercialSchema) }),
-  });
-
-  let rentalsFormik = useFormik({
-    initialValues: {
-      //   Add Rental owner
-      rentalOwner_firstName: "",
-      rentalOwner_lastName: "",
-      rentalOwner_companyName: "",
-      rentalOwner_primaryEmail: "",
-      rentalOwner_phoneNumber: "",
-      rentalOwner_homeNumber: "",
-      rentalOwner_businessNumber: "",
-
-      entries: [
-        {
-          rental_id: "",
-          property_type: "",
-          // propertysub_type: "",
-          rental_adress: "",
-          rental_city: "",
-          rental_country: "",
-          rental_state: "",
-          rental_postcode: "",
-          rentalOwner_operatingAccount: "",
-          rentalOwner_propertyReserve: "",
-          staffMember: "",
-          type: "",
-          //rooms
-          //RESIDENTIAL
-          residential: [
-            {
-              rental_bed: "",
-              rental_bath: "",
-              propertyres_image: [],
-              rental_sqft: "",
-              rental_units: "",
-              rental_unitsAdress: "",
-            },
-          ],
-
-          //COMMERCIAL
-          commercial: [
-            {
-              rentalcom_sqft: "",
-              rentalcom_units: "",
-              rentalcom_unitsAdress: "",
-              property_image: [],
-            },
-          ],
-        },
-      ],
-    },
-    validationSchema: yup.object({
-      rentalOwner_primaryEmail: yup
-        .string()
-        .email("Invalid email address")
-        .required("Required"),
-      rentalOwner_firstName: yup.string().required("Required"),
-      rentalOwner_lastName: yup.string().required("Required"),
-      rentalOwner_phoneNumber: yup.string().required("Required"),
-      entries: yup.array().of(entrySchema),
-    }),
-    onSubmit: (values) => {
-      if (selectedRentalOwnerData.length !== 0) {
-        handleSubmit(values);
-      } else {
-        setDisplay(true);
-      }
-    },
-  });
-
-  const handleRentalownerDelete = () => {
-    setSelectedRentalOwnerData([]);
-    rentalOwnerFormik.setValues({
-      rentalOwner_firstName: "",
-      rentalOwner_lastName: "",
-      rentalOwner_primaryEmail: "",
-      rentalOwner_phoneNumber: "",
-      rentalOwner_companyName: "",
-      rentalOwner_homeNumber: "",
-      rentalOwner_businessNumber: "",
-    });
-
-    // console.log("first");
-  };
-
-  const [selectedbath, setSelectedbath] = useState("");
-  const handleBathSelect = (bath, index) => {
-    rentalsFormik.setFieldValue(
-      `entries[0].residential[${index}].rental_bath`,
-      bath
-    );
-    // setSelectedbath(bath);
-    // setSelectedbath(bath);
-  };
-
-  const [display, setDisplay] = React.useState(false);
-  const [selectedOperatingAccount, setSelectedOperatingAccount] = useState("");
-  const handleOperatingAccount = (operatingAccount) => {
-    setSelectedOperatingAccount(operatingAccount);
-    localStorage.setItem("operatingAccount", operatingAccount);
-  };
-  let cookies = new Cookies();
-  const [accessType, setAccessType] = useState({});
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
-  }, [navigate]);
+  }, []);
 
-  // ==================================================================
+  const fetchEditeData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/rentals/rental_summary/${rental_id}`
+      );
 
-  const { id, entryIndex } = useParams();
-  const { rental_id } = useParams();
-  const [residentialImage, setResidentialImage] = useState([]);
-  const [commercialImage, setCommercialImage] = useState([]);
+      const response2 = await axios.get(
+        `${baseUrl}/unit/rental_unit/${rental_id}`
+      );
 
-  const fileData = async (e, type, i) => {
-    const files = Array.from(e.target.files).map((file) =>
-      URL.createObjectURL(file)
-    );
+      setPropType(response.data.data[0].property_type_data.property_type);
+      setSelectedPropType(response.data.data[0].property_type_data);
+      setSelectedUser(response.data.data[0].staffmember_data.staffmember_name);
 
-    if (type === "property_image") {
-      setCommercialImage((prevCommercialImage) => {
-        const newFiles = [...prevCommercialImage];
+      rentalsFormik.setValues({
+        rental_id: response.data.data[0].rental_id,
+        rental_adress: response.data.data[0].rental_adress,
+        is_rent_on: response.data.data[0].is_rent_on,
+        rental_city: response.data.data[0].rental_city,
+        rental_state: response.data.data[0].rental_state,
+        rental_country: response.data.data[0].rental_country,
+        rental_postcode: response.data.data[0].rental_postcode,
+        staffmember_id: response.data.data[0].staffmember_id,
+        staffmember_name: response.data.data[0].staffmember_name,
+        residential:
+          response.data.data[0].property_type_data.property_type ===
+          "Residential"
+            ? response2.data.data.map((item) => {
+                const {
+                  rental_unit,
+                  rental_unit_adress,
+                  rental_sqft,
+                  rental_bath,
+                  rental_bed,
+                  rental_images,
+                  unit_id,
+                } = item;
 
-        // Ensure the array at index i exists or initialize it as an empty array
-        if (!newFiles[i]) {
-          newFiles[i] = [];
-        }
+                return {
+                  rental_unit: rental_unit,
+                  rental_unit_adress: rental_unit_adress,
+                  rental_sqft: rental_sqft,
+                  rental_bath: rental_bath,
+                  rental_bed: rental_bed,
+                  rental_images: rental_images,
+                  unit_id: unit_id,
+                };
+              })
+            : [],
+        commercial:
+          response.data.data[0].property_type_data.property_type ===
+          "Commercial"
+            ? response2.data.data.map((item) => {
+                const {
+                  rental_unit,
+                  rental_unit_adress,
+                  rental_sqft,
+                  rental_images,
+                  unit_id,
+                } = item;
 
-        newFiles[i] = [...newFiles[i], ...files];
-        return newFiles;
+                return {
+                  rental_unit: rental_unit,
+                  rental_unit_adress: rental_unit_adress,
+                  rental_sqft: rental_sqft,
+                  rental_images: rental_images,
+                  unit_id: unit_id,
+                };
+              })
+            : [],
       });
-    } else {
-      setResidentialImage((prevResidentialImage) => {
-        const newFiles = [...prevResidentialImage];
 
-        // Ensure the array at index i exists or initialize it as an empty array
-        if (!newFiles[i]) {
-          newFiles[i] = [];
-        }
-
-        newFiles[i] = [...newFiles[i], ...files];
-        return newFiles;
+      rentalOwnerFormik.setValues({
+        rentalowner_id: response.data.data[0].rental_owner_data.rentalowner_id,
+        rentalOwner_firstName:
+          response.data.data[0].rental_owner_data.rentalOwner_firstName,
+        rentalOwner_lastName:
+          response.data.data[0].rental_owner_data.rentalOwner_lastName,
+        rentalOwner_companyName:
+          response.data.data[0].rental_owner_data.rentalOwner_companyName,
+        rentalOwner_primaryEmail:
+          response.data.data[0].rental_owner_data.rentalOwner_primaryEmail,
+        rentalOwner_phoneNumber:
+          response.data.data[0].rental_owner_data.rentalOwner_phoneNumber,
+        rentalOwner_homeNumber:
+          response.data.data[0].rental_owner_data.rentalOwner_homeNumber,
+        rentalOwner_businessNumber:
+          response.data.data[0].rental_owner_data.rentalOwner_businessNumber,
+        chooseExistingOwner: false,
       });
+
+      setSelectedRentalOwnerData(response.data.data[0].rental_owner_data);
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  };
+
+  const fetchPropertyTypeData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/propertytype/property_type/${accessType.admin_id}`
+      );
+      setPropertyData(response.data.data);
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
+  const fetchRentalOwnerData = async () => {
+    try {
+      const response = await fetch(
+        `${baseUrl}/rentals/rental-owners/${accessType.admin_id}`
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        setRentalownerData(data || []);
+      } else {
+        console.error("Error:", data.message || "Failed to fetch data");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
+  const fetchStaffMemberData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/staffmember/staff_member/${accessType.admin_id}`
+      );
+      setStaffMemberData(response.data.data);
+    } catch (error) {
+      console.error("Network error:", error);
     }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${baseUrl}/rentals/rental-owners/${accessType.admin_id}`
-        );
-        const data = await response.json();
+    fetchEditeData();
+  }, [rental_id]);
 
-        if (response.ok) {
-          setRentalownerData(data || []); // Ensure data is an array or handle empty data
-          console.log("Here is the fetched data:", data);
-        } else {
-          console.error("Error:", data.message || "Failed to fetch data");
-        }
-      } catch (error) {
-        console.error("Network error:", error);
-      }
-    };
+  useEffect(() => {
+    fetchPropertyTypeData();
+    fetchRentalOwnerData();
+    fetchStaffMemberData();
+  }, [accessType]);
 
-    fetchData();
-  }, [accessType]); // Add dependencies that trigger a refetch if changed
-  // console.log(commercialImage, "commercialImage");
+  const handleClose = () => {
+    setOpen(false);
+    setRentalDialogOpen(false);
+  };
 
-  let navigate = useNavigate();
   const handleCloseButtonClick = () => {
-    // Use history.push to navigate to the PropertiesTable page
     navigate("../propertiesTable");
   };
 
-  const clearSelectedPhoto = (index, name, indexes) => {
-    if (name === "propertyres_image") {
-      setResidentialImage((prevResidentialImage) => {
-        const filteredImage = prevResidentialImage.map((residentialUnit, i) => {
-          if (i === indexes) {
-            return residentialUnit.filter((item, j) => j !== index);
-          }
-          return residentialUnit;
-        });
-        return filteredImage;
-      });
-    } else {
-      setCommercialImage((prevResidentialImage) => {
-        const filteredImage = prevResidentialImage.map((residentialUnit, i) => {
-          if (i === indexes) {
-            return residentialUnit.filter((item, j) => j !== index);
-          }
-          return residentialUnit;
-        });
-        return filteredImage;
-      });
-    }
-  };
-
-  useEffect(() => {
-    // Make an HTTP GET request to your Express API endpoint
-    fetch(`${baseUrl}/propertytype/property_type/${accessType.admin_id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setPropertyData(data.data);
-        } else {
-          // Handle error
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        // Handle network error
-        console.error("Network error:", error);
-      });
-  }, [accessType]);
-
-  useEffect(() => {
-    // Make an HTTP GET request to your Express API endpoint
-    fetch(`${baseUrl}/staffmember/staff_member/${accessType.admin_id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setStaffMemberData(data.data);
-        } else {
-          // Handle error
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        // Handle network error
-        console.error("Network error:", error);
-      });
-  }, [accessType]);
-
-  const [unitData, setUnitData] = useState([]);
-  const [rentalOwnerData, setRentalOwnerData] = useState([]);
-
-  useEffect(() => {
-    if (rental_id) {
-      axios
-        .get(`${baseUrl}/rentals/rental_summary/${rental_id}`)
-        .then((response) => {
-          const propertysData = response.data.data[0];
-          
-          setRentalOwnerData(propertysData.rental_owner_data);
-          
-          rentalOwnerFormik.setValues({
-            rentalOwner_firstName: propertysData.rental_owner_data.rentalOwner_firstName || "",
-            rentalOwner_lastName: propertysData.rental_owner_data.rentalOwner_lastName || "",
-            rentalOwner_primaryEmail:
-            propertysData.rental_owner_data.rentalOwner_primaryEmail || "",
-            rentalOwner_phoneNumber:
-            propertysData.rental_owner_data.rentalOwner_phoneNumber || "",
-            rentalOwner_companyName:
-            propertysData.rental_owner_data.rentalOwner_companyName || "",
-            rentalOwner_homeNumber: propertysData.rental_owner_data.rentalOwner_homeNumber || "",
-            rentalOwner_businessNumber:
-            propertysData.rental_owner_data.rentalOwner_businessNumber || "",
-          });
-
-          setSelectedRentalOwnerData({
-            rentalOwner_firstName: propertysData.rental_owner_data.rentalOwner_firstName || "",
-            rentalOwner_lastName: propertysData.rental_owner_data.rentalOwner_lastName || "",
-            rentalOwner_phoneNumber: propertysData.rental_owner_data.rentalOwner_phoneNumber || "",
-            rentalOwner_homeNumber: propertysData.rental_owner_data.rentalOwner_homeNumber || "",
-            rentalOwner_businessNumber:
-            propertysData.rental_owner_data.rentalOwner_businessNumber || "",
-          });
-          
-          console.log(propertysData.property_type_data, "yashuj2");
-          setSelectedProp(propertysData.property_type_data || "yashuj2");
-
-          const matchedProperty = propertysData;
-
-          setSelectedbath(matchedProperty.rental_bath || "Select");
-          setSelectedBad(matchedProperty.rental_bed || "Select");
-          setSelectedBank(
-            matchedProperty.rentalOwner_operatingAccount || "Select"
-          );
-          setCommercialImage(matchedProperty.property_image || "");
-
-          setResidentialImage(matchedProperty.propertyres_image || "");
-          setSelectedUser(matchedProperty.staffMember || "Select");
-
-          rentalsFormik.setFieldValue(
-            "entries[0].rental_adress",
-            matchedProperty.rental_adress || ""
-          );
-          rentalsFormik.setFieldValue(
-            "entries[0].rental_city",
-            matchedProperty.rental_city || ""
-          );
-          rentalsFormik.setFieldValue(
-            "entries[0].rental_country",
-            matchedProperty.rental_country || ""
-          );
-          rentalsFormik.setFieldValue(
-            "entries[0].rental_state",
-            matchedProperty.rental_state || ""
-          );
-          rentalsFormik.setFieldValue(
-            "entries[0].rental_postcode",
-            matchedProperty.rental_postcode || ""
-          );
-          getUnitData(propertysData._id);
-        })
-        .catch((error) => {
-          console.error("Error fetching rentals data:", error);
-        });
-    }
-  }, [rental_id]);
-
-  const getUnitData = async (id) => {
-    await axios
-      .get(`${baseUrl}/propertyunit/propertyunit/` + id)
-      .then((res) => {
-        // setUnitProperty(res.data.data);
-        // console.log(res.data.data, "property unit");
-        // setPropertyUnit(res.data.data);
-        // const matchedUnit = res.data.data.filter(
-        //   (item) => item._id ===
-        // );
-        // console.log(matchedUnit, "matchedUnit");
-        // setClickedObject(matchedUnit[0]);
-        setUnitData(res.data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  // console.log(residentialImage, "residentialImage");
-  // console.log(propType, "proptype");
-  const [loader, setLoader] = useState(false);
-
-  const handleSubmit = async (values) => {
-    // console.log(propType, "values");
-    setLoader(true);
-    const entriesArray = [];
-    if (propType === "Residential") {
-      // if (residentialImage && residentialImage.length > 0) {
-      //   for (let i = 0; i < residentialImage.length; i++) {
-      //     const fileArray = residentialImage[i];
-
-      //     if (fileArray && fileArray.length > 0) {
-      //       for (let j = 0; j < fileArray.length; j++) {
-      //         const fileUrl = fileArray[j];
-
-      //         try {
-      //           // Fetch the file using the URL
-      //           const response = await fetch(fileUrl);
-      //           const blob = await response.blob();
-
-      //           const file = new File([blob], `residential_${i}_${j}.png`, {
-      //             type: blob.type,
-      //           });
-
-      //           const formData = new FormData();
-      //           formData.append("files", file);
-      //           const url = `${imageUrl}/images/upload`; // Use the correct endpoint for multiple files upload
-      //           try {
-      //             const result = await axios.post(url, formData, {
-      //               headers: {
-      //                 "Content-Type": "multipart/form-data",
-      //               },
-      //             });
-      //             residentialImage[i][j] = result.data.files.map(
-      //               (file) => file.url
-      //             );
-      //           } catch (error) {
-      //             console.error(error, "error");
-      //           }
-      //         } catch (error) {
-      //           console.error(`Error fetching file at index ${i}-${j}:`, error);
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
-
-      // entriesArray.push(entriesObject);
-
-      // const leaseObject = {
-      //   //   Add Rental owner
-      //   rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
-      //   rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
-      //   rentalOwner_companyName:
-      //     rentalOwnerFormik.values.rentalOwner_companyName,
-      //   rentalOwner_primaryEmail:
-      //     rentalOwnerFormik.values.rentalOwner_primaryEmail,
-      //   rentalOwner_phoneNumber:
-      //     rentalOwnerFormik.values.rentalOwner_phoneNumber,
-      //   rentalOwner_homeNumber: rentalOwnerFormik.values.rentalOwner_homeNumber,
-      //   rentalOwner_businessNumber:
-      //     rentalOwnerFormik.values.rentalOwner_businessNumber,
-      //   entries: entriesArray,
-      // };
-      // const entriesObject = {
-      //   property_type: selectedProp.propertysub_type,
-      //   rental_adress: rentalsFormik.values.entries[0].rental_adress,
-      //   rental_city: rentalsFormik.values.entries[0].rental_city,
-      //   rental_state: rentalsFormik.values.entries[0].rental_state,
-      //   rental_country: rentalsFormik.values.entries[0].rental_country,
-      //   rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-      //   rental_sqft: rentalsFormik.values.entries[0].rental_soft,
-      //   rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
-      //   rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
-      //   staffMember: selectedUser,
-      //   //RESIDENTIAL
-      //   residential: rentalsFormik.values.entries[0].residential,
-      // };
-      // residentialImage.map((data, index) => {
-      //   rentalsFormik.values.entries[0].residential[index].propertyres_image =
-      //     data;
-      // });
-      const object = {
-        rentalOwner: {
-          admin_id: accessType.admin_id,
-          rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
-          rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
-          rentalOwner_companyName:
-            rentalOwnerFormik.values.rentalOwner_companyName,
-          rentalOwner_primaryEmail:
-            rentalOwnerFormik.values.rentalOwner_primaryEmail,
-          rentalOwner_phoneNumber:
-            rentalOwnerFormik.values.rentalOwner_phoneNumber,
-          rentalOwner_homeNumber:
-            rentalOwnerFormik.values.rentalOwner_homeNumber,
-          rentalOwner_businessNumber:
-            rentalOwnerFormik.values.rentalOwner_businessNumber,
-        },
-        rental: {
-          admin_id: accessType.admin_id,
-          property_id: selectedPropId,
-          rental_adress: rentalsFormik.values.entries[0].rental_adress,
-          rental_city: rentalsFormik.values.entries[0].rental_city,
-          rental_state: rentalsFormik.values.entries[0].rental_state,
-          rental_country: rentalsFormik.values.entries[0].rental_country,
-          rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-          staffmember_id: selectedUserId,
-        },
-        units: rentalsFormik.values.entries[0].residential.map(
-          (residentialItem) => {
-            const {
-              rental_units,
-              rental_unitsAdress,
-              rental_sqft,
-              rental_bath,
-              rental_bed,
-              propertyres_image,
-            } = residentialItem;
-
-            return {
-              admin_id: accessType.admin_id,
-              rental_unit: rental_units,
-              rental_unit_adress: rental_unitsAdress,
-              rental_sqft: rental_sqft,
-              rental_bath: rental_bath,
-              rental_bed: rental_bed,
-              rental_images: propertyres_image,
-            };
-          }
-        ),
-      };
-      console.log(object, "leaseObject");
-
-      const res = await axios.post(`${baseUrl}/rentals/rentals`, object);
-      if (res.data.statusCode === 200) {
-        swal("Success!", "Property Added Successfully", "success");
-        // navigate("/admin/RentalownerTable");
-        console.log(res.data, "res.data.data after post");
-      } else {
-        if (res.data.statusCode === 201) {
-          swal("Failed!", "Property Name Already Added", "error");
-        } else {
-          swal("", res.data.message, "error");
-        }
-      }
-      handleResponse(res);
-      setLoader(false);
-      return;
-    } else {
-      // if (commercialImage && commercialImage.length > 0) {
-      //   for (let i = 0; i < commercialImage.length; i++) {
-      //     const fileArray = commercialImage[i];
-
-      //     if (fileArray && fileArray.length > 0) {
-      //       for (let j = 0; j < fileArray.length; j++) {
-      //         const fileUrl = fileArray[j];
-
-      //         try {
-      //           // Fetch the file using the URL
-      //           const response = await fetch(fileUrl);
-      //           const blob = await response.blob();
-
-      //           const file = new File([blob], `commercial_${i}_${j}.png`, {
-      //             type: blob.type,
-      //           });
-
-      //           const formData = new FormData();
-      //           formData.append("files", file);
-      //           const url = `${imageUrl}/images/upload`;
-      //           try {
-      //             const result = await axios.post(url, formData, {
-      //               headers: {
-      //                 "Content-Type": "multipart/form-data",
-      //               },
-      //             });
-      //             commercialImage[i][j] = result.data.files.map(
-      //               (file) => file.url
-      //             );
-      //           } catch (error) {
-      //             console.error(error, "imgs");
-      //           }
-      //         } catch (error) {
-      //           console.error(`Error fetching file at index ${i}-${j}:`, error);
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
-      // const entriesObject = {
-      //   property_type: selectedProp.propertysub_type,
-      //   type: propType,
-      //   rental_adress: rentalsFormik.values.entries[0].rental_adress,
-      //   rental_city: rentalsFormik.values.entries[0].rental_city,
-      //   rental_state: rentalsFormik.values.entries[0].rental_state,
-      //   rental_country: rentalsFormik.values.entries[0].rental_country,
-      //   rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-      //   rental_sqft: rentalsFormik.values.entries[0].rental_soft,
-      //   rentalOwner_operatingAccount: values.rentalOwner_operatingAccount,
-      //   rentalOwner_propertyReserve: values.rentalOwner_propertyReserve,
-      //   staffMember: selectedUser,
-      //   //RESIDENTIAL
-      //   // residential: rentalsFormik.values.entries[0].residential,
-      //   commercial: rentalsFormik.values.entries[0].commercial,
-      //   // createdAt:moment().format("YYYY-MM-DD"),
-      //   property_image: commercialImage,
-      //   //COMMERCIAL
-      // };
-      // commercialImage.map((data, index) => {
-      //   rentalsFormik.values.entries[0].commercial[index].property_image = data;
-      // });
-      // entriesArray.push(entriesObject);
-      // const leaseObject = {
-      //   //   Add Rental owner
-      //   rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
-      //   rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
-      //   rentalOwner_companyName:
-      //     rentalOwnerFormik.values.rentalOwner_companyName,
-      //   rentalOwner_primaryEmail:
-      //     rentalOwnerFormik.values.rentalOwner_primaryEmail,
-      //   rentalOwner_phoneNumber:
-      //     rentalOwnerFormik.values.rentalOwner_phoneNumber,
-      //   rentalOwner_homeNumber: rentalOwnerFormik.values.rentalOwner_homeNumber,
-      //   rentalOwner_businessNumber:
-      //     rentalOwnerFormik.values.rentalOwner_businessNumber,
-      //   entries: entriesArray,
-      // };
-
-      const object = {
-        rentalOwner: {
-          admin_id: accessType.admin_id,
-          rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
-          rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
-          rentalOwner_companyName:
-            rentalOwnerFormik.values.rentalOwner_companyName,
-          rentalOwner_primaryEmail:
-            rentalOwnerFormik.values.rentalOwner_primaryEmail,
-          rentalOwner_phoneNumber:
-            rentalOwnerFormik.values.rentalOwner_phoneNumber,
-          rentalOwner_homeNumber:
-            rentalOwnerFormik.values.rentalOwner_homeNumber,
-          rentalOwner_businessNumber:
-            rentalOwnerFormik.values.rentalOwner_businessNumber,
-        },
-        rental: {
-          admin_id: accessType.admin_id,
-          property_id: selectedPropId,
-          rental_adress: rentalsFormik.values.entries[0].rental_adress,
-          rental_city: rentalsFormik.values.entries[0].rental_city,
-          rental_state: rentalsFormik.values.entries[0].rental_state,
-          rental_country: rentalsFormik.values.entries[0].rental_country,
-          rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-          staffmember_id: selectedUserId,
-        },
-        units: rentalsFormik.values.entries[0].commercial.map(
-          (residentialItem) => {
-            const {
-              rentalcom_units,
-              rentalcom_unitsAdress,
-              rentalcom_sqft,
-              property_image,
-            } = residentialItem;
-
-            // Creating the unit object for each residential item
-            return {
-              admin_id: accessType.admin_id,
-              rental_sqft: rentalcom_sqft,
-              rental_images: property_image,
-              rental_unit: rentalcom_units,
-              rental_unit_adress: rentalcom_unitsAdress,
-            };
-          }
-        ),
-      };
-      console.log(object, "leaseObject");
-
-      try {
-        const res = await axios.post(`${baseUrl}/rentals/rentals`, object);
-
-        if (res.data.statusCode === 200) {
-          swal("Success!", "Property Added Successfully", "success");
-          // navigate("/admin/RentalownerTable");
-          console.log(res.data.data, "form response");
-          // console.log(res.data.data, "res.data.data after post");
-        } else {
-          swal("", res.data.message, "error");
-        }
-
-        handleResponse(res);
-        setLoader(false);
-      } catch (error) {
-        // Handle errors here
-        console.error("Error:", error);
-        swal("Error", "An error occurred while adding the property", "error");
-        setLoader(false);
-      }
-
-      return;
-    }
-  };
-
-  const editProperty = async (id) => {
-    const editUrl = `${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`;
-    const entriesArray = [];
-    if (propType === "Residential") {
-      const entriesObject = {
-        property_type: selectedProp.propertysub_type,
-        type: propType,
-
-        rental_adress: rentalsFormik.values.entries[0].rental_adress,
-        rental_city: rentalsFormik.values.entries[0].rental_city,
-        rental_state: rentalsFormik.values.entries[0].rental_state,
-        rental_country: rentalsFormik.values.entries[0].rental_country,
-        rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-
-        rentalOwner_operatingAccount:
-          rentalsFormik.values.entries[0].rentalOwner_operatingAccount,
-        rentalOwner_propertyReserve:
-          rentalsFormik.values.entries[0].rentalOwner_propertyReserve,
-        staffMember: selectedUser,
-        //rooms
-        //RESIDENTIAL
-        residential: unitData,
-        //COMMERCIAL
-        // commercial: rentalsFormik.values.entries[0].commercial,
-      };
-      entriesArray.push(entriesObject);
-
-      const leaseObject = {
-        //   Add Rental owner
-        rentalOwner_firstName: rentalsFormik.values.rentalOwner_firstName
-          ? rentalsFormik.values.rentalOwner_firstName
-          : rentalOwnerData.rentalOwner_firstName,
-        rentalOwner_lastName: rentalsFormik.values.rentalOwner_lastName
-          ? rentalsFormik.values.rentalOwner_lastName
-          : rentalOwnerData.rentalOwner_lastName,
-        rentalOwner_companyName: rentalsFormik.values.rentalOwner_companyName
-          ? rentalsFormik.values.rentalOwner_companyName
-          : rentalOwnerData.rentalOwner_companyName,
-        rentalOwner_primaryEmail: rentalsFormik.values.rentalOwner_primaryEmail
-          ? rentalsFormik.values.rentalOwner_primaryEmail
-          : rentalOwnerData.rentalOwner_primaryEmail,
-        rentalOwner_phoneNumber: rentalsFormik.values.rentalOwner_phoneNumber
-          ? rentalsFormik.values.rentalOwner_phoneNumber
-          : rentalOwnerData.rentalOwner_phoneNumber,
-        rentalOwner_homeNumber: rentalsFormik.values.rentalOwner_homeNumber
-          ? rentalsFormik.values.rentalOwner_homeNumber
-          : rentalOwnerData.rentalOwner_homeNumber,
-        rentalOwner_businessNumber: rentalsFormik.values
-          .rentalOwner_businessNumber
-          ? rentalsFormik.values.rentalOwner_businessNumber
-          : rentalOwnerData.rentalOwner_businessNumber,
-        entries: entriesArray,
-      };
-
-      // console.log(leaseObject, "updated values");
-      await axios
-        .put(editUrl, leaseObject)
-        .then((response) => {
-          // console.log(response, "response1111");
-          handleResponse(response);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-    } else {
-      const entriesObject = {
-        property_type: selectedProp.propertysub_type,
-        type: propType,
-        rental_adress: rentalsFormik.values.entries[0].rental_adress,
-        rental_city: rentalsFormik.values.entries[0].rental_city,
-        rental_state: rentalsFormik.values.entries[0].rental_state,
-        rental_country: rentalsFormik.values.entries[0].rental_country,
-        rental_postcode: rentalsFormik.values.entries[0].rental_postcode,
-        rentalOwner_operatingAccount:
-          rentalsFormik.values.entries[0].rentalOwner_operatingAccount,
-        rentalOwner_propertyReserve:
-          rentalsFormik.values.entries[0].rentalOwner_propertyReserve,
-        staffMember: selectedUser,
-        //rooms
-        //RESIDENTIAL
-        // residential: rentalsFormik.values.entries[0].residential,
-        //COMMERCIAL
-        commercial: unitData,
-      };
-      entriesArray.push(entriesObject);
-
-      const leaseObject = {
-        //   Add Rental owner
-        rentalOwner_firstName: rentalsFormik.values.rentalOwner_firstName
-          ? rentalsFormik.values.rentalOwner_firstName
-          : rentalOwnerData.rentalOwner_firstName,
-        rentalOwner_lastName: rentalsFormik.values.rentalOwner_lastName
-          ? rentalsFormik.values.rentalOwner_lastName
-          : rentalOwnerData.rentalOwner_lastName,
-        rentalOwner_companyName: rentalsFormik.values.rentalOwner_companyName
-          ? rentalsFormik.values.rentalOwner_companyName
-          : rentalOwnerData.rentalOwner_companyName,
-        rentalOwner_primaryEmail: rentalsFormik.values.rentalOwner_primaryEmail
-          ? rentalsFormik.values.rentalOwner_primaryEmail
-          : rentalOwnerData.rentalOwner_primaryEmail,
-        rentalOwner_phoneNumber: rentalsFormik.values.rentalOwner_phoneNumber
-          ? rentalsFormik.values.rentalOwner_phoneNumber
-          : rentalOwnerData.rentalOwner_phoneNumber,
-        rentalOwner_homeNumber: rentalsFormik.values.rentalOwner_homeNumber
-          ? rentalsFormik.values.rentalOwner_homeNumber
-          : rentalOwnerData.rentalOwner_homeNumber,
-        rentalOwner_businessNumber: rentalsFormik.values
-          .rentalOwner_businessNumber
-          ? rentalsFormik.values.rentalOwner_businessNumber
-          : rentalOwnerData.rentalOwner_businessNumber,
-        entries: entriesArray,
-      };
-
-      // console.log(leaseObject, "updated values");
-      await axios
-        .put(editUrl, leaseObject)
-        .then((response) => {
-          // console.log(response, "response1111");
-          handleResponse(response);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-    }
-  };
-  function handleResponse(response) {
-    // console.log(response, "response");
-    if (response.status === 200) {
-      navigate("/admin/propertiesTable");
-      swal(
-        "Success!",
-        id && entryIndex
-          ? "Property Updated Successfully"
-          : "Property Added Successfully!",
-        "success"
-      );
-    }
-    if (response.status === 201) {
-      swal(
-        "Failed!",
-        `Property "${rentalsFormik.values.entries[0].rental_adress}" already exists in the system`,
-        "warning"
-      );
-    } else {
-      //alert(response.data.message);
-    }
-  }
   const addCommercialUnit = () => {
     const newUnit = {
-      rentalcom_units: "",
-      rentalcom_soft: "",
-      rentalcom_unitsAdress: "",
+      rental_unit: "",
+      rental_soft: "",
+      rental_unit_adress: "",
       property_image: [],
     };
 
     rentalsFormik.setValues({
       ...rentalsFormik.values,
-      entries: [
-        {
-          ...rentalsFormik.values.entries[0],
-          commercial: [...rentalsFormik.values.entries[0].commercial, newUnit],
-        },
-      ],
-    });
-    const commercialUnit = [];
-    setCommercialImage([...commercialImage, commercialUnit]);
-    // rentalsFormik.values.propertyres_image.push(newUnit)
-  };
-
-  const deleteCommercialUnit = (index) => {
-    // console.log("delete commercial");
-    setCommercialImage((prevResidentialImage) => {
-      // Use filter to exclude the sub-array at the specified index (i)
-      const filteredImage = prevResidentialImage.filter(
-        (residentialUnit, j) => j !== index
-      );
-
-      // Return the updated array with the sub-array removed
-      return filteredImage;
-    });
-    const updatedCommercialUnits = [
-      ...rentalsFormik.values.entries[0].commercial,
-    ];
-    updatedCommercialUnits.splice(index, 1);
-    rentalsFormik.setValues({
-      ...rentalsFormik.values,
-      entries: [
-        {
-          ...rentalsFormik.values.entries[0],
-          commercial: updatedCommercialUnits,
-        },
-      ],
+      commercial: [...rentalsFormik.values.commercial, newUnit],
     });
   };
 
@@ -1173,59 +380,101 @@ const Rentals = () => {
       rental_bath: "",
       propertyres_image: [],
       rental_sqft: "",
-      rental_units: "",
-      rental_unitsAdress: "",
+      rental_unit: "",
+      rental_unit_adress: "",
     };
 
     rentalsFormik.setValues({
       ...rentalsFormik.values,
-      entries: [
-        {
-          ...rentalsFormik.values.entries[0],
-          residential: [
-            ...rentalsFormik.values.entries[0].residential,
-            newUnit,
-          ],
-        },
-      ],
+      residential: [...rentalsFormik.values.residential, newUnit],
     });
-    const residentialUnit = [];
-    setResidentialImage([...residentialImage, residentialUnit]);
+  };
+
+  const deleteCommercialUnit = (index) => {
+    const updatedCommercialUnits = [...rentalsFormik.values.commercial];
+    updatedCommercialUnits.splice(index, 1);
+    rentalsFormik.setValues({
+      ...rentalsFormik.values,
+      commercial: updatedCommercialUnits,
+    });
   };
 
   const deleteResidentialUnit = (index) => {
-    setResidentialImage((prevResidentialImage) => {
-      // Use filter to exclude the sub-array at the specified index (i)
-      const filteredImage = prevResidentialImage.filter(
-        (residentialUnit, j) => j !== index
-      );
-
-      // Return the updated array with the sub-array removed
-      return filteredImage;
-    });
-    const updatedResidentialUnits = [
-      ...rentalsFormik.values.entries[0].residential,
-    ];
+    const updatedResidentialUnits = [...rentalsFormik.values.residential];
     updatedResidentialUnits.splice(index, 1);
     rentalsFormik.setValues({
       ...rentalsFormik.values,
-      entries: [
-        {
-          ...rentalsFormik.values.entries[0],
-          residential: updatedResidentialUnits,
-        },
-      ],
+      residential: updatedResidentialUnits,
     });
   };
 
-  // console.log(rentalsFormik.values, "commercialUnits");
+  const fileData = () => {};
+  const togglePhotoDialog = () => {};
+
+  const handleUserSelection = (value) => {
+    setSelectedUser(value.staffmember_name);
+    setuserDropdownOpen(true);
+  };
+
+  const handleRentalownerDelete = () => {
+    setSelectedRentalOwnerData([]);
+    rentalOwnerFormik.resetForm();
+  };
+
+  const handleCheckboxChange = (rentalOwnerInfo) => {
+    rentalOwnerFormik.setValues({
+      rentalowner_id: rentalOwnerInfo.rentalowner_id,
+      rentalOwner_firstName: rentalOwnerInfo.rentalOwner_firstName,
+      rentalOwner_lastName: rentalOwnerInfo.rentalOwner_lastName,
+      rentalOwner_companyName: rentalOwnerInfo.rentalOwner_companyName,
+      rentalOwner_primaryEmail: rentalOwnerInfo.rentalOwner_primaryEmail,
+      rentalOwner_phoneNumber: rentalOwnerInfo.rentalOwner_phoneNumber,
+      rentalOwner_homeNumber: rentalOwnerInfo.rentalOwner_homeNumber,
+      rentalOwner_businessNumber: rentalOwnerInfo.rentalOwner_businessNumber,
+      chooseExistingOwner: true,
+    });
+    setSelectedRentalOwnerData(rentalOwnerInfo);
+  };
+
+  const handleAddrentalOwner = () => {
+    const newrentalOwnerDetails = {
+      rentalOwner_firstName: rentalOwnerFormik.values.rentalOwner_firstName,
+      rentalOwner_lastName: rentalOwnerFormik.values.rentalOwner_lastName,
+      rentalOwner_phoneNumber: rentalOwnerFormik.values.rentalOwner_phoneNumber,
+      rentalOwner_primaryEmail:
+        rentalOwnerFormik.values.rentalOwner_primaryEmail,
+      rentalOwner_homeNumber: rentalOwnerFormik.values.rentalOwner_homeNumber,
+      rentalOwner_businessNumber:
+        rentalOwnerFormik.values.rentalOwner_businessNumber,
+      rentalowner_id: rentalOwnerFormik.values.rentalowner_id || "",
+    };
+    setSelectedRentalOwnerData(newrentalOwnerDetails);
+    if (!rental_id) {
+      swal("Success!", "Rental Owner Added Successfully", "success");
+    }
+    setDisplay(false);
+  };
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleChange = () => {
+    setshowRentalOwnerTable(!showRentalOwnerTable);
+  };
+
+  const handlePropSelection = (propertyType) => {
+    rentalsFormik.setFieldValue("property_type", propertyType.property_type);
+    setSelectedPropType(propertyType);
+    setPropType(propertyType.property_type);
+  };
 
   return (
     <>
       <RentalHeader />
       <Container className="mt--7" fluid>
         <Row>
-          <Col className="order-xl-1" xl="12">
+          <Col>
             <Card
               className="bg-secondary shadow"
               onSubmit={rentalsFormik.handleSubmit}
@@ -1234,9 +483,10 @@ const Rentals = () => {
                 <Row className="align-items-center">
                   <Col xs="8">
                     <h3 className="mb-0">
-                      {id ? "Edit Property" : "New Property"}
+                      {rental_id ? "Edit Property" : "New Property"}
                     </h3>
                   </Col>
+                  <Col className="text-right" xs="4"></Col>
                 </Row>
               </CardHeader>
               <CardBody>
@@ -1257,18 +507,19 @@ const Rentals = () => {
                           <br />
                           <br />
                           <Dropdown
-                            isOpen={prodropdownOpen}
+                            isOpen={proDropdownOpen}
                             toggle={toggle1}
                             disabled={rental_id}
-                          >{console.log(selectedProp, "jay")}
+                          >
                             <DropdownToggle caret>
-                              {selectedProp && selectedProp.propertysub_type
-                                ? selectedProp.propertysub_type
-                                : selectedProp && !selectedProp.propertysub_type
-                                ? selectedProp
+                              {selectedPropType &&
+                              selectedPropType.propertysub_type
+                                ? selectedPropType.propertysub_type
+                                : selectedPropType &&
+                                  !selectedPropType.propertysub_type
+                                ? selectedPropType
                                 : "Select Property Type"}
                             </DropdownToggle>
-                            {console.log(rentalOwnerFormik, "yash")}
                             <DropdownMenu>
                               {Object.values(
                                 propertyData.reduce((acc, item) => {
@@ -1305,16 +556,12 @@ const Rentals = () => {
                           </Dropdown>
                           {
                             <div>
-                              {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors?.entries[0]?.property_type &&
-                              rentalsFormik.touched?.entries &&
-                              rentalsFormik.touched?.entries[0]
-                                ?.property_type ? (
+                              {rentalsFormik.errors &&
+                              rentalsFormik.errors?.property_type &&
+                              rentalsFormik.touched &&
+                              rentalsFormik.touched?.property_type ? (
                                 <div style={{ color: "red" }}>
-                                  {
-                                    rentalsFormik.errors?.entries[0]
-                                      ?.property_type
-                                  }
+                                  {rentalsFormik.errors?.property_type}
                                 </div>
                               ) : null}
                             </div>
@@ -1351,27 +598,20 @@ const Rentals = () => {
                               onBlur={rentalsFormik.handleBlur}
                               onChange={(e) =>
                                 rentalsFormik.setFieldValue(
-                                  "entries[0].rental_adress",
+                                  "rental_adress",
                                   e.target.value
                                 )
                               }
-                              value={
-                                rentalsFormik.values?.entries[0]?.rental_adress
-                              }
+                              value={rentalsFormik.values?.rental_adress}
                             />
                             {
                               <div>
-                                {rentalsFormik.errors.entries &&
-                                rentalsFormik.errors?.entries[0]
-                                  ?.rental_adress &&
-                                rentalsFormik.touched?.entries &&
-                                rentalsFormik.touched?.entries[0]
-                                  ?.rental_adress ? (
+                                {rentalsFormik.errors &&
+                                rentalsFormik.errors?.rental_adress &&
+                                rentalsFormik.touched &&
+                                rentalsFormik.touched?.rental_adress ? (
                                   <div style={{ color: "red" }}>
-                                    {
-                                      rentalsFormik.errors?.entries[0]
-                                        ?.rental_adress
-                                    }
+                                    {rentalsFormik.errors?.rental_adress}
                                   </div>
                                 ) : null}
                               </div>
@@ -1399,25 +639,20 @@ const Rentals = () => {
                             onBlur={rentalsFormik.handleBlur}
                             onChange={(e) =>
                               rentalsFormik.setFieldValue(
-                                "entries[0].rental_city",
+                                "rental_city",
                                 e.target.value
                               )
                             }
-                            value={
-                              rentalsFormik.values?.entries[0]?.rental_city
-                            }
+                            value={rentalsFormik.values?.rental_city}
                           />
                           {
                             <div>
-                              {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors?.entries[0]?.rental_city &&
-                              rentalsFormik.touched?.entries &&
-                              rentalsFormik.touched?.entries[0]?.rental_city ? (
+                              {rentalsFormik.errors &&
+                              rentalsFormik.errors?.rental_city &&
+                              rentalsFormik.touched &&
+                              rentalsFormik.touched?.rental_city ? (
                                 <div style={{ color: "red" }}>
-                                  {
-                                    rentalsFormik.errors?.entries[0]
-                                      ?.rental_city
-                                  }
+                                  {rentalsFormik.errors?.rental_city}
                                 </div>
                               ) : null}
                             </div>
@@ -1442,26 +677,20 @@ const Rentals = () => {
                             onBlur={rentalsFormik.handleBlur}
                             onChange={(e) =>
                               rentalsFormik.setFieldValue(
-                                "entries[0].rental_state",
+                                "rental_state",
                                 e.target.value
                               )
                             }
-                            value={
-                              rentalsFormik.values?.entries[0]?.rental_state
-                            }
+                            value={rentalsFormik.values?.rental_state}
                           />
                           {
                             <div>
-                              {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors?.entries[0]?.rental_state &&
-                              rentalsFormik.touched?.entries &&
-                              rentalsFormik.touched?.entries[0]
-                                ?.rental_state ? (
+                              {rentalsFormik.errors &&
+                              rentalsFormik.errors?.rental_state &&
+                              rentalsFormik.touched &&
+                              rentalsFormik.touched?.rental_state ? (
                                 <div style={{ color: "red" }}>
-                                  {
-                                    rentalsFormik.errors?.entries[0]
-                                      ?.rental_state
-                                  }
+                                  {rentalsFormik.errors?.rental_state}
                                 </div>
                               ) : null}
                             </div>
@@ -1486,27 +715,20 @@ const Rentals = () => {
                             onBlur={rentalsFormik.handleBlur}
                             onChange={(e) =>
                               rentalsFormik.setFieldValue(
-                                "entries[0].rental_country",
+                                "rental_country",
                                 e.target.value
                               )
                             }
-                            value={
-                              rentalsFormik.values?.entries[0]?.rental_country
-                            }
+                            value={rentalsFormik.values?.rental_country}
                           />
                           {
                             <div>
-                              {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors?.entries[0]
-                                ?.rental_country &&
-                              rentalsFormik.touched?.entries &&
-                              rentalsFormik.touched?.entries[0]
-                                ?.rental_country ? (
+                              {rentalsFormik.errors &&
+                              rentalsFormik.errors?.rental_country &&
+                              rentalsFormik.touched &&
+                              rentalsFormik.touched?.rental_country ? (
                                 <div style={{ color: "red" }}>
-                                  {
-                                    rentalsFormik.errors?.entries[0]
-                                      ?.rental_country
-                                  }
+                                  {rentalsFormik.errors?.rental_country}
                                 </div>
                               ) : null}
                             </div>
@@ -1531,35 +753,28 @@ const Rentals = () => {
                             onBlur={rentalsFormik.handleBlur}
                             onChange={(e) =>
                               rentalsFormik.setFieldValue(
-                                "entries[0].rental_postcode",
+                                "rental_postcode",
                                 e.target.value.toUpperCase()
                               )
                             }
-                            value={
-                              rentalsFormik.values.entries[0]?.rental_postcode
-                            }
+                            value={rentalsFormik.values?.rental_postcode}
                             onInput={(e) => {
                               const inputValue = e.target.value;
                               const sanitizedValue = inputValue.replace(
                                 /[^A-Za-z0-9-]/g,
                                 ""
-                              ); // Allow only alphanumeric characters and hyphen
+                              );
                               e.target.value = sanitizedValue.toUpperCase();
                             }}
                           />
                           {
                             <div>
-                              {rentalsFormik.errors.entries &&
-                              rentalsFormik.errors?.entries[0]
-                                ?.rental_postcode &&
-                              rentalsFormik.touched?.entries &&
-                              rentalsFormik.touched?.entries[0]
-                                ?.rental_postcode ? (
+                              {rentalsFormik.errors &&
+                              rentalsFormik.errors?.rental_postcode &&
+                              rentalsFormik.touched &&
+                              rentalsFormik.touched?.rental_postcode ? (
                                 <div style={{ color: "red" }}>
-                                  {
-                                    rentalsFormik.errors?.entries[0]
-                                      ?.rental_postcode
-                                  }
+                                  {rentalsFormik.errors?.rental_postcode}
                                 </div>
                               ) : null}
                             </div>
@@ -1569,7 +784,6 @@ const Rentals = () => {
                     </Row>
                   </div>
                   <hr className="my-4" />
-                  {/* Address */}
                   <h6 className="heading-small text-muted mb-4">
                     Owner information
                   </h6>
@@ -1709,10 +923,6 @@ const Rentals = () => {
                                                     border: "1px solid #ddd",
                                                   }}
                                                 >
-                                                  {/* {console.log(
-                                                  rentalOwner,
-                                                  "revsefw"
-                                                )} */}
                                                   <td
                                                     style={{
                                                       paddingLeft: "15px",
@@ -1748,53 +958,9 @@ const Rentals = () => {
                                                         setCheckedCheckbox(
                                                           rentalOwner.rentalOwner_phoneNumber
                                                         );
-                                                        // console.log(rentalOwner, "rentalownerData");
-                                                        rentalOwnerFormik.setValues(
-                                                          {
-                                                            rentalOwner_firstName:
-                                                              rentalOwner.rentalOwner_firstName,
-                                                            rentalOwner_lastName:
-                                                              rentalOwner.rentalOwner_lastName,
-                                                            rentalOwner_phoneNumber:
-                                                              rentalOwner.rentalOwner_phoneNumber,
-                                                            rentalOwner_companyName:
-                                                              rentalOwner.rentalOwner_companyName,
-                                                            rentalOwner_primaryEmail:
-                                                              rentalOwner.rentalOwner_primaryEmail,
-
-                                                            rentalOwner_homeNumber:
-                                                              rentalOwner.rentalOwner_homeNumber,
-                                                            rentalOwner_businessNumber:
-                                                              rentalOwner.rentalOwner_businessNumber,
-                                                          }
-                                                        );
-                                                        const rentalOwnerInfo = `${
-                                                          rentalOwner.rentalOwner_firstName ||
-                                                          ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_lastName ||
-                                                          ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_phoneNumber ||
-                                                          ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_companyName ||
-                                                          ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_primaryEmail ||
-                                                          ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_homeNumber ||
-                                                          ""
-                                                        }-${
-                                                          rentalOwner.rentalOwner_businessNumber ||
-                                                          ""
-                                                        }`;
 
                                                         handleCheckboxChange(
-                                                          event,
-                                                          rentalOwnerInfo,
-                                                          rentalOwner.rentalOwner_phoneNumber
+                                                          rentalOwner
                                                         );
                                                       }}
                                                     />
@@ -1834,10 +1000,6 @@ const Rentals = () => {
                                             "rentalOwner_firstName",
                                             e.target.value
                                           );
-                                          rentalsFormik.setFieldValue(
-                                            "rentalOwner_firstName",
-                                            e.target.value
-                                          );
                                         }}
                                         value={
                                           rentalOwnerFormik.values
@@ -1869,10 +1031,6 @@ const Rentals = () => {
                                         onBlur={rentalOwnerFormik.handleBlur}
                                         onChange={(e) => {
                                           rentalOwnerFormik.setFieldValue(
-                                            "rentalOwner_lastName",
-                                            e.target.value
-                                          );
-                                          rentalsFormik.setFieldValue(
                                             "rentalOwner_lastName",
                                             e.target.value
                                           );
@@ -1920,17 +1078,12 @@ const Rentals = () => {
                                             "rentalOwner_companyName",
                                             e.target.value
                                           );
-                                          rentalsFormik.setFieldValue(
-                                            "rentalOwner_companyName",
-                                            e.target.value
-                                          );
                                         }}
                                         value={
                                           rentalOwnerFormik.values
                                             .rentalOwner_companyName
                                         }
                                       />
-
                                       {rentalOwnerFormik.touched
                                         .rentalOwner_companyName &&
                                       rentalOwnerFormik.errors
@@ -1942,11 +1095,6 @@ const Rentals = () => {
                                           }
                                         </div>
                                       ) : null}
-                                      {/* <Checkbox
-                                  onClick={handleChange}
-                                  style={{ marginRight: "10px" }}
-                                />
-                                <span>Company</span> */}
                                     </div>
                                     <div
                                       className="formInput"
@@ -1975,10 +1123,6 @@ const Rentals = () => {
                                           onBlur={rentalOwnerFormik.handleBlur}
                                           onChange={(e) => {
                                             rentalOwnerFormik.setFieldValue(
-                                              "rentalOwner_primaryEmail",
-                                              e.target.value
-                                            );
-                                            rentalsFormik.setFieldValue(
                                               "rentalOwner_primaryEmail",
                                               e.target.value
                                             );
@@ -2044,10 +1188,6 @@ const Rentals = () => {
                                               "rentalOwner_phoneNumber",
                                               e.target.value
                                             );
-                                            rentalsFormik.setFieldValue(
-                                              "rentalOwner_phoneNumber",
-                                              e.target.value
-                                            );
                                           }}
                                           value={
                                             rentalOwnerFormik.values
@@ -2056,7 +1196,7 @@ const Rentals = () => {
                                           onInput={(e) => {
                                             const inputValue = e.target.value;
                                             const numericValue =
-                                              inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                              inputValue.replace(/\D/g, "");
                                             e.target.value = numericValue;
                                           }}
                                         />
@@ -2102,10 +1242,6 @@ const Rentals = () => {
                                               "rentalOwner_homeNumber",
                                               e.target.value
                                             );
-                                            rentalsFormik.setFieldValue(
-                                              "rentalOwner_homeNumber",
-                                              e.target.value
-                                            );
                                           }}
                                           value={
                                             rentalOwnerFormik.values
@@ -2114,7 +1250,7 @@ const Rentals = () => {
                                           onInput={(e) => {
                                             const inputValue = e.target.value;
                                             const numericValue =
-                                              inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                              inputValue.replace(/\D/g, "");
                                             e.target.value = numericValue;
                                           }}
                                         />
@@ -2160,10 +1296,6 @@ const Rentals = () => {
                                               "rentalOwner_businessNumber",
                                               e.target.value
                                             );
-                                            rentalsFormik.setFieldValue(
-                                              "rentalOwner_businessNumber",
-                                              e.target.value
-                                            );
                                           }}
                                           value={
                                             rentalOwnerFormik.values
@@ -2172,7 +1304,7 @@ const Rentals = () => {
                                           onInput={(e) => {
                                             const inputValue = e.target.value;
                                             const numericValue =
-                                              inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                              inputValue.replace(/\D/g, "");
                                             e.target.value = numericValue;
                                           }}
                                         />
@@ -2273,7 +1405,9 @@ const Rentals = () => {
                                         textAlign: "left",
                                       }}
                                     >
-                                      {selectedRentalOwnerData.rentalOwner_firstName}
+                                      {
+                                        selectedRentalOwnerData.rentalOwner_firstName
+                                      }
                                     </td>
                                     <td
                                       style={{
@@ -2281,7 +1415,9 @@ const Rentals = () => {
                                         textAlign: "left",
                                       }}
                                     >
-                                      {selectedRentalOwnerData.rentalOwner_lastName}
+                                      {
+                                        selectedRentalOwnerData.rentalOwner_lastName
+                                      }
                                     </td>
                                     <td
                                       style={{
@@ -2289,7 +1425,9 @@ const Rentals = () => {
                                         textAlign: "left",
                                       }}
                                     >
-                                      {selectedRentalOwnerData.rentalOwner_phoneNumber}
+                                      {
+                                        selectedRentalOwnerData.rentalOwner_phoneNumber
+                                      }
                                     </td>
                                     <td
                                       style={{
@@ -2298,12 +1436,14 @@ const Rentals = () => {
                                       }}
                                     >
                                       <EditIcon
+                                        style={{ cursor: "pointer" }}
                                         onClick={() => {
                                           setshowRentalOwnerTable(false);
                                           setRentalDialogOpen(true);
                                         }}
                                       />
                                       <DeleteIcon
+                                        style={{ cursor: "pointer" }}
                                         onClick={() => {
                                           setshowRentalOwnerTable(false);
                                           handleRentalownerDelete();
@@ -2320,280 +1460,9 @@ const Rentals = () => {
                     </Row>
                   </div>
                   <hr className="my-4" />
-                  {/* Address */}
-                  {/* <h6 className="heading-small text-muted mb-4">
-                    Bank Account Details
-                  </h6> */}
                   <div className="pl-lg-4">
-                    {/* <label
-                      className="form-control-label"
-                      htmlFor="input-property"
-                    >
-                      What is the property's primary bank account?
-                    </label> */}
-                    {/* <br />
-                    <br /> */}
                     <Row>
-                      {/* <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-account"
-                          >
-                            Operating Account
-                          </label>
-                          <br />
-                          <Dropdown isOpen={bankdropdownOpen} toggle={toggle2}>
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectedBank} &nbsp;&nbsp;&nbsp;&nbsp;
-                            </DropdownToggle>
-                            <DropdownMenu style={{ width: "100%" }}>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleBankSelection("JPMorgan Chase Bank")
-                                }
-                              >
-                                JPMorgan Chase Bank
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleBankSelection("Bank of America")
-                                }
-                              >
-                                Bank of America
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleBankSelection("Wells Fargo Bank")
-                                }
-                              >
-                                Wells Fargo Bank
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => handleBankSelection("Citibank")}
-                              >
-                                Citibank
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() => handleBankSelection("U.S.Bank")}
-                              >
-                                U.S.Bank
-                              </DropdownItem>
-                              <DropdownItem
-                                onClick={() =>
-                                  handleBankSelection("Capital One")
-                                }
-                              >
-                                Capital One
-                              </DropdownItem>
-                              <DropdownItem onClick={toggleAddBankDialog}>
-                                Add new bank..
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                          <Dialog
-                            open={isAddBankDialogOpen}
-                            onClose={handleCloseDialog}
-                          >
-                            <DialogTitle style={{ background: "#F0F8FF" }}>
-                              Add bank account
-                            </DialogTitle>
-                            <DialogContent
-                              style={{ width: "100%", maxWidth: "500px" }}
-                            >
-                              <div
-                                className="formInput"
-                                style={{ margin: "10px 10px" }}
-                              >
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-address"
-                                >
-                                  Bank Account Name *
-                                </label>
-                                <br />
-                                <Input
-                                  className="form-control-alternative"
-                                  id="input-accname"
-                                  placeholder="e.g. Bank of America 1234"
-                                  type="text"
-                                />
-                              </div>
-
-                              <div
-                                className="formInput"
-                                style={{ margin: "30px 10px" }}
-                              >
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-address"
-                                >
-                                  Account Notes
-                                </label>
-                                <br />
-                                <Input
-                                  className="form-control-alternative"
-                                  id="input-address"
-                                  placeholder="This bank account is used to track 302 Properties"
-                                  type="textarea"
-                                  style={{ height: "90px" }}
-                                />
-                              </div>
-                              <div
-                                className="formInput"
-                                style={{ margin: "30px 10px" }}
-                              >
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-address"
-                                >
-                                  Account Type
-                                </label>
-                                <br />
-                                <FormGroup check>
-                                  <Label
-                                    check
-                                    style={{
-                                      fontSize: "15px",
-                                      fontFamily: "sans-serif",
-                                    }}
-                                  >
-                                    <Input type="radio" name="radio1" />{" "}
-                                    Checking Account
-                                  </Label>
-                                </FormGroup>
-                                <FormGroup check>
-                                  <Label
-                                    check
-                                    style={{
-                                      fontSize: "15px",
-                                      fontFamily: "sans-serif",
-                                    }}
-                                  >
-                                    <Input type="radio" name="radio2" /> Savings
-                                    Account
-                                  </Label>
-                                </FormGroup>
-                              </div>
-                              <div
-                                className="formInput"
-                                style={{ margin: "10px 10px" }}
-                              >
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-address"
-                                >
-                                  Country *
-                                </label>
-                                <br />
-                                <Input
-                                  className="form-control-alternative"
-                                  id="input-countryt"
-                                  placeholder="United States"
-                                  type="text"
-                                />
-                              </div>
-                              <div
-                                className="formInput"
-                                style={{ margin: "30px 10px" }}
-                              >
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-address"
-                                >
-                                  Routing Number
-                                </label>
-                                <br />
-                                <Input
-                                  className="form-control-alternative"
-                                  id="input-routno"
-                                  placeholder=""
-                                  type="number"
-                                />
-                              </div>
-                              <div
-                                className="formInput"
-                                style={{ margin: "30px 10px" }}
-                              >
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-address"
-                                >
-                                  Account Number
-                                </label>
-                                <br />
-                                <Input
-                                  className="form-control-alternative"
-                                  id="input-no"
-                                  placeholder=""
-                                  type="number"
-                                />
-                              </div>
-                              <div
-                                className="formInput"
-                                style={{ margin: "30px 10px" }}
-                              >
-                                We stores this information{" "}
-                                <b style={{ color: "blue", fontSize: "15px" }}>
-                                  Privately
-                                </b>{" "}
-                                and{" "}
-                                <b style={{ color: "blue", fontSize: "15px" }}>
-                                  Securely
-                                </b>
-                                .
-                              </div>
-                            </DialogContent>
-                            <DialogActions>
-                              <Button onClick={handleCloseDialog}>
-                                Cancel
-                              </Button>
-                              <Button
-                                onClick={handleCloseDialog}
-                                color="primary"
-                              >
-                                Add
-                              </Button>
-                            </DialogActions>
-                          </Dialog>
-                        </FormGroup>
-                      </Col> */}
                       <br />
-                      {/* <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-address"
-                          >
-                            Property Reserve
-                          </label>
-                          <br />
-                          <FormGroup>
-                            <Input
-                              className="form-control-alternative"
-                              id="input-reserve"
-                              placeholder="$0.00"
-                              type="number"
-                              name="rentalOwner_propertyReserve"
-                              onBlur={rentalsFormik.handleBlur}
-                              onChange={rentalsFormik.handleChange}
-                              value={
-                                rentalsFormik.values.rentalOwner_propertyReserve
-                              }
-                            />
-                            {rentalsFormik.touched
-                              .rentalOwner_propertyReserve &&
-                            rentalsFormik.errors.rentalOwner_propertyReserve ? (
-                              <div style={{ color: "red" }}>
-                                {
-                                  rentalsFormik.errors
-                                    .rentalOwner_propertyReserve
-                                }
-                              </div>
-                            ) : null}
-                          </FormGroup>
-                        </FormGroup>
-                      </Col> */}
                     </Row>{" "}
                     <br />
                     <Row>
@@ -2635,13 +1504,18 @@ const Rentals = () => {
                               <DropdownMenu>
                                 {StaffMemberData.map((user) => (
                                   <DropdownItem
-                                    key={user._id}
-                                    onClick={() =>
-                                      handleUserSelection(
-                                        user.staffmember_name,
+                                    key={user.staffmember_id}
+                                    onClick={() => {
+                                      handleUserSelection(user);
+                                      rentalsFormik.setFieldValue(
+                                        "staffmember_name",
+                                        user.staffmember_name
+                                      );
+                                      rentalsFormik.setFieldValue(
+                                        "staffmember_id",
                                         user.staffmember_id
-                                      )
-                                    }
+                                      );
+                                    }}
                                   >
                                     {user.staffmember_name}
                                   </DropdownItem>
@@ -2655,8 +1529,7 @@ const Rentals = () => {
                   </div>
 
                   <hr className="my-4" />
-                  {/* Description */}
-                  {propType === "Residential" && (
+                  {!rental_id && propType === "Residential" && (
                     <div className="pl-lg-4">
                       <h6 className="heading-small text-muted mb-4">
                         Residential Unit
@@ -2670,8 +1543,8 @@ const Rentals = () => {
                         </label>
                         <br />
                         <br />
-                        {rentalsFormik.values.entries &&
-                          rentalsFormik.values.entries[0]?.residential.map(
+                        {rentalsFormik.values &&
+                          rentalsFormik.values?.residential.map(
                             (residential, residentialIndex) => (
                               <div key={residentialIndex}>
                                 <Row style={{ position: "relative" }}>
@@ -2680,7 +1553,7 @@ const Rentals = () => {
                                       cursor: "pointer",
                                       position: "absolute",
                                       right: "10px",
-                                      display: selectedProp.is_multiunit
+                                      display: selectedPropType.is_multiunit
                                         ? "block"
                                         : "none",
                                       marginBottom: "20px",
@@ -2692,7 +1565,7 @@ const Rentals = () => {
                                   <Col
                                     lg="3"
                                     style={
-                                      selectedProp.is_multiunit
+                                      selectedPropType.is_multiunit
                                         ? {
                                             display: "block",
                                             marginTop: "20px",
@@ -2714,45 +1587,41 @@ const Rentals = () => {
                                         id={`input-unit-${residentialIndex}`}
                                         placeholder="102"
                                         type="text"
-                                        name={`entries[0].residential[${residentialIndex}].rental_units`}
+                                        name={`residential[${residentialIndex}].rental_unit`}
                                         onBlur={rentalsFormik.handleBlur}
                                         onChange={(e) => {
-                                          const value = e.target.value; // Get the entered value
-
-                                          // Allow only alphabetic and numeric characters
+                                          const value = e.target.value;
                                           const newValue = value.replace(
                                             /[^A-Za-z0-9]/g,
                                             ""
                                           );
 
                                           rentalsFormik.setFieldValue(
-                                            `entries[0].residential[${residentialIndex}].rental_units`,
+                                            `residential[${residentialIndex}].rental_unit`,
                                             newValue
                                           );
                                         }}
                                         value={
-                                          rentalsFormik.values.entries[0]
-                                            .residential[residentialIndex]
-                                            .rental_units
+                                          rentalsFormik.values.residential[
+                                            residentialIndex
+                                          ].rental_unit
                                         }
                                       />
-                                      {rentalsFormik.errors.entries &&
-                                      rentalsFormik.errors.entries[0]
-                                        ?.residential &&
-                                      rentalsFormik.errors.entries[0]
-                                        .residential[residentialIndex]
-                                        ?.rental_units &&
-                                      rentalsFormik.touched.entries &&
-                                      rentalsFormik.touched.entries[0]
-                                        ?.residential &&
-                                      rentalsFormik.touched.entries[0]
-                                        .residential[residentialIndex]
-                                        ?.rental_units ? (
+                                      {rentalsFormik.errors &&
+                                      rentalsFormik.errors?.residential &&
+                                      rentalsFormik.errors.residential[
+                                        residentialIndex
+                                      ]?.rental_unit &&
+                                      rentalsFormik.touched &&
+                                      rentalsFormik.touched?.residential &&
+                                      rentalsFormik.touched.residential[
+                                        residentialIndex
+                                      ]?.rental_unit ? (
                                         <div style={{ color: "red" }}>
                                           {
-                                            rentalsFormik.errors.entries[0]
-                                              .residential[residentialIndex]
-                                              ?.rental_units
+                                            rentalsFormik.errors.residential[
+                                              residentialIndex
+                                            ]?.rental_unit
                                           }
                                         </div>
                                       ) : null}
@@ -2761,7 +1630,7 @@ const Rentals = () => {
                                   <Col
                                     lg="4"
                                     style={
-                                      selectedProp.is_multiunit
+                                      selectedPropType.is_multiunit
                                         ? { display: "block" }
                                         : { display: "none" }
                                     }
@@ -2780,20 +1649,18 @@ const Rentals = () => {
                                         id="input-unitadd"
                                         placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
                                         type="text"
-                                        name={`entries${[
-                                          residentialIndex,
-                                        ]}.rental_unitsAdress`}
+                                        name={`residential[${residentialIndex}].rental_unit_adress`}
                                         onBlur={rentalsFormik.handleBlur}
                                         onChange={(e) =>
                                           rentalsFormik.setFieldValue(
-                                            `entries[0].residential[${residentialIndex}].rental_unitsAdress`,
+                                            `residential[${residentialIndex}].rental_unit_adress`,
                                             e.target.value
                                           )
                                         }
                                         value={
-                                          rentalsFormik.values.entries[0]
-                                            .residential[residentialIndex]
-                                            .rental_unitsAdress
+                                          rentalsFormik.values.residential[
+                                            residentialIndex
+                                          ].rental_unit_adress
                                         }
                                       />
                                     </FormGroup>
@@ -2813,43 +1680,41 @@ const Rentals = () => {
                                         id="input-unitadd"
                                         placeholder="3000"
                                         type="text"
-                                        name={`entries[0].residential[${residentialIndex}].rental_sqft`}
+                                        name={`residential[${residentialIndex}].rental_sqft`}
                                         onBlur={rentalsFormik.handleBlur}
                                         onChange={(e) => {
                                           rentalsFormik.setFieldValue(
-                                            `entries[0].residential[${residentialIndex}].rental_sqft`,
+                                            `residential[${residentialIndex}].rental_sqft`,
                                             e.target.value
                                           );
                                         }}
                                         value={
-                                          rentalsFormik.values.entries[0]
-                                            .residential[residentialIndex]
-                                            .rental_sqft
+                                          rentalsFormik.values.residential[
+                                            residentialIndex
+                                          ].rental_sqft
                                         }
                                         onInput={(e) => {
                                           const inputValue = e.target.value;
                                           const numericValue =
-                                            inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                                            inputValue.replace(/\D/g, "");
                                           e.target.value = numericValue;
                                         }}
                                       />
-                                      {rentalsFormik.errors.entries &&
-                                      rentalsFormik.errors.entries[0]
-                                        ?.residential &&
-                                      rentalsFormik.errors.entries[0]
-                                        .residential[residentialIndex]
-                                        ?.rental_sqft &&
-                                      rentalsFormik.touched.entries &&
-                                      rentalsFormik.touched.entries[0]
-                                        ?.residential &&
-                                      rentalsFormik.touched.entries[0]
-                                        .residential[residentialIndex]
-                                        ?.rental_sqft ? (
+                                      {rentalsFormik.errors &&
+                                      rentalsFormik.errors?.residential &&
+                                      rentalsFormik.errors.residential[
+                                        residentialIndex
+                                      ]?.rental_sqft &&
+                                      rentalsFormik.touched &&
+                                      rentalsFormik.touched?.residential &&
+                                      rentalsFormik.touched.residential[
+                                        residentialIndex
+                                      ]?.rental_sqft ? (
                                         <div style={{ color: "red" }}>
                                           {
-                                            rentalsFormik.errors.entries[0]
-                                              .residential[residentialIndex]
-                                              ?.rental_sqft
+                                            rentalsFormik.errors.residential[
+                                              residentialIndex
+                                            ]?.rental_sqft
                                           }
                                         </div>
                                       ) : null}
@@ -2874,7 +1739,6 @@ const Rentals = () => {
                                             </label>
                                             <Autocomplete
                                               className="form-control-alternative"
-                                              // id="free-solo-demo"
                                               id="input-unitadd"
                                               freeSolo
                                               size="small"
@@ -2883,7 +1747,7 @@ const Rentals = () => {
                                               )}
                                               onChange={(event, newValue) => {
                                                 rentalsFormik.setFieldValue(
-                                                  `entries[0].residential[${residentialIndex}].rental_bath`,
+                                                  `residential[${residentialIndex}].rental_bath`,
                                                   newValue
                                                 );
                                               }}
@@ -2894,25 +1758,19 @@ const Rentals = () => {
                                                   id={`residential[${residentialIndex}].rental_bath`}
                                                   value={
                                                     rentalsFormik.values
-                                                      .entries[0].residential[
+                                                      .residential[
                                                       residentialIndex
                                                     ].rental_bath
                                                   }
-                                                  // onChange={rentalsFormik.handleChange}
                                                   onChange={(e) => {
                                                     rentalsFormik.setFieldValue(
-                                                      `entries[0].residential[${residentialIndex}].rental_bath`,
+                                                      `residential[${residentialIndex}].rental_bath`,
                                                       e.target.value
                                                     );
                                                   }}
                                                 />
                                               )}
                                             />
-                                            {/* {console.log(
-                                            rentalsFormik.values.entries[0]
-                                              .residential[residentialIndex],
-                                            "hiufhbgvwejnkml"
-                                          )} */}
                                           </FormGroup>
                                         </Col>
                                         <Col md="4">
@@ -2926,7 +1784,6 @@ const Rentals = () => {
 
                                             <Autocomplete
                                               className="form-control-alternative"
-                                              // id="free-solo-demo"
                                               id="input-unitadd"
                                               freeSolo
                                               size="small"
@@ -2935,7 +1792,7 @@ const Rentals = () => {
                                               )}
                                               onChange={(event, newValue) => {
                                                 rentalsFormik.setFieldValue(
-                                                  `entries[0].residential[${residentialIndex}].rental_bed`,
+                                                  `residential[${residentialIndex}].rental_bed`,
                                                   newValue
                                                 );
                                               }}
@@ -2946,14 +1803,13 @@ const Rentals = () => {
                                                   id={`residential[${residentialIndex}].rental_bed`}
                                                   value={
                                                     rentalsFormik.values
-                                                      .entries[0].residential[
+                                                      .residential[
                                                       residentialIndex
                                                     ].rental_bed
                                                   }
-                                                  // onChange={rentalsFormik.handleChange}
                                                   onChange={(e) => {
                                                     rentalsFormik.setFieldValue(
-                                                      `entries[0].residential[${residentialIndex}].rental_bed`,
+                                                      `residential[${residentialIndex}].rental_bed`,
                                                       e.target.value
                                                     );
                                                   }}
@@ -2986,7 +1842,7 @@ const Rentals = () => {
                                           Photo
                                         </label>
                                         <span
-                                          onClick={togglePhotoresDialog}
+                                          onClick={togglePhotoDialog}
                                           style={{
                                             cursor: "pointer",
                                             fontSize: "14px",
@@ -3016,10 +1872,9 @@ const Rentals = () => {
                                           >
                                             <b style={{ fontSize: "20px" }}>
                                               +
-                                            </b>{" "}
+                                            </b>
                                             Add
                                           </label>
-                                          {/* <b style={{ fontSize: "20px" }}>+</b> Add */}
                                         </span>
                                       </FormGroup>
 
@@ -3037,7 +1892,7 @@ const Rentals = () => {
                                             flexWrap: "wrap",
                                           }}
                                         >
-                                          {residentialImage &&
+                                          {/* {residentialImage &&
                                             residentialImage.length > 0 &&
                                             residentialImage[
                                               residentialIndex
@@ -3046,7 +1901,7 @@ const Rentals = () => {
                                               residentialIndex
                                             ].map((unitImg, index) => (
                                               <div
-                                                key={index} // Use a unique identifier, such as index or image URL
+                                                key={index}
                                                 style={{
                                                   position: "relative",
                                                   width: "100px",
@@ -3088,12 +1943,12 @@ const Rentals = () => {
                                                   }
                                                 />
                                               </div>
-                                            ))}
-                                          <OpenImageDialog
+                                            ))} */}
+                                          {/* <OpenImageDialog
                                             open={open}
                                             setOpen={setOpen}
                                             selectedImage={selectedImage}
-                                          />
+                                          /> */}
                                         </div>
                                       </FormGroup>
                                     </div>
@@ -3107,7 +1962,7 @@ const Rentals = () => {
                             <Button
                               onClick={addResidentialUnits}
                               style={
-                                selectedProp.is_multiunit
+                                selectedPropType.is_multiunit
                                   ? { display: "block" }
                                   : { display: "none" }
                               }
@@ -3119,8 +1974,7 @@ const Rentals = () => {
                       </FormGroup>
                     </div>
                   )}
-                  {/* {console.log(propType, "propType")} */}
-                  {propType === "Commercial" && (
+                  {!rental_id && propType === "Commercial" && (
                     <div className="pl-lg-4">
                       <h6 className="heading-small text-muted mb-4">
                         Commercial Unit
@@ -3134,8 +1988,8 @@ const Rentals = () => {
                         </label>
                         <br />
                         <br />
-                        {rentalsFormik.values.entries &&
-                          rentalsFormik.values.entries[0].commercial.map(
+                        {rentalsFormik.values &&
+                          rentalsFormik.values.commercial.map(
                             (commercialUnit, commercialIndex) => (
                               <div key={commercialIndex}>
                                 <Row style={{ position: "relative" }}>
@@ -3144,7 +1998,7 @@ const Rentals = () => {
                                       cursor: "pointer",
                                       position: "absolute",
                                       right: "10px",
-                                      display: selectedProp.is_multiunit
+                                      display: selectedPropType.is_multiunit
                                         ? "block"
                                         : "none",
                                     }}
@@ -3156,7 +2010,7 @@ const Rentals = () => {
                                   <Col
                                     lg="3"
                                     style={
-                                      selectedProp.is_multiunit
+                                      selectedPropType.is_multiunit
                                         ? { display: "block" }
                                         : { display: "none" }
                                     }
@@ -3174,44 +2028,35 @@ const Rentals = () => {
                                         id={`input-unit-${commercialIndex}`}
                                         placeholder="102"
                                         type="text"
-                                        //name should be dynamic
-                                        name={`rentalcom_units${commercialIndex}`}
+                                        name={`commercial[${commercialIndex}].rental_unit`}
                                         onBlur={rentalsFormik.handleBlur}
                                         onChange={(e) => {
                                           rentalsFormik.setFieldValue(
-                                            `entries[0].commercial[${commercialIndex}].rentalcom_units`,
+                                            `commercial[${commercialIndex}].rental_unit`,
                                             e.target.value
                                           );
                                         }}
                                         value={
-                                          rentalsFormik.values.entries[0]
-                                            .commercial[commercialIndex]
-                                            .rentalcom_units
+                                          rentalsFormik.values.commercial[
+                                            commercialIndex
+                                          ].rental_unit
                                         }
                                       />
-                                      {/* {rentalsFormik.touched.rentalcom_units &&
-                                      rentalsFormik.errors.rentalcom_units ? (
-                                        <div style={{ color: "red" }}>
-                                          {rentalsFormik.errors.rentalcom_units}
-                                        </div>
-                                      ) : null} */}
-                                      {rentalsFormik.errors.entries &&
-                                      rentalsFormik.errors.entries[0]
-                                        ?.commercial &&
-                                      rentalsFormik.errors.entries[0]
-                                        .commercial[commercialIndex]
-                                        ?.rentalcom_units &&
-                                      rentalsFormik.touched.entries &&
-                                      rentalsFormik.touched.entries[0]
-                                        ?.commercial &&
-                                      rentalsFormik.touched.entries[0]
-                                        .commercial[commercialIndex]
-                                        ?.rentalcom_units ? (
+                                      {rentalsFormik.errors &&
+                                      rentalsFormik.errors?.commercial &&
+                                      rentalsFormik.errors.commercial[
+                                        commercialIndex
+                                      ]?.rental_unit &&
+                                      rentalsFormik.touched &&
+                                      rentalsFormik.touched?.commercial &&
+                                      rentalsFormik.touched.commercial[
+                                        commercialIndex
+                                      ]?.rental_unit ? (
                                         <div style={{ color: "red" }}>
                                           {
-                                            rentalsFormik.errors.entries[0]
-                                              .commercial[commercialIndex]
-                                              ?.rentalcom_units
+                                            rentalsFormik.errors.commercial[
+                                              commercialIndex
+                                            ]?.rental_unit
                                           }
                                         </div>
                                       ) : null}
@@ -3220,7 +2065,7 @@ const Rentals = () => {
                                   <Col
                                     lg="4"
                                     style={
-                                      selectedProp.is_multiunit
+                                      selectedPropType.is_multiunit
                                         ? { display: "block" }
                                         : { display: "none" }
                                     }
@@ -3238,31 +2083,20 @@ const Rentals = () => {
                                         id="input-unitadd"
                                         placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
                                         type="text"
-                                        name={`rentalcom_unitsAdress${commercialIndex}`}
+                                        name={`commercial[${commercialIndex}].rental_unit_adress`}
                                         onBlur={rentalsFormik.handleBlur}
                                         onChange={(e) => {
                                           rentalsFormik.setFieldValue(
-                                            `entries[0].commercial[${commercialIndex}].rentalcom_unitsAdress`,
+                                            `commercial[${commercialIndex}].rental_unit_adress`,
                                             e.target.value
                                           );
                                         }}
                                         value={
-                                          rentalsFormik.values.entries[0]
-                                            .commercial[commercialIndex]
-                                            .rentalcom_unitsAdress
+                                          rentalsFormik.values.commercial[
+                                            commercialIndex
+                                          ].rental_unit_adress
                                         }
                                       />
-                                      {/* {rentalsFormik.touched
-                                        .rentalcom_unitsAdress &&
-                                      rentalsFormik.errors
-                                        .rentalcom_unitsAdress ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalsFormik.errors
-                                              .rentalcom_unitsAdress
-                                          }
-                                        </div>
-                                      ) : null} */}
                                     </FormGroup>
                                   </Col>
                                   <Col lg="2">
@@ -3279,11 +2113,11 @@ const Rentals = () => {
                                         id="input-unitadd"
                                         placeholder="3000"
                                         type="text"
-                                        name={`rentalcom_sqft${commercialIndex}`}
+                                        name={`commercial[${commercialIndex}].rental_sqft`}
                                         onBlur={rentalsFormik.handleBlur}
                                         onChange={(e) => {
                                           rentalsFormik.setFieldValue(
-                                            `entries[0].commercial[${commercialIndex}].rentalcom_sqft`,
+                                            `commercial[${commercialIndex}].rental_sqft`,
                                             e.target.value
                                           );
                                         }}
@@ -3294,28 +2128,26 @@ const Rentals = () => {
                                           e.target.value = numericValue;
                                         }}
                                         value={
-                                          rentalsFormik.values.entries[0]
-                                            .commercial[commercialIndex]
-                                            .rentalcom_sqft
+                                          rentalsFormik.values.commercial[
+                                            commercialIndex
+                                          ].rental_sqft
                                         }
                                       />
-                                      {rentalsFormik.errors.entries &&
-                                      rentalsFormik.errors.entries[0]
-                                        ?.commercial &&
-                                      rentalsFormik.errors.entries[0]
-                                        .commercial[commercialIndex]
-                                        ?.rentalcom_sqft &&
-                                      rentalsFormik.touched.entries &&
-                                      rentalsFormik.touched.entries[0]
-                                        ?.commercial &&
-                                      rentalsFormik.touched.entries[0]
-                                        .commercial[commercialIndex]
-                                        ?.rentalcom_sqft ? (
+                                      {rentalsFormik.errors &&
+                                      rentalsFormik.errors?.commercial &&
+                                      rentalsFormik.errors.commercial[
+                                        commercialIndex
+                                      ]?.rental_sqft &&
+                                      rentalsFormik.touched &&
+                                      rentalsFormik.touched?.commercial &&
+                                      rentalsFormik.touched.commercial[
+                                        commercialIndex
+                                      ]?.rental_sqft ? (
                                         <div style={{ color: "red" }}>
                                           {
-                                            rentalsFormik.errors.entries[0]
-                                              .commercial[commercialIndex]
-                                              ?.rentalcom_sqft
+                                            rentalsFormik.errors.commercial[
+                                              commercialIndex
+                                            ]?.rental_sqft
                                           }
                                         </div>
                                       ) : null}
@@ -3356,7 +2188,6 @@ const Rentals = () => {
                                             type="file"
                                             className="form-control-file d-none"
                                             accept="image/*"
-                                            // name="property_image"
                                             multiple
                                             id={`property_image${commercialIndex}`}
                                             name={`property_image${commercialIndex}`}
@@ -3386,12 +2217,12 @@ const Rentals = () => {
                                             flexWrap: "wrap",
                                           }}
                                         >
-                                          {commercialImage &&
+                                          {/* {commercialImage &&
                                             commercialImage.length > 0 &&
                                             commercialImage.map(
                                               (unitImg, index) => (
                                                 <div
-                                                  key={index} // Use a unique identifier, such as index or image URL
+                                                  key={index}
                                                   style={{
                                                     position: "relative",
                                                     width: "100px",
@@ -3433,12 +2264,12 @@ const Rentals = () => {
                                                   />
                                                 </div>
                                               )
-                                            )}
-                                          <OpenImageDialog
+                                            )} */}
+                                          {/* <OpenImageDialog
                                             open={open}
                                             setOpen={setOpen}
                                             selectedImage={selectedImage}
-                                          />
+                                          /> */}
                                         </div>
                                       </FormGroup>
                                     </div>
@@ -3452,7 +2283,7 @@ const Rentals = () => {
                             <Button
                               onClick={addCommercialUnit}
                               style={
-                                selectedProp.is_multiunit
+                                selectedPropType.is_multiunit
                                   ? { display: "block" }
                                   : { display: "none" }
                               }
@@ -3476,14 +2307,27 @@ const Rentals = () => {
                     >
                       Loading...
                     </button>
-                  ) : id ? (
+                  ) : rental_id ? (
                     <button
                       type="submit"
                       className="btn btn-primary"
                       style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
+                      onClick={async (e) => {
                         e.preventDefault();
-                        editProperty(id);
+                        setLoader(true);
+                        const res = await editProperty(
+                          rentalsFormik.values,
+                          rentalOwnerFormik.values,
+                          accessType.admin_id,
+                          selectedPropType.property_id
+                        );
+                        setLoader(false);
+                        if (res === false) {
+                          setLoader(false);
+                          navigate("/admin/propertiesTable");
+                        } else {
+                          setLoader(false);
+                        }
                       }}
                     >
                       Update Property
@@ -3499,7 +2343,6 @@ const Rentals = () => {
                           rentalsFormik.handleSubmit();
                         } else {
                           rentalsFormik.handleSubmit();
-                          // console.log("data not ok")
                           setDisplay(true);
                         }
                       }}
@@ -3519,11 +2362,6 @@ const Rentals = () => {
                   >
                     Cancel
                   </button>
-                  {/* { rentalownerData === 0 ? (
-                    <div style={{ color: "red" }}>
-                      Please Add Rental Owner
-                    </div>
-                  ) : null} */}
                 </Form>
               </CardBody>
             </Card>
@@ -3534,4 +2372,4 @@ const Rentals = () => {
   );
 };
 
-export default Rentals;
+export default Rentals2;

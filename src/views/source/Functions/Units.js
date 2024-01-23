@@ -6,6 +6,7 @@ import { OpenImageDialog } from "components/OpenImageDialog";
 import { Autocomplete, TextField } from "@mui/material";
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const imageUrl = process.env.REACT_APP_IMAGE_URL;
 
 const roomsArray = [
   "1 Bed",
@@ -80,15 +81,108 @@ const handleDeleteUnit = (id) => {
   });
 };
 
-const handleSubmit = async (event) => {};
+//add unit
+const handleSubmit = async (rental_id, admin_id, object) => {
+  object.admin_id = admin_id;
+  object.rental_id = rental_id;
+  try {
+    const res = await axios.post(`${baseUrl}/unit/unit`, object);
+    console.log(res.data.statusCode, "yashuj");
+    if (res.data.statusCode === 200) {
+      swal("", res.data.message, "success");
+      return false;
+    } else {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error:", error.message);
+    swal("", error.message, "error");
+    return true;
+  }
+};
 
-const getUnitProperty = async (unit_id) => {};
+//edite unit
+const handleUnitDetailsEdit = async (unit_id, object) => {
+  try {
+    const res = await axios.put(`${baseUrl}/unit/unit/${unit_id}`, object);
+    console.log(res.data.statusCode, "yashuj");
+    if (res.data.statusCode === 200) {
+      swal("", res.data.message, "success");
+      return false;
+    } else {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error:", error.message);
+    swal("", error.message, "error");
+    return true;
+  }
+};
 
-const handleUnitDetailsEdit = () => {};
+//add appliance
+const addAppliancesSubmit = async (unit_id, admin_id, object) => {
+  object.admin_id = admin_id;
+  object.unit_id = unit_id;
+  try {
+    const res = await axios.post(`${baseUrl}/appliance/appliance`, object);
+    if (res.data.statusCode === 200) {
+      swal("", res.data.message, "success");
+      return false;
+    } else {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error:", error.message);
+    swal("", error.message, "error");
+    return true;
+  }
+};
+
+//edite appliance
+const editeAppliancesSubmit = async (object) => {
+  try {
+    const res = await axios.put(
+      `${baseUrl}/appliance/appliance/${object.appliance_id}`,
+      object
+    );
+    console.log(res.data.statusCode, "yashuj");
+    if (res.data.statusCode === 200) {
+      swal("", res.data.message, "success");
+      return false;
+    } else {
+      swal("", res.data.message, "warning");
+      return true;
+    }
+  } catch (error) {
+    console.error("Error:", error.message);
+    swal("", error.message, "error");
+    return true;
+  }
+};
+
+//delete appliance
+const deleteAppliance = async (appliance_id) => {
+  swal("Are You Sure You Want TO Delete ?", {
+    buttons: ["No", "Yes"],
+  }).then(async (buttons) => {
+    if (buttons === true) {
+      try {
+        const res = await axios.delete(
+          `${baseUrl}/appliance/appliance/${appliance_id}`
+        );
+        if (res.data.statusCode === 200) {
+          swal("", res.data.message, "success");
+          return res.data.statusCode;
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
+        swal("", error.message, "error");
+      }
+    }
+  });
+};
 
 const UnitEdite = ({
-  openEdite,
-  setOpenEdite,
   clickedObject,
   selectedImage,
   setOpen,
@@ -99,13 +193,15 @@ const UnitEdite = ({
   fileData,
   togglePhotoresDialog,
   addUnitFormik,
+  closeModal,
+  addUnitDialogOpen,
 }) => {
   return (
-    <Row>
+    <Row style={{ width: "600px" }}>
       <Col md={12}>
         <Card style={{ position: "relative" }}>
           <CardBody>
-            <form onSubmit={addUnitFormik}>
+            <form onSubmit={addUnitFormik.handleSubmit}>
               {clickedObject?.rental_unit ? (
                 <>
                   <div
@@ -168,67 +264,77 @@ const UnitEdite = ({
                         onBlur={addUnitFormik.handleBlur}
                       />
                     </Col>
-                    <Col>
-                      <div>
-                        <h5>Bath</h5>
-                      </div>
-                      <Autocomplete
-                        className="form-control-alternative"
-                        id="input-unitadd"
-                        freeSolo
-                        size="small"
-                        options={bathArray.map((option) => option)}
-                        onChange={(event, newValue) => {
-                          addUnitFormik.setFieldValue(`rental_bath`, newValue);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            name={`rental_bath`}
-                            id={`rental_bath`}
-                            value={addUnitFormik.values.rental_bath}
-                            onChange={(e) => {
-                              addUnitFormik.setFieldValue(
-                                `rental_bath`,
-                                e.target.value
-                              );
-                            }}
-                          />
-                        )}
-                      />
-                    </Col>
-                    <Col>
-                      <div>
-                        <h5>Bed</h5>
-                      </div>
-                      <Autocomplete
-                        className="form-control-alternative"
-                        id="input-unitadd"
-                        freeSolo
-                        size="small"
-                        options={roomsArray.map((option) => option)}
-                        onChange={(event, newValue) => {
-                          addUnitFormik.setFieldValue(`rental_bed`, newValue);
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            name={`rental_bed`}
-                            id={`rental_bed`}
-                            value={addUnitFormik.values.rental_bed}
-                            onChange={(e) => {
-                              addUnitFormik.setFieldValue(
-                                `rental_bed`,
-                                e.target.value
-                              );
-                            }}
-                          />
-                        )}
-                      />
-                    </Col>
+                    {clickedObject?.rental_bath ? (
+                      <Col>
+                        <div>
+                          <h5>Bath</h5>
+                        </div>
+                        <Autocomplete
+                          className="form-control-alternative"
+                          id="input-unitadd"
+                          freeSolo
+                          size="small"
+                          value={addUnitFormik.values.rental_bath}
+                          options={bathArray.map((option) => option)}
+                          onChange={(event, newValue) => {
+                            addUnitFormik.setFieldValue(
+                              `rental_bath`,
+                              newValue
+                            );
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              name={`rental_bath`}
+                              id={`rental_bath`}
+                              value={addUnitFormik.values.rental_bath}
+                              onChange={(e) => {
+                                const newValue = e.target.value;
+                                addUnitFormik.setFieldValue(
+                                  `rental_bath`,
+                                  newValue
+                                );
+                              }}
+                            />
+                          )}
+                        />
+                      </Col>
+                    ) : null}
+                    {clickedObject?.rental_bed ? (
+                      <Col>
+                        <div>
+                          <h5>Bed</h5>
+                        </div>
+                        <Autocomplete
+                          className="form-control-alternative"
+                          id="input-unitadd"
+                          freeSolo
+                          size="small"
+                          value={addUnitFormik.values.rental_bed}
+                          options={roomsArray.map((option) => option)}
+                          onChange={(event, newValue) => {
+                            addUnitFormik.setFieldValue(`rental_bed`, newValue);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              name={`rental_bed`}
+                              id={`rental_bed`}
+                              value={addUnitFormik.values.rental_bed}
+                              onChange={(e) => {
+                                addUnitFormik.setFieldValue(
+                                  `rental_bed`,
+                                  e.target.value
+                                );
+                              }}
+                            />
+                          )}
+                        />
+                      </Col>
+                    ) : null}
                   </Row>
                 </>
-              ) : (
+              ) : addUnitDialogOpen === "" ? (
                 <>
                   <div
                     style={{
@@ -291,6 +397,141 @@ const UnitEdite = ({
                       />
                     </div>
                   </div>
+                </>
+              ) : (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <div>
+                      <h5>Unit Number</h5>
+                    </div>
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="rental_unit"
+                      name="rental_unit"
+                      value={addUnitFormik.values.rental_unit}
+                      onChange={addUnitFormik.handleChange}
+                      onBlur={addUnitFormik.handleBlur}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <div>
+                      <h5>Street Address</h5>
+                    </div>
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="rental_unit_adress"
+                      name="rental_unit_adress"
+                      value={addUnitFormik.values.rental_unit_adress}
+                      onChange={addUnitFormik.handleChange}
+                      onBlur={addUnitFormik.handleBlur}
+                    />
+                  </div>
+                  <Row
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Col>
+                      <div>
+                        <h5>SQFT</h5>
+                      </div>
+                      <TextField
+                        type="text"
+                        size="small"
+                        id="rental_sqft"
+                        name="rental_sqft"
+                        value={addUnitFormik.values.rental_sqft}
+                        onChange={addUnitFormik.handleChange}
+                        onBlur={addUnitFormik.handleBlur}
+                      />
+                    </Col>
+                    {addUnitDialogOpen === "Residential" ? (
+                      <>
+                        <Col>
+                          <div>
+                            <h5>Bath</h5>
+                          </div>
+                          <Autocomplete
+                            className="form-control-alternative"
+                            id="input-unitadd"
+                            freeSolo
+                            size="small"
+                            value={addUnitFormik.values.rental_bath}
+                            options={bathArray.map((option) => option)}
+                            onChange={(event, newValue) => {
+                              addUnitFormik.setFieldValue(
+                                `rental_bath`,
+                                newValue
+                              );
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                name={`rental_bath`}
+                                id={`rental_bath`}
+                                value={addUnitFormik.values.rental_bath}
+                                onChange={(e) => {
+                                  const newValue = e.target.value;
+                                  addUnitFormik.setFieldValue(
+                                    `rental_bath`,
+                                    newValue
+                                  );
+                                }}
+                              />
+                            )}
+                          />
+                        </Col>
+                        <Col>
+                          <div>
+                            <h5>Bed</h5>
+                          </div>
+                          <Autocomplete
+                            className="form-control-alternative"
+                            id="input-unitadd"
+                            freeSolo
+                            size="small"
+                            value={addUnitFormik.values.rental_bed}
+                            options={roomsArray.map((option) => option)}
+                            onChange={(event, newValue) => {
+                              addUnitFormik.setFieldValue(
+                                `rental_bed`,
+                                newValue
+                              );
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                name={`rental_bed`}
+                                id={`rental_bed`}
+                                value={addUnitFormik.values.rental_bed}
+                                onChange={(e) => {
+                                  addUnitFormik.setFieldValue(
+                                    `rental_bed`,
+                                    e.target.value
+                                  );
+                                }}
+                              />
+                            )}
+                          />
+                        </Col>
+                      </>
+                    ) : null}
+                  </Row>
                 </>
               )}
 
@@ -417,21 +658,12 @@ const UnitEdite = ({
               </div>
 
               <div style={{ marginTop: "10px" }}>
-                <Button
-                  color="success"
-                  type="submit"
-                  onClick={() => {
-                    handleUnitDetailsEdit(
-                      clickedObject?._id,
-                      clickedObject?.rentalId
-                    );
-                  }}
-                >
+                <Button color="success" type="submit">
                   Save
                 </Button>
                 <Button
                   onClick={() => {
-                    setOpenEdite(!openEdite);
+                    closeModal();
                   }}
                 >
                   Cancel
@@ -452,6 +684,9 @@ export {
   roomsArray,
   bathArray,
   handleSubmit,
-  getUnitProperty,
   UnitEdite,
+  handleUnitDetailsEdit,
+  addAppliancesSubmit,
+  editeAppliancesSubmit,
+  deleteAppliance,
 };

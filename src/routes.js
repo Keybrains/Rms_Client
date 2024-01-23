@@ -67,6 +67,7 @@ import DemoPayment from "views/source/DemoPayment";
 import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
 import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
 import PropDetails2 from "views/source/PropDetails2";
+import Rentals2 from "views/source/Rentals2";
 
 var routes = [
   {
@@ -81,6 +82,13 @@ var routes = [
     name: "Add Property",
     icon: "ni ni-pin-3 text-orange",
     component: <Rentals />,
+    layout: "/admin",
+  },
+  {
+    path: "/rentals2",
+    name: "Add Property",
+    icon: "ni ni-pin-3 text-orange",
+    component: <Rentals2 />,
     layout: "/admin",
   },
   {
@@ -453,6 +461,20 @@ var routes = [
     name: "Add Property",
     icon: "ni ni-pin-3 text-orange",
     component: <Rentals />,
+    layout: "/admin",
+  },
+  {
+    path: "/rentals/:rental_id",
+    name: "Add Property",
+    icon: "ni ni-pin-3 text-orange",
+    component: <Rentals />,
+    layout: "/admin",
+  },
+  {
+    path: "/rentals2/:rental_id",
+    name: "Add Property",
+    icon: "ni ni-pin-3 text-orange",
+    component: <Rentals2 />,
     layout: "/admin",
   },
   {
