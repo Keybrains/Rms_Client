@@ -168,7 +168,10 @@ const SuperAdminSidebar = (props) => {
   const createLinks = (routes) => {
     const filteredRoutes = routes.filter(
       (prop) =>
-        (prop.name === "Plans" || prop.name === "Dashboard" || prop.name === "Admin") &&
+        (prop.name === "Plans" ||
+          prop.name === "Dashboard" ||
+          prop.name === "Admin" ||
+          prop.name === "Staff-Member") &&
         prop.layout === "/superadmin"
       // prop.name === "Add Agent"
     );

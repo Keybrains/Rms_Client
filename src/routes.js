@@ -61,6 +61,7 @@ import Changepassword from "views/source/Changepassword";
 import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
 import DemoPayment from "views/source/DemoPayment";
+import PropDetails2 from "views/source/PropDetails2";
 
 // ==========================  Super Admin ===================================================
 
@@ -68,7 +69,7 @@ import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoar
 import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
 import SuperAdminAdmin from "components/superadmin/Admin/Admin"; 
 import SuperAdminRentals from "components/superadmin/Admin/Rentals"; 
-import PropDetails2 from "views/source/PropDetails2";
+import SuperAdminStaffMember from "components/superadmin/Admin/StaffMember"; 
 
 var routes = [
   {
@@ -669,6 +670,13 @@ var routes = [
     name: "Rentals",
     icon: "ni ni-pin-3 text-orange",
     component: <SuperAdminRentals />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/staff-member",
+    name: "Staff-Member",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminStaffMember />,
     layout: "/superadmin",
   },
 
