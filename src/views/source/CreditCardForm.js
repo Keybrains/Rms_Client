@@ -73,56 +73,59 @@ function CreditCardForm(props) {
   const handleSubmit = async (values) => {
     const isValidCard = validateCardNumber(values.card_number);
     const cardType = isValidCard.niceType;
-
-    console.log(isValidCard, "valid");
-    console.log(cardType, "cardType");
-
+  
     if (!isValidCard) {
       swal("Error", "Invalid credit card number", "error");
       return;
     }
-
+  
     try {
-      // Call both APIs in parallel
-      const [creditCardResponse, customerVaultResponse] = await Promise.all([
-        axios.post(`${baseUrl}/creditcard/addCreditCard`, {
+      // Call the first API
+      const customerVaultResponse = await axios.post(`${baseUrl}/nmipayment/create-customer-vault`, {
+        first_name: "Mansi", 
+        last_name: "Doe",
+        ccnumber: values.card_number,
+        ccexp: values.exp_date,
+      });
+  
+      if (customerVaultResponse.data && customerVaultResponse.data.data) {
+        // Extract customer_vault_id from the first API response
+        const customerVaultId = customerVaultResponse.data.data.customer_vault_id;
+        const vaultResponse = customerVaultResponse.data.data.response_code;
+  
+        // Call the second API using the extracted customer_vault_id
+        const creditCardResponse = await axios.post(`${baseUrl}/creditcard/addCreditCard`, {
           tenant_id: tenantId,
           card_number: values.card_number,
           exp_date: values.exp_date,
           card_type: cardType,
-        }),
-        axios.post(`${baseUrl}/nmipayment/create-customer-vault`, {
-          first_name: "John",
-          last_name: "Doe",
-          ccnumber: values.card_number,
-          ccexp: values.exp_date,
-        }),
-      ]);
-
-      console.log("Credit Card Response:", creditCardResponse.data);
-      console.log("Customer Vault Response:", customerVaultResponse.data);
-
-      if (
-        creditCardResponse.status === 200 &&
-        customerVaultResponse.status === 200
-      ) {
-        swal("Success", "Card Added Successfully", "success");
-        //closeModal();
-        getCreditCard();
+          customer_vault_id: customerVaultId,
+          response_code: vaultResponse,
+        });
+  
+        console.log("Credit Card Response:", creditCardResponse.data);
+        console.log("Customer Vault Response:", customerVaultResponse.data);
+  
+        if (
+          creditCardResponse.status === 200 &&
+          customerVaultResponse.status === 200
+        ) {
+          swal("Success", "Card Added Successfully", "success");
+          //closeModal();
+          getCreditCard();
+        } else {
+          swal("Error", creditCardResponse.data.message, "error");
+        }
       } else {
-        swal("Error", creditCardResponse.data.message, "error");
+        // Handle the case where the response structure is not as expected
+        swal("Error", "Unexpected response format from create-customer-vault API", "error");
       }
-
-      // if (customerVaultResponse.data.success) {
-      //   swal("Success", "Customer vault created successfully.", "success");
-      // } else {
-      //   swal("Error","", "error");
-      // }
     } catch (error) {
       console.error("Error:", error);
       swal("Error", "Something went wrong!", "error");
     }
   };
+  
 
   //   const handleSubmit = async (values) => {
 
@@ -264,7 +267,7 @@ function CreditCardForm(props) {
               Credit Cards
             </Typography>
           </div> */}
-              {cardDetalis && cardDetalis.length > 0 && (
+           {cardDetalis && cardDetalis.length > 0 ? (
                 <Table responsive>
                   <tbody>
                     <tr>
@@ -314,6 +317,10 @@ function CreditCardForm(props) {
                     ))}
                   </tbody>
                 </Table>
+              ) : (
+                <Typography variant="body1" color="text.secondary">
+                  No cards added.
+                </Typography>
               )}
 
               {/* Add Credit Card Button
