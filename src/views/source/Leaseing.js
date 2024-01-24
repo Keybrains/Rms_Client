@@ -1704,7 +1704,6 @@ const Leaseing = () => {
       address2: entrySchema.values.rental_units,
     };
 
-
     try {
       const res = await axios.get(`${baseUrl}/tenant/tenant`);
       if (res.data.statusCode === 200) {
@@ -2460,7 +2459,6 @@ const Leaseing = () => {
   return (
     <>
       <LeaseHeader />
-      {/* Page content */}
 
       <Container className="mt--7" fluid>
         <Row>
@@ -2740,36 +2738,6 @@ const Leaseing = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-
-                    {/* <Row>
-                      <Col lg="6">
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Leasing Agent
-                        </label>
-                        <FormGroup>
-                          <Dropdown isOpen={agentdropdownOpen} toggle={toggle}>
-                            <DropdownToggle caret style={{ width: "100%" }}>
-                              {selectedAgent ? selectedAgent : "Select Agent"}{" "}
-                              &nbsp;&nbsp;&nbsp;&nbsp;
-                            </DropdownToggle>
-                            <DropdownMenu style={{ width: "100%" }}>
-                              <DropdownItem value="">Select</DropdownItem>
-                              {agentData.map((agent) => (
-                                <DropdownItem
-                                  key={agent._id}
-                                  onClick={() => handleAgentSelect(agent)}
-                                >
-                                  {agent.agent_name}
-                                </DropdownItem>
-                              ))}
-                            </DropdownMenu>
-                          </Dropdown>
-                        </FormGroup>
-                      </Col>
-                    </Row> */}
                   </div>
 
                   <hr className="my-4" />
@@ -2777,8 +2745,6 @@ const Leaseing = () => {
                   <h6 className="heading-small text-muted mb-4">
                     Tenants and Cosigner
                   </h6>
-                  {/* <div className="pl-lg-4"></div> */}
-
                   <Row>
                     <Col lg="12">
                       <FormGroup>
@@ -2812,7 +2778,6 @@ const Leaseing = () => {
                           >
                             <div
                               style={{
-                                // display: "flex",
                                 alignItems: "center",
                                 margin: "30px 0",
                               }}
@@ -2983,8 +2948,6 @@ const Leaseing = () => {
                                                                 "15px",
                                                             }}
                                                           >
-                                                            {/* <FormControlLabel
-                                                          control={  */}
                                                             <Checkbox
                                                               type="checkbox"
                                                               name="tenant"
@@ -3001,34 +2964,6 @@ const Leaseing = () => {
                                                                 setCheckedCheckbox(
                                                                   tenant.tenant_mobileNumber
                                                                 );
-                                                                // const tenantInfo = `${tenant.tenant_firstName || ""}
-                                                                // ${tenant.tenant_lastName ||
-                                                                //   ""
-                                                                //   } ${tenant.tenant_mobileNumber ||
-                                                                //   ""
-                                                                //   } ${tenant.tenant_email ||
-                                                                //   ""
-                                                                //   } ${tenant.textpayer_id ||
-                                                                //   ""
-                                                                //   } ${tenant.birth_date ||
-                                                                //   ""
-                                                                //   } ${tenant.comments ||
-                                                                //   ""
-                                                                //   } ${tenant.contact_name ||
-                                                                //   ""
-                                                                //   } ${tenant.relationship_tenants ||
-                                                                //   ""
-                                                                //   } ${tenant.email ||
-                                                                //   ""
-                                                                //   } ${tenant.emergency_PhoneNumber ||
-                                                                //   ""
-                                                                //   } ${tenant.tenant_password ||
-                                                                //   ""
-                                                                //   } ${tenant.tenant_workNumber ||
-                                                                //   ""
-                                                                //   } ${tenant.alternate_email ||
-                                                                //   ""
-                                                                //   }`;
                                                                 const tenantInfo1 =
                                                                   {
                                                                     tenant_firstName:
@@ -3065,7 +3000,6 @@ const Leaseing = () => {
                                                                   tenantInfo1,
                                                                   tenant.tenant_mobileNumber
                                                                 );
-                                                                // console.log(tenantInfo1)
                                                               }}
                                                             />
                                                           </td>
@@ -3077,7 +3011,6 @@ const Leaseing = () => {
                                             <br />
                                           </div>
                                         )}
-                                      {/* {console.log(tenantsFormik.values)} */}
                                       {!showTenantTable && (
                                         <div
                                           className="TenantDetail"
@@ -3108,10 +3041,6 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_firstName"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
                                               >
                                                 First Name *
                                               </label>
@@ -3149,7 +3078,6 @@ const Leaseing = () => {
                                                   }
                                                 </div>
                                               ) : null}
-                                              {/* {console.log(tenantsSchema.values)} */}
                                             </div>
                                             <div
                                               style={{
@@ -3160,10 +3088,6 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_lastName"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
                                               >
                                                 Last Name *
                                               </label>
@@ -3268,20 +3192,6 @@ const Leaseing = () => {
                                                 </div>
                                               ) : null}
                                             </div>
-                                            {/* <span
-                                              onClick={setOpenTenantsDialog}
-                                              style={{
-                                                cursor: "pointer",
-                                                fontSize: "14px",
-                                                fontFamily: "monospace",
-                                                color: "blue",
-                                              }}
-                                            >
-                                              <b style={{ fontSize: "20px" }}>
-                                                +
-                                              </b>{" "}
-                                              Add alternative Phone
-                                            </span> */}
                                             <div
                                               style={{
                                                 display: "flex",
@@ -3338,19 +3248,6 @@ const Leaseing = () => {
                                                         numericValue;
                                                     }}
                                                   />
-                                                  {/* {tenantsFormik.touched
-                                                    .tenant_workNumber &&
-                                                    tenantsFormik.errors
-                                                      .tenant_workNumber ? (
-                                                    <div
-                                                      style={{ color: "red" }}
-                                                    >
-                                                      {
-                                                        tenantsFormik.errors
-                                                          .tenant_workNumber
-                                                      }
-                                                    </div>
-                                                  ) : null} */}
                                                 </div>
                                               )}
                                               <span
@@ -3387,10 +3284,6 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_email"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
                                               >
                                                 Email*
                                               </label>
@@ -3429,21 +3322,6 @@ const Leaseing = () => {
                                                 </div>
                                               ) : null}
                                             </div>
-                                            {/* <span
-                                                onClick={setOpenTenantsDialog}
-                                                style={{
-                                                  cursor: "pointer",
-                                                  fontSize: "14px",
-                                                  fontFamily: "monospace",
-                                                  color: "blue",
-                                                  marginLeft: "10px", // Add this to create space between the input and the link
-                                                }}
-                                              >
-                                                <b style={{ fontSize: "20px" }}>
-                                                  +
-                                                </b>{" "}
-                                                Add alternative Email
-                                              </span> */}
                                             <div
                                               style={{
                                                 display: "flex",
@@ -3489,21 +3367,6 @@ const Leaseing = () => {
                                                         .alternate_email
                                                     }
                                                   />
-                                                  {/* {tenantsSchema.touched
-                                                    .alternate_email &&
-                                                    tenantsSchema.errors
-                                                      .alternate_email &&
-                                                    tenantsSchema.values
-                                                      .tenant_email === "" ? (
-                                                    <div
-                                                      style={{ color: "red" }}
-                                                    >
-                                                      {
-                                                        tenantsSchema.errors
-                                                          .alternate_email
-                                                      }
-                                                    </div>
-                                                  ) : null} */}
                                                 </div>
                                               )}
                                               <span
@@ -3532,10 +3395,6 @@ const Leaseing = () => {
                                               <label
                                                 className="form-control-label"
                                                 htmlFor="tenant_password"
-                                                // style={{
-                                                //   fontFamily: "monospace",
-                                                //   fontSize: "14px",
-                                                // }}
                                               >
                                                 Password*
                                               </label>
@@ -3578,18 +3437,6 @@ const Leaseing = () => {
                                                   {<VisibilityIcon />}
                                                 </Button>
                                               </div>
-                                              {/* {tenantsFormik.touched
-                                                .tenant_password &&
-                                                tenantsFormik.errors
-                                                  .tenant_password && tenantsFormik.values
-                                                    .tenant_password === '' ? (
-                                                <div style={{ color: "red" }}>
-                                                  {
-                                                    tenantsFormik.errors
-                                                      .tenant_password
-                                                  }
-                                                </div>
-                                              ) : null} */}
                                               {tenantsSchema.errors &&
                                               tenantsSchema.errors
                                                 ?.tenant_password &&
@@ -3601,56 +3448,10 @@ const Leaseing = () => {
                                                     tenantsSchema.errors
                                                       .tenant_password
                                                   }
-                                                  {/* {console.log(tenantsFormik.errors.tenant_password)} */}
                                                 </div>
                                               ) : null}
                                             </div>
                                           </div>
-                                          {/* <hr /> */}
-                                          {/* <div>
-                                            <label
-                                              className="form-control-label"
-                                              htmlFor="input-email"
-                                            >
-                                              Address*
-                                            </label>
-                                          </div> */}
-
-                                          {/* <div
-                                            style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                            }}
-                                          >
-                                            <Checkbox
-                                              //onClick={handleChange}
-                                              style={{ marginRight: "10px" }}
-                                            />
-                                            <label
-                                              className="form-control-label"
-                                              htmlFor="input-unitadd"
-                                            >
-                                              {" "}
-                                              Same as Unit Address
-                                            </label>
-                                          </div> */}
-                                          {/* <div>
-                                              <span
-                                                onClick={setOpenTenantsDialog}
-                                                style={{
-                                                  cursor: "pointer",
-                                                  fontSize: "14px",
-                                                  fontFamily: "monospace",
-                                                  color: "blue",
-                                                  marginLeft: "10px", // Add this to create space between the input and the link
-                                                }}
-                                              >
-                                                <b style={{ fontSize: "20px" }}>
-                                                  +
-                                                </b>{" "}
-                                                Add alternative Address
-                                              </span>
-                                            </div> */}
                                           <br />
                                           <div>
                                             <span
@@ -3694,22 +3495,6 @@ const Leaseing = () => {
                                                               .birth_date
                                                           }
                                                         />
-                                                        {/* {tenantsSchema.touched
-                                                          .birth_date &&
-                                                          tenantsSchema.errors
-                                                            .birth_date ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsSchema
-                                                                .errors
-                                                                .birth_date
-                                                            }
-                                                          </div>
-                                                        ) : null} */}
                                                       </FormGroup>
                                                     </Col>
                                                     <Col lg="7">
@@ -3736,22 +3521,6 @@ const Leaseing = () => {
                                                               .textpayer_id
                                                           }
                                                         />
-                                                        {/* {tenantsSchema.touched
-                                                          .textpayer_id &&
-                                                          tenantsFormik.errors
-                                                            .textpayer_id ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsFormik
-                                                                .errors
-                                                                .textpayer_id
-                                                            }
-                                                          </div>
-                                                        ) : null} */}
                                                       </FormGroup>
                                                     </Col>
                                                   </Row>
@@ -3785,21 +3554,6 @@ const Leaseing = () => {
                                                               .comments
                                                           }
                                                         />
-                                                        {/* {tenantsSchema.touched
-                                                          .comments &&
-                                                          tenantsSchema.errors
-                                                            .comments ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsSchema
-                                                                .errors.comments
-                                                            }
-                                                          </div>
-                                                        ) : null} */}
                                                       </FormGroup>
                                                     </Col>
                                                   </Row>
@@ -3847,22 +3601,6 @@ const Leaseing = () => {
                                                               .contact_name
                                                           }
                                                         />
-                                                        {/* {tenantsSchema.touched
-                                                          .contact_name &&
-                                                          tenantsSchema.errors
-                                                            .contact_name ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsSchema
-                                                                .errors
-                                                                .contact_name
-                                                            }
-                                                          </div>
-                                                        ) : null} */}
                                                       </FormGroup>
                                                     </Col>
                                                     <Col lg="6">
@@ -3889,22 +3627,6 @@ const Leaseing = () => {
                                                               .relationship_tenants
                                                           }
                                                         />
-                                                        {/* {tenantsFormik.touched
-                                                          .relationship_tenants &&
-                                                          tenantsFormik.errors
-                                                            .relationship_tenants ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsFormik
-                                                                .errors
-                                                                .relationship_tenants
-                                                            }
-                                                          </div>
-                                                        ) : null} */}
                                                       </FormGroup>
                                                     </Col>
                                                   </Row>
@@ -3933,21 +3655,6 @@ const Leaseing = () => {
                                                               .email
                                                           }
                                                         />
-                                                        {/* {tenantsSchema.touched
-                                                          .email &&
-                                                          tenantsSchema.errors
-                                                            .email ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsSchema
-                                                                .errors.email
-                                                            }
-                                                          </div>
-                                                        ) : null} */}
                                                       </FormGroup>
                                                     </Col>
                                                     <Col lg="6">
@@ -3985,22 +3692,6 @@ const Leaseing = () => {
                                                               numericValue;
                                                           }}
                                                         />
-                                                        {/* {tenantsSchema.touched
-                                                          .emergency_PhoneNumber &&
-                                                          tenantsSchema.errors
-                                                            .emergency_PhoneNumber ? (
-                                                          <div
-                                                            style={{
-                                                              color: "red",
-                                                            }}
-                                                          >
-                                                            {
-                                                              tenantsSchema
-                                                                .errors
-                                                                .emergency_PhoneNumber
-                                                            }
-                                                          </div>
-                                                        ) : null} */}
                                                       </FormGroup>
                                                     </Col>
                                                   </Row>
@@ -4200,20 +3891,6 @@ const Leaseing = () => {
                                               </div>
                                             ) : null}
                                           </div>
-                                          {/* <span
-                                            onClick={setOpenTenantsDialog}
-                                            style={{
-                                              cursor: "pointer",
-                                              fontSize: "14px",
-                                              fontFamily: "monospace",
-                                              color: "blue",
-                                            }}
-                                          >
-                                            <b style={{ fontSize: "20px" }}>
-                                              +
-                                            </b>{" "}
-                                            Add alternative Phone
-                                          </span> */}
                                           <div
                                             style={{
                                               display: "flex",
@@ -4350,21 +4027,6 @@ const Leaseing = () => {
                                               </div>
                                             ) : null}
                                           </div>
-                                          {/* <span
-                                            onClick={setOpenTenantsDialog}
-                                            style={{
-                                              cursor: "pointer",
-                                              fontSize: "14px",
-                                              fontFamily: "monospace",
-                                              color: "blue",
-                                              marginLeft: "10px", // Add this to create space between the input and the link
-                                            }}
-                                          >
-                                            <b style={{ fontSize: "20px" }}>
-                                              +
-                                            </b>{" "}
-                                            Add alternative Email
-                                          </span> */}
                                           <div
                                             style={{
                                               display: "flex",
@@ -4397,7 +4059,7 @@ const Leaseing = () => {
                                                   style={{
                                                     marginRight: "10px",
                                                     flex: 1,
-                                                  }} // Adjust flex property
+                                                  }}
                                                   name="cosigner_alternateemail"
                                                   onBlur={
                                                     cosignerSchema.handleBlur
@@ -4412,17 +4074,6 @@ const Leaseing = () => {
                                                       .cosigner_alternateemail
                                                   }
                                                 />
-                                                {/* {consignerFormik.touched
-                                                  .cosigner_alternateemail &&
-                                                  consignerFormik.errors
-                                                    .cosigner_alternateemail ? (
-                                                  <div style={{ color: "red" }}>
-                                                    {
-                                                      consignerFormik.errors
-                                                        .cosigner_alternateemail
-                                                    }
-                                                  </div>
-                                                ) : null} */}
                                               </div>
                                             )}
                                             <span
@@ -4483,17 +4134,6 @@ const Leaseing = () => {
                                                   .cosigner_streetAdress
                                               }
                                             />
-                                            {/* {consignerFormik.touched
-                                              .cosigner_streetAdress &&
-                                              consignerFormik.errors
-                                                .cosigner_streetAdress ? (
-                                              <div style={{ color: "red" }}>
-                                                {
-                                                  consignerFormik.errors
-                                                    .cosigner_streetAdress
-                                                }
-                                              </div>
-                                            ) : null} */}
                                           </FormGroup>
                                         </div>
                                         <div>
@@ -4525,17 +4165,6 @@ const Leaseing = () => {
                                                       .cosigner_city
                                                   }
                                                 />
-                                                {/* {consignerFormik.touched
-                                                  .cosigner_city &&
-                                                  consignerFormik.errors
-                                                    .cosigner_city ? (
-                                                  <div style={{ color: "red" }}>
-                                                    {
-                                                      consignerFormik.errors
-                                                        .cosigner_city
-                                                    }
-                                                  </div>
-                                                ) : null} */}
                                               </FormGroup>
                                             </Col>
                                             <Col lg="4">
@@ -4565,17 +4194,6 @@ const Leaseing = () => {
                                                       .cosigner_country
                                                   }
                                                 />
-                                                {/* {consignerFormik.touched
-                                                  .cosigner_country &&
-                                                  consignerFormik.errors
-                                                    .cosigner_country ? (
-                                                  <div style={{ color: "red" }}>
-                                                    {
-                                                      consignerFormik.errors
-                                                        .cosigner_country
-                                                    }
-                                                  </div>
-                                                ) : null} */}
                                               </FormGroup>
                                             </Col>
                                             <Col lg="4">
@@ -4616,38 +4234,10 @@ const Leaseing = () => {
                                                       numericValue;
                                                   }}
                                                 />
-                                                {/* {consignerFormik.touched
-                                                  .cosigner_postalcode &&
-                                                  consignerFormik.errors
-                                                    .cosigner_postalcode ? (
-                                                  <div style={{ color: "red" }}>
-                                                    {
-                                                      consignerFormik.errors
-                                                        .cosigner_postalcode
-                                                    }
-                                                  </div>
-                                                ) : null} */}
                                               </FormGroup>
                                             </Col>
                                           </Row>
                                         </div>
-                                        {/* <div>
-                                          <span
-                                            onClick={setOpenTenantsDialog}
-                                            style={{
-                                              cursor: "pointer",
-                                              fontSize: "14px",
-                                              fontFamily: "monospace",
-                                              color: "blue",
-                                              marginLeft: "10px",
-                                            }}
-                                          >
-                                            <b style={{ fontSize: "20px" }}>
-                                              +
-                                            </b>{" "}
-                                            Add alternative Address
-                                          </span>
-                                        </div> */}
                                         <br />
                                       </div>
                                       <button
@@ -4739,7 +4329,6 @@ const Leaseing = () => {
                         entrySchema.submitCount > 0 ? (
                           <div style={{ color: "red" }}>
                             {tenantsSchema.errors.tenant_password}
-                            {/* {console.log(tenantsFormik.errors.tenant_password)} */}
                           </div>
                         ) : null}
 
@@ -4801,8 +4390,6 @@ const Leaseing = () => {
                     </Col>
                   </Row>
 
-                  {/* /================================================================================================================================================= */}
-
                   <hr className="my-4" />
                   {/* Address */}
                   <h6 className="heading-small text-muted mb-4">
@@ -4861,9 +4448,6 @@ const Leaseing = () => {
                       </Col>
                     </Row>
                   </div>
-                  {/* <hr className="my-4" /> */}
-                  {/* Address */}
-
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="12">
@@ -4886,7 +4470,6 @@ const Leaseing = () => {
                                     type="text"
                                     name="amount"
                                     onBlur={entrySchema.handleBlur}
-                                    //onChange={leaseFormik.handleChange}
                                     value={entrySchema.values.amount}
                                     onChange={(e) => {
                                       const inputValue = e.target.value;
@@ -4912,136 +4495,9 @@ const Leaseing = () => {
                                       {entrySchema.errors.amount}
                                     </div>
                                   ) : null}
-                                  {/* {leaseFormik.touched.entries &&
-                                    leaseFormik.errors.entries[0].amount ? (
-                                    <div style={{ color: "red" }}>
-                                      {leaseFormik.errors.entries[0].amount}
-                                    </div>
-                                  ) : null} */}
                                 </FormGroup>
                               </FormGroup>
                             </Col>
-                            {/* <FormGroup>
-                              <label
-                                className="form-control-label"
-                                htmlFor="input-property"
-                                style={{ marginLeft: "10px" }}
-                              >
-                                Account
-                              </label>
-                              <br />
-                              <FormGroup style={{ marginLeft: "10px" }}>
-                                <Dropdown
-                                  isOpen={rentincdropdownOpen}
-                                  toggle={toggle4}
-                                >
-                                  <DropdownToggle
-                                    caret
-                                    style={{ width: "100%" }}
-                                  >
-                                    {selectedAccount
-                                      ? selectedAccount
-                                      : "Select"}
-                                  </DropdownToggle>
-                                  <DropdownMenu
-                                    style={{
-                                      zIndex: 999,
-                                      maxHeight: "280px",
-                                      // overflowX: "hidden",
-                                      overflowY: "auto",
-                                      width: "100%",
-                                    }}
-                                  >
-                                    {entrySchema.touched.account &&
-                                    entrySchema.errors.account ? (
-                                      <div style={{ color: "red" }}>
-                                        {entrySchema.errors.account}
-                                      </div>
-                                    ) : null}
-                                    <DropdownItem
-                                      header
-                                      style={{ color: "blue" }}
-                                    >
-                                      Income Account
-                                    </DropdownItem>
-                                    {accountNames.map((item) => {
-                                      const accountName =
-                                        item.account_name || ""; // Use an empty string if account_name is missing
-                                      return (
-                                        <DropdownItem
-                                          key={item._id}
-                                          onClick={() =>
-                                            hadleselectedAccount(accountName)
-                                          }
-                                        >
-                                          {accountName}
-                                        </DropdownItem>
-                                      );
-                                    })}
-                                    <DropdownItem
-                                      onClick={() =>
-                                        AddNewAccountName("rentAccountName")
-                                      }
-                                    >
-                                      Add new account..
-                                    </DropdownItem>
-                                  </DropdownMenu>
-                                </Dropdown>
-                                <AccountDialog
-                                  AddBankAccountDialogOpen={
-                                    AddBankAccountDialogOpen
-                                  }
-                                  handleCloseDialog={handleCloseDialog}
-                                  selectAccountDropDown={selectAccountDropDown}
-                                  toggle8={toggle8}
-                                  setAddBankAccountDialogOpen={
-                                    setAddBankAccountDialogOpen
-                                  }
-                                  toggle1={toggle1}
-                                  selectAccountLevelDropDown={
-                                    selectAccountLevelDropDown
-                                  }
-                                  selectFundTypeDropDown={
-                                    selectFundTypeDropDown
-                                  }
-                                  toggle10={toggle10}
-                                  selectedAccount={selectedAccount}
-                                  accountTypeName={accountTypeName}
-                                  setToggleApiCall={setToggleApiCall}
-                                  toggleApiCall={toggleApiCall}
-                                />
-                                <AccountDialog
-                                  AddBankAccountDialogOpen={
-                                    AddBankAccountDialogOpen
-                                  }
-                                  handleCloseDialog={handleCloseDialog}
-                                  selectAccountDropDown={selectAccountDropDown}
-                                  toggle8={toggle8}
-                                  setAddBankAccountDialogOpen={
-                                    setAddBankAccountDialogOpen
-                                  }
-                                  toggle1={toggle1}
-                                  selectAccountLevelDropDown={
-                                    selectAccountLevelDropDown
-                                  }
-                                  selectFundTypeDropDown={
-                                    selectFundTypeDropDown
-                                  }
-                                  toggle10={toggle10}
-                                  selectedAccount={selectedAccount}
-                                  accountTypeName={accountTypeName}
-                                  setToggleApiCall={setToggleApiCall}
-                                  toggleApiCall={toggleApiCall}
-                                  hadleselectedAccount={hadleselectedAccount}
-                                  hadleselectedOneTimeAccount={
-                                    hadleselectedOneTimeAccount
-                                  }
-                                  hadleselectedRecuringAccount={
-                                    hadleselectedRecuringAccount
-                                  }
-                                />
-                              </FormGroup>
-                            </FormGroup> */}
 
                             <Col lg="3">
                               <FormGroup>
@@ -5061,35 +4517,6 @@ const Leaseing = () => {
                                   onChange={(e) => entrySchema.handleChange(e)}
                                   value={entrySchema.values.nextDue_date}
                                 />
-
-                                {/* <LocalizationProvider
-                                  dateAdapter={AdapterDayjs}
-                                >
-                                  <DatePicker
-                                    className="form-control-alternative"
-                                    name="nextDue_date"
-                                    id="input-unitadd"
-                                    slotProps={{ textField: { size: 'small' } }}
-                                    placeholder="3000"
-                                    dateFormat="MM-dd-yyyy"
-                                    onBlur={leaseFormik.handleBlur}
-                              views={['year', 'month', 'day']}
-
-                                    selected={leaseFormik.values.tenant_nextDue_date} // Use 'selected' prop instead of 'value'
-                                    onChange={(date) => {
-                                      leaseFormik.setFieldValue(
-                                        "tenant_nextDue_date",
-                                        date
-                                      ); // Update the Formik field value
-                                    }}
-                                  />
-                                </LocalizationProvider> */}
-                                {/* {leaseFormik.touched.nextDue_date &&
-                                  leaseFormik.errors.nextDue_date ? (
-                                  <div style={{ color: "red" }}>
-                                    {leaseFormik.errors.nextDue_date}
-                                  </div>
-                                ) : null} */}
                               </FormGroup>
                             </Col>
 
@@ -5110,12 +4537,6 @@ const Leaseing = () => {
                                   onChange={entrySchema.handleChange}
                                   value={entrySchema.values.memo}
                                 />
-                                {/* {leaseFormik.touched.memo &&
-                                  leaseFormik.errors.memo ? (
-                                  <div style={{ color: "red" }}>
-                                    {leaseFormik.errors.memo}
-                                  </div>
-                                ) : null} */}
                               </FormGroup>
                             </Col>
                           </Row>
@@ -5131,41 +4552,8 @@ const Leaseing = () => {
                   </h6>
                   <div className="pl-lg-2">
                     <FormGroup>
-                      {/* <label
-                        className="form-control-label"
-                        htmlFor="input-address"
-                      >
-                        Security Deposite (Optional)
-                      </label> */}
                       <br />
                       <Row>
-                        {/* <Col lg="2">
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-unitadd"
-                            >
-                              Next Due Date
-                            </label>
-                            <Input
-                              className="form-control-alternative"
-                              id="input-unitadd"
-                              placeholder="3000"
-                              type="date"
-                              name="Due_date"
-                              onBlur={entrySchema.handleBlur}
-                              onChange={entrySchema.handleChange}
-                              value={entrySchema.values.Due_date}
-                            />
-
-                            {entrySchema.touched.tenant_start_date &&
-                            entrySchema.errors.Due_date ? (
-                              <div style={{ color: "red" }}>
-                                {entrySchema.errors.Due_date}
-                              </div>
-                            ) : null}
-                          </FormGroup>
-                        </Col> */}
                         <Col lg="2">
                           <FormGroup>
                             <label
@@ -5190,16 +4578,10 @@ const Leaseing = () => {
                                   const numericValue = inputValue.replace(
                                     /\D/g,
                                     ""
-                                  ); // Remove non-numeric characters
+                                  );
                                   e.target.value = numericValue;
                                 }}
                               />
-                              {/* {leaseFormik.touched.Security_amount &&
-                                leaseFormik.errors.Security_amount ? (
-                                <div style={{ color: "red" }}>
-                                  {leaseFormik.errors.Security_amount}
-                                </div>
-                              ) : null} */}
                             </FormGroup>
                           </FormGroup>
                         </Col>
@@ -5303,7 +4685,6 @@ const Leaseing = () => {
                                             .recuring_account || ""
                                         }
                                       >
-                                        {/* {console.log(recurringChargeSchema.values)} */}
                                         {RecAccountNames.map((item) => {
                                           const accountName =
                                             item.account_name || ""; // Use an empty string if account_name is missing
@@ -5362,7 +4743,6 @@ const Leaseing = () => {
                                       type="text"
                                       name="recuring_amount"
                                       onBlur={recurringChargeSchema.handleBlur}
-                                      // onChange={(e) => recurringChargeSchema.handleChange(e)}
                                       value={
                                         recurringChargeSchema.values
                                           .recuring_amount || ""
@@ -5778,24 +5158,6 @@ const Leaseing = () => {
                       </FormGroup>
                     </Col>
                   </Row>
-
-                  {/* <div className="file-upload-wrapper">
-                    <input
-                      type="file"
-                      className="form-control-file d-block"
-                      accept="file/*"
-                      name="upload_file"
-                      onChange={(e) => fileData(e.target.files[0])}
-                      // onChange={rentalsFormik.handleChange}
-                      value={leaseFormik.values.upload_file}
-                    />
-                    {leaseFormik.touched.upload_file &&
-                    leaseFormik.errors.upload_file ? (
-                      <div style={{ color: "red" }}>
-                        {leaseFormik.errors.upload_file}
-                      </div>
-                    ) : null}
-                  </div> */}
                   <div className="d-flex">
                     <div className="file-upload-wrapper">
                       <TextField
@@ -5821,66 +5183,6 @@ const Leaseing = () => {
                       </label>
                     </div>
                     <div className="d-flex ">
-                      {/* {id
-                        ? file.length > 0 &&
-                          file
-                            .map((item) => {
-                              return "name:" + item;
-                            })
-                            .map((file, index) => (
-                              <div
-                                key={index}
-                                style={{
-                                  position: "relative",
-                                  marginLeft: "50px",
-                                }}
-                              >
-                                <p
-                                  // onClick={() => handleOpenFile(file)}
-                                  style={{ cursor: "pointer" }}
-                                >
-                                  {file?.name?.substr(0, 5)}
-                                  {file?.name?.length > 5 ? "..." : null}
-                                </p>
-                                <CloseIcon
-                                  style={{
-                                    cursor: "pointer",
-                                    position: "absolute",
-                                    left: "64px",
-                                    top: "-2px",
-                                  }}
-                                  onClick={() => deleteFile(index)}
-                                />
-                              </div>
-                            ))
-                        : file.length > 0 &&
-                          file?.map((file, index) => (
-                            <div
-                              key={index}
-                              style={{
-                                position: "relative",
-                                marginLeft: "50px",
-                              }}
-                            >
-                              <p
-                                onClick={() => handleOpenFile(file)}
-                                style={{ cursor: "pointer" }}
-                              >
-                                {file?.name?.substr(0, 5)}
-                                {file?.name?.length > 5 ? "..." : null}
-                              </p>
-                              <CloseIcon
-                                style={{
-                                  cursor: "pointer",
-                                  position: "absolute",
-                                  left: "64px",
-                                  top: "-2px",
-                                }}
-                                onClick={() => deleteFile(index)}
-                              />
-                            </div>
-                          ))} */}
-
                       {file.length > 0 &&
                         file?.map((singleFile, index) => (
                           <div

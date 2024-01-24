@@ -62,6 +62,7 @@ import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
 import DemoPayment from "views/source/DemoPayment";
 import PropDetails2 from "views/source/PropDetails2";
+import Rentals2 from "views/source/Rentals2";
 
 // ==========================  Super Admin ===================================================
 
@@ -84,6 +85,13 @@ var routes = [
     name: "Add Property",
     icon: "ni ni-pin-3 text-orange",
     component: <Rentals />,
+    layout: "/admin",
+  },
+  {
+    path: "/rentals2",
+    name: "Add Property",
+    icon: "ni ni-pin-3 text-orange",
+    component: <Rentals2 />,
     layout: "/admin",
   },
   {
@@ -456,6 +464,20 @@ var routes = [
     name: "Add Property",
     icon: "ni ni-pin-3 text-orange",
     component: <Rentals />,
+    layout: "/admin",
+  },
+  {
+    path: "/rentals/:rental_id",
+    name: "Add Property",
+    icon: "ni ni-pin-3 text-orange",
+    component: <Rentals />,
+    layout: "/admin",
+  },
+  {
+    path: "/rentals2/:rental_id",
+    name: "Add Property",
+    icon: "ni ni-pin-3 text-orange",
+    component: <Rentals2 />,
     layout: "/admin",
   },
   {

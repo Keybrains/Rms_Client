@@ -7,16 +7,11 @@ import {
   Paper,
   TextField,
   Typography,
+  Grid,
 } from "@mui/material";
 import Header from "components/Headers/Header";
 import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Link,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -31,16 +26,21 @@ import {
   Input,
   Row,
   Table,
+  Form,
 } from "reactstrap";
 import Tab from "@mui/material/Tab";
 import fone from "../../assets/img/icons/common/property_bg.png";
-import { Grid, RotatingLines } from "react-loader-spinner";
+import { RotatingLines } from "react-loader-spinner";
 import moment from "moment";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import ClearIcon from "@mui/icons-material/Clear";
 import { OpenImageDialog } from "components/OpenImageDialog";
 import { useFormik } from "formik";
+import * as yup from "yup";
+import axios from "axios";
+
 //financial
 import {
   financialTypeArray,
@@ -48,6 +48,7 @@ import {
   calculateTotalIncome,
   calculateTotalExpenses,
   calculateNetIncome,
+  handleImageChange,
 } from "./Functions/Financial";
 
 //units
@@ -58,10 +59,13 @@ import {
   roomsArray,
   bathArray,
   handleSubmit,
-  getUnitProperty,
   UnitEdite,
+  handleUnitDetailsEdit,
+  addAppliancesSubmit,
+  editeAppliancesSubmit,
+  deleteAppliance,
 } from "./Functions/Units";
-import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const PropDetails2 = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -71,7 +75,7 @@ const PropDetails2 = () => {
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const source = queryParams.get("source");
-  const { rentla_id } = useParams();
+  const { rental_id } = useParams();
 
   const [value, setValue] = React.useState("summary");
   const [rentalData, setRentalData] = useState();
@@ -81,37 +85,42 @@ const PropDetails2 = () => {
   const [staffMemberData, setStaffMemberData] = useState("");
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
   const [clickedUnitObject, setClickedUnitObject] = useState([]);
+  const [applianceData, setApplianceData] = useState([]);
   const [propImageLoader, setPropImageLoader] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loader, setLoader] = useState(false);
   const [unitImageLoader, setUnitImageLoader] = useState(false);
   const [financialType, setFinancialType] = useState("");
+  const [open, setOpen] = useState(false);
   const [monthWiseData, setMonthWiseData] = useState("");
-  const [open, setOpen] = React.useState(false);
   const [threeMonths, setThreeMonths] = useState([]);
-  const [propId, setPropId] = useState("");
   const [allMonthData, setAllMonthData] = useState("");
   const [financialDropdown, setFinancialDropdown] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [propSummary, setPropSummary] = useState(false);
   const [month, setMonth] = useState([]);
-  const [editListingData, setEditListingData] = useState(false);
-  const [setAddAppliances, addAppliances] = useState(false);
+  const [addAppliances, setAddAppliances] = useState(false);
   const [unitImage, setUnitImage] = useState([]);
   const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
-  const [multiUnit, setMultiUnit] = useState(null);
-  const [roomDropdown, setRoomDropdown] = useState(false);
-  const [bathDropdown, setBathDropdown] = useState(false);
-  const [addUnitDialogOpen, setAddUnitDialogOpen] = useState(false);
-  const [propType, setPropType] = useState("");
+  const [addUnitDialogOpen, setAddUnitDialogOpen] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [openEdite, setOpenEdite] = useState("");
+  const [accessType, setAccessType] = useState(null);
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
   const fetchRentalData = async () => {
     setLoader(true);
     try {
       const response = await axios.get(
-        `${baseUrl}/rentals/rental_summary/${rentla_id}`
+        `${baseUrl}/rentals/rental_summary/${rental_id}`
       );
       setRentalData(response.data.data[0]);
       setPropertyTypeData(response.data.data[0].property_type_data);
@@ -128,10 +137,9 @@ const PropDetails2 = () => {
     setLoader(true);
     try {
       const response = await axios.get(
-        `${baseUrl}/rentals/rental_unit/${rentla_id}`
+        `${baseUrl}/unit/rental_unit/${rental_id}`
       );
       setpropertyUnitData(response.data.data);
-      console.log(response.data.data, "yash");
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setLoading(false);
@@ -141,15 +149,28 @@ const PropDetails2 = () => {
   useEffect(() => {
     fetchRentalData();
     fetchUnitsData();
-  }, [rentla_id]);
+  }, [rental_id]);
+
+  const fetchApplianceData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/appliance/appliance/${clickedUnitObject.unit_id}`
+      );
+      setApplianceData(response.data.data);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchApplianceData();
+  }, [clickedUnitObject]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const toggle1 = () => setRoomDropdown((prevState) => !prevState);
-  const toggle2 = () => setBathDropdown((prevState) => !prevState);
-  const toggle3 = () => setFinancialDropdown((prevState) => !prevState);
+  const toggle = () => setFinancialDropdown((prevState) => !prevState);
 
   const totals = {
     0: 0,
@@ -192,23 +213,77 @@ const PropDetails2 = () => {
       rental_images: "",
     },
 
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      try {
+        let res;
+
+        console.log(values, "yashuj");
+        if (clickedUnitObject.unit_id) {
+          res = await handleUnitDetailsEdit(clickedUnitObject?.unit_id, values);
+        } else {
+          res = await handleSubmit(
+            rentalData?.rental_id,
+            accessType.admin_id,
+            values
+          );
+        }
+
+        if (res === false) {
+          setOpenEdite(false);
+          addUnitFormik.resetForm();
+          fetchUnitsData();
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
+      }
+    },
+  });
+
+  const addAppliancesFormin = useFormik({
+    initialValues: {
+      appliance_name: "",
+      appliance_description: "",
+      installed_date: "",
+      appliance_id: "",
+    },
+    validationSchema: yup.object({
+      appliance_name: yup.string().required("Appliance Name Required"),
+      appliance_description: yup.string().required("Descriprion Required"),
+      installed_date: yup.date().required("Installed Date Required"),
+    }),
+    onSubmit: async (values) => {
+      try {
+        let res;
+        if (values.appliance_id === "") {
+          res = await addAppliancesSubmit(
+            clickedUnitObject.unit_id,
+            accessType.admin_id,
+            values
+          );
+        } else {
+          res = await editeAppliancesSubmit(values);
+        }
+
+        if (res === false) {
+          setAddAppliances(!addAppliances);
+          addAppliancesFormin.resetForm();
+          fetchApplianceData();
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
+      }
     },
   });
 
   const closeModal = () => {
     setOpenEdite(false);
+    addUnitFormik.resetForm();
+    setClickedUnitObject([]);
   };
 
   const openEditeTab = async (event, unit) => {
     event.stopPropagation();
     setOpenEdite(true);
-    setPropId(unit.unit_id);
-
-    // Use await to wait for the promise to resolve
-    await getUnitProperty(unit.unit_id);
-
     setClickedUnitObject(unit);
     addUnitFormik.setValues({
       rental_unit: unit?.rental_unit,
@@ -262,7 +337,10 @@ const PropDetails2 = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              onClick={() => navigate("/admin/propertiesTable")}
+              onClick={() => {
+                navigate("/admin/propertiesTable");
+                setClickedUnitObject([]);
+              }}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -292,7 +370,7 @@ const PropDetails2 = () => {
                         value="financial"
                       />
                       <Tab
-                        label={`Units (0)`}
+                        label={`Units (${propertyUnitData?.length || 0})`}
                         style={{ textTransform: "none" }}
                         value="units"
                       />
@@ -346,6 +424,9 @@ const PropDetails2 = () => {
                                     accept: "image/*",
                                     multiple: false,
                                   }}
+                                  onChange={(e) =>
+                                    handleImageChange(e, rentalData.rental_id)
+                                  }
                                   style={{ display: "none" }}
                                 />
                               </div>
@@ -620,7 +701,7 @@ const PropDetails2 = () => {
                       className="text-primary text-lg font-weight-bold"
                     >
                       <FormGroup>
-                        <Dropdown isOpen={financialDropdown} toggle={toggle3}>
+                        <Dropdown isOpen={financialDropdown} toggle={toggle}>
                           <DropdownToggle
                             caret
                             color="primary"
@@ -1146,425 +1227,7 @@ const PropDetails2 = () => {
                   </TabPanel>
 
                   <TabPanel value="units">
-                    {addUnitDialogOpen ? (
-                      <>
-                        <Form onSubmit={handleSubmit}>
-                          <h4 style={{ marginBottom: "20px" }}>
-                            What is the unit information?
-                          </h4>
-                          <Row style={{ marginTop: "10px" }}>
-                            <Col lg="4">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-city"
-                                >
-                                  Unit Number *
-                                </label>
-                                <Input
-                                  required
-                                  className="form-control-alternative"
-                                  id="unit_number"
-                                  placeholder="Unit Number"
-                                  type="text"
-                                  name="unit_number"
-                                  value={addUnitFormik.values.unit_number}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row style={{ marginTop: "10px" }}>
-                            <Col lg="4">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-city"
-                                >
-                                  Market Rent *
-                                </label>
-                                <Input
-                                  required
-                                  className="form-control-alternative"
-                                  id="market_rent"
-                                  placeholder="Market Rent"
-                                  type="text"
-                                  name="market_rent"
-                                  value={addUnitFormik.values.market_rent}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                />
-                              </FormGroup>
-                            </Col>
-                            <Col lg="4">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-city"
-                                >
-                                  Size (Optional)
-                                </label>
-                                <Input
-                                  className="form-control-alternative"
-                                  id="size"
-                                  placeholder="Sq. Ft."
-                                  type="text"
-                                  name="size"
-                                  value={addUnitFormik.values.size}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col lg="10">
-                              <hr />
-                            </Col>
-                          </Row>
-                          <h4 style={{ marginBottom: "20px" }}>
-                            What is the street address?
-                          </h4>
-                          <Row style={{ marginTop: "10px" }}>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-city"
-                                >
-                                  Address *
-                                </label>
-                                <Input
-                                  required
-                                  className="form-control-alternative"
-                                  id="address1"
-                                  placeholder="Address"
-                                  type="text"
-                                  name="address1"
-                                  value={addUnitFormik.values.address1}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                  style={{ marginBottom: "10px" }}
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row style={{ marginTop: "10px" }}>
-                            <Col lg="2">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-city"
-                                >
-                                  City *
-                                </label>
-                                <Input
-                                  required
-                                  className="form-control-alternative"
-                                  id="city"
-                                  placeholder="City"
-                                  type="text"
-                                  name="city"
-                                  value={addUnitFormik.values.city}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                />
-                              </FormGroup>
-                            </Col>
-                            <Col lg="2">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-country"
-                                >
-                                  State *
-                                </label>
-                                <Input
-                                  required
-                                  className="form-control-alternative"
-                                  id="state"
-                                  placeholder="State"
-                                  type="text"
-                                  name="state"
-                                  value={addUnitFormik.values.state}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                />
-                              </FormGroup>
-                            </Col>
-                            <Col lg="2">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-country"
-                                >
-                                  Zip *
-                                </label>
-                                <Input
-                                  required
-                                  className="form-control-alternative"
-                                  id="zip"
-                                  placeholder="Zip"
-                                  type="text"
-                                  name="zip"
-                                  value={addUnitFormik.values.zip}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row style={{ marginTop: "10px" }}>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-country"
-                                >
-                                  Country *
-                                </label>
-                                <Input
-                                  requi
-                                  className="form-control-alternative"
-                                  id="country"
-                                  placeholder="Country"
-                                  type="text"
-                                  name="country"
-                                  value={addUnitFormik.values.country}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col lg="10">
-                              <hr />
-                            </Col>
-                          </Row>
-                          <h4 style={{ marginBottom: "20px" }}>
-                            What is the listing information?
-                          </h4>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-city"
-                            style={
-                              propType !== "Residential"
-                                ? { display: "none" }
-                                : { display: "block" }
-                            }
-                          >
-                            Rooms (optional)
-                          </label>
-                          <Row
-                            style={
-                              propType !== "Residential"
-                                ? { display: "none", marginTop: "10px" }
-                                : { marginTop: "10px" }
-                            }
-                          >
-                            <Col lg="2">
-                              <FormGroup>
-                                <Dropdown
-                                  isOpen={roomDropdown}
-                                  toggle={toggle1}
-                                >
-                                  <DropdownToggle caret>
-                                    {addUnitFormik.values.rooms
-                                      ? addUnitFormik.values.rooms
-                                      : "Beds..."}
-                                  </DropdownToggle>
-                                  <DropdownMenu>
-                                    {roomsArray.map((subtype, index) => (
-                                      <DropdownItem
-                                        key={index}
-                                        onClick={() => {
-                                          addUnitFormik.setFieldValue(
-                                            "rooms",
-                                            subtype
-                                          );
-                                        }}
-                                        onChange={addUnitFormik.handleChange}
-                                        onBlur={addUnitFormik.handleBlur}
-                                      >
-                                        {subtype}
-                                      </DropdownItem>
-                                    ))}
-                                  </DropdownMenu>
-                                </Dropdown>
-                              </FormGroup>
-                            </Col>
-                            <Col lg="2">
-                              <FormGroup>
-                                <Dropdown
-                                  isOpen={bathDropdown}
-                                  toggle={toggle2}
-                                >
-                                  <DropdownToggle caret>
-                                    {addUnitFormik.values.baths
-                                      ? addUnitFormik.values.baths
-                                      : "Baths..."}
-                                  </DropdownToggle>
-                                  <DropdownMenu>
-                                    {bathArray.map((subtype, index) => (
-                                      <DropdownItem
-                                        key={index}
-                                        onClick={() => {
-                                          addUnitFormik.setFieldValue(
-                                            "bath",
-                                            subtype
-                                          );
-                                        }}
-                                        onChange={addUnitFormik.handleChange}
-                                        onBlur={addUnitFormik.handleBlur}
-                                      >
-                                        {subtype}
-                                      </DropdownItem>
-                                    ))}
-                                  </DropdownMenu>
-                                </Dropdown>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row style={{ marginTop: "10px" }}>
-                            <Col lg="6">
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-city"
-                                >
-                                  Description (optional)
-                                </label>
-                                <Input
-                                  className="form-control-alternative"
-                                  id="description"
-                                  placeholder="Description"
-                                  type="textarea"
-                                  name="description"
-                                  value={addUnitFormik.values.description}
-                                  onChange={addUnitFormik.handleChange}
-                                  onBlur={addUnitFormik.handleBlur}
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row style={{ marginTop: "10px" }}>
-                            <Col lg="2">
-                              <FormGroup
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                }}
-                              >
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-unitadd"
-                                >
-                                  Photo
-                                </label>
-                                <span
-                                  onClick={togglePhotoresDialog}
-                                  style={{
-                                    cursor: "pointer",
-                                    fontSize: "14px",
-                                    fontFamily: "monospace",
-                                    color: "blue",
-                                  }}
-                                >
-                                  <br />
-                                  <input
-                                    type="file"
-                                    className="form-control-file d-none"
-                                    accept="image/*"
-                                    multiple
-                                    id={`unit_img`}
-                                    name={`unit_img`}
-                                    onChange={(e) => fileData(e)}
-                                  />
-                                  <label htmlFor={`unit_img`}>
-                                    <b style={{ fontSize: "20px" }}>+</b> Add
-                                  </label>
-                                </span>
-                              </FormGroup>
-                              <FormGroup
-                                style={{
-                                  display: "flex",
-                                  flexWrap: "wrap",
-                                  paddingLeft: "10px",
-                                }}
-                              >
-                                <div className="d-flex">
-                                  {unitImage &&
-                                    unitImage.length > 0 &&
-                                    unitImage.map((unitImg, index) => (
-                                      <div
-                                        key={index}
-                                        style={{
-                                          position: "relative",
-                                          width: "100px",
-                                          height: "100px",
-                                          margin: "10px",
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}
-                                      >
-                                        <img
-                                          src={unitImg}
-                                          alt=""
-                                          style={{
-                                            width: "100px",
-                                            height: "100px",
-                                            maxHeight: "100%",
-                                            maxWidth: "100%",
-                                            borderRadius: "10px",
-                                          }}
-                                          onClick={() => {
-                                            setSelectedImage(unitImg);
-                                            setOpen(true);
-                                          }}
-                                        />
-                                        <ClearIcon
-                                          style={{
-                                            cursor: "pointer",
-                                            alignSelf: "flex-start",
-                                            position: "absolute",
-                                            top: "-12px",
-                                            right: "-12px",
-                                          }}
-                                          onClick={() =>
-                                            clearSelectedPhoto(
-                                              index,
-                                              "propertyres_image"
-                                            )
-                                          }
-                                        />
-                                      </div>
-                                    ))}
-                                  <OpenImageDialog
-                                    open={open}
-                                    setOpen={setOpen}
-                                    selectedImage={selectedImage}
-                                  />
-                                </div>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row style={{ marginTop: "10px" }}>
-                            <Button
-                              className="btn-icon btn-2"
-                              color="success"
-                              type="submit"
-                            >
-                              Create Unit
-                            </Button>
-                            <Button onClick={() => setAddUnitDialogOpen(false)}>
-                              Cancel
-                            </Button>
-                          </Row>
-                        </Form>
-                      </>
-                    ) : !propSummary ? (
+                    {!propSummary ? (
                       <div>
                         <div
                           style={{
@@ -1585,16 +1248,10 @@ const PropDetails2 = () => {
                             }}
                             size="l"
                             onClick={() => {
-                              addUnitFormik.setValues({
-                                rental_unit: clickedUnitObject?.rental_unit,
-                                rental_unit_adress:
-                                  clickedUnitObject?.rental_unit_adress,
-                                rental_sqft: clickedUnitObject?.rental_sqft,
-                                rental_bath: clickedUnitObject?.rental_bath,
-                                rental_bed: clickedUnitObject?.rental_bed,
-                                rental_images: clickedUnitObject?.rental_images,
-                              });
-                              setAddUnitDialogOpen(true);
+                              setOpenEdite(true);
+                              setAddUnitDialogOpen(
+                                propertyTypeData.property_type
+                              );
                             }}
                           >
                             <span className="btn-inner--text">Add Unit</span>
@@ -1620,7 +1277,6 @@ const PropDetails2 = () => {
                                   key={index}
                                   onClick={() => {
                                     setPropSummary(true);
-                                    setPropId(unit._id);
                                     setClickedUnitObject(unit);
                                   }}
                                   style={{ cursor: "pointer" }}
@@ -1674,7 +1330,7 @@ const PropDetails2 = () => {
                         <Grid container>
                           <Grid container md={9} style={{ display: "flex" }}>
                             <div className="din d-flex justify-content-between">
-                              <div className="col-md-4 mt-2">
+                              <div className="col-md-4 mt-2 mb-2">
                                 <label htmlFor="unit_image">
                                   {unitImageLoader ? (
                                     <>
@@ -1707,7 +1363,7 @@ const PropDetails2 = () => {
                                   marginLeft: "20px",
                                 }}
                               >
-                                {clickedUnitObject?.rental_units ? (
+                                {clickedUnitObject?.rental_unit ? (
                                   <div className="d-flex align-self-end">
                                     <Typography
                                       variant="h6"
@@ -1722,7 +1378,7 @@ const PropDetails2 = () => {
                                       }}
                                     >
                                       <div>
-                                        {clickedUnitObject?.rental_units}
+                                        {clickedUnitObject?.rental_unit}
                                       </div>
                                       <hr
                                         style={{
@@ -1736,34 +1392,35 @@ const PropDetails2 = () => {
                                   ""
                                 )}
                                 <span style={{ marginTop: "0px" }}>
-                                  ADDRESS
+                                  <b>ADDRESS</b>
                                   <br />
-                                  {clickedUnitObject?.rental_units
-                                    ? clickedUnitObject?.rental_units + ", "
+                                  {clickedUnitObject?.rental_unit
+                                    ? clickedUnitObject?.rental_unit + ", "
                                     : ""}
-                                  {clickedUnitObject?.rental_adress
-                                    ? clickedUnitObject?.rental_adress + ", "
-                                    : ""}
-                                  <br />
-                                  {clickedUnitObject?.rental_city
-                                    ? clickedUnitObject?.rental_city + ", "
-                                    : ""}
-                                  {clickedUnitObject?.rental_state
-                                    ? clickedUnitObject?.rental_state + ", "
+                                  {rentalData?.rental_adress
+                                    ? rentalData?.rental_adress + ", "
                                     : ""}
                                   <br />
-                                  {clickedUnitObject?.rental_country
-                                    ? clickedUnitObject?.rental_country + ", "
+                                  {rentalData?.rental_city
+                                    ? rentalData?.rental_city + ", "
                                     : ""}
-                                  {clickedUnitObject?.rental_postcode
-                                    ? clickedUnitObject?.rental_postcode
+                                  {rentalData?.rental_state
+                                    ? rentalData?.rental_state + ", "
+                                    : ""}
+                                  <br />
+                                  {rentalData?.rental_country
+                                    ? rentalData?.rental_country + ", "
+                                    : ""}
+                                  {rentalData?.rental_postcode
+                                    ? rentalData?.rental_postcode
                                     : ""}
                                 </span>
                               </Grid>
                             </div>
 
                             <Grid item xs="12" style={{ marginTop: "20px" }}>
-                              <>
+                              {/* //listing */}
+                              {/* <>
                                 <Row
                                   className="w-100 my-3 "
                                   style={{
@@ -1775,7 +1432,7 @@ const PropDetails2 = () => {
                                   }}
                                 >
                                   <Col>
-                                    Listing Information{" "}
+                                    Listing Information
                                     <Button
                                       size="sm"
                                       style={{
@@ -1784,10 +1441,6 @@ const PropDetails2 = () => {
                                         marginBottom: "5px",
                                       }}
                                       onClick={() => {
-                                        console.log(
-                                          clickedUnitObject,
-                                          "clickedUnitObject"
-                                        );
                                         addUnitFormik.setValues({
                                           market_rent:
                                             clickedUnitObject?.market_rent,
@@ -1834,8 +1487,8 @@ const PropDetails2 = () => {
                                   </Col>
                                   <Col></Col>
                                 </Row>
-                              </>
-                              {editListingData ? (
+                              </> */}
+                              {/* {editListingData ? (
                                 <Row>
                                   <Col>
                                     <Card style={{ position: "relative" }}>
@@ -1966,8 +1619,9 @@ const PropDetails2 = () => {
                                     </Card>
                                   </Col>
                                 </Row>
-                              ) : null}
+                              ) : null} */}
 
+                              {/* leases */}
                               <Row
                                 className="w-100 my-3 "
                                 style={{
@@ -2001,10 +1655,6 @@ const PropDetails2 = () => {
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
-                                    {console.log(
-                                      "clickedUnitObject",
-                                      clickedUnitObject
-                                    )}
                                     {clickedUnitObject &&
                                     clickedUnitObject?.tenant_firstName &&
                                     clickedUnitObject?.tenant_lastName ? (
@@ -2054,8 +1704,8 @@ const PropDetails2 = () => {
                                         </tr>
                                       </>
                                     ) : (
-                                      <Row>
-                                        <Col>
+                                      <tr>
+                                        <td>
                                           <Typography
                                             variant="body2"
                                             color="textSecondary"
@@ -2064,12 +1714,14 @@ const PropDetails2 = () => {
                                             You don't have any leases for this
                                             unit right now.
                                           </Typography>
-                                        </Col>
-                                      </Row>
+                                        </td>
+                                      </tr>
                                     )}
                                   </tbody>
                                 </Table>
                               </Row>
+
+                              {/* Appliances */}
                               <Row
                                 className="w-100 my-3 "
                                 style={{
@@ -2080,8 +1732,8 @@ const PropDetails2 = () => {
                                   borderBottom: "1px solid #ddd",
                                 }}
                               >
-                                <Col>
-                                  Appliances{" "}
+                                <Col xs={6}>Appliances</Col>
+                                <Col xs={6} className="text-right">
                                   <Button
                                     size="sm"
                                     style={{
@@ -2091,6 +1743,7 @@ const PropDetails2 = () => {
                                     }}
                                     onClick={() => {
                                       setAddAppliances(!addAppliances);
+                                      addAppliancesFormin.resetForm();
                                     }}
                                   >
                                     Add
@@ -2111,12 +1764,13 @@ const PropDetails2 = () => {
                                           }}
                                           onClick={() => {
                                             setAddAppliances(!addAppliances);
+                                            addAppliancesFormin.resetForm();
                                           }}
                                         />
                                         <CardBody>
                                           <form
                                             onSubmit={
-                                              addUnitFormik.handleSubmit
+                                              addAppliancesFormin.handleSubmit
                                             }
                                           >
                                             <div
@@ -2133,6 +1787,13 @@ const PropDetails2 = () => {
                                                 size="small"
                                                 id="appliance_name"
                                                 name="appliance_name"
+                                                value={
+                                                  addAppliancesFormin.values
+                                                    .appliance_name
+                                                }
+                                                onChange={
+                                                  addAppliancesFormin.handleChange
+                                                }
                                               />
                                             </div>
                                             <div
@@ -2150,6 +1811,13 @@ const PropDetails2 = () => {
                                                 size="small"
                                                 id="appliance_description"
                                                 name="appliance_description"
+                                                value={
+                                                  addAppliancesFormin.values
+                                                    .appliance_description
+                                                }
+                                                onChange={
+                                                  addAppliancesFormin.handleChange
+                                                }
                                               />
                                             </div>
                                             <div
@@ -2168,6 +1836,13 @@ const PropDetails2 = () => {
                                                   size="small"
                                                   id="installed_date"
                                                   name="installed_date"
+                                                  value={
+                                                    addAppliancesFormin.values
+                                                      .installed_date
+                                                  }
+                                                  onChange={
+                                                    addAppliancesFormin.handleChange
+                                                  }
                                                 />
                                               </div>
                                             </div>
@@ -2175,11 +1850,6 @@ const PropDetails2 = () => {
                                               <Button
                                                 color="success"
                                                 type="submit"
-                                                onClick={() => {
-                                                  setAddAppliances(
-                                                    !addAppliances
-                                                  );
-                                                }}
                                               >
                                                 Save
                                               </Button>
@@ -2188,6 +1858,7 @@ const PropDetails2 = () => {
                                                   setAddAppliances(
                                                     !addAppliances
                                                   );
+                                                  addAppliancesFormin.resetForm();
                                                 }}
                                               >
                                                 Cancel
@@ -2201,30 +1872,99 @@ const PropDetails2 = () => {
                                 </>
                               ) : (
                                 <>
-                                  {clickedUnitObject?.appliances ? (
-                                    <>
-                                      {clickedUnitObject?.appliances.map(
-                                        (appliance, index) => {
-                                          <Row key={index}>
-                                            <Col>{appliance}</Col>
-                                          </Row>;
-                                        }
-                                      )}
-                                    </>
-                                  ) : (
-                                    <Row>
-                                      <Col>
-                                        <Typography
-                                          variant="body2"
-                                          color="textSecondary"
-                                          component="p"
-                                        >
-                                          You don't have any appliances for this
-                                          unit right now.
-                                        </Typography>
-                                      </Col>
-                                    </Row>
-                                  )}
+                                  <Row>
+                                    <Table responsive>
+                                      <tbody
+                                        className="tbbody p-0 m-0"
+                                        style={{
+                                          borderTopRightRadius: "5px",
+                                          borderTopLeftRadius: "5px",
+                                          borderBottomLeftRadius: "5px",
+                                          borderBottomRightRadius: "5px",
+                                        }}
+                                      >
+                                        <tr className="header">
+                                          <th>Name</th>
+                                          <th>Descriprion</th>
+                                          <th>Installed Date</th>
+                                          <th>Action</th>
+                                        </tr>
+                                        {applianceData?.length > 0 ? (
+                                          applianceData.map(
+                                            (appliance, index) => (
+                                              <tr className="body" key={index}>
+                                                <td>
+                                                  {appliance.appliance_name}
+                                                </td>
+                                                <td>
+                                                  {
+                                                    appliance.appliance_description
+                                                  }
+                                                </td>
+                                                <td>
+                                                  {appliance.installed_date}
+                                                </td>
+                                                <td>
+                                                  <div
+                                                    style={{
+                                                      display: "flex",
+                                                      gap: "5px",
+                                                    }}
+                                                  >
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={async () => {
+                                                        const res =
+                                                          await deleteAppliance(
+                                                            appliance.appliance_id
+                                                          );
+                                                        if (res === 200) {
+                                                          fetchApplianceData();
+                                                        }
+                                                      }}
+                                                    >
+                                                      <DeleteIcon />
+                                                    </div>
+                                                    <div
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={() => {
+                                                        setAddAppliances(true);
+                                                        addAppliancesFormin.setValues(
+                                                          {
+                                                            appliance_description:
+                                                              appliance.appliance_description,
+                                                            appliance_name:
+                                                              appliance.appliance_name,
+                                                            installed_date:
+                                                              appliance.installed_date,
+                                                            appliance_id:
+                                                              appliance.appliance_id,
+                                                          }
+                                                        );
+                                                      }}
+                                                    >
+                                                      <EditIcon />
+                                                    </div>
+                                                  </div>
+                                                </td>
+                                              </tr>
+                                            )
+                                          )
+                                        ) : (
+                                          <tr>
+                                            <td>
+                                              You don't have any appliance for
+                                              this unit right now
+                                            </td>
+                                          </tr>
+                                        )}
+                                      </tbody>
+                                    </Table>
+                                  </Row>
                                 </>
                               )}
                             </Grid>
@@ -2306,11 +2046,7 @@ const PropDetails2 = () => {
         </Row>
       </Container>
 
-      <Dialog
-        open={openEdite}
-        onClose={closeModal}
-        style={{ overflowY: "hidden", maxWidth: "600" }}
-      >
+      <Dialog open={openEdite} onClose={closeModal}>
         <DialogTitle>Edit Unit Details</DialogTitle>
         <CloseIcon
           style={{
@@ -2319,9 +2055,7 @@ const PropDetails2 = () => {
             right: "10px",
             cursor: "pointer",
           }}
-          onClick={() => {
-            setOpenEdite(!openEdite);
-          }}
+          onClick={closeModal}
         />
         <UnitEdite
           openEdite={openEdite}
@@ -2329,9 +2063,18 @@ const PropDetails2 = () => {
           setOpenEdite={setOpenEdite}
           clickedObject={clickedUnitObject}
           addUnitFormik={addUnitFormik}
+          selectedImage={selectedImage}
+          setOpen={setOpen}
+          open={open}
+          clearSelectedPhoto={clearSelectedPhoto}
+          setSelectedImage={setSelectedImage}
+          unitImage={unitImage}
+          fileData={fileData}
+          togglePhotoresDialog={togglePhotoresDialog}
+          addUnitDialogOpen={addUnitDialogOpen}
         />
       </Dialog>
-      {console.log(addUnitFormik, "yashu")}
+      {console.log(addAppliancesFormin, "yashu")}
     </>
   );
 };

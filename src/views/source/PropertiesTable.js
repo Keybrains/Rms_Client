@@ -134,10 +134,8 @@ const PropertiesTables = () => {
     setCurrentPage(page);
   };
 
-  const editProperty = (id, propertyIndex) => {
-    //console.log(propertyIndex, "ropeorjjhbuijo");
-    navigate(`/admin/rentals/${id}/${propertyIndex}`);
-    //console.log(id);
+  const editProperty = (rental_id) => {
+    navigate(`/admin/rentals2/${rental_id}`);
   };
 
   const filterRentalsBySearch = () => {
@@ -768,10 +766,7 @@ const PropertiesTables = () => {
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  editProperty(
-                                    Rental.rental_id,
-                                    Rental.entries.entryIndex
-                                  );
+                                  editProperty(Rental.rental_id);
                                 }}
                               >
                                 <EditIcon />

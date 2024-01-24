@@ -244,17 +244,7 @@ const PropDetails = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
-  // const handleOpen = () => setOpen(true);
-  // const handleClose = () => setOpen(false);
-
-  // function ImageModal({ imageUrl, closeModal }) {
-  //   return (
-  //     <div className="image-modal" onClick={closeModal}>
-  //       <img src={imageUrl} alt="Opened Image" />
-  //     </div>
-  //   );
-  // }
+  
   const addUnitFormik = useFormik({
     initialValues: {
       unit_number: "",
@@ -615,62 +605,59 @@ const PropDetails = () => {
         console.log(err);
       });
     setPropImageLoader(false);
-
-    // Wait for all Axios requests to complete before logging the data
-    // await Promise.all(axiosRequests);
   };
 
-  const filterRentalsBySearch = () => {
-    if (!searchQuery) {
-      return GeneralLedgerData.flatMap((item) => {
-        return item.paymentAndCharges.map((payment) => ({
-          paymentAndCharges: payment,
-          unit: item.unit,
-          unit_id: item.unit_id,
-          _id: item._id,
-        }));
-      });
-    }
+  // const filterRentalsBySearch = () => {
+  //   if (!searchQuery) {
+  //     return GeneralLedgerData.flatMap((item) => {
+  //       return item.paymentAndCharges.map((payment) => ({
+  //         paymentAndCharges: payment,
+  //         unit: item.unit,
+  //         unit_id: item.unit_id,
+  //         _id: item._id,
+  //       }));
+  //     });
+  //   }
 
-    const allPaymentAndCharges = GeneralLedgerData.flatMap((item) => {
-      return item.paymentAndCharges.map((payment) => ({
-        paymentAndCharges: payment,
-        unit: item.unit,
-        unit_id: item.unit_id,
-        _id: item._id,
-      }));
-    });
+  //   const allPaymentAndCharges = GeneralLedgerData.flatMap((item) => {
+  //     return item.paymentAndCharges.map((payment) => ({
+  //       paymentAndCharges: payment,
+  //       unit: item.unit,
+  //       unit_id: item.unit_id,
+  //       _id: item._id,
+  //     }));
+  //   });
 
-    return allPaymentAndCharges.filter((rental) => {
-      // const lowerCaseQuery = searchQuery.toLowerCase();
-      return (
-        (rental.paymentAndCharges.charges_account &&
-          rental.paymentAndCharges.charges_account.includes(
-            searchQuery.toLowerCase()
-          )) ||
-        (rental.paymentAndCharges.account &&
-          rental.paymentAndCharges.account
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.type &&
-          rental.paymentAndCharges.type
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.charges_memo &&
-          rental.paymentAndCharges.charges_memo
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.memo &&
-          rental.paymentAndCharges.memo
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
-        (rental.paymentAndCharges.amount &&
-          rental.paymentAndCharges.amount
-            .toString()
-            .includes(searchQuery.toLowerCase()))
-      );
-    });
-  };
+  //   return allPaymentAndCharges.filter((rental) => {
+  //     // const lowerCaseQuery = searchQuery.toLowerCase();
+  //     return (
+  //       (rental.paymentAndCharges.charges_account &&
+  //         rental.paymentAndCharges.charges_account.includes(
+  //           searchQuery.toLowerCase()
+  //         )) ||
+  //       (rental.paymentAndCharges.account &&
+  //         rental.paymentAndCharges.account
+  //           .toLowerCase()
+  //           .includes(searchQuery.toLowerCase())) ||
+  //       (rental.paymentAndCharges.type &&
+  //         rental.paymentAndCharges.type
+  //           .toLowerCase()
+  //           .includes(searchQuery.toLowerCase())) ||
+  //       (rental.paymentAndCharges.charges_memo &&
+  //         rental.paymentAndCharges.charges_memo
+  //           .toLowerCase()
+  //           .includes(searchQuery.toLowerCase())) ||
+  //       (rental.paymentAndCharges.memo &&
+  //         rental.paymentAndCharges.memo
+  //           .toLowerCase()
+  //           .includes(searchQuery.toLowerCase())) ||
+  //       (rental.paymentAndCharges.amount &&
+  //         rental.paymentAndCharges.amount
+  //           .toString()
+  //           .includes(searchQuery.toLowerCase()))
+  //     );
+  //   });
+  // };
 
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
   const [loader, setLoader] = useState(false);
