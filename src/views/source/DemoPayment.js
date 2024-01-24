@@ -38,6 +38,7 @@ import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
 import moment from "moment";
 import axios from "axios";
+import valid from "card-validator";
 import CreditCardForm from "./CreditCardForm";
 
 const DemoPayment = () => {
@@ -68,9 +69,75 @@ const DemoPayment = () => {
   const [refund, setRefund] = useState(false);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
-
+  const [addCard, setAddCard] = useState(false);
   const [isModalsOpen, setIsModalsOpen] = useState(false);
-  console.log(isModalsOpen, "isModalOpen");
+
+  const validateCardNumber = (cardNumber) => {
+    const numberValidation = valid.number(cardNumber);
+    return numberValidation.isPotentiallyValid && numberValidation.card;
+  };
+
+  const handleCorrect = async (values)=> {
+    const isValidCard = validateCardNumber(financialFormik.values.card_number);
+
+    const cardType = isValidCard.niceType;
+  
+    if (!isValidCard) {
+      swal("Error", "Invalid credit card number", "error");
+      return;
+    }
+  
+    try {
+      // Call the first API
+      const customerVaultResponse = await axios.post(`${baseUrl}/nmipayment/create-customer-vault`, {
+        first_name: "Manyaaaa", 
+        last_name: "Doe",
+        ccnumber: financialFormik.values.card_number,
+        ccexp: financialFormik.values.expiration_date,
+      });
+  
+      if (customerVaultResponse.data && customerVaultResponse.data.data) {
+        // Extract customer_vault_id from the first API response
+        const customerVaultId = customerVaultResponse.data.data.customer_vault_id;
+        const vaultResponse = customerVaultResponse.data.data.response_code;
+  
+        // Call the second API using the extracted customer_vault_id
+        const creditCardResponse = await axios.post(`${baseUrl}/creditcard/addCreditCard`, {
+          tenant_id: tenantId,
+          card_number: financialFormik.values.card_number,
+          exp_date: financialFormik.values.expiration_date,
+          card_type: cardType,
+          customer_vault_id: customerVaultId,
+          response_code: vaultResponse,
+        });
+  
+        console.log("Credit Card Response:", creditCardResponse.data);
+        console.log("Customer Vault Response:", customerVaultResponse.data);
+  
+        if (
+          creditCardResponse.status === 200 &&
+          customerVaultResponse.status === 200
+        ) {
+          swal("Success", "Card Added Successfully", "success");
+          //closeModal();
+          setAddCard(false);
+          getCreditCard();
+        } else {
+          swal("Error", creditCardResponse.data.message, "error");
+        }
+      } else {
+        // Handle the case where the response structure is not as expected
+        swal("Error", "Unexpected response format from create-customer-vault API", "error");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      swal("Error", "Something went wrong!", "error");
+    }
+  };
+
+  const handleIncorrect = () => {
+    setAddCard(false);
+  };
 
   const openCardForm = () => {
     setIsModalsOpen(true);
@@ -126,15 +193,18 @@ const DemoPayment = () => {
       card_number: "",
       expiration_date: "",
       check_number: "",
+      customer_vault_id: "",
     });
 
     // Update other selected values
+    setSelectedCreditCard("");
     setSelectedPaymentType("");
     setSelectedPropertyType("");
     setSelectedUnit("");
     setSelectedAccount("");
     setPaymentId("");
     setIsModalOpen(true);
+    getCreditCard();
   };
 
   const closeModal = () => {
@@ -174,8 +244,6 @@ const DemoPayment = () => {
       `${baseUrl}/creditcard/getCreditCard/${tenantId}`
     );
     setCardDetails(response.data);
-    //fetchCardLogo(response.data.card_type);
-    console.log(response.data, "yashu");
   };
 
   useEffect(() => {
@@ -243,6 +311,7 @@ const DemoPayment = () => {
       property: "",
       unit: "",
       type2: "Payment",
+      customer_vault_id: "",
     },
     validationSchema: yup.object({
       first_name: yup.string().required("First name is required"),
@@ -324,20 +393,6 @@ const DemoPayment = () => {
     }
   };
 
-  // const myString = "0826";
-
-  // // Assuming a default year (e.g., 2000)
-  // const defaultYear = 2000;
-
-  // // Extract month and day from the string
-  // const month = parseInt(myString.substring(0, 2), 10);
-  // const day = parseInt(myString.substring(2), 10);
-
-  // // Create a Date object
-  // const myDate = new Date(defaultYear, month - 1, day);
-
-  // console.log(myDate, typeof myDate, "manu");
-
   useEffect(() => {
     getGeneralLedgerData();
   }, [pageItem]);
@@ -348,12 +403,11 @@ const DemoPayment = () => {
   const [selectedCreditCard, setSelectedCreditCard] = useState(null);
 
   const handleCreditCardSelection = (selectedCard) => {
-    if (selectedCreditCard === selectedCard.card_number) {
+    if (selectedCreditCard === selectedCard.customer_vault_id) {
       setSelectedCreditCard(null); // Unselect if already selected
     } else {
-      setSelectedCreditCard(selectedCard.card_number); // Select the clicked card
+      setSelectedCreditCard(selectedCard.customer_vault_id); // Select the clicked card
     }
-    console.log("22", selectedCard.card_number);
   };
 
   const handleFinancialSubmit = async (values, action) => {
@@ -384,30 +438,37 @@ const DemoPayment = () => {
       ) {
         url = `${baseUrl}/nmipayment/postnmipayments`;
         values.status = "Pending";
+        values.type2 = "Payment";
       } else if (selectedPaymentType === "Credit Card") {
         url = `${baseUrl}/nmipayment/sale`;
         values.status = "Success";
+        values.type2 = "Payment";
       } else {
         url = `${baseUrl}/nmipayment/postnmipayments`;
         values.status = "Success";
+        values.type2 = "Payment";
       }
 
       const creditCardDetails = cardDetalis.find(
-        (card) => card.card_number === selectedCreditCard,
-        
+        (card) => card.customer_vault_id === selectedCreditCard,
         console.log("miu", selectedCreditCard)
       );
 
-      const [expMonth, expYear] = creditCardDetails.exp_date.split('/');
+      if (creditCardDetails) {
+        const [expMonth, expYear] = creditCardDetails.exp_date.split("/");
+        const formattedExpirationDate = `${expMonth}/${expYear.slice(-2)}`;
 
-      // Format the result as "MM/YY"
-      const formattedExpirationDate = `${expMonth}/${expYear.slice(-2)}`;
+        values.expiration_date = formattedExpirationDate;
+        values.card_number = Number(selectedCreditCard.card_number);
+        values.customer_vault_id = selectedCreditCard;
+      } else {
+        console.error(
+          "Credit card details not found for selected card:",
+          selectedCreditCard
+        );
+      }
 
-      values.expiration_date = formattedExpirationDate
-      values.card_number = Number(creditCardDetails.card_number)
-      console.log("mani", formattedExpirationDate);
-
-
+      console.log("values", values);
       const response = await axios.post(url, {
         paymentDetails: values,
       });
@@ -640,6 +701,7 @@ const DemoPayment = () => {
           memo: financialFormik.values.memo,
           email_name: financialFormik.values.email_name,
           date: financialFormik.values.date,
+          check_number: financialFormik.values.check_number,
           paymentType: financialFormik.values.paymentType,
         };
 
@@ -686,6 +748,7 @@ const DemoPayment = () => {
 
       const object = {
         transactionId: ResponseData.transactionid,
+        tenantId: ResponseData.tenantId,
         amount: financialFormik.values.amount,
         paymentType: ResponseData.paymentType,
         date: financialFormik.values.date,
@@ -736,7 +799,7 @@ const DemoPayment = () => {
         <Row>
           <Col xs="12" sm="9">
             <FormGroup className="">
-              <h1 style={{ color: "white" }}>Ledger</h1>
+              <h1 style={{ color: "white", marginLeft:'20px'}}>Ledger</h1>
             </FormGroup>
           </Col>
           <Col xs="1.5" sm="1.5">
@@ -872,7 +935,7 @@ const DemoPayment = () => {
                                         : "0"}
                                     </td>
                                     <td>
-                                      {item?.type2 !== "Refund" ? (
+                                      {item?.type2 === "Payment" ? (
                                         <UncontrolledDropdown nav>
                                           <DropdownToggle
                                             className="pr-0"
@@ -889,8 +952,8 @@ const DemoPayment = () => {
                                                 background: "transparent",
                                                 color: "lightblue",
                                                 fontWeight: "bold",
-                                                border: "2px solid lightblue", // Set border color to blue
-                                                padding: "10px", // Adjust padding as needed
+                                                border: "2px solid lightblue",
+                                                padding: "10px",
                                                 display: "flex",
                                                 alignItems: "center",
                                                 justifyContent: "center",
@@ -916,7 +979,8 @@ const DemoPayment = () => {
                                                       Refund
                                                     </DropdownItem>
                                                   )}
-                                                {item?.status === "Pending" && (
+                                                {(item?.status === "Pending" ||
+                                                  item?.type2 === "Cash" || item?.type2 === "Check" ) && (
                                                   <DropdownItem
                                                     tag="div"
                                                     onClick={() => {
@@ -1400,7 +1464,6 @@ const DemoPayment = () => {
                     />
                   </FormGroup>
                 </Col>
-                <Col></Col>
               </Row>
 
               <FormGroup>
@@ -1527,148 +1590,270 @@ const DemoPayment = () => {
                 //           />
                 //         </FormGroup>
                 //       </Col>
-                //       <Col>
-                //         <FormGroup>
-                //           <label
-                //             className="form-control-label"
-                //             htmlFor="input-property"
-                //           >
-                //             CVV *
-                //           </label>
-                //           <Input
-                //             type="number"
-                //             id="cvv"
-                //             placeholder="123"
-                //             name="cvv"
-                //             onBlur={financialFormik.handleBlur}
-                //             onChange={(e) => {
-                //               const inputValue = e.target.value;
-                //               if (/^\d{0,3}$/.test(inputValue)) {
-                //                 // Only allow up to 3 digits
-                //                 financialFormik.handleChange(e);
-                //               }
-                //             }}
-                //             value={financialFormik.values.cvv}
-                //             maxLength={3}
-                //             required
-                //             disabled={refund === true}
-                //           />
-                //         </FormGroup>
-                //       </Col>
+                // <Col>
+                //   <FormGroup>
+                //     <label
+                //       className="form-control-label"
+                //       htmlFor="input-property"
+                //     >
+                //       CVV *
+                //     </label>
+                //     <Input
+                //       type="number"
+                //       id="cvv"
+                //       placeholder="123"
+                //       name="cvv"
+                //       onBlur={financialFormik.handleBlur}
+                //       onChange={(e) => {
+                //         const inputValue = e.target.value;
+                //         if (/^\d{0,3}$/.test(inputValue)) {
+                //           // Only allow up to 3 digits
+                //           financialFormik.handleChange(e);
+                //         }
+                //       }}
+                //       value={financialFormik.values.cvv}
+                //       maxLength={3}
+                //       required
+                //       disabled={refund === true}
+                //     />
+                //   </FormGroup>
+                // </Col>
                 //     </Row>
                 //   ) : (
                 //     ""
                 //   )}
                 // </>
                 <>
-                 {isEditable === false && refund === false ? (
-                  <Card
-                    className="w-100 mt-3"
-                    style={{ background: "#F4F6FF" }}
-                  >
-                    <CardContent>
-                      {/* Card Details */}
-                      <div style={{ display: "flex", flexDirection: "column" }}>
-                        <Typography
-                          sx={{
-                            fontSize: 15,
-                            fontWeight: "bold",
-                            fontFamily: "Arial",
-                            textTransform: "capitalize",
-                            marginRight: "10px",
-                          }}
-                          color="text.secondary"
-                          gutterBottom
+                  {isEditable === false && refund === false ? (
+                    <Card
+                      className="w-100 mt-3"
+                      style={{ background: "#F4F6FF" }}
+                    >
+                      <CardContent>
+                        {/* Card Details */}
+                        <div
+                          style={{ display: "flex", flexDirection: "column" }}
                         >
-                          Credit Cards
-                        </Typography>
-                      </div>
-                      {cardDetalis && cardDetalis.length > 0 && (
-                        <Table responsive>
-                          <tbody>
-                            <tr>
-                              <th>Card Number</th>
-                              <th>Card Type</th>
-                              <th>Select</th>
-                            </tr>
-                            {cardDetalis.map((item, index) => (
-                              <tr key={index} style={{ marginBottom: "10px" }}>
-                                <td>
-                                  <Typography
-                                    sx={{
-                                      fontSize: 14,
-                                      fontWeight: "bold",
-                                      fontStyle: "italic",
-                                      fontFamily: "Arial",
-                                      textTransform: "capitalize",
-                                      marginRight: "10px",
-                                    }}
-                                    color="text.secondary"
-                                    gutterBottom
-                                  >
-                                    {item.card_number.slice(0, 4) +
-                                      "*".repeat(8) +
-                                      item.card_number.slice(-4)}
-                                  </Typography>
-                                </td>
-                                <td>
-                                  <Typography
-                                    sx={{
-                                      fontSize: 14,
-                                      marginRight: "10px",
-                                    }}
-                                    color="text.secondary"
-                                    gutterBottom
-                                  >
-                                    {item.card_type}
-                                    {item.card_type && (
-                                      <img
-                                        src={`https://logo.clearbit.com/${item.card_type.toLowerCase()}.com`}
-                                        alt={`${item.card_type} Logo`}
-                                        style={{
-                                          width: "20%",
-                                          marginLeft: "10%",
-                                        }}
-                                      />
-                                    )}
-                                  </Typography>
-                                </td>
-                                <td>
-                                  <input
-                                    type="checkbox"
-                                    checked={
-                                      selectedCreditCard === item.card_number
-                                    }
-                                    onChange={() =>
-                                      handleCreditCardSelection(item)
-                                    }
-                                  />
-                                </td>
+                          <Typography
+                            sx={{
+                              fontSize: 15,
+                              fontWeight: "bold",
+                              fontFamily: "Arial",
+                              textTransform: "capitalize",
+                              marginRight: "10px",
+                            }}
+                            color="text.secondary"
+                            gutterBottom
+                          >
+                            Credit Cards
+                          </Typography>
+                        </div>
+                        {cardDetalis && cardDetalis.length > 0 && (
+                          <Table responsive>
+                            <tbody>
+                              <tr>
+                                <th>Select</th>
+                                <th>Card Number</th>
+                                <th>Card Type</th>
+                               
                               </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      )}
+                              {cardDetalis.map((item, index) => (
+                                <tr
+                                  key={index}
+                                  style={{ marginBottom: "10px" }}
+                                >
+                                    <td>
+                                    <input
+                                      type="checkbox"
+                                      checked={
+                                        selectedCreditCard ===
+                                        item.customer_vault_id
+                                      }
+                                      onChange={() =>
+                                        handleCreditCardSelection(item)
+                                      }
+                                    />
+                                  </td>
+                                  <td>
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        fontWeight: "bold",
+                                        fontStyle: "italic",
+                                        fontFamily: "Arial",
+                                        textTransform: "capitalize",
+                                        marginRight: "10px",
+                                      }}
+                                      color="text.secondary"
+                                      gutterBottom
+                                    >
+                                      {item.card_number.slice(0, 4) +
+                                        "*".repeat(8) +
+                                        item.card_number.slice(-4)}
+                                    </Typography>
+                                  </td>
+                                  <td>
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        marginRight: "10px",
+                                      }}
+                                      color="text.secondary"
+                                      gutterBottom
+                                    >
+                                      {item.card_type}
+                                      {item.card_type && (
+                                        <img
+                                          src={`https://logo.clearbit.com/${item.card_type.toLowerCase()}.com`}
+                                          alt={`${item.card_type} Logo`}
+                                          style={{
+                                            width: "20%",
+                                            marginLeft: "10%",
+                                          }}
+                                        />
+                                      )}
+                                    </Typography>
+                                  </td>
 
-                      {/* Add Credit Card Button */}
-                      {/* <div style={{ display: "flex", flexDirection: "row", marginTop: "10px" }}>
-      <Button
-        color="primary"
-        onClick={() => openCardForm()}
-        style={{
-          background: "white",
-          color: "blue",
-          marginRight: "10px",
-        }}
-      >
-        Add Credit Card
-      </Button>
-    </div> */}
-                    </CardContent>
-                  </Card>
-                    ) : (
-                          ""
+                    
+                                  {selectedCreditCard === item.customer_vault_id && (
+                                    <Row>
+                                      <FormGroup>
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-property"
+                                        >
+                                          CVV *
+                                        </label>
+                                        <Input
+                                          type="number"
+                                          id="cvv"
+                                          placeholder="123"
+                                          name="cvv"
+                                          onBlur={financialFormik.handleBlur}
+                                          onChange={(e) => {
+                                            const inputValue = e.target.value;
+                                            if (/^\d{0,3}$/.test(inputValue)) {
+                                              // Only allow up to 3 digits
+                                              financialFormik.handleChange(e);
+                                            }
+                                          }}
+                                          value={financialFormik.values.cvv}
+                                          required
+                                          disabled={refund === true}
+                                        />
+                                      </FormGroup>
+                                    </Row>
+                                  )}
+                                
+                                </tr>
+                              ))}
+                            </tbody>
+                          </Table>
                         )}
+
+  {/* Add Credit Card Button */}
+  <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            marginTop: "10px",
+                          }}
+                        >
+                          <Button
+                            color="primary"
+                            onClick={() => setAddCard(true)}
+                            style={{
+                              background: "white",
+                              color: "#3B2F2F",
+                              marginRight: "10px",
+                            }}
+                          >
+                            Add Credit Card
+                          </Button>
+                        </div><br/>
+
+                        {addCard &&  (
+                            <Row>
+                            <Col sm='5'>
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Card Number *
+                                </label>
+                                <InputGroup>
+                                  <Input
+                                    type="string"
+                                    id="card_number"
+                                    placeholder="0000 0000 0000 0000"
+                                    name="card_number"
+                                    value={financialFormik.values.card_number}
+                                    onBlur={financialFormik.handleBlur}
+                                    onChange={(e) => {
+                                      // const inputValue = e.target.value;
+                                      // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
+                                      // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
+                                      // // const formattedValue = formatCardNumber(limitedValue);
+                                      // e.target.value = limitedValue;
+                                      financialFormik.handleChange(e);
+                                    }}
+                                    required
+                                    disabled={refund === true}
+                                  />
+                                </InputGroup>
+                              </FormGroup>
+                            </Col>
+  
+                            <Col sm='4'>
+                              <FormGroup>
+                                <label
+                                  className="form-control-label"
+                                  htmlFor="input-property"
+                                >
+                                  Expiration Date *
+                                </label>
+                                <Input
+                                  type="text"
+                                  id="expiration_date"
+                                  name="expiration_date"
+                                  onBlur={financialFormik.handleBlur}
+                                  onChange={financialFormik.handleChange}
+                                  value={financialFormik.values.expiration_date}
+                                  placeholder="MM/YYYY"
+                                  required
+                                  disabled={refund === true}
+                                  
+                                />
+                             
+                              </FormGroup>
+                            </Col>
+
+                            <Col sm='3'>
+                                <div style={{marginTop:'30px'}}>
+                                  <span
+                                    style={{ cursor: 'pointer', marginRight: '10px',fontSize:'20px',color:'green'}}
+                                    onClick={handleCorrect}
+                                  >
+                                    ✔️
+                                  </span>
+                                  <span
+                                    style={{ cursor: 'pointer',fontSize:'20px' }}
+                                    onClick={handleIncorrect}
+                                  >
+                                    ❌
+                                  </span>
+                                </div>
+                              </Col>
+                          </Row>
+                        )  
+                        }
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    ""
+                  )}
                 </>
               ) : selectedPaymentType === "Check" ? (
                 <>
