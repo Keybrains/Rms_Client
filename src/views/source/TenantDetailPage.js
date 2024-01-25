@@ -289,6 +289,7 @@ const TenantDetailPage = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    getCreditCard()
   };
 
   const [cardDetalis, setCardDetails] = useState([]);
@@ -1027,7 +1028,7 @@ const TenantDetailPage = () => {
         </Row>
         <br />
         <br />
-        <Modal isOpen={isModalOpen} toggle={closeModal}>
+        <Modal isOpen={isModalOpen} toggle={closeModal} style={{ maxWidth: '950px'}}>
           <ModalHeader toggle={closeModal} className="bg-secondary text-white">
             <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
           </ModalHeader>
@@ -1035,7 +1036,7 @@ const TenantDetailPage = () => {
             <CreditCardForm
               tenantId={tenantId}
               closeModal={closeModal}
-              getCreditCard={getCreditCard}
+              //getCreditCard={getCreditCard}
             />
           </ModalBody>
         </Modal>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { CardContent, Typography } from "@mui/material";
-import { Col, FormGroup, Row, Card, CardHeader, Table } from "reactstrap";
+import { Col, FormGroup, Row, Card, CardHeader, Table, Input } from "reactstrap";
 import * as yup from "yup";
 import axios from "axios";
 import swal from "sweetalert";
@@ -10,7 +10,7 @@ import valid from "card-validator";
 function CreditCardForm(props) {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, closeModal } = props;
-
+  const [isSubmitting, setSubmitting] = useState(false);
   const [cardLogo, setCardLogo] = useState("");
 
   const fetchCardLogo = async (cardType) => {
@@ -63,6 +63,17 @@ function CreditCardForm(props) {
       .matches(/^(0[1-9]|1[0-2])\/[0-9]{4}$/, "Invalid date format (MM/YYYY)")
       .required("Required"),
     card_type: yup.string(),
+    first_name: yup.string().required("Required"),
+    last_name: yup.string().required("Required"),
+    address1: yup.string(),
+    city: yup.string(),
+    state: yup.string(),
+    zip: yup.string(),
+    country: yup.string(),
+    phone: yup.string().required("Required"),
+    email: yup.string().email("Invalid email").required("Required"),
+    company: yup.string(),
+    address2: yup.string(),
   });
 
   const validateCardNumber = (cardNumber) => {
@@ -71,8 +82,10 @@ function CreditCardForm(props) {
   };
 
   const handleSubmit = async (values) => {
+    console.log("Form submitted", values);
     const isValidCard = validateCardNumber(values.card_number);
     const cardType = isValidCard.niceType;
+    console.log("isValidCard:", isValidCard);
   
     if (!isValidCard) {
       swal("Error", "Invalid credit card number", "error");
@@ -80,12 +93,21 @@ function CreditCardForm(props) {
     }
   
     try {
+      setSubmitting(true);
       // Call the first API
       const customerVaultResponse = await axios.post(`${baseUrl}/nmipayment/create-customer-vault`, {
-        first_name: "Mansi", 
-        last_name: "Doe",
+        first_name: values.first_name, 
+        last_name: values.last_name,
         ccnumber: values.card_number,
         ccexp: values.exp_date,
+        address1: values.address1,
+        address2: values.address2,
+        city: values.city,
+        state: values.state,
+        zip: values.zip,
+        country: values.country,
+        phone: values.phone,
+        email: values.email,
       });
   
       if (customerVaultResponse.data && customerVaultResponse.data.data) {
@@ -111,7 +133,7 @@ function CreditCardForm(props) {
           customerVaultResponse.status === 200
         ) {
           swal("Success", "Card Added Successfully", "success");
-          //closeModal();
+          closeModal();
           getCreditCard();
         } else {
           swal("Error", creditCardResponse.data.message, "error");
@@ -123,49 +145,35 @@ function CreditCardForm(props) {
     } catch (error) {
       console.error("Error:", error);
       swal("Error", "Something went wrong!", "error");
+    } finally {
+      setSubmitting(false); 
     }
   };
-  
-
-  //   const handleSubmit = async (values) => {
-
-  //   const isValidCard = validateCardNumber(values.card_number);
-  //   const cardType = isValidCard.niceType;
-  //   //fetchCardLogo(cardType);
-
-  //   console.log(isValidCard, "valid");
-  //   console.log(cardType, "cardType");
-
-  //   if (!isValidCard) {
-  //     swal("Error", "Invalid credit card number", "error");
-  //     return;
-  //   }
-
-  //   const object = {
-  //     tenant_id: tenantId,
-  //     card_number: values.card_number,
-  //     exp_date: values.exp_date,
-  //     card_type: cardType,
-  //   };
-
-  //   const response = await axios.post(
-  //     `${baseUrl}/creditcard/addCreditCard`,
-  //     object
-  //   );
-
-  //   swal("Success", response.data.message, "success");
-  //   closeModal();
-  //   getCreditCard();
-  // };
 
   return (
-    <div>
+    <div style={{ maxHeight: '530px',  overflowY: 'auto', overflowX:'hidden' }}>
+      <Row>
+        {/* Formik Section */}
+        <Col xs="12" sm="7">
       <Formik
-        initialValues={{ card_number: "", exp_date: "" }}
+        initialValues={{
+          card_number: "",
+          exp_date: "",
+          first_name: "",
+          last_name: "",
+          phone: "",
+          email: "",
+          address1: "",
+          city: "",
+          state: "",
+          zip: "",
+          country: "",
+          company: "",
+        }}
         validationSchema={paymentSchema}
         onSubmit={(values, { resetForm }) => {
-          if (paymentSchema.isValid) {
-            console.log("Form submitted", values);
+          if (paymentSchema.isValid()) {
+            // Rest of your code
             handleSubmit(values);
             resetForm();
           } else {
@@ -173,176 +181,382 @@ function CreditCardForm(props) {
           }
         }}
       >
-        <Form>
-          {/* Form Fields */}
-          <Row className="mb-3">
-            <Col xs="12" sm="12">
-              <Row>
-                <Col xs="12" sm="6">
-                  <FormGroup>
-                    <label htmlFor="card_number">Card Number *</label>
-                    <Field
-                      type="number"
-                      id="card_number"
-                      placeholder="0000 0000 0000 0000"
-                      className="no-spinner"
-                      name="card_number"
-                    />
-                    <ErrorMessage
-                      name="card_number"
-                      component="div"
-                      style={{ color: "red" }}
-                    />
-                  </FormGroup>
-                </Col>
+        {/* {({ isSubmitting }) => ( */}
+          <Form>
+            {/* Form Fields */}
+            {/* <Row className="mb-0">
+              <Col xs="12" sm="12"> */}
+              <Row className="mb--2">
+                  <Col xs="12" sm="6">
+                    <FormGroup>
+                      <label htmlFor="card_number">Card Number *</label>
+                      <Input
+                        type="number"
+                        id="card_number"
+                        placeholder="0000 0000 0000 0000"
+                        className="no-spinner"
+                        name="card_number"
+                        tag={Field}
+                        required
+                      />
+                      {/* <ErrorMessage
+                        name="card_number"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+  
+                  <Col xs="12" sm="4">
+                    <FormGroup>
+                      <label htmlFor="exp_date">Expiration Date *</label>
+                      <Input
+                        type="text"
+                        id="exp_date"
+                        name="exp_date"
+                        placeholder="MM/YYYY"
+                        tag={Field}
+                        required
+                      />
+                      {/* <ErrorMessage
+                        name="exp_date"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                </Row>
+
+                <Row className="mb--2">
+                  <Col xs="12" sm="6">
+                    <FormGroup>
+                      <label htmlFor="first_name">First Name *</label>
+                      <Input
+                        type="text"
+                        id="first_name"
+                        name="first_name"
+                        placeholder="Enter first name"
+                        tag={Field}
+                        required
+                      />
+                      {/* <ErrorMessage
+                        name="first_name"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12" sm="6">
+                    <FormGroup>
+                      <label htmlFor="last_name">Last Name *</label>
+                      <Input
+                        type="text"
+                        id="last_name"
+                        name="last_name"
+                        placeholder="Enter last name"
+                        tag={Field}
+                        required
+                      />
+                      {/* <ErrorMessage
+                        name="last_name"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                </Row>
+
+                <Row className="mb--2">
+                  <Col xs="12" sm="7">
+                    <FormGroup>
+                      <label htmlFor="email">Email *</label>
+                      <Input
+                        type="text"
+                        id="email"
+                        name="email"
+                        placeholder="Enter email"
+                        tag={Field}
+                        required
+                      />
+                      {/* <ErrorMessage
+                        name="email"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12" sm="5">
+                    <FormGroup>
+                      <label htmlFor="phone">Phone *</label>
+                      <Input
+                        type="text"
+                        id="phone"
+                        name="phone"
+                        placeholder="Enter phone"
+                        tag={Field}
+                        required
+                      />
+                      {/* <ErrorMessage
+                        name="phone"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                </Row>
+  
+                <Row className="mb--2">
+                  <Col xs="12" sm="10">
+                    <FormGroup>
+                      <label htmlFor="address1">Address </label>
+                      <Input
+                        type="textarea"
+                        id="address1"
+                        name="address1"
+                        placeholder="Enter address"
+                        tag={Field}
+                      />
+                      {/* <ErrorMessage
+                        name="address1"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                </Row>
+  
+                <Row className="mb--2">
+                  <Col xs="12" sm="4">
+                    <FormGroup>
+                      <label htmlFor="city">City</label>
+                      <Input
+                        type="text"
+                        id="city"
+                        name="city"
+                        placeholder="Enter city"
+                        tag={Field}
+                      />
+                      {/* <ErrorMessage
+                        name="city"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12" sm="4">
+                    <FormGroup>
+                      <label htmlFor="state">State</label>
+                      <Input
+                        type="text"
+                        id="state"
+                        name="state"
+                        placeholder="Enter state"
+                        tag={Field}
+                      />
+                      {/* <ErrorMessage
+                        name="state"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12" sm="4">
+                    <FormGroup>
+                      <label htmlFor="country">Country</label>
+                      <Input
+                        type="text"
+                        id="country"
+                        name="country"
+                        placeholder="Enter country"
+                        tag={Field}
+                      />
+                      {/* <ErrorMessage
+                        name="country"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                </Row>
+  
+                <Row className="mb--2">
                 <Col xs="12" sm="4">
-                  <FormGroup>
-                    <label htmlFor="exp_date">Expiration Date *</label>
-                    <Field
-                      type="text"
-                      id="exp_date"
-                      name="exp_date"
-                      placeholder="MM/YYYY"
-                    />
-                    <ErrorMessage
-                      name="exp_date"
-                      component="div"
-                      style={{ color: "red" }}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-
-          {/* Form Buttons */}
-          <div
-            style={{
-              display: "flex",
-              marginTop: "10px",
-            }}
-          >
-            <button
-              type="submit"
-              className="btn btn-primary"
+                    <FormGroup>
+                      <label htmlFor="zip">Zip</label>
+                      <Input
+                        type="text"
+                        id="zip"
+                        name="zip"
+                        placeholder="Enter zip"
+                        tag={Field}
+                      />
+                      {/* <ErrorMessage
+                        name="zip"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+               
+                  <Col xs="12" sm="7">
+                    <FormGroup>
+                      <label htmlFor="company">Company</label>
+                      <Input
+                        type="text"
+                        id="company"
+                        name="company"
+                        placeholder="Enter company"
+                        tag={Field}
+                      />
+                      {/* <ErrorMessage
+                        name="company"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                    </FormGroup>
+                  </Col>
+                </Row>
+  
+                {/* <Row className="mb-3">
+                  <Col xs="12" sm="6">
+                    <FormGroup>
+                      <label htmlFor="fax">Fax</label>
+                      <Input
+                        type="text"
+                        id="fax"
+                        name="fax"
+                        placeholder="Enter fax"
+                        tag={Field}
+                      />
+                      <ErrorMessage
+                        name="fax"
+                        component="div"
+                        style={{ color: "red" }}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+   */}
+            
+              {/* </Col>
+            </Row> */}
+  
+            {/* Form Buttons */}
+            <div
               style={{
-                background: "green",
-                cursor: paymentSchema.isValid ? "pointer" : "not-allowed",
-              }}
-              disabled={!paymentSchema.isValid}
-            >
-              {paymentSchema.isSubmitting ? "Loading..." : "Add Card"}
-            </button>
-
-            <button
-              type="reset"
-              className="btn btn-primary"
-              onClick={closeModal}
-              style={{
-                background: "#fff",
-                cursor: "pointer",
-                color: "#333",
+                display: "flex"
               }}
             >
-              Cancel
-            </button>
-          </div>
-
-          {/* Card Details Section */}
-          <Card className="w-100 mt-3" style={{ background: "#F4F6FF" }}>
-            <CardContent>
-              {/* Card Details */}
-              {/* <div style={{ display: "flex", flexDirection: "column" }}>
-            <Typography
-              sx={{
-                fontSize: 15,
-                fontWeight: "bold",
-                fontFamily: "Arial",
-                textTransform: "capitalize",
-                marginRight: "10px",
-              }}
-              color="text.secondary"
-              gutterBottom
-            >
-              Credit Cards
-            </Typography>
-          </div> */}
-           {cardDetalis && cardDetalis.length > 0 ? (
-                <Table responsive>
-                  <tbody>
-                    <tr>
-                      <th>Card Number</th>
-                      <th>Card Type</th>
-                    </tr>
-                    {cardDetalis.map((item, index) => (
-                      <tr key={index} style={{ marginBottom: "10px" }}>
-                        <td>
-                          <Typography
-                            sx={{
-                              fontSize: 14,
-                              fontWeight: "bold",
-                              fontStyle: "italic",
-                              fontFamily: "Arial",
-                              textTransform: "capitalize",
-                              marginRight: "10px",
-                            }}
-                            color="text.secondary"
-                            gutterBottom
-                          >
-                            {item.card_number.slice(0, 4) +
-                              "*".repeat(8) +
-                              item.card_number.slice(-4)}
-                          </Typography>
-                        </td>
-                        <td>
-                          <Typography
-                            sx={{
-                              fontSize: 14,
-                              marginRight: "10px",
-                            }}
-                            color="text.secondary"
-                            gutterBottom
-                          >
-                            {item.card_type}
-                            {item.card_type && (
-                            <img
-                              src={`https://logo.clearbit.com/${item.card_type.toLowerCase()}.com`}
-                              alt={`${item.card_type} Logo`}
-                              style={{ width: "20%", marginLeft:"10%"}}
-                            />
-                          )}
-                          </Typography>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              ) : (
-                <Typography variant="body1" color="text.secondary">
-                  No cards added.
-                </Typography>
-              )}
-
-              {/* Add Credit Card Button
-        <div style={{ display: "flex", flexDirection: "row", marginTop: "10px" }}>
-          <Button
-            color="primary"
-            onClick={() => openCardForm()}
-            style={{
-              background: "white",
-              color: "blue",
-              marginRight: "10px",
-            }}
-          >
-            Add Credit Card
-          </Button>
-        </div> */}
-            </CardContent>
-          </Card>
-        </Form>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                style={{
+                  background: "green",
+                  cursor: paymentSchema.isValid ? "pointer" : "not-allowed",
+                }}
+                disabled={!paymentSchema.isValid || isSubmitting}
+              >
+                {isSubmitting ? "Loading..." : "Add Card"}
+              </button>
+  
+              <button
+                type="reset"
+                className="btn btn-primary"
+                onClick={closeModal}
+                style={{
+                  background: "#fff",
+                  cursor: "pointer",
+                  color: "#333",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </Form>
+        {/* )} */}
       </Formik>
+      </Col>
+       {/* Card Details Section */}
+       <Col xs="12" sm="5">
+       <Card className="mt-1" style={{ background: "#F4F6FF",maxWidth:'350px', height:'530px', overflowY:'auto'}}>
+        
+              <CardContent>
+              <Typography
+                                        sx={{
+                                          fontSize: 17,
+                                          fontWeight: "bold",
+                                          fontFamily: "Arial",
+                                          textTransform: "capitalize",
+                                          marginRight: "10px",
+                                        }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        Credit Cards
+                                      </Typography>
+                {/* Card Details */}
+                {cardDetalis && cardDetalis.length > 0 ? (
+                  <Table responsive>
+                    <tbody>
+                      <tr>
+                        <th>Card Number</th>
+                        <th>Card Type</th>
+                      </tr>
+                      {cardDetalis.map((item, index) => (
+                        <tr key={index} style={{ marginBottom: "10px" }}>
+                          <td>
+                            <Typography
+                              sx={{
+                                fontSize: 14,
+                                fontWeight: "bold",
+                                fontStyle: "italic",
+                                fontFamily: "Arial",
+                                textTransform: "capitalize",
+                                marginRight: "10px",
+                              }}
+                              color="text.secondary"
+                              gutterBottom
+                            >
+                              {item.card_number.slice(0, 4) +
+                                "*".repeat(8) +
+                                item.card_number.slice(-4)}
+                            </Typography>
+                          </td>
+                          <td>
+                            <Typography
+                              sx={{
+                                fontSize: 14,
+                                marginRight: "10px",
+                              }}
+                              color="text.secondary"
+                              gutterBottom
+                            >
+                              {item.card_type}
+                              {item.card_type && (
+                                <img
+                                  src={`https://logo.clearbit.com/${item.card_type.toLowerCase()}.com`}
+                                  alt={`${item.card_type} Logo`}
+                                  style={{ width: "40%", marginLeft: "10%" }}
+                                />
+                              )}
+                            </Typography>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                ) : (
+                  <Typography variant="body1" color="text.secondary">
+                    No cards added.
+                  </Typography>
+                )}
+              </CardContent>
+      </Card>
+      </Col>
+      </Row>
     </div>
   );
+  
 }
 
 export default CreditCardForm;
