@@ -3,6 +3,7 @@ import Profile from "views/source/Profile.js";
 import Rentals from "views/source/Rentals.js";
 import PropertiesTable from "views/source/PropertiesTable";
 import Leaseing from "views/source/Leaseing.js";
+import Leaseing2 from "views/source/Leaseing2";
 import TenantsTable from "views/source/TenantsTable.js";
 import PropertyType from "views/source/PropertyType";
 import AddPropertyType from "views/source/AddPropertyType";
@@ -124,6 +125,20 @@ var routes = [
     name: "Leaseing",
     icon: "ni ni-home-3 text-orange",
     component: <Leaseing />,
+    layout: "/admin",
+  },
+  {
+    path: "/Leaseing2",
+    name: "Leaseing",
+    icon: "ni ni-home-3 text-orange",
+    component: <Leaseing2 />,
+    layout: "/admin",
+  },
+  {
+    path: "/Leaseing2/:lease_id",
+    name: "Leaseing",
+    icon: "ni ni-home-3 text-orange",
+    component: <Leaseing2 />,
     layout: "/admin",
   },
   {
