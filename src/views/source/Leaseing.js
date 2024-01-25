@@ -371,32 +371,14 @@ const Leaseing = () => {
     // localStorage.setItem("leasetype", leasetype);
   };
 
-  const [selectedFrequency, setselectedFrequency] = useState("");
-  const hadleselectedFrequency = (frequency) => {
-    setselectedFrequency(frequency);
-    // localStorage.setItem("leasetype", leasetype);
-  };
-
   const [selectedAccountType, setselectedAccountType] = useState("");
-  const hadleselectedAccountType = (frequency) => {
-    setselectedAccountType(frequency);
-    // localStorage.setItem("leasetype", leasetype);
-  };
-
   const [selectedAccountLevel, setselectedAccountLevel] = useState("");
-  const hadleselectedAccountLevel = (level) => {
-    setselectedAccountLevel(level);
-  };
-
   const [selectedFundType, setselectedFundType] = useState("");
-  const hadleselectedFundType = (level) => {
-    setselectedFundType(level);
-  };
 
   const handleCloseButtonClick = () => {
-    // Use history.push to navigate to the PropertiesTable page
     navigate("../TenantsTable");
   };
+
   const AddNewAccountName = async (accountName) => {
     toggleAddBankDialog();
     setAccountTypeName(accountName);
@@ -417,7 +399,6 @@ const Leaseing = () => {
     } else {
       setSelectedTenants([]);
       const selectedTenant = selectedTenants[0];
-      // console.log(selectedTenants, "selectedTenants");
       const tenantParts = selectedTenant.split(" ");
       const tenantDetails = {
         firstName: tenantParts[0],
@@ -771,7 +752,7 @@ const Leaseing = () => {
 
   const fetchingAccountNames = async () => {
     // console.log("fetching account names");
-    fetch(`${baseUrl}/addaccount/find_accountname`)
+    fetch(`${baseUrl}/accounts/accounts/${accessType.admin_id}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -788,63 +769,11 @@ const Leaseing = () => {
       });
   };
 
-  const fetchingRecAccountNames = async () => {
-    // console.log("fetching rec accounr names");
-    fetch(`${baseUrl}/recurringAcc/find_accountname`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          // console.log(data.data,'Data from adding the account'); // Add this line to check the data
-          setRecAccountNames(data.data);
-        } else {
-          // Handle error
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        // Handle network error
-        console.error("Network error:", error);
-      });
-  };
-
-  const fetchingOneTimeCharges = async () => {
-    // console.log("fetcjhiine pne rime charges");
-    fetch(`${baseUrl}/onetimecharge/find_accountname`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          // console.log(data.data,'Data from adding the account'); // Add this line to check the data
-          setOneTimeCharges(data.data);
-        } else {
-          // Handle error
-          console.error("Error:", data.message);
-        }
-      });
-  };
-
-  // const AddNewAccountName = async (accountName) => {
-  //   toggleAddBankDialog();
-  //   setAccountTypeName(accountName);
-  // };
-
   useEffect(() => {
-    // Make an HTTP GET request to your Express API endpoint
     fetchingAccountNames();
-    fetchingRecAccountNames();
-    fetchingOneTimeCharges();
-  }, [toggleApiCall]);
-
-  // console.log(accountNames, "accountNames after handle add");
+  }, [accessType, toggleApiCall]);
 
   useEffect(() => {
-    // Make an HTTP GET request to your Express API endpoint
-    fetchingAccountNames();
-    fetchingRecAccountNames();
-    fetchingOneTimeCharges();
-  }, []);
-
-  useEffect(() => {
-    // Make an HTTP GET request to your Express API endpoint
     fetch(`${baseUrl}/addagent/find_agentname`)
       .then((response) => response.json())
       .then((data) => {
@@ -864,22 +793,17 @@ const Leaseing = () => {
 
   const handleCheckboxChange = (event, tenantInfo, mobileNumber) => {
     if (checkedCheckbox === mobileNumber) {
-      // If the checkbox is already checked, uncheck it
       setCheckedCheckbox(null);
     } else {
-      // Otherwise, check the checkbox
       setCheckedCheckbox(mobileNumber);
     }
-    // Toggle the selected tenants in the state when their checkboxes are clicked
     if (event.target.checked) {
-      // console.log(selectedTenants)
       setSelectedTenants([tenantInfo, ...selectedTenants]);
       tenantsSchema.setValues({
         //   Add tenants
         tenant_firstName: tenantInfo.tenant_firstName,
         tenant_lastName: tenantInfo.tenant_lastName,
         tenant_unitNumber: tenantInfo.tenant_unitNumber,
-        // tenant_phoneNumber: { type: Number },
         tenant_mobileNumber: tenantInfo.tenant_mobileNumber,
         tenant_workNumber: tenantInfo.tenant_workNumber,
         tenant_homeNumber: tenantInfo.tenant_homeNumber,
@@ -888,23 +812,16 @@ const Leaseing = () => {
         tenant_password: tenantInfo.tenant_password,
         alternate_email: tenantInfo.alternate_email,
         tenant_residentStatus: false,
-
-        // personal information
         birth_date: tenantInfo.birth_date,
         textpayer_id: tenantInfo.textpayer_id,
         comments: tenantInfo.comments,
-
-        //Emergency contact
 
         contact_name: tenantInfo.contact_name,
         relationship_tenants: tenantInfo.relationship_tenants,
         email: tenantInfo.email,
         emergency_PhoneNumber: tenantInfo.emergency_PhoneNumber,
       });
-      // setShowTenantTable(false);
-      // console.log(tenantInfo.tenant_firstName, "yup", tenantsSchema.values);
     } else {
-      // console.log(selectedTenants)
       setSelectedTenants(
         selectedTenants.filter((tenant) => tenant !== tenantInfo)
       );
@@ -962,7 +879,7 @@ const Leaseing = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -1298,7 +1215,6 @@ const Leaseing = () => {
         setselectedAccount(applicantData.account_name || "Select");
         setselectedOneTimeAccount(applicantData.onetime_account || "Select");
         setselectedRecuringAccount(applicantData.recuring_account);
-        setselectedFrequency(applicantData.recuringfrequency || "Select");
         setselectedAccountType(applicantData.account_type || "Select");
         setselectedAccountLevel(applicantData.parent_account || "Select");
         setselectedFundType(applicantData.fund_type || "Select");
@@ -1437,7 +1353,6 @@ const Leaseing = () => {
           setselectedAccount(matchedLease.account_name || "Select");
           setselectedOneTimeAccount(matchedLease.onetime_account || "Select");
           setselectedRecuringAccount(matchedLease.recuring_account);
-          setselectedFrequency(matchedLease.recuringfrequency || "Select");
           setselectedAccountType(matchedLease.account_type || "Select");
           setselectedAccountLevel(matchedLease.parent_account || "Select");
           setselectedFundType(matchedLease.fund_type || "Select");
