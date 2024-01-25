@@ -68,9 +68,9 @@ import Rentals2 from "views/source/Rentals2";
 
 import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
 import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
-import SuperAdminAdmin from "components/superadmin/Admin/Admin"; 
-import SuperAdminRentals from "components/superadmin/Admin/Rentals"; 
-import SuperAdminStaffMember from "components/superadmin/Admin/StaffMember"; 
+import SuperAdminAdmin from "components/superadmin/Admin/Admin";
+import SuperAdminRentals from "components/superadmin/Admin/Rentals";
+import SuperAdminStaffMember from "components/superadmin/Admin/StaffMember";
 
 var routes = [
   {
@@ -701,7 +701,6 @@ var routes = [
     component: <SuperAdminStaffMember />,
     layout: "/superadmin",
   },
-
 ];
 
 export default routes;
