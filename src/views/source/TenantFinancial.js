@@ -71,75 +71,74 @@ const TenantFinancial = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const [refund, setRefund] = useState(false);
-  const [addCard, setAddCard] = useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
-  const validateCardNumber = (cardNumber) => {
-    const numberValidation = valid.number(cardNumber);
-    return numberValidation.isPotentiallyValid && numberValidation.card;
-  };
+  // const validateCardNumber = (cardNumber) => {
+  //   const numberValidation = valid.number(cardNumber);
+  //   return numberValidation.isPotentiallyValid && numberValidation.card;
+  // };
 
-  const handleCorrect = async (values)=> {
-    const isValidCard = validateCardNumber(financialFormik.values.card_number);
+  // const handleCorrect = async (values)=> {
+  //   const isValidCard = validateCardNumber(financialFormik.values.card_number);
 
-    const cardType = isValidCard.niceType;
-  
-    if (!isValidCard) {
-      swal("Error", "Invalid credit card number", "error");
-      return;
-    }
-  
-    try {
-      // Call the first API
-      const customerVaultResponse = await axios.post(`${baseUrl}/nmipayment/create-customer-vault`, {
-        first_name: "Manyaaaa", 
-        last_name: "Doe",
-        ccnumber: financialFormik.values.card_number,
-        ccexp: financialFormik.values.expiration_date,
-      });
-  
-      if (customerVaultResponse.data && customerVaultResponse.data.data) {
-        // Extract customer_vault_id from the first API response
-        const customerVaultId = customerVaultResponse.data.data.customer_vault_id;
-        const vaultResponse = customerVaultResponse.data.data.response_code;
-  
-        // Call the second API using the extracted customer_vault_id
-        const creditCardResponse = await axios.post(`${baseUrl}/creditcard/addCreditCard`, {
-          tenant_id: cookie_id,
-          card_number: financialFormik.values.card_number,
-          exp_date: financialFormik.values.expiration_date,
-          card_type: cardType,
-          customer_vault_id: customerVaultId,
-          response_code: vaultResponse,
-        });
-  
-        console.log("Credit Card Response:", creditCardResponse.data);
-        console.log("Customer Vault Response:", customerVaultResponse.data);
-  
-        if (
-          creditCardResponse.status === 200 &&
-          customerVaultResponse.status === 200
-        ) {
-          swal("Success", "Card Added Successfully", "success");
-          //closeModal();
-          setAddCard(false);
-          getCreditCard();
-        } else {
-          swal("Error", creditCardResponse.data.message, "error");
-        }
-      } else {
-        // Handle the case where the response structure is not as expected
-        swal("Error", "Unexpected response format from create-customer-vault API", "error");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      swal("Error", "Something went wrong!", "error");
-    }
-  };
+  //   const cardType = isValidCard.niceType;
 
-  const handleIncorrect = () => {
-    setAddCard(false);
-  };
+  //   if (!isValidCard) {
+  //     swal("Error", "Invalid credit card number", "error");
+  //     return;
+  //   }
+
+  //   try {
+  //     // Call the first API
+  //     const customerVaultResponse = await axios.post(`${baseUrl}/nmipayment/create-customer-vault`, {
+  //       first_name: "Manyaaaa",
+  //       last_name: "Doe",
+  //       ccnumber: financialFormik.values.card_number,
+  //       ccexp: financialFormik.values.expiration_date,
+  //     });
+
+  //     if (customerVaultResponse.data && customerVaultResponse.data.data) {
+  //       // Extract customer_vault_id from the first API response
+  //       const customerVaultId = customerVaultResponse.data.data.customer_vault_id;
+  //       const vaultResponse = customerVaultResponse.data.data.response_code;
+
+  //       // Call the second API using the extracted customer_vault_id
+  //       const creditCardResponse = await axios.post(`${baseUrl}/creditcard/addCreditCard`, {
+  //         tenant_id: cookie_id,
+  //         card_number: financialFormik.values.card_number,
+  //         exp_date: financialFormik.values.expiration_date,
+  //         card_type: cardType,
+  //         customer_vault_id: customerVaultId,
+  //         response_code: vaultResponse,
+  //       });
+
+  //       console.log("Credit Card Response:", creditCardResponse.data);
+  //       console.log("Customer Vault Response:", customerVaultResponse.data);
+
+  //       if (
+  //         creditCardResponse.status === 200 &&
+  //         customerVaultResponse.status === 200
+  //       ) {
+  //         swal("Success", "Card Added Successfully", "success");
+  //         //closeModal();
+  //         setAddCard(false);
+  //         getCreditCard();
+  //       } else {
+  //         swal("Error", creditCardResponse.data.message, "error");
+  //       }
+  //     } else {
+  //       // Handle the case where the response structure is not as expected
+  //       swal("Error", "Unexpected response format from create-customer-vault API", "error");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     swal("Error", "Something went wrong!", "error");
+  //   }
+  // };
+
+  // const handleIncorrect = () => {
+  //   setAddCard(false);
+  // };
 
   const openCardForm = () => {
     setIsModalsOpen(true);
@@ -147,6 +146,7 @@ const TenantFinancial = () => {
 
   const closeModals = () => {
     setIsModalsOpen(false);
+    getCreditCard();
   };
 
   const handleSearch = (e) => {
@@ -716,7 +716,11 @@ const TenantFinancial = () => {
             .toLowerCase()
             .includes(searchQuery.toLowerCase())) ||
         (rental.amount &&
-          rental.amount.toString().includes(searchQuery.toLowerCase()))
+          rental.amount.toString().includes(searchQuery.toLowerCase()))||
+          (rental.transactionid &&
+              rental.transactionid.toString().includes(searchQuery.toLowerCase()))||
+          (rental.status &&
+                rental.status.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     });
   };
@@ -1261,7 +1265,11 @@ const TenantFinancial = () => {
           </div>
         </Row>
       </Container>
-      <Modal isOpen={isModalOpen} toggle={closeModal}>
+      <Modal
+        isOpen={isModalOpen}
+        toggle={closeModal}
+        style={{ maxWidth: "650px" }}
+      >
         <Form onSubmit={financialFormik.handleSubmit}>
           <ModalHeader toggle={closeModal} className="bg-secondary text-white">
             <strong style={{ fontSize: 18 }}>
@@ -1797,6 +1805,7 @@ const TenantFinancial = () => {
                                 <th>Select</th>
                                 <th>Card Number</th>
                                 <th>Card Type</th>
+                                <th></th>
                               </tr>
                               {cardDetalis.map((item, index) => (
                                 <tr
@@ -1858,33 +1867,37 @@ const TenantFinancial = () => {
 
                                   {selectedCreditCard ===
                                     item.customer_vault_id && (
-                                    <Row>
-                                      <FormGroup>
-                                        <label
-                                          className="form-control-label"
-                                          htmlFor="input-property"
-                                        >
-                                          CVV *
-                                        </label>
-                                        <Input
-                                          type="number"
-                                          id="cvv"
-                                          placeholder="123"
-                                          name="cvv"
-                                          onBlur={financialFormik.handleBlur}
-                                          onChange={(e) => {
-                                            const inputValue = e.target.value;
-                                            if (/^\d{0,3}$/.test(inputValue)) {
-                                              // Only allow up to 3 digits
-                                              financialFormik.handleChange(e);
-                                            }
-                                          }}
-                                          value={financialFormik.values.cvv}
-                                          required
-                                          disabled={refund === true}
-                                        />
-                                      </FormGroup>
-                                    </Row>
+                                    <td>
+                                      <Row>
+                                        <FormGroup>
+                                          <label
+                                            className="form-control-label"
+                                            htmlFor="input-property"
+                                          >
+                                            CVV *
+                                          </label>
+                                          <Input
+                                            type="number"
+                                            id="cvv"
+                                            placeholder="123"
+                                            name="cvv"
+                                            onBlur={financialFormik.handleBlur}
+                                            onChange={(e) => {
+                                              const inputValue = e.target.value;
+                                              if (
+                                                /^\d{0,3}$/.test(inputValue)
+                                              ) {
+                                                // Only allow up to 3 digits
+                                                financialFormik.handleChange(e);
+                                              }
+                                            }}
+                                            value={financialFormik.values.cvv}
+                                            required
+                                            disabled={refund === true}
+                                          />
+                                        </FormGroup>
+                                      </Row>
+                                    </td>
                                   )}
                                 </tr>
                               ))}
@@ -1902,7 +1915,9 @@ const TenantFinancial = () => {
                         >
                           <Button
                             color="primary"
-                            onClick={() => setAddCard(true)}
+                            onClick={() => {
+                              openCardForm();
+                            }}
                             style={{
                               background: "white",
                               color: "#3B2F2F",
@@ -1911,9 +1926,10 @@ const TenantFinancial = () => {
                           >
                             Add Credit Card
                           </Button>
-                        </div><br/>
+                        </div>
+                        <br />
 
-                        {addCard &&  (
+                        {/* {addCard &&  (
                             <Row>
                             <Col sm='5'>
                               <FormGroup>
@@ -1988,7 +2004,7 @@ const TenantFinancial = () => {
                               </Col>
                           </Row>
                         )  
-                        }
+                        } */}
                       </CardContent>
                     </Card>
                   ) : (
@@ -2037,7 +2053,12 @@ const TenantFinancial = () => {
           </ModalFooter>
         </Form>
       </Modal>
-      <Modal isOpen={isModalsOpen} toggle={closeModals}>
+
+      <Modal
+        isOpen={isModalsOpen}
+        toggle={closeModals}
+        style={{ maxWidth: "950px" }}
+      >
         <ModalHeader toggle={closeModals} className="bg-secondary text-white">
           <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
         </ModalHeader>
