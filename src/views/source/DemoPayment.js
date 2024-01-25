@@ -469,7 +469,6 @@ const DemoPayment = () => {
         );
       }
 
-      console.log("values", values);
       const response = await axios.post(url, {
         paymentDetails: values,
       });
@@ -750,8 +749,8 @@ const DemoPayment = () => {
       setPaymentLoader(true);
       // Assuming 'item' is a prop or state variable
       const { _id, paymentType, transactionid } = ResponseData;
-
-      const object = {
+  
+      const commonData = {
         transactionId: ResponseData.transactionid,
         tenantId: ResponseData.tenantId,
         amount: financialFormik.values.amount,
@@ -769,32 +768,96 @@ const DemoPayment = () => {
         property: ResponseData.property,
         unit: ResponseData.unit,
       };
-
+  
       if (paymentType === "Credit Card") {
         const response = await axios.post(`${baseUrl}/nmipayment/refund`, {
-          refundDetails: object,
+          refundDetails: commonData,
         });
-
+  
         if (response.data.status === 200) {
-          await setRefund(false);
           swal("Success!", response.data.data, "success");
-          console.log("Navigating to /admin/Payment");
-          window.location.href = "/admin/Payment";
+          await getGeneralLedgerData();
+          closeModal();
+        } else {
+          console.error("Failed to process refund:", response.statusText);
+        }
+      } else if (paymentType === "Cash" || paymentType === "Check") {
+        const response = await axios.post(`${baseUrl}/nmipayment/manual-refund/${_id}`, {
+          refundDetails: commonData,
+        });
+  
+        if (response.data.statusCode === 200) {
+          //await setRefund(false);
+          swal("Success!", response.data.message, "success");
+          await getGeneralLedgerData();
+          closeModal();
         } else {
           console.error("Failed to process refund:", response.statusText);
         }
       } else {
-        console.log("Refund is only available for Credit Card payments.");
+        console.log("Refund is only available for Credit Card, Cash, or Check payments.");
       }
     } catch (error) {
-      if (error?.response?.data?.status === 400) {
-        swal("Warning!", error.response.data.data.error, "warning");
+      if (error?.response?.data?.statusCode === 400) {
+        swal("Warning!", error.response.data.message, "warning");
       }
       console.error("Error:", error);
     } finally {
       setPaymentLoader(false);
     }
   };
+  
+
+  // const handleRefundClick = async () => {
+  //   try {
+  //     setPaymentLoader(true);
+  //     // Assuming 'item' is a prop or state variable
+  //     const { _id, paymentType, transactionid } = ResponseData;
+
+  //     const object = {
+  //       transactionId: ResponseData.transactionid,
+  //       tenantId: ResponseData.tenantId,
+  //       amount: financialFormik.values.amount,
+  //       paymentType: ResponseData.paymentType,
+  //       date: financialFormik.values.date,
+  //       first_name: ResponseData.first_name,
+  //       last_name: ResponseData.last_name,
+  //       email_name: ResponseData.email_name,
+  //       card_number: ResponseData.card_number,
+  //       account: ResponseData.account,
+  //       type2: ResponseData.type2,
+  //       memo: ResponseData.memo,
+  //       expiration_date: ResponseData.expiration_date,
+  //       cvv: ResponseData.cvv,
+  //       property: ResponseData.property,
+  //       unit: ResponseData.unit,
+  //     };
+
+  //     if (paymentType === "Credit Card") {
+  //       const response = await axios.post(`${baseUrl}/nmipayment/refund`, {
+  //         refundDetails: object,
+  //       });
+
+  //       if (response.data.status === 200) {
+  //         await setRefund(false);
+  //         swal("Success!", response.data.data, "success");
+  //         console.log("Navigating to /admin/Payment");
+  //         window.location.href = "/admin/Payment";
+  //       } else {
+  //         console.error("Failed to process refund:", response.statusText);
+  //       }
+  //     } else {
+  //       console.log("Refund is only available for Credit Card payments.");
+  //     }
+  //   } catch (error) {
+  //     if (error?.response?.data?.status === 400) {
+  //       swal("Warning!", error.response.data.data.error, "warning");
+  //     }
+  //     console.error("Error:", error);
+  //   } finally {
+  //     setPaymentLoader(false);
+  //   }
+  // };
 
   return (
     <>
@@ -970,8 +1033,7 @@ const DemoPayment = () => {
                                           <DropdownMenu className="dropdown-menu-arrow">
                                             {item?._id === showOptionsId && (
                                               <div>
-                                                {item?.paymentType ===
-                                                  "Credit Card" &&
+                                                {
                                                   item?.status ===
                                                     "Success" && (
                                                     <DropdownItem
@@ -1882,6 +1944,7 @@ const DemoPayment = () => {
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.check_number}
                       required
+                      disabled={refund === true}
                     />
                   </FormGroup>
                 </>
