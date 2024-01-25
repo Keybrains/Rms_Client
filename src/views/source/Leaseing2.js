@@ -248,7 +248,7 @@ const Leaseing2 = () => {
     },
   });
 
-  let paymentFormin = useFormik({
+  let paymentFormik = useFormik({
     initialValues: { card_number: "", exp_date: "", paymentMethod: "" },
     validationSchema: yup.object({
       paymentMethod: yup.string().required("Payment Method Required"),
@@ -546,6 +546,10 @@ const Leaseing2 = () => {
     setOneTimeData((prevData) => {
       return prevData.filter((data, index) => index !== indexToDelete);
     });
+  };
+
+  const handleCloseButtonClick = () => {
+    navigate("../TenantsTable");
   };
 
   //get data apis
@@ -3470,16 +3474,16 @@ const Leaseing2 = () => {
                             <DropdownMenu
                               style={{ width: "100%" }}
                               name="paymentMethod"
-                              onBlur={paymentFormin.handleBlur}
-                              onChange={(e) => paymentFormin.handleChange(e)}
-                              value={paymentFormin.values.paymentMethod}
+                              onBlur={paymentFormik.handleBlur}
+                              onChange={(e) => paymentFormik.handleChange(e)}
+                              value={paymentFormik.values.paymentMethod}
                             >
                               {selectPaymentMethodData.map((option) => (
                                 <DropdownItem
                                   key={option}
                                   onClick={() => {
                                     setSelectPaymentMethod(option);
-                                    paymentFormin.setFieldValue(
+                                    paymentFormik.setFieldValue(
                                       "paymentMethod",
                                       option
                                     );
@@ -3490,13 +3494,13 @@ const Leaseing2 = () => {
                               ))}
                             </DropdownMenu>
                           </Dropdown>
-                          {paymentFormin.errors &&
-                          paymentFormin.errors?.paymentMethod &&
-                          paymentFormin.touched &&
-                          paymentFormin.touched?.paymentMethod &&
-                          paymentFormin.values.paymentMethod === "" ? (
+                          {paymentFormik.errors &&
+                          paymentFormik.errors?.paymentMethod &&
+                          paymentFormik.touched &&
+                          paymentFormik.touched?.paymentMethod &&
+                          paymentFormik.values.paymentMethod === "" ? (
                             <div style={{ color: "red" }}>
-                              {paymentFormin.errors.paymentMethod}
+                              {paymentFormik.errors.paymentMethod}
                             </div>
                           ) : null}
                         </FormGroup>
@@ -3523,19 +3527,19 @@ const Leaseing2 = () => {
                                     placeholder="0000 0000 0000 0000"
                                     className="no-spinner"
                                     name={`card_number`}
-                                    value={paymentFormin.values.card_number}
+                                    value={paymentFormik.values.card_number}
                                     onChange={(e) => {
                                       const inputValue = e.target.value;
-                                      paymentFormin.setFieldValue(
+                                      paymentFormik.setFieldValue(
                                         `card_number`,
                                         inputValue
                                       );
                                     }}
                                   />
-                                  {paymentFormin.errors &&
-                                  paymentFormin.errors.card_number ? (
+                                  {paymentFormik.errors &&
+                                  paymentFormik.errors.card_number ? (
                                     <div style={{ color: "red" }}>
-                                      {paymentFormin.errors.card_number}
+                                      {paymentFormik.errors.card_number}
                                     </div>
                                   ) : null}
                                 </FormGroup>
@@ -3554,18 +3558,18 @@ const Leaseing2 = () => {
                                     name={`exp_date`}
                                     onChange={(e) => {
                                       const inputValue = e.target.value;
-                                      paymentFormin.setFieldValue(
+                                      paymentFormik.setFieldValue(
                                         `exp_date`,
                                         inputValue
                                       );
                                     }}
-                                    value={paymentFormin.values.exp_date}
+                                    value={paymentFormik.values.exp_date}
                                     placeholder="MM/YYYY"
                                   />
-                                  {paymentFormin.errors &&
-                                  paymentFormin.errors.exp_date ? (
+                                  {paymentFormik.errors &&
+                                  paymentFormik.errors.exp_date ? (
                                     <div style={{ color: "red" }}>
-                                      {paymentFormin.errors.exp_date}
+                                      {paymentFormik.errors.exp_date}
                                     </div>
                                   ) : null}
                                 </FormGroup>
@@ -3595,12 +3599,12 @@ const Leaseing2 = () => {
                         if (selectedTenantData.length !== 0) {
                           leaseFormik.handleSubmit(leaseFormik.values);
                           if (selectPaymentMethod === "AutoPayment") {
-                            paymentFormin.handleSubmit();
+                            paymentFormik.handleSubmit();
                           }
                         } else {
                           leaseFormik.handleSubmit(leaseFormik.values);
                           if (selectPaymentMethod === "AutoPayment") {
-                            paymentFormin.handleSubmit();
+                            paymentFormik.handleSubmit();
                           }
                           setDisplay(true);
                         }
@@ -3618,12 +3622,12 @@ const Leaseing2 = () => {
                         if (selectedTenantData.length !== 0) {
                           leaseFormik.handleSubmit();
                           if (selectPaymentMethod === "AutoPayment") {
-                            paymentFormin.handleSubmit();
+                            paymentFormik.handleSubmit();
                           }
                         } else {
                           leaseFormik.handleSubmit();
                           if (selectPaymentMethod === "AutoPayment") {
-                            paymentFormin.handleSubmit();
+                            paymentFormik.handleSubmit();
                           }
                           setDisplay(true);
                         }
@@ -3634,7 +3638,7 @@ const Leaseing2 = () => {
                   )}
                   <Button
                     color="primary"
-                    // onClick={handleCloseButtonClick}
+                    onClick={handleCloseButtonClick}
                     className="btn btn-primary"
                     style={{
                       background: "white",
