@@ -31,12 +31,18 @@ import {
   ToggleButton,
   Checkbox,
   InputAdornment,
+  DialogActions,
+  TextField,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
+import CloseIcon from "@mui/icons-material/Close";
+import AccountDialog from "components/AccountDialog";
 
 const Leaseing2 = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -58,6 +64,13 @@ const Leaseing2 = () => {
   const [propertyDropdownOpen, setPropertyDropdownOpen] = useState(false);
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [leaseDropdownOpen, setLeaseDropdownOpen] = useState(false);
+  const [rentCycleDropdownOpen, setRentCycleDropdownOpen] = useState(false);
+  const [openRecurringDialog, setOpenRecurringDialog] = useState(false);
+  const [openOneTimeChargeDialog, setOpenOneTimeChargeDialog] = useState(false);
+  const [addBankAccountDialogOpen, setAddBankAccountDialogOpen] =
+    useState(false);
+  const [paymentOptionDropdawnOpen, setpaymentOptionDropdawnOpen] =
+    useState(false);
 
   //checkbox
   const [checkedCheckbox, setCheckedCheckbox] = useState(false);
@@ -65,6 +78,8 @@ const Leaseing2 = () => {
   const [rentincdropdownOpen2, setRentincdropdownOpen2] = useState(false);
   const [rentincdropdownOpen3, setRentincdropdownOpen3] = useState(false);
   const [rentincdropdownOpen4, setRentincdropdownOpen4] = useState(false);
+  const [rentincdropdownOpen5, setRentincdropdownOpen5] = useState(false);
+  const [rentincdropdownOpen6, setRentincdropdownOpen6] = useState(false);
   const [collapseper, setCollapseper] = useState(false);
   const [collapsecont, setCollapsecont] = useState(false);
 
@@ -74,6 +89,10 @@ const Leaseing2 = () => {
   const [selectedLeaseType, setSelectedLeaseType] = useState("");
   const [selectedOption, setSelectedOption] = useState("Tenant");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRentCycle, setSelectedRentCycle] = useState("");
+  const [accountTypeName, setAccountTypeName] = useState("");
+  const [selectPaymentMethod, setSelectPaymentMethod] = useState("");
+  const [editingIndex, setEditingIndex] = useState(null);
 
   //get response variables
   const [propertyData, setPropertyData] = useState([]);
@@ -82,6 +101,8 @@ const Leaseing2 = () => {
   const [tenantData, setTenantData] = useState([]);
   const [selectedTenantData, setSelectedTenantData] = useState([]);
   const [cosignerData, setCosignerData] = useState([]);
+  const [recurringData, setRecurringData] = useState([]);
+  const [oneTimeData, setOneTimeData] = useState([]);
 
   //display
   const [openTenantsDialog, setOpenTenantsDialog] = useState(false);
@@ -92,20 +113,44 @@ const Leaseing2 = () => {
 
   // other isVariableStatement
   const [alignment, setAlignment] = useState("web");
+  const [file, setFile] = useState("");
 
   //toggles
   const toggle = () => setPropertyDropdownOpen((prevState) => !prevState);
   const toggle2 = () => setUnitDropdownOpen((prevState) => !prevState);
   const toggle3 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const toggle6 = () => setRentCycleDropdownOpen((prevState) => !prevState);
+  const toggle7 = () => setRentincdropdownOpen6((prevState) => !prevState);
+  const toggle8 = () => setRentincdropdownOpen5((prevState) => !prevState);
+  const paymentMethodtoggle = () =>
+    setpaymentOptionDropdawnOpen((prevState) => !prevState);
   const toggle4 = () => {
     setCollapseper(!collapseper);
   };
   const toggle5 = () => {
     setCollapsecont(!collapsecont);
   };
+  const toggleAddBankDialog = () => {
+    setAddBankAccountDialogOpen((prevState) => !prevState);
+  };
+
+  //loaders
+  const [loader, setLoader] = useState(false);
+
+  //dropdown options
+  const rentOptions = [
+    "Daily",
+    "Weekly",
+    "Every two weeks",
+    "Monthly",
+    "Every two months",
+    "Quarterly",
+    "Yearly",
+  ];
+  const selectPaymentMethodData = ["Manually", "AutoPayment"];
 
   //formik for form
-  const leaseFormin = useFormik({
+  const leaseFormik = useFormik({
     initialValues: {
       rental_id: "",
       unit_id: "",
@@ -113,6 +158,7 @@ const Leaseing2 = () => {
       start_date: "",
       end_date: "",
       uploaded_file: "",
+      tenant_residentStatus: false,
     },
     validationSchema: yup.object({
       rental_id: yup.string().required("Required"),
@@ -124,13 +170,15 @@ const Leaseing2 = () => {
     }),
   });
 
-  const chargeFormin = useFormik({
+  const rentChargeFormin = useFormik({
     initialValues: {
       amount: "",
       memo: "",
-      charge_type: "",
-      account: "",
+      charge_type: "Last Month's Rent",
+      account: "Last Month's Rent",
       date: "",
+      rent_cycle: "",
+      security_amount: "",
       is_paid: false,
       is_lateFee: false,
     },
@@ -138,6 +186,85 @@ const Leaseing2 = () => {
       amount: yup.number().required("Required"),
       account: yup.string().required("Required"),
       charge_type: yup.string().required("Required"),
+      rent_cycle: yup.string().required("Required"),
+    }),
+  });
+
+  let recurringChargeSchema = useFormik({
+    initialValues: {
+      recuring_amount: "",
+      recuring_account: "",
+      recuringmemo: "",
+    },
+
+    validationSchema: yup.object({
+      recuring_amount: yup.string().required("Required"),
+      recuring_account: yup.string().required("Required"),
+    }),
+
+    onSubmit: (values, { resetForm }) => {
+      if (editingIndex !== null) {
+        setRecurringData((prevRecurringData) => {
+          const updatedData = [...prevRecurringData];
+          updatedData[editingIndex] = values;
+          return updatedData;
+        });
+
+        setEditingIndex(null);
+      } else {
+        setRecurringData((prevRecurringData) => [...prevRecurringData, values]);
+      }
+      setOpenRecurringDialog(false);
+      resetForm();
+    },
+  });
+
+  let oneTimeChargeSchema = useFormik({
+    initialValues: {
+      onetime_amount: "",
+      onetime_account: "",
+      onetime_memo: "",
+    },
+
+    validationSchema: yup.object({
+      onetime_amount: yup.string().required("Required"),
+      onetime_account: yup.string().required("Required"),
+    }),
+
+    onSubmit: (values, { resetForm }) => {
+      if (editingIndex !== null) {
+        setOneTimeData((prevOneTimeData) => {
+          const updatedData = [...prevOneTimeData];
+          updatedData[editingIndex] = values;
+          return updatedData;
+        });
+
+        setEditingIndex(null);
+      } else {
+        setOneTimeData((prevOneTimeData) => [...prevOneTimeData, values]);
+      }
+      setOpenOneTimeChargeDialog(false);
+      resetForm();
+    },
+  });
+
+  let paymentFormin = useFormik({
+    initialValues: { card_number: "", exp_date: "", paymentMethod: "" },
+    validationSchema: yup.object({
+      paymentMethod: yup.string().required("Payment Method Required"),
+      card_number: yup
+        .number()
+        .required("Required")
+        .typeError("Must be a number")
+        .test(
+          "is-size-16",
+          "Card Number must be 16 digits",
+          (val) => val?.toString().length === 16
+        ),
+      exp_date: yup
+        .string()
+        .matches(/^(0[1-9]|1[0-2])\/[0-9]{4}$/, "Invalid date format (MM/YYYY)")
+        .required("Required"),
     }),
   });
 
@@ -174,6 +301,9 @@ const Leaseing2 = () => {
         )
         .required("Required"),
     }),
+    onSubmit: () => {
+      setOpenTenantsDialog(false);
+    },
   });
 
   const cosignerFormik = useFormik({
@@ -195,34 +325,40 @@ const Leaseing2 = () => {
       cosigner_phoneNumber: yup.number().required("Required"),
       cosigner_email: yup.string().required("Required"),
     }),
+    onSubmit: (values) => {
+      setOpenTenantsDialog(false);
+      setCosignerData(values);
+    },
   });
 
   //onchange funtions
   const handlePropertyTypeSelect = (property) => {
     setselectedProperty(property.rental_adress);
-    leaseFormin.setFieldValue("rental_id", property.rental_id);
+    leaseFormik.setFieldValue("rental_id", property.rental_id);
     fetchUnitData(property.rental_id);
   };
 
   const handleUnitSelect = (unit) => {
     setselectedUnit(unit.rental_unit);
-    leaseFormin.setFieldValue("unit_id", unit.unit_id);
+    leaseFormik.setFieldValue("unit_id", unit.unit_id);
   };
 
   const handleLeaseTypeSelect = (lease) => {
     setSelectedLeaseType(lease);
-    leaseFormin.setFieldValue("lease_type", lease);
+    leaseFormik.setFieldValue("lease_type", lease);
   };
 
   const handleDateChange = (date) => {
     const nextDate = moment(date).add(1, "months").format("YYYY-MM-DD");
-    leaseFormin.setFieldValue("end_date", nextDate);
+    leaseFormik.setFieldValue("end_date", nextDate);
     // setIsDateUnavailable(false);
     // checkDate(nextDate);
   };
 
   const handleClose = () => {
     setOpenTenantsDialog(false);
+    setOpenRecurringDialog(false);
+    setOpenOneTimeChargeDialog(false);
   };
 
   const handleChange = (value) => {
@@ -235,8 +371,60 @@ const Leaseing2 = () => {
   };
 
   const handleCheckboxChange = (event, tenant) => {
+    const {
+      tenant_firstName,
+      tenant_lastName,
+      tenant_phoneNumber,
+      tenant_alternativeNumber,
+      tenant_email,
+      tenant_alternativeEmail,
+      tenant_password,
+      tenant_birthDate,
+      taxPayer_id,
+      comments,
+      emergency_contact: { name, relation, email, phoneNumber },
+    } = tenant;
     if (event.target.checked) {
-      tenantFormik.setValues(tenant);
+      setShowTenantTable(false);
+      tenantFormik.setValues({
+        tenant_firstName,
+        tenant_lastName,
+        tenant_phoneNumber,
+        tenant_alternativeNumber,
+        tenant_email,
+        tenant_alternativeEmail,
+        tenant_password,
+        tenant_birthDate,
+        taxPayer_id,
+        comments,
+        emergency_contact: {
+          name,
+          relation,
+          email,
+          phoneNumber,
+        },
+      });
+      setSelectedTenantData({
+        tenant_firstName,
+        tenant_lastName,
+        tenant_phoneNumber,
+        tenant_alternativeNumber,
+        tenant_email,
+        tenant_alternativeEmail,
+        tenant_password,
+        tenant_birthDate,
+        taxPayer_id,
+        comments,
+        emergency_contact: {
+          name,
+          relation,
+          email,
+          phoneNumber,
+        },
+      });
+    } else {
+      setCheckedCheckbox("");
+      tenantFormik.resetForm();
     }
   };
 
@@ -244,6 +432,67 @@ const Leaseing2 = () => {
     setSelectedTenantData({});
     setCheckedCheckbox(null);
     tenantFormik.resetForm();
+  };
+
+  const handleCosignerDelete = () => {
+    setCosignerData({});
+    cosignerFormik.resetForm();
+  };
+
+  const handleselectedRentCycle = (rentcycle) => {
+    setSelectedRentCycle(rentcycle);
+    rentChargeFormin.setFieldValue("rent_cycle", rentcycle);
+
+    const startDate = rentChargeFormin.values.start_date;
+    let nextDue_date;
+    let dayFrequency;
+    switch (rentcycle) {
+      case "Daily":
+        nextDue_date = moment(startDate).add(1, "days").format("YYYY-MM-DD");
+        dayFrequency = 1;
+        break;
+      case "Weekly":
+        nextDue_date = moment(startDate).add(1, "weeks").format("YYYY-MM-DD");
+        dayFrequency = 7;
+        break;
+      case "Every two weeks":
+        nextDue_date = moment(startDate).add(2, "weeks").format("YYYY-MM-DD");
+        dayFrequency = 14;
+        break;
+      case "Monthly":
+        nextDue_date = moment(startDate).add(1, "months").format("YYYY-MM-DD");
+        dayFrequency = 30;
+        break;
+      case "Every two months":
+        nextDue_date = moment(startDate).add(2, "months").format("YYYY-MM-DD");
+        dayFrequency = 60;
+        break;
+      case "Quarterly":
+        nextDue_date = moment(startDate).add(3, "months").format("YYYY-MM-DD");
+        dayFrequency = 120;
+        break;
+      default:
+        nextDue_date = moment(startDate).add(1, "years").format("YYYY-MM-DD");
+        dayFrequency = 365;
+    }
+    rentChargeFormin.setFieldValue("date", nextDue_date);
+  };
+
+  const handleClickOpenRecurring = () => {
+    recurringChargeSchema.setValues({
+      recuring_amount: "",
+      recuring_account: "",
+      recuringmemo: "",
+    });
+    setOpenRecurringDialog(true);
+  };
+  const handleClickOpenOneTimeCharge = () => {
+    oneTimeChargeSchema.setValues({
+      onetime_amount: "",
+      onetime_account: "",
+      onetime_memo: "",
+    });
+    setOpenOneTimeChargeDialog(true);
   };
 
   const handleClick1 = () => {
@@ -260,6 +509,43 @@ const Leaseing2 = () => {
 
   const handleClick4 = () => {
     setRentincdropdownOpen4(!rentincdropdownOpen4);
+  };
+
+  const AddNewAccountName = async (accountName) => {
+    toggleAddBankDialog();
+    setAccountTypeName(accountName);
+  };
+
+  const editeReccuring = (index) => {
+    setOpenRecurringDialog(true);
+    setEditingIndex(index);
+    recurringChargeSchema.setValues({
+      recuring_amount: recurringData[index].recuring_amount,
+      recuring_account: recurringData[index].recuring_account,
+      recuringmemo: recurringData[index].recuringmemo,
+    });
+  };
+
+  const editOneTime = (index) => {
+    setOpenOneTimeChargeDialog(true);
+    setEditingIndex(index);
+    oneTimeChargeSchema.setValues({
+      onetime_amount: oneTimeData[index].onetime_amount,
+      onetime_account: oneTimeData[index].onetime_account,
+      onetime_memo: oneTimeData[index].onetime_memo,
+    });
+  };
+
+  const handleRecurringDelete = (indexToDelete) => {
+    setRecurringData((prevData) => {
+      return prevData.filter((data, index) => index !== indexToDelete);
+    });
+  };
+
+  const handleOnetimeDelete = (indexToDelete) => {
+    setOneTimeData((prevData) => {
+      return prevData.filter((data, index) => index !== indexToDelete);
+    });
   };
 
   //get data apis
@@ -328,12 +614,70 @@ const Leaseing2 = () => {
     fetchTenantData();
   }, [accessType]);
 
-  console.log(
-    leaseFormin.values,
-    tenantFormik.values,
-    chargeFormin.values,
-    cosignerFormik.values
-  );
+  // console.log(
+  //   // leaseFormik.values,
+  //   // tenantFormik.values,
+  //   // selectedTenantData,
+  //   rentChargeFormin.values
+  //   // cosignerFormik.values
+  // );
+
+  //files set
+  const fileData = (files) => {
+    const filesArray = [...files];
+
+    if (filesArray.length <= 10 && file.length === 0) {
+      const finalArray = [];
+
+      for (let i = 0; i < filesArray.length; i++) {
+        const object = {
+          upload_file: filesArray[i],
+          upload_date: moment().format("YYYY-MM-DD"),
+          upload_time: moment().format("HH:mm:ss"),
+          upload_by: accessType.first_name + " " + accessType.last_name,
+          file_name: filesArray[i].name,
+          // Create a blob link for each file
+          upload_link: URL.createObjectURL(filesArray[i]),
+        };
+        finalArray.push(object);
+      }
+
+      setFile([...finalArray]);
+      leaseFormik.setFieldValue("upload_file", [...finalArray]);
+    } else if (
+      file.length >= 0 &&
+      file.length <= 10 &&
+      filesArray.length + file.length > 10
+    ) {
+      setFile([...file]);
+      leaseFormik.setFieldValue("upload_file", [...file]);
+    } else {
+      const finalArray = [];
+
+      for (let i = 0; i < filesArray.length; i++) {
+        const object = {
+          upload_file: filesArray[i],
+          upload_date: moment().format("YYYY-MM-DD"),
+          upload_time: moment().format("HH:mm:ss"),
+          upload_by: localStorage.getItem("user_id"),
+          file_name: filesArray[i].name,
+          // Create a blob link for each file
+          upload_link: URL.createObjectURL(filesArray[i]),
+        };
+        finalArray.push(object);
+      }
+
+      setFile([...file, ...finalArray]);
+      leaseFormik.setFieldValue("upload_file", [...file, ...finalArray]);
+    }
+  };
+
+  const deleteFile = (index) => {
+    const newFile = [...file];
+    newFile.splice(index, 1);
+    setFile(newFile);
+    leaseFormik.setFieldValue("upload_file", newFile);
+  };
 
   return (
     <>
@@ -392,12 +736,12 @@ const Leaseing2 = () => {
                                 </DropdownItem>
                               ))}
                             </DropdownMenu>
-                            {leaseFormin.errors &&
-                            leaseFormin.errors?.rental_id &&
-                            leaseFormin.touched &&
-                            leaseFormin.touched?.rental_id ? (
+                            {leaseFormik.errors &&
+                            leaseFormik.errors?.rental_id &&
+                            leaseFormik.touched &&
+                            leaseFormik.touched?.rental_id ? (
                               <div div style={{ color: "red" }}>
-                                {leaseFormin.errors.rental_id}
+                                {leaseFormik.errors.rental_id}
                               </div>
                             ) : null}
                           </Dropdown>
@@ -438,12 +782,12 @@ const Leaseing2 = () => {
                                   </DropdownItem>
                                 )}
                               </DropdownMenu>
-                              {leaseFormin.errors &&
-                              leaseFormin.errors?.unit_id &&
-                              leaseFormin.touched &&
-                              leaseFormin.touched?.unit_id ? (
+                              {leaseFormik.errors &&
+                              leaseFormik.errors?.unit_id &&
+                              leaseFormik.touched &&
+                              leaseFormik.touched?.unit_id ? (
                                 <div style={{ color: "red" }}>
-                                  {leaseFormin.errors.unit_id}
+                                  {leaseFormik.errors.unit_id}
                                 </div>
                               ) : null}
                             </Dropdown>
@@ -491,12 +835,12 @@ const Leaseing2 = () => {
                                 At-will(month to month)
                               </DropdownItem>
                             </DropdownMenu>
-                            {leaseFormin.errors &&
-                            leaseFormin.errors?.lease_type &&
-                            leaseFormin.touched &&
-                            leaseFormin.touched?.lease_type ? (
+                            {leaseFormik.errors &&
+                            leaseFormik.errors?.lease_type &&
+                            leaseFormik.touched &&
+                            leaseFormik.touched?.lease_type ? (
                               <div style={{ color: "red" }}>
-                                {leaseFormin.errors.lease_type}
+                                {leaseFormik.errors.lease_type}
                               </div>
                             ) : null}
                           </Dropdown>
@@ -517,22 +861,22 @@ const Leaseing2 = () => {
                             placeholder="3000"
                             type="date"
                             name="start_date"
-                            onBlur={leaseFormin.handleBlur}
+                            onBlur={leaseFormik.handleBlur}
                             onChange={(e) => {
                               handleDateChange(e.target.value);
-                              leaseFormin.handleChange(e);
+                              leaseFormik.handleChange(e);
                               //   checkStartDate(e.target.value);
                             }}
-                            value={moment(leaseFormin.values.start_date).format(
+                            value={moment(leaseFormik.values.start_date).format(
                               "YYYY-MM-DD"
                             )}
                           />
-                          {leaseFormin.errors &&
-                          leaseFormin.errors?.start_date &&
-                          leaseFormin.touched &&
-                          leaseFormin.touched?.start_date ? (
+                          {leaseFormik.errors &&
+                          leaseFormik.errors?.start_date &&
+                          leaseFormik.touched &&
+                          leaseFormik.touched?.start_date ? (
                             <div style={{ color: "red" }}>
-                              {leaseFormin.errors.start_date}
+                              {leaseFormik.errors.start_date}
                             </div>
                           ) : null}
                           {/* {isStartDateUnavailable && (
@@ -572,15 +916,15 @@ const Leaseing2 = () => {
                             placeholder="3000"
                             type="date"
                             name="end_date"
-                            onBlur={leaseFormin.handleBlur}
+                            onBlur={leaseFormik.handleBlur}
                             onChange={(e) => {
-                              leaseFormin.handleChange(e);
+                              leaseFormik.handleChange(e);
                               //   checkDate(e.target.value);
                             }}
-                            value={moment(leaseFormin.values.end_date).format(
+                            value={moment(leaseFormik.values.end_date).format(
                               "YYYY-MM-DD"
                             )}
-                            min={moment(leaseFormin.values.start_date).format(
+                            min={moment(leaseFormik.values.start_date).format(
                               "YYYY-MM-DD"
                             )}
                           />
@@ -602,9 +946,7 @@ const Leaseing2 = () => {
                       </Col>
                     </Row>
                   </div>
-
                   <hr className="my-4" />
-
                   {/* tenant and cosigner */}
                   <h6 className="heading-small text-muted mb-4">
                     Tenants and Cosigner
@@ -958,7 +1300,6 @@ const Leaseing2 = () => {
                                           <br />
                                           <div
                                             style={{
-                                              // display: "flex",
                                               flexDirection: "row",
                                               alignItems: "center",
                                             }}
@@ -1533,7 +1874,6 @@ const Leaseing2 = () => {
                                         type="submit"
                                         className="btn btn-primary"
                                         onClick={() => {
-                                          setShowTenantTable(false);
                                           tenantFormik.handleSubmit();
                                         }}
                                       >
@@ -2127,11 +2467,14 @@ const Leaseing2 = () => {
                                   color: "#000",
                                 }}
                               >
-                                <Col>{selectedTenantData.firstName}</Col>
-                                <Col>{selectedTenantData.lastName}</Col>
-                                <Col>{selectedTenantData.mobileNumber}</Col>
+                                <Col>{selectedTenantData.tenant_firstName}</Col>
+                                <Col>{selectedTenantData.tenant_lastName}</Col>
+                                <Col>
+                                  {selectedTenantData.tenant_phoneNumber}
+                                </Col>
                                 <Col>
                                   <EditIcon
+                                    style={{ cursor: "pointer" }}
                                     onClick={() => {
                                       setShowTenantTable(false);
                                       setOpenTenantsDialog(true);
@@ -2141,6 +2484,7 @@ const Leaseing2 = () => {
                                   />
 
                                   <DeleteIcon
+                                    style={{ cursor: "pointer" }}
                                     onClick={() => {
                                       setShowTenantTable(false);
                                       handleTenantDelete();
@@ -2153,7 +2497,7 @@ const Leaseing2 = () => {
                         </div>
                         {tenantFormik.errors &&
                         tenantFormik.errors?.tenant_password &&
-                        leaseFormin.submitCount > 0 ? (
+                        leaseFormik.submitCount > 0 ? (
                           <div style={{ color: "red" }}>
                             {tenantFormik.errors.tenant_password}
                           </div>
@@ -2181,7 +2525,6 @@ const Leaseing2 = () => {
                                   className="w-100 mb-1"
                                   style={{
                                     fontSize: "17px",
-                                    // textTransform: "uppercase",
                                     color: "#aaa",
                                     fontWeight: "bold",
                                   }}
@@ -2200,15 +2543,18 @@ const Leaseing2 = () => {
                                     color: "#000",
                                   }}
                                 >
-                                  <Col>{cosignerData.firstName}</Col>
-                                  <Col>{cosignerData.lastName}</Col>
-                                  <Col>{cosignerData.mobileNumber}</Col>
+                                  <Col>{cosignerData.cosigner_firstName}</Col>
+                                  <Col>{cosignerData.cosigner_lastName}</Col>
+                                  <Col>{cosignerData.cosigner_phoneNumber}</Col>
                                   <Col>
-                                    {/* <EditIcon onClick={setOpenTenantsDialog} />
+                                    <EditIcon
+                                      style={{ cursor: "pointer" }}
+                                      onClick={setOpenTenantsDialog}
+                                    />
                                     <DeleteIcon
+                                      style={{ cursor: "pointer" }}
                                       onClick={handleCosignerDelete}
-                                    /> */}
-                                    hi
+                                    />
                                   </Col>
                                 </Row>
                               </>
@@ -2217,13 +2563,66 @@ const Leaseing2 = () => {
                       </FormGroup>
                     </Col>
                   </Row>
-
                   <hr className="my-4" />
-
                   {/* rent charge */}
                   <h6 className="heading-small text-muted mb-4">
                     Rent (Optional)
                   </h6>
+                  <div className="pl-lg-4">
+                    <Row>
+                      <Col md="12">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            Rent cycle *
+                          </label>
+                          <FormGroup>
+                            <Dropdown
+                              isOpen={rentCycleDropdownOpen}
+                              toggle={toggle6}
+                            >
+                              <DropdownToggle caret style={{ width: "100%" }}>
+                                {selectedRentCycle
+                                  ? selectedRentCycle
+                                  : "Select"}
+                              </DropdownToggle>
+                              <DropdownMenu
+                                style={{ width: "100%" }}
+                                name="rent_cycle"
+                                onBlur={rentChargeFormin.handleBlur}
+                                onChange={(e) =>
+                                  rentChargeFormin.handleChange(e)
+                                }
+                                value={rentChargeFormin.values.rent_cycle}
+                              >
+                                {rentOptions.map((option) => (
+                                  <DropdownItem
+                                    key={option}
+                                    onClick={() =>
+                                      handleselectedRentCycle(option)
+                                    }
+                                  >
+                                    {option}
+                                  </DropdownItem>
+                                ))}
+                              </DropdownMenu>
+                            </Dropdown>
+                          </FormGroup>
+                          {rentChargeFormin.errors &&
+                          rentChargeFormin.errors?.rent_cycle &&
+                          rentChargeFormin.touched &&
+                          rentChargeFormin.touched?.rent_cycle &&
+                          rentChargeFormin.values.rent_cycle === "" ? (
+                            <div style={{ color: "red" }}>
+                              {rentChargeFormin.errors.rent_cycle}
+                            </div>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  </div>
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="12">
@@ -2245,16 +2644,17 @@ const Leaseing2 = () => {
                                     placeholder="$0.00"
                                     type="text"
                                     name="amount"
-                                    onBlur={chargeFormin.handleBlur}
-                                    value={chargeFormin.values.amount}
+                                    onBlur={rentChargeFormin.handleBlur}
+                                    value={rentChargeFormin.values.amount}
                                     onChange={(e) => {
                                       const inputValue = e.target.value;
                                       const numericValue = inputValue.replace(
                                         /\D/g,
                                         ""
                                       );
-                                      chargeFormin.values.amount = numericValue;
-                                      chargeFormin.handleChange({
+                                      rentChargeFormin.values.amount =
+                                        numericValue;
+                                      rentChargeFormin.handleChange({
                                         target: {
                                           name: "amount",
                                           value: numericValue,
@@ -2262,13 +2662,13 @@ const Leaseing2 = () => {
                                       });
                                     }}
                                   />
-                                  {chargeFormin.errors &&
-                                  chargeFormin.errors.amount &&
-                                  chargeFormin.touched &&
-                                  chargeFormin.touched.amount &&
-                                  chargeFormin.values.amount === "" ? (
+                                  {rentChargeFormin.errors &&
+                                  rentChargeFormin.errors.amount &&
+                                  rentChargeFormin.touched &&
+                                  rentChargeFormin.touched.amount &&
+                                  rentChargeFormin.values.amount === "" ? (
                                     <div style={{ color: "red" }}>
-                                      {chargeFormin.errors.amount}
+                                      {rentChargeFormin.errors.amount}
                                     </div>
                                   ) : null}
                                 </FormGroup>
@@ -2288,10 +2688,12 @@ const Leaseing2 = () => {
                                   id="input-unitadd9"
                                   placeholder="3000"
                                   type="date"
-                                  name="nextDue_date"
-                                  onBlur={chargeFormin.handleBlur}
-                                  onChange={(e) => chargeFormin.handleChange(e)}
-                                  value={chargeFormin.values.nextDue_date}
+                                  name="date"
+                                  onBlur={rentChargeFormin.handleBlur}
+                                  onChange={(e) =>
+                                    rentChargeFormin.handleChange(e)
+                                  }
+                                  value={rentChargeFormin.values.date}
                                 />
                               </FormGroup>
                             </Col>
@@ -2309,9 +2711,9 @@ const Leaseing2 = () => {
                                   id="memo"
                                   type="text"
                                   name="memo"
-                                  onBlur={chargeFormin.handleBlur}
-                                  onChange={chargeFormin.handleChange}
-                                  value={chargeFormin.values.memo}
+                                  onBlur={rentChargeFormin.handleBlur}
+                                  onChange={rentChargeFormin.handleChange}
+                                  value={rentChargeFormin.values.memo}
                                 />
                               </FormGroup>
                             </Col>
@@ -2320,6 +2722,935 @@ const Leaseing2 = () => {
                       </Col>
                     </Row>
                   </div>
+                  <hr className="my-4" />
+                  {/* Security Deposite */}
+                  <h6 className="heading-small text-muted mb-4">
+                    Security Deposite (Optional)
+                  </h6>
+                  <div className="pl-lg-2">
+                    <FormGroup>
+                      <br />
+                      <Row>
+                        <Col lg="2">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-address"
+                            >
+                              Amount
+                            </label>
+                            <br />
+                            <FormGroup>
+                              <Input
+                                className="form-control-alternative"
+                                id="input-reserve"
+                                placeholder="$0.00"
+                                type="text"
+                                name="security_amount"
+                                onBlur={rentChargeFormin.handleBlur}
+                                onChange={rentChargeFormin.handleChange}
+                                value={rentChargeFormin.values.security_amount}
+                                onInput={(e) => {
+                                  const inputValue = e.target.value;
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ""
+                                  );
+                                  e.target.value = numericValue;
+                                }}
+                              />
+                            </FormGroup>
+                          </FormGroup>
+                        </Col>
+
+                        <Col lg="7">
+                          <FormGroup>
+                            <br />
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-unitadd10"
+                            >
+                              Don't forget to record the payment once you have
+                              connected the deposite
+                            </label>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                    </FormGroup>
+                  </div>
+                  <hr />
+                  <h6 className="heading-small text-muted mb-4">
+                    Charges (Optional)
+                  </h6>
+                  <Row>
+                    <Col lg="4">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-address"
+                        >
+                          Add Charges
+                        </label>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col lg="2">
+                      <FormGroup>
+                        <span
+                          onClick={handleClickOpenRecurring}
+                          style={{
+                            cursor: "pointer",
+                            fontSize: "14px",
+                            fontFamily: "monospace",
+                            color: "blue",
+                          }}
+                        >
+                          <b style={{ fontSize: "20px" }}>+</b> Add Recurring
+                        </span>
+                        <Dialog
+                          open={openRecurringDialog}
+                          onClose={handleClose}
+                        >
+                          <DialogTitle style={{ background: "#F0F8FF" }}>
+                            Add Recurring content
+                          </DialogTitle>
+
+                          <div>
+                            <div
+                              style={{ marginLeft: "4%", marginRight: "4%" }}
+                            >
+                              <br />
+                              <div className="grid-container resp-header">
+                                <div>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-unitadd11"
+                                  >
+                                    Account*
+                                  </label>
+                                  <FormGroup>
+                                    <Dropdown
+                                      isOpen={rentincdropdownOpen5}
+                                      toggle={toggle8}
+                                    >
+                                      <DropdownToggle caret>
+                                        {recurringChargeSchema.values
+                                          .recuring_account
+                                          ? recurringChargeSchema.values
+                                              .recuring_account
+                                          : "Select"}
+                                      </DropdownToggle>
+                                      <DropdownMenu
+                                        style={{
+                                          zIndex: 999,
+                                          maxHeight: "280px",
+                                          overflowY: "auto",
+                                          width: "100%",
+                                        }}
+                                        name="recuring_account"
+                                        onBlur={
+                                          recurringChargeSchema.handleBlur
+                                        }
+                                        onChange={(e) =>
+                                          recurringChargeSchema.handleChange(e)
+                                        }
+                                        value={
+                                          recurringChargeSchema.values
+                                            .recuring_account || ""
+                                        }
+                                      >
+                                        {accountsData.map((account) => (
+                                          <>
+                                            {account.charge_type ===
+                                            "Recurring Charge" ? (
+                                              <DropdownItem
+                                                onClick={() => {
+                                                  recurringChargeSchema.setFieldValue(
+                                                    "recuring_account",
+                                                    account.account
+                                                  );
+                                                }}
+                                                key={account.account_id}
+                                              >
+                                                {account.account}
+                                              </DropdownItem>
+                                            ) : (
+                                              ""
+                                            )}
+                                          </>
+                                        ))}
+                                        <DropdownItem
+                                          onClick={() =>
+                                            AddNewAccountName(
+                                              "Recurring Charge"
+                                            )
+                                          }
+                                        >
+                                          Add new account..
+                                        </DropdownItem>
+                                      </DropdownMenu>
+                                      {recurringChargeSchema.errors &&
+                                      recurringChargeSchema.errors
+                                        .recuring_account &&
+                                      recurringChargeSchema.touched &&
+                                      recurringChargeSchema.touched
+                                        .recuring_account &&
+                                      recurringChargeSchema.values
+                                        .recuring_account === "" ? (
+                                        <div style={{ color: "red" }}>
+                                          {
+                                            recurringChargeSchema.errors
+                                              .recuring_account
+                                          }
+                                        </div>
+                                      ) : null}
+                                    </Dropdown>
+                                  </FormGroup>
+                                </div>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-address"
+                                  >
+                                    Amount*
+                                  </label>
+                                  <br />
+                                  <FormGroup>
+                                    <Input
+                                      className="form-control-alternative"
+                                      id="recuring_amount"
+                                      placeholder="$0.00"
+                                      type="text"
+                                      name="recuring_amount"
+                                      onBlur={recurringChargeSchema.handleBlur}
+                                      value={
+                                        recurringChargeSchema.values
+                                          .recuring_amount || ""
+                                      }
+                                      onChange={(e) =>
+                                        recurringChargeSchema.handleChange(e)
+                                      }
+                                      onInput={(e) => {
+                                        const inputValue = e.target.value;
+                                        const numericValue = inputValue.replace(
+                                          /\D/g,
+                                          ""
+                                        );
+                                        e.target.value = numericValue;
+                                      }}
+                                    />
+                                    {recurringChargeSchema.errors &&
+                                    recurringChargeSchema.errors
+                                      .recuring_amount &&
+                                    recurringChargeSchema.touched &&
+                                    recurringChargeSchema.touched
+                                      .recuring_amount &&
+                                    recurringChargeSchema.values
+                                      .recuring_amount === "" ? (
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          recurringChargeSchema.errors
+                                            .recuring_amount
+                                        }
+                                      </div>
+                                    ) : null}
+                                  </FormGroup>
+                                </FormGroup>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="recuringmemo"
+                                  >
+                                    Memo
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="recuringmemo"
+                                    type="text"
+                                    name="recuringmemo"
+                                    onBlur={recurringChargeSchema.handleBlur}
+                                    onChange={(e) => {
+                                      recurringChargeSchema.values.recuringmemo =
+                                        e.target.value;
+                                      recurringChargeSchema.handleChange(e);
+                                    }}
+                                    value={
+                                      recurringChargeSchema.values
+                                        .recuringmemo || ""
+                                    }
+                                  />
+                                </FormGroup>
+                              </div>
+                            </div>
+                            <DialogActions>
+                              <Button
+                                type="submit"
+                                style={{
+                                  backgroundColor: "#007bff",
+                                  color: "white",
+                                }}
+                                onClick={() => {
+                                  recurringChargeSchema.handleSubmit();
+                                }}
+                              >
+                                Add
+                              </Button>
+                              <Button onClick={handleClose}>Cancel</Button>
+                            </DialogActions>
+                          </div>
+                        </Dialog>
+                      </FormGroup>
+                    </Col>
+                    <Col lg="4">
+                      <FormGroup>
+                        <span
+                          onClick={handleClickOpenOneTimeCharge}
+                          style={{
+                            cursor: "pointer",
+                            fontSize: "14px",
+                            fontFamily: "monospace",
+                            color: "blue",
+                          }}
+                        >
+                          <b style={{ fontSize: "20px" }}>+</b> Add one Time
+                          charge
+                        </span>
+                        <Dialog
+                          open={openOneTimeChargeDialog}
+                          onClose={handleClose}
+                        >
+                          <DialogTitle style={{ background: "#F0F8FF" }}>
+                            Add one Time charge content
+                          </DialogTitle>
+                          <div>
+                            <div style={{ padding: "5%" }}>
+                              <div className="grid-container resp-header">
+                                <div>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-unitadd11"
+                                  >
+                                    Account*
+                                  </label>
+                                  <FormGroup>
+                                    <Dropdown
+                                      isOpen={rentincdropdownOpen6}
+                                      toggle={toggle7}
+                                    >
+                                      <DropdownToggle caret>
+                                        {oneTimeChargeSchema.values
+                                          .onetime_account
+                                          ? oneTimeChargeSchema.values
+                                              .onetime_account
+                                          : "Select"}
+                                      </DropdownToggle>
+                                      <DropdownMenu
+                                        style={{
+                                          zIndex: 999,
+                                          maxHeight: "280px",
+                                          overflowY: "auto",
+                                          width: "100%",
+                                        }}
+                                        name="onetime_account"
+                                        onBlur={oneTimeChargeSchema.handleBlur}
+                                        onChange={
+                                          oneTimeChargeSchema.handleChange
+                                        }
+                                        value={
+                                          oneTimeChargeSchema.values
+                                            .onetime_account
+                                        }
+                                      >
+                                        {accountsData.map((account) => (
+                                          <>
+                                            {account.charge_type ===
+                                            "One Time Charge" ? (
+                                              <DropdownItem
+                                                onClick={() => {
+                                                  oneTimeChargeSchema.setFieldValue(
+                                                    "onetime_account",
+                                                    account.account
+                                                  );
+                                                }}
+                                                key={account.account_id}
+                                              >
+                                                {account.account}
+                                              </DropdownItem>
+                                            ) : (
+                                              ""
+                                            )}
+                                          </>
+                                        ))}
+                                        <DropdownItem
+                                          onClick={() =>
+                                            AddNewAccountName("One Time Charge")
+                                          }
+                                        >
+                                          Add new account..
+                                        </DropdownItem>
+                                      </DropdownMenu>
+                                      {oneTimeChargeSchema.errors &&
+                                      oneTimeChargeSchema.errors
+                                        .onetime_account &&
+                                      oneTimeChargeSchema.touched &&
+                                      oneTimeChargeSchema.touched
+                                        .onetime_account &&
+                                      oneTimeChargeSchema.values
+                                        .onetime_account === "" ? (
+                                        <div style={{ color: "red" }}>
+                                          {
+                                            oneTimeChargeSchema.errors
+                                              .onetime_account
+                                          }
+                                        </div>
+                                      ) : null}
+                                    </Dropdown>
+                                  </FormGroup>
+                                </div>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-address"
+                                  >
+                                    Amount*
+                                  </label>
+                                  <br />
+                                  <FormGroup>
+                                    <Input
+                                      className="form-control-alternative"
+                                      id="input-reserve"
+                                      placeholder="$0.00"
+                                      type="text"
+                                      name="onetime_amount"
+                                      onBlur={oneTimeChargeSchema.handleBlur}
+                                      onChange={
+                                        oneTimeChargeSchema.handleChange
+                                      }
+                                      value={
+                                        oneTimeChargeSchema.values
+                                          .onetime_amount
+                                      }
+                                      onInput={(e) => {
+                                        const inputValue = e.target.value;
+                                        const numericValue = inputValue.replace(
+                                          /\D/g,
+                                          ""
+                                        ); // Remove non-numeric characters
+                                        e.target.value = numericValue;
+                                        oneTimeChargeSchema.values.onetime_amount =
+                                          numericValue;
+                                      }}
+                                    />
+                                    {oneTimeChargeSchema.errors &&
+                                    oneTimeChargeSchema.errors.onetime_amount &&
+                                    oneTimeChargeSchema.touched &&
+                                    oneTimeChargeSchema.touched
+                                      .onetime_amount &&
+                                    oneTimeChargeSchema.values
+                                      .onetime_amount === "" ? (
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          oneTimeChargeSchema.errors
+                                            .onetime_amount
+                                        }
+                                      </div>
+                                    ) : null}
+                                  </FormGroup>
+                                </FormGroup>
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor="input-unitadd12"
+                                  >
+                                    Memo*
+                                  </label>
+                                  <Input
+                                    className="form-control-alternative"
+                                    id="input-unitadd12"
+                                    type="text"
+                                    name="onetime_memo"
+                                    onBlur={oneTimeChargeSchema.handleBlur}
+                                    onChange={oneTimeChargeSchema.handleChange}
+                                    value={
+                                      oneTimeChargeSchema.values.onetime_memo
+                                    }
+                                    onInput={(e) => {
+                                      oneTimeChargeSchema.values.onetime_memo =
+                                        e.target.value;
+                                    }}
+                                  />
+                                </FormGroup>
+                              </div>
+                            </div>
+                            <DialogActions>
+                              <Button
+                                type="submit"
+                                style={{
+                                  backgroundColor: "#007bff",
+                                  color: "white",
+                                }}
+                                onClick={() => {
+                                  oneTimeChargeSchema.handleSubmit();
+                                }}
+                              >
+                                Add
+                              </Button>
+                              <Button onClick={handleClose}>Cancel</Button>
+                            </DialogActions>
+                          </div>
+                        </Dialog>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+
+                  {/* //add new accounts */}
+                  <AccountDialog
+                    addBankAccountDialogOpen={addBankAccountDialogOpen}
+                    setAddBankAccountDialogOpen={setAddBankAccountDialogOpen}
+                    accountTypeName={accountTypeName}
+                    adminId={accessType?.admin_id}
+                  />
+
+                  {/* //reccuring charges Data */}
+                  <div>
+                    {recurringData.length > 0 ? (
+                      <>
+                        <Row
+                          className="w-100 my-3"
+                          style={{
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#5e72e4",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                            paddingTop: "15px",
+                          }}
+                        >
+                          <Col>Recurring Information</Col>
+                        </Row>
+
+                        <Row
+                          className="w-100 mb-1"
+                          style={{
+                            fontSize: "17px",
+                            // textTransform: "uppercase",
+                            color: "#aaa",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          <Col>Account</Col>
+                          <Col>Amount</Col>
+                          <Col>Action</Col>
+                        </Row>
+
+                        {recurringData.map((data, index) => (
+                          <Row
+                            className="w-100 mt-1"
+                            style={{
+                              fontSize: "14px",
+                              textTransform: "capitalize",
+                              color: "#000",
+                            }}
+                            key={index} // Add a unique key to each iterated element
+                          >
+                            <Col>{data.recuring_account}</Col>
+                            <Col>{data.recuring_amount}</Col>
+                            <Col>
+                              <EditIcon onClick={() => editeReccuring(index)} />
+                              <DeleteIcon
+                                onClick={() => handleRecurringDelete(index)}
+                              />
+                            </Col>
+                          </Row>
+                        ))}
+                      </>
+                    ) : null}
+                  </div>
+
+                  {/* one tme charges */}
+                  <div>
+                    {oneTimeData.length > 0 ? (
+                      <>
+                        <Row
+                          className="w-100 my-3"
+                          style={{
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#5e72e4",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                            paddingTop: "15px",
+                          }}
+                        >
+                          <Col>One Time Information</Col>
+                        </Row>
+
+                        <Row
+                          className="w-100 mb-1"
+                          style={{
+                            fontSize: "17px",
+                            color: "#aaa",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          <Col>Account</Col>
+                          <Col>Amount</Col>
+                          <Col>Action</Col>
+                        </Row>
+
+                        {oneTimeData.map((data, index) => (
+                          <Row
+                            className="w-100 mt-1"
+                            style={{
+                              fontSize: "14px",
+                              textTransform: "capitalize",
+                              color: "#000",
+                            }}
+                            key={index}
+                          >
+                            <Col>{data.onetime_account}</Col>
+                            <Col>{data.onetime_amount}</Col>
+                            <Col>
+                              <EditIcon onClick={() => editOneTime(index)} />
+                              <DeleteIcon
+                                onClick={() => handleOnetimeDelete(index)}
+                              />
+                            </Col>
+                          </Row>
+                        ))}
+                      </>
+                    ) : null}
+                  </div>
+
+                  <hr />
+
+                  {/* uploaded file */}
+
+                  <Row>
+                    <Col lg="4">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-address"
+                        >
+                          Upload Files (Maximum of 10)
+                        </label>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <div className="d-flex">
+                    <div className="file-upload-wrapper">
+                      <TextField
+                        type="file"
+                        className="form-control-file d-none"
+                        accept="file/*"
+                        name="upload_file"
+                        id="upload_file"
+                        multiple
+                        inputProps={{
+                          multiple: true,
+                          accept: "application/pdf",
+                          max: 10,
+                        }}
+                        onChange={(e) => {
+                          fileData(e.target.files);
+                        }}
+                      />
+                      <label for="upload_file" className="btn">
+                        Upload
+                      </label>
+                    </div>
+                    <div className="d-flex ">
+                      {file.length > 0 &&
+                        file?.map((singleFile, index) => (
+                          <div
+                            key={index}
+                            style={{ position: "relative", marginLeft: "50px" }}
+                          >
+                            {!lease_id ? (
+                              <p
+                                onClick={() => {
+                                  window.open(singleFile.upload_link, "_blank");
+                                }}
+                                style={{ cursor: "pointer" }}
+                              >
+                                {singleFile?.file_name?.substr(0, 5)}
+                                {singleFile?.file_name?.length > 5
+                                  ? "..."
+                                  : null}
+                              </p>
+                            ) : (
+                              <p
+                                onClick={() => {
+                                  window.open(singleFile.upload_link, "_blank");
+                                }}
+                                style={{ cursor: "pointer" }}
+                              >
+                                {singleFile.file_name?.substr(0, 5)}
+                                {singleFile.file_name?.length > 5
+                                  ? "..."
+                                  : null}
+                              </p>
+                            )}
+                            <CloseIcon
+                              style={{
+                                cursor: "pointer",
+                                position: "absolute",
+                                left: "64px",
+                                top: "-2px",
+                              }}
+                              onClick={() => deleteFile(index)}
+                            />
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+
+                  <hr />
+                  <Row>
+                    <Col lg="3">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-address"
+                        >
+                          Residents center Welcome Email
+                        </label>
+
+                        <label
+                          className="heading-small text-muted mb-4"
+                          htmlFor="input-address"
+                        >
+                          we send a welcome Email to anyone without Resident
+                          Center access
+                        </label>
+                      </FormGroup>
+                    </Col>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            color="primary"
+                            value={leaseFormik.values.tenant_residentStatus}
+                            onChange={(e) => {
+                              leaseFormik.setFieldValue(
+                                "tenant_residentStatus",
+                                e.target.checked
+                              );
+                            }}
+                          />
+                        }
+                        labelPlacement="end"
+                      />
+                    </FormGroup>
+                  </Row>
+
+                  <hr />
+
+                  <Row>
+                    <Col md="12">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Select Payment Method *
+                        </label>
+                        <FormGroup>
+                          <Dropdown
+                            isOpen={paymentOptionDropdawnOpen}
+                            toggle={paymentMethodtoggle}
+                          >
+                            <DropdownToggle caret style={{ width: "100%" }}>
+                              {selectPaymentMethod
+                                ? selectPaymentMethod
+                                : "Select"}
+                            </DropdownToggle>
+                            <DropdownMenu
+                              style={{ width: "100%" }}
+                              name="paymentMethod"
+                              onBlur={paymentFormin.handleBlur}
+                              onChange={(e) => paymentFormin.handleChange(e)}
+                              value={paymentFormin.values.paymentMethod}
+                            >
+                              {selectPaymentMethodData.map((option) => (
+                                <DropdownItem
+                                  key={option}
+                                  onClick={() => {
+                                    setSelectPaymentMethod(option);
+                                    paymentFormin.setFieldValue(
+                                      "paymentMethod",
+                                      option
+                                    );
+                                  }}
+                                >
+                                  {option}
+                                </DropdownItem>
+                              ))}
+                            </DropdownMenu>
+                          </Dropdown>
+                          {paymentFormin.errors &&
+                          paymentFormin.errors?.paymentMethod &&
+                          paymentFormin.touched &&
+                          paymentFormin.touched?.paymentMethod &&
+                          paymentFormin.values.paymentMethod === "" ? (
+                            <div style={{ color: "red" }}>
+                              {paymentFormin.errors.paymentMethod}
+                            </div>
+                          ) : null}
+                        </FormGroup>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Col sm="12">
+                    {selectPaymentMethod === "AutoPayment" ? (
+                      <>
+                        <Row className="mb-3">
+                          <Col xs="12" sm="7">
+                            <Row>
+                              <Col xs="12" sm="5">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor={`card_number`}
+                                  >
+                                    Card Number *
+                                  </label>
+                                  <Input
+                                    type="text"
+                                    id={`card_number`}
+                                    placeholder="0000 0000 0000 0000"
+                                    className="no-spinner"
+                                    name={`card_number`}
+                                    value={paymentFormin.values.card_number}
+                                    onChange={(e) => {
+                                      const inputValue = e.target.value;
+                                      paymentFormin.setFieldValue(
+                                        `card_number`,
+                                        inputValue
+                                      );
+                                    }}
+                                  />
+                                  {paymentFormin.errors &&
+                                  paymentFormin.errors.card_number ? (
+                                    <div style={{ color: "red" }}>
+                                      {paymentFormin.errors.card_number}
+                                    </div>
+                                  ) : null}
+                                </FormGroup>
+                              </Col>
+                              <Col xs="12" sm="5">
+                                <FormGroup>
+                                  <label
+                                    className="form-control-label"
+                                    htmlFor={`exp_date`}
+                                  >
+                                    Expiration Date *
+                                  </label>
+                                  <Input
+                                    type="text"
+                                    id={`exp_date`}
+                                    name={`exp_date`}
+                                    onChange={(e) => {
+                                      const inputValue = e.target.value;
+                                      paymentFormin.setFieldValue(
+                                        `exp_date`,
+                                        inputValue
+                                      );
+                                    }}
+                                    value={paymentFormin.values.exp_date}
+                                    placeholder="MM/YYYY"
+                                  />
+                                  {paymentFormin.errors &&
+                                  paymentFormin.errors.exp_date ? (
+                                    <div style={{ color: "red" }}>
+                                      {paymentFormin.errors.exp_date}
+                                    </div>
+                                  ) : null}
+                                </FormGroup>
+                              </Col>
+                            </Row>
+                          </Col>
+                        </Row>
+                      </>
+                    ) : null}
+                  </Col>
+                  {loader ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "not-allowed" }}
+                      disabled
+                    >
+                      Loading...
+                    </button>
+                  ) : lease_id ? (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (selectedTenantData.length !== 0) {
+                          leaseFormik.handleSubmit(leaseFormik.values);
+                          if (selectPaymentMethod === "AutoPayment") {
+                            paymentFormin.handleSubmit();
+                          }
+                        } else {
+                          leaseFormik.handleSubmit(leaseFormik.values);
+                          if (selectPaymentMethod === "AutoPayment") {
+                            paymentFormin.handleSubmit();
+                          }
+                          setDisplay(true);
+                        }
+                      }}
+                    >
+                      Update Lease
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      style={{ background: "green", cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (selectedTenantData.length !== 0) {
+                          leaseFormik.handleSubmit();
+                          if (selectPaymentMethod === "AutoPayment") {
+                            paymentFormin.handleSubmit();
+                          }
+                        } else {
+                          leaseFormik.handleSubmit();
+                          if (selectPaymentMethod === "AutoPayment") {
+                            paymentFormin.handleSubmit();
+                          }
+                          setDisplay(true);
+                        }
+                      }}
+                    >
+                      Create Lease
+                    </button>
+                  )}
+                  <Button
+                    color="primary"
+                    // onClick={handleCloseButtonClick}
+                    className="btn btn-primary"
+                    style={{
+                      background: "white",
+                      color: "black",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  {tenantFormik.errors &&
+                  tenantFormik.errors?.tenant_password &&
+                  leaseFormik.submitCount > 0 ? (
+                    <div style={{ color: "red" }}>
+                      Tenant Password is missing
+                    </div>
+                  ) : null}
                 </Form>
               </CardBody>
             </Card>
