@@ -166,11 +166,17 @@ const Leaseing2 = () => {
       lease_type: yup.string().required("Required"),
       start_date: yup.string().required("Required"),
       end_date: yup.string().required("Required"),
-      uploaded_file: yup.string().required("Required"),
     }),
+    onSubmit: () => {
+      if (lease_id) {
+        updateLease();
+      } else {
+        addLease();
+      }
+    },
   });
 
-  const rentChargeFormin = useFormik({
+  const rentChargeFormik = useFormik({
     initialValues: {
       amount: "",
       memo: "",
@@ -190,16 +196,21 @@ const Leaseing2 = () => {
     }),
   });
 
-  let recurringChargeSchema = useFormik({
+  let recurringChargeFormink = useFormik({
     initialValues: {
-      recuring_amount: "",
-      recuring_account: "",
-      recuringmemo: "",
+      amount: "",
+      memo: "",
+      charge_type: "Recurring Charge",
+      account: "",
+      date: "",
+      rent_cycle: "",
+      is_paid: false,
+      is_lateFee: false,
     },
 
     validationSchema: yup.object({
-      recuring_amount: yup.string().required("Required"),
-      recuring_account: yup.string().required("Required"),
+      amount: yup.string().required("Required"),
+      account: yup.string().required("Required"),
     }),
 
     onSubmit: (values, { resetForm }) => {
@@ -219,16 +230,21 @@ const Leaseing2 = () => {
     },
   });
 
-  let oneTimeChargeSchema = useFormik({
+  let oneTimeChargeFormik = useFormik({
     initialValues: {
-      onetime_amount: "",
-      onetime_account: "",
-      onetime_memo: "",
+      amount: "",
+      memo: "",
+      charge_type: "One Time Charge",
+      account: "",
+      date: "",
+      rent_cycle: "",
+      is_paid: false,
+      is_lateFee: false,
     },
 
     validationSchema: yup.object({
-      onetime_amount: yup.string().required("Required"),
-      onetime_account: yup.string().required("Required"),
+      amount: yup.string().required("Required"),
+      account: yup.string().required("Required"),
     }),
 
     onSubmit: (values, { resetForm }) => {
@@ -270,6 +286,7 @@ const Leaseing2 = () => {
 
   const tenantFormik = useFormik({
     initialValues: {
+      tenant_id: "",
       tenant_firstName: "",
       tenant_lastName: "",
       tenant_phoneNumber: "",
@@ -331,6 +348,41 @@ const Leaseing2 = () => {
     },
   });
 
+  //update lease
+  const updateLease = async () => {
+    try {
+      const res = await axios.put(`${baseUrl}/leases/leases`);
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  };
+
+  const addLease = async () => {
+    const securityCharge = {
+      ammount: rentChargeFormik.values.security_amount,
+      account: "Security Deposite",
+      charge_type: "Security Deposite",
+      memo: "Security Deposite",
+    };
+    const object = {
+      lease: leaseFormik.values,
+      tenant: tenantFormik.values,
+      cosigner: cosignerFormik.values,
+      charge: [
+        ...recurringData,
+        ...oneTimeData,
+        securityCharge,
+        rentChargeFormik.values,
+      ],
+    };
+    console.log(object);
+    try {
+      const res = await axios.post(`${baseUrl}/leases/leases`, object);
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  };
+
   //onchange funtions
   const handlePropertyTypeSelect = (property) => {
     setselectedProperty(property.rental_adress);
@@ -372,6 +424,7 @@ const Leaseing2 = () => {
 
   const handleCheckboxChange = (event, tenant) => {
     const {
+      tenant_id,
       tenant_firstName,
       tenant_lastName,
       tenant_phoneNumber,
@@ -387,6 +440,7 @@ const Leaseing2 = () => {
     if (event.target.checked) {
       setShowTenantTable(false);
       tenantFormik.setValues({
+        tenant_id,
         tenant_firstName,
         tenant_lastName,
         tenant_phoneNumber,
@@ -441,9 +495,9 @@ const Leaseing2 = () => {
 
   const handleselectedRentCycle = (rentcycle) => {
     setSelectedRentCycle(rentcycle);
-    rentChargeFormin.setFieldValue("rent_cycle", rentcycle);
+    rentChargeFormik.setFieldValue("rent_cycle", rentcycle);
 
-    const startDate = rentChargeFormin.values.start_date;
+    const startDate = rentChargeFormik.values.start_date;
     let nextDue_date;
     let dayFrequency;
     switch (rentcycle) {
@@ -475,22 +529,22 @@ const Leaseing2 = () => {
         nextDue_date = moment(startDate).add(1, "years").format("YYYY-MM-DD");
         dayFrequency = 365;
     }
-    rentChargeFormin.setFieldValue("date", nextDue_date);
+    rentChargeFormik.setFieldValue("date", nextDue_date);
   };
 
   const handleClickOpenRecurring = () => {
-    recurringChargeSchema.setValues({
-      recuring_amount: "",
-      recuring_account: "",
-      recuringmemo: "",
+    recurringChargeFormink.setValues({
+      amount: "",
+      account: "",
+      memo: "",
     });
     setOpenRecurringDialog(true);
   };
   const handleClickOpenOneTimeCharge = () => {
-    oneTimeChargeSchema.setValues({
-      onetime_amount: "",
-      onetime_account: "",
-      onetime_memo: "",
+    oneTimeChargeFormik.setValues({
+      amount: "",
+      account: "",
+      memo: "",
     });
     setOpenOneTimeChargeDialog(true);
   };
@@ -519,20 +573,20 @@ const Leaseing2 = () => {
   const editeReccuring = (index) => {
     setOpenRecurringDialog(true);
     setEditingIndex(index);
-    recurringChargeSchema.setValues({
-      recuring_amount: recurringData[index].recuring_amount,
-      recuring_account: recurringData[index].recuring_account,
-      recuringmemo: recurringData[index].recuringmemo,
+    recurringChargeFormink.setValues({
+      amount: recurringData[index].amount,
+      account: recurringData[index].account,
+      memo: recurringData[index].memo,
     });
   };
 
   const editOneTime = (index) => {
     setOpenOneTimeChargeDialog(true);
     setEditingIndex(index);
-    oneTimeChargeSchema.setValues({
-      onetime_amount: oneTimeData[index].onetime_amount,
-      onetime_account: oneTimeData[index].onetime_account,
-      onetime_memo: oneTimeData[index].onetime_memo,
+    oneTimeChargeFormik.setValues({
+      amount: oneTimeData[index].amount,
+      account: oneTimeData[index].account,
+      memo: oneTimeData[index].memo,
     });
   };
 
@@ -622,7 +676,7 @@ const Leaseing2 = () => {
   //   // leaseFormik.values,
   //   // tenantFormik.values,
   //   // selectedTenantData,
-  //   rentChargeFormin.values
+  //   rentChargeFormik.values
   //   // cosignerFormik.values
   // );
 
@@ -2595,11 +2649,11 @@ const Leaseing2 = () => {
                               <DropdownMenu
                                 style={{ width: "100%" }}
                                 name="rent_cycle"
-                                onBlur={rentChargeFormin.handleBlur}
+                                onBlur={rentChargeFormik.handleBlur}
                                 onChange={(e) =>
-                                  rentChargeFormin.handleChange(e)
+                                  rentChargeFormik.handleChange(e)
                                 }
-                                value={rentChargeFormin.values.rent_cycle}
+                                value={rentChargeFormik.values.rent_cycle}
                               >
                                 {rentOptions.map((option) => (
                                   <DropdownItem
@@ -2614,13 +2668,13 @@ const Leaseing2 = () => {
                               </DropdownMenu>
                             </Dropdown>
                           </FormGroup>
-                          {rentChargeFormin.errors &&
-                          rentChargeFormin.errors?.rent_cycle &&
-                          rentChargeFormin.touched &&
-                          rentChargeFormin.touched?.rent_cycle &&
-                          rentChargeFormin.values.rent_cycle === "" ? (
+                          {rentChargeFormik.errors &&
+                          rentChargeFormik.errors?.rent_cycle &&
+                          rentChargeFormik.touched &&
+                          rentChargeFormik.touched?.rent_cycle &&
+                          rentChargeFormik.values.rent_cycle === "" ? (
                             <div style={{ color: "red" }}>
-                              {rentChargeFormin.errors.rent_cycle}
+                              {rentChargeFormik.errors.rent_cycle}
                             </div>
                           ) : null}
                         </FormGroup>
@@ -2648,17 +2702,17 @@ const Leaseing2 = () => {
                                     placeholder="$0.00"
                                     type="text"
                                     name="amount"
-                                    onBlur={rentChargeFormin.handleBlur}
-                                    value={rentChargeFormin.values.amount}
+                                    onBlur={rentChargeFormik.handleBlur}
+                                    value={rentChargeFormik.values.amount}
                                     onChange={(e) => {
                                       const inputValue = e.target.value;
                                       const numericValue = inputValue.replace(
                                         /\D/g,
                                         ""
                                       );
-                                      rentChargeFormin.values.amount =
+                                      rentChargeFormik.values.amount =
                                         numericValue;
-                                      rentChargeFormin.handleChange({
+                                      rentChargeFormik.handleChange({
                                         target: {
                                           name: "amount",
                                           value: numericValue,
@@ -2666,13 +2720,13 @@ const Leaseing2 = () => {
                                       });
                                     }}
                                   />
-                                  {rentChargeFormin.errors &&
-                                  rentChargeFormin.errors.amount &&
-                                  rentChargeFormin.touched &&
-                                  rentChargeFormin.touched.amount &&
-                                  rentChargeFormin.values.amount === "" ? (
+                                  {rentChargeFormik.errors &&
+                                  rentChargeFormik.errors.amount &&
+                                  rentChargeFormik.touched &&
+                                  rentChargeFormik.touched.amount &&
+                                  rentChargeFormik.values.amount === "" ? (
                                     <div style={{ color: "red" }}>
-                                      {rentChargeFormin.errors.amount}
+                                      {rentChargeFormik.errors.amount}
                                     </div>
                                   ) : null}
                                 </FormGroup>
@@ -2693,11 +2747,11 @@ const Leaseing2 = () => {
                                   placeholder="3000"
                                   type="date"
                                   name="date"
-                                  onBlur={rentChargeFormin.handleBlur}
+                                  onBlur={rentChargeFormik.handleBlur}
                                   onChange={(e) =>
-                                    rentChargeFormin.handleChange(e)
+                                    rentChargeFormik.handleChange(e)
                                   }
-                                  value={rentChargeFormin.values.date}
+                                  value={rentChargeFormik.values.date}
                                 />
                               </FormGroup>
                             </Col>
@@ -2715,9 +2769,9 @@ const Leaseing2 = () => {
                                   id="memo"
                                   type="text"
                                   name="memo"
-                                  onBlur={rentChargeFormin.handleBlur}
-                                  onChange={rentChargeFormin.handleChange}
-                                  value={rentChargeFormin.values.memo}
+                                  onBlur={rentChargeFormik.handleBlur}
+                                  onChange={rentChargeFormik.handleChange}
+                                  value={rentChargeFormik.values.memo}
                                 />
                               </FormGroup>
                             </Col>
@@ -2751,9 +2805,9 @@ const Leaseing2 = () => {
                                 placeholder="$0.00"
                                 type="text"
                                 name="security_amount"
-                                onBlur={rentChargeFormin.handleBlur}
-                                onChange={rentChargeFormin.handleChange}
-                                value={rentChargeFormin.values.security_amount}
+                                onBlur={rentChargeFormik.handleBlur}
+                                onChange={rentChargeFormik.handleChange}
+                                value={rentChargeFormik.values.security_amount}
                                 onInput={(e) => {
                                   const inputValue = e.target.value;
                                   const numericValue = inputValue.replace(
@@ -2839,10 +2893,9 @@ const Leaseing2 = () => {
                                       toggle={toggle8}
                                     >
                                       <DropdownToggle caret>
-                                        {recurringChargeSchema.values
-                                          .recuring_account
-                                          ? recurringChargeSchema.values
-                                              .recuring_account
+                                        {recurringChargeFormink.values.account
+                                          ? recurringChargeFormink.values
+                                              .account
                                           : "Select"}
                                       </DropdownToggle>
                                       <DropdownMenu
@@ -2852,16 +2905,16 @@ const Leaseing2 = () => {
                                           overflowY: "auto",
                                           width: "100%",
                                         }}
-                                        name="recuring_account"
+                                        name="account"
                                         onBlur={
-                                          recurringChargeSchema.handleBlur
+                                          recurringChargeFormink.handleBlur
                                         }
                                         onChange={(e) =>
-                                          recurringChargeSchema.handleChange(e)
+                                          recurringChargeFormink.handleChange(e)
                                         }
                                         value={
-                                          recurringChargeSchema.values
-                                            .recuring_account || ""
+                                          recurringChargeFormink.values
+                                            .account || ""
                                         }
                                       >
                                         {accountsData.map((account) => (
@@ -2870,8 +2923,8 @@ const Leaseing2 = () => {
                                             "Recurring Charge" ? (
                                               <DropdownItem
                                                 onClick={() => {
-                                                  recurringChargeSchema.setFieldValue(
-                                                    "recuring_account",
+                                                  recurringChargeFormink.setFieldValue(
+                                                    "account",
                                                     account.account
                                                   );
                                                 }}
@@ -2894,18 +2947,16 @@ const Leaseing2 = () => {
                                           Add new account..
                                         </DropdownItem>
                                       </DropdownMenu>
-                                      {recurringChargeSchema.errors &&
-                                      recurringChargeSchema.errors
-                                        .recuring_account &&
-                                      recurringChargeSchema.touched &&
-                                      recurringChargeSchema.touched
-                                        .recuring_account &&
-                                      recurringChargeSchema.values
-                                        .recuring_account === "" ? (
+                                      {recurringChargeFormink.errors &&
+                                      recurringChargeFormink.errors.account &&
+                                      recurringChargeFormink.touched &&
+                                      recurringChargeFormink.touched.account &&
+                                      recurringChargeFormink.values.account ===
+                                        "" ? (
                                         <div style={{ color: "red" }}>
                                           {
-                                            recurringChargeSchema.errors
-                                              .recuring_account
+                                            recurringChargeFormink.errors
+                                              .account
                                           }
                                         </div>
                                       ) : null}
@@ -2923,17 +2974,17 @@ const Leaseing2 = () => {
                                   <FormGroup>
                                     <Input
                                       className="form-control-alternative"
-                                      id="recuring_amount"
+                                      id="amount"
                                       placeholder="$0.00"
                                       type="text"
-                                      name="recuring_amount"
-                                      onBlur={recurringChargeSchema.handleBlur}
+                                      name="amount"
+                                      onBlur={recurringChargeFormink.handleBlur}
                                       value={
-                                        recurringChargeSchema.values
-                                          .recuring_amount || ""
+                                        recurringChargeFormink.values.amount ||
+                                        ""
                                       }
                                       onChange={(e) =>
-                                        recurringChargeSchema.handleChange(e)
+                                        recurringChargeFormink.handleChange(e)
                                       }
                                       onInput={(e) => {
                                         const inputValue = e.target.value;
@@ -2944,19 +2995,14 @@ const Leaseing2 = () => {
                                         e.target.value = numericValue;
                                       }}
                                     />
-                                    {recurringChargeSchema.errors &&
-                                    recurringChargeSchema.errors
-                                      .recuring_amount &&
-                                    recurringChargeSchema.touched &&
-                                    recurringChargeSchema.touched
-                                      .recuring_amount &&
-                                    recurringChargeSchema.values
-                                      .recuring_amount === "" ? (
+                                    {recurringChargeFormink.errors &&
+                                    recurringChargeFormink.errors.amount &&
+                                    recurringChargeFormink.touched &&
+                                    recurringChargeFormink.touched.amount &&
+                                    recurringChargeFormink.values.amount ===
+                                      "" ? (
                                       <div style={{ color: "red" }}>
-                                        {
-                                          recurringChargeSchema.errors
-                                            .recuring_amount
-                                        }
+                                        {recurringChargeFormink.errors.amount}
                                       </div>
                                     ) : null}
                                   </FormGroup>
@@ -2964,24 +3010,23 @@ const Leaseing2 = () => {
                                 <FormGroup>
                                   <label
                                     className="form-control-label"
-                                    htmlFor="recuringmemo"
+                                    htmlFor="memo"
                                   >
                                     Memo
                                   </label>
                                   <Input
                                     className="form-control-alternative"
-                                    id="recuringmemo"
+                                    id="memo"
                                     type="text"
-                                    name="recuringmemo"
-                                    onBlur={recurringChargeSchema.handleBlur}
+                                    name="memo"
+                                    onBlur={recurringChargeFormink.handleBlur}
                                     onChange={(e) => {
-                                      recurringChargeSchema.values.recuringmemo =
+                                      recurringChargeFormink.values.memo =
                                         e.target.value;
-                                      recurringChargeSchema.handleChange(e);
+                                      recurringChargeFormink.handleChange(e);
                                     }}
                                     value={
-                                      recurringChargeSchema.values
-                                        .recuringmemo || ""
+                                      recurringChargeFormink.values.memo || ""
                                     }
                                   />
                                 </FormGroup>
@@ -2995,7 +3040,7 @@ const Leaseing2 = () => {
                                   color: "white",
                                 }}
                                 onClick={() => {
-                                  recurringChargeSchema.handleSubmit();
+                                  recurringChargeFormink.handleSubmit();
                                 }}
                               >
                                 Add
@@ -3043,10 +3088,8 @@ const Leaseing2 = () => {
                                       toggle={toggle7}
                                     >
                                       <DropdownToggle caret>
-                                        {oneTimeChargeSchema.values
-                                          .onetime_account
-                                          ? oneTimeChargeSchema.values
-                                              .onetime_account
+                                        {oneTimeChargeFormik.values.account
+                                          ? oneTimeChargeFormik.values.account
                                           : "Select"}
                                       </DropdownToggle>
                                       <DropdownMenu
@@ -3056,14 +3099,13 @@ const Leaseing2 = () => {
                                           overflowY: "auto",
                                           width: "100%",
                                         }}
-                                        name="onetime_account"
-                                        onBlur={oneTimeChargeSchema.handleBlur}
+                                        name="account"
+                                        onBlur={oneTimeChargeFormik.handleBlur}
                                         onChange={
-                                          oneTimeChargeSchema.handleChange
+                                          oneTimeChargeFormik.handleChange
                                         }
                                         value={
-                                          oneTimeChargeSchema.values
-                                            .onetime_account
+                                          oneTimeChargeFormik.values.account
                                         }
                                       >
                                         {accountsData.map((account) => (
@@ -3072,8 +3114,8 @@ const Leaseing2 = () => {
                                             "One Time Charge" ? (
                                               <DropdownItem
                                                 onClick={() => {
-                                                  oneTimeChargeSchema.setFieldValue(
-                                                    "onetime_account",
+                                                  oneTimeChargeFormik.setFieldValue(
+                                                    "account",
                                                     account.account
                                                   );
                                                 }}
@@ -3094,19 +3136,14 @@ const Leaseing2 = () => {
                                           Add new account..
                                         </DropdownItem>
                                       </DropdownMenu>
-                                      {oneTimeChargeSchema.errors &&
-                                      oneTimeChargeSchema.errors
-                                        .onetime_account &&
-                                      oneTimeChargeSchema.touched &&
-                                      oneTimeChargeSchema.touched
-                                        .onetime_account &&
-                                      oneTimeChargeSchema.values
-                                        .onetime_account === "" ? (
+                                      {oneTimeChargeFormik.errors &&
+                                      oneTimeChargeFormik.errors.account &&
+                                      oneTimeChargeFormik.touched &&
+                                      oneTimeChargeFormik.touched.account &&
+                                      oneTimeChargeFormik.values.account ===
+                                        "" ? (
                                         <div style={{ color: "red" }}>
-                                          {
-                                            oneTimeChargeSchema.errors
-                                              .onetime_account
-                                          }
+                                          {oneTimeChargeFormik.errors.account}
                                         </div>
                                       ) : null}
                                     </Dropdown>
@@ -3126,15 +3163,12 @@ const Leaseing2 = () => {
                                       id="input-reserve"
                                       placeholder="$0.00"
                                       type="text"
-                                      name="onetime_amount"
-                                      onBlur={oneTimeChargeSchema.handleBlur}
+                                      name="amount"
+                                      onBlur={oneTimeChargeFormik.handleBlur}
                                       onChange={
-                                        oneTimeChargeSchema.handleChange
+                                        oneTimeChargeFormik.handleChange
                                       }
-                                      value={
-                                        oneTimeChargeSchema.values
-                                          .onetime_amount
-                                      }
+                                      value={oneTimeChargeFormik.values.amount}
                                       onInput={(e) => {
                                         const inputValue = e.target.value;
                                         const numericValue = inputValue.replace(
@@ -3142,22 +3176,17 @@ const Leaseing2 = () => {
                                           ""
                                         ); // Remove non-numeric characters
                                         e.target.value = numericValue;
-                                        oneTimeChargeSchema.values.onetime_amount =
+                                        oneTimeChargeFormik.values.amount =
                                           numericValue;
                                       }}
                                     />
-                                    {oneTimeChargeSchema.errors &&
-                                    oneTimeChargeSchema.errors.onetime_amount &&
-                                    oneTimeChargeSchema.touched &&
-                                    oneTimeChargeSchema.touched
-                                      .onetime_amount &&
-                                    oneTimeChargeSchema.values
-                                      .onetime_amount === "" ? (
+                                    {oneTimeChargeFormik.errors &&
+                                    oneTimeChargeFormik.errors.amount &&
+                                    oneTimeChargeFormik.touched &&
+                                    oneTimeChargeFormik.touched.amount &&
+                                    oneTimeChargeFormik.values.amount === "" ? (
                                       <div style={{ color: "red" }}>
-                                        {
-                                          oneTimeChargeSchema.errors
-                                            .onetime_amount
-                                        }
+                                        {oneTimeChargeFormik.errors.amount}
                                       </div>
                                     ) : null}
                                   </FormGroup>
@@ -3173,14 +3202,12 @@ const Leaseing2 = () => {
                                     className="form-control-alternative"
                                     id="input-unitadd12"
                                     type="text"
-                                    name="onetime_memo"
-                                    onBlur={oneTimeChargeSchema.handleBlur}
-                                    onChange={oneTimeChargeSchema.handleChange}
-                                    value={
-                                      oneTimeChargeSchema.values.onetime_memo
-                                    }
+                                    name="memo"
+                                    onBlur={oneTimeChargeFormik.handleBlur}
+                                    onChange={oneTimeChargeFormik.handleChange}
+                                    value={oneTimeChargeFormik.values.memo}
                                     onInput={(e) => {
-                                      oneTimeChargeSchema.values.onetime_memo =
+                                      oneTimeChargeFormik.values.memo =
                                         e.target.value;
                                     }}
                                   />
@@ -3195,7 +3222,7 @@ const Leaseing2 = () => {
                                   color: "white",
                                 }}
                                 onClick={() => {
-                                  oneTimeChargeSchema.handleSubmit();
+                                  oneTimeChargeFormik.handleSubmit();
                                 }}
                               >
                                 Add
@@ -3216,7 +3243,7 @@ const Leaseing2 = () => {
                     adminId={accessType?.admin_id}
                   />
 
-                  {/* //reccuring charges Data */}
+                  {/* //Recurring Charges Data */}
                   <div>
                     {recurringData.length > 0 ? (
                       <>
@@ -3258,8 +3285,8 @@ const Leaseing2 = () => {
                             }}
                             key={index} // Add a unique key to each iterated element
                           >
-                            <Col>{data.recuring_account}</Col>
-                            <Col>{data.recuring_amount}</Col>
+                            <Col>{data.account}</Col>
+                            <Col>{data.amount}</Col>
                             <Col>
                               <EditIcon onClick={() => editeReccuring(index)} />
                               <DeleteIcon
@@ -3313,8 +3340,8 @@ const Leaseing2 = () => {
                             }}
                             key={index}
                           >
-                            <Col>{data.onetime_account}</Col>
-                            <Col>{data.onetime_amount}</Col>
+                            <Col>{data.account}</Col>
+                            <Col>{data.amount}</Col>
                             <Col>
                               <EditIcon onClick={() => editOneTime(index)} />
                               <DeleteIcon
@@ -3597,12 +3624,12 @@ const Leaseing2 = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         if (selectedTenantData.length !== 0) {
-                          leaseFormik.handleSubmit(leaseFormik.values);
+                          leaseFormik.handleSubmit();
                           if (selectPaymentMethod === "AutoPayment") {
                             paymentFormik.handleSubmit();
                           }
                         } else {
-                          leaseFormik.handleSubmit(leaseFormik.values);
+                          leaseFormik.handleSubmit();
                           if (selectPaymentMethod === "AutoPayment") {
                             paymentFormik.handleSubmit();
                           }
@@ -3660,6 +3687,15 @@ const Leaseing2 = () => {
             </Card>
           </Col>
         </Row>
+        {console.log(
+          leaseFormik.errors,
+          tenantFormik.errors,
+          rentChargeFormik.errors,
+          recurringChargeFormink.errors,
+          oneTimeChargeFormik.errors,
+          cosignerFormik.errors,
+          paymentFormik.errors
+        )}
       </Container>
     </>
   );
