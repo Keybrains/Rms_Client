@@ -52,13 +52,13 @@ const Login = () => {
         values
       );
 
+      console.log("Admin ID:", adminRes.data);
       if (adminRes.data.statusCode === 200) {
         // Admin login successful
         swal("Success!", "Admin Login Successful!", "success").then((value) => {
           if (value) {
             localStorage.setItem("token", adminRes.data.token);
             navigate("/admin/index");
-            //console.log("Admin ID:", adminRes.data.data._id);
           }
         });
       } else {
