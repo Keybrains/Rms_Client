@@ -64,14 +64,14 @@ const Trial = (props) => {
             <div className="header-body text-center mb-7">
               <Row className="justify-content-center">
                 <Col lg="5" md="6">
-                    <img
-                      alt="..."
-                      style={{ height: '75px' }}
-                      src={require("../assets/img/brand/rms.jpeg")}
-                    />
-                    <br/>
-                    <br/>
-                    <br/>
+                  <img
+                    alt="..."
+                    style={{ height: "75px" }}
+                    src={require("../assets/img/brand/rms.jpeg")}
+                  />
+                  <br />
+                  <br />
+                  <br />
 
                   <h1 className="text-white">Welcome To 302 Rentals</h1>
                 </Col>
@@ -99,7 +99,10 @@ const Trial = (props) => {
           <Row className="justify-content-center">
             <Routes>
               {getRoutes(routes)}
-              <Route path="*" element={<Navigate to="/trial/trial-login" replace />} />
+              <Route
+                path="*"
+                element={<Navigate to="/trial/trial-login" replace />}
+              />
             </Routes>
           </Row>
         </Container>

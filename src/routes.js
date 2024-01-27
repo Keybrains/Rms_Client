@@ -3,7 +3,6 @@ import Profile from "views/source/Profile.js";
 import Rentals from "views/source/Rentals.js";
 import PropertiesTable from "views/source/PropertiesTable";
 import Leaseing from "views/source/Leaseing.js";
-import Leaseing2 from "views/source/Leaseing2";
 import TenantsTable from "views/source/TenantsTable.js";
 import PropertyType from "views/source/PropertyType";
 import AddPropertyType from "views/source/AddPropertyType";
@@ -72,6 +71,7 @@ import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
 import SuperAdminAdmin from "components/superadmin/Admin/Admin";
 import SuperAdminRentals from "components/superadmin/Admin/Rentals";
 import SuperAdminStaffMember from "components/superadmin/Admin/StaffMember";
+import SuperAdminTenants from "components/superadmin/Tenants/Tenants";
 
 var routes = [
   {
@@ -128,20 +128,6 @@ var routes = [
     name: "Leaseing",
     icon: "ni ni-home-3 text-orange",
     component: <Leaseing />,
-    layout: "/admin",
-  },
-  {
-    path: "/Leaseing2",
-    name: "Leaseing",
-    icon: "ni ni-home-3 text-orange",
-    component: <Leaseing2 />,
-    layout: "/admin",
-  },
-  {
-    path: "/Leaseing2/:lease_id",
-    name: "Leaseing",
-    icon: "ni ni-home-3 text-orange",
-    component: <Leaseing2 />,
     layout: "/admin",
   },
   {
@@ -714,6 +700,13 @@ var routes = [
     name: "Staff-Member",
     icon: "ni ni-pin-3 text-orange",
     component: <SuperAdminStaffMember />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/tenant",
+    name: "Tenant",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminTenants />,
     layout: "/superadmin",
   },
 ];
