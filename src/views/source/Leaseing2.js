@@ -43,6 +43,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import CloseIcon from "@mui/icons-material/Close";
 import AccountDialog from "components/AccountDialog";
+import swal from "sweetalert";
 
 const Leaseing2 = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -167,11 +168,23 @@ const Leaseing2 = () => {
       start_date: yup.string().required("Required"),
       end_date: yup.string().required("Required"),
     }),
-    onSubmit: () => {
-      if (lease_id) {
-        updateLease();
+    onSubmit: async () => {
+      const res = await handleDateCheck();
+
+      if (res === 200) {
+        if (lease_id) {
+          updateLease();
+        } else {
+          addLease();
+        }
       } else {
-        addLease();
+        const errorMessage = `Please select another date range. Overlapping ( ${
+          selectedUnit ? selectedUnit + " - " : ""
+        }${selectedProperty} to ${selectedTenantData.tenant_firstName} ${
+          selectedTenantData.tenant_lastName
+        }) with existing lease.`;
+
+        leaseFormik.setFieldError("start_date", errorMessage);
       }
     },
   });
@@ -320,6 +333,7 @@ const Leaseing2 = () => {
     }),
     onSubmit: () => {
       setOpenTenantsDialog(false);
+      setDisplay(false);
     },
   });
 
@@ -350,43 +364,62 @@ const Leaseing2 = () => {
 
   //update lease
   const updateLease = async () => {
+    setLoader(true);
     try {
       const res = await axios.put(`${baseUrl}/leases/leases`);
     } catch (error) {
       console.error("Error:", error.message);
     }
+    setLoader(false);
   };
 
   const addLease = async () => {
+    setLoader(true);
+    if (leaseFormik.values.uploaded_file) {
+    }
     const securityCharge = {
       ammount: rentChargeFormik.values.security_amount,
+      date: rentChargeFormik.values.date,
       account: "Security Deposite",
       charge_type: "Security Deposite",
       memo: "Security Deposite",
+      is_paid: false,
+      is_lateFee: false,
     };
+    const chargeData = [
+      ...recurringData,
+      ...oneTimeData,
+      securityCharge,
+      rentChargeFormik.values,
+    ];
     const object = {
-      lease: leaseFormik.values,
-      tenant: tenantFormik.values,
-      cosigner: cosignerFormik.values,
-      charge: [
-        ...recurringData,
-        ...oneTimeData,
-        securityCharge,
+      leaseData: {...leaseFormik.values, admin_id: accessType.admin_id},
+      tenantData: {...tenantFormik.values, admin_id: accessType.admin_id},
+      cosignerData: {...cosignerFormik.values, admin_id: accessType.admin_id},
+      chargeData: [
+        ...chargeData,
         rentChargeFormik.values,
       ],
     };
-    console.log(object);
-    try {
-      const res = await axios.post(`${baseUrl}/leases/leases`, object);
-    } catch (error) {
-      console.error("Error:", error.message);
-    }
+    console.log(chargeData, "yash")
+    // try {
+    //   const res = await axios.post(`${baseUrl}/leases/leases`, object);
+    //   console.log(res, object)
+    //   if (res.data.statusCode === 200) {
+    //     swal("Success", "Lease Added Successfully", "success");
+    //   }
+    // } catch (error) {
+    //   console.error("Error:", error.message);
+    // }
+    setLoader(false);
   };
 
   //onchange funtions
   const handlePropertyTypeSelect = (property) => {
     setselectedProperty(property.rental_adress);
     leaseFormik.setFieldValue("rental_id", property.rental_id);
+    setselectedUnit("");
+    leaseFormik.setFieldValue("unit_id", "");
     fetchUnitData(property.rental_id);
   };
 
@@ -533,19 +566,11 @@ const Leaseing2 = () => {
   };
 
   const handleClickOpenRecurring = () => {
-    recurringChargeFormink.setValues({
-      amount: "",
-      account: "",
-      memo: "",
-    });
+    recurringChargeFormink.resetForm();
     setOpenRecurringDialog(true);
   };
   const handleClickOpenOneTimeCharge = () => {
-    oneTimeChargeFormik.setValues({
-      amount: "",
-      account: "",
-      memo: "",
-    });
+    oneTimeChargeFormik.resetForm();
     setOpenOneTimeChargeDialog(true);
   };
 
@@ -577,6 +602,11 @@ const Leaseing2 = () => {
       amount: recurringData[index].amount,
       account: recurringData[index].account,
       memo: recurringData[index].memo,
+      charge_type: "Recurring Charge",
+      date: "",
+      rent_cycle: "",
+      is_paid: false,
+      is_lateFee: false,
     });
   };
 
@@ -587,6 +617,11 @@ const Leaseing2 = () => {
       amount: oneTimeData[index].amount,
       account: oneTimeData[index].account,
       memo: oneTimeData[index].memo,
+      charge_type: "One Time Charge",
+      date: "",
+      rent_cycle: "",
+      is_paid: false,
+      is_lateFee: false,
     });
   };
 
@@ -604,6 +639,39 @@ const Leaseing2 = () => {
 
   const handleCloseButtonClick = () => {
     navigate("../TenantsTable");
+  };
+
+  const handleDateCheck = async () => {
+    const object = {
+      tenant_id: tenantFormik.values.tenant_id,
+      rental_id: leaseFormik.values.rental_id,
+      unit_id: leaseFormik.values.unit_id,
+      start_date: leaseFormik.values.start_date,
+      end_date: leaseFormik.values.end_date,
+    };
+    try {
+      const { tenant_id, rental_id, start_date, end_date } = object;
+      if (
+        tenant_id !== "" &&
+        rental_id !== "" &&
+        start_date !== "" &&
+        end_date !== ""
+      ) {
+        const res = await axios.post(
+          `http://192.168.1.13:4000/api/leases/check_lease`,
+          object
+        );
+        console.log(object, "yash", res);
+        if (res.data.statusCode === 201) {
+          swal("Warning", res.data.message, "warning");
+        }
+        return res.data.statusCode;
+      } else {
+        return 400;
+      }
+    } catch (error) {
+      console.error("Error :", error.message);
+    }
   };
 
   //get data apis
@@ -626,7 +694,14 @@ const Leaseing2 = () => {
     try {
       const res = await axios.get(`${baseUrl}/unit/rental_unit/${rental_id}`);
       if (res.data.statusCode === 200) {
-        setUnitData(res.data.data);
+        const filteredData = res.data.data.filter(
+          (item) => item.rental_unit !== ""
+        );
+        if (filteredData.length === 0) {
+          leaseFormik.setFieldValue("unit_id", res.data.data[0].unit_id);
+        }
+        setUnitData(filteredData);
+        
       } else if (res.data.statusCode === 201) {
         setUnitData([]);
       }
@@ -671,14 +746,6 @@ const Leaseing2 = () => {
     fetchAccounts();
     fetchTenantData();
   }, [accessType]);
-
-  // console.log(
-  //   // leaseFormik.values,
-  //   // tenantFormik.values,
-  //   // selectedTenantData,
-  //   rentChargeFormik.values
-  //   // cosignerFormik.values
-  // );
 
   //files set
   const fileData = (files) => {
@@ -807,7 +874,7 @@ const Leaseing2 = () => {
                       </Col>
                     </Row>
                     <Row>
-                      {selectedProperty && unitData && (
+                      {selectedProperty && unitData.length > 0 && (
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -825,20 +892,14 @@ const Leaseing2 = () => {
                                 {selectedUnit ? selectedUnit : "Select Unit"}
                               </DropdownToggle>
                               <DropdownMenu>
-                                {unitData.length > 0 ? (
-                                  unitData.map((unit) => (
-                                    <DropdownItem
-                                      key={unit.unit_id}
-                                      onClick={() => handleUnitSelect(unit)}
-                                    >
-                                      {unit.rental_unit}
-                                    </DropdownItem>
-                                  ))
-                                ) : (
-                                  <DropdownItem disabled>
-                                    No units available
+                                {unitData.map((unit) => (
+                                  <DropdownItem
+                                    key={unit.unit_id}
+                                    onClick={() => handleUnitSelect(unit)}
+                                  >
+                                    {unit.rental_unit}
                                   </DropdownItem>
-                                )}
+                                ))}
                               </DropdownMenu>
                               {leaseFormik.errors &&
                               leaseFormik.errors?.unit_id &&
@@ -3624,15 +3685,11 @@ const Leaseing2 = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         if (selectedTenantData.length !== 0) {
-                          leaseFormik.handleSubmit();
-                          if (selectPaymentMethod === "AutoPayment") {
-                            paymentFormik.handleSubmit();
+                          if (tenantFormik.errors && rentChargeFormik.errors) {
+                            return;
                           }
+                          leaseFormik.handleSubmit();
                         } else {
-                          leaseFormik.handleSubmit();
-                          if (selectPaymentMethod === "AutoPayment") {
-                            paymentFormik.handleSubmit();
-                          }
                           setDisplay(true);
                         }
                       }}
@@ -3647,15 +3704,15 @@ const Leaseing2 = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         if (selectedTenantData.length !== 0) {
-                          leaseFormik.handleSubmit();
-                          if (selectPaymentMethod === "AutoPayment") {
-                            paymentFormik.handleSubmit();
+                          if (
+                            Object.keys(tenantFormik.errors).length !== 0 &&
+                            Object.keys(rentChargeFormik.errors).length !== 0
+                          ) {
+                            return;
                           }
+                          leaseFormik.handleSubmit();
+                          return;
                         } else {
-                          leaseFormik.handleSubmit();
-                          if (selectPaymentMethod === "AutoPayment") {
-                            paymentFormik.handleSubmit();
-                          }
                           setDisplay(true);
                         }
                       }}
@@ -3687,15 +3744,16 @@ const Leaseing2 = () => {
             </Card>
           </Col>
         </Row>
-        {console.log(
+        {/* {console.log(
           leaseFormik.errors,
           tenantFormik.errors,
           rentChargeFormik.errors,
           recurringChargeFormink.errors,
           oneTimeChargeFormik.errors,
           cosignerFormik.errors,
-          paymentFormik.errors
-        )}
+          paymentFormik.errors,
+          selectedTenantData
+        )} */}
       </Container>
     </>
   );
