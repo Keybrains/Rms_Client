@@ -147,6 +147,7 @@ const TenantFinancial = () => {
   const closeModals = () => {
     setIsModalsOpen(false);
     getCreditCard();
+    getMultipleCustomerVault();
   };
 
   const handleSearch = (e) => {
@@ -203,6 +204,7 @@ const TenantFinancial = () => {
     setPaymentId("");
     setIsModalOpen(true);
     getCreditCard();
+    getMultipleCustomerVault();
   };
 
   // Event handler to close the modal
@@ -234,17 +236,52 @@ const TenantFinancial = () => {
     fetchCardLogo();
   }, []);
 
+  const [customervault, setCustomervault] = useState([]);
   const [cardDetalis, setCardDetails] = useState([]);
+
   const getCreditCard = async () => {
-    const response = await axios.get(
-      `${baseUrl}/creditcard/getCreditCard/${cookie_id}`
-    );
-    setCardDetails(response.data);
+    try {
+      const response = await axios.get(`${baseUrl}/creditcard/getCreditCard/${cookie_id}`);
+      setCustomervault(response.data);
+    } catch (error) {
+      console.error('Error fetching credit card details:', error);
+    }
+  };
+
+  const getMultipleCustomerVault = async (customerVaultIds) => {
+    try {
+      const response = await axios.post(`${baseUrl}/nmipayment/get-multiple-customer-vault`, {
+        customer_vault_id: customerVaultIds,
+      });
+     // Extract relevant information from the API response
+     const extractedData = response.data.data.map((item) => ({
+        cc_number: item.customer.cc_number,
+        cc_exp: item.customer.cc_exp,
+        cc_type: item.customer.cc_type,
+        customer_vault_id: item.customer.customer_vault_id,
+      }));
+
+      // Update the cardDetails state
+      setCardDetails(extractedData);
+      console.log("object",response.data.data)
+    } catch (error) {
+      console.error('Error fetching multiple customer vault records:', error);
+    }
   };
 
   useEffect(() => {
     getCreditCard();
   }, [cookie_id]);
+
+  useEffect(() => {
+    // Extract customer_vault_id values from cardDetails
+    const customerVaultIds = customervault?.map((card) => card.customer_vault_id);
+
+    if (customerVaultIds.length > 0) {
+      // Call the API to get multiple customer vault records
+      getMultipleCustomerVault(customerVaultIds);
+    }
+  }, [customervault]);
 
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
@@ -312,6 +349,7 @@ const TenantFinancial = () => {
       }
     },
   });
+
   const handlePropertyTypeSelect = async (property) => {
     setSelectedPropertyType(property.rental_adress || property.property);
     financialFormik.setFieldValue(
@@ -561,17 +599,17 @@ const TenantFinancial = () => {
   const handleFinancialSubmit = async (values, action) => {
     let url = `${baseUrl}/nmipayment/postnmipayments`;
 
-    if (selectedPaymentType === "Credit Card" && values.expiration_date) {
-      const dateParts = values.expiration_date.split("/");
-      if (dateParts.length !== 2) {
-        alert("Invalid date format");
-        return;
-      }
-      const month = dateParts[0].padStart(2, "0");
-      const year = dateParts[1].slice(-2);
-      values.expiration_date = `${month}${year}`;
-      // url = `${baseUrl}/nmipayment/sale`;
-    }
+    // if (selectedPaymentType === "Credit Card" && values.expiration_date) {
+    //   const dateParts = values.expiration_date.split("/");
+    //   if (dateParts.length !== 2) {
+    //     alert("Invalid date format");
+    //     return;
+    //   }
+    //   const month = dateParts[0].padStart(2, "0");
+    //   const year = dateParts[1].slice(-2);
+    //   values.expiration_date = `${month}${year}`;
+    //   // url = `${baseUrl}/nmipayment/sale`;
+    // }
     values.account = selectedAccount;
 
     try {
@@ -603,11 +641,11 @@ const TenantFinancial = () => {
       );
 
       if (creditCardDetails) {
-        const [expMonth, expYear] = creditCardDetails.exp_date.split("/");
-        const formattedExpirationDate = `${expMonth}/${expYear.slice(-2)}`;
+        // const [expMonth, expYear] = creditCardDetails.exp_date.split("/");
+        // const formattedExpirationDate = `${expMonth}/${expYear.slice(-2)}`;
 
-        values.expiration_date = formattedExpirationDate;
-        values.card_number = Number(selectedCreditCard.card_number);
+        // values.expiration_date = formattedExpirationDate;
+        // values.card_number = Number(selectedCreditCard.card_number);
         values.customer_vault_id = selectedCreditCard;
       } else {
         console.error(
@@ -1837,9 +1875,7 @@ const TenantFinancial = () => {
                                       color="text.secondary"
                                       gutterBottom
                                     >
-                                      {item.card_number.slice(0, 4) +
-                                        "*".repeat(8) +
-                                        item.card_number.slice(-4)}
+                                      {item.cc_number}
                                     </Typography>
                                   </td>
                                   <td>
@@ -1851,11 +1887,11 @@ const TenantFinancial = () => {
                                       color="text.secondary"
                                       gutterBottom
                                     >
-                                      {item.card_type}
-                                      {item.card_type && (
+                                      {item.cc_type}
+                                      {item.cc_type && (
                                         <img
-                                          src={`https://logo.clearbit.com/${item.card_type.toLowerCase()}.com`}
-                                          alt={`${item.card_type} Logo`}
+                                          src={`https://logo.clearbit.com/${item.cc_type.toLowerCase()}.com`}
+                                          alt={`${item.cc_type} Logo`}
                                           style={{
                                             width: "20%",
                                             marginLeft: "10%",
@@ -2057,7 +2093,7 @@ const TenantFinancial = () => {
       <Modal
         isOpen={isModalsOpen}
         toggle={closeModals}
-        style={{ maxWidth: "950px" }}
+        style={{ maxWidth: "1000px" }}
       >
         <ModalHeader toggle={closeModals} className="bg-secondary text-white">
           <strong style={{ fontSize: 18 }}>Add Credit Card</strong>

@@ -1,17 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { CardContent, Typography } from "@mui/material";
-import { Col, FormGroup, Row, Card, CardHeader, Table, Input } from "reactstrap";
+import {
+  Col,
+  FormGroup,
+  Row,
+  Card,
+  CardHeader,
+  Table,
+  Input,
+} from "reactstrap";
 import * as yup from "yup";
 import axios from "axios";
 import swal from "sweetalert";
 import valid from "card-validator";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { RotatingLines } from "react-loader-spinner";
+import EditIcon from "@mui/icons-material/Edit";
+import { values } from "pdf-lib";
 
 function CreditCardForm(props) {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, closeModal } = props;
   const [isSubmitting, setSubmitting] = useState(false);
   const [cardLogo, setCardLogo] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchCardLogo = async (cardType) => {
     try {
@@ -34,19 +47,71 @@ function CreditCardForm(props) {
     fetchCardLogo();
   }, []);
 
+  const [customervault, setCustomervault] = useState([]);
   const [cardDetalis, setCardDetails] = useState([]);
+
   const getCreditCard = async () => {
-    const response = await axios.get(
-      `${baseUrl}/creditcard/getCreditCard/${tenantId}`
-    );
-    setCardDetails(response.data);
-    //fetchCardLogo(response.data.card_type);
-    console.log(response.data, "yashu");
+    try {
+      const response = await axios.get(
+        `${baseUrl}/creditcard/getCreditCard/${tenantId}`
+      );
+      setCustomervault(response.data);
+
+      const ids = response.data;
+      const customerVaultIds = ids?.map((card) => card.customer_vault_id);
+      getMultipleCustomerVault(customerVaultIds);
+    } catch (error) {
+      console.error("Error fetching credit card details:", error);
+    }
+  };
+
+  const getMultipleCustomerVault = async (customerVaultIds) => {
+    try {
+      setPaymentLoader(true);
+      if (customerVaultIds.length === 0) {
+        setCardDetails([]);
+        return;
+      }
+
+      const response = await axios.post(
+        `${baseUrl}/nmipayment/get-multiple-customer-vault`,
+        {
+          customer_vault_id: customerVaultIds,
+        }
+      );
+
+      // Extract relevant information from the API response
+      const extractedData = response.data.data.map((item) => ({
+        cc_number: item.customer.cc_number,
+        cc_exp: item.customer.cc_exp,
+        cc_type: item.customer.cc_type,
+        customer_vault_id: item.customer.customer_vault_id,
+      }));
+      setPaymentLoader(false);
+      // Update the cardDetails state
+      setCardDetails(extractedData);
+      console.log("object", response.data.data);
+    } catch (error) {
+      console.error("Error fetching multiple customer vault records:", error);
+      setPaymentLoader(false);
+    }
   };
 
   useEffect(() => {
     getCreditCard();
   }, [tenantId]);
+
+  useEffect(() => {
+    // Extract customer_vault_id values from cardDetails
+    const customerVaultIds = customervault?.map(
+      (card) => card.customer_vault_id
+    );
+
+    if (customerVaultIds.length > 0) {
+      // Call the API to get multiple customer vault records
+      getMultipleCustomerVault(customerVaultIds);
+    }
+  }, [customervault]);
 
   const paymentSchema = yup.object({
     card_number: yup
@@ -82,481 +147,663 @@ function CreditCardForm(props) {
   };
 
   const handleSubmit = async (values) => {
-    console.log("Form submitted", values);
     const isValidCard = validateCardNumber(values.card_number);
-    const cardType = isValidCard.niceType;
-    console.log("isValidCard:", isValidCard);
-  
+
     if (!isValidCard) {
       swal("Error", "Invalid credit card number", "error");
       return;
     }
-  
+
     try {
       setSubmitting(true);
       // Call the first API
-      const customerVaultResponse = await axios.post(`${baseUrl}/nmipayment/create-customer-vault`, {
-        first_name: values.first_name, 
-        last_name: values.last_name,
-        ccnumber: values.card_number,
-        ccexp: values.exp_date,
-        address1: values.address1,
-        address2: values.address2,
-        city: values.city,
-        state: values.state,
-        zip: values.zip,
-        country: values.country,
-        phone: values.phone,
-        email: values.email,
-      });
-  
+      const customerVaultResponse = await axios.post(
+        `${baseUrl}/nmipayment/create-customer-vault`,
+        {
+          first_name: values.first_name,
+          last_name: values.last_name,
+          ccnumber: values.card_number,
+          ccexp: values.exp_date,
+          address1: values.address1,
+          address2: values.address2,
+          city: values.city,
+          state: values.state,
+          zip: values.zip,
+          country: values.country,
+          company: values.company,
+          phone: values.phone,
+          email: values.email,
+        }
+      );
+
       if (customerVaultResponse.data && customerVaultResponse.data.data) {
         // Extract customer_vault_id from the first API response
-        const customerVaultId = customerVaultResponse.data.data.customer_vault_id;
+        const customerVaultId =
+          customerVaultResponse.data.data.customer_vault_id;
         const vaultResponse = customerVaultResponse.data.data.response_code;
-  
+
         // Call the second API using the extracted customer_vault_id
-        const creditCardResponse = await axios.post(`${baseUrl}/creditcard/addCreditCard`, {
-          tenant_id: tenantId,
-          card_number: values.card_number,
-          exp_date: values.exp_date,
-          card_type: cardType,
-          customer_vault_id: customerVaultId,
-          response_code: vaultResponse,
-        });
-  
-        console.log("Credit Card Response:", creditCardResponse.data);
-        console.log("Customer Vault Response:", customerVaultResponse.data);
-  
+        const creditCardResponse = await axios.post(
+          `${baseUrl}/creditcard/addCreditCard`,
+          {
+            tenant_id: tenantId,
+            customer_vault_id: customerVaultId,
+            response_code: vaultResponse,
+          }
+        );
+
         if (
-          creditCardResponse.status === 200 &&
+          (creditCardResponse.status === 200 ||
+            creditCardResponse.status === 201) &&
           customerVaultResponse.status === 200
         ) {
           swal("Success", "Card Added Successfully", "success");
           closeModal();
           getCreditCard();
+          getMultipleCustomerVault();
         } else {
           swal("Error", creditCardResponse.data.message, "error");
         }
       } else {
         // Handle the case where the response structure is not as expected
-        swal("Error", "Unexpected response format from create-customer-vault API", "error");
+        swal(
+          "Error",
+          "Unexpected response format from create-customer-vault API",
+          "error"
+        );
       }
     } catch (error) {
       console.error("Error:", error);
       swal("Error", "Something went wrong!", "error");
     } finally {
-      setSubmitting(false); 
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteCard = async (customerVaultId) => {
+    try {
+      // Make parallel requests to delete from your record and NMI
+      const [deleteRecordResponse, deleteNMIResponse] = await Promise.all([
+        axios.delete(
+          `${baseUrl}/creditcard/deleteCreditCard/${customerVaultId}`
+        ),
+        axios.post(`${baseUrl}/nmipayment/delete-customer-vault`, {
+          customer_vault_id: customerVaultId,
+        }),
+      ]);
+
+      // Check the responses
+      if (
+        deleteRecordResponse.status === 200 &&
+        deleteNMIResponse.status === 200
+      ) {
+        swal("Success", "Card deleted successfully", "success");
+        getCreditCard(); // all vault id get from this function
+      } else {
+        // Handle errors, show a message, or log the error
+        console.error(
+          "Delete card failed:",
+          deleteRecordResponse.statusText,
+          deleteNMIResponse.statusText
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting card:", error.message);
+    }
+  };
+
+  const [paymentLoader, setPaymentLoader] = useState(false);
+  const [formValue, setFormValues] = useState({});
+
+  // const handleEditCard = async (id,values) => {
+  //   try {
+  //     setPaymentLoader(true);
+  //     const response = await axios.get(
+  //       `${baseUrl}/nmipayment/nmipayments/${id}`
+  //     );
+
+  //     if (response.data.statusCode === 200) {
+  //       const updatedValues = {
+  //         amount: values.amount,
+  //         account: values.account,
+  //         first_name: values.values.first_name,
+  //         last_name: values.values.last_name,
+  //       };
+
+  //       const putUrl = `${baseUrl}/nmipayment/updatepayment/${id}`;
+  //       const putResponse = await axios.put(putUrl, updatedValues);
+
+  //       if (putResponse.data.statusCode === 200) {
+  //         closeModal();
+  //         swal("Success", "Payment Updated Successfully", "success");
+  //       } else {
+  //         swal("Error", putResponse.data.message, "error");
+  //         console.error("Server Error:", putResponse.data.message);
+  //       }
+  //     } else {
+  //       swal("Error", response.data.message, "error");
+  //       console.error("Error:", response.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     if (error.response) {
+  //       console.error("Response Data:", error.response.data);
+  //     }
+  //   } finally {
+  //     setPaymentLoader(false);
+  //   }
+  // };
+
+  const getEditData = async (customerVaultId) => {
+    try {
+      const response = await axios.post(
+        `${baseUrl}/nmipayment/get-customer-vault`,
+        {
+          customer_vault_id: customerVaultId,
+        }
+      );
+
+      // Set the form values with the existing card details
+      setFormValues({
+        card_number: response.data.data.customer.cc_number || "",
+        exp_date: response.data.data.customer.cc_exp || "",
+        first_name: response.data.data.customer.first_name?.value || "",
+        last_name: response.data.data.customer.last_name?.value || "",
+        phone: response.data.data.customer.phone?.value || "",
+        email: response.data.data.customer.email?.value || "",
+        address1: response.data.data.customer.address_1?.value || "",
+        city: response.data.data.customer.city?.value || "",
+        state: response.data.data.customer.state?.value || "",
+        zip: response.data.data.customer.postal_code?.value || "",
+        country: response.data.data.customer.country?.value || "",
+        company: response.data.data.customer.company?.value || "",
+      });
+      console.log("vaibhav", response.data.data.customer);
+
+      if (response.status === 200) {
+        console.log("object");
+      } else {
+        // Handle errors, show a message, or log the error
+        console.error("card failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error card:", error.message);
+    }
+  };
+
+  const handleEditCard = async (customerVaultId) => {
+    try {
+      const response = await axios.post(
+        `${baseUrl}/nmipayment/get-customer-vault`,
+        {
+          customer_vault_id: customerVaultId,
+        }
+      );
+
+      // Set the form values with the existing card details
+      setFormValues({
+        card_number: response.data.data.customer.cc_number || "",
+        exp_date: response.data.data.customer.cc_exp || "",
+        first_name: response.data.data.customer.first_name?.value || "",
+        last_name: response.data.data.customer.last_name?.value || "",
+        phone: response.data.data.customer.phone?.value || "",
+        email: response.data.data.customer.email?.value || "",
+        address1: response.data.data.customer.address_1?.value || "",
+        city: response.data.data.customer.city?.value || "",
+        state: response.data.data.customer.state?.value || "",
+        zip: response.data.data.customer.postal_code?.value || "",
+        country: response.data.data.customer.country?.value || "",
+        company: response.data.data.customer.company?.value || "",
+      });
+
+      console.log("vaibhav", formValue);
+      // Your form submission logic goes here
+
+      // Perform the update operation
+      const updateResponse = await axios.post(
+        `${baseUrl}/nmipayment/update-customer-vault`,
+        {
+          customer_vault_id: customerVaultId,
+        }
+      );
+
+      if (updateResponse.status === 200) {
+        // Fetch the updated records after successful update
+        // await Promise.all([
+        //   getCreditCard(),
+        //   getMultipleCustomerVault()
+        // ]);
+
+        swal("Success", "Card updated successfully", "success");
+      } else {
+        // Handle errors, show a message, or log the error
+        console.error("Update card failed:", updateResponse.statusText);
+      }
+    } catch (error) {
+      console.error("Error updating card:", error.message);
     }
   };
 
   return (
-    <div style={{ maxHeight: '530px',  overflowY: 'auto', overflowX:'hidden' }}>
+    <div style={{ maxHeight: "530px", overflowY: "auto", overflowX: "hidden" }}>
       <Row>
         {/* Formik Section */}
-        <Col xs="12" sm="7">
-      <Formik
-        initialValues={{
-          card_number: "",
-          exp_date: "",
-          first_name: "",
-          last_name: "",
-          phone: "",
-          email: "",
-          address1: "",
-          city: "",
-          state: "",
-          zip: "",
-          country: "",
-          company: "",
-        }}
-        validationSchema={paymentSchema}
-        onSubmit={(values, { resetForm }) => {
-          if (paymentSchema.isValid()) {
-            // Rest of your code
-            handleSubmit(values);
-            resetForm();
-          } else {
-            console.log("Form not submitted - validation failed");
-          }
-        }}
-      >
-        {/* {({ isSubmitting }) => ( */}
-          <Form>
-            {/* Form Fields */}
-            {/* <Row className="mb-0">
+        <Col xs="12" sm="6">
+          <Formik
+            initialValues={{
+              card_number: "",
+              exp_date: "",
+              first_name: "",
+              last_name: "",
+              phone: "",
+              email: "",
+              address1: "",
+              city: "",
+              state: "",
+              zip: "",
+              country: "",
+              company: "",
+            }}
+            validationSchema={paymentSchema}
+            onSubmit={(values, { resetForm }) => {
+              if (paymentSchema.isValid()) {
+                // Rest of your code
+                handleSubmit(values);
+                resetForm();
+              } else {
+                console.log("Form not submitted - validation failed");
+              }
+            }}
+          >
+            {/* {({ isSubmitting }) => ( */}
+            <Form>
+              {/* Form Fields */}
+              {/* <Row className="mb-0">
               <Col xs="12" sm="12"> */}
               <Row className="mb--2">
-                  <Col xs="12" sm="6">
-                    <FormGroup>
-                      <label htmlFor="card_number">Card Number *</label>
-                      <Input
-                        type="number"
-                        id="card_number"
-                        placeholder="0000 0000 0000 0000"
-                        className="no-spinner"
-                        name="card_number"
-                        tag={Field}
-                        required
-                      />
-                      {/* <ErrorMessage
-                        name="card_number"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
-                    </FormGroup>
-                  </Col>
-  
-                  <Col xs="12" sm="4">
-                    <FormGroup>
-                      <label htmlFor="exp_date">Expiration Date *</label>
-                      <Input
-                        type="text"
-                        id="exp_date"
-                        name="exp_date"
-                        placeholder="MM/YYYY"
-                        tag={Field}
-                        required
-                      />
-                      {/* <ErrorMessage
-                        name="exp_date"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
-                    </FormGroup>
-                  </Col>
-                </Row>
+                <Col xs="12" sm="6">
+                  <FormGroup>
+                    <label htmlFor="card_number">Card Number *</label>
+                    <Input
+                      type="number"
+                      id="card_number"
+                      placeholder="0000 0000 0000 0000"
+                      className="no-spinner"
+                      name="card_number"
+                      tag={Field}
+                      required
+                    />
+                    <ErrorMessage
+                      name="card_number"
+                      component="div"
+                      style={{ color: "red" }}
+                    />
+                  </FormGroup>
+                </Col>
 
-                <Row className="mb--2">
-                  <Col xs="12" sm="6">
-                    <FormGroup>
-                      <label htmlFor="first_name">First Name *</label>
-                      <Input
-                        type="text"
-                        id="first_name"
-                        name="first_name"
-                        placeholder="Enter first name"
-                        tag={Field}
-                        required
-                      />
-                      {/* <ErrorMessage
-                        name="first_name"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12" sm="6">
-                    <FormGroup>
-                      <label htmlFor="last_name">Last Name *</label>
-                      <Input
-                        type="text"
-                        id="last_name"
-                        name="last_name"
-                        placeholder="Enter last name"
-                        tag={Field}
-                        required
-                      />
-                      {/* <ErrorMessage
-                        name="last_name"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
-                    </FormGroup>
-                  </Col>
-                </Row>
-
-                <Row className="mb--2">
-                  <Col xs="12" sm="7">
-                    <FormGroup>
-                      <label htmlFor="email">Email *</label>
-                      <Input
-                        type="text"
-                        id="email"
-                        name="email"
-                        placeholder="Enter email"
-                        tag={Field}
-                        required
-                      />
-                      {/* <ErrorMessage
-                        name="email"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12" sm="5">
-                    <FormGroup>
-                      <label htmlFor="phone">Phone *</label>
-                      <Input
-                        type="text"
-                        id="phone"
-                        name="phone"
-                        placeholder="Enter phone"
-                        tag={Field}
-                        required
-                      />
-                      {/* <ErrorMessage
-                        name="phone"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
-                    </FormGroup>
-                  </Col>
-                </Row>
-  
-                <Row className="mb--2">
-                  <Col xs="12" sm="10">
-                    <FormGroup>
-                      <label htmlFor="address1">Address </label>
-                      <Input
-                        type="textarea"
-                        id="address1"
-                        name="address1"
-                        placeholder="Enter address"
-                        tag={Field}
-                      />
-                      {/* <ErrorMessage
-                        name="address1"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
-                    </FormGroup>
-                  </Col>
-                </Row>
-  
-                <Row className="mb--2">
-                  <Col xs="12" sm="4">
-                    <FormGroup>
-                      <label htmlFor="city">City</label>
-                      <Input
-                        type="text"
-                        id="city"
-                        name="city"
-                        placeholder="Enter city"
-                        tag={Field}
-                      />
-                      {/* <ErrorMessage
-                        name="city"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12" sm="4">
-                    <FormGroup>
-                      <label htmlFor="state">State</label>
-                      <Input
-                        type="text"
-                        id="state"
-                        name="state"
-                        placeholder="Enter state"
-                        tag={Field}
-                      />
-                      {/* <ErrorMessage
-                        name="state"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12" sm="4">
-                    <FormGroup>
-                      <label htmlFor="country">Country</label>
-                      <Input
-                        type="text"
-                        id="country"
-                        name="country"
-                        placeholder="Enter country"
-                        tag={Field}
-                      />
-                      {/* <ErrorMessage
-                        name="country"
-                        component="div"
-                        style={{ color: "red" }}
-                      /> */}
-                    </FormGroup>
-                  </Col>
-                </Row>
-  
-                <Row className="mb--2">
                 <Col xs="12" sm="4">
-                    <FormGroup>
-                      <label htmlFor="zip">Zip</label>
-                      <Input
-                        type="text"
-                        id="zip"
-                        name="zip"
-                        placeholder="Enter zip"
-                        tag={Field}
-                      />
-                      {/* <ErrorMessage
+                  <FormGroup>
+                    <label htmlFor="exp_date">Expiration Date *</label>
+                    <Input
+                      type="text"
+                      id="exp_date"
+                      name="exp_date"
+                      placeholder="MM/YYYY"
+                      tag={Field}
+                      required
+                    />
+                    <ErrorMessage
+                      name="exp_date"
+                      component="div"
+                      style={{ color: "red" }}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row className="mb--2">
+                <Col xs="12" sm="6">
+                  <FormGroup>
+                    <label htmlFor="first_name">First Name *</label>
+                    <Input
+                      type="text"
+                      id="first_name"
+                      name="first_name"
+                      placeholder="Enter first name"
+                      tag={Field}
+                      required
+                    />
+                    {/* <ErrorMessage
+                        name="first_name"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                  </FormGroup>
+                </Col>
+                <Col xs="12" sm="6">
+                  <FormGroup>
+                    <label htmlFor="last_name">Last Name *</label>
+                    <Input
+                      type="text"
+                      id="last_name"
+                      name="last_name"
+                      placeholder="Enter last name"
+                      tag={Field}
+                      required
+                    />
+                    {/* <ErrorMessage
+                        name="last_name"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row className="mb--2">
+                <Col xs="12" sm="7">
+                  <FormGroup>
+                    <label htmlFor="email">Email *</label>
+                    <Input
+                      type="text"
+                      id="email"
+                      name="email"
+                      placeholder="Enter email"
+                      tag={Field}
+                      required
+                    />
+                    <ErrorMessage
+                      name="email"
+                      component="div"
+                      style={{ color: "red" }}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col xs="12" sm="5">
+                  <FormGroup>
+                    <label htmlFor="phone">Phone *</label>
+                    <Input
+                      type="text"
+                      id="phone"
+                      name="phone"
+                      placeholder="Enter phone"
+                      tag={Field}
+                      required
+                    />
+                    {/* <ErrorMessage
+                        name="phone"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row className="mb--2">
+                <Col xs="12" sm="10">
+                  <FormGroup>
+                    <label htmlFor="address1">Address </label>
+                    <Input
+                      type="textarea"
+                      id="address1"
+                      name="address1"
+                      placeholder="Enter address"
+                      tag={Field}
+                    />
+                    {/* <ErrorMessage
+                        name="address1"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row className="mb--2">
+                <Col xs="12" sm="4">
+                  <FormGroup>
+                    <label htmlFor="city">City</label>
+                    <Input
+                      type="text"
+                      id="city"
+                      name="city"
+                      placeholder="Enter city"
+                      tag={Field}
+                    />
+                    {/* <ErrorMessage
+                        name="city"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                  </FormGroup>
+                </Col>
+                <Col xs="12" sm="4">
+                  <FormGroup>
+                    <label htmlFor="state">State</label>
+                    <Input
+                      type="text"
+                      id="state"
+                      name="state"
+                      placeholder="Enter state"
+                      tag={Field}
+                    />
+                    {/* <ErrorMessage
+                        name="state"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                  </FormGroup>
+                </Col>
+                <Col xs="12" sm="4">
+                  <FormGroup>
+                    <label htmlFor="country">Country</label>
+                    <Input
+                      type="text"
+                      id="country"
+                      name="country"
+                      placeholder="Enter country"
+                      tag={Field}
+                    />
+                    {/* <ErrorMessage
+                        name="country"
+                        component="div"
+                        style={{ color: "red" }}
+                      /> */}
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row className="mb--2">
+                <Col xs="12" sm="4">
+                  <FormGroup>
+                    <label htmlFor="zip">Zip</label>
+                    <Input
+                      type="text"
+                      id="zip"
+                      name="zip"
+                      placeholder="Enter zip"
+                      tag={Field}
+                    />
+                    {/* <ErrorMessage
                         name="zip"
                         component="div"
                         style={{ color: "red" }}
                       /> */}
-                    </FormGroup>
-                  </Col>
-               
-                  <Col xs="12" sm="7">
-                    <FormGroup>
-                      <label htmlFor="company">Company</label>
-                      <Input
-                        type="text"
-                        id="company"
-                        name="company"
-                        placeholder="Enter company"
-                        tag={Field}
-                      />
-                      {/* <ErrorMessage
+                  </FormGroup>
+                </Col>
+
+                <Col xs="12" sm="7">
+                  <FormGroup>
+                    <label htmlFor="company">Company</label>
+                    <Input
+                      type="text"
+                      id="company"
+                      name="company"
+                      placeholder="Enter company"
+                      tag={Field}
+                    />
+                    {/* <ErrorMessage
                         name="company"
                         component="div"
                         style={{ color: "red" }}
                       /> */}
-                    </FormGroup>
-                  </Col>
-                </Row>
-  
-                {/* <Row className="mb-3">
-                  <Col xs="12" sm="6">
-                    <FormGroup>
-                      <label htmlFor="fax">Fax</label>
-                      <Input
-                        type="text"
-                        id="fax"
-                        name="fax"
-                        placeholder="Enter fax"
-                        tag={Field}
-                      />
-                      <ErrorMessage
-                        name="fax"
-                        component="div"
-                        style={{ color: "red" }}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-   */}
-            
-              {/* </Col>
-            </Row> */}
-  
-            {/* Form Buttons */}
-            <div
-              style={{
-                display: "flex"
-              }}
-            >
-              <button
-                type="submit"
-                className="btn btn-primary"
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              {/* Form Buttons */}
+              <div
                 style={{
-                  background: "green",
-                  cursor: paymentSchema.isValid ? "pointer" : "not-allowed",
-                }}
-                disabled={!paymentSchema.isValid || isSubmitting}
-              >
-                {isSubmitting ? "Loading..." : "Add Card"}
-              </button>
-  
-              <button
-                type="reset"
-                className="btn btn-primary"
-                onClick={closeModal}
-                style={{
-                  background: "#fff",
-                  cursor: "pointer",
-                  color: "#333",
+                  display: "flex",
                 }}
               >
-                Cancel
-              </button>
-            </div>
-          </Form>
-        {/* )} */}
-      </Formik>
-      </Col>
-       {/* Card Details Section */}
-       <Col xs="12" sm="5">
-       <Card className="mt-1" style={{ background: "#F4F6FF",maxWidth:'350px', height:'530px', overflowY:'auto'}}>
-        
-              <CardContent>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  style={{
+                    background: "green",
+                    cursor: paymentSchema.isValid ? "pointer" : "not-allowed",
+                  }}
+                  disabled={!paymentSchema.isValid || isSubmitting}
+                >
+                  {isSubmitting ? "Loading..." : "Add Card"}
+                </button>
+
+                <button
+                  type="reset"
+                  className="btn btn-primary"
+                  onClick={closeModal}
+                  style={{
+                    background: "#fff",
+                    cursor: "pointer",
+                    color: "#333",
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </Form>
+            {/* )} */}
+          </Formik>
+        </Col>
+        {/* Card Details Section */}
+        <Col xs="12" sm="6">
+          <Card
+            className="mt-1"
+            style={{
+              background: "#F4F6FF",
+              maxWidth: "500px",
+              height: "530px",
+              overflowY: "auto",
+              overflowX: "hidden",
+            }}
+          >
+            <CardContent>
               <Typography
-                                        sx={{
-                                          fontSize: 17,
-                                          fontWeight: "bold",
-                                          fontFamily: "Arial",
-                                          textTransform: "capitalize",
-                                          marginRight: "10px",
-                                        }}
-                                        color="text.secondary"
-                                        gutterBottom
-                                      >
-                                        Credit Cards
-                                      </Typography>
-                {/* Card Details */}
-                {cardDetalis && cardDetalis.length > 0 ? (
-                  <Table responsive>
-                    <tbody>
-                      <tr>
-                        <th>Card Number</th>
-                        <th>Card Type</th>
+                sx={{
+                  fontSize: 17,
+                  fontWeight: "bold",
+                  fontFamily: "Arial",
+                  textTransform: "capitalize",
+                  marginRight: "10px",
+                }}
+                color="text.secondary"
+                gutterBottom
+              >
+                Credit Cards
+              </Typography>
+              {/* Card Details */}
+              {paymentLoader ? (
+                <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="50"
+                    visible={paymentLoader}
+                  />
+                </div>
+              ) : cardDetalis && cardDetalis.length > 0 ? (
+                <Table responsive style={{ overflowX: "hidden" }}>
+                  <tbody>
+                    <tr>
+                      <th>Card Number</th>
+                      <th>Card Type</th>
+                      <th></th>
+                    </tr>
+                    {cardDetalis.map((item, index) => (
+                      <tr key={index} style={{ marginBottom: "10px" }}>
+                        <td>
+                          <Typography
+                            sx={{
+                              fontSize: 14,
+                              fontWeight: "bold",
+                              fontStyle: "italic",
+                              fontFamily: "Arial",
+                              textTransform: "capitalize",
+                              marginRight: "10px",
+                            }}
+                            color="text.secondary"
+                            gutterBottom
+                          >
+                            {item.cc_number}
+                          </Typography>
+                        </td>
+                        <td>
+                          <Typography
+                            sx={{
+                              fontSize: 14,
+                              marginRight: "10px",
+                            }}
+                            color="text.secondary"
+                            gutterBottom
+                          >
+                            {item.cc_type}
+                            {item.cc_type && (
+                              <img
+                                src={`https://logo.clearbit.com/${item.cc_type.toLowerCase()}.com`}
+                                alt={`${item.cc_type} Logo`}
+                                style={{ width: "40%", marginLeft: "10%" }}
+                              />
+                            )}
+                          </Typography>
+                        </td>
+                        <td>
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <DeleteIcon
+                              onClick={() =>
+                                handleDeleteCard(item.customer_vault_id)
+                              }
+                              style={{
+                                cursor: "pointer",
+                                marginRight: "5px",
+                              }}
+                            />
+                            {/* <EditIcon
+                              onClick={() =>
+                                getEditData(item.customer_vault_id)
+                              }
+                              style={{ cursor: "pointer" }}
+                            /> */}
+                          </div>
+                        </td>
                       </tr>
-                      {cardDetalis.map((item, index) => (
-                        <tr key={index} style={{ marginBottom: "10px" }}>
-                          <td>
-                            <Typography
-                              sx={{
-                                fontSize: 14,
-                                fontWeight: "bold",
-                                fontStyle: "italic",
-                                fontFamily: "Arial",
-                                textTransform: "capitalize",
-                                marginRight: "10px",
-                              }}
-                              color="text.secondary"
-                              gutterBottom
-                            >
-                              {item.card_number.slice(0, 4) +
-                                "*".repeat(8) +
-                                item.card_number.slice(-4)}
-                            </Typography>
-                          </td>
-                          <td>
-                            <Typography
-                              sx={{
-                                fontSize: 14,
-                                marginRight: "10px",
-                              }}
-                              color="text.secondary"
-                              gutterBottom
-                            >
-                              {item.card_type}
-                              {item.card_type && (
-                                <img
-                                  src={`https://logo.clearbit.com/${item.card_type.toLowerCase()}.com`}
-                                  alt={`${item.card_type} Logo`}
-                                  style={{ width: "40%", marginLeft: "10%" }}
-                                />
-                              )}
-                            </Typography>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                ) : (
-                  <Typography variant="body1" color="text.secondary">
-                    No cards added.
-                  </Typography>
-                )}
-              </CardContent>
-      </Card>
-      </Col>
+                    ))}
+                  </tbody>
+                </Table>
+              ) : (
+                <Typography variant="body1" color="text.secondary">
+                  No cards added.
+                </Typography>
+              )}
+            </CardContent>
+          </Card>
+        </Col>
       </Row>
     </div>
   );
-  
 }
 
 export default CreditCardForm;
