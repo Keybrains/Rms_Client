@@ -301,7 +301,7 @@ export default function Tenants() {
                     id="tableTitle"
                     component="div"
                   >
-                    Staff-Member
+                    Tenant
                   </Typography>
 
                   <form className="form-inline">

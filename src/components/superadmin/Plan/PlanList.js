@@ -26,6 +26,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Formik, Form, useFormikContext } from "formik";
 import * as Yup from "yup";
 import Collapse from "@mui/material/Collapse";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
@@ -37,6 +39,8 @@ import Switch from "@mui/material/Switch";
 import { Circles } from "react-loader-spinner";
 import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
+// import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
+// import ArrowUpLineIcon from "@rsuite/icons/ArrowUpLine";
 
 import { Col, Container, Row } from "reactstrap";
 
@@ -50,15 +54,13 @@ const headCells = [
     label: "Price",
   },
   {
-    label: "Duration",
-  },
-  {
     label: "Date",
   },
 ];
 
 function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
+  const [open, setOpen] = React.useState(false);
 
   return (
     <React.Fragment>
@@ -70,6 +72,15 @@ function Rows(props) {
         tabIndex={-1}
         selected={isItemSelected}
       >
+        <TableCell align="center">
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
         <TableCell align="center" padding="checkbox">
           <Checkbox
             color="primary"
@@ -83,7 +94,7 @@ function Rows(props) {
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
         <TableCell align="center">{row.plan_name}</TableCell>
         <TableCell align="center">{row.plan_price}</TableCell>
-        <TableCell align="center">{row.plan_duration_monts}</TableCell>
+        {/* <TableCell align="center">{row.plan_duration_monts}</TableCell> */}
         <TableCell align="center">
           {new Date(row.createdAt).toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -92,12 +103,75 @@ function Rows(props) {
           })}
         </TableCell>
 
-        <TableCell align="center">
+        {/* <TableCell align="center">
           <button class="btn " onClick={() => seletedEditData(row)}>
             <EditIcon />
           </button>
-        </TableCell>
+        </TableCell> */}
       </TableRow>
+
+      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <Box sx={{ paddingLeft: 15, margin: 2 }}>
+            <Typography variant="h6" gutterBottom component="div">
+              Other Data :
+            </Typography>
+            <hr />
+
+            <table
+              style={{
+                fontFamily: "arial, sans-serif",
+                border: "collapse",
+                width: "50%",
+              }}
+            >
+              <tr>
+                <th
+                  style={{
+                    border: "1px solid #dddddd",
+                    textAlign: "left",
+                    padding: "8px",
+                  }}
+                >
+                  Index
+                </th>
+                <th
+                  style={{
+                    border: "1px solid #dddddd",
+                    textAlign: "left",
+                    padding: "8px",
+                  }}
+                >
+                  Feature
+                </th>
+              </tr>
+
+              {row?.features.map((index, id) => (
+                <tr key={id}>
+                  <th
+                    style={{
+                      border: "1px solid #dddddd",
+                      textAlign: "left",
+                      padding: "8px",
+                    }}
+                  >
+                    {id + 1}
+                  </th>
+                  <td
+                    style={{
+                      border: "1px solid #dddddd",
+                      textAlign: "left",
+                      padding: "8px",
+                    }}
+                  >
+                    {index?.features}
+                  </td>
+                </tr>
+              ))}
+            </table>
+          </Box>
+        </Collapse>
+      </TableCell>
     </React.Fragment>
   );
 }
@@ -239,8 +313,8 @@ export default function PlanList() {
 
   if (!id) {
     handleSubmit = async (values) => {
-      console.log(values, "values");
       try {
+        values["features"] = inputFields;
         const res = await axios.post(`${baseUrl}/plans/plans`, values);
         console.log(res, "res");
         if (res.data.statusCode === 200) {
@@ -296,6 +370,33 @@ export default function PlanList() {
   //     return null;
   //   };
 
+  const [inputFields, setInputFields] = useState([
+    {
+      features: "",
+    },
+  ]);
+
+  console.log(inputFields, "yash");
+  const addInputField = () => {
+    setInputFields([
+      ...inputFields,
+      {
+        features: "",
+      },
+    ]);
+  };
+  const removeInputFields = (index) => {
+    const rows = [...inputFields];
+    rows.splice(index, 1);
+    setInputFields(rows);
+  };
+  const handleFeaturesChange = (index, evnt) => {
+    const { name, value } = evnt.target;
+    const list = [...inputFields];
+    list[index][name] = value;
+    setInputFields(list);
+  };
+
   return (
     <>
       <SuperAdminHeader />
@@ -312,6 +413,11 @@ export default function PlanList() {
                       setModalShowForPopupForm(true);
                       setId(null);
                       setEditData({});
+                      setInputFields([
+                        {
+                          features: "",
+                        },
+                      ]);
                     }}
                     variant="contained"
                     style={{ backgroundColor: "#4A5073", color: "#ffffff" }} // Set background color and text color
@@ -405,6 +511,8 @@ export default function PlanList() {
                     <Table aria-label="collapsible table">
                       <TableHead>
                         <TableRow>
+                          <TableCell align="center"></TableCell>
+
                           <TableCell align="center" padding="checkbox">
                             <Checkbox
                               color="primary"
@@ -423,6 +531,8 @@ export default function PlanList() {
                             />
                           </TableCell>
 
+                          {/* <TableCell align="center"></TableCell> */}
+
                           {headCells.map((headCell, id) => {
                             return (
                               <TableCell
@@ -435,9 +545,9 @@ export default function PlanList() {
                             );
                           })}
 
-                          <TableCell className="fw-bold" align="center">
+                          {/* <TableCell className="fw-bold" align="center">
                             Action
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -486,15 +596,15 @@ export default function PlanList() {
                       editData && editData.plan_price
                         ? editData.plan_price
                         : "",
-                    plan_duration_monts:
-                      editData && editData.plan_duration_monts
-                        ? editData.plan_duration_monts
-                        : "",
+                    // billing_interval:
+                    //   editData && editData.billing_interval
+                    //     ? editData.billing_interval
+                    //     : "",
                   }}
                   validationSchema={Yup.object().shape({
                     plan_name: Yup.string().required("Required"),
                     plan_price: Yup.number().required("Required"),
-                    plan_duration_monts: Yup.number().required("Required"),
+                    // billing_interval: Yup.number().required("Required"),
                   })}
                   onSubmit={(values, { resetForm }) => {
                     handleSubmit(values);
@@ -541,24 +651,53 @@ export default function PlanList() {
                             </div>
                           ) : null}
                         </div>
-                        <div className="mt-3">
-                          <TextField
-                            type="number"
-                            size="small"
-                            fullWidth
-                            placeholder="Add Duration *"
-                            label="Add Duration *"
-                            name="plan_duration_monts"
-                            value={values.plan_duration_monts}
-                            onBlur={handleBlur}
-                            onChange={handleChange}
-                          />
-                          {touched.plan_duration_monts &&
-                          errors.plan_duration_monts ? (
-                            <div className="text-danger">
-                              {errors.plan_duration_monts}
+
+                        <div className="col-sm-8">
+                          {inputFields.map((data, index) => {
+                            const { features } = data;
+                            return (
+                              <div className="row my-3" key={index}>
+                                <div className="col">
+                                  <div className="form-group">
+                                    <TextField
+                                      type="text"
+                                      onChange={(evnt) =>
+                                        handleFeaturesChange(index, evnt)
+                                      }
+                                      value={features}
+                                      name="features"
+                                      className="form-control"
+                                      placeholder="Features"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="col">
+                                  {inputFields.length !== 1 ? (
+                                    <button
+                                      className="btn btn-outline-danger"
+                                      onClick={removeInputFields}
+                                    >
+                                      x
+                                    </button>
+                                  ) : (
+                                    ""
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+
+                          <div className="row">
+                            <div className="col-sm-12">
+                              <div
+                                className="btn btn-outline-success "
+                                onClick={addInputField}
+                              >
+                                Add New
+                              </div>
                             </div>
-                          ) : null}
+                          </div>
                         </div>
 
                         {!id ? (

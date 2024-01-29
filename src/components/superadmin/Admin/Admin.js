@@ -69,9 +69,7 @@ function Rows(props) {
     <React.Fragment>
       <TableRow
         hover
-        style={{ cursor: "pointer" }}
         // onClick={(event) => handleClick(event, row._id)}
-        onClick={() => navigate(`/superadmin/rentals/${row.admin_id}`)}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
