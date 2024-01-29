@@ -61,8 +61,6 @@ import Changepassword from "views/source/Changepassword";
 import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
 import DemoPayment from "views/source/DemoPayment";
-import PropDetails2 from "views/source/PropDetails2";
-import Rentals2 from "views/source/Rentals2";
 
 // ==========================  Super Admin ===================================================
 
@@ -84,13 +82,6 @@ var routes = [
     name: "Add Property",
     icon: "ni ni-pin-3 text-orange",
     component: <Rentals />,
-    layout: "/admin",
-  },
-  {
-    path: "/rentals2",
-    name: "Add Property",
-    icon: "ni ni-pin-3 text-orange",
-    component: <Rentals2 />,
     layout: "/admin",
   },
   {
@@ -260,12 +251,6 @@ var routes = [
     path: "/PropDetails/:id",
     name: "Prop Details",
     component: <PropDetails />,
-    layout: "/admin",
-  },
-  {
-    path: "/PropDetails2/:rentla_id",
-    name: "Prop Details",
-    component: <PropDetails2 />,
     layout: "/admin",
   },
   {
@@ -473,20 +458,12 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/rentals2/:rental_id",
-    name: "Add Property",
-    icon: "ni ni-pin-3 text-orange",
-    component: <Rentals2 />,
-    layout: "/admin",
-  },
-  {
     path: "/GeneralLedger",
     name: "General Ledger",
     icon: "ni ni-single-02 text-black",
     component: <GeneralLedger />,
     layout: "/admin",
   },
-
   {
     path: "/AddPropertyType/:id",
     name: "Add Property",
