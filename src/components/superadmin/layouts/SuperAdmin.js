@@ -1,8 +1,3 @@
-
-
-
-
-
 import React from "react";
 import { useLocation, Route, Routes, Navigate } from "react-router-dom";
 
@@ -69,9 +64,7 @@ const SuperAdmin = (props) => {
           {getRoutes(routes)}
           <Route path="*" element={<Navigate to="/superadmin" replace />} />
         </Routes>
-        <Container fluid>
-          {/* <AdminFooter /> */}
-        </Container>
+        <Container fluid>{/* <AdminFooter /> */}</Container>
       </div>
     </>
   );

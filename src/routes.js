@@ -3,7 +3,6 @@ import Profile from "views/source/Profile.js";
 import Rentals from "views/source/Rentals.js";
 import PropertiesTable from "views/source/PropertiesTable";
 import Leaseing from "views/source/Leaseing.js";
-import Leaseing2 from "views/source/Leaseing2";
 import TenantsTable from "views/source/TenantsTable.js";
 import PropertyType from "views/source/PropertyType";
 import AddPropertyType from "views/source/AddPropertyType";
@@ -62,13 +61,15 @@ import Changepassword from "views/source/Changepassword";
 import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
 import DemoPayment from "views/source/DemoPayment";
+import PropDetails2 from "views/source/PropDetails2";
+import Rentals2 from "views/source/Rentals2";
 
 // ==========================  Super Admin ===================================================
 
 import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
 import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
-import PropDetails2 from "views/source/PropDetails2";
-import Rentals2 from "views/source/Rentals2";
+import SuperAdminAdmin from "components/superadmin/Admin/Admin";
+import SuperAdminTenants from "components/superadmin/Tenants/Tenants";
 
 var routes = [
   {
@@ -125,20 +126,6 @@ var routes = [
     name: "Leaseing",
     icon: "ni ni-home-3 text-orange",
     component: <Leaseing />,
-    layout: "/admin",
-  },
-  {
-    path: "/Leaseing2",
-    name: "Leaseing",
-    icon: "ni ni-home-3 text-orange",
-    component: <Leaseing2 />,
-    layout: "/admin",
-  },
-  {
-    path: "/Leaseing2/:lease_id",
-    name: "Leaseing",
-    icon: "ni ni-home-3 text-orange",
-    component: <Leaseing2 />,
     layout: "/admin",
   },
   {
@@ -683,6 +670,20 @@ var routes = [
     name: "Plans",
     icon: "ni ni-pin-3 text-orange",
     component: <SuperAdminPlanList />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/admin",
+    name: "Admin",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminAdmin />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/tenant",
+    name: "Tenant",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminTenants />,
     layout: "/superadmin",
   },
 ];
