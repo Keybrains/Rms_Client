@@ -146,6 +146,7 @@ const DemoPayment = () => {
   const closeModals = () => {
     setIsModalsOpen(false);
     getCreditCard();
+    getMultipleCustomerVault();
   };
 
   const handleSearch = (e) => {
@@ -206,6 +207,7 @@ const DemoPayment = () => {
     setPaymentId("");
     setIsModalOpen(true);
     getCreditCard();
+    getMultipleCustomerVault();
   };
 
   const closeModal = () => {
@@ -239,19 +241,64 @@ const DemoPayment = () => {
     fetchCardLogo();
   }, []);
 
+  const [customervault, setCustomervault] = useState([]);
   const [cardDetalis, setCardDetails] = useState([]);
+  // const getCreditCard = async () => {
+  //   const response = await axios.get(
+  //     `${baseUrl}/creditcard/getCreditCard/${tenantId}`
+  //   );
+  //   setCardDetails(response.data);
+  // };
+
+  // useEffect(() => {
+  //   getCreditCard();
+  // }, [tenantId]);
+
   const getCreditCard = async () => {
-    const response = await axios.get(
-      `${baseUrl}/creditcard/getCreditCard/${tenantId}`
-    );
-    setCardDetails(response.data);
+    try {
+      const response = await axios.get(`${baseUrl}/creditcard/getCreditCard/${tenantId}`);
+      setCustomervault(response.data);
+    } catch (error) {
+      console.error('Error fetching credit card details:', error);
+    }
+  };
+
+  const getMultipleCustomerVault = async (customerVaultIds) => {
+    try {
+      const response = await axios.post(`${baseUrl}/nmipayment/get-multiple-customer-vault`, {
+        customer_vault_id: customerVaultIds,
+      });
+     // Extract relevant information from the API response
+     const extractedData = response.data.data.map((item) => ({
+        cc_number: item.customer.cc_number,
+        cc_exp: item.customer.cc_exp,
+        cc_type: item.customer.cc_type,
+        customer_vault_id: item.customer.customer_vault_id,
+      }));
+
+      // Update the cardDetails state
+      setCardDetails(extractedData);
+      console.log("object",response.data.data)
+    } catch (error) {
+      console.error('Error fetching multiple customer vault records:', error);
+    }
   };
 
   useEffect(() => {
     getCreditCard();
   }, [tenantId]);
 
-  const tenantId = "65a136e760b6af72eb259880";
+  useEffect(() => {
+    // Extract customer_vault_id values from cardDetails
+    const customerVaultIds = customervault?.map((card) => card.customer_vault_id);
+
+    if (customerVaultIds.length > 0) {
+      // Call the API to get multiple customer vault records
+      getMultipleCustomerVault(customerVaultIds);
+    }
+  }, [customervault]);
+
+  const tenantId = "658a70ea75bd6d8f3b6dbfde";
 
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
@@ -414,17 +461,17 @@ const DemoPayment = () => {
   const handleFinancialSubmit = async (values, action) => {
     let url = `${baseUrl}/nmipayment/postnmipayments`;
 
-    if (selectedPaymentType === "Credit Card" && values.expiration_date) {
-      const dateParts = values.expiration_date.split("/");
-      if (dateParts.length !== 2) {
-        alert("Invalid date format");
-        return;
-      }
-      const month = dateParts[0].padStart(2, "0");
-      const year = dateParts[1].slice(-2);
-      values.expiration_date = `${month}${year}`;
-      // url = `${baseUrl}/nmipayment/sale`;
-    }
+    // if (selectedPaymentType === "Credit Card" && values.expiration_date) {
+    //   const dateParts = values.expiration_date.split("/");
+    //   if (dateParts.length !== 2) {
+    //     alert("Invalid date format");
+    //     return;
+    //   }
+    //   const month = dateParts[0].padStart(2, "0");
+    //   const year = dateParts[1].slice(-2);
+    //   values.expiration_date = `${month}${year}`;
+    //   // url = `${baseUrl}/nmipayment/sale`;
+    // }
     values.account = selectedAccount;
 
     try {
@@ -456,11 +503,11 @@ const DemoPayment = () => {
       );
 
       if (creditCardDetails) {
-        const [expMonth, expYear] = creditCardDetails.exp_date.split("/");
-        const formattedExpirationDate = `${expMonth}/${expYear.slice(-2)}`;
+        // const [expMonth, expYear] = creditCardDetails.exp_date.split("/");
+        // const formattedExpirationDate = `${expMonth}/${expYear.slice(-2)}`;
 
-        values.expiration_date = formattedExpirationDate;
-        values.card_number = Number(selectedCreditCard.card_number);
+        // values.expiration_date = formattedExpirationDate;
+        // values.card_number = Number(selectedCreditCard.card_number);
         values.customer_vault_id = selectedCreditCard;
       } else {
         console.error(
@@ -663,20 +710,22 @@ const DemoPayment = () => {
           unit: responseData.unit || "",
           property: responseData.property || "",
           paymentType: responseData.paymentType || "",
-          card_number: responseData.cc_number || "",
-          expiration_date: responseData.expiration_date
-            ? formatDate(responseData.expiration_date.toString())
-            : "",
-          cvv: responseData.cvv || "",
+          customer_vault_id: responseData.customer_vault_id || "",
+          // card_number: responseData.cc_number || "",
+          // expiration_date: responseData.expiration_date
+          //   ? formatDate(responseData.expiration_date.toString())
+          //   : "",
+          // cvv: responseData.cvv || "",
           check_number: responseData.check_number || "",
         });
-        console.log(financialFormik, "ccnum");
+        console.log(responseData, "ccnum");
         // Update other selected values
         setSelectedPaymentType(responseData.paymentType);
         setSelectedPropertyType(responseData.property);
         setSelectedUnit(responseData.unit);
         setSelectedAccount(responseData.account);
         setResponseData(responseData);
+        setSelectedCreditCard(responseData.customer_vault_id)
 
         setPaymentId(id);
       } else {
@@ -705,6 +754,7 @@ const DemoPayment = () => {
           memo: financialFormik.values.memo,
           email_name: financialFormik.values.email_name,
           date: financialFormik.values.date,
+          customer_vault_id: financialFormik.values.cust,
           check_number: financialFormik.values.check_number,
           paymentType: financialFormik.values.paymentType,
         };
@@ -762,7 +812,7 @@ const DemoPayment = () => {
         card_number: ResponseData.card_number,
         account: ResponseData.account,
         type2: ResponseData.type2,
-        memo: ResponseData.memo,
+        memo: financialFormik.values.memo,
         expiration_date: ResponseData.expiration_date,
         cvv: ResponseData.cvv,
         property: ResponseData.property,
@@ -773,14 +823,16 @@ const DemoPayment = () => {
         const response = await axios.post(`${baseUrl}/nmipayment/refund`, {
           refundDetails: commonData,
         });
-  
         if (response.data.status === 200) {
           swal("Success!", response.data.data, "success");
           await getGeneralLedgerData();
           closeModal();
+        } else if (response.data.status === 201) {
+            swal("Warning!", response.data.data.error, "warning");
         } else {
           console.error("Failed to process refund:", response.statusText);
         }
+  
       } else if (paymentType === "Cash" || paymentType === "Check") {
         const response = await axios.post(`${baseUrl}/nmipayment/manual-refund/${_id}`, {
           refundDetails: commonData,
@@ -792,6 +844,7 @@ const DemoPayment = () => {
           await getGeneralLedgerData();
           closeModal();
         } else {
+          swal("Warning!", response.statusText, "warning");
           console.error("Failed to process refund:", response.statusText);
         }
       } else {
@@ -1527,7 +1580,6 @@ const DemoPayment = () => {
                       onBlur={financialFormik.handleBlur}
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.memo}
-                      disabled={refund === true}
                     />
                   </FormGroup>
                 </Col>
@@ -1691,7 +1743,7 @@ const DemoPayment = () => {
                 //   )}
                 // </>
                 <>
-                  {isEditable === false && refund === false ? (
+                  { isEditable === false && refund === false ? (
                     <Card
                       className="w-100 mt-3"
                       style={{ background: "#F4F6FF" }}
@@ -1754,9 +1806,7 @@ const DemoPayment = () => {
                                       color="text.secondary"
                                       gutterBottom
                                     >
-                                      {item.card_number.slice(0, 4) +
-                                        "*".repeat(8) +
-                                        item.card_number.slice(-4)}
+                                      {item.cc_number}
                                     </Typography>
                                   </td>
                                   <td>
@@ -1768,11 +1818,11 @@ const DemoPayment = () => {
                                       color="text.secondary"
                                       gutterBottom
                                     >
-                                      {item.card_type}
-                                      {item.card_type && (
+                                      {item.cc_type}
+                                      {item.cc_type && (
                                         <img
-                                          src={`https://logo.clearbit.com/${item.card_type.toLowerCase()}.com`}
-                                          alt={`${item.card_type} Logo`}
+                                          src={`https://logo.clearbit.com/${item.cc_type.toLowerCase()}.com`}
+                                          alt={`${item.cc_type} Logo`}
                                           style={{
                                             width: "20%",
                                             marginLeft: "10%",
@@ -1970,7 +2020,7 @@ const DemoPayment = () => {
         </Form>
       </Modal>
 
-      <Modal isOpen={isModalsOpen} toggle={closeModals} style={{ maxWidth: '950px'}}>
+      <Modal isOpen={isModalsOpen} toggle={closeModals} style={{ maxWidth: '1000px'}}>
         <ModalHeader toggle={closeModals} className="bg-secondary text-white">
           <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
         </ModalHeader>
