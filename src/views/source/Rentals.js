@@ -293,7 +293,7 @@ const Rentals = () => {
     },
   });
 
-  console.log(selectedRentalOwnerData, "yashuje")
+  console.log(selectedRentalOwnerData, "yashuje");
   const residentialSchema = yup.object({
     rental_sqft: yup.string().required("Required"),
     // Add more validations as needed for residential entries
@@ -583,32 +583,39 @@ const Rentals = () => {
         .get(`${baseUrl}/rentals/rental_summary/${rental_id}`)
         .then((response) => {
           const propertysData = response.data.data[0];
-          
+
           setRentalOwnerData(propertysData.rental_owner_data);
-          
+
           rentalOwnerFormik.setValues({
-            rentalOwner_firstName: propertysData.rental_owner_data.rentalOwner_firstName || "",
-            rentalOwner_lastName: propertysData.rental_owner_data.rentalOwner_lastName || "",
+            rentalOwner_firstName:
+              propertysData.rental_owner_data.rentalOwner_firstName || "",
+            rentalOwner_lastName:
+              propertysData.rental_owner_data.rentalOwner_lastName || "",
             rentalOwner_primaryEmail:
-            propertysData.rental_owner_data.rentalOwner_primaryEmail || "",
+              propertysData.rental_owner_data.rentalOwner_primaryEmail || "",
             rentalOwner_phoneNumber:
-            propertysData.rental_owner_data.rentalOwner_phoneNumber || "",
+              propertysData.rental_owner_data.rentalOwner_phoneNumber || "",
             rentalOwner_companyName:
-            propertysData.rental_owner_data.rentalOwner_companyName || "",
-            rentalOwner_homeNumber: propertysData.rental_owner_data.rentalOwner_homeNumber || "",
+              propertysData.rental_owner_data.rentalOwner_companyName || "",
+            rentalOwner_homeNumber:
+              propertysData.rental_owner_data.rentalOwner_homeNumber || "",
             rentalOwner_businessNumber:
-            propertysData.rental_owner_data.rentalOwner_businessNumber || "",
+              propertysData.rental_owner_data.rentalOwner_businessNumber || "",
           });
 
           setSelectedRentalOwnerData({
-            rentalOwner_firstName: propertysData.rental_owner_data.rentalOwner_firstName || "",
-            rentalOwner_lastName: propertysData.rental_owner_data.rentalOwner_lastName || "",
-            rentalOwner_phoneNumber: propertysData.rental_owner_data.rentalOwner_phoneNumber || "",
-            rentalOwner_homeNumber: propertysData.rental_owner_data.rentalOwner_homeNumber || "",
+            rentalOwner_firstName:
+              propertysData.rental_owner_data.rentalOwner_firstName || "",
+            rentalOwner_lastName:
+              propertysData.rental_owner_data.rentalOwner_lastName || "",
+            rentalOwner_phoneNumber:
+              propertysData.rental_owner_data.rentalOwner_phoneNumber || "",
+            rentalOwner_homeNumber:
+              propertysData.rental_owner_data.rentalOwner_homeNumber || "",
             rentalOwner_businessNumber:
-            propertysData.rental_owner_data.rentalOwner_businessNumber || "",
+              propertysData.rental_owner_data.rentalOwner_businessNumber || "",
           });
-          
+
           console.log(propertysData.property_type_data, "yashuj2");
           setSelectedProp(propertysData.property_type_data || "yashuj2");
 
@@ -1260,7 +1267,8 @@ const Rentals = () => {
                             isOpen={prodropdownOpen}
                             toggle={toggle1}
                             disabled={rental_id}
-                          >{console.log(selectedProp, "jay")}
+                          >
+                            {console.log(selectedProp, "jay")}
                             <DropdownToggle caret>
                               {selectedProp && selectedProp.propertysub_type
                                 ? selectedProp.propertysub_type
@@ -2190,7 +2198,7 @@ const Rentals = () => {
                                         </InputGroupAddon>
                                       </InputGroup>
 
-                                      {rentalOwnerFormik.touched
+                                      {/* {rentalOwnerFormik.touched
                                         .rentalOwner_businessNumber &&
                                       rentalOwnerFormik.errors
                                         .rentalOwner_businessNumber ? (
@@ -2200,7 +2208,280 @@ const Rentals = () => {
                                               .rentalOwner_businessNumber
                                           }
                                         </div>
-                                      ) : null}
+                                      ) : null} */}
+                                    </div>
+                                    <div
+                                      className="formInput"
+                                      style={{ margin: "30px 10px" }}
+                                    >
+                                      <br />
+                                      <Row>
+                                      <FormGroup className=" col-5">
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-address"
+                                        >
+                                          Address *
+                                        </label>
+                                        <Input
+                                          required
+                                          className="form-control-alternative"
+                                          id="input-address"
+                                          placeholder="Address"
+                                          type="text"
+                                          name="rental_adress"
+                                          // onBlur={rentalsFormik.handleBlur}
+                                          // onChange={(e) =>
+                                          //   rentalsFormik.setFieldValue(
+                                          //     "entries[0].rental_adress",
+                                          //     e.target.value
+                                          //   )
+                                          // }
+                                          // value={
+                                          //   rentalsFormik.values?.entries[0]
+                                          //     ?.rental_adress
+                                          // }
+                                          style={{border: "1px solid #cad1d7"}}
+                                        />
+                                        {/* {
+                                          <div>
+                                            {rentalsFormik.errors.entries &&
+                                            rentalsFormik.errors?.entries[0]
+                                              ?.rental_adress &&
+                                            rentalsFormik.touched?.entries &&
+                                            rentalsFormik.touched?.entries[0]
+                                              ?.rental_adress ? (
+                                              <div style={{ color: "red" }}>
+                                                {
+                                                  rentalsFormik.errors
+                                                    ?.entries[0]?.rental_adress
+                                                }
+                                              </div>
+                                            ) : null}
+                                          </div>
+                                        } */}
+                                      </FormGroup>
+
+                                      {/* {rentalOwnerFormik.touched
+                                        .rentalOwner_phoneNumber &&
+                                      rentalOwnerFormik.errors
+                                        .rentalOwner_phoneNumber ? (
+                                        <div style={{ color: "red" }}>
+                                          {
+                                            rentalOwnerFormik.errors
+                                              .rentalOwner_phoneNumber
+                                          }
+                                        </div>
+                                      ) : null} */}
+                                      <FormGroup className="mx-4 col-5">
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-address"
+                                        >
+                                          City *
+                                        </label>
+                                        <Input
+                                          required
+                                          className="form-control-alternative"
+                                          id="input-address"
+                                          placeholder="City"
+                                          type="text"
+                                          name="rental_adress"
+                                          // onBlur={rentalsFormik.handleBlur}
+                                          // onChange={(e) =>
+                                          //   rentalsFormik.setFieldValue(
+                                          //     "entries[0].rental_adress",
+                                          //     e.target.value
+                                          //   )
+                                          // }
+                                          // value={
+                                          //   rentalsFormik.values?.entries[0]
+                                          //     ?.rental_adress
+                                          // }
+                                          style={{border: "1px solid #cad1d7"}}
+                                        />
+                                        {/* {
+                                          <div>
+                                            {rentalsFormik.errors.entries &&
+                                            rentalsFormik.errors?.entries[0]
+                                              ?.rental_adress &&
+                                            rentalsFormik.touched?.entries &&
+                                            rentalsFormik.touched?.entries[0]
+                                              ?.rental_adress ? (
+                                              <div style={{ color: "red" }}>
+                                                {
+                                                  rentalsFormik.errors
+                                                    ?.entries[0]?.rental_adress
+                                                }
+                                              </div>
+                                            ) : null}
+                                          </div>
+                                        } */}
+                                      </FormGroup>
+                                      </Row>
+
+                                      {/* {rentalOwnerFormik.touched
+                                        .rentalOwner_homeNumber &&
+                                      rentalOwnerFormik.errors
+                                        .rentalOwner_homeNumber ? (
+                                        <div style={{ color: "red" }}>
+                                          {
+                                            rentalOwnerFormik.errors
+                                              .rentalOwner_homeNumber
+                                          }
+                                        </div>
+                                      ) : null} */}
+                                      <Row>
+                                      <FormGroup className=" col-5">
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-address"
+                                        >
+                                          State *
+                                        </label>
+                                        <Input
+                                          required
+                                          className="form-control-alternative"
+                                          id="input-address"
+                                          placeholder="State"
+                                          type="text"
+                                          name="rental_adress"
+                                          // onBlur={rentalsFormik.handleBlur}
+                                          // onChange={(e) =>
+                                          //   rentalsFormik.setFieldValue(
+                                          //     "entries[0].rental_adress",
+                                          //     e.target.value
+                                          //   )
+                                          // }
+                                          // value={
+                                          //   rentalsFormik.values?.entries[0]
+                                          //     ?.rental_adress
+                                          // }
+                                          style={{border: "1px solid #cad1d7"}}
+                                        />
+                                        {/* {
+                                          <div>
+                                            {rentalsFormik.errors.entries &&
+                                            rentalsFormik.errors?.entries[0]
+                                              ?.rental_adress &&
+                                            rentalsFormik.touched?.entries &&
+                                            rentalsFormik.touched?.entries[0]
+                                              ?.rental_adress ? (
+                                              <div style={{ color: "red" }}>
+                                                {
+                                                  rentalsFormik.errors
+                                                    ?.entries[0]?.rental_adress
+                                                }
+                                              </div>
+                                            ) : null}
+                                          </div>
+                                        } */}
+                                      </FormGroup>
+
+                                      {/* {rentalOwnerFormik.touched
+                                        .rentalOwner_businessNumber &&
+                                      rentalOwnerFormik.errors
+                                        .rentalOwner_businessNumber ? (
+                                        <div style={{ color: "red" }}>
+                                          {
+                                            rentalOwnerFormik.errors
+                                              .rentalOwner_businessNumber
+                                          }
+                                        </div>
+                                      ) : null} */}
+                                      <FormGroup className="mx-4 col-5">
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-address"
+                                        >
+                                          Country *
+                                        </label>
+                                        <Input
+                                          required
+                                          className="form-control-alternative"
+                                          id="input-address"
+                                          placeholder="Country"
+                                          type="text"
+                                          name="rental_adress"
+                                          // onBlur={rentalsFormik.handleBlur}
+                                          // onChange={(e) =>
+                                          //   rentalsFormik.setFieldValue(
+                                          //     "entries[0].rental_adress",
+                                          //     e.target.value
+                                          //   )
+                                          // }
+                                          // value={
+                                          //   rentalsFormik.values?.entries[0]
+                                          //     ?.rental_adress
+                                          // }
+                                          style={{border: "1px solid #cad1d7"}}
+                                        />
+                                        {/* {
+                                          <div>
+                                            {rentalsFormik.errors.entries &&
+                                            rentalsFormik.errors?.entries[0]
+                                              ?.rental_adress &&
+                                            rentalsFormik.touched?.entries &&
+                                            rentalsFormik.touched?.entries[0]
+                                              ?.rental_adress ? (
+                                              <div style={{ color: "red" }}>
+                                                {
+                                                  rentalsFormik.errors
+                                                    ?.entries[0]?.rental_adress
+                                                }
+                                              </div>
+                                            ) : null}
+                                          </div>
+                                        } */}
+                                      </FormGroup>
+                                      </Row>
+                                      <Row>
+                                      <FormGroup className="col-5">
+                                        <label
+                                          className="form-control-label"
+                                          htmlFor="input-address"
+                                        >
+                                          Postal code *
+                                        </label>
+                                        <Input
+                                          required
+                                          className="form-control-alternative"
+                                          id="input-address"
+                                          placeholder="Postal code"
+                                          type="text"
+                                          name="rental_adress"
+                                          // onBlur={rentalsFormik.handleBlur}
+                                          // onChange={(e) =>
+                                          //   rentalsFormik.setFieldValue(
+                                          //     "entries[0].rental_adress",
+                                          //     e.target.value
+                                          //   )
+                                          // }
+                                          // value={
+                                          //   rentalsFormik.values?.entries[0]
+                                          //     ?.rental_adress
+                                          // }
+                                          style={{border: "1px solid #cad1d7"}}
+                                        />
+                                        {/* {
+                                          <div>
+                                            {rentalsFormik.errors.entries &&
+                                            rentalsFormik.errors?.entries[0]
+                                              ?.rental_adress &&
+                                            rentalsFormik.touched?.entries &&
+                                            rentalsFormik.touched?.entries[0]
+                                              ?.rental_adress ? (
+                                              <div style={{ color: "red" }}>
+                                                {
+                                                  rentalsFormik.errors
+                                                    ?.entries[0]?.rental_adress
+                                                }
+                                              </div>
+                                            ) : null}
+                                          </div>
+                                        } */}
+                                      </FormGroup>
+                                      </Row>
                                     </div>
                                   </div>
                                 )}
@@ -2273,7 +2554,9 @@ const Rentals = () => {
                                         textAlign: "left",
                                       }}
                                     >
-                                      {selectedRentalOwnerData.rentalOwner_firstName}
+                                      {
+                                        selectedRentalOwnerData.rentalOwner_firstName
+                                      }
                                     </td>
                                     <td
                                       style={{
@@ -2281,7 +2564,9 @@ const Rentals = () => {
                                         textAlign: "left",
                                       }}
                                     >
-                                      {selectedRentalOwnerData.rentalOwner_lastName}
+                                      {
+                                        selectedRentalOwnerData.rentalOwner_lastName
+                                      }
                                     </td>
                                     <td
                                       style={{
@@ -2289,7 +2574,9 @@ const Rentals = () => {
                                         textAlign: "left",
                                       }}
                                     >
-                                      {selectedRentalOwnerData.rentalOwner_phoneNumber}
+                                      {
+                                        selectedRentalOwnerData.rentalOwner_phoneNumber
+                                      }
                                     </td>
                                     <td
                                       style={{

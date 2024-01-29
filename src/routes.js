@@ -10,6 +10,7 @@ import AddPropertyType from "views/source/AddPropertyType";
 import AddStaffMember from "views/source/AddStaffMember";
 import StaffMember from "views/source/StaffMember";
 import Rentalowner from "views/source/Rentalowner";
+import Plans from "views/source/Plans";
 import Login from "views/source/Login";
 import RentalownerTable from "views/source/RentalownerTable";
 import Listings from "views/source/Listings";
@@ -62,7 +63,6 @@ import Changepassword from "views/source/Changepassword";
 import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
 import DemoPayment from "views/source/DemoPayment";
-
 // ==========================  Super Admin ===================================================
 
 import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
@@ -173,6 +173,11 @@ var routes = [
     layout: "/admin",
   },
   {
+    path: "/Plans",
+    component: <Plans />,
+    layout: "/admin",
+  },
+  {
     path: "/Rentalowner/:id",
 
     component: <Rentalowner />,
@@ -264,6 +269,13 @@ var routes = [
   },
   {
     path: "/rentalownerdetail/:id",
+    name: "Rental owner Detail",
+    component: <RentalOwnerDetail />,
+    layout: "/admin",
+  },
+
+  {
+    path: "/rentalownerdetail",
     name: "Rental owner Detail",
     component: <RentalOwnerDetail />,
     layout: "/admin",
