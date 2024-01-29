@@ -121,7 +121,7 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/Leaseing/:id",
+    path: "/Leaseing/:tenant_id",
     name: "Leaseing",
     icon: "ni ni-home-3 text-orange",
     component: <Leaseing />,
@@ -597,13 +597,6 @@ var routes = [
     name: "applicants",
     icon: "ni ni-home-3 text-orange",
     component: <ApplicantSummary />,
-    layout: "/admin",
-  },
-  {
-    path: "/Leaseing/:id/:entryIndex",
-    name: "Leaseing",
-    icon: "ni ni-home-3 text-orange",
-    component: <Leaseing />,
     layout: "/admin",
   },
   {

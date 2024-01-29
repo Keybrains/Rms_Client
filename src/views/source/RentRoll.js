@@ -15,23 +15,13 @@ import {
   DropdownItem,
 } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
-import {
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  InputLabel,
-} from "@mui/material";
+import { Grid } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "components/Headers/Header";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import swal from "sweetalert"; // Import sweetalert
-import { Link } from "react-router-dom";
-import InfoIcon from "@mui/icons-material/Info";
+import swal from "sweetalert";
 import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -45,21 +35,14 @@ const RentRoll = () => {
   let [loader, setLoader] = React.useState(true);
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
-  
-  // function navigateToRentRollDetails(rentRollId) {
-  //   const rentRollDetailsURL = `/admin/rentrolldetail/${rentRollId}`;
-  //   window.location.href = rentRollDetailsURL;
-  // }
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
-  const navigateToRentRollDetails = (tenantId, entryIndex) => {
-    navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
-    //console.log(tenantId, "Tenant Id");
-    //console.log(entryIndex, "Entry Index");
+  const navigateToRentRollDetails = (tenantId) => {
+    navigate(`/admin/rentrolldetail/${tenantId}`);
   };
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -67,7 +50,7 @@ const RentRoll = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -75,7 +58,7 @@ const RentRoll = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/tenant/tenants`);
+      const response = await axios.get(`${baseUrl}/leases/leases`);
       const data = response.data.data;
 
       // Reverse the data order
@@ -100,7 +83,7 @@ const RentRoll = () => {
     paginatedData = tenantsData.slice(startIndex, endIndex);
   }
   const handlePageChange = (page) => {
-    console.log(page,'page')
+    console.log(page, "page");
     setCurrentPage(page);
   };
 
@@ -140,63 +123,77 @@ const RentRoll = () => {
   // };
   const filterRentRollsBySearch = () => {
     let filteredData = [...tenantsData]; // Create a copy of tenantsData to avoid mutating the original array
-  
+
     if (searchQuery) {
-      
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       // setCurrentPage(1);
       filteredData = filteredData.filter((tenant) => {
-      
         const name = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
         // setCurrentPage(1)
         return (
-          tenant.entries.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.entries.lease_type.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.tenant_firstName.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.entries.rental_adress
+            .toLowerCase()
+            .includes(lowerCaseSearchQuery) ||
+          tenant.entries.lease_type
+            .toLowerCase()
+            .includes(lowerCaseSearchQuery) ||
+          tenant.tenant_firstName
+            .toLowerCase()
+            .includes(lowerCaseSearchQuery) ||
           tenant.tenant_lastName.toLowerCase().includes(lowerCaseSearchQuery) ||
           name.toLowerCase().includes(lowerCaseSearchQuery)
         );
       });
     }
-  
+
     if (upArrow.length > 0) {
       upArrow.forEach((value) => {
         switch (value) {
           case "rental_adress":
-            filteredData.sort((a, b) => a.entries.rental_adress.localeCompare(b.entries.rental_adress));
+            filteredData.sort((a, b) =>
+              a.entries.rental_adress.localeCompare(b.entries.rental_adress)
+            );
             break;
           case "lease_type":
-            filteredData.sort((a, b) => a.entries.lease_type.localeCompare(b.entries.lease_type));
+            filteredData.sort((a, b) =>
+              a.entries.lease_type.localeCompare(b.entries.lease_type)
+            );
             break;
           case "tenant_firstName":
-            filteredData.sort((a, b) => a.tenant_firstName.localeCompare(b.tenant_firstName));
+            filteredData.sort((a, b) =>
+              a.tenant_firstName.localeCompare(b.tenant_firstName)
+            );
             break;
           case "start_date":
-            filteredData.sort((a, b) => new Date(a.entries.start_date) - new Date(b.entries.start_date));
+            filteredData.sort(
+              (a, b) =>
+                new Date(a.entries.start_date) - new Date(b.entries.start_date)
+            );
             break;
           case "amount":
             filteredData.sort((a, b) => a.entries.amount - b.entries.amount);
             break;
           case "createAt":
-            filteredData.sort((a, b) => new Date(a.createAt) - new Date(b.createAt));
+            filteredData.sort(
+              (a, b) => new Date(a.createAt) - new Date(b.createAt)
+            );
             break;
           default:
             // If an unknown sort option is provided, do nothing
-            filteredData.slice(startIndex, endIndex)
+            filteredData.slice(startIndex, endIndex);
             break;
         }
       });
     }
-  
+
     return filteredData;
   };
-  
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentRollsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
-    console.log(startIndex, endIndex, 'start index and end index')
-    console.log(filteredData, paginatedData, 'filtered and paginated data')
+    console.log(startIndex, endIndex, "start index and end index");
+    console.log(filteredData, paginatedData, "filtered and paginated data");
     return paginatedData;
   };
 
@@ -215,7 +212,7 @@ const RentRoll = () => {
             if (response.data.statusCode === 200) {
               swal("Success!", "Tenant deleted successfully!", "success");
               fetchData();
-              const subscription_id_to_send = subscription_id
+              const subscription_id_to_send = subscription_id;
               axios
                 .post(`${baseUrl}/nmipayment/custom-delete-subscription`, {
                   subscription_id: subscription_id_to_send,
@@ -377,8 +374,9 @@ const RentRoll = () => {
                           />
                         )}
                       </th>
-                      <th scope="col">Type 
-                      {sortBy.includes("lease_type") ? (
+                      <th scope="col">
+                        Type
+                        {sortBy.includes("lease_type") ? (
                           upArrow.includes("lease_type") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("lease_type")}
@@ -396,8 +394,9 @@ const RentRoll = () => {
                       </th>
 
                       <th scope="col">Status</th>
-                      <th scope="col">Start Date-End Date
-                      {sortBy.includes("start_date") ? (
+                      <th scope="col">
+                        Start Date-End Date
+                        {sortBy.includes("start_date") ? (
                           upArrow.includes("start_date") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("start_date")}
@@ -427,9 +426,7 @@ const RentRoll = () => {
                             />
                           )
                         ) : (
-                          <ArrowUpwardIcon
-                            onClick={() => sortData("amount")}
-                          />
+                          <ArrowUpwardIcon onClick={() => sortData("amount")} />
                         )}{" "}
                       </th>
                       <th scope="col">
