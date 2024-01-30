@@ -23,12 +23,14 @@ import { Container } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
+import { useParams } from "react-router-dom";
 
 import routes from "routes.js";
 
 const Admin = (props) => {
   const mainContent = React.useRef(null);
   const location = useLocation();
+  const {admin} = useParams();
 
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
@@ -66,7 +68,7 @@ const Admin = (props) => {
         {...props}
         routes={routes}
         logo={{
-          innerLink: "/admin/index",
+          innerLink: "/"+admin+"/index",
           imgSrc: require("../assets/img/brand/rms.jpeg"),
           imgAlt: "...",
         }}
@@ -78,7 +80,7 @@ const Admin = (props) => {
         />
         <Routes>
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/admin/index" replace />} />
+          <Route path="*" element={<Navigate to={`/${admin}/index`} replace />} />
         </Routes>
         <Container fluid>
           <AdminFooter />

@@ -32,7 +32,6 @@ const Login = () => {
   let cookies = new Cookies();
   const [isLoading, setIsLoading] = useState(false);
 
-
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -58,7 +57,8 @@ const Login = () => {
         swal("Success!", "Admin Login Successful!", "success").then((value) => {
           if (value) {
             localStorage.setItem("token", adminRes.data.token);
-            navigate("/admin/index");
+            const jwt = jwtDecode(localStorage.getItem("token"));
+            navigate(`/${jwt.company_name}/index`);
           }
         });
       } else {
