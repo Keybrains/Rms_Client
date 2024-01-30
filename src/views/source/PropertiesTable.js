@@ -42,18 +42,14 @@ const PropertiesTables = () => {
   const [pageItem, setPageItem] = React.useState(10);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
-  // const [onClickUpArrow, setOnClickUpArrow] = useState(false);
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
-  // const [onClickDownArrow, setOnClickDownArrow] = useState(false);
 
   const navigateToPropDetails = (rental_id) => {
-    const propDetailsURL = `/admin/PropDetails2/${rental_id}`;
-
-    // window.location.href = propDetailsURL;
+    const propDetailsURL = `/admin/PropDetails/${rental_id}`;
     navigate(propDetailsURL);
   };
-  let cookies = new Cookies();
+  
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -135,7 +131,7 @@ const PropertiesTables = () => {
   };
 
   const editProperty = (rental_id) => {
-    navigate(`/admin/rentals2/${rental_id}`);
+    navigate(`/admin/rentals/${rental_id}`);
   };
 
   const filterRentalsBySearch = () => {

@@ -152,13 +152,11 @@ var routes = [
   },
   {
     path: "/Rentalowner/:id",
-
     component: <Rentalowner />,
     layout: "/admin",
   },
   {
     path: "/RentalownerTable",
-
     component: <RentalownerTable />,
     layout: "/admin",
   },
@@ -440,14 +438,6 @@ var routes = [
   {
     path: "/addworkorder/addtask/:rental_id",
     component: <AddWorkorder />,
-    layout: "/admin",
-  },
-
-  {
-    path: "/rentals/:id/:entryIndex",
-    name: "Add Property",
-    icon: "ni ni-pin-3 text-orange",
-    component: <Rentals />,
     layout: "/admin",
   },
   {

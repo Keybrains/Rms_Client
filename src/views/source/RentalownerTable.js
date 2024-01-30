@@ -57,7 +57,7 @@ const RentalownerTable = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -66,11 +66,11 @@ const RentalownerTable = () => {
   const fetchRentalsData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/rentalowner/rentalowner`
+        `${baseUrl}/rentals/rental-owners/${accessType.admin_id}`
       );
-      if (response.data && Array.isArray(response.data.data)) {
+      if (response.status === 200) {
         setLoader(false);
-        setRentalsData(response.data.data);
+        setRentalsData(response.data);
       } else {
         console.error("Invalid API response structure: ", response.data);
       }
@@ -81,50 +81,17 @@ const RentalownerTable = () => {
 
   useEffect(() => {
     fetchRentalsData();
-  }, []);
+  }, [accessType]);
 
   function navigateToRentRollDetails(rentalOwnerId) {
-    navigate(`/admin/rentalownerdetail/${rentalOwnerId}`)
-    // const rentalOwnerURL = ;
-    // window.location.href = rentalOwnerURL;
+    navigate(`/admin/rentalownerdetail/${rentalOwnerId}`);
   }
-
-  const editTenantData = async (id, updatedData) => {
-    try {
-      const editUrl = `${baseUrl}/rentalowner/rentalowner/${id}`;
-      //console.log("Edit URL:", editUrl);
-      //console.log("Property ID:", id);
-      //console.log("Updated Data:", updatedData); // Log the updated data for debugging
-
-      const response = await axios.put(editUrl, updatedData); // Send the updated data in the request body
-      //console.log("Edit Response:", response);
-
-      if (response.status === 200) {
-        swal("", response.data.message, "success");
-        fetchRentalsData(); // Refresh the data after successful edit
-      } else {
-        swal("", response.data.message, "error");
-        console.error("Edit request failed with status:", response.status);
-      }
-    } catch (error) {
-      console.error("Error editing property:", error);
-    }
-  };
-  const openEditDialog = (rentalOwner) => {
-    setEditingTenant({ ...rentalOwner });
-    setIsEditDialogOpen(true);
-  };
-
-  const closeEditDialog = () => {
-    setIsEditDialogOpen(false);
-  };
 
   const editRentalOwner = (id) => {
     navigate(`/admin/Rentalowner/${id}`);
-    //console.log(id);
   };
-  const deleteTenant = (id) => {
-    // Show a confirmation dialog to the user
+
+  const deleteTenant = (rentalowner_id) => {
     swal({
       title: "Are you sure?",
       text: "Once deleted, you will not be able to recover this tenant!",
@@ -134,31 +101,18 @@ const RentalownerTable = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(
-            `${baseUrl}/rentalowner/delete_rentalowner`,
-            {
-              data: { _id: id },
-            }
-          )
+          .delete(`${baseUrl}/rentals/rental-owners/${rentalowner_id}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
               fetchRentalsData();
-              // Show a success SweetAlert message here
               swal("Deleted!", "The tenant has been deleted.", "success");
             } else {
-              console.error("Failed to delete tenant property");
-              // Show an error SweetAlert message here if needed
-              swal("Error", "Failed to delete tenant property", "error");
+              swal("Error", response.data.message, "error");
             }
           })
           .catch((error) => {
             console.error("Error deleting tenant:", error);
-            // Show an error SweetAlert message here if needed
-            swal(
-              "Error",
-              "An error occurred while deleting the tenant.",
-              "error"
-            );
+            swal("Error", error.message, "error");
           });
       } else {
         swal("Cancelled", "Tenant is safe :)", "info");
@@ -203,7 +157,6 @@ const RentalownerTable = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
               onClick={() => navigate("/admin/Rentalowner")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -253,7 +206,6 @@ const RentalownerTable = () => {
                     <tr>
                       <th scope="col">First Name</th>
                       <th scope="col">Last Name</th>
-                      {/* <th scope="col">Agreement Ends On</th> */}
                       <th scope="col">Address</th>
                       <th scope="col">Phone</th>
                       <th scope="col">Email</th>
@@ -263,16 +215,15 @@ const RentalownerTable = () => {
                   <tbody>
                     {filterRentalOwnersBySearch()?.map((rentalOwner) => (
                       <tr
-                        key={rentalOwner._id}
+                        key={rentalOwner.rentalowner_id}
                         onClick={() =>
-                          navigateToRentRollDetails(rentalOwner._id)
+                          navigateToRentRollDetails(rentalOwner.rentalowner_id)
                         }
                         style={{ cursor: "pointer" }}
                       >
-                        <td>{rentalOwner.rentalowner_firstName}</td>
+                        <td>{rentalOwner.rentalOwner_firstName}</td>
                         <td>{rentalOwner.rentalOwner_lastName}</td>
-                        {/* <td>{rentalOwner.end_date}</td> */}
-                        <td>{rentalOwner.rentalOwner_streetAdress}</td>
+                        <td>{rentalOwner?.rentalOwner_adress}</td>
                         <td>{rentalOwner.rentalOwner_phoneNumber}</td>
                         <td>{rentalOwner.rentalOwner_primaryEmail}</td>
                         <td style={{}}>
@@ -280,8 +231,8 @@ const RentalownerTable = () => {
                             <div
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {
-                                e.stopPropagation(); // Prevent the row click event from firing
-                                deleteTenant(rentalOwner._id);
+                                e.stopPropagation();
+                                deleteTenant(rentalOwner.rentalowner_id);
                               }}
                             >
                               <DeleteIcon />
@@ -290,8 +241,8 @@ const RentalownerTable = () => {
                             <div
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {
-                                e.stopPropagation(); // Prevent the row click event from firing
-                                editRentalOwner(rentalOwner._id);
+                                e.stopPropagation();
+                                editRentalOwner(rentalOwner.rentalowner_id);
                               }}
                             >
                               <EditIcon />
@@ -307,186 +258,6 @@ const RentalownerTable = () => {
           </div>
         </Row>
       </Container>
-
-      {/* Edit Dialog */}
-      <Dialog
-        open={isEditDialogOpen}
-        onClose={closeEditDialog}
-        maxWidth="xs" // Set to "xs" for a smaller width
-        fullWidth
-      >
-        <DialogTitle style={{ background: "#F0F8FF", marginBottom: "16px" }}>
-          Edit RentRoll
-        </DialogTitle>
-        <DialogContent style={{ width: "100%", maxWidth: "500px" }}>
-          {/* <div style={{ marginBottom: "16px" }}>
-            <InputLabel>FirstName</InputLabel>
-            <TextField
-              fullWidth
-              value={editingTenant?.rentalowner_firstName || ""}
-              onChange={(e) =>
-                setEditingTenant({
-                  ...editingTenant,
-                  rentalowner_firstName: e.target.value,
-                })
-              }
-            />
-          </div> */}
-          <FormGroup>
-            <label className="form-control-label" htmlFor="input-property">
-              FirstName
-            </label>
-            <Input
-              className="form-control-alternative"
-              id="input-protype"
-              type="text"
-              name="rentalowner_firstName"
-              value={editingTenant?.rentalowner_firstName || ""}
-              onChange={(e) =>
-                setEditingTenant({
-                  ...editingTenant,
-                  rentalowner_firstName: e.target.value,
-                })
-              }
-            />
-          </FormGroup>
-          {/* <div style={{ marginBottom: "16px" }}>
-            <InputLabel>lastName</InputLabel>
-            <TextField
-              fullWidth
-              value={editingTenant?.rentalOwner_lastName || ""}
-              onChange={(e) =>
-                setEditingTenant({
-                  ...editingTenant,
-                  rentalOwner_lastName: e.target.value,
-                })
-              }
-            />
-          </div> */}
-          <FormGroup>
-            <label className="form-control-label" htmlFor="input-property">
-              lastName
-            </label>
-            <Input
-              className="form-control-alternative"
-              id="input-protype"
-              type="text"
-              name="rentalowner_lastName"
-              value={editingTenant?.rentalOwner_lastName || ""}
-              onChange={(e) =>
-                setEditingTenant({
-                  ...editingTenant,
-                  rentalOwner_lastName: e.target.value,
-                })
-              }
-            />
-          </FormGroup>
-          {/* <div style={{ marginBottom: "16px" }}>
-            <InputLabel>phoneNumber</InputLabel>
-            <TextField
-              fullWidth
-              value={editingTenant?.rentalOwner_phoneNumber || ""}
-              onChange={(e) =>
-                setEditingTenant({
-                  ...editingTenant,
-                  rentalOwner_phoneNumber: e.target.value,
-                })
-              }
-            />
-          </div> */}
-          <FormGroup>
-            <label className="form-control-label" htmlFor="input-property">
-              phoneNumber
-            </label>
-            <Input
-              className="form-control-alternative"
-              id="input-protype"
-              type="text"
-              name="rentalOwner_phoneNumber"
-              value={editingTenant?.rentalOwner_phoneNumber || ""}
-              onChange={(e) =>
-                setEditingTenant({
-                  ...editingTenant,
-                  rentalOwner_phoneNumber: e.target.value,
-                })
-              }
-            />
-          </FormGroup>
-          {/* <div style={{ marginBottom: "16px" }}>
-            <InputLabel>Address</InputLabel>
-            <TextField
-              fullWidth
-              value={editingTenant?.rentalOwner_streetAdress || ""}
-              onChange={(e) =>
-                setEditingTenant({
-                  ...editingTenant,
-                  rentalOwner_streetAdress: e.target.value,
-                })
-              }
-            />
-          </div> */}
-          <FormGroup>
-            <label className="form-control-label" htmlFor="input-property">
-              Address
-            </label>
-            <Input
-              className="form-control-alternative"
-              id="input-protype"
-              type="text"
-              name="rentalOwner_streetAdress"
-              value={editingTenant?.rentalOwner_streetAdress || ""}
-              onChange={(e) =>
-                setEditingTenant({
-                  ...editingTenant,
-                  rentalOwner_streetAdress: e.target.value,
-                })
-              }
-            />
-          </FormGroup>
-          {/* <div style={{ marginBottom: "16px" }}>
-            <InputLabel>Email</InputLabel>
-            <TextField
-              fullWidth
-              value={editingTenant?.rentalOwner_primaryEmail || ""}
-              onChange={(e) =>
-                setEditingTenant({
-                  ...editingTenant,
-                  rentalOwner_primaryEmail: e.target.value,
-                })
-              }
-            />
-          </div> */}
-          <FormGroup>
-            <label className="form-control-label" htmlFor="input-property">
-              Email
-            </label>
-            <Input
-              className="form-control-alternative"
-              id="input-protype"
-              type="text"
-              name="rentalOwner_primaryEmail"
-              value={editingTenant?.rentalOwner_primaryEmail || ""}
-              onChange={(e) =>
-                setEditingTenant({
-                  ...editingTenant,
-                  rentalOwner_primaryEmail: e.target.value,
-                })
-              }
-            />
-          </FormGroup>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeEditDialog}>Cancel</Button>
-          <Button
-            onClick={() => {
-              editTenantData(editingTenant._id, editingTenant);
-            }}
-            color="primary"
-          >
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };
