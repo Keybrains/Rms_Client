@@ -20,7 +20,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "components/Headers/Header";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
 import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
@@ -31,6 +31,7 @@ const RentRoll = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [tenantsData, setTenantsData] = useState([]);
   const navigate = useNavigate();
+  const {admin} = useParams()
   const [searchQuery, setSearchQuery] = useState("");
   let [loader, setLoader] = React.useState(true);
   const [upArrow, setUpArrow] = useState([]);
@@ -42,7 +43,7 @@ const RentRoll = () => {
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
   const navigateToRentRollDetails = (tenantId) => {
-    navigate(`/admin/rentrolldetail/${tenantId}`);
+    navigate(`/${admin}/rentrolldetail/${tenantId}`);
   };
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -198,7 +199,7 @@ const RentRoll = () => {
   };
 
   const editLeasing = (id) => {
-    navigate(`/admin/RentRollLeaseing/${id}`);
+    navigate(`/${admin}/RentRollLeaseing/${id}`);
   };
 
   const getStatus = (startDate, endDate) => {
@@ -243,7 +244,7 @@ const RentRoll = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              onClick={() => navigate("/admin/RentRollLeaseing")}
+              onClick={() => navigate("/"+admin+"/RentRollLeaseing")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >

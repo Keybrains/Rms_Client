@@ -26,7 +26,7 @@ const AddVendor = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   // Initialize variables and state
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id, admin } = useParams();
   const [showPassword, setShowPassword] = useState(false);
 
   // Define validation schema for form fields
@@ -129,7 +129,7 @@ const AddVendor = () => {
   // Handle API response and navigation
   function handleResponse(response) {
     if (response.status === 200) {
-      navigate("/admin/vendor");
+      navigate("/"+admin+"/vendor");
       swal(
         "Success!",
         id ? "Vendor updated successfully" : "Vendor added successfully!",

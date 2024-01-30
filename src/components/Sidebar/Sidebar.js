@@ -179,7 +179,8 @@ const Sidebar = (props) => {
       // prop.name === "Add Agent"
     );
     return filteredRoutes.map((prop, key) => {
-      const path = prop.layout == "/admin" ? "/"+admin : prop.layout;
+      const path = prop.layout == "/"+admin+"" ? "/" + admin : "/" + admin;
+      console.log(path, "yash")
       return (
         <NavItem key={key}>
           <NavLink
@@ -449,21 +450,21 @@ const Sidebar = (props) => {
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem
-                  to={"/"+admin+"/propertiesTable"}
+                  to={"/" + admin + "/propertiesTable"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   Properties
                 </DropdownItem>
                 <DropdownItem
-                  to={"/"+admin+"/RentRoll"}
+                  to={"/" + admin + "/RentalownerTable"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   Rental Owners
                 </DropdownItem>
                 <DropdownItem
-                  to={"/"+admin+"/TenantsTable"}
+                  to={"/" + admin + "/TenantsTable"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
@@ -486,6 +487,13 @@ const Sidebar = (props) => {
                 Listings
               </DropdownItem> */}
                 <DropdownItem
+                  to={"/"+admin+"/RentRoll"}
+                  tag={Link}
+                  onClick={toggleCollapse}
+                >
+                  Rent Roll
+                </DropdownItem>
+                <DropdownItem
                   to={"/"+admin+"/Applicants"}
                   tag={Link}
                   onClick={toggleCollapse}
@@ -503,14 +511,14 @@ const Sidebar = (props) => {
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem
-                  to={"/"+admin+"/vendor"}
+                  to={"/" + admin + "/vendor"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   Vendors
                 </DropdownItem>
                 <DropdownItem
-                  to={"/"+admin+"/Workorder"}
+                  to={"/" + admin + "/Workorder"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
@@ -527,13 +535,13 @@ const Sidebar = (props) => {
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem
-                  to={"/"+admin+"/GeneralLedger"}
+                  to={"/" + admin + "/GeneralLedger"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   General Ledger
                 </DropdownItem>
-                <DropdownItem to={"/"+admin+"/Payment"} tag={Link} onClick={toggleCollapse}>
+                <DropdownItem to={"/" + admin + "/Payment"} tag={Link} onClick={toggleCollapse}>
                   Payment
                 </DropdownItem>
                 {/* <DropdownItem to={"/"+admin+"/OutstandingBalance"} tag={Link}>

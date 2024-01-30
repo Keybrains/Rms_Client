@@ -52,7 +52,7 @@ import {
 import { roomsArray, bathArray } from "./Functions/Units";
 
 const Rentals = () => {
-  const { rental_id } = useParams();
+  const { rental_id , admin} = useParams();
   const navigate = useNavigate();
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -159,7 +159,7 @@ const Rentals = () => {
           );
           if (res === false) {
             setLoader(false);
-            navigate("/admin/propertiesTable");
+            navigate("/"+admin+"/propertiesTable");
           } else {
             setLoader(false);
           }
