@@ -401,7 +401,7 @@ const Rentals = () => {
                           </label>
 
                           <Row>
-                            <Col lg="4">
+                            <Col lg="6">
                               <FormGroup>
                                 <Input
                                   type="text"
@@ -421,7 +421,7 @@ const Rentals = () => {
                                 ) : null}
                               </FormGroup>
                             </Col>
-                            <Col lg="4">
+                            <Col lg="6">
                               <FormGroup>
                                 <Input
                                   type="text"
@@ -546,7 +546,9 @@ const Rentals = () => {
                             <br></br>
                             <br></br>
                             <Row>
-                              <Col lg="4">
+                              
+                            <Row className="mx-1">
+                              <Col lg="12">
                                 <FormGroup
                                   // style={{
                                   //   display: "flex",
@@ -604,7 +606,7 @@ const Rentals = () => {
                             &nbsp; &nbsp; &nbsp;
                             <FormGroup>
                               <Row>
-                                <Col lg="4"
+                                <Col lg="12"
                                   // style={{
                                   //   display: "flex",
                                   //   flexDirection: "column",
@@ -656,7 +658,9 @@ const Rentals = () => {
                                   ) : null}
                                 </Col>
                               </Row>
+                              
                             </FormGroup>
+                            </Row>
                           </FormGroup>
 
                           <hr></hr>
@@ -1017,7 +1021,7 @@ const Rentals = () => {
                             className="form-control-label"
                             htmlFor="input-zip"
                           >
-                            Zip
+                            Zip 
                           </label>
                           <Input
                             type="text"
@@ -1057,7 +1061,7 @@ const Rentals = () => {
                             className="form-control-label"
                             htmlFor="input-country"
                           >
-                            <div className="pl-lg-4">Country</div>
+                            <div className="pl-lg-2">Country</div>
                           </label>
 
                           <br />
@@ -1196,7 +1200,7 @@ const Rentals = () => {
                     <Row>
                       <FormGroup>
                         <div className="pl-lg-4">
-                          <label
+                          {/* <label
                             className="form-control-label"
                             htmlFor="input-country"
                           >
@@ -1221,13 +1225,13 @@ const Rentals = () => {
                             ) : null}
                             <br></br>
                             1099-NEC tax filing information
-                          </label>
+                          </label> */}
                         </div>
                       </FormGroup>
                     </Row>
                   </Col>
 
-                  <FormGroup>
+                  {/* <FormGroup>
                     <Row>
                       <Col lg="4" className="ml-lg-4">
                         <label
@@ -1256,7 +1260,7 @@ const Rentals = () => {
                         ) : null}
                       </Col>
                     </Row>
-                  </FormGroup>
+                  </FormGroup> */}
 
                   <FormGroup>
                     <Row>
@@ -1313,7 +1317,7 @@ const Rentals = () => {
                   </FormGroup> */}
                   <Col>
                     <FormGroup>
-                      <div className="pl-lg-4">
+                      <div className="pl-lg-2">
                         <label
                           className="form-control-label"
                           htmlFor="input-rental properties"
@@ -1328,7 +1332,7 @@ const Rentals = () => {
 
                   <Col>
                     <FormGroup>
-                      <div className="pl-lg-4">
+                      <div className="pl-lg-2">
                         <label
                           className="form-control-label"
                           htmlFor="input-property"
@@ -1352,7 +1356,7 @@ const Rentals = () => {
 
                   <Col>
                     <FormGroup>
-                      <div className="pl-lg-3">
+                      <div className="pl-lg-2">
                         <input
                           type="checkbox"
                           style={{
@@ -1374,7 +1378,7 @@ const Rentals = () => {
 
                   <Row>
                     <Col lg="4" className="ml-lg-4">
-                      <div className="pl-lg-4">
+                      <div className="pl-lg-2">
                         <FormGroup>
                           {filterRentalsBySearch().length > 0 ? (
                             filterRentalsBySearch().map((property) => (

@@ -460,7 +460,7 @@ const Sidebar = (props) => {
                   tag={Link}
                   onClick={toggleCollapse}
                 >
-                  Rent Roll
+                  Rental Owners
                 </DropdownItem>
                 <DropdownItem
                   to={"/"+admin+"/TenantsTable"}

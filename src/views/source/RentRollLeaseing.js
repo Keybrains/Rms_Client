@@ -401,16 +401,14 @@ const RentRollLeaseing = () => {
         rentChargeFormik.values,
       ],
     };
-    console.log(chargeData, "yash")
-    // try {
-    //   const res = await axios.post(`${baseUrl}/leases/leases`, object);
-    //   console.log(res, object)
-    //   if (res.data.statusCode === 200) {
-    //     swal("Success", "Lease Added Successfully", "success");
-    //   }
-    // } catch (error) {
-    //   console.error("Error:", error.message);
-    // }
+    try {
+      const res = await axios.post(`${baseUrl}/leases/leases`, object);
+      if (res.data.statusCode === 200) {
+        swal("Success", "Lease Added Successfully", "success");
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
     setLoader(false);
   };
 

@@ -47,7 +47,7 @@ const RentRoll = () => {
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
@@ -58,23 +58,45 @@ const RentRoll = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/leases/leases`);
-      const data = response.data.data;
+      const response = await axios.get(
+        `${baseUrl}/leases/leases/${accessType.admin_id}`
+      );
 
-      // Reverse the data order
-      const reversedData = data.slice().reverse();
-
-      setLoader(false);
-      setTenantsData(reversedData);
-      setTotalPages(Math.ceil(reversedData.length / pageItem));
+      if (response.data.statusCode === 200) {
+        const data = response.data.data;
+        const transformedData = data.map((item) => {
+          return {
+            tenant_id: item.tenant.tenant_id,
+            tenant_firstName: item.tenant.tenant_firstName,
+            tenant_lastName: item.tenant.tenant_lastName,
+            rental_id: item.rental.rental_id,
+            rental_adress: item.rental.rental_adress,
+            unit_id: item.unit.unit_id,
+            rental_unit: item.unit.rental_unit,
+            lease_id: item.lease.lease_id,
+            lease_type: item.lease.lease_type,
+            start_date: item.lease.start_date,
+            end_date: item.lease.end_date,
+            createdAt: item.lease.createdAt,
+            updatedAt: item.lease.updatedAt,
+          };
+        });
+        const reversedData = transformedData.slice().reverse();
+        setLoader(false);
+        setTenantsData(reversedData);
+        setTotalPages(Math.ceil(reversedData.length / pageItem));
+      } else {
+        console.log(response.data.message);
+        return;
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchData();
-  }, [pageItem]);
+  }, [pageItem, accessType]);
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -87,56 +109,16 @@ const RentRoll = () => {
     setCurrentPage(page);
   };
 
-  // const filterRentRollsBySearch = () => {
-  //   if (!searchQuery) {
-  //     return tenantsData;
-  //   }
-
-  //   return tenantsData.filter((tenant) => {
-  //     return (
-  //       `${tenant.tenant_firstName} ${tenant.tenant_lastName}`
-  //         .toLowerCase()
-  //         .includes(searchQuery.toLowerCase()) ||
-  //       tenant.property_type
-  //         .toLowerCase()
-  //         .includes(searchQuery.toLowerCase()) ||
-  //       tenant.lease_type.toLowerCase().includes(searchQuery.toLowerCase())
-  //     );
-  //   });
-  // };
-  // const filterRentRollsBySearch = () => {
-  //   if (searchQuery === undefined) {
-  //     return tenantsData;
-  //   }
-
-  //   return tenantsData.filter((tenant) => {
-  //     return tenant.entries.some((entry) => {
-  //       const rentalAddress = entry.rental_adress;
-  //       if (rentalAddress && typeof rentalAddress === "string") {
-  //         return rentalAddress
-  //           .toLowerCase()
-  //           .includes(searchQuery.toLowerCase());
-  //       }
-  //       return false;
-  //     });
-  //   });
-  // };
   const filterRentRollsBySearch = () => {
-    let filteredData = [...tenantsData]; // Create a copy of tenantsData to avoid mutating the original array
+    let filteredData = [...tenantsData];
 
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
-      // setCurrentPage(1);
       filteredData = filteredData.filter((tenant) => {
         const name = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
-        // setCurrentPage(1)
         return (
-          tenant.entries.rental_adress
-            .toLowerCase()
-            .includes(lowerCaseSearchQuery) ||
-          tenant.entries.lease_type
-            .toLowerCase()
-            .includes(lowerCaseSearchQuery) ||
+          tenant.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
+          tenant.lease_type.toLowerCase().includes(lowerCaseSearchQuery) ||
           tenant.tenant_firstName
             .toLowerCase()
             .includes(lowerCaseSearchQuery) ||
@@ -151,12 +133,12 @@ const RentRoll = () => {
         switch (value) {
           case "rental_adress":
             filteredData.sort((a, b) =>
-              a.entries.rental_adress.localeCompare(b.entries.rental_adress)
+              a.rental_adress.localeCompare(b.rental_adress)
             );
             break;
           case "lease_type":
             filteredData.sort((a, b) =>
-              a.entries.lease_type.localeCompare(b.entries.lease_type)
+              a.lease_type.localeCompare(b.lease_type)
             );
             break;
           case "tenant_firstName":
@@ -166,12 +148,11 @@ const RentRoll = () => {
             break;
           case "start_date":
             filteredData.sort(
-              (a, b) =>
-                new Date(a.entries.start_date) - new Date(b.entries.start_date)
+              (a, b) => new Date(a.start_date) - new Date(b.start_date)
             );
             break;
           case "amount":
-            filteredData.sort((a, b) => a.entries.amount - b.entries.amount);
+            filteredData.sort((a, b) => a.amount - b.amount);
             break;
           case "createAt":
             filteredData.sort(
@@ -179,7 +160,6 @@ const RentRoll = () => {
             );
             break;
           default:
-            // If an unknown sort option is provided, do nothing
             filteredData.slice(startIndex, endIndex);
             break;
         }
@@ -192,53 +172,33 @@ const RentRoll = () => {
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentRollsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
-    console.log(startIndex, endIndex, "start index and end index");
-    console.log(filteredData, paginatedData, "filtered and paginated data");
     return paginatedData;
   };
 
-  const deleteTenant = (tenantId, entryIndex, subscription_id) => {
+  const deleteTenant = (lease_id) => {
     swal({
       title: "Are you sure?",
-      text: "Once deleted, you will not be able to recover this tenant!",
+      text: "Once deleted, you will not be able to recover this lease!",
       icon: "warning",
       buttons: ["Cancel", "Delete"],
       dangerMode: true,
-    }).then((willDelete) => {
+    }).then(async (willDelete) => {
       if (willDelete) {
-        axios
-          .delete(`${baseUrl}/tenant/tenant/${tenantId}/entry/${entryIndex}`)
-          .then((response) => {
-            if (response.data.statusCode === 200) {
-              swal("Success!", "Tenant deleted successfully!", "success");
-              fetchData();
-              const subscription_id_to_send = subscription_id;
-              axios
-                .post(`${baseUrl}/nmipayment/custom-delete-subscription`, {
-                  subscription_id: subscription_id_to_send,
-                })
-                .then((secondApiResponse) => {
-                  console.log("Second API Response:", secondApiResponse.data);
-                })
-                .catch((secondApiError) => {
-                  console.error("Error calling second API:", secondApiError);
-                });
-            } else {
-              swal("", response.data.message, "error");
-            }
-          })
-          .catch((error) => {
-            console.error("Error deleting Tenant:", error);
-          });
+        const res = await axios.delete(`${baseUrl}/leases/leases/${lease_id}`);
+        if (res.data.statusCode === 200) {
+          swal("Success", res.data.message, "success");
+          fetchData();
+        } else {
+          swal("Warning", res.data.message, "warning");
+        }
       } else {
         swal("Cancelled", "Tenant is safe :)", "info");
       }
     });
   };
 
-  const editLeasing = (id, entryIndex) => {
-    navigate(`/admin/RentRollLeaseing/${id}/${entryIndex}`);
-    //console.log(id);
+  const editLeasing = (id) => {
+    navigate(`/admin/RentRollLeaseing/${id}`);
   };
 
   const getStatus = (startDate, endDate) => {
@@ -267,15 +227,7 @@ const RentRoll = () => {
       setUpArrow(upArrow.filter((sort) => sort !== value));
       filterTenantsBySearchAndPage();
     }
-    //console.log(value);
-    // setOnClickUpArrow(!onClickUpArrow);
   };
-
-  useEffect(() => {
-    // setLoader(false);
-    // filterRentalsBySearch();
-    fetchData();
-  }, [upArrow, sortBy]);
 
   return (
     <>
@@ -291,7 +243,6 @@ const RentRoll = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              //  href="#rms"
               onClick={() => navigate("/admin/RentRollLeaseing")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -413,7 +364,6 @@ const RentRoll = () => {
                         )}
                       </th>
                       <th scope="col">
-                        {" "}
                         Rent
                         {sortBy.includes("amount") ? (
                           upArrow.includes("amount") ? (
@@ -427,7 +377,7 @@ const RentRoll = () => {
                           )
                         ) : (
                           <ArrowUpwardIcon onClick={() => sortData("amount")} />
-                        )}{" "}
+                        )}
                       </th>
                       <th scope="col">
                         Created At
@@ -455,12 +405,9 @@ const RentRoll = () => {
                     {filterTenantsBySearchAndPage()?.map((tenant) => (
                       <>
                         <tr
-                          key={tenant._id}
+                          key={tenant.lease_id}
                           onClick={() =>
-                            navigateToRentRollDetails(
-                              tenant._id,
-                              tenant.entries.entryIndex
-                            )
+                            navigateToRentRollDetails(tenant.lease_id)
                           }
                           style={{ cursor: "pointer" }}
                         >
@@ -468,44 +415,28 @@ const RentRoll = () => {
                             {tenant.tenant_firstName} {tenant.tenant_lastName}
                           </td>
                           <td>
-                            {tenant.entries.rental_adress}{" "}
-                            {tenant.entries.rental_units
-                              ? " - " + tenant.entries.rental_units
+                            {tenant.rental_adress}{" "}
+                            {tenant.rental_unit
+                              ? " - " + tenant.rental_unit
                               : null}{" "}
                           </td>
-                          <td>{tenant.entries.lease_type}</td>
+                          <td>{tenant.lease_type}</td>
                           <td>
-                            {getStatus(
-                              tenant.entries.start_date,
-                              tenant.entries.end_date
-                            )}
+                            {getStatus(tenant.start_date, tenant.end_date)}
                           </td>
                           <td>
-                            {tenant.entries.start_date} to{" "}
-                            {tenant.entries.end_date}
+                            {tenant.start_date} to {tenant.end_date}
                           </td>
-                          <td>{tenant.entries.amount}</td>
-                          <td>{tenant.entries.createdAt} </td>
-                          <td>
-                            {tenant.entries.updateAt
-                              ? tenant.entries.updateAt
-                              : "-"}{" "}
-                          </td>
-
-                          {/* <td>{tenant.entries.entryIndex}</td>
-                        <td>{tenant.entries.rental_adress}</td> */}
+                          <td>{tenant.amount}</td>
+                          <td>{tenant.createdAt} </td>
+                          <td>{tenant.updatedAt ? tenant.updatedAt : "-"} </td>
                           <td style={{}}>
                             <div style={{ display: "flex", gap: "5px" }}>
                               <div
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  deleteTenant(
-                                    tenant._id,
-                                    tenant.entries.entryIndex,
-                                    tenant.entries.subscription_id
-                                  );
-                                  // console.log(entry.entryIndex,"dsgdg")
+                                  deleteTenant(tenant.lease_id);
                                 }}
                               >
                                 <DeleteIcon />
@@ -514,10 +445,7 @@ const RentRoll = () => {
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  editLeasing(
-                                    tenant._id,
-                                    tenant.entries.entryIndex
-                                  );
+                                  editLeasing(tenant.lease_id);
                                 }}
                               >
                                 <EditIcon />

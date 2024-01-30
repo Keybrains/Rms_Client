@@ -51,7 +51,7 @@ import {
 //units
 import { roomsArray, bathArray } from "./Functions/Units";
 
-const Rentals2 = () => {
+const Rentals = () => {
   const { rental_id } = useParams();
   const navigate = useNavigate();
 
@@ -179,6 +179,7 @@ const Rentals2 = () => {
       rentalOwner_lastName: "",
       rentalOwner_companyName: "",
       rentalOwner_primaryEmail: "",
+      rentalOwner_alternativeEmail: "",
       rentalOwner_phoneNumber: "",
       rentalOwner_homeNumber: "",
       rentalOwner_businessNumber: "",
@@ -287,6 +288,8 @@ const Rentals2 = () => {
           response.data.data[0].rental_owner_data.rentalOwner_companyName,
         rentalOwner_primaryEmail:
           response.data.data[0].rental_owner_data.rentalOwner_primaryEmail,
+        rentalOwner_alternativeEmail:
+          response.data.data[0].rental_owner_data.rentalOwner_alternativeEmail,
         rentalOwner_phoneNumber:
           response.data.data[0].rental_owner_data.rentalOwner_phoneNumber,
         rentalOwner_homeNumber:
@@ -428,6 +431,7 @@ const Rentals2 = () => {
       rentalOwner_lastName: rentalOwnerInfo.rentalOwner_lastName,
       rentalOwner_companyName: rentalOwnerInfo.rentalOwner_companyName,
       rentalOwner_primaryEmail: rentalOwnerInfo.rentalOwner_primaryEmail,
+      rentalOwner_alternativeEmail: rentalOwnerInfo.rentalOwner_alternativeEmail,
       rentalOwner_phoneNumber: rentalOwnerInfo.rentalOwner_phoneNumber,
       rentalOwner_homeNumber: rentalOwnerInfo.rentalOwner_homeNumber,
       rentalOwner_businessNumber: rentalOwnerInfo.rentalOwner_businessNumber,
@@ -443,6 +447,8 @@ const Rentals2 = () => {
       rentalOwner_phoneNumber: rentalOwnerFormik.values.rentalOwner_phoneNumber,
       rentalOwner_primaryEmail:
         rentalOwnerFormik.values.rentalOwner_primaryEmail,
+      rentalOwner_alternativeEmail:
+        rentalOwnerFormik.values.rentalOwner_alternativeEmail,
       rentalOwner_homeNumber: rentalOwnerFormik.values.rentalOwner_homeNumber,
       rentalOwner_businessNumber:
         rentalOwnerFormik.values.rentalOwner_businessNumber,
@@ -1061,7 +1067,7 @@ const Rentals2 = () => {
                                         className="form-control-label"
                                         htmlFor="input-address"
                                       >
-                                        Company Name
+                                        Company Name *
                                       </label>
                                       <br />
                                       <Input
@@ -1104,7 +1110,7 @@ const Rentals2 = () => {
                                         className="form-control-label"
                                         htmlFor="input-address"
                                       >
-                                        Primary Email
+                                        Primary Email *
                                       </label>
                                       <br />
                                       <InputGroup
@@ -1156,6 +1162,55 @@ const Rentals2 = () => {
                                           }
                                         </div>
                                       ) : null}
+                                    </div>
+                                    <div
+                                      className="formInput"
+                                      style={{ margin: "30px 10px" }}
+                                    >
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-address"
+                                      >
+                                        Alternative Email *
+                                      </label>
+                                      <br />
+                                      <InputGroup
+                                        style={{
+                                          marginRight: "10px",
+                                          marginTop: "5px",
+                                          flex: 1,
+                                        }}
+                                      >
+                                        <Input
+                                          required
+                                          id="standard-multiline-static"
+                                          className="popinput"
+                                          type="text"
+                                          name="rentalOwner_alternativeEmail"
+                                          onBlur={rentalOwnerFormik.handleBlur}
+                                          onChange={(e) => {
+                                            rentalOwnerFormik.setFieldValue(
+                                              "rentalOwner_alternativeEmail",
+                                              e.target.value
+                                            );
+                                          }}
+                                          value={
+                                            rentalOwnerFormik.values
+                                              .rentalOwner_alternativeEmail
+                                          }
+                                        />
+                                        <InputGroupAddon addonType="prepend">
+                                          <span
+                                            className="input-group-text"
+                                            style={{
+                                              paddingBottom: "8px",
+                                              paddingTop: "8px",
+                                            }}
+                                          >
+                                            <EmailIcon />
+                                          </span>
+                                        </InputGroupAddon>
+                                      </InputGroup>
                                     </div>
                                     <div
                                       className="formInput"
@@ -1333,6 +1388,137 @@ const Rentals2 = () => {
                                           }
                                         </div>
                                       ) : null}
+                                    </div>
+                                    <div
+                                      className="formInput"
+                                      style={{ margin: "30px 10px" }}
+                                    >
+                                      <div>Street Address</div>
+                                      <br />
+                                      <Row>
+                                        <FormGroup className="col-12">
+                                          <Input
+                                            required
+                                            className="form-control-alternative"
+                                            id="input-address"
+                                            placeholder="Address"
+                                            type="text"
+                                            name="rental_adress"
+                                            // onBlur={rentalsFormik.handleBlur}
+                                            // onChange={(e) =>
+                                            //   rentalsFormik.setFieldValue(
+                                            //     "entries[0].rental_adress",
+                                            //     e.target.value
+                                            //   )
+                                            // }
+                                            // value={
+                                            //   rentalsFormik.values?.entries[0]
+                                            //     ?.rental_adress
+                                            // }
+                                            style={{
+                                              border: "1px solid #cad1d7",
+                                            }}
+                                          />
+                                        </FormGroup>
+                                        <FormGroup className="col-6">
+                                          <Input
+                                            required
+                                            className="form-control-alternative"
+                                            id="input-address"
+                                            placeholder="City"
+                                            type="text"
+                                            name="rental_adress"
+                                            // onBlur={rentalsFormik.handleBlur}
+                                            // onChange={(e) =>
+                                            //   rentalsFormik.setFieldValue(
+                                            //     "entries[0].rental_adress",
+                                            //     e.target.value
+                                            //   )
+                                            // }
+                                            // value={
+                                            //   rentalsFormik.values?.entries[0]
+                                            //     ?.rental_adress
+                                            // }
+                                            style={{
+                                              border: "1px solid #cad1d7",
+                                            }}
+                                          />
+                                        </FormGroup>
+                                        <FormGroup className="col-6">
+                                          <Input
+                                            required
+                                            className="form-control-alternative"
+                                            id="input-address"
+                                            placeholder="State"
+                                            type="text"
+                                            name="rental_adress"
+                                            // onBlur={rentalsFormik.handleBlur}
+                                            // onChange={(e) =>
+                                            //   rentalsFormik.setFieldValue(
+                                            //     "entries[0].rental_adress",
+                                            //     e.target.value
+                                            //   )
+                                            // }
+                                            // value={
+                                            //   rentalsFormik.values?.entries[0]
+                                            //     ?.rental_adress
+                                            // }
+                                            style={{
+                                              border: "1px solid #cad1d7",
+                                            }}
+                                          />
+                                        </FormGroup>
+                                      </Row>
+                                      <Row>
+                                        <FormGroup className="col-6">
+                                          <Input
+                                            required
+                                            className="form-control-alternative"
+                                            id="input-address"
+                                            placeholder="Country"
+                                            type="text"
+                                            name="rental_adress"
+                                            // onBlur={rentalsFormik.handleBlur}
+                                            // onChange={(e) =>
+                                            //   rentalsFormik.setFieldValue(
+                                            //     "entries[0].rental_adress",
+                                            //     e.target.value
+                                            //   )
+                                            // }
+                                            // value={
+                                            //   rentalsFormik.values?.entries[0]
+                                            //     ?.rental_adress
+                                            // }
+                                            style={{
+                                              border: "1px solid #cad1d7",
+                                            }}
+                                          />
+                                        </FormGroup>
+                                        <FormGroup className="col-6">
+                                          <Input
+                                            required
+                                            className="form-control-alternative"
+                                            id="input-address"
+                                            placeholder="Postal code"
+                                            type="text"
+                                            name="rental_adress"
+                                            // onBlur={rentalsFormik.handleBlur}
+                                            // onChange={(e) =>
+                                            //   rentalsFormik.setFieldValue(
+                                            //     "entries[0].rental_adress",
+                                            //     e.target.value
+                                            //   )
+                                            // }
+                                            // value={
+                                            //   rentalsFormik.values?.entries[0]
+                                            //     ?.rental_adress
+                                            // }
+                                            style={{
+                                              border: "1px solid #cad1d7",
+                                            }}
+                                          />
+                                        </FormGroup>
+                                      </Row>
                                     </div>
                                   </div>
                                 )}
@@ -2372,4 +2558,4 @@ const Rentals2 = () => {
   );
 };
 
-export default Rentals2;
+export default Rentals;
