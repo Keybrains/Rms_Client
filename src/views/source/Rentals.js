@@ -183,6 +183,10 @@ const Rentals = () => {
       rentalOwner_phoneNumber: "",
       rentalOwner_homeNumber: "",
       rentalOwner_businessNumber: "",
+      city: "",
+      state: "",
+      country: "",
+      postal_code: "",
       chooseExistingOwner: false,
     },
     validationSchema: yup.object({
@@ -431,7 +435,8 @@ const Rentals = () => {
       rentalOwner_lastName: rentalOwnerInfo.rentalOwner_lastName,
       rentalOwner_companyName: rentalOwnerInfo.rentalOwner_companyName,
       rentalOwner_primaryEmail: rentalOwnerInfo.rentalOwner_primaryEmail,
-      rentalOwner_alternativeEmail: rentalOwnerInfo.rentalOwner_alternativeEmail,
+      rentalOwner_alternativeEmail:
+        rentalOwnerInfo.rentalOwner_alternativeEmail,
       rentalOwner_phoneNumber: rentalOwnerInfo.rentalOwner_phoneNumber,
       rentalOwner_homeNumber: rentalOwnerInfo.rentalOwner_homeNumber,
       rentalOwner_businessNumber: rentalOwnerInfo.rentalOwner_businessNumber,
@@ -1403,18 +1408,19 @@ const Rentals = () => {
                                             id="input-address"
                                             placeholder="Address"
                                             type="text"
-                                            name="rental_adress"
-                                            // onBlur={rentalsFormik.handleBlur}
-                                            // onChange={(e) =>
-                                            //   rentalsFormik.setFieldValue(
-                                            //     "entries[0].rental_adress",
-                                            //     e.target.value
-                                            //   )
-                                            // }
-                                            // value={
-                                            //   rentalsFormik.values?.entries[0]
-                                            //     ?.rental_adress
-                                            // }
+                                            name="address"
+                                            onBlur={
+                                              rentalOwnerFormik.handleBlur
+                                            }
+                                            onChange={(e) =>
+                                              rentalOwnerFormik.setFieldValue(
+                                                "address",
+                                                e.target.value
+                                              )
+                                            }
+                                            value={
+                                              rentalOwnerFormik.values?.address
+                                            }
                                             style={{
                                               border: "1px solid #cad1d7",
                                             }}
@@ -1427,18 +1433,19 @@ const Rentals = () => {
                                             id="input-address"
                                             placeholder="City"
                                             type="text"
-                                            name="rental_adress"
-                                            // onBlur={rentalsFormik.handleBlur}
-                                            // onChange={(e) =>
-                                            //   rentalsFormik.setFieldValue(
-                                            //     "entries[0].rental_adress",
-                                            //     e.target.value
-                                            //   )
-                                            // }
-                                            // value={
-                                            //   rentalsFormik.values?.entries[0]
-                                            //     ?.rental_adress
-                                            // }
+                                            name="city"
+                                            onBlur={
+                                              rentalOwnerFormik.handleBlur
+                                            }
+                                            onChange={(e) =>
+                                              rentalOwnerFormik.setFieldValue(
+                                                "city",
+                                                e.target.value
+                                              )
+                                            }
+                                            value={
+                                              rentalOwnerFormik.values?.city
+                                            }
                                             style={{
                                               border: "1px solid #cad1d7",
                                             }}
@@ -1451,18 +1458,19 @@ const Rentals = () => {
                                             id="input-address"
                                             placeholder="State"
                                             type="text"
-                                            name="rental_adress"
-                                            // onBlur={rentalsFormik.handleBlur}
-                                            // onChange={(e) =>
-                                            //   rentalsFormik.setFieldValue(
-                                            //     "entries[0].rental_adress",
-                                            //     e.target.value
-                                            //   )
-                                            // }
-                                            // value={
-                                            //   rentalsFormik.values?.entries[0]
-                                            //     ?.rental_adress
-                                            // }
+                                            name="state"
+                                            onBlur={
+                                              rentalOwnerFormik.handleBlur
+                                            }
+                                            onChange={(e) =>
+                                              rentalOwnerFormik.setFieldValue(
+                                                "state",
+                                                e.target.value
+                                              )
+                                            }
+                                            value={
+                                              rentalOwnerFormik.values?.state
+                                            }
                                             style={{
                                               border: "1px solid #cad1d7",
                                             }}
@@ -1477,18 +1485,19 @@ const Rentals = () => {
                                             id="input-address"
                                             placeholder="Country"
                                             type="text"
-                                            name="rental_adress"
-                                            // onBlur={rentalsFormik.handleBlur}
-                                            // onChange={(e) =>
-                                            //   rentalsFormik.setFieldValue(
-                                            //     "entries[0].rental_adress",
-                                            //     e.target.value
-                                            //   )
-                                            // }
-                                            // value={
-                                            //   rentalsFormik.values?.entries[0]
-                                            //     ?.rental_adress
-                                            // }
+                                            name="country"
+                                            onBlur={
+                                              rentalOwnerFormik.handleBlur
+                                            }
+                                            onChange={(e) =>
+                                              rentalOwnerFormik.setFieldValue(
+                                                "country",
+                                                e.target.value
+                                              )
+                                            }
+                                            value={
+                                              rentalOwnerFormik.values?.country
+                                            }
                                             style={{
                                               border: "1px solid #cad1d7",
                                             }}
@@ -1501,18 +1510,20 @@ const Rentals = () => {
                                             id="input-address"
                                             placeholder="Postal code"
                                             type="text"
-                                            name="rental_adress"
-                                            // onBlur={rentalsFormik.handleBlur}
-                                            // onChange={(e) =>
-                                            //   rentalsFormik.setFieldValue(
-                                            //     "entries[0].rental_adress",
-                                            //     e.target.value
-                                            //   )
-                                            // }
-                                            // value={
-                                            //   rentalsFormik.values?.entries[0]
-                                            //     ?.rental_adress
-                                            // }
+                                            name="postal_code"
+                                            onBlur={
+                                              rentalOwnerFormik.handleBlur
+                                            }
+                                            onChange={(e) =>
+                                              rentalOwnerFormik.setFieldValue(
+                                                "postal_code",
+                                                e.target.value
+                                              )
+                                            }
+                                            value={
+                                              rentalOwnerFormik.values
+                                                ?.postal_code
+                                            }
                                             style={{
                                               border: "1px solid #cad1d7",
                                             }}

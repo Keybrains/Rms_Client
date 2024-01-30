@@ -86,6 +86,7 @@ const PropertyType = () => {
     setEditDialogOpen(false);
     setEditingProperty([]);
   };
+  
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 

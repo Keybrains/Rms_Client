@@ -72,6 +72,7 @@ const Rentals = () => {
   const [selectedState, setSelectedState] = useState("United State");
   const [selectedProp, setSelectedProp] = useState([]);
   const [loading, setIsLoading] = useState(true);
+  const [countries, setCountries] = useState([]);
 
   const toggle1 = () => setstateDropdownOpen((prevState) => !prevState);
 
@@ -93,7 +94,7 @@ const Rentals = () => {
   // const handleClose = () => {
   //   setOpen(false); // Close the form by setting the 'open' state to false
   // };
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -180,6 +181,21 @@ const Rentals = () => {
       // Handle the error and display an error message to the user if necessary.
     }
   }
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await axios.get(
+          "https://restcountries.com/v3.1/all?fields=name"
+        );
+        setCountries(response.data);
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+      }
+    };
+
+    fetchCountries();
+  }, []); // Empty dependency array ensures that the effect runs only once, similar to componentDidMount
 
   function handleResponse(response) {
     if (response.status === 200) {
@@ -370,7 +386,6 @@ const Rentals = () => {
   `}
       </style>
       <RentalownerHeder />
-      {/* Page content */}
       <Container className="mt--7" fluid>
         <Row>
           <Col className="order-xl-1" xl="12">
@@ -444,8 +459,8 @@ const Rentals = () => {
                           </Row>
 
                           <Row>
-                            <Col>
-                              <FormGroup>
+                            <Col lg={12}>
+                              <FormGroup className="mb-0">
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-address"
@@ -492,7 +507,7 @@ const Rentals = () => {
                                 >
                                   Date Of Birth*
                                 </label>
-                                <br/>
+                                <br />
                                 <Input
                                   id="birth_date"
                                   placeholder="Date Of Birth"
@@ -500,30 +515,7 @@ const Rentals = () => {
                                   onBlur={rentalsFormik.handleBlur}
                                   onChange={rentalsFormik.handleChange}
                                   value={rentalsFormik.values.birth_date}
-                                  
                                 />
-                                {/* <LocalizationProvider
-                                  dateAdapter={AdapterDayjs}
-                                  style={{ backgroundColor: "white" }}
-                                >
-                                  <DatePicker
-                                    className="form-control-alternative custom-date-picker"
-                                    name="birth_date"
-                                    slotProps={{ textField: { size: "small" } }}
-                                    id="birth_date"
-                                    views={["year", "month", "day"]}
-                                    placeholder="3000"
-                                    dateFormat="MM-dd-yyyy"
-                                    onBlur={rentalsFormik.handleBlur}
-                                    selected={rentalsFormik.values.birth_date}
-                                    onChange={(date) => {
-                                      rentalsFormik.setFieldValue(
-                                        "birth_date",
-                                        date
-                                      );
-                                    }}
-                                  />
-                                </LocalizationProvider> */}
                                 {rentalsFormik.touched.birth_date &&
                                 rentalsFormik.errors.birth_date ? (
                                   <div style={{ color: "red" }}>
@@ -546,120 +538,62 @@ const Rentals = () => {
                             <br></br>
                             <br></br>
                             <Row>
-                              
-                            <Row className="mx-1">
-                              <Col lg="12">
-                                <FormGroup
-                                  // style={{
-                                  //   display: "flex",
-                                  //   flexDirection: "column",
-                                  // }}
-                                >
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-unitadd"
-                                  >
-                                    Start Date *
-                                  </label>
-                                  <br/>
+                              <Row className="mx-1">
+                                <Col lg="12">
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-unitadd"
+                                    >
+                                      Start Date *
+                                    </label>
+                                    <br />
 
-                                  <Input
-                                    id="start_date"
-                                    placeholder="Start Date"
-                                    type="date"
-                                    onBlur={rentalsFormik.handleBlur}
-                                    onChange={rentalsFormik.handleChange}
-                                    value={rentalsFormik.values.start_date}
-                                  />
-                                  {/* <LocalizationProvider
-                                    dateAdapter={AdapterDayjs}
-                                  >
-                                    <DatePicker
-                                      className="form-control-alternative custom-date-picker"
-                                      name="start_date"
-                                      slotProps={{
-                                        textField: { size: "small" },
-                                      }}
+                                    <Input
                                       id="start_date"
-                                      placeholder="3000"
-                                      views={["year", "month", "day"]}
-                                      dateFormat="MM-dd-yyyy"
+                                      placeholder="Start Date"
+                                      type="date"
                                       onBlur={rentalsFormik.handleBlur}
-                                      selected={rentalsFormik.values.start_date} // Use 'selected' prop instead of 'value'
-                                      onChange={(date) => {
-                                        rentalsFormik.setFieldValue(
-                                          "start_date",
-                                          date
-                                        ); // Update the Formik field value
-                                      }}
+                                      onChange={rentalsFormik.handleChange}
+                                      value={rentalsFormik.values.start_date}
                                     />
-                                  </LocalizationProvider> */}
-                                  {rentalsFormik.touched.start_date &&
-                                  rentalsFormik.errors.start_date ? (
-                                    <div style={{ color: "red" }}>
-                                      {rentalsFormik.errors.start_date}
-                                    </div>
-                                  ) : null}
-                                </FormGroup>
-                              </Col>
-                            </Row>
-                            &nbsp; &nbsp; &nbsp;
-                            <FormGroup>
-                              <Row>
-                                <Col lg="12"
-                                  // style={{
-                                  //   display: "flex",
-                                  //   flexDirection: "column",
-                                  // }}
-                                >
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-unitadd"
-                                  >
-                                    End Date *
-                                  </label>
-                                  <br/>
-                                  <Input
-                                    id="end_date"
-                                    placeholder="End Date"
-                                    type="date"
-                                    onBlur={rentalsFormik.handleBlur}
-                                    onChange={rentalsFormik.handleChange}
-                                    value={rentalsFormik.values.end_date}
-                                  />
-                                  {/* <LocalizationProvider
-                                    dateAdapter={AdapterDayjs}
-                                  >
-                                    <DatePicker
-                                      className="form-control-alternative custom-date-picker"
-                                      name="end_date"
-                                      slotProps={{
-                                        textField: { size: "small" },
-                                      }}
-                                      id="end_date"
-                                      placeholder="3000"
-                                      views={["year", "month", "day"]}
-                                      dateFormat="MM-dd-yyyy"
-                                      onBlur={rentalsFormik.handleBlur}
-                                      selected={rentalsFormik.values.end_date} // Use 'selected' prop instead of 'value'
-                                      onChange={(date) => {
-                                        rentalsFormik.setFieldValue(
-                                          "end_date",
-                                          date
-                                        ); // Update the Formik field value
-                                      }}
-                                    />
-                                  </LocalizationProvider> */}
-                                  {rentalsFormik.touched.end_date &&
-                                  rentalsFormik.errors.end_date ? (
-                                    <div style={{ color: "red" }}>
-                                      {rentalsFormik.errors.end_date}
-                                    </div>
-                                  ) : null}
+                                    {rentalsFormik.touched.start_date &&
+                                    rentalsFormik.errors.start_date ? (
+                                      <div style={{ color: "red" }}>
+                                        {rentalsFormik.errors.start_date}
+                                      </div>
+                                    ) : null}
+                                  </FormGroup>
                                 </Col>
                               </Row>
-                              
-                            </FormGroup>
+                              &nbsp; &nbsp; &nbsp;
+                              <FormGroup>
+                                <Row>
+                                  <Col lg="12">
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-unitadd"
+                                    >
+                                      End Date *
+                                    </label>
+                                    <br />
+                                    <Input
+                                      id="end_date"
+                                      placeholder="End Date"
+                                      type="date"
+                                      onBlur={rentalsFormik.handleBlur}
+                                      onChange={rentalsFormik.handleChange}
+                                      value={rentalsFormik.values.end_date}
+                                    />
+                                    {rentalsFormik.touched.end_date &&
+                                    rentalsFormik.errors.end_date ? (
+                                      <div style={{ color: "red" }}>
+                                        {rentalsFormik.errors.end_date}
+                                      </div>
+                                    ) : null}
+                                  </Col>
+                                </Row>
+                              </FormGroup>
                             </Row>
                           </FormGroup>
 
@@ -676,7 +610,7 @@ const Rentals = () => {
 
                           <Row>
                             <Col>
-                              <FormGroup>
+                              <FormGroup className="mb-0">
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
@@ -717,13 +651,12 @@ const Rentals = () => {
                                   ) : null}
                                 </div>
                               </FormGroup>
-                              <FormGroup>
+                              <FormGroup className="mb-0">
                                 <label
                                   className="form-control-label"
                                   htmlFor="input-property"
                                 >
                                   Alternative E-mail
-                                  {/* <EmailIcon/> */}
                                 </label>
                                 &nbsp;
                               </FormGroup>
@@ -763,7 +696,7 @@ const Rentals = () => {
                           </Row>
 
                           <Col></Col>
-                          <FormGroup>
+                          <FormGroup className="mb-0">
                             <label
                               className="form-control-label"
                               htmlFor="input-property"
@@ -788,13 +721,13 @@ const Rentals = () => {
                                 rentalsFormik.values.rentalOwner_phoneNumber
                               }
                               onInput={(e) => {
-                              const inputValue = e.target.value;
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ""
-                              ); // Remove non-numeric characters
-                              e.target.value = numericValue;
-                            }}
+                                const inputValue = e.target.value;
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  ""
+                                ); // Remove non-numeric characters
+                                e.target.value = numericValue;
+                              }}
                             />
                             {rentalsFormik.touched.rentalOwner_phoneNumber &&
                             rentalsFormik.errors.rentalOwner_phoneNumber ? (
@@ -825,13 +758,13 @@ const Rentals = () => {
                                 rentalsFormik.values.rentalOwner_homeNumber
                               }
                               onInput={(e) => {
-                              const inputValue = e.target.value;
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ""
-                              ); // Remove non-numeric characters
-                              e.target.value = numericValue;
-                            }}
+                                const inputValue = e.target.value;
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  ""
+                                ); // Remove non-numeric characters
+                                e.target.value = numericValue;
+                              }}
                             />
                             {rentalsFormik.touched.rentalOwner_homeNumber &&
                             rentalsFormik.errors.rentalOwner_homeNumber ? (
@@ -863,13 +796,13 @@ const Rentals = () => {
                                 rentalsFormik.values.rentalOwner_businessNumber
                               }
                               onInput={(e) => {
-                              const inputValue = e.target.value;
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ""
-                              ); // Remove non-numeric characters
-                              e.target.value = numericValue;
-                            }}
+                                const inputValue = e.target.value;
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  ""
+                                ); // Remove non-numeric characters
+                                e.target.value = numericValue;
+                              }}
                             />
                             {rentalsFormik.touched.rentalOwner_businessNumber &&
                             rentalsFormik.errors.rentalOwner_businessNumber ? (
@@ -903,13 +836,13 @@ const Rentals = () => {
                                 rentalsFormik.values.rentalOwner_telephoneNumber
                               }
                               onInput={(e) => {
-                              const inputValue = e.target.value;
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ""
-                              ); // Remove non-numeric characters
-                              e.target.value = numericValue;
-                            }}
+                                const inputValue = e.target.value;
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  ""
+                                ); // Remove non-numeric characters
+                                e.target.value = numericValue;
+                              }}
                             />
                             {rentalsFormik.touched
                               .rentalOwner_telephoneNumber &&
@@ -928,7 +861,7 @@ const Rentals = () => {
                           </div>
                         </FormGroup>
 
-                        <FormGroup>
+                        <FormGroup className="mb-0">
                           <label
                             className="form-control-label"
                             htmlFor="input-property"
@@ -959,7 +892,7 @@ const Rentals = () => {
                     <br></br>
 
                     <Row>
-                      <Col lg="4">
+                      <Col lg="3">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -986,7 +919,7 @@ const Rentals = () => {
                           ) : null}
                         </FormGroup>
                       </Col>
-                      <Col lg="4">
+                      <Col lg="3">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -1014,49 +947,13 @@ const Rentals = () => {
                           ) : null}
                         </FormGroup>
                       </Col>
-
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-zip"
-                          >
-                            Zip 
-                          </label>
-                          <Input
-                            type="text"
-                            id="rentalOwner_zip"
-                            placeholder="zip code"
-                            onChange={rentalsFormik.handleChange}
-                            value={rentalsFormik.values.rentalOwner_zip}
-                            onInput={(e) => {
-                              const inputValue = e.target.value;
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ""
-                              ); // Remove non-numeric characters
-                              e.target.value = numericValue;
-                            }}
-                          />
-                          {rentalsFormik.touched.rentalOwner_zip &&
-                          rentalsFormik.errors.rentalOwner_zip ? (
-                            <div
-                              style={{
-                                color: "red",
-                              }}
-                            >
-                              {rentalsFormik.errors.rentalOwner_zip}
-                            </div>
-                          ) : null}
-                        </FormGroup>
-                      </Col>
                     </Row>
                   </div>
 
                   <FormGroup>
                     <Row>
-                      <Col>
-                        <Col lg="4">
+                      <Col className="d-flex">
+                        <Col lg="3">
                           <label
                             className="form-control-label"
                             htmlFor="input-country"
@@ -1068,13 +965,14 @@ const Rentals = () => {
                           <Row>
                             <div
                               style={{ display: "flex" }}
-                              className="pl-lg-4"
+                              className="pl-lg-2"
                             >
                               <Dropdown
+                                className="col-9"
                                 isOpen={statedropdownOpen}
                                 toggle={toggle1}
                               >
-                                <DropdownToggle caret style={{ width: "200%" }}>
+                                <DropdownToggle caret style={{ width: "160%" }}>
                                   {/* {selectedState} &nbsp;&nbsp; */}
                                   {selectedState ? selectedState : "Select"}
                                 </DropdownToggle>
@@ -1084,184 +982,64 @@ const Rentals = () => {
                                     maxHeight: "200px",
                                     overflowY: "auto",
                                   }}
-                                  onBlur={rentalsFormik.handleBlur}
-                                  onChange={rentalsFormik.handleChange}
-                                  value={
-                                    rentalsFormik.values.rentalOwner_country
-                                  }
                                 >
-                                  {rentalsFormik.touched.rentalOwner_country &&
-                                  rentalsFormik.errors.rentalOwner_country ? (
-                                    <div style={{ color: "red" }}>
-                                      {rentalsFormik.errors.rentalOwner_country}
-                                    </div>
-                                  ) : null}
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Afghanistan ")
-                                    }
-                                  >
-                                    Afghanistan{" "}
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Burundi ")
-                                    }
-                                  >
-                                    Burundi
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Cameroon ")
-                                    }
-                                  >
-                                    Cameroon
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Canada")
-                                    }
-                                  >
-                                    Canada
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Burma")
-                                    }
-                                  >
-                                    Burm
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() => handleStateSelection("chad")}
-                                  >
-                                    cha
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("United States ")
-                                    }
-                                  >
-                                    United States
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Afghanistan ")
-                                    }
-                                  >
-                                    Afghanistan{" "}
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Burundi ")
-                                    }
-                                  >
-                                    Burundi
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Cameroon ")
-                                    }
-                                  >
-                                    Cameroon
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Canada")
-                                    }
-                                  >
-                                    Canada
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Burma")
-                                    }
-                                  >
-                                    Burm
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() =>
-                                      handleStateSelection("Brazil")
-                                    }
-                                  >
-                                    Brazil
-                                  </DropdownItem>
-
-                                  {/* Add more city names here */}
+                                  {countries.map((country, index) => (
+                                    <DropdownItem
+                                      key={index}
+                                      onClick={() =>
+                                        handleStateSelection(
+                                          country.name.common
+                                        )
+                                      }
+                                    >
+                                      {country.name.common}
+                                    </DropdownItem>
+                                  ))}
                                 </DropdownMenu>
                               </Dropdown>
                             </div>
                           </Row>
                         </Col>
-                      </Col>
-                    </Row>
-                  </FormGroup>
 
-                  <Col>
-                    <Row>
-                      <FormGroup>
-                        <div className="pl-lg-4">
-                          {/* <label
-                            className="form-control-label"
-                            htmlFor="input-country"
-                          >
-                            Comments
-                            <br></br>
+                        <Col lg="3">
+                          <FormGroup className="mx-2">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-zip"
+                            >
+                              Postal Code
+                            </label>
                             <Input
-                              type="text" // Use type "tel" for mobile numbers
-                              id="rentalOwner_comments"
-                              placeholder="Enter Comment"
+                              type="text"
+                              id="rentalOwner_zip"
+                              placeholder="Postal code"
                               onChange={rentalsFormik.handleChange}
-                              value={rentalsFormik.values.rentalOwner_comments}
+                              value={rentalsFormik.values.rentalOwner_zip}
+                              onInput={(e) => {
+                                const inputValue = e.target.value;
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  ""
+                                ); // Remove non-numeric characters
+                                e.target.value = numericValue;
+                              }}
+                              style={{ width: "235px" }}
                             />
-                            {rentalsFormik.touched.rentalOwner_comments &&
-                            rentalsFormik.errors.rentalOwner_comments ? (
+                            {rentalsFormik.touched.rentalOwner_zip &&
+                            rentalsFormik.errors.rentalOwner_zip ? (
                               <div
                                 style={{
                                   color: "red",
                                 }}
                               >
-                                {rentalsFormik.errors.rentalOwner_comments}
+                                {rentalsFormik.errors.rentalOwner_zip}
                               </div>
                             ) : null}
-                            <br></br>
-                            1099-NEC tax filing information
-                          </label> */}
-                        </div>
-                      </FormGroup>
-                    </Row>
-                  </Col>
-
-                  {/* <FormGroup>
-                    <Row>
-                      <Col lg="4" className="ml-lg-4">
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-tax"
-                        >
-                          Tax Identity Type
-                        </label>
-
-                        <Input
-                          type="text"
-                          id="text_identityType"
-                          placeholder="Tax Identity Type"
-                          onChange={rentalsFormik.handleChange}
-                          value={rentalsFormik.values.text_identityType}
-                        />
-                        {rentalsFormik.touched.text_identityType &&
-                        rentalsFormik.errors.text_identityType ? (
-                          <div
-                            style={{
-                              color: "red",
-                            }}
-                          >
-                            {rentalsFormik.errors.text_identityType}
-                          </div>
-                        ) : null}
+                          </FormGroup>
+                        </Col>
                       </Col>
                     </Row>
-                  </FormGroup> */}
-
+                  </FormGroup>
                   <FormGroup>
                     <Row>
                       <Col lg="4" className="ml-lg-4">
@@ -1293,28 +1071,6 @@ const Rentals = () => {
                     </Row>
                   </FormGroup>
                   <hr />
-                  {/* <FormGroup>
-
-                    <Checkbox></Checkbox>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-diffrent name"
-                    >
-                      Use a different name
-                    </label>
-
-                  </FormGroup>
-                  <FormGroup>
-
-                    <Checkbox></Checkbox>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-diffrent address"
-                    >
-                      Use a different address
-                    </label>
-
-                  </FormGroup> */}
                   <Col>
                     <FormGroup>
                       <div className="pl-lg-2">
@@ -1398,13 +1154,8 @@ const Rentals = () => {
                                       handlePropertyCheckboxChange(property._id)
                                     }
                                     onBlur={rentalsFormik.handleBlur}
-                                    // onChange={rentalsFormik.handleChange}
-                                    // value={
-                                    //   rentalsFormik.values.rentalOwner_properties
-                                    // }
                                   />
                                   {property.rental_adress}
-                                  {/* Updated property name here */}
                                 </label>
                                 {rentalsFormik.touched.rentalOwner_properties &&
                                 rentalsFormik.errors.rentalOwner_properties ? (

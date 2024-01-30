@@ -723,8 +723,8 @@ const PropertiesTables = () => {
                           style={{ cursor: "pointer" }}
                         >
                           <td>{Rental.rental_adress}</td>
-                          <td>{Rental.property_type_data.property_type}</td>
-                          <td>{Rental.property_type_data.propertysub_type}</td>
+                          <td>{Rental?.property_type_data?.property_type}</td>
+                          <td>{Rental?.property_type_data?.propertysub_type}</td>
                           <td>
                             {Rental.rental_owner_data.rentalOwner_firstName}{" "}
                             {Rental.rental_owner_data.rentalOwner_lastName}

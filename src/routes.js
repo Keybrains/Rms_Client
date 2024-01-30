@@ -15,6 +15,7 @@ import Listings from "views/source/Listings";
 import Applicants from "views/source/Applicants";
 import RentRoll from "views/source/RentRoll";
 // import SumProperties from "views/source/SumProperties";
+import Plans from "views/source/Plans";
 import OutstandingBalance from "views/source/OutstandingBalance";
 import TenantDetailPage from "views/source/TenantDetailPage";
 import RentRollDetail from "views/source/RentRollDetail";
@@ -82,6 +83,11 @@ var routes = [
     name: "Add Property",
     icon: "ni ni-pin-3 text-orange",
     component: <Rentals />,
+    layout: "/admin",
+  },
+  {
+    path: "/Plans",
+    component: <Plans />,
     layout: "/admin",
   },
   {
