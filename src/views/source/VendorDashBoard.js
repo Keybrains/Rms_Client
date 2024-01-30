@@ -42,13 +42,31 @@ const VendorDashBoard = (props) => {
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
-
+  const bgStyle = {
+    backgroundColor: '#e4e6e7',
+    paddingLeft:"10px"
+    // width:"300px"
+  };
+  const spStyle = {
+    color: 'red',
+    // width:"300px"
+  };
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
     setChartExample1Data("data" + index);
   };
 
+  const [showMoreNewOrders, setShowMoreNewOrders] = useState(false);
+  const [showMoreOverdueOrders, setShowMoreOverdueOrders] = useState(false);
+
+  const handleViewMoreNewOrders = () => {
+    setShowMoreNewOrders(!showMoreNewOrders);
+  };
+
+  const handleViewMoreOverdueOrders = () => {
+    setShowMoreOverdueOrders(!showMoreOverdueOrders);
+  };
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -61,39 +79,233 @@ const VendorDashBoard = (props) => {
     }
   }, [navigate]);
 
-  
-  const cardStyle = {
-    // background: `url(${require("../assets/img/us3.jpeg").default})`, 
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    minHeight: '70vh',
-    alignItems: 'center',
-    justifyContent: "center",
-    // display: 'flex',
-    fontFamily: 'sans-serif',
-    fontSize: '30px',
-    color: 'black',
-    // textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-  };
-  
-
-
   return (
     <>
       <VendorHeader />
-      {/* Page content */}
       <Container className="mt--7" fluid>
-          <div >
-          <Card>
-            
-           <CardBody style={cardStyle}>
-              Welcome to 302 Properties
-            </CardBody>
-          </Card>
-          
-        </div>
+        <div>
 
-      </Container>
+
+          {/* Small Cards */}
+          <Row lg="12" className="d-flex justify-content-around" >
+            <Col lg="5" md="6" sm="12">
+              <Card style={{
+                justifyContent: "center",
+                fontFamily: 'sans-serif',
+                fontSize: '20px',
+                color: 'black',
+              }} >
+                < CardBody>
+                  <div className="mb-2 d-flex justify-content-start">
+                    <span style={{fontWeight:"bold",fontSize:"28px"}}> New Work Orders</span>
+                  </div>
+                  <div className="col-lg-2">
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="">Total -</span>
+                      <span> 7 </span>
+                    </div>
+                  </div>
+                  <div style={bgStyle}>
+                    <div className="d-flex justify-content-start">
+                      <span className="">Leakage in bathroom</span>
+
+                    </div>
+                    <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                      <label className="d-flex justify-content-between mb-1">
+                        <span>13/01/2024</span>
+                        <span>New</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div style={bgStyle}>
+                    <div className="d-flex justify-content-start">
+                      <span className="">Leakage in bathroom</span>
+
+                    </div>
+                    <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                      <label className="d-flex justify-content-between mb-1">
+                        <span>13/01/2024</span>
+                        <span>New</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div style={bgStyle}>
+                    <div className="d-flex justify-content-start">
+                      <span className="">Leakage in bathroom</span>
+
+                    </div>
+                    <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                      <label className="d-flex justify-content-between mb-1">
+                        <span>13/01/2024</span>
+                        <span>New</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {showMoreNewOrders && (
+                    <>
+                      <div style={bgStyle}>
+                        <div className="d-flex justify-content-start">
+                          <span className="">Leakage in bathroom</span>
+
+                        </div>
+                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                          <label className="d-flex justify-content-between mb-1">
+                            <span>13/01/2024</span>
+                            <span>New</span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <div style={bgStyle}>
+                        <div className="d-flex justify-content-start">
+                          <span className="">Leakage in bathroom</span>
+
+                        </div>
+                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                          <label className="d-flex justify-content-between mb-1">
+                            <span>13/01/2024</span>
+                            <span>New</span>
+                          </label>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <label
+                    className="d-flex justify-content-start"
+                    style={{ cursor: 'pointer', color: 'blue' }}
+                    onClick={handleViewMoreNewOrders}
+                  >
+                    {showMoreNewOrders ? 'View Less' : 'View All'}
+                  </label>
+                </CardBody>
+              </Card>
+            </Col>
+            {/* <Col lg="4" md="6" sm="12">
+              <Card style={{
+                justifyContent: "center",
+                fontFamily: 'sans-serif',
+                fontSize: '25px',
+                color: 'black',
+                backgroundColor: '#cff5fc',
+                padding: '10px',
+                margin: '10px',
+                borderRadius: '8px',
+                textAlign: 'center',
+                height: 'auto',
+                marginBottom: '0',
+              }}>
+                <CardBody>
+                  <div className="mb-2 d-flex justify-content-start">
+                    <span style={{}}> Work Orders</span>
+                  </div>
+
+                  <div className="">
+                    <div className="d-flex justify-content-between mb-1 ">
+                      <p className="">In progress</p>
+                      <p> 5 </p>
+                    </div>
+                  </div>
+
+                </CardBody>
+              </Card>
+            </Col> */}
+            <Col lg="5" md="6" sm="12">
+              <Card style={{
+                justifyContent: "center",
+                fontFamily: 'sans-serif',
+                fontSize: '20px',
+                color: 'black',
+              }} >
+                < CardBody>
+                  <div className="mb-2 d-flex justify-content-start">
+                    <span style={{fontWeight:"bold",fontSize:"28px"}}> Overdue Work Orders</span>
+                  </div>
+                  <div className="col-lg-2">
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="">Total -</span>
+                      <span> 5 </span>
+                    </div>
+                  </div>
+                  <div style={bgStyle}>
+                    <div className="d-flex justify-content-start">
+                      <span className="">Leakage in bathroom</span>
+
+                    </div>
+                    <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                      <label className="d-flex justify-content-between mb-1">
+                        <span style={spStyle}>30/01/2024</span>
+                     
+                      </label>
+                    </div>
+                  </div>
+                  <div style={bgStyle}>
+                    <div className="d-flex justify-content-start">
+                      <span className="">Leakage in bathroom</span>
+
+                    </div>
+                    <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                      <label className="d-flex justify-content-between mb-1">
+                        <span style={spStyle}>30/01/2024</span>
+                     
+                      </label>
+                    </div>
+                  </div>
+                  <div style={bgStyle}>
+                    <div className="d-flex justify-content-start">
+                      <span className="">Leakage in bathroom</span>
+
+                    </div>
+                    <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                      <label className="d-flex justify-content-between mb-1">
+                        <span style={spStyle}>30/01/2024</span>
+                     
+                      </label>
+                    </div>
+                  </div>
+
+                  {showMoreOverdueOrders && (
+                    <>
+                      <div style={bgStyle}>
+                        <div className="d-flex justify-content-start">
+                          <span className="">Leakage in bathroom</span>
+
+                        </div>
+                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                          <label className="d-flex justify-content-between mb-1">
+                            <span style={spStyle}>30/01/2024</span>
+                         
+                          </label>
+                        </div>
+                      </div>
+
+                      <div style={bgStyle}>
+                        <div className="d-flex justify-content-start">
+                          <span className="">Leakage in bathroom</span>
+
+                        </div>
+                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                          <label className="d-flex justify-content-between mb-1">
+                            <span style={spStyle}>30/01/2024</span>
+                         
+                          </label>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <label
+                    className="d-flex justify-content-start"
+                    style={{ cursor: 'pointer', color: 'blue' }}
+                    onClick={handleViewMoreOverdueOrders}
+                  >
+                    {showMoreOverdueOrders ? 'View Less' : 'View All'}
+                  </label>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      </Container >
     </>
   );
 };

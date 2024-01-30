@@ -38,10 +38,10 @@ const Login = () => {
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
-  }; 
+  };
 
 
-  const handleSubmit = async (values) => {   
+  const handleSubmit = async (values) => {
     try {
       setIsLoading(true); // Set loading state to true
 
@@ -64,10 +64,10 @@ const Login = () => {
       } else {
         // Admin login failed, try tenant login
         const tenantRes = await axios.post(
-          `${baseUrl}/tenant/login`,
+          `${baseUrl}/tenants/login`,
           {
-            tenant_email: values.email,
-            tenant_password: values.password,
+            email: values.email,
+            password: values.password,
           }
         );
 
@@ -76,124 +76,125 @@ const Login = () => {
           const tenantData = tenantRes.data.data; // Assuming the API response structure
 
           // Check if tenantData contains _id
-          if (tenantData && tenantData._id) {
+          if (tenantData && tenantData.tenant_id) {
             //console.log("Tenant ID:", tenantData._id);
             swal("Success!", "Tenant Login Successful!", "success").then(
               (value) => {
                 if (value) {
                   localStorage.setItem("token", tenantRes.data.token);
-                  localStorage.setItem("Tenant ID", tenantData._id);
-                  localStorage.setItem("ID", tenantData._id);
+                  localStorage.setItem("Tenant ID", tenantData.tenant_id);
+                  localStorage.setItem("ID", tenantData.tenant_id);
                   navigate("/tenant/tenantdashboard");
                 }
               }
             );
-          } else {  
+          } else {
             // Tenant login succeeded, but no _id found
             swal("Error!", "Invalid tenant data", "error");
           }
         } else {
           // Admin and tenant login failed, try agent login
-          const agentRes = await axios.post(
-            `${baseUrl}/addagent/login`,
+          // const agentRes = await axios.post(
+          //   `${baseUrl}/addagent/login`,
+          //   {
+          //     agent_email: values.email,
+          //     agent_password: values.password,
+          //   }
+          // );
+
+          // if (agentRes.data.statusCode === 200) {
+          //   // Agent login successful
+          //   const agentData = agentRes.data.data; // Assuming the API response structure
+          //   //console.log("Agent ID:", agentData._id);
+
+          //   // Check if agentData contains _id
+          //   if (agentData && agentData._id) {
+          //     //console.log("Agent ID:", agentData._id);
+          //     swal("Success!", "Agent Login Successful!", "success").then(
+          //       (value) => {
+          //         if (value) {
+          //           localStorage.setItem("token", agentRes.data.token);
+          //           localStorage.setItem("Agent ID", agentData._id);
+          //           localStorage.setItem("ID", agentData._id);
+          //           navigate("/agent/AgentdashBoard");
+          //         }
+          //       }
+          //     );
+          //   } else {
+          //     // Agent login succeeded, but no _id found
+          //     swal("Error!", "Invalid agent data", "error");
+          //   }
+          // // } 
+          // else {
+          // All login attempts failed, try staff login
+          const staffRes = await axios.post(
+            `${baseUrl}/staffmember/login`,
             {
-              agent_email: values.email,
-              agent_password: values.password,
+              email: values.email,
+              password: values.password,
             }
           );
 
-          if (agentRes.data.statusCode === 200) {
-            // Agent login successful
-            const agentData = agentRes.data.data; // Assuming the API response structure
-            //console.log("Agent ID:", agentData._id);
+          if (staffRes.data.statusCode === 200) {
+            // Staff login successful
+            const staffData = staffRes.data.data; // Assuming the API response structure
+            //console.log("Staff ID:", staffData._id);
 
-            // Check if agentData contains _id
-            if (agentData && agentData._id) {
-              //console.log("Agent ID:", agentData._id);
-              swal("Success!", "Agent Login Successful!", "success").then(
+            // Check if staffData contains _id
+            if (staffData && staffData._id) {
+              //console.log("Staff ID:", staffData._id);
+              swal("Success!", "Staff Login Successful!", "success").then(
                 (value) => {
                   if (value) {
-                    localStorage.setItem("token", agentRes.data.token);
-                    localStorage.setItem("Agent ID", agentData._id);
-                    localStorage.setItem("ID", agentData._id);
-                    navigate("/agent/AgentdashBoard");
+                    localStorage.setItem("token", staffRes.data.token);
+                    localStorage.setItem("Staff ID", staffData._id);
+                    localStorage.setItem("ID", staffData._id);
+                    navigate("/staff/staffdashboard");
                   }
                 }
               );
             } else {
-              // Agent login succeeded, but no _id found
-              swal("Error!", "Invalid agent data", "error");
+              // Staff login succeeded, but no _id found
+              swal("Error!", "Invalid staff data", "error");
             }
           } else {
-            // All login attempts failed, try staff login
-            const staffRes = await axios.post(
-              `${baseUrl}/addstaffmember/login`,
+            // All login attempts failed, try vendor login
+            const vendorRes = await axios.post(
+              `${baseUrl}/vendor/login`,
               {
-                staffmember_email: values.email,
-                staffmember_password: values.password,
+                email: values.email,
+                password: values.password,
               }
             );
 
-            if (staffRes.data.statusCode === 200) {
-              // Staff login successful
-              const staffData = staffRes.data.data; // Assuming the API response structure
-              //console.log("Staff ID:", staffData._id);
+            if (vendorRes.data.statusCode === 200) {
+              // Vendor login successful
+              const vendorData = vendorRes.data.data; // Assuming the API response structure
+              //console.log("Vendor ID:", vendorData._id);
 
-              // Check if staffData contains _id
-              if (staffData && staffData._id) {
-                //console.log("Staff ID:", staffData._id);
-                swal("Success!", "Staff Login Successful!", "success").then(
+              // Check if vendorData contains _id
+              if (vendorData && vendorData._id) {
+                //console.log("Vendor ID:", vendorData._id);
+                swal("Success!", "Vendor Login Successful!", "success").then(
                   (value) => {
                     if (value) {
-                      localStorage.setItem("token", staffRes.data.token);
-                      localStorage.setItem("Staff ID", staffData._id);
-                      localStorage.setItem("ID", staffData._id);
-                      navigate("/staff/staffdashboard");
+                      localStorage.setItem("token", vendorRes.data.token);
+                      localStorage.setItem("Vendor ID", vendorData._id);
+                      localStorage.setItem("ID", vendorData._id);
+                      navigate("/vendor/vendordashboard");
                     }
                   }
                 );
               } else {
-                // Staff login succeeded, but no _id found
-                swal("Error!", "Invalid staff data", "error");
+                // Vendor login succeeded, but no _id found
+                swal("Error!", "Invalid vendor data", "error");
               }
             } else {
-              // All login attempts failed, try vendor login
-              const vendorRes = await axios.post(
-                `${baseUrl}/vendor/login`,
-                {
-                  vendor_email: values.email,
-                  vendor_password: values.password,
-                }
-              );
-
-              if (vendorRes.data.statusCode === 200) {
-                // Vendor login successful
-                const vendorData = vendorRes.data.data; // Assuming the API response structure
-                //console.log("Vendor ID:", vendorData._id);
-
-                // Check if vendorData contains _id
-                if (vendorData && vendorData._id) {
-                  //console.log("Vendor ID:", vendorData._id);
-                  swal("Success!", "Vendor Login Successful!", "success").then(
-                    (value) => {
-                      if (value) {
-                        localStorage.setItem("token", vendorRes.data.token);
-                        localStorage.setItem("Vendor ID", vendorData._id);
-                        localStorage.setItem("ID", vendorData._id);
-                        navigate("/vendor/vendordashboard");
-                      }
-                    }
-                  );
-                } else {
-                  // Vendor login succeeded, but no _id found
-                  swal("Error!", "Invalid vendor data", "error");
-                }
-              } else {
-                // All login attempts failed
-                swal("Error!", "Invalid credentials", "error");
-              }
+              // All login attempts failed
+              swal("Error!", "Invalid credentials", "error");
             }
           }
+          // }
         }
       }
     } catch (error) {
@@ -236,15 +237,15 @@ const Login = () => {
 
   return (
     <>
-        <Col lg="5" md="7">
-          <Card
-            className="bg-secondary shadow border-0"
-            onSubmit={loginFormik.handleSubmit}
-          >
-            <CardBody className="px-lg-5 py-lg-5">
-              <div className="text-center text-muted mb-4">
-                <small>Sign in with your credentials</small>
-              </div>
+      <Col lg="5" md="7">
+        <Card
+          className="bg-secondary shadow border-0"
+          onSubmit={loginFormik.handleSubmit}
+        >
+          <CardBody className="px-lg-5 py-lg-5">
+            <div className="text-center text-muted mb-4">
+              <small>Sign in with your credentials</small>
+            </div>
             <Form role="form">
               <FormGroup className="mb-3">
                 <InputGroup className="input-group-alternative">
@@ -263,14 +264,14 @@ const Login = () => {
                     value={loginFormik.values.email}
                   />
                 </InputGroup>
-                  {loginFormik.touched.email && loginFormik.errors.email ? (
-                    <Typography
-                      variant="caption"
-                      style={{ color: "red" }}
-                    >
-                      {loginFormik.errors.email}
-                    </Typography>
-                  ): null}
+                {loginFormik.touched.email && loginFormik.errors.email ? (
+                  <Typography
+                    variant="caption"
+                    style={{ color: "red" }}
+                  >
+                    {loginFormik.errors.email}
+                  </Typography>
+                ) : null}
               </FormGroup>
               <FormGroup>
                 <InputGroup className="input-group-alternative">
@@ -299,21 +300,21 @@ const Login = () => {
                   </IconButton>
 
                 </InputGroup>
-                  {loginFormik.touched.password &&
+                {loginFormik.touched.password &&
                   loginFormik.errors.password ? (
-                    <Typography
-                      variant="caption"
-                      style={{ color: "red" }}
-                    >
-                      {loginFormik.errors.password}
-                    </Typography>
-                  ) : null}
+                  <Typography
+                    variant="caption"
+                    style={{ color: "red" }}
+                  >
+                    {loginFormik.errors.password}
+                  </Typography>
+                ) : null}
               </FormGroup>
 
               <div className="custom-control custom-control-alternative custom-checkbox">
                 <Row>
                   <Col>
-                  <input
+                    <input
                       className="custom-control-input"
                       id=" customCheckLogin"
                       type="checkbox"
@@ -329,13 +330,13 @@ const Login = () => {
                     <label
                       className=""
                       // href="#rms"
-                      onClick={ () => navigate(`/auth/forgetpassword`)}
+                      onClick={() => navigate(`/auth/forgetpassword`)}
                     >
-                      <span className="text-muted mb-4" style={{fontSize:"14px"}}>Forgot password?</span>
+                      <span className="text-muted mb-4" style={{ fontSize: "14px" }}>Forgot password?</span>
                     </label>
                   </Col>
                 </Row>
-              <br/>
+                <br />
               </div>
               <div className="text-center">
                 {/* <Button className="my-4" color="primary" type="button">
@@ -352,8 +353,8 @@ const Login = () => {
                   {isLoading ? <CircularProgress size={24} /> : "Login"}
                 </Button>
               </div>
-              <br/>
-    
+              <br />
+
             </Form>
           </CardBody>
         </Card>
