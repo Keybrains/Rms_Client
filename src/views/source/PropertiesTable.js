@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -29,6 +29,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import moment from "moment";
 
 const PropertiesTables = () => {
+  const {admin} = useParams()
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [rentalsData, setRentalsData] = useState([]);
@@ -438,7 +439,7 @@ const PropertiesTables = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/admin/rentals")}
+              onClick={() => navigate("/"+admin+"/rentals")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -542,7 +543,7 @@ const PropertiesTables = () => {
                         )}
                       </th>
                       <th scope="col">
-                        Property Type{" "}
+                        Property Typess{" "}
                         {sortBy.includes("type") ? (
                           upArrow.includes("type") ? (
                             <ArrowDownwardIcon

@@ -155,7 +155,7 @@ const Index = (props) => {
           <Col
             xl="3"
             onClick={() => {
-              navigate("/admin/propertiesTable");
+              navigate("/"+admin+"/propertiesTable");
             }}
           >
             <Card
@@ -197,7 +197,7 @@ const Index = (props) => {
           <Col
             xl="3"
             onClick={() => {
-              navigate("/admin/TenantsTable");
+              navigate("/"+admin+"/TenantsTable");
             }}
           >
             <Card
@@ -239,7 +239,7 @@ const Index = (props) => {
           <Col
             xl="3"
             onClick={() => {
-              navigate("/admin/propertiesTable");
+              navigate("/"+admin+"/propertiesTable");
             }}
           >
             <Card
@@ -281,7 +281,7 @@ const Index = (props) => {
           <Col
             xl="3"
             onClick={() => {
-              navigate("/admin/StaffMember");
+              navigate("/"+admin+"/StaffMember");
             }}
           >
             <Card
