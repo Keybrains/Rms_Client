@@ -1257,7 +1257,7 @@ const RentRollDetail = () => {
                                     </div>
                                   </CardContent>
                                 </Card>
-                                <Card
+                                {/* <Card
                                   className="w-100 mt-3"
                                   style={{ background: "#F4F6FF" }}
                                 >
@@ -1287,7 +1287,7 @@ const RentRollDetail = () => {
                                         <tbody>
                                           <tr>
                                             <th>Card Number</th>
-                                            {/* <th>Expiration Date</th> */}
+                                             <th>Expiration Date</th> 
                                           </tr>
                                           {cardDetalis.map((item, index) => (
                                             <tr
@@ -1325,7 +1325,7 @@ const RentRollDetail = () => {
                                                   gutterBottom
                                                 >
                                                   {item.exp_date}
-                                                </Typography> */}
+                                                </Typography> 
                                               </td>
                                             </tr>
                                           ))}
@@ -1353,7 +1353,7 @@ const RentRollDetail = () => {
                                       </Button>
                                     </div>
                                   </CardContent>
-                                </Card>
+                                </Card> */}
                               </div>
                             </div>
                           </div>

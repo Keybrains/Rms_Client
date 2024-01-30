@@ -1086,7 +1086,7 @@ const TenantFinancial = () => {
                               <th scope="col">Account</th>
                               <th scope="col">Increase</th>
                               <th scope="col">Decrease</th>
-                              {/* <th scope="col">Action</th> */}
+                              <th scope="col">Action</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1118,8 +1118,8 @@ const TenantFinancial = () => {
                                         ? item?.amount
                                         : "0"}
                                     </td>
-                                    {/* <td>
-                                      {item?.type2 === "Payment" ? (
+                                    <td>
+                                      {item?.type2 === "Payment" && item?.status === "Pending" ? (
                                         <UncontrolledDropdown nav>
                                           <DropdownToggle
                                             className="pr-0"
@@ -1149,7 +1149,7 @@ const TenantFinancial = () => {
                                           <DropdownMenu className="dropdown-menu-arrow">
                                             {item?._id === showOptionsId && (
                                               <div>
-                                                {item?.paymentType ===
+                                                {/* {item?.paymentType ===
                                                   "Credit Card" &&
                                                   item?.status ===
                                                     "Success" && (
@@ -1162,7 +1162,7 @@ const TenantFinancial = () => {
                                                     >
                                                       Refund
                                                     </DropdownItem>
-                                                  )}
+                                                  )} */}
                                                 {(item?.status === "Pending" ||
                                                   item?.type2 !==
                                                     "Credit Card") && (
@@ -1194,7 +1194,7 @@ const TenantFinancial = () => {
                                           --
                                         </div>
                                       )}
-                                    </td> */}
+                                    </td>
                                   </tr>
                                 </React.Fragment>
                               )
