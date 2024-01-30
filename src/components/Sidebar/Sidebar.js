@@ -3,13 +3,14 @@ import { NavLink as NavLinkRRD, Link } from "react-router-dom";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { PropTypes } from "prop-types";
 import Cookies from "universal-cookie";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Drawer from "@mui/material/Drawer";
 // import Button from '@mui/material/Button';
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
+import { jwtDecode } from "jwt-decode";
 // reactstrap components
 import {
   Button,
@@ -77,6 +78,8 @@ const Sidebar = (props) => {
     // localStorage.removeItem("id");
     // navigate("/login");
   };
+
+  const { admin } = useParams();
 
   const [collapseOpen, setCollapseOpen] = useState(false);
 
@@ -190,6 +193,32 @@ const Sidebar = (props) => {
       );
     });
   };
+
+  const checkAdminExist = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/admin/company/${admin}`);
+
+      const status = response.data.statusCode;
+
+      if (status != 200) {
+        navigate(`/${admin}/404`)
+      } else {
+        if (localStorage.getItem("token")) {
+          const jwt = jwtDecode(localStorage.getItem("token"));
+          if (jwt.company_name != admin) {
+            navigate(`/${admin}/404`)
+          }
+        }
+      }
+
+    } catch (error) {
+      console.log("error in acheck admin exist", error)
+    }
+  }
+
+  useEffect(() => {
+    checkAdminExist()
+  }, [admin])
 
   const { bgColor, routes, logo } = props;
   let navbarBrandProps;

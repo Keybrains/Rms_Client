@@ -17,20 +17,21 @@ import Agent from "layouts/Agent";
 import Staff from "layouts/Staff";
 import Vendor from "layouts/Vendor";
 import Trial from "layouts/Trial";
-// import SumProperties from "views/source/SumProperties";
+// import SumProperties from "views/source/SumProperties";=
 
 
 // ==========================  Super Admin =================================================== 
 import SuperAdmin from "../src/components/superadmin/layouts/SuperAdmin"
+import NotFound from "views/source/404NotFound";
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root"))
 
 root.render(
   <BrowserRouter>
     <Routes>
-      <Route path="/admin/*" element={<AdminLayout />} />
+      <Route path="/:admin/*" element={<AdminLayout />} />
       <Route path="/auth/*" element={<AuthLayout />} />
-      <Route path="*" element={<Navigate to="/admin/index" replace />} />
+      <Route path="*" element={<NotFound />} />
       <Route path="/tenant/*" element={<Tenant />} />
       <Route path="/agent/*" element={<Agent/>} />
       <Route path="/staff/*" element={<Staff/>} />
@@ -42,6 +43,7 @@ root.render(
 
       {/* ==========================  Super Admin =================================================== */}
       <Route path="/superadmin/*" element={<SuperAdmin />} />
+      <Route path="/:admin/404" element={<NotFound />} />
 
     </Routes> 
   </BrowserRouter>

@@ -49,11 +49,14 @@ import {
 import Header from "components/Headers/Header.js";
 import Cookies from "universal-cookie";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 
 const Index = (props) => {
+
+  const { admin } = useParams();
+
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
@@ -70,11 +73,40 @@ const Index = (props) => {
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
+  const [adminData, setAdminData] = useState(null)
+
+  console.warn(adminData, "data after decode")
+
+  // http://localhost:4000/api/admin/company/sst
+
+  // statusCode 200 404
+
+  // const checkAdminExist = async () => {
+  //   try {
+  //     const response = await axios.get(`${baseUrl}/admin/company/${admin}`);
+
+  //     const status = response.data.statusCode;
+
+  //     if (status != 200) {
+  //       navigate(`/${admin}/404`)
+  //     }else{
+  //       alert('ok')
+  //     }
+
+  //   } catch (error) {
+  //     console.log("error in acheck admin exist", error)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   checkAdminExist()
+  // }, [admin])
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
+      setAdminData(jwt)
     } else {
       navigate("/auth/login");
     }
