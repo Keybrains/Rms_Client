@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, useFormik } from "formik";
 import { CardContent, Typography } from "@mui/material";
 import {
   Col,
@@ -252,9 +252,6 @@ function CreditCardForm(props) {
     }
   };
 
-  const [paymentLoader, setPaymentLoader] = useState(false);
-  const [formValue, setFormValues] = useState({});
-
   // const handleEditCard = async (id,values) => {
   //   try {
   //     setPaymentLoader(true);
@@ -293,6 +290,9 @@ function CreditCardForm(props) {
   //     setPaymentLoader(false);
   //   }
   // };
+  const [paymentLoader, setPaymentLoader] = useState(false);
+  const [formValue, setFormValues] = useState({});
+  const [customerVaultId, setCustomerVaultId] = useState(null);
 
   const getEditData = async (customerVaultId) => {
     try {
@@ -304,19 +304,19 @@ function CreditCardForm(props) {
       );
 
       // Set the form values with the existing card details
-      setFormValues({
+      formik.setValues({
         card_number: response.data.data.customer.cc_number || "",
         exp_date: response.data.data.customer.cc_exp || "",
-        first_name: response.data.data.customer.first_name?.value || "",
-        last_name: response.data.data.customer.last_name?.value || "",
-        phone: response.data.data.customer.phone?.value || "",
-        email: response.data.data.customer.email?.value || "",
-        address1: response.data.data.customer.address_1?.value || "",
-        city: response.data.data.customer.city?.value || "",
-        state: response.data.data.customer.state?.value || "",
-        zip: response.data.data.customer.postal_code?.value || "",
-        country: response.data.data.customer.country?.value || "",
-        company: response.data.data.customer.company?.value || "",
+        first_name: response.data.data.customer.first_name || "",
+        last_name: response.data.data.customer.last_name || "",
+        phone: response.data.data.customer.phone || "",
+        email: response.data.data.customer.email || "",
+        address1: response.data.data.customer.address_1 || "",
+        city: response.data.data.customer.city || "",
+        state: response.data.data.customer.state || "",
+        zip: response.data.data.customer.postal_code || "",
+        country: response.data.data.customer.country || "",
+        company: response.data.data.customer.company || "",
       });
       console.log("vaibhav", response.data.data.customer);
 
@@ -331,50 +331,36 @@ function CreditCardForm(props) {
     }
   };
 
+  useEffect(() => {
+    // Assuming `customerVaultId` is available in your component state
+    getEditData(customerVaultId);
+  }, [customerVaultId]);
+
   const handleEditCard = async (customerVaultId) => {
     try {
-      const response = await axios.post(
-        `${baseUrl}/nmipayment/get-customer-vault`,
-        {
-          customer_vault_id: customerVaultId,
-        }
-      );
+      setCustomerVaultId(customerVaultId);
+      await getEditData(customerVaultId);
 
-      // Set the form values with the existing card details
-      setFormValues({
-        card_number: response.data.data.customer.cc_number || "",
-        exp_date: response.data.data.customer.cc_exp || "",
-        first_name: response.data.data.customer.first_name?.value || "",
-        last_name: response.data.data.customer.last_name?.value || "",
-        phone: response.data.data.customer.phone?.value || "",
-        email: response.data.data.customer.email?.value || "",
-        address1: response.data.data.customer.address_1?.value || "",
-        city: response.data.data.customer.city?.value || "",
-        state: response.data.data.customer.state?.value || "",
-        zip: response.data.data.customer.postal_code?.value || "",
-        country: response.data.data.customer.country?.value || "",
-        company: response.data.data.customer.company?.value || "",
-      });
-
-      console.log("vaibhav", formValue);
-      // Your form submission logic goes here
+      // Change the button text to "Update"
+      setSubmitButtonText("Update Card");
 
       // Perform the update operation
-      const updateResponse = await axios.post(
-        `${baseUrl}/nmipayment/update-customer-vault`,
-        {
-          customer_vault_id: customerVaultId,
-        }
-      );
+      const updateResponse = await axios
+        .post
+        // `${baseUrl}/nmipayment/update-customer-vault`,
+        // {
+        //   customer_vault_id: customerVaultId,
+        // }
+        ();
 
       if (updateResponse.status === 200) {
-        // Fetch the updated records after successful update
-        // await Promise.all([
-        //   getCreditCard(),
-        //   getMultipleCustomerVault()
-        // ]);
+        await Promise.all([getCreditCard(), getMultipleCustomerVault()]);
 
         swal("Success", "Card updated successfully", "success");
+
+        // Reset the form values and change button text back to "Add Card"
+        setFormValues({});
+        setSubmitButtonText("Add Card");
       } else {
         // Handle errors, show a message, or log the error
         console.error("Update card failed:", updateResponse.statusText);
@@ -384,14 +370,29 @@ function CreditCardForm(props) {
     }
   };
 
-
-
-  // ... (Previous code remains unchanged)
-
-  // Add a state to track the submit button text
   const [submitButtonText, setSubmitButtonText] = useState("Add Card");
+  console.log("formvalue", formValue);
 
-
+  const formik = useFormik({
+    initialValues: {
+      card_number: "",
+      exp_date: "",
+      first_name: formValue.first_name || "",
+      last_name: formValue.last_name || "",
+      phone: formValue.phone || "",
+      email: formValue.email || "",
+      address1: formValue.address1 || "",
+      city: formValue.city || "",
+      state: formValue.state || "",
+      zip: formValue.zip || "",
+      country: formValue.country || "",
+      company: formValue.company || "",
+    },
+    validationSchema: { paymentSchema },
+    onSubmit: (values) => {
+      handleSubmit(values);
+    },
+  });
   return (
     <div style={{ maxHeight: "530px", overflowY: "auto", overflowX: "hidden" }}>
       <Row>
@@ -401,16 +402,16 @@ function CreditCardForm(props) {
             initialValues={{
               card_number: "",
               exp_date: "",
-              first_name: "",
-              last_name: "",
-              phone: "",
-              email: "",
-              address1: "",
-              city: "",
-              state: "",
-              zip: "",
-              country: "",
-              company: "",
+              first_name: formValue.first_name || "",
+              last_name: formValue.last_name || "",
+              phone: formValue.phone || "",
+              email: formValue.email || "",
+              address1: formValue.address1 || "",
+              city: formValue.city || "",
+              state: formValue.state || "",
+              zip: formValue.zip || "",
+              country: formValue.country || "",
+              company: formValue.company || "",
             }}
             validationSchema={paymentSchema}
             onSubmit={(values, { resetForm }) => {
@@ -426,6 +427,7 @@ function CreditCardForm(props) {
             {/* {({ isSubmitting }) => ( */}
             <Form>
               {/* Form Fields */}
+
               {/* <Row className="mb-0">
               <Col xs="12" sm="12"> */}
               <Row className="mb--2">
@@ -439,6 +441,9 @@ function CreditCardForm(props) {
                       className="no-spinner"
                       name="card_number"
                       tag={Field}
+                      value={formik.values.card_number}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                       required
                     />
                     <ErrorMessage
@@ -448,6 +453,7 @@ function CreditCardForm(props) {
                     />
                   </FormGroup>
                 </Col>
+                {console.log(formik.values, "yash")}
 
                 <Col xs="12" sm="4">
                   <FormGroup>
@@ -458,6 +464,9 @@ function CreditCardForm(props) {
                       name="exp_date"
                       placeholder="MM/YYYY"
                       tag={Field}
+                      value={formik.values.exp_date}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                       required
                     />
                     <ErrorMessage
@@ -479,6 +488,9 @@ function CreditCardForm(props) {
                       name="first_name"
                       placeholder="Enter first name"
                       tag={Field}
+                      value={formik.values.first_name}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                       required
                     />
                     {/* <ErrorMessage
@@ -497,6 +509,9 @@ function CreditCardForm(props) {
                       name="last_name"
                       placeholder="Enter last name"
                       tag={Field}
+                      value={formik.values.last_name}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                       required
                     />
                     {/* <ErrorMessage
@@ -674,7 +689,7 @@ function CreditCardForm(props) {
                   }}
                   disabled={!paymentSchema.isValid || isSubmitting}
                 >
-                  {isSubmitting ? "Loading..." : "Add Card"}
+                  {isSubmitting ? "Loading..." : submitButtonText}
                 </button>
 
                 <button
@@ -789,12 +804,12 @@ function CreditCardForm(props) {
                                 marginRight: "5px",
                               }}
                             />
-                            {/* <EditIcon
+                            <EditIcon
                               onClick={() =>
-                                getEditData(item.customer_vault_id)
+                                handleEditCard(item.customer_vault_id)
                               }
                               style={{ cursor: "pointer" }}
-                            /> */}
+                            />
                           </div>
                         </td>
                       </tr>

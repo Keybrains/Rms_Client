@@ -176,10 +176,7 @@ const Workorder = () => {
   
     return filteredData;
   };
-  
-  
-  
-            
+          
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
@@ -191,10 +188,6 @@ const Workorder = () => {
     navigate(`/admin/workorderdetail/${workorder_id}`);
     //console.log(workorder_id);
   };
-  console.log(workData, "workData");
-  console.log(sortBy, "sortBy");
-  console.log(upArrow, "upArrow");
-
 
   const sortData = (value) => {
     if (!sortBy.includes(value)) {
@@ -341,7 +334,7 @@ const Workorder = () => {
                       </th>
                       <th scope="col">
                         Assigned
-                        {sortBy.includes("staffmember_name") ? (
+                        {/* {sortBy.includes("staffmember_name") ? (
                           upArrow.includes("staffmember_name") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("staffmember_name")}
@@ -355,7 +348,7 @@ const Workorder = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("staffmember_name")}
                           />
-                        )}
+                        )} */}
                       </th>
                       <th scope="col">Status</th>
                       <th scope="col">Created At</th>

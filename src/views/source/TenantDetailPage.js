@@ -925,7 +925,7 @@ const TenantDetailPage = () => {
                           </CardContent>
                         </Card>
 
-                        <Card
+                        {/* <Card
                           className="w-100 mt-3"
                           style={{ background: "#F4F6FF" }}
                         >
@@ -1017,7 +1017,7 @@ const TenantDetailPage = () => {
                               </Button>
                             </div>
                           </CardContent>
-                        </Card>
+                        </Card> */}
                       </>
                     )}
                   </div>
