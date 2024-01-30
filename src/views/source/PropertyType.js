@@ -42,7 +42,7 @@ import moment from "moment";
 
 const PropertyType = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { id } = useParams();
+  const { id, admin } = useParams();
   let [propertyData, setPropertyData] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [isEditDialogOpen, setEditDialogOpen] = React.useState(false);
@@ -170,10 +170,9 @@ const PropertyType = () => {
   };
 
   const editPropertyType = (id) => {
-    navigate(`/admin/AddPropertyType/${id}`);
+    navigate(`/${admin}/AddPropertyType/${id}`);
     //console.log(id);
   };
-  console.log(propertyData, "propertyData");
 
   const filterPropertyBySearch = () => {
     let filteredData = propertyData;
@@ -283,7 +282,7 @@ const PropertyType = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/admin/AddPropertyType")}
+              onClick={() => navigate("/"+admin+"/AddPropertyType")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >

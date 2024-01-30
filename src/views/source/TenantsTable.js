@@ -38,6 +38,7 @@ const TenantsTable = () => {
   let [tentalsData, setTenantsDate] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   let [loader, setLoader] = React.useState(true);
+  const {admin} = useParams()
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -58,7 +59,7 @@ const TenantsTable = () => {
   }, [navigate]);
 
   const navigateToTenantsDetails = (tenantId) => {
-    navigate(`/admin/tenantdetail/${tenantId}`);
+    navigate(`/${admin}/tenantdetail/${tenantId}`);
   };
 
   let getTenantsDate = async () => {
@@ -181,7 +182,7 @@ const TenantsTable = () => {
   };
 
   const editLeasing = (id) => {
-    navigate(`/admin/Leaseing/${id}`);
+    navigate(`/${admin}/Leaseing/${id}`);
   };
 
   function formatDateWithoutTime(dateString) {
@@ -324,7 +325,7 @@ const TenantsTable = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              onClick={() => navigate("/admin/Leaseing")}
+              onClick={() => navigate("/"+admin+"/Leaseing")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >

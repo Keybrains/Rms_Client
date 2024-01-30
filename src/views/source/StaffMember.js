@@ -36,7 +36,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 const StaffMember = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { id } = useParams();
+  const { id, admin } = useParams();
   let [StaffMemberData, setStaffMemberData] = useState();
   const [open, setOpen] = React.useState(false);
   const [isEditDialogOpen, setEditDialogOpen] = React.useState(false);
@@ -183,7 +183,7 @@ const StaffMember = () => {
   };
 
   const editStaffMember = (id) => {
-    navigate(`/admin/AddStaffMember/${id}`);
+    navigate(`/${admin}/AddStaffMember/${id}`);
     //console.log(id);
   };
 
@@ -304,7 +304,7 @@ const StaffMember = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/admin/AddStaffMember")}
+              onClick={() => navigate("/" + admin + "/AddStaffMember")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >

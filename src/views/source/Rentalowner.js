@@ -60,7 +60,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const Rentals = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { id } = useParams();
+  const { id , admin} = useParams();
   const [statedropdownOpen, setstateDropdownOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   // const [filteredRentalsData, setFilteredRentalsData] = useState([]);
@@ -199,7 +199,7 @@ const Rentals = () => {
 
   function handleResponse(response) {
     if (response.status === 200) {
-      navigate("/admin/RentalownerTable");
+      navigate("/"+admin+"/RentalownerTable");
       swal(
         "Success!",
         id ? "property updated successfully" : "property added successfully!",
