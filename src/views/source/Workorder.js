@@ -18,7 +18,7 @@ import {
 import Header from "components/Headers/Header";
 import * as React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useParams} from "react-router-dom";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -35,7 +35,8 @@ const Workorder = () => {
   let navigate = useNavigate();
   let [workData, setWorkData] = useState();
   let [loader, setLoader] = React.useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const {admin} = useParams()
+const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -113,7 +114,7 @@ const Workorder = () => {
   };
   const editWorkOrder = (id) => {
     console.log(id,'id male che')
-    navigate(`/admin/addworkorder/${id}`);
+    navigate(`/${admin} /addworkorder/${id}`);
     //console.log(id);
   };
 
@@ -188,7 +189,7 @@ const Workorder = () => {
 
   const navigateToDetails = (workorder_id) => {
     // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
-    navigate(`/admin/workorderdetail/${workorder_id}`);
+    navigate(`/${admin} /workorderdetail/${workorder_id}`);
     //console.log(workorder_id);
   };
   console.log(workData, "workData");
@@ -238,7 +239,7 @@ const Workorder = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/admin/addworkorder")}
+              onClick={() => navigate("/"+admin+"/addworkorder")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >

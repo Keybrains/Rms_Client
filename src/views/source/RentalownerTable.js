@@ -30,10 +30,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import swal from "sweetalert"; // Import sweetalert
 import { Link } from "react-router-dom";
 import InfoIcon from "@mui/icons-material/Info";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 
 const RentalownerTable = () => {
+  const {admin} = useParams()
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [rentalsData, setRentalsData] = useState([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -84,11 +85,11 @@ const RentalownerTable = () => {
   }, [accessType]);
 
   function navigateToRentRollDetails(rentalOwnerId) {
-    navigate(`/admin/rentalownerdetail/${rentalOwnerId}`);
+    navigate(`/${admin}/rentalownerdetail/${rentalOwnerId}`);
   }
 
   const editRentalOwner = (id) => {
-    navigate(`/admin/Rentalowner/${id}`);
+    navigate(`/${admin}/Rentalowner/${id}`);
   };
 
   const deleteTenant = (rentalowner_id) => {
@@ -157,7 +158,7 @@ const RentalownerTable = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              onClick={() => navigate("/admin/Rentalowner")}
+              onClick={() => navigate("/"+admin+"/Rentalowner")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >

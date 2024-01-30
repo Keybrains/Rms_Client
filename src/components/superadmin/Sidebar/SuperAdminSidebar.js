@@ -162,7 +162,7 @@ const SuperAdminSidebar = (props) => {
       });
 
     // Continue with navigating to the details pagenavigate(`/admin/addworkorder/${id}`);
-    navigate(`/admin/addworkorder/${workorder_id}`);
+    navigate(`/${admin}/addworkorder/${workorder_id}`);
   };
   // creates the links that appear in the left menu / Sidebar
   const createLinks = (routes) => {

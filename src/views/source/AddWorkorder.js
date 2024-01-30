@@ -492,10 +492,10 @@ const AddWorkorder = () => {
     if (response.status === 200) {
       if (rental_id) {
         navigate(
-          `/admin/PropDetails/${WorkFormik.values.rental_id}/${rental_id}?source=task`
+          `/${admin}/PropDetails/${WorkFormik.values.rental_id}/${rental_id}?source=task`
         );
       } else {
-        navigate("/admin/Workorder");
+        navigate("/"+admin+" /Workorder");
       }
       swal(
         "Success!",

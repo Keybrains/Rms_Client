@@ -47,7 +47,7 @@ const PropertiesTables = () => {
   const [sortBy, setSortBy] = useState([]);
 
   const navigateToPropDetails = (rental_id) => {
-    const propDetailsURL = `/admin/PropDetails/${rental_id}`;
+    const propDetailsURL = `/${admin}/PropDetails/${rental_id}`;
     navigate(propDetailsURL);
   };
   
@@ -132,7 +132,7 @@ const PropertiesTables = () => {
   };
 
   const editProperty = (rental_id) => {
-    navigate(`/admin/rentals/${rental_id}`);
+    navigate(`/${admin}/rentals/${rental_id}`);
   };
 
   const filterRentalsBySearch = () => {
