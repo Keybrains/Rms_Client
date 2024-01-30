@@ -25,6 +25,7 @@ import { Typography, colors } from "@mui/material";
 import swal from "sweetalert";
 import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { AdminPanelSettingsRounded } from "@mui/icons-material";
 
 const Login = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -52,6 +53,11 @@ const Login = () => {
       );
 
       console.log("Admin ID:", adminRes.data);
+
+      if (adminRes.data.statusCode && adminRes.data.statusCode != 200) {
+        swal(adminRes.data.message)
+      }
+
       if (adminRes.data.statusCode === 200) {
         // Admin login successful
         swal("Success!", "Admin Login Successful!", "success").then((value) => {

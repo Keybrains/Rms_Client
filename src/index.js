@@ -23,6 +23,7 @@ import Trial from "layouts/Trial";
 // ==========================  Super Admin =================================================== 
 import SuperAdmin from "../src/components/superadmin/layouts/SuperAdmin"
 import NotFound from "views/source/404NotFound";
+import AuthCheckAdmin from "views/source/AuthCheckAdmin";
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
 
@@ -30,6 +31,7 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/:admin/*" element={<AdminLayout />} />
+      <Route path="/" element={<Navigate to="/authentication" replace />} />
       <Route path="/auth/*" element={<AuthLayout />} />
       <Route path="*" element={<NotFound />} />
       <Route path="/tenant/*" element={<Tenant />} />
@@ -44,6 +46,7 @@ root.render(
       {/* ==========================  Super Admin =================================================== */}
       <Route path="/superadmin/*" element={<SuperAdmin />} />
       <Route path="/:admin/404" element={<NotFound />} />
+      <Route path="/authentication" element={<AuthCheckAdmin />} />
 
     </Routes> 
   </BrowserRouter>
