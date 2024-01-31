@@ -38,18 +38,14 @@ const Login = () => {
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
-  }; 
+  };
 
-
-  const handleSubmit = async (values) => {   
+  const handleSubmit = async (values) => {
     try {
       setIsLoading(true); // Set loading state to true
 
       // Admin login
-      const adminRes = await axios.post(
-        `${baseUrl}/admin/login`,
-        values
-      );
+      const adminRes = await axios.post(`${baseUrl}/admin/login`, values);
 
       console.log("Admin ID:", adminRes.data);
       if (adminRes.data.statusCode === 200) {
@@ -63,15 +59,12 @@ const Login = () => {
         });
       } else {
         // Admin login failed, try tenant login
-        const tenantRes = await axios.post(
-          `${baseUrl}/tenant/login`,
-          {
-            tenant_email: values.email,
-            tenant_password: values.password,
-          }
-        );
+        const tenantRes = await axios.post(`${baseUrl}/tenant/login`, {
+          tenant_email: values.email,
+          tenant_password: values.password,
+        });
 
-        if (tenantRes.data.statusCode === 200) {
+        if (tenantRes.data.statusCode === 403) {
           // Tenant login successful
           const tenantData = tenantRes.data.data; // Assuming the API response structure
 
@@ -88,19 +81,16 @@ const Login = () => {
                 }
               }
             );
-          } else {  
+          } else {
             // Tenant login succeeded, but no _id found
             swal("Error!", "Invalid tenant data", "error");
           }
         } else {
           // Admin and tenant login failed, try agent login
-          const agentRes = await axios.post(
-            `${baseUrl}/addagent/login`,
-            {
-              agent_email: values.email,
-              agent_password: values.password,
-            }
-          );
+          const agentRes = await axios.post(`${baseUrl}/addagent/login`, {
+            agent_email: values.email,
+            agent_password: values.password,
+          });
 
           if (agentRes.data.statusCode === 200) {
             // Agent login successful
@@ -158,13 +148,10 @@ const Login = () => {
               }
             } else {
               // All login attempts failed, try vendor login
-              const vendorRes = await axios.post(
-                `${baseUrl}/vendor/login`,
-                {
-                  vendor_email: values.email,
-                  vendor_password: values.password,
-                }
-              );
+              const vendorRes = await axios.post(`${baseUrl}/vendor/login`, {
+                vendor_email: values.email,
+                vendor_password: values.password,
+              });
 
               if (vendorRes.data.statusCode === 200) {
                 // Vendor login successful
@@ -236,15 +223,15 @@ const Login = () => {
 
   return (
     <>
-        <Col lg="5" md="7">
-          <Card
-            className="bg-secondary shadow border-0"
-            onSubmit={loginFormik.handleSubmit}
-          >
-            <CardBody className="px-lg-5 py-lg-5">
-              <div className="text-center text-muted mb-4">
-                <small>Sign in with your credentials</small>
-              </div>
+      <Col lg="5" md="7">
+        <Card
+          className="bg-secondary shadow border-0"
+          onSubmit={loginFormik.handleSubmit}
+        >
+          <CardBody className="px-lg-5 py-lg-5">
+            <div className="text-center text-muted mb-4">
+              <small>Sign in with your credentials</small>
+            </div>
             <Form role="form">
               <FormGroup className="mb-3">
                 <InputGroup className="input-group-alternative">
@@ -263,14 +250,11 @@ const Login = () => {
                     value={loginFormik.values.email}
                   />
                 </InputGroup>
-                  {loginFormik.touched.email && loginFormik.errors.email ? (
-                    <Typography
-                      variant="caption"
-                      style={{ color: "red" }}
-                    >
-                      {loginFormik.errors.email}
-                    </Typography>
-                  ): null}
+                {loginFormik.touched.email && loginFormik.errors.email ? (
+                  <Typography variant="caption" style={{ color: "red" }}>
+                    {loginFormik.errors.email}
+                  </Typography>
+                ) : null}
               </FormGroup>
               <FormGroup>
                 <InputGroup className="input-group-alternative">
@@ -297,23 +281,18 @@ const Login = () => {
                   >
                     {<VisibilityIcon />}
                   </IconButton>
-
                 </InputGroup>
-                  {loginFormik.touched.password &&
-                  loginFormik.errors.password ? (
-                    <Typography
-                      variant="caption"
-                      style={{ color: "red" }}
-                    >
-                      {loginFormik.errors.password}
-                    </Typography>
-                  ) : null}
+                {loginFormik.touched.password && loginFormik.errors.password ? (
+                  <Typography variant="caption" style={{ color: "red" }}>
+                    {loginFormik.errors.password}
+                  </Typography>
+                ) : null}
               </FormGroup>
 
               <div className="custom-control custom-control-alternative custom-checkbox">
                 <Row>
                   <Col>
-                  <input
+                    <input
                       className="custom-control-input"
                       id=" customCheckLogin"
                       type="checkbox"
@@ -329,13 +308,18 @@ const Login = () => {
                     <label
                       className=""
                       // href="#rms"
-                      onClick={ () => navigate(`/auth/forgetpassword`)}
+                      onClick={() => navigate(`/auth/forgetpassword`)}
                     >
-                      <span className="text-muted mb-4" style={{fontSize:"14px"}}>Forgot password?</span>
+                      <span
+                        className="text-muted mb-4"
+                        style={{ fontSize: "14px" }}
+                      >
+                        Forgot password?
+                      </span>
                     </label>
                   </Col>
                 </Row>
-              <br/>
+                <br />
               </div>
               <div className="text-center">
                 {/* <Button className="my-4" color="primary" type="button">
@@ -352,8 +336,7 @@ const Login = () => {
                   {isLoading ? <CircularProgress size={24} /> : "Login"}
                 </Button>
               </div>
-              <br/>
-    
+              <br />
             </Form>
           </CardBody>
         </Card>

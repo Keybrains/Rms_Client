@@ -40,6 +40,7 @@ import SuperAdminHeader from "../Headers/SuperAdminHeader";
 
 import { Col, Container, Row } from "reactstrap";
 import { useNavigate } from "react-router-dom";
+import ProfileIcon from "../Images/profile.png";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -69,19 +70,28 @@ function Rows(props) {
     <React.Fragment>
       <TableRow
         hover
-        // onClick={(event) => handleClick(event, row._id)}
+        onClick={(event) => handleClick(event, row._id)}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
         selected={isItemSelected}
       >
+        <TableCell align="center" padding="checkbox">
+          <Checkbox
+            color="primary"
+            checked={isItemSelected}
+            inputProps={{
+              "aria-labelledby": labelId,
+            }}
+          />
+        </TableCell>
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
         <TableCell align="left">
-          {row.first_name} {row.last_name}
+          <img src={ProfileIcon} /> {row?.first_name} {row?.last_name}
         </TableCell>
-        <TableCell align="left">{row.compony_name}</TableCell>
-        <TableCell align="left">{row.phone_number}</TableCell>
-        <TableCell align="left">{row.email}</TableCell>
+        <TableCell align="left">{row?.company_name}</TableCell>
+        <TableCell align="left">{row?.phone_number}</TableCell>
+        <TableCell align="left">{row?.email}</TableCell>
         <TableCell align="left">
           {new Date(row.createdAt).toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -114,16 +124,12 @@ export default function Admin() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
-    const token = cookies.get("token");
     try {
       const res = await axios.get(`${baseUrl}/admin/admin`, {
         params: {
           pageSize: rowsPerPage,
           pageNumber: page,
         },
-        //   headers: {
-        //     Authorization: `Bearer ${token}`,
-        //   },
       });
       setLoader(false);
       setAdminData(res.data.data);
@@ -179,6 +185,27 @@ export default function Admin() {
   };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
+
+  // Delete selected
+  var handleDelete = () => {
+    swal("Are You Sure You Want TO Delete ?", {
+      buttons: ["No", "Yes"],
+    }).then(async (buttons) => {
+      if (buttons === true) {
+        axios
+          .delete(`${baseUrl}/admin/admin`, {
+            data: selected,
+          })
+          .then((response) => {
+            if (response.data.statusCode === 200) {
+              getData();
+              setSelected([]);
+              swal("", response.data.message, "success");
+            }
+          });
+      }
+    });
+  };
 
   //
   // Searchbar
@@ -309,6 +336,24 @@ export default function Admin() {
                       aria-label="Search"
                     />
                   </form> */}
+
+                  <>
+                    {selected.length > 0 ? (
+                      <Tooltip title="Delete">
+                        <IconButton onClick={() => handleDelete()}>
+                          <img
+                            src={deleterecord}
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              margin: "10px",
+                              alignItems: "center",
+                            }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                    ) : null}
+                  </>
                 </Toolbar>
 
                 {loader || searchLoader ? (
@@ -328,6 +373,25 @@ export default function Admin() {
                     <Table aria-label="collapsible table">
                       <TableHead>
                         <TableRow>
+                          {/* <TableCell align="center"></TableCell> */}
+
+                          <TableCell align="center" padding="checkbox">
+                            <Checkbox
+                              color="primary"
+                              indeterminate={
+                                selected.length > 0 &&
+                                selected.length < adminData?.length
+                              }
+                              checked={
+                                adminData?.length > 0 &&
+                                selected.length === adminData?.length
+                              }
+                              onChange={handleSelectAllClick}
+                              inputProps={{
+                                "aria-label": "select all desserts",
+                              }}
+                            />
+                          </TableCell>
                           {headCells.map((headCell, id) => {
                             return (
                               <TableCell
