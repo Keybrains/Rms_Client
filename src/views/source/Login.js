@@ -52,8 +52,6 @@ const Login = () => {
         values
       );
 
-      console.log("Admin ID:", adminRes.data);
-
       if (adminRes.data.statusCode && adminRes.data.statusCode != 200) {
         swal(adminRes.data.message)
       }
