@@ -271,7 +271,7 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/RentRollLeaseing/:id",
+    path: "/RentRollLeaseing/:lease_id",
     name: "Rent Roll Leaseing",
     icon: "ni ni-home-3 text-orange",
     component: <RentRollLeaseing />,
@@ -587,14 +587,6 @@ var routes = [
   {
     path: "/AddPayment",
     component: <AddPayment />,
-    layout: "/admin",
-  },
-
-  {
-    path: "/RentRollLeaseing/:id/:entryIndex",
-    name: "Rent Roll Leaseing",
-    icon: "ni ni-home-3 text-orange",
-    component: <RentRollLeaseing />,
     layout: "/admin",
   },
   {
