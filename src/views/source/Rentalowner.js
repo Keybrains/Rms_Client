@@ -60,125 +60,71 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const Rentals = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { id , admin} = useParams();
-  const [statedropdownOpen, setstateDropdownOpen] = React.useState(false);
+  const { id, admin } = useParams();
+  let navigate = useNavigate();
+
+  const [statedropdownOpen, setstateDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  // const [filteredRentalsData, setFilteredRentalsData] = useState([]);
   const [propertyData, setPropertyData] = useState([]);
-  // const [laesingdata, setlaesingdata] = useState([]);
-  // const [selectedProperty, setSelectedProperty] = useState("");
   const [selectedProperties, setSelectedProperties] = useState([]);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
-  const [selectedState, setSelectedState] = useState("United State");
-  const [selectedProp, setSelectedProp] = useState([]);
+  const [selectedState, setSelectedState] = useState("");
   const [loading, setIsLoading] = useState(true);
   const [countries, setCountries] = useState([]);
 
   const toggle1 = () => setstateDropdownOpen((prevState) => !prevState);
 
-  // const [open, setOpen] = React.useState(false);
-
-  const handleStateSelection = (value) => {
+  const handleCountrySelection = (value) => {
     setSelectedState(value);
     setstateDropdownOpen(true);
+    rentalsFormik.setFieldValue("rentalOwner_country", value);
   };
 
-  const handlePropSelection = (value) => {
-    setSelectedProp(value);
-  };
-
-  // const handleClickOpen = () => {
-  //   setOpen(true);
-  // };
-
-  // const handleClose = () => {
-  //   setOpen(false); // Close the form by setting the 'open' state to false
-  // };
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
+
   const handleCloseButtonClick = () => {
-    // Use history.push to navigate to the PropertiesTable page
-    navigate("../RentalownerTable");
+    navigate("/" + admin + "/RentalownerTable");
   };
-  // const handelcreateowner = () => {
-  //   navigate("../RentalownerTable");
-  // };
 
-  // const handleChange = (e) => {
-  //   // setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-  // };
-
-  // const [selectedPropertyType, setSelectedPropertyType] = useState("");
-  // const handlePropertyTypeSelect = (propertyType) => {
-  //   setSelectedPropertyType(propertyType);
-  //   localStorage.setItem("propertyType", propertyType);
-  // };
-
-  // const [selectedOperatingAccount, setSelectedOperatingAccount] = useState("");
-  // const handleOperatingAccount = (operatingAccount) => {
-  //   setSelectedOperatingAccount(operatingAccount);
-  //   localStorage.setItem("operatingAccount", operatingAccount);
-  // };
-
-  let navigate = useNavigate();
-  // const handleSubmit = async (values) => {
-  //   values["rentalOwner_country"] = selectedState;
-
-  //   //console.log(values, "values");
-  //   try {
-  //     // values["property_type"] = localStorage.getItem("propertyType");
-  //     const res = await axios.post(
-  //       "https://propertymanager.cloudpress.host/api/rentalowner/rentalowner",
-  //       values
-  //     );
-  //     if (res.data.statusCode === 200) {
-  //       swal("", res.data.message, "success");
-  //       navigate("/admin/RentalownerTable");
-  //     } else {
-  //       swal("", res.data.message, "error");
-  //     }
-  //   } catch (error) {
-  //     //console.log(error);
-  //   }
-  // };
   async function handleSubmit(values) {
     try {
-      values["rentalOwner_country"] = selectedState;
-
-      // Fetch the complete property objects for the selected property IDs
       const selectedPropertyData = propertyData.filter((property) =>
-        selectedProperties.includes(property._id)
+        selectedProperties.includes(property.rental_id)
       );
 
-      // Assign the selected property data to the "rentalOwner_properties" field
-      values["rentalOwner_properties"] = selectedPropertyData;
+      const selectedPropertyIds = selectedPropertyData.map(
+        (property) => property.rental_id
+      );
 
-      if (id === undefined) {
-        const res = await axios.post(
-          `${baseUrl}/rentalowner/rentalowner`,
-          values
-        );
-        handleResponse(res);
-      } else {
-        const editUrl = `${baseUrl}/rentalowner/rentalowner/${id}`;
-        const res = await axios.put(editUrl, values);
-        handleResponse(res);
-      }
+      values["rentalOwner_properties"] = selectedPropertyIds;
+      console.log(selectedPropertyIds, selectedPropertyData);
+
+      // if (id === undefined) {
+      //   const res = await axios.post(
+      //     `${baseUrl}/rentalowner/rentalowner`,
+      //     values
+      //   );
+      //   handleResponse(res);
+      // } else {
+      //   const editUrl = `${baseUrl}/rentalowner/rentalowner/${id}`;
+      //   const res = await axios.put(editUrl, values);
+      //   handleResponse(res);
+      // }
     } catch (error) {
       console.error("Error:", error);
       if (error.response) {
         console.error("Response Data:", error.response.data);
       }
-      // Handle the error and display an error message to the user if necessary.
     }
   }
 
@@ -188,27 +134,50 @@ const Rentals = () => {
         const response = await axios.get(
           "https://restcountries.com/v3.1/all?fields=name"
         );
-        setCountries(response.data);
+        const sortedCountries = response.data.sort((a, b) => {
+          const nameA = a.name.common.toUpperCase();
+          const nameB = b.name.common.toUpperCase();
+          return nameA.localeCompare(nameB);
+        });
+
+        setCountries(sortedCountries);
       } catch (error) {
         console.error("Error fetching countries:", error);
       }
     };
 
     fetchCountries();
-  }, []); // Empty dependency array ensures that the effect runs only once, similar to componentDidMount
+  }, []);
+
+  useEffect(() => {
+    const fetchPropertyData = async () => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/rentals/rentals/${accessType.admin_id}`
+        );
+
+        setPropertyData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+      }
+    };
+
+    fetchPropertyData();
+  }, []);
 
   function handleResponse(response) {
     if (response.status === 200) {
-      navigate("/"+admin+"/RentalownerTable");
       swal(
         "Success!",
         id ? "property updated successfully" : "property added successfully!",
         "success"
       );
+      navigate("/" + admin + "/RentalownerTable");
     } else {
       alert(response.data.message);
     }
   }
+
   let rentalsFormik = useFormik({
     initialValues: {
       rentalowner_firstName: "",
@@ -217,7 +186,7 @@ const Rentals = () => {
       birth_date: "",
       start_date: "",
       end_date: "",
-      rentalOwner_primaryEmail: "",
+      rentalOwner_email: "",
       rentalOwner_alternateEmail: "",
       rentalOwner_phoneNumber: "",
       rentalOwner_homeNumber: "",
@@ -229,31 +198,20 @@ const Rentals = () => {
       rentalOwner_zip: "",
       rentalOwner_country: "",
       rentalOwner_comments: "",
-      text_identityType: "",
-      textpayer_id: "",
+      texpayer_id: "",
       rentalOwner_properties: [],
     },
     validationSchema: yup.object({
-      // property_type: yup.string().required("Required"),
-      // lease_type: yup.string().required("Required"),
-      // tenant_firstName: yup.string().required("Required"),
-      // tenant_lastName: yup.string().required("Required"),
-      // tenant_mobileNumber: yup.string().required("Required"),
-      // tenant_email: yup.string().required("Required"),
-      tenant_password: yup
-        .string()
-        // .required("No Password Provided")
-        .min(8, "Password is too short")
-        .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-          "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
-        ),
+      rentalowner_firstName: yup.string().required("Required"),
+      rentalOwner_lastName: yup.string().required("Required"),
+      rentalOwner_email: yup.string().required("Required"),
+      rentalOwner_phoneNumber: yup.string().required("Required"),
     }),
     onSubmit: (values) => {
       handleSubmit(values);
-      //console.log(values, "values");
     },
   });
+
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
       return propertyData;
@@ -266,44 +224,25 @@ const Rentals = () => {
     });
   };
 
-  const handlePropertyCheckboxChange = (propertyId) => {
+  const handlePropertyCheckboxChange = (rental_id) => {
     setSelectedProperties((prevSelectedProperties) => {
-      if (prevSelectedProperties.includes(propertyId)) {
-        return prevSelectedProperties.filter((id) => id !== propertyId);
+      if (prevSelectedProperties.includes(rental_id)) {
+        return prevSelectedProperties.filter((id) => id !== rental_id);
       } else {
-        return [...prevSelectedProperties, propertyId];
+        return [...prevSelectedProperties, rental_id];
       }
     });
   };
 
-  // Function to handle "Select All" checkbox change
   const handleSelectAllChange = () => {
     if (!selectAllChecked) {
-      // If "Select All" is checked, select all properties
-      setSelectedProperties(propertyData.map((property) => property._id));
+      setSelectedProperties(propertyData.map((property) => property.rental_id));
     } else {
-      // If "Select All" is unchecked, clear the selection
       setSelectedProperties([]);
     }
     setSelectAllChecked(!selectAllChecked);
   };
 
-  React.useEffect(() => {
-    // Fetch data from your API
-    fetch(`${baseUrl}/rentals/property_onrent`)
-      .then((response) => response.json())
-      .then((data) => {
-        //console.log("Data from API:", data); // Log the response data
-        if (data.statusCode === 200) {
-          setPropertyData(data.data);
-        } else {
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Network error:", error);
-      });
-  }, []);
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -318,23 +257,9 @@ const Rentals = () => {
         .then((response) => {
           const rentalOwnerdata = response.data.data;
           setRentalOwnerData(rentalOwnerData);
-          //console.log(rentalOwnerdata);
           setIsLoading(false);
           setSelectedState(rentalOwnerdata.rentalOwner_country || "Select");
 
-          // const formattedStartDate = rentalsFormik.start_date
-          //   ? new Date(rentalOwnerdata.start_date).toISOString().split("T")[0]
-          //   : "";
-          // const formattedEndDate = rentalsFormik.end_date
-          //   ? new Date(rentalOwnerdata.end_date).toISOString().split("T")[0]
-          //   : "";
-          // const formattedBirthDate = rentalsFormik.birth_date
-          //   ? new Date(rentalOwnerdata.birth_date).toISOString().split("T")[0]
-          //   : "";
-          //   //console.log("Formatted Start Date:", formattedStartDate);
-          //   //console.log("Formatted End Date:", formattedEndDate);
-          //   //console.log("Formatted Birth Date:", formattedBirthDate);
-          // // Initialize the form with fetched data
           rentalsFormik.setValues({
             rentalowner_firstName: rentalOwnerdata.rentalowner_firstName || "",
             rentalOwner_lastName: rentalOwnerdata.rentalOwner_lastName || "",
@@ -343,8 +268,7 @@ const Rentals = () => {
             birth_date: formatDate(rentalOwnerdata.birth_date),
             start_date: formatDate(rentalOwnerdata.start_date),
             end_date: formatDate(rentalOwnerdata.end_date),
-            rentalOwner_primaryEmail:
-              rentalOwnerdata.rentalOwner_primaryEmail || "",
+            rentalOwner_email: rentalOwnerdata.rentalOwner_email || "",
             rentalOwner_alternateEmail:
               rentalOwnerdata.rentalOwner_alternateEmail || "",
             rentalOwner_phoneNumber:
@@ -362,10 +286,9 @@ const Rentals = () => {
             rentalOwner_zip: rentalOwnerdata.rentalOwner_zip || "",
             rentalOwner_country: rentalOwnerdata.rentalOwner_country || "",
             rentalOwner_comments: rentalOwnerdata.rentalOwner_comments || "",
-            text_identityType: rentalOwnerdata.text_identityType || "",
             rentalOwner_companyName:
               rentalOwnerdata.rentalOwner_companyName || "",
-            textpayer_id: rentalOwnerdata.textpayer_id || "",
+            texpayer_id: rentalOwnerdata.texpayer_id || "",
             rentalOwner_properties:
               rentalOwnerdata.rentalOwner_properties || "",
           });
@@ -629,24 +552,18 @@ const Rentals = () => {
                                   </div>
                                   <Input
                                     type="text"
-                                    id="rentalOwner_primaryEmail"
+                                    id="rentalOwner_email"
                                     placeholder="Enter Email"
                                     onBlur={rentalsFormik.handleBlur}
                                     onChange={rentalsFormik.handleChange}
                                     value={
-                                      rentalsFormik.values
-                                        .rentalOwner_primaryEmail
+                                      rentalsFormik.values.rentalOwner_email
                                     }
                                   />
-                                  {rentalsFormik.touched
-                                    .rentalOwner_primaryEmail &&
-                                  rentalsFormik.errors
-                                    .rentalOwner_primaryEmail ? (
+                                  {rentalsFormik.touched.rentalOwner_email &&
+                                  rentalsFormik.errors.rentalOwner_email ? (
                                     <div style={{ color: "red" }}>
-                                      {
-                                        rentalsFormik.errors
-                                          .rentalOwner_primaryEmail
-                                      }
+                                      {rentalsFormik.errors.rentalOwner_email}
                                     </div>
                                   ) : null}
                                 </div>
@@ -819,7 +736,7 @@ const Rentals = () => {
                             ) : null}
                           </div>
                           <br />
-
+                          {console.log(rentalsFormik.values, "yash")}
                           <div className="input-group">
                             <div className="input-group-prepend">
                               <span className="input-group-text">
@@ -840,7 +757,7 @@ const Rentals = () => {
                                 const numericValue = inputValue.replace(
                                   /\D/g,
                                   ""
-                                ); // Remove non-numeric characters
+                                );
                                 e.target.value = numericValue;
                               }}
                             />
@@ -958,9 +875,8 @@ const Rentals = () => {
                             className="form-control-label"
                             htmlFor="input-country"
                           >
-                            <div className="pl-lg-2">Country</div>
+                            Country
                           </label>
-
                           <br />
                           <Row>
                             <div
@@ -972,8 +888,7 @@ const Rentals = () => {
                                 isOpen={statedropdownOpen}
                                 toggle={toggle1}
                               >
-                                <DropdownToggle caret style={{ width: "160%" }}>
-                                  {/* {selectedState} &nbsp;&nbsp; */}
+                                <DropdownToggle caret>
                                   {selectedState ? selectedState : "Select"}
                                 </DropdownToggle>
                                 <DropdownMenu
@@ -987,7 +902,7 @@ const Rentals = () => {
                                     <DropdownItem
                                       key={index}
                                       onClick={() =>
-                                        handleStateSelection(
+                                        handleCountrySelection(
                                           country.name.common
                                         )
                                       }
@@ -1020,7 +935,7 @@ const Rentals = () => {
                                 const numericValue = inputValue.replace(
                                   /\D/g,
                                   ""
-                                ); // Remove non-numeric characters
+                                );
                                 e.target.value = numericValue;
                               }}
                               style={{ width: "235px" }}
@@ -1052,19 +967,19 @@ const Rentals = () => {
 
                         <Input
                           type="text"
-                          id="textpayer_id"
+                          id="texpayer_id"
                           placeholder="Enter SSN or EIN....."
                           onChange={rentalsFormik.handleChange}
-                          value={rentalsFormik.values.textpayer_id}
+                          value={rentalsFormik.values.texpayer_id}
                         />
-                        {rentalsFormik.touched.textpayer_id &&
-                        rentalsFormik.errors.textpayer_id ? (
+                        {rentalsFormik.touched.texpayer_id &&
+                        rentalsFormik.errors.texpayer_id ? (
                           <div
                             style={{
                               color: "red",
                             }}
                           >
-                            {rentalsFormik.errors.textpayer_id}
+                            {rentalsFormik.errors.texpayer_id}
                           </div>
                         ) : null}
                       </Col>
@@ -1138,7 +1053,7 @@ const Rentals = () => {
                         <FormGroup>
                           {filterRentalsBySearch().length > 0 ? (
                             filterRentalsBySearch().map((property) => (
-                              <div key={property._id}>
+                              <div key={property.rental_id}>
                                 <label>
                                   <input
                                     type="checkbox"
@@ -1146,26 +1061,22 @@ const Rentals = () => {
                                       transform: "scale(1.5)",
                                       marginRight: "10px",
                                     }}
-                                    value={property._id}
+                                    value={property.rental_id}
                                     checked={selectedProperties.includes(
-                                      property._id
+                                      property.rental_id
                                     )}
                                     onChange={() =>
-                                      handlePropertyCheckboxChange(property._id)
+                                      handlePropertyCheckboxChange(
+                                        property.rental_id
+                                      )
                                     }
                                     onBlur={rentalsFormik.handleBlur}
                                   />
-                                  {property.rental_adress}
+                                  {property.rental_adress}{" "}
+                                  {property?.property_type_data?.property_type
+                                    ? `(${property?.property_type_data?.property_type})`
+                                    : ""}
                                 </label>
-                                {rentalsFormik.touched.rentalOwner_properties &&
-                                rentalsFormik.errors.rentalOwner_properties ? (
-                                  <div style={{ color: "red" }}>
-                                    {
-                                      rentalsFormik.errors
-                                        .rentalOwner_properties
-                                    }
-                                  </div>
-                                ) : null}
                               </div>
                             ))
                           ) : (
@@ -1188,7 +1099,8 @@ const Rentals = () => {
                         <ul>
                           {selectedProperties.map((selectedPropertyId) => {
                             const selectedProperty = propertyData.find(
-                              (property) => property._id === selectedPropertyId
+                              (property) =>
+                                property.rental_id === selectedPropertyId
                             );
                             return (
                               <li key={selectedPropertyId}>
