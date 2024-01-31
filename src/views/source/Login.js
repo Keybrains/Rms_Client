@@ -59,7 +59,6 @@ const Login = () => {
           if (value) {
             localStorage.setItem("token", adminRes.data.token);
             navigate("/admin/index");
-            //console.log("Admin ID:", adminRes.data.data._id);
           }
         });
       } else {
