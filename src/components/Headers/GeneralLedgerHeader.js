@@ -1,8 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Container, Row, Col, Button, FormGroup } from "reactstrap";
 
 const GeneralLedgerHeader = () => {
   const navigate = useNavigate();
+  const {admin} = useParams()
+
   return (
     <>
       <div
@@ -29,7 +31,7 @@ const GeneralLedgerHeader = () => {
             <Button
               color="primary"
               ////  href="#rms"
-              onClick={() => navigate("/admin/addgeneralledger")}
+              onClick={() => navigate("/"+admin+"/addgeneralledger")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >

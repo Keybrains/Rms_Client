@@ -25,6 +25,7 @@ import { Typography, colors } from "@mui/material";
 import swal from "sweetalert";
 import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { AdminPanelSettingsRounded } from "@mui/icons-material";
 
 const Login = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -42,151 +43,107 @@ const Login = () => {
 
   const handleSubmit = async (values) => {
     try {
-      setIsLoading(true); // Set loading state to true
-
-      // Admin login
+      setIsLoading(true);
       const adminRes = await axios.post(`${baseUrl}/admin/login`, values);
 
-      console.log("Admin ID:", adminRes.data);
-      if (adminRes.data.statusCode === 200) {
-        // Admin login successful
-        swal("Success!", "Admin Login Successful!", "success").then((value) => {
-          if (value) {
-            localStorage.setItem("token", adminRes.data.token);
-            const jwt = jwtDecode(localStorage.getItem("token"));
-            navigate(`/${jwt.company_name}/index`);
-          }
-        });
+      if (adminRes.status === 200) {
+        const adminData = adminRes.data;
+        if (adminData.statusCode === 200) {
+          swal("Success!", "Admin Login Successful!", "success").then(
+            (value) => {
+              if (value) {
+                localStorage.setItem("token", adminData.token);
+                const jwt = jwtDecode(localStorage.getItem("token"));
+                navigate(`/${jwt.company_name}/index`);
+              }
+            }
+          );
+        } else if (adminData.statusCode === 202) {
+          swal("Error!", adminData.message, "error");
+        } else {
+          swal("Error!", "Invalid admin data", "error");
+        }
       } else {
-        // Admin login failed, try tenant login
-        const tenantRes = await axios.post(`${baseUrl}/tenant/login`, {
-          tenant_email: values.email,
-          tenant_password: values.password,
+        const tenantRes = await axios.post(`${baseUrl}/tenants/login`, {
+          email: values.email,
+          password: values.password,
         });
 
-        if (tenantRes.data.statusCode === 403) {
-          // Tenant login successful
-          const tenantData = tenantRes.data.data; // Assuming the API response structure
-
-          // Check if tenantData contains _id
-          if (tenantData && tenantData._id) {
-            //console.log("Tenant ID:", tenantData._id);
+        if (tenantRes.status === 200) {
+          const tenantData = tenantRes.data;
+          if (tenantData.statusCode === 200) {
             swal("Success!", "Tenant Login Successful!", "success").then(
               (value) => {
                 if (value) {
-                  localStorage.setItem("token", tenantRes.data.token);
-                  localStorage.setItem("Tenant ID", tenantData._id);
-                  localStorage.setItem("ID", tenantData._id);
+                  localStorage.setItem("token", tenantRes.data.tenantToken);
                   navigate("/tenant/tenantdashboard");
                 }
               }
             );
+          } else if (tenantData.statusCode === 202) {
+            swal("Error!", tenantData.message, "error");
           } else {
-            // Tenant login succeeded, but no _id found
             swal("Error!", "Invalid tenant data", "error");
           }
         } else {
-          // Admin and tenant login failed, try agent login
-          const agentRes = await axios.post(`${baseUrl}/addagent/login`, {
-            agent_email: values.email,
-            agent_password: values.password,
+          const staffRes = await axios.post(`${baseUrl}/staffmember/login`, {
+            email: values.email,
+            password: values.password,
           });
-
-          if (agentRes.data.statusCode === 200) {
-            // Agent login successful
-            const agentData = agentRes.data.data; // Assuming the API response structure
-            //console.log("Agent ID:", agentData._id);
-
-            // Check if agentData contains _id
-            if (agentData && agentData._id) {
-              //console.log("Agent ID:", agentData._id);
-              swal("Success!", "Agent Login Successful!", "success").then(
-                (value) => {
-                  if (value) {
-                    localStorage.setItem("token", agentRes.data.token);
-                    localStorage.setItem("Agent ID", agentData._id);
-                    localStorage.setItem("ID", agentData._id);
-                    navigate("/agent/AgentdashBoard");
-                  }
+          if (staffRes.status === 200) {
+            const vendorData = staffRes.data;
+            if (vendorData.statusCode === 200) {
+              console.log(vendorData);
+              swal(
+                "Success!",
+                "Staff Member Login Successful!",
+                "success"
+              ).then((value) => {
+                console.log(value);
+                if (value) {
+                  localStorage.setItem("token", vendorData.staff_memberToken);
+                  navigate("/staff/staffdashboard");
                 }
-              );
+              });
+            } else if (vendorData.statusCode === 202) {
+              swal("Error!", vendorData.message, "error");
             } else {
-              // Agent login succeeded, but no _id found
-              swal("Error!", "Invalid agent data", "error");
+              swal("Error!", "Invalid staff member data", "error");
             }
           } else {
-            // All login attempts failed, try staff login
-            const staffRes = await axios.post(
-              `${baseUrl}/addstaffmember/login`,
-              {
-                staffmember_email: values.email,
-                staffmember_password: values.password,
-              }
-            );
-
-            if (staffRes.data.statusCode === 200) {
-              // Staff login successful
-              const staffData = staffRes.data.data; // Assuming the API response structure
-              //console.log("Staff ID:", staffData._id);
-
-              // Check if staffData contains _id
-              if (staffData && staffData._id) {
-                //console.log("Staff ID:", staffData._id);
-                swal("Success!", "Staff Login Successful!", "success").then(
+            const vendorRes = await axios.post(`${baseUrl}/vendor/login`, {
+              email: values.email,
+              password: values.password,
+            });
+            console.log(vendorRes);
+            if (vendorRes.status === 200) {
+              const staffmemberData = vendorRes.data;
+              if (staffmemberData.statusCode === 200) {
+                swal("Success!", "Vendor Login Successful!", "success").then(
                   (value) => {
                     if (value) {
-                      localStorage.setItem("token", staffRes.data.token);
-                      localStorage.setItem("Staff ID", staffData._id);
-                      localStorage.setItem("ID", staffData._id);
-                      navigate("/staff/staffdashboard");
+                      localStorage.setItem(
+                        "token",
+                        staffmemberData.vendorToken
+                      );
+                      navigate("/vendor/vendordashboard");
                     }
                   }
                 );
+              } else if (staffmemberData.statusCode === 202) {
+                swal("Error!", staffmemberData.message, "error");
               } else {
-                // Staff login succeeded, but no _id found
-                swal("Error!", "Invalid staff data", "error");
-              }
-            } else {
-              // All login attempts failed, try vendor login
-              const vendorRes = await axios.post(`${baseUrl}/vendor/login`, {
-                vendor_email: values.email,
-                vendor_password: values.password,
-              });
-
-              if (vendorRes.data.statusCode === 200) {
-                // Vendor login successful
-                const vendorData = vendorRes.data.data; // Assuming the API response structure
-                //console.log("Vendor ID:", vendorData._id);
-
-                // Check if vendorData contains _id
-                if (vendorData && vendorData._id) {
-                  //console.log("Vendor ID:", vendorData._id);
-                  swal("Success!", "Vendor Login Successful!", "success").then(
-                    (value) => {
-                      if (value) {
-                        localStorage.setItem("token", vendorRes.data.token);
-                        localStorage.setItem("Vendor ID", vendorData._id);
-                        localStorage.setItem("ID", vendorData._id);
-                        navigate("/vendor/vendordashboard");
-                      }
-                    }
-                  );
-                } else {
-                  // Vendor login succeeded, but no _id found
-                  swal("Error!", "Invalid vendor data", "error");
-                }
-              } else {
-                // All login attempts failed
-                swal("Error!", "Invalid credentials", "error");
+                swal("Error!", "Invalid vendor data", "error");
               }
             }
           }
         }
+        // }
       }
     } catch (error) {
-      //console.log(error);
+      console.log(error);
     } finally {
-      setIsLoading(false); // Set loading state to false after API call completes
+      setIsLoading(false);
     }
   };
 

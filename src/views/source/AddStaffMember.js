@@ -30,7 +30,7 @@ import { jwtDecode } from "jwt-decode";
 
 const AddStaffMember = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { id } = useParams();
+  const { id , admin} = useParams();
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
 
   const [selectedProp, setSelectedProp] = useState("Select");
@@ -168,7 +168,7 @@ const AddStaffMember = () => {
 
   function handleResponse(response) {
     if (response.status === 200) {
-      navigate("/admin/StaffMember");
+      navigate("/"+admin+"/StaffMember");
       swal(
         "Success!",
         id
