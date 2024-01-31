@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -29,6 +29,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import moment from "moment";
 
 const PropertiesTables = () => {
+  const {admin} = useParams()
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [rentalsData, setRentalsData] = useState([]);
@@ -46,7 +47,7 @@ const PropertiesTables = () => {
   const [sortBy, setSortBy] = useState([]);
 
   const navigateToPropDetails = (rental_id) => {
-    const propDetailsURL = `/admin/PropDetails/${rental_id}`;
+    const propDetailsURL = `/${admin}/PropDetails/${rental_id}`;
     navigate(propDetailsURL);
   };
   
@@ -131,7 +132,7 @@ const PropertiesTables = () => {
   };
 
   const editProperty = (rental_id) => {
-    navigate(`/admin/rentals/${rental_id}`);
+    navigate(`/${admin}/rentals/${rental_id}`);
   };
 
   const filterRentalsBySearch = () => {
@@ -434,7 +435,7 @@ const PropertiesTables = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/admin/rentals")}
+              onClick={() => navigate("/"+admin+"/rentals")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -538,7 +539,7 @@ const PropertiesTables = () => {
                         )}
                       </th>
                       <th scope="col">
-                        Property Type{" "}
+                        Property Typess{" "}
                         {sortBy.includes("type") ? (
                           upArrow.includes("type") ? (
                             <ArrowDownwardIcon
@@ -723,8 +724,8 @@ const PropertiesTables = () => {
                           style={{ cursor: "pointer" }}
                         >
                           <td>{Rental.rental_adress}</td>
-                          <td>{Rental.property_type_data.property_type}</td>
-                          <td>{Rental.property_type_data.propertysub_type}</td>
+                          <td>{Rental?.property_type_data?.property_type}</td>
+                          <td>{Rental?.property_type_data?.propertysub_type}</td>
                           <td>
                             {Rental.rental_owner_data.rentalOwner_firstName}{" "}
                             {Rental.rental_owner_data.rentalOwner_lastName}

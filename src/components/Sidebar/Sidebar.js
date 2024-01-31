@@ -179,10 +179,12 @@ const Sidebar = (props) => {
       // prop.name === "Add Agent"
     );
     return filteredRoutes.map((prop, key) => {
+      const path = prop.layout == "/"+admin+"" ? "/" + admin : "/" + admin;
+      console.log(path, "yash")
       return (
         <NavItem key={key}>
           <NavLink
-            to={prop.layout + prop.path}
+            to={path + prop.path}
             tag={NavLinkRRD}
             onClick={closeCollapse}
           >
@@ -448,27 +450,27 @@ const Sidebar = (props) => {
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem
-                  to="/admin/propertiesTable"
+                  to={"/" + admin + "/propertiesTable"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   Properties
                 </DropdownItem>
                 <DropdownItem
-                  to="/admin/RentalownerTable"
+                  to={"/" + admin + "/RentalownerTable"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   Rental Owners
                 </DropdownItem>
                 <DropdownItem
-                  to="/admin/TenantsTable"
+                  to={"/" + admin + "/TenantsTable"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   Tenants
                 </DropdownItem>
-                {/* <DropdownItem to="/admin/RentalownerTable" tag={Link}>
+                {/* <DropdownItem to={"/"+admin+"/RentalownerTable"} tag={Link}>
                   Rental Owners
                 </DropdownItem> */}
               </DropdownMenu>
@@ -481,18 +483,18 @@ const Sidebar = (props) => {
                 <i className="ni ni-pin-3 text-orange" /> Leasing
               </DropdownToggle>
               <DropdownMenu>
-                {/* <DropdownItem to="/admin/Listings" tag={Link} >
+                {/* <DropdownItem to={"/"+admin+"/Listings"} tag={Link} >
                 Listings
               </DropdownItem> */}
                 <DropdownItem
-                  to="/admin/RentRoll"
+                  to={"/"+admin+"/RentRoll"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   Rent Roll
                 </DropdownItem>
                 <DropdownItem
-                  to="/admin/Applicants"
+                  to={"/"+admin+"/Applicants"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
@@ -509,14 +511,14 @@ const Sidebar = (props) => {
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem
-                  to="/admin/vendor"
+                  to={"/" + admin + "/vendor"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   Vendors
                 </DropdownItem>
                 <DropdownItem
-                  to="/admin/Workorder"
+                  to={"/" + admin + "/Workorder"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
@@ -533,16 +535,16 @@ const Sidebar = (props) => {
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem
-                  to="/admin/GeneralLedger"
+                  to={"/" + admin + "/GeneralLedger"}
                   tag={Link}
                   onClick={toggleCollapse}
                 >
                   General Ledger
                 </DropdownItem>
-                <DropdownItem to="/admin/Payment" tag={Link} onClick={toggleCollapse}>
+                <DropdownItem to={"/" + admin + "/Payment"} tag={Link} onClick={toggleCollapse}>
                   Payment
                 </DropdownItem>
-                {/* <DropdownItem to="/admin/OutstandingBalance" tag={Link}>
+                {/* <DropdownItem to={"/"+admin+"/OutstandingBalance"} tag={Link}>
                 Outstanding Balances
               </DropdownItem> */}
               </DropdownMenu>

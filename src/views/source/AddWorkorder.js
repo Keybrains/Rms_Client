@@ -35,7 +35,7 @@ import { OpenImageDialog } from "components/OpenImageDialog";
 const AddWorkorder = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
-  const { id } = useParams();
+  const { id, admin } = useParams();
   const { rental_id } = useParams();
   const [propdropdownOpen, setpropdropdownOpen] = React.useState(false);
   const [categorydropdownOpen, setcategorydropdownOpen] = React.useState(false);
@@ -492,10 +492,10 @@ const AddWorkorder = () => {
     if (response.status === 200) {
       if (rental_id) {
         navigate(
-          `/admin/PropDetails/${WorkFormik.values.rental_id}/${rental_id}?source=task`
+          `/${admin}/PropDetails/${WorkFormik.values.rental_id}/${rental_id}?source=task`
         );
       } else {
-        navigate("/admin/Workorder");
+        navigate("/"+admin+" /Workorder");
       }
       swal(
         "Success!",

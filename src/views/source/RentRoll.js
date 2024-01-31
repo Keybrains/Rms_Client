@@ -20,7 +20,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "components/Headers/Header";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
 import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
@@ -31,6 +31,7 @@ const RentRoll = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [tenantsData, setTenantsData] = useState([]);
   const navigate = useNavigate();
+  const { admin } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
   let [loader, setLoader] = React.useState(true);
   const [upArrow, setUpArrow] = useState([]);
@@ -42,7 +43,7 @@ const RentRoll = () => {
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
   const navigateToRentRollDetails = (tenantId) => {
-    navigate(`/admin/rentrolldetail/${tenantId}`);
+    navigate(`/${admin}/rentrolldetail/${tenantId}`);
   };
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -61,24 +62,24 @@ const RentRoll = () => {
       const response = await axios.get(
         `${baseUrl}/leases/leases/${accessType.admin_id}`
       );
-
       if (response.data.statusCode === 200) {
         const data = response.data.data;
         const transformedData = data.map((item) => {
+          console.log(item, "yashu");
           return {
-            tenant_id: item.tenant.tenant_id,
-            tenant_firstName: item.tenant.tenant_firstName,
-            tenant_lastName: item.tenant.tenant_lastName,
-            rental_id: item.rental.rental_id,
-            rental_adress: item.rental.rental_adress,
-            unit_id: item.unit.unit_id,
-            rental_unit: item.unit.rental_unit,
-            lease_id: item.lease.lease_id,
-            lease_type: item.lease.lease_type,
-            start_date: item.lease.start_date,
-            end_date: item.lease.end_date,
-            createdAt: item.lease.createdAt,
-            updatedAt: item.lease.updatedAt,
+            tenant_id: item?.tenant?.tenant_id,
+            tenant_firstName: item?.tenant?.tenant_firstName,
+            tenant_lastName: item?.tenant?.tenant_lastName,
+            rental_id: item?.rental?.rental_id,
+            rental_adress: item?.rental?.rental_adress,
+            unit_id: item?.unit?.unit_id,
+            rental_unit: item?.unit?.rental_unit,
+            lease_id: item?.lease?.lease_id,
+            lease_type: item?.lease?.lease_type,
+            start_date: item?.lease?.start_date,
+            end_date: item?.lease?.end_date,
+            createdAt: item?.lease?.createdAt,
+            updatedAt: item?.lease?.updatedAt,
           };
         });
         const reversedData = transformedData.slice().reverse();
@@ -96,7 +97,7 @@ const RentRoll = () => {
 
   useEffect(() => {
     fetchData();
-  }, [pageItem, accessType]);
+  }, [accessType]);
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -110,7 +111,7 @@ const RentRoll = () => {
   };
 
   const filterRentRollsBySearch = () => {
-    let filteredData = [...tenantsData];
+    let filteredData = tenantsData;
 
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
@@ -198,7 +199,7 @@ const RentRoll = () => {
   };
 
   const editLeasing = (id) => {
-    navigate(`/admin/RentRollLeaseing/${id}`);
+    navigate(`/${admin}/RentRollLeaseing/${id}`);
   };
 
   const getStatus = (startDate, endDate) => {
@@ -243,7 +244,7 @@ const RentRoll = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              onClick={() => navigate("/admin/RentRollLeaseing")}
+              onClick={() => navigate("/" + admin + "/RentRollLeaseing")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -402,6 +403,7 @@ const RentRoll = () => {
                     </tr>
                   </thead>
                   <tbody>
+                    {console.log(tenantsData, "yash")}
                     {filterTenantsBySearchAndPage()?.map((tenant) => (
                       <>
                         <tr

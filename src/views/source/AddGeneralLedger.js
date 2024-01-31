@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
 import Cookies from "universal-cookie";
@@ -38,6 +38,7 @@ const AddGeneralLedger = () => {
   const handlePropSelection = (propertyType) => {
     setSelectedProp(propertyType);
   };
+  const {admin} = useParams()
 
   const [file, setFile] = useState("");
   const [accountData, setAccountData] = useState([]);
@@ -205,7 +206,7 @@ const AddGeneralLedger = () => {
 
       if (response.data.statusCode === 200) {
         swal("", response.data.message, "success");
-        navigate("/admin/GeneralLedger");
+        navigate("/"+admin+"/GeneralLedger");
       } else {
         swal("", response.data.message, "error");
         console.error("Server Error:", response.data.message);

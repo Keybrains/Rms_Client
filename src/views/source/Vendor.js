@@ -21,7 +21,7 @@ import swal from "sweetalert";
 import { RotatingLines } from "react-loader-spinner";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useParams} from "react-router-dom";
 import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -30,6 +30,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 const Vendor = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
+  const {admin} = useParams()
   const [vendorData, setVendorData] = useState([]);
   const [loader, setLoader] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -121,7 +122,7 @@ const Vendor = () => {
   };
 
   const editVendor = (id) => {
-    navigate(`/admin/addvendor/${id}`);
+    navigate(`/${admin}/addvendor/${id}`);
     //console.log(id);
   };
 
@@ -224,7 +225,7 @@ const Vendor = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/admin/addvendor")}
+              onClick={() => navigate("/"+admin+"/addvendor")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >

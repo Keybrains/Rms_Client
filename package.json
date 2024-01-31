@@ -85,6 +85,7 @@
     "react-loader-spinner": "^5.4.5",
     "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",
+    "react-select-country-list": "^2.2.3",
     "reactstrap": "8.10.0",
     "sass": "1.62.1",
     "spinner": "^0.3.4",

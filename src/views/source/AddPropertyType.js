@@ -37,7 +37,7 @@ import Checkbox from "@mui/material/Checkbox";
 
 const AddPropertyType = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { id } = useParams();
+  const { id , admin} = useParams();
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
   const [isMultiUnit, setIsMultiUnit] = React.useState(false);
 
@@ -152,7 +152,7 @@ const AddPropertyType = () => {
   }
   function handleResponse(response) {
     if (response.data.statusCode === 200) {
-      navigate("/admin/PropertyType");
+      navigate("/"+admin+"/PropertyType");
       swal(
         "Success!",
         id

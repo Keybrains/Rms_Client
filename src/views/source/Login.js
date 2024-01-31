@@ -25,6 +25,7 @@ import { Typography, colors } from "@mui/material";
 import swal from "sweetalert";
 import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { AdminPanelSettingsRounded } from "@mui/icons-material";
 
 const Login = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -39,175 +40,134 @@ const Login = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+  const [rememberMe, setRememberMe] = useState(
+    localStorage.getItem("rememberedEmail") !== null
+  );
 
+  console.warn(rememberMe, "rememberMe")
 
   const handleSubmit = async (values) => {
     try {
-      setIsLoading(true); // Set loading state to true
+      setIsLoading(true);
+      const adminRes = await axios.post(`${baseUrl}/admin/login`, values);
 
-      // Admin login
-      const adminRes = await axios.post(
-        `${baseUrl}/admin/login`,
-        values
-      );
+      if (adminRes.status === 200) {
 
-      console.log("Admin ID:", adminRes.data);
-      if (adminRes.data.statusCode === 200) {
-        // Admin login successful
-        swal("Success!", "Admin Login Successful!", "success").then((value) => {
-          if (value) {
-            localStorage.setItem("token", adminRes.data.token);
-            const jwt = jwtDecode(localStorage.getItem("token"));
-            navigate(`/${jwt.company_name}/index`);
-          }
-        });
+        if (rememberMe) {
+          // Save only the email in localStorage
+          localStorage.setItem("rememberedEmail", values.email);
+        } else {
+          // Clear any existing saved email
+          localStorage.removeItem("rememberedEmail");
+        }
+
+        const adminData = adminRes.data;
+        if (adminData.statusCode === 200) {
+          swal("Success!", "Admin Login Successful!", "success").then(
+            (value) => {
+              if (value) {
+                localStorage.setItem("token", adminData.token);
+                const jwt = jwtDecode(localStorage.getItem("token"));
+                navigate(`/${jwt.company_name}/index`);
+              }
+            }
+          );
+        } else if (adminData.statusCode === 202) {
+          swal("Error!", adminData.message, "error");
+        } else {
+          swal("Error!", "Invalid admin data", "error");
+        }
       } else {
-        // Admin login failed, try tenant login
-        const tenantRes = await axios.post(
-          `${baseUrl}/tenants/login`,
-          {
-            email: values.email,
-            password: values.password,
-          }
-        );
+        const tenantRes = await axios.post(`${baseUrl}/tenants/login`, {
+          email: values.email,
+          password: values.password,
+        });
 
-        if (tenantRes.data.statusCode === 200) {
-          // Tenant login successful
-          const tenantData = tenantRes.data.data; // Assuming the API response structure
-
-          // Check if tenantData contains _id
-          if (tenantData && tenantData.tenant_id) {
-            //console.log("Tenant ID:", tenantData._id);
+        if (tenantRes.status === 200) {
+          const tenantData = tenantRes.data;
+          if (tenantData.statusCode === 200) {
             swal("Success!", "Tenant Login Successful!", "success").then(
               (value) => {
                 if (value) {
-                  localStorage.setItem("token", tenantRes.data.token);
-                  localStorage.setItem("Tenant ID", tenantData.tenant_id);
-                  localStorage.setItem("ID", tenantData.tenant_id);
+                  localStorage.setItem("token", tenantRes.data.tenantToken);
                   navigate("/tenant/tenantdashboard");
                 }
               }
             );
+          } else if (tenantData.statusCode === 202) {
+            swal("Error!", tenantData.message, "error");
           } else {
-            // Tenant login succeeded, but no _id found
             swal("Error!", "Invalid tenant data", "error");
           }
         } else {
-          // Admin and tenant login failed, try agent login
-          // const agentRes = await axios.post(
-          //   `${baseUrl}/addagent/login`,
-          //   {
-          //     agent_email: values.email,
-          //     agent_password: values.password,
-          //   }
-          // );
-
-          // if (agentRes.data.statusCode === 200) {
-          //   // Agent login successful
-          //   const agentData = agentRes.data.data; // Assuming the API response structure
-          //   //console.log("Agent ID:", agentData._id);
-
-          //   // Check if agentData contains _id
-          //   if (agentData && agentData._id) {
-          //     //console.log("Agent ID:", agentData._id);
-          //     swal("Success!", "Agent Login Successful!", "success").then(
-          //       (value) => {
-          //         if (value) {
-          //           localStorage.setItem("token", agentRes.data.token);
-          //           localStorage.setItem("Agent ID", agentData._id);
-          //           localStorage.setItem("ID", agentData._id);
-          //           navigate("/agent/AgentdashBoard");
-          //         }
-          //       }
-          //     );
-          //   } else {
-          //     // Agent login succeeded, but no _id found
-          //     swal("Error!", "Invalid agent data", "error");
-          //   }
-          // // } 
-          // else {
-          // All login attempts failed, try staff login
-          const staffRes = await axios.post(
-            `${baseUrl}/staffmember/login`,
-            {
-              email: values.email,
-              password: values.password,
-            }
-          );
-
-          if (staffRes.data.statusCode === 200) {
-            // Staff login successful
-            const staffData = staffRes.data.data; // Assuming the API response structure
-            //console.log("Staff ID:", staffData._id);
-
-            // Check if staffData contains _id
-            if (staffData && staffData._id) {
-              //console.log("Staff ID:", staffData._id);
-              swal("Success!", "Staff Login Successful!", "success").then(
-                (value) => {
-                  if (value) {
-                    localStorage.setItem("token", staffRes.data.token);
-                    localStorage.setItem("Staff ID", staffData._id);
-                    localStorage.setItem("ID", staffData._id);
-                    navigate("/staff/staffdashboard");
-                  }
+          const staffRes = await axios.post(`${baseUrl}/staffmember/login`, {
+            email: values.email,
+            password: values.password,
+          });
+          if (staffRes.status === 200) {
+            const vendorData = staffRes.data;
+            if (vendorData.statusCode === 200) {
+              console.log(vendorData);
+              swal(
+                "Success!",
+                "Staff Member Login Successful!",
+                "success"
+              ).then((value) => {
+                console.log(value);
+                if (value) {
+                  localStorage.setItem("token", vendorData.staff_memberToken);
+                  navigate("/staff/staffdashboard");
                 }
-              );
+              });
+            } else if (vendorData.statusCode === 202) {
+              swal("Error!", vendorData.message, "error");
             } else {
-              // Staff login succeeded, but no _id found
-              swal("Error!", "Invalid staff data", "error");
+              swal("Error!", "Invalid staff member data", "error");
             }
           } else {
-            // All login attempts failed, try vendor login
-            const vendorRes = await axios.post(
-              `${baseUrl}/vendor/login`,
-              {
-                email: values.email,
-                password: values.password,
-              }
-            );
-
-            if (vendorRes.data.statusCode === 200) {
-              // Vendor login successful
-              const vendorData = vendorRes.data.data; // Assuming the API response structure
-              //console.log("Vendor ID:", vendorData._id);
-
-              // Check if vendorData contains _id
-              if (vendorData && vendorData._id) {
-                //console.log("Vendor ID:", vendorData._id);
+            const vendorRes = await axios.post(`${baseUrl}/vendor/login`, {
+              email: values.email,
+              password: values.password,
+            });
+            console.log(vendorRes);
+            if (vendorRes.status === 200) {
+              const staffmemberData = vendorRes.data;
+              if (staffmemberData.statusCode === 200) {
                 swal("Success!", "Vendor Login Successful!", "success").then(
                   (value) => {
                     if (value) {
-                      localStorage.setItem("token", vendorRes.data.token);
-                      localStorage.setItem("Vendor ID", vendorData._id);
-                      localStorage.setItem("ID", vendorData._id);
+                      localStorage.setItem(
+                        "token",
+                        staffmemberData.vendorToken
+                      );
                       navigate("/vendor/vendordashboard");
                     }
                   }
                 );
+              } else if (staffmemberData.statusCode === 202) {
+                swal("Error!", staffmemberData.message, "error");
               } else {
-                // Vendor login succeeded, but no _id found
                 swal("Error!", "Invalid vendor data", "error");
               }
-            } else {
-              // All login attempts failed
-              swal("Error!", "Invalid credentials", "error");
             }
           }
-          // }
         }
+        // }
       }
+     
+
     } catch (error) {
-      //console.log(error);
+      console.log(error);
     } finally {
-      setIsLoading(false); // Set loading state to false after API call completes
+      setIsLoading(false);
     }
   };
 
+
   let loginFormik = useFormik({
     initialValues: {
-      email: "",
-      password: "",
+      email: localStorage.getItem("rememberedEmail") || "",
+      password: "", // Do not retrieve password from localStorage
     },
     validationSchema: yup.object({
       email: yup.string().required("Required"),
@@ -240,7 +200,7 @@ const Login = () => {
       <Col lg="5" md="7">
         <Card
           className="bg-secondary shadow border-0"
-          onSubmit={loginFormik.handleSubmit}
+          onSubmit={(e) => loginFormik.handleSubmit(e, loginFormik.values.rememberMe)}
         >
           <CardBody className="px-lg-5 py-lg-5">
             <div className="text-center text-muted mb-4">
@@ -265,10 +225,7 @@ const Login = () => {
                   />
                 </InputGroup>
                 {loginFormik.touched.email && loginFormik.errors.email ? (
-                  <Typography
-                    variant="caption"
-                    style={{ color: "red" }}
-                  >
+                  <Typography variant="caption" style={{ color: "red" }}>
                     {loginFormik.errors.email}
                   </Typography>
                 ) : null}
@@ -298,46 +255,45 @@ const Login = () => {
                   >
                     {<VisibilityIcon />}
                   </IconButton>
-
                 </InputGroup>
-                {loginFormik.touched.password &&
-                  loginFormik.errors.password ? (
-                  <Typography
-                    variant="caption"
-                    style={{ color: "red" }}
-                  >
+                {loginFormik.touched.password && loginFormik.errors.password ? (
+                  <Typography variant="caption" style={{ color: "red" }}>
                     {loginFormik.errors.password}
                   </Typography>
                 ) : null}
               </FormGroup>
-
               <div className="custom-control custom-control-alternative custom-checkbox">
                 <Row>
                   <Col>
                     <input
                       className="custom-control-input"
-                      id=" customCheckLogin"
+                      id="customCheckLogin"
                       type="checkbox"
+                      onChange={() => setRememberMe(!rememberMe)}
+                      checked={rememberMe}
                     />
                     <label
                       className="custom-control-label"
-                      htmlFor=" customCheckLogin"
+                      htmlFor="customCheckLogin"
                     >
                       <span className="text-muted">Remember me</span>
                     </label>
                   </Col>
+
+
                   <Col xs="6">
                     <label
                       className=""
                       // href="#rms"
                       onClick={() => navigate(`/auth/forgetpassword`)}
                     >
-                      <span className="text-muted mb-4" style={{ fontSize: "14px" }}>Forgot password?</span>
+                      <span className="text-muted mb-4" style={{ fontSize: "14px", cursor: "pointer" }}>Forgot password?</span>
                     </label>
                   </Col>
                 </Row>
                 <br />
               </div>
+
               <div className="text-center">
                 {/* <Button className="my-4" color="primary" type="button">
                     Sign in
@@ -353,8 +309,18 @@ const Login = () => {
                   {isLoading ? <CircularProgress size={24} /> : "Login"}
                 </Button>
               </div>
-              <br />
+              <div className="d-flex justify-content-start mt-4">
+                <Row>
+                  <Col>
+                    <span className="text-muted">Don't have an account?</span>
+                    <a href="#" onClick={() => navigate(`/trial/trial-login`)}> Sign up</a>
+                  </Col>
 
+
+                </Row>
+                <br />
+              </div>
+              <br />
             </Form>
           </CardBody>
         </Card>

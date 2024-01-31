@@ -15,6 +15,7 @@ import Listings from "views/source/Listings";
 import Applicants from "views/source/Applicants";
 import RentRoll from "views/source/RentRoll";
 // import SumProperties from "views/source/SumProperties";
+import Plans from "views/source/Plans";
 import OutstandingBalance from "views/source/OutstandingBalance";
 import TenantDetailPage from "views/source/TenantDetailPage";
 import RentRollDetail from "views/source/RentRollDetail";
@@ -68,6 +69,7 @@ import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoar
 import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
 import SuperAdminAdmin from "components/superadmin/Admin/Admin";
 import SuperAdminTenants from "components/superadmin/Tenants/Tenants";
+import ResetPassword from "views/source/Resetpassword";
 
 var routes = [
   {
@@ -82,6 +84,11 @@ var routes = [
     name: "Add Property",
     icon: "ni ni-pin-3 text-orange",
     component: <Rentals />,
+    layout: "/admin",
+  },
+  {
+    path: "/Plans",
+    component: <Plans />,
     layout: "/admin",
   },
   {
@@ -180,7 +187,12 @@ var routes = [
     component: <Forgetmail />,
     layout: "/auth",
   },
-
+  {
+    path: "/Resetpassword",
+    name: "Reset password",
+    component: <ResetPassword />,
+    layout: "/auth",
+  },
   {
     path: "/RentRoll",
     name: "RentRoll",
