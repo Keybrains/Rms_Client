@@ -450,13 +450,23 @@ const DemoPayment = () => {
   const [paymentLoader, setPaymentLoader] = useState(false);
   const [selectedCreditCard, setSelectedCreditCard] = useState(null);
 
+  // const handleCreditCardSelection = (selectedCard) => {
+  //   if (selectedCreditCard === selectedCard.customer_vault_id) {
+  //     setSelectedCreditCard(null); // Unselect if already selected
+  //   } else {
+  //     setSelectedCreditCard(selectedCard.customer_vault_id); // Select the clicked card
+  //   }
+  // };
+
   const handleCreditCardSelection = (selectedCard) => {
-    if (selectedCreditCard === selectedCard.customer_vault_id) {
-      setSelectedCreditCard(null); // Unselect if already selected
-    } else {
-      setSelectedCreditCard(selectedCard.customer_vault_id); // Select the clicked card
-    }
+    financialFormik.setValues({
+      ...financialFormik.values,
+      customer_vault_id: selectedCard.customer_vault_id,
+    });
+  
+    setSelectedCreditCard(selectedCard.customer_vault_id);
   };
+  
 
   const handleFinancialSubmit = async (values, action) => {
     let url = `${baseUrl}/nmipayment/postnmipayments`;
@@ -695,7 +705,6 @@ const DemoPayment = () => {
       );
       if (response.data.statusCode === 200) {
         const responseData = response.data.data;
-
         openModal();
         handlePropertyTypeSelect(responseData);
 
@@ -710,23 +719,15 @@ const DemoPayment = () => {
           unit: responseData.unit || "",
           property: responseData.property || "",
           paymentType: responseData.paymentType || "",
-          customer_vault_id: responseData.customer_vault_id || "",
-          // card_number: responseData.cc_number || "",
-          // expiration_date: responseData.expiration_date
-          //   ? formatDate(responseData.expiration_date.toString())
-          //   : "",
-          // cvv: responseData.cvv || "",
           check_number: responseData.check_number || "",
         });
-        console.log(responseData, "ccnum");
         // Update other selected values
         setSelectedPaymentType(responseData.paymentType);
         setSelectedPropertyType(responseData.property);
         setSelectedUnit(responseData.unit);
         setSelectedAccount(responseData.account);
         setResponseData(responseData);
-        setSelectedCreditCard(responseData.customer_vault_id)
-
+        setSelectedCreditCard(responseData.customer_vault_id);
         setPaymentId(id);
       } else {
         console.error("Error:", response.data.message);
@@ -754,7 +755,7 @@ const DemoPayment = () => {
           memo: financialFormik.values.memo,
           email_name: financialFormik.values.email_name,
           date: financialFormik.values.date,
-          customer_vault_id: financialFormik.values.cust,
+          customer_vault_id: financialFormik.values.customer_vault_id,
           check_number: financialFormik.values.check_number,
           paymentType: financialFormik.values.paymentType,
         };
@@ -766,7 +767,7 @@ const DemoPayment = () => {
           closeModal();
           await getGeneralLedgerData();
           swal("Success", "Payment Updated Successfully", "success");
-          navigate(`/admin/Payment`);
+          navigate(`/tenant/tenantFinancial`);
         } else {
           swal("Error", putResponse.data.message, "error");
           console.error("Server Error:", putResponse.data.message);
@@ -1743,7 +1744,7 @@ const DemoPayment = () => {
                 //   )}
                 // </>
                 <>
-                  { isEditable === false && refund === false ? (
+                  { refund === false ? (
                     <Card
                       className="w-100 mt-3"
                       style={{ background: "#F4F6FF" }}
@@ -1785,13 +1786,15 @@ const DemoPayment = () => {
                                     <input
                                       type="checkbox"
                                       checked={
-                                        selectedCreditCard ===
+                                        selectedCreditCard.toString() ===
                                         item.customer_vault_id
                                       }
                                       onChange={() =>
                                         handleCreditCardSelection(item)
                                       }
-                                    />
+                                      />
+                                      {console.log("item", item, typeof item.customer_vault_id)}
+                                    {console.log("selectedCreditCard", selectedCreditCard, typeof selectedCreditCard)}
                                   </td>
                                   <td>
                                     <Typography
