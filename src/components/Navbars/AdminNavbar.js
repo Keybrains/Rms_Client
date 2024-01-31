@@ -162,6 +162,19 @@ const AdminNavbar = (props) => {
             {props.brandText}
           </Link>
           <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
+            <Button
+              color="primary"
+              onClick={() => navigate("/admin/Plans")}
+              size="sm"
+              style={{
+                background: "rgb(48 52 58 / 70%)",
+                color: "#fff",
+                marginRight: "20px",
+              }}
+            >
+              buy
+            </Button>
+            <br />
             <FormGroup
               className="mb-0"
               onClick={toggleSidebar}

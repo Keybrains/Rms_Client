@@ -86,6 +86,7 @@ const PropertyType = () => {
     setEditDialogOpen(false);
     setEditingProperty([]);
   };
+  
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -172,7 +173,6 @@ const PropertyType = () => {
     navigate(`/${admin}/AddPropertyType/${id}`);
     //console.log(id);
   };
-  console.log(propertyData, "propertyData");
 
   const filterPropertyBySearch = () => {
     let filteredData = propertyData;

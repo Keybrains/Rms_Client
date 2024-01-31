@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink as NavLinkRRD, Link } from "react-router-dom";
+import { NavLink as NavLinkRRD, Link, useParams } from "react-router-dom";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { PropTypes } from "prop-types";
 import Cookies from "universal-cookie";
@@ -42,6 +42,7 @@ import {
 } from "reactstrap";
 
 const SuperAdminSidebar = (props) => {
+  const {admin} = useParams()
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
