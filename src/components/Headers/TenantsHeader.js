@@ -9,7 +9,6 @@ const TenantsHeader = () => {
         <Container fluid>
           <div className="header-body">
            
-            
           </div>
         </Container>
       </div>
