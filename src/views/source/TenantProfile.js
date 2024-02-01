@@ -23,8 +23,9 @@ const TenantProfile = () => {
   const { id } = useParams();
   // console.log(id);
   const [tenantDetails, setTenantDetails] = useState({});
+  console.log(tenantDetails, "tenantDetails");
   const [tenantDetails1, setTenantDetails1] = useState({});
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
@@ -46,15 +47,15 @@ const TenantProfile = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/tenant/tenant/${cookie_id}/entries`
+        `${baseUrl}/tenants/tenant_profile/1706524047815`
       );
       // console.log(response.data.data);
       setTenantDetails(response.data.data);
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -72,11 +73,11 @@ const TenantProfile = () => {
       );
       setTenantDetails1([response.data.data]);
       // console.log(response.data.data);
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -115,8 +116,8 @@ const TenantProfile = () => {
                       style={{ width: "100%" }}
                     >
                       <div className="w-100">
-                        {Array.isArray(tenantDetails1) ? (
-                          tenantDetails1.map((tenantDetails, index) => (
+                        {Array.isArray(tenantDetails) ? (
+                          tenantDetails.map((tenantDetails, index) => (
                             <div key={index}>
                               <Row
                                 className="w-100 my-3 "
@@ -153,18 +154,19 @@ const TenantProfile = () => {
 
                                     <tr className="body">
                                       <td>
-                                        {tenantDetails.tenant_firstName ||
+                                        {tenantDetails?.tenant_firstName ||
                                           "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails.tenant_lastName || "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails.tenant_mobileNumber ||
+                                        {tenantDetails?.tenant_lastName ||
                                           "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails.tenant_email || "N/A"}
+                                        {tenantDetails?.tenant_phoneNumber ||
+                                          "N/A"}
+                                      </td>
+                                      <td>
+                                        {tenantDetails?.tenant_email || "N/A"}
                                       </td>
                                     </tr>
                                   </tbody>
@@ -177,27 +179,26 @@ const TenantProfile = () => {
                             <td>Loading Tenant details...</td>
                           </tr>
                         )}
-                         <Row
-                                className="w-100 my-3 "
-                                style={{
-                                  fontSize: "18px",
-                                  textTransform: "capitalize",
-                                  color: "#3B2F2F",
-                                  fontWeight: "600",
-                                  borderBottom: "1px solid #ddd",
-                                }}
-                              >
-                                <Col>Lease Details</Col>
-                         </Row>
+                        <Row
+                          className="w-100 my-3 "
+                          style={{
+                            fontSize: "18px",
+                            textTransform: "capitalize",
+                            color: "#3B2F2F",
+                            fontWeight: "600",
+                            borderBottom: "1px solid #ddd",
+                          }}
+                        >
+                          <Col>Lease Details</Col>
+                        </Row>
                         {Array.isArray(tenantDetails) ? (
                           tenantDetails.map((tenantDetails, index) => (
                             <div key={index}>
-                             
                               <Row
                                 className="mb-1 m-0 p-0"
                                 style={{ fontSize: "12px", color: "#000" }}
                               >
-                                <Table style={{marginBottom:"20px"}}>
+                                <Table style={{ marginBottom: "20px" }}>
                                   <tbody
                                     className="tbbody p-0 m-0"
                                     style={{
@@ -219,36 +220,39 @@ const TenantProfile = () => {
 
                                     <tr className="body">
                                       <td>
-                                        {tenantDetails.entries.rental_adress ||
-                                          "N/A"}
+                                        {tenantDetails?.rental_data
+                                          ?.rental_adress || "N/A"}
                                       </td>
-                                      <td>{tenantDetails.entries.lease_type || "N/A"}</td>
-                                    
-                                        <td>
-                                          {formatDateWithoutTime(
-                                            tenantDetails.entries.start_date
-                                          ) || "N/A"}
-                                        </td>
-                                    
+                                      <td>
+                                        {tenantDetails?.lease_data
+                                          ?.lease_type || "N/A"}
+                                      </td>
+
                                       <td>
                                         {formatDateWithoutTime(
-                                          tenantDetails.entries.end_date
+                                          tenantDetails?.lease_data?.start_date
+                                        ) || "N/A"}
+                                      </td>
+
+                                      <td>
+                                        {formatDateWithoutTime(
+                                          tenantDetails?.lease_data?.end_date
                                         ) || "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails.entries.rent_cycle ||
+                                        {tenantDetails?.rental_data?.rent_cycle ||
                                           "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails.entries.amount || "N/A"}
+                                        {tenantDetails?.rental_data?.amount ||
+                                          "N/A"}
                                       </td>
-                                  
+
                                       <td>
                                         {formatDateWithoutTime(
-                                          tenantDetails.entries.nextDue_date
+                                          tenantDetails?.rental_data?.nextDue_date
                                         ) || "N/A"}
                                       </td>
-                                 
                                     </tr>
                                   </tbody>
                                 </Table>

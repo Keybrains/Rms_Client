@@ -14,7 +14,7 @@ import {
   Col,
 } from "reactstrap";
 import * as yup from "yup";
-import LeaseHeader from "components/Headers/LeaseHeader.js";
+import TenantHeader from "components/Headers/TenantHeader";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -76,7 +76,11 @@ const Leaseing = () => {
         .required("Required"),
     }),
     onSubmit: (values) => {
-      addTenant(values);
+      if (tenant_id) {
+        editTenant();
+      } else {
+        addTenant(values);
+      }
     },
   });
 
@@ -89,6 +93,29 @@ const Leaseing = () => {
       console.log(res, object);
       if (res.data.statusCode === 200) {
         swal("Success", "Tenant Added Successfully", "success");
+        handleCloseButtonClick();
+      } else {
+        swal("Warning", res.data.message, "warning");
+      }
+    } catch (error) {
+      swal("", error.message, "error");
+      console.error("Error:", error.message);
+    }
+    setLoader(false);
+  };
+
+  const editTenant = async () => {
+    const object = tenantFormik.values;
+
+    setLoader(true);
+    try {
+      const res = await axios.put(
+        `${baseUrl}/tenants/tenants/${tenant_id}`,
+        object
+      );
+      console.log(res, object);
+      if (res.data.statusCode === 200) {
+        swal("Success", "Tenant Updated Successfully", "success");
         handleCloseButtonClick();
       } else {
         swal("Warning", res.data.message, "warning");
@@ -119,12 +146,14 @@ const Leaseing = () => {
 
   //useeffects
   useEffect(() => {
-    fetchTenantData();
+    if (tenant_id) {
+      fetchTenantData();
+    }
   }, [tenant_id]);
 
   return (
     <>
-      <LeaseHeader />
+      <TenantHeader id={tenant_id} />
 
       <Container className="mt--7" fluid>
         <Row>

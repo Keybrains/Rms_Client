@@ -48,7 +48,7 @@ import swal from "sweetalert";
 const RentRollLeaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
-  const { lease_id } = useParams();
+  const { lease_id, admin } = useParams();
   const navigate = useNavigate();
 
   const [accessType, setAccessType] = useState(null);
@@ -200,6 +200,25 @@ const RentRollLeaseing = () => {
       security_amount: "",
       is_paid: false,
       is_lateFee: false,
+    },
+    validationSchema: yup.object({
+      amount: yup.number().required("Required"),
+      account: yup.string().required("Required"),
+      charge_type: yup.string().required("Required"),
+      rent_cycle: yup.string().required("Required"),
+    }),
+  });
+
+  const securityChargeFormik = useFormik({
+    initialValues: {
+      amount: "",
+      memo: "Security Deposite",
+      charge_type: "Security Deposite",
+      account: "Security Deposite",
+      date: moment().format("YYYY-MM-DD"),
+      is_paid: false,
+      is_lateFee: false,
+      ammount: rentChargeFormik.values.security_amount,
     },
     validationSchema: yup.object({
       amount: yup.number().required("Required"),
@@ -366,40 +385,76 @@ const RentRollLeaseing = () => {
   const updateLease = async () => {
     setLoader(true);
     try {
-      const res = await axios.put(`${baseUrl}/leases/leases`);
+      for (let i = 0; i < file.length; i++) {
+        if (file[i] instanceof File) {
+          console.log("object");
+        }
+        console.log("object2");
+      }
+
+      // const res = await axios.put(`${baseUrl}/leases/leases`);
     } catch (error) {
       console.error("Error:", error.message);
     }
     setLoader(false);
   };
+  console.log(
+    leaseFormik.errors,
+    tenantFormik.errors,
+    rentChargeFormik.errors,
+    recurringChargeFormink.errors,
+    cosignerFormik.errors,
+    oneTimeChargeFormik.errors
+  );
 
   const addLease = async () => {
     setLoader(true);
-    if (leaseFormik.values.uploaded_file) {
+    if (file) {
+      try {
+        const uploadPromises = file.map(async (fileItem) => {
+          if (fileItem.upload_file instanceof File) {
+            try {
+              const form = new FormData();
+              form.append("files", fileItem.upload_file);
+
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
+
+              if (
+                res &&
+                res.data &&
+                res.data.files &&
+                res.data.files.length > 0
+              ) {
+                fileItem.upload_file = res.data.files[0].url;
+              } else {
+                console.error("Unexpected response format:", res);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
+          }
+        });
+
+        await Promise.all(uploadPromises);
+
+      } catch (error) {
+        console.error("Error processing file uploads:", error);
+      }
+      console.log(file);
     }
-    const securityCharge = {
-      ammount: rentChargeFormik.values.security_amount,
-      date: rentChargeFormik.values.date,
-      account: "Security Deposite",
-      charge_type: "Security Deposite",
-      memo: "Security Deposite",
-      is_paid: false,
-      is_lateFee: false,
-    };
+
     const chargeData = [
       ...recurringData,
       ...oneTimeData,
-      securityCharge,
+      securityChargeFormik.values,
       rentChargeFormik.values,
     ];
+    
     const object = {
-      leaseData: {...leaseFormik.values, admin_id: accessType.admin_id},
-      tenantData: {...tenantFormik.values, admin_id: accessType.admin_id},
-      cosignerData: {...cosignerFormik.values, admin_id: accessType.admin_id},
-      chargeData: [
-        ...chargeData,
-        rentChargeFormik.values,
-      ],
+      leaseData: { ...leaseFormik.values, admin_id: accessType.admin_id },
+      tenantData: { ...tenantFormik.values, admin_id: accessType.admin_id },
+      cosignerData: { ...cosignerFormik.values, admin_id: accessType.admin_id },
+      chargeData: [...chargeData, rentChargeFormik.values],
     };
     try {
       const res = await axios.post(`${baseUrl}/leases/leases`, object);
@@ -413,12 +468,16 @@ const RentRollLeaseing = () => {
   };
 
   //onchange funtions
-  const handlePropertyTypeSelect = (property) => {
-    setselectedProperty(property.rental_adress);
-    leaseFormik.setFieldValue("rental_id", property.rental_id);
-    setselectedUnit("");
-    leaseFormik.setFieldValue("unit_id", "");
-    fetchUnitData(property.rental_id);
+  const handlePropertyTypeSelect = async (property) => {
+    try {
+      setselectedProperty(property.rental_adress);
+      leaseFormik.setFieldValue("rental_id", property.rental_id);
+      setselectedUnit("");
+      leaseFormik.setFieldValue("unit_id", "");
+      await fetchUnitData(property.rental_id);
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
   };
 
   const handleUnitSelect = (unit) => {
@@ -636,7 +695,7 @@ const RentRollLeaseing = () => {
   };
 
   const handleCloseButtonClick = () => {
-    navigate("../TenantsTable");
+    navigate("/" + admin + "/TenantsTable");
   };
 
   const handleDateCheck = async () => {
@@ -655,11 +714,7 @@ const RentRollLeaseing = () => {
         start_date !== "" &&
         end_date !== ""
       ) {
-        const res = await axios.post(
-          `${baseUrl}/leases/check_lease`,
-          object
-        );
-        console.log(object, "yash", res);
+        const res = await axios.post(`${baseUrl}/leases/check_lease`, object);
         if (res.data.statusCode === 201) {
           swal("Warning", res.data.message, "warning");
         }
@@ -699,7 +754,6 @@ const RentRollLeaseing = () => {
           leaseFormik.setFieldValue("unit_id", res.data.data[0].unit_id);
         }
         setUnitData(filteredData);
-        
       } else if (res.data.statusCode === 201) {
         setUnitData([]);
       }
@@ -738,12 +792,43 @@ const RentRollLeaseing = () => {
     }
   };
 
+  const fetchLeaseData = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/leases/get_lease/${lease_id}`);
+      if (res.data.statusCode === 200) {
+        const data = res.data.data;
+        leaseFormik.setValues(data.leases);
+        tenantFormik.setValues(data.tenant);
+
+        const property = await propertyData.find(
+          (property) => property.rental_id === data.leases.rental_id
+        );
+
+        await handlePropertyTypeSelect(property);
+
+        const unit = await unitData.find(
+          (unit) => unit.unit_id === data.leases.unit_id
+        );
+
+        handleUnitSelect(unit);
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+  };
+
   //get data apis useeffect
   useEffect(() => {
     fetchPropertyData();
     fetchAccounts();
     fetchTenantData();
   }, [accessType]);
+
+  useEffect(() => {
+    if (lease_id) {
+      fetchLeaseData();
+    }
+  }, [lease_id, propertyData]);
 
   //files set
   const fileData = (files) => {
@@ -759,7 +844,6 @@ const RentRollLeaseing = () => {
           upload_time: moment().format("HH:mm:ss"),
           upload_by: accessType.first_name + " " + accessType.last_name,
           file_name: filesArray[i].name,
-          // Create a blob link for each file
           upload_link: URL.createObjectURL(filesArray[i]),
         };
         finalArray.push(object);
@@ -782,9 +866,8 @@ const RentRollLeaseing = () => {
           upload_file: filesArray[i],
           upload_date: moment().format("YYYY-MM-DD"),
           upload_time: moment().format("HH:mm:ss"),
-          upload_by: localStorage.getItem("user_id"),
+          upload_by: accessType.first_name + " " + accessType.last_name,
           file_name: filesArray[i].name,
-          // Create a blob link for each file
           upload_link: URL.createObjectURL(filesArray[i]),
         };
         finalArray.push(object);
@@ -804,7 +887,7 @@ const RentRollLeaseing = () => {
 
   return (
     <>
-      <LeaseHeader />
+      <LeaseHeader id={lease_id} />
 
       <Container className="mt--7" fluid>
         <Row>
@@ -872,7 +955,8 @@ const RentRollLeaseing = () => {
                       </Col>
                     </Row>
                     <Row>
-                      {selectedProperty && unitData.length > 0 && (
+                      {((selectedProperty && unitData.length > 0) ||
+                        selectedUnit !== "") && (
                         <FormGroup>
                           <label
                             className="form-control-label"

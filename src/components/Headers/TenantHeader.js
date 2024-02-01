@@ -1,6 +1,6 @@
-import { Container, Row, Col } from "reactstrap";
+import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 
-const RentalHeader = (props) => {
+const TenantsHeader = (props) => {
   return (
     <>
       <div
@@ -17,7 +17,7 @@ const RentalHeader = (props) => {
           <Row>
             <Col lg="7" md="10">
               <h1 className="display-2 text-white">
-                {props.id ? "Edit Lease" : "Add Lease"}
+                {props.id ? "Edit Tenant" : "Add Tenant"}
               </h1>
             </Col>
           </Row>
@@ -27,4 +27,4 @@ const RentalHeader = (props) => {
   );
 };
 
-export default RentalHeader;
+export default TenantsHeader;
