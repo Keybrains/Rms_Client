@@ -41,7 +41,8 @@ import NoteIcon from "@mui/icons-material/Note";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import swal from "sweetalert";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import greenTick from "../../assets/img/icons/common/green_tick.jpg";
 import { Link } from "react-router-dom";
 import {
@@ -113,9 +114,9 @@ const ApplicantSummary = () => {
     const storedCheckedItems =
       JSON.parse(localStorage.getItem("staticCheckedItems")) || [];
 
-    if (checked && !storedCheckedItems.includes(id)) {
+    if (checked && !storedCheckedItems?.includes(id)) {
       storedCheckedItems.push(id);
-    } else if (!checked && storedCheckedItems.includes(id)) {
+    } else if (!checked && storedCheckedItems?.includes(id)) {
       const index = storedCheckedItems.indexOf(id);
       storedCheckedItems.splice(index, 1);
     }
@@ -213,16 +214,16 @@ const ApplicantSummary = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
     if (newValue === "Approved") {
-      setLoader2(true)
+      setLoader2(true);
       setTimeout(function () {
-        setLoader2(false)
-      }, 500)
+        setLoader2(false);
+      }, 500);
     }
     if (newValue === "Rejected") {
-      setLoader3(true)
+      setLoader3(true);
       setTimeout(function () {
-        setLoader3(false)
-      }, 500)
+        setLoader3(false);
+      }, 500);
     }
     //console.log(newValue);
     //console.log(matchedApplicant?.tenant_mobileNumber);
@@ -328,55 +329,54 @@ const ApplicantSummary = () => {
       });
   };
 
-
   const navigateToLease = () => {
     axios
       .get(`${baseUrl}/applicant/applicant_summary/${id}`)
       .then((response) => {
         const applicantsData = response.data.data;
-        console.log(applicantsData, 'data frpm 325')
+        console.log(applicantsData, "data frpm 325");
         // Extract the rental address from the response
         const rentalAddress = applicantsData.rental_adress;
         //console.log(rentalAddress, "Rental Addressss");
-        axios
-          .get(`${baseUrl}/rentals/allproperty`)
-          .then((response) => {
-            const property = response.data.data;
-            //console.log(property, "properties");
-            const matchedProperty = property.find((property) => {
-              return property.rental_adress === rentalAddress;
-            });
-            //console.log(matchedProperty, "matchedProperty");
-            if (!matchedProperty) {
-              alert("Property not found");
-              return;
-            } else {
-              // navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
-              navigate(`/admin/RentRollLeaseing`,
-                //console.log(tenantID, "tenantID");
-                {
-                  state: {
-                    applicantData: applicantsData,
-                  }
-                });
-              //console.log(matchedApplicant, "matchedApplicant");
-              // axios
-              // .get("https://propertymanager.cloudpress.host/api/tenant/tenant")
-              // .then((response) => {
-              //   //console.log(response.data.data,'response.data.data');
-              //   const tenant = response.data.data;
-              //   const matchedTenant = tenant.find((tenant) => {
-              //     return tenant._id === id;
-              //   })
-              //   //console.log(matchedTenant, "matchedTenantdddd");
-              // })
-              // .then((err) => {
-              //   //console.log(err);
-              //   // setLoader(false);
-              // });
-              // navigate(`/admin/rentrolldetail/${id}/`);
-            }
+        axios.get(`${baseUrl}/rentals/allproperty`).then((response) => {
+          const property = response.data.data;
+          //console.log(property, "properties");
+          const matchedProperty = property.find((property) => {
+            return property.rental_adress === rentalAddress;
           });
+          //console.log(matchedProperty, "matchedProperty");
+          if (!matchedProperty) {
+            alert("Property not found");
+            return;
+          } else {
+            // navigate(`/admin/Leaseing/${id}/${matchedProperty._id}`);
+            navigate(
+              `/admin/RentRollLeaseing`,
+              //console.log(tenantID, "tenantID");
+              {
+                state: {
+                  applicantData: applicantsData,
+                },
+              }
+            );
+            //console.log(matchedApplicant, "matchedApplicant");
+            // axios
+            // .get("https://propertymanager.cloudpress.host/api/tenant/tenant")
+            // .then((response) => {
+            //   //console.log(response.data.data,'response.data.data');
+            //   const tenant = response.data.data;
+            //   const matchedTenant = tenant.find((tenant) => {
+            //     return tenant._id === id;
+            //   })
+            //   //console.log(matchedTenant, "matchedTenantdddd");
+            // })
+            // .then((err) => {
+            //   //console.log(err);
+            //   // setLoader(false);
+            // });
+            // navigate(`/admin/rentrolldetail/${id}/`);
+          }
+        });
 
         // Navigate to the leasing page with the rental address
 
@@ -500,10 +500,7 @@ const ApplicantSummary = () => {
       };
       //console.log(updatedApplicant, "updatedApplicant");
       axios
-        .put(
-          `${baseUrl}/applicant/applicant/${id}/checklist`,
-          updatedApplicant
-        )
+        .put(`${baseUrl}/applicant/applicant/${id}/checklist`, updatedApplicant)
         .then((response) => {
           //console.log(response.data.data, "response.data.data");
           getApplicantData();
@@ -528,10 +525,7 @@ const ApplicantSummary = () => {
     };
 
     axios
-      .put(
-        `${baseUrl}/applicant/applicant/${id}/checklist`,
-        updatedApplicant
-      )
+      .put(`${baseUrl}/applicant/applicant/${id}/checklist`, updatedApplicant)
       .then((response) => {
         // Handle response if needed
         getApplicantData(); // Refresh applicant data after update
@@ -551,7 +545,7 @@ const ApplicantSummary = () => {
 
       // Check if the response contains the data you expect
       const fetchedData = response.data;
-      console.log(fetchedData, 'fetched data')
+      console.log(fetchedData, "fetched data");
       //console.log(fetchedData, "fetched data");
       if (fetchedData) {
         // Step 2: Create an object with the fetched data
@@ -623,7 +617,8 @@ const ApplicantSummary = () => {
               // add cosigner
               cosigner_firstName: fetchedData.data.cosigner_firstName || "",
               cosigner_lastName: fetchedData.data.cosigner_lastName || "",
-              cosigner_mobileNumber: fetchedData.data.cosigner_mobileNumber || "",
+              cosigner_mobileNumber:
+                fetchedData.data.cosigner_mobileNumber || "",
               cosigner_workNumber: fetchedData.data.cosigner_workNumber || "",
               cosigner_homeNumber: fetchedData.data.cosigner_homeNumber || "",
               cosigner_faxPhoneNumber:
@@ -631,7 +626,8 @@ const ApplicantSummary = () => {
               cosigner_email: fetchedData.data.cosigner_email || "",
               cosigner_alternateemail:
                 fetchedData.data.cosigner_alternateemail || "",
-              cosigner_streetAdress: fetchedData.data.cosigner_streetAdress || "",
+              cosigner_streetAdress:
+                fetchedData.data.cosigner_streetAdress || "",
               cosigner_city: fetchedData.data.cosigner_city || "",
               cosigner_state: fetchedData.data.cosigner_state || "",
               cosigner_zip: fetchedData.data.cosigner_zip || "",
@@ -649,14 +645,21 @@ const ApplicantSummary = () => {
               cash_flow: fetchedData.data.cash_flow || "",
               notes: fetchedData.data.notes || "",
 
-              tenant_residentStatus: fetchedData.data.tenant_residentStatus || false,
-              rentalOwner_firstName: fetchedData.data.rentalOwner_firstName || "",
+              tenant_residentStatus:
+                fetchedData.data.tenant_residentStatus || false,
+              rentalOwner_firstName:
+                fetchedData.data.rentalOwner_firstName || "",
               rentalOwner_lastName: fetchedData.data.rentalOwner_lastName || "",
-              rentalOwner_primaryemail: fetchedData.data.rentalOwner_email || "",
-              rentalOwner_phoneNumber: fetchedData.data.rentalOwner_phoneNumber || "",
-              rentalOwner_businessNumber: fetchedData.data.rentalOwner_businessNumber || "",
-              rentalOwner_homeNumber: fetchedData.data.rentalOwner_homeNumber || "",
-              rentalOwner_companyName: fetchedData.data.rentalOwner_companyName || "",
+              rentalOwner_primaryemail:
+                fetchedData.data.rentalOwner_email || "",
+              rentalOwner_phoneNumber:
+                fetchedData.data.rentalOwner_phoneNumber || "",
+              rentalOwner_businessNumber:
+                fetchedData.data.rentalOwner_businessNumber || "",
+              rentalOwner_homeNumber:
+                fetchedData.data.rentalOwner_homeNumber || "",
+              rentalOwner_companyName:
+                fetchedData.data.rentalOwner_companyName || "",
 
               // recurring_charges: fetchedData.recurring_charges || {},
               // one_time_charges: fetchedData.one_time_charges || {},
@@ -675,10 +678,10 @@ const ApplicantSummary = () => {
         // if (postResponse.status === 200) {
         //   console.log(postResponse,'clgbcmnm')
         //   //console.log("Data posted successfully:", postResponse.data.data);
-        //   // setTenantID(postResponse.data.data._id)  
+        //   // setTenantID(postResponse.data.data._id)
         //   console.log(postResponse.data.data,'hjsadn')
         //   // debugger
-        //   
+        //
         // } else {
         //   console.error(
         //     "Data post request failed. Status code:",
@@ -689,10 +692,7 @@ const ApplicantSummary = () => {
         //     postResponse.data.message
         //   );
         // }
-        navigateToLease(
-          dataToSend
-        );
-
+        navigateToLease(dataToSend);
       } else {
         // Handle the case where the fetched data is not as expected
         console.error("Invalid data format received from the API");
@@ -704,7 +704,6 @@ const ApplicantSummary = () => {
   };
 
   const [moveIn, setMoveIn] = useState([]);
-
 
   const [matchedApplicant, setMatchedApplicant] = useState([]);
 
@@ -723,12 +722,12 @@ const ApplicantSummary = () => {
           console.log(matchedApplicant, "matchedApplicant");
           setMatchedApplicant(matchedApplicant);
           setMoveIn(matchedApplicant.applicant_status[0]);
-          setApplicantLoader(false);
         }
       })
       .catch((err) => {
         console.error(err);
       });
+    setApplicantLoader(false);
   };
 
   const onClickEditButton = async () => {
@@ -741,9 +740,8 @@ const ApplicantSummary = () => {
 
       setUnitData(units);
     } catch (error) {
-      console.log(error, 'error')
+      console.log(error, "error");
     }
-
 
     setSelectedUnit(matchedApplicant.rental_units || "Select");
     applicantFormik.setValues({
@@ -792,10 +790,7 @@ const ApplicantSummary = () => {
     console.log("Updated Applicant Data: ", updatedApplicant);
 
     axios
-      .put(
-        `${baseUrl}/applicant/applicant/${id}`,
-        updatedApplicant
-      )
+      .put(`${baseUrl}/applicant/applicant/${id}`, updatedApplicant)
       .catch((err) => {
         console.error(err);
       })
@@ -803,7 +798,6 @@ const ApplicantSummary = () => {
         getApplicantData();
       });
   };
-
 
   useEffect(() => {
     getApplicantData();
@@ -820,7 +814,6 @@ const ApplicantSummary = () => {
       // debugger
 
       const updatedItems = event.target.checked
-
         ? [...checkedItems, item]
         : checkedItems.filter((checkedItem) => checkedItem !== item);
       console.log(updatedItems, "updatedItems");
@@ -832,9 +825,9 @@ const ApplicantSummary = () => {
       // Make a PUT request to update the checked checklist on the server
       const apiUrl = `${baseUrl}/applicant/applicant/${id}/checked-checklist`;
       const response = await fetch(apiUrl, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ applicant_checkedChecklist: updatedItems }),
       });
@@ -847,13 +840,10 @@ const ApplicantSummary = () => {
       const responseData = await response.json();
       console.log(responseData);
       setCheckedItems(responseData.updatedApplicant.applicant_checkedChecklist); // You can handle the response data as needed
-
     } catch (error) {
       console.error(error.message); // Handle the error appropriately
     }
   };
-
-
 
   // const handleCheckItem = () => {
   //   if (newItem.trim() !== "") {
@@ -994,7 +984,10 @@ const ApplicantSummary = () => {
   const handleSave = () => {
     if (newNote === "" || newFile === null) {
       // Display an alert or error message for incomplete fields
-      swal("Warning!", "Please fill in both the note and file.", "warning");
+      toast.warning("Please fill in both the note and file.", {
+        position: "top-center",
+      });
+
       return; // Prevent further execution
     }
 
@@ -1007,7 +1000,9 @@ const ApplicantSummary = () => {
       handleSubmit(); // Handle form submission or any other necessary actions
     } else {
       // Display an alert or error message for incomplete fields
-      swal("Warning!", "Please fill in both the note and file.", "warning");
+      toast.warning("Please fill in both the note and file.", {
+        position: "top-center",
+      });
     }
   };
 
@@ -1033,15 +1028,20 @@ const ApplicantSummary = () => {
 
     const deleteUrl = `${baseUrl}/applicant/applicant/note_attachment/${appId}/${document._id}`;
 
-    // swal if confirm than only delete
-    await axios.delete(deleteUrl).then((res) => {
-      console.log(res.data);
-      swal("Success!", "Document deleted successfully", "success");
-      // getNotesAndFiles();
-      getApplicantData();
-    }).catch((err) => {
-      console.log(err);
-    })
+    await axios
+      .delete(deleteUrl)
+      .then((res) => {
+        console.log(res.data);
+        toast.success("Document deleted successfully", {
+          position: "top-center",
+        });
+
+        // getNotesAndFiles();
+        getApplicantData();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const openFileInBrowser = (selectedFile) => {
@@ -1063,7 +1063,6 @@ const ApplicantSummary = () => {
     },
   });
 
-
   const handleSubmit = (values = {}) => {
     // Handle form submission
     hadlenotesandfile(values); // Call handleEdit function to make PUT request
@@ -1083,30 +1082,32 @@ const ApplicantSummary = () => {
         applicant_file: newFile.name,
       };
 
-      console.log(formData, 'formData')
+      console.log(formData, "formData");
       // formData.append('applicant_notes', newNote);
       // formData.append('applicant_file', newFile);
-      const response = await axios.put(`${baseUrl}/applicant/applicant/note_attachment/${id}`, formData);
+      const response = await axios.put(
+        `${baseUrl}/applicant/applicant/note_attachment/${id}`,
+        formData
+      );
       if (response.data) {
-        console.log(response.data, "response.data")
+        console.log(response.data, "response.data");
         setIsAttachFile(false);
         getApplicantData();
         // Handle success, update state, show a success message, etc.
       } else {
         // Handle error, show an error message, etc.
-        console.log('error')
+        console.log("error");
       }
-      console.log('Response:', response.data);
+      console.log("Response:", response.data);
       // Handle success, update state, show a success message, etc.
     } catch (error) {
-      console.error('Error:', error.response ? error.response.data : error.message);
+      console.error(
+        "Error:",
+        error.response ? error.response.data : error.message
+      );
       // Handle error, show an error message, etc.
     }
   };
-
-
-
-
 
   // ----------------------------------------------Applicant Put----------------------------------------------------------------------------
 
@@ -1148,8 +1149,7 @@ const ApplicantSummary = () => {
     e.preventDefault();
 
     try {
-      const apiUrl =
-        `${baseUrl}/applicant/application/${id}`;
+      const apiUrl = `${baseUrl}/applicant/application/${id}`;
 
       const updatedData = {
         // Add other fields as needed
@@ -1235,17 +1235,19 @@ const ApplicantSummary = () => {
 
   let sendApplicantMailData = async () => {
     setSendApplicantMailLoader(true);
-    let responce = await axios.get(
-      `${baseUrl}/applicant/applicant/mail/${id}`
-    );
+    let responce = await axios.get(`${baseUrl}/applicant/applicant/mail/${id}`);
     setSendApplicantMail(responce.data.data);
 
     if (responce.data.statusCode === 200) {
       setSendApplicantMailLoader(false);
-      swal("", "Application emailed", "success");
+      toast.success("Application emailed", {
+        position: "top-center",
+      });
     } else {
       setSendApplicantMailLoader(false);
-      swal("", responce.data.message, "error");
+      toast.error("error", {
+        position: "top-center",
+      });
     }
   };
 
@@ -1277,7 +1279,9 @@ const ApplicantSummary = () => {
                   visible={loader}/> */}
                     </div>
                   </tr>
-                </tbody>) : (<>
+                </tbody>
+              ) : (
+                <>
                   <h1 style={{ color: "white" }}>
                     Applicant :
                     {" " +
@@ -1291,7 +1295,9 @@ const ApplicantSummary = () => {
                     {matchedApplicant.rental_units
                       ? " - " + matchedApplicant.rental_units
                       : " "}
-                  </h4></>)}
+                  </h4>
+                </>
+              )}
             </FormGroup>
           </Col>
           <Col className="text-right" xs="12" sm="6">
@@ -1363,10 +1369,12 @@ const ApplicantSummary = () => {
                     strokeWidth="5"
                     animationDuration="0.75"
                     width="50"
-                    visible={loader} />
+                    visible={loader}
+                  />
                 </div>
               </tr>
-            </tbody>) : (
+            </tbody>
+          ) : (
             <>
               <div
                 className="formInput d-flex flex-direction-row"
@@ -1381,19 +1389,19 @@ const ApplicantSummary = () => {
                   {console.log(matchedApplicant.applicant_status, "status")}
                   <DropdownToggle caret style={{ width: "100%" }}>
                     {matchedApplicant &&
-                      matchedApplicant.applicant_status &&
-                      matchedApplicant?.applicant_status[0]?.status
+                    matchedApplicant.applicant_status &&
+                    matchedApplicant?.applicant_status[0]?.status
                       ? matchedApplicant?.applicant_status[0]?.status
                       : selectedDropdownItem
-                        ? selectedDropdownItem
-                        : "Select"}
+                      ? selectedDropdownItem
+                      : "Select"}
                   </DropdownToggle>
                   <DropdownMenu
                     style={{ width: "100%" }}
                     name="rent_cycle"
-                  //   onBlur={accountFormik.handleBlur}
-                  //   onChange={accountFormik.handleChange}
-                  //   value={accountFormik.values.account_type}
+                    //   onBlur={accountFormik.handleBlur}
+                    //   onChange={accountFormik.handleChange}
+                    //   value={accountFormik.values.account_type}
                   >
                     {dropdownList.map((item, index) => {
                       return (
@@ -1410,7 +1418,7 @@ const ApplicantSummary = () => {
                     })}
                   </DropdownMenu>
                 </Dropdown>
-                    
+
                 <LoadingButton
                   variant="contained"
                   loading={loading}
@@ -1425,7 +1433,9 @@ const ApplicantSummary = () => {
                     handleClick();
                     // navigate("/admin/RentRoll");
                   }}
-                  disabled={matchedApplicant && matchedApplicant.isMovedin === true}
+                  disabled={
+                    matchedApplicant && matchedApplicant.isMovedin === true
+                  }
                 >
                   Move in
                 </LoadingButton>
@@ -1452,12 +1462,12 @@ const ApplicantSummary = () => {
                           label="Approved"
                           value="Approved"
                           style={{ textTransform: "none" }}
-                        // onClick={(e) =>
-                        //   tenantsData(
-                        //     matchedApplicant?.tenant_mobileNumber,
-                        //     e.target.value
-                        //   )
-                        // }
+                          // onClick={(e) =>
+                          //   tenantsData(
+                          //     matchedApplicant?.tenant_mobileNumber,
+                          //     e.target.value
+                          //   )
+                          // }
                         />
                         <Tab
                           label="Rejected"
@@ -1536,7 +1546,9 @@ const ApplicantSummary = () => {
                                             onChange={(e) => {
                                               setNewFile(e.target.files[0]);
                                               // Display the file name
-                                              setFileName(e.target.files[0]?.name || "");
+                                              setFileName(
+                                                e.target.files[0]?.name || ""
+                                              );
                                             }}
                                           />
                                           <label
@@ -1556,16 +1568,23 @@ const ApplicantSummary = () => {
                                                 cursor: "pointer",
                                                 color: "blue",
                                               }}
-                                              onClick={() => openFileInBrowser(newFile)}
+                                              onClick={() =>
+                                                openFileInBrowser(newFile)
+                                              }
                                             >
                                               {fileName}
                                             </p>
                                           )}
 
-                                          {applicantFormik1.touched.applicant_file &&
-                                            applicantFormik1.errors.applicant_file ? (
+                                          {applicantFormik1.touched
+                                            .applicant_file &&
+                                          applicantFormik1.errors
+                                            .applicant_file ? (
                                             <div style={{ color: "red" }}>
-                                              {applicantFormik1.errors.applicant_file}
+                                              {
+                                                applicantFormik1.errors
+                                                  .applicant_file
+                                              }
                                             </div>
                                           ) : null}
                                         </div>
@@ -1579,7 +1598,11 @@ const ApplicantSummary = () => {
                                             Save
                                           </Button>
 
-                                          <Button onClick={() => setIsAttachFile(false)}>
+                                          <Button
+                                            onClick={() =>
+                                              setIsAttachFile(false)
+                                            }
+                                          >
                                             Cancel
                                           </Button>
                                         </div>
@@ -1605,7 +1628,6 @@ const ApplicantSummary = () => {
                               <div>
                                 <div>
                                   {console.log(checkedItems, "checked")}
-
                                   <input
                                     type="checkbox"
                                     id="CreditCheck"
@@ -1620,7 +1642,9 @@ const ApplicantSummary = () => {
                                     onChange={(e) =>
                                       handleChecklistChange(e, "CreditCheck")
                                     }
-                                    checked={checkedItems.includes("CreditCheck")}
+                                    checked={checkedItems?.includes(
+                                      "CreditCheck"
+                                    )}
                                   />{" "}
                                   Credit and background check <br />
                                   <input
@@ -1640,7 +1664,7 @@ const ApplicantSummary = () => {
                                         "EmploymentVerification"
                                       )
                                     }
-                                    checked={checkedItems.includes(
+                                    checked={checkedItems?.includes(
                                       "EmploymentVerification"
                                     )}
                                   />{" "}
@@ -1659,7 +1683,7 @@ const ApplicantSummary = () => {
                                     onChange={(e) =>
                                       handleChecklistChange(e, "ApplicationFee")
                                     }
-                                    checked={checkedItems.includes(
+                                    checked={checkedItems?.includes(
                                       "ApplicationFee"
                                     )}
                                   />{" "}
@@ -1676,9 +1700,12 @@ const ApplicantSummary = () => {
                                       fontWeight: "bold",
                                     }}
                                     onChange={(e) =>
-                                      handleChecklistChange(e, "IncomeVerification")
+                                      handleChecklistChange(
+                                        e,
+                                        "IncomeVerification"
+                                      )
                                     }
-                                    checked={checkedItems.includes(
+                                    checked={checkedItems?.includes(
                                       "IncomeVerification"
                                     )}
                                   />{" "}
@@ -1701,7 +1728,7 @@ const ApplicantSummary = () => {
                                         "LandlordVerification"
                                       )
                                     }
-                                    checked={checkedItems.includes(
+                                    checked={checkedItems?.includes(
                                       "LandlordVerification"
                                     )}
                                   />{" "}
@@ -1734,7 +1761,9 @@ const ApplicantSummary = () => {
                                               onChange={(e) =>
                                                 handleChecklistChange(e, item)
                                               }
-                                              checked={checkedItems.includes(item)}
+                                              checked={checkedItems?.includes(
+                                                item
+                                              )}
                                             />
                                           }
                                           label={
@@ -1775,7 +1804,9 @@ const ApplicantSummary = () => {
                                         size="small"
                                         fullWidth
                                         value={newItem}
-                                        onChange={(e) => setNewItem(e.target.value)}
+                                        onChange={(e) =>
+                                          setNewItem(e.target.value)
+                                        }
                                       />
                                       <CheckIcon
                                         style={{
@@ -1824,7 +1855,8 @@ const ApplicantSummary = () => {
                                 </Button>
                               </div>
 
-                              {matchedApplicant?.applicant_NotesAndFile.length > 0 && (
+                              {matchedApplicant?.applicant_NotesAndFile?.length >
+                                0 && (
                                 <>
                                   <Row
                                     className="w-100 my-3"
@@ -1853,49 +1885,63 @@ const ApplicantSummary = () => {
                                     <Col>File</Col>
                                     <Col>Clear</Col>
                                   </Row>
-                                  {console.log(matchedApplicant, 'matchedApplicnt')}
+                                  {console.log(
+                                    matchedApplicant,
+                                    "matchedApplicnt"
+                                  )}
 
-                                  {matchedApplicant?.applicant_NotesAndFile.map((data, index) => (
-                                    <Row
-                                      className="w-100 mt-1"
-                                      style={{
-                                        fontSize: "12px",
-                                        textTransform: "capitalize",
-                                        color: "#000",
-                                      }}
-                                      key={index} // Ensure to provide a unique key when iterating in React
-                                    >
-                                      <Col>{data.applicant_file && <p>{data.applicant_file}</p>}</Col>
-                                      <Col>
-                                        {data.applicant_notes && (
-                                          <div
-                                            style={{
-                                              display: "flex",
-                                              // alignItems: "center",
+                                  {matchedApplicant?.applicant_NotesAndFile.map(
+                                    (data, index) => (
+                                      <Row
+                                        className="w-100 mt-1"
+                                        style={{
+                                          fontSize: "12px",
+                                          textTransform: "capitalize",
+                                          color: "#000",
+                                        }}
+                                        key={index} // Ensure to provide a unique key when iterating in React
+                                      >
+                                        <Col>
+                                          {data.applicant_file && (
+                                            <p>{data.applicant_file}</p>
+                                          )}
+                                        </Col>
+                                        <Col>
+                                          {data.applicant_notes && (
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                // alignItems: "center",
+                                              }}
+                                            >
+                                              <p
+                                                onClick={() =>
+                                                  openFileInNewTab(
+                                                    data.applicant_notes
+                                                  )
+                                                }
+                                              >
+                                                <FileOpenIcon />
+                                                {data.applicant_notes}
+                                              </p>
+                                            </div>
+                                          )}
+                                        </Col>
+                                        <Col>
+                                          <ClearIcon
+                                            onClick={() => {
+                                              handleClearRow(
+                                                data,
+                                                matchedApplicant._id
+                                              );
                                             }}
                                           >
-                                            <p
-                                              onClick={() =>
-                                                openFileInNewTab(data.applicant_notes)
-                                              }
-                                            >
-                                              <FileOpenIcon />
-                                              {data.applicant_notes}
-                                            </p>
-                                          </div>
-                                        )}
-                                      </Col>
-                                      <Col>
-                                        <ClearIcon
-                                          onClick={() => {
-                                            handleClearRow(data, matchedApplicant._id);
-                                          }}
-                                        >
-                                          Clear
-                                        </ClearIcon>
-                                      </Col>
-                                    </Row>
-                                  ))}
+                                            Clear
+                                          </ClearIcon>
+                                        </Col>
+                                      </Row>
+                                    )
+                                  )}
                                 </>
                               )}
 
@@ -1928,8 +1974,8 @@ const ApplicantSummary = () => {
                                       <Col>
                                         {item?.status
                                           ? arrayOfStatus.find(
-                                            (x) => x.value === item.status
-                                          )?.label
+                                              (x) => x.value === item.status
+                                            )?.label
                                           : "N/A"}
                                       </Col>
                                       <Col>
@@ -1969,9 +2015,12 @@ const ApplicantSummary = () => {
                                           id="tenant_firstName"
                                           name="tenant_firstName"
                                           value={
-                                            applicantFormik.values.tenant_firstName
+                                            applicantFormik.values
+                                              .tenant_firstName
                                           }
-                                          onChange={applicantFormik.handleChange}
+                                          onChange={
+                                            applicantFormik.handleChange
+                                          }
                                           onBlur={applicantFormik.handleBlur}
                                           placeholder="FirstName"
                                         />
@@ -1983,9 +2032,12 @@ const ApplicantSummary = () => {
                                           id="tenant_lastName"
                                           name="tenant_lastName"
                                           value={
-                                            applicantFormik.values.tenant_lastName
+                                            applicantFormik.values
+                                              .tenant_lastName
                                           }
-                                          onChange={applicantFormik.handleChange}
+                                          onChange={
+                                            applicantFormik.handleChange
+                                          }
                                           onBlur={applicantFormik.handleBlur}
                                         />
                                       </div>
@@ -2009,7 +2061,9 @@ const ApplicantSummary = () => {
                                             applicantFormik.values
                                               .tenant_mobileNumber
                                           }
-                                          onChange={applicantFormik.handleChange}
+                                          onChange={
+                                            applicantFormik.handleChange
+                                          }
                                           onBlur={applicantFormik.handleBlur}
                                         />
                                         <TextField
@@ -2020,9 +2074,12 @@ const ApplicantSummary = () => {
                                           id="tenant_workNumber"
                                           name="tenant_workNumber"
                                           value={
-                                            applicantFormik.values.tenant_workNumber
+                                            applicantFormik.values
+                                              .tenant_workNumber
                                           }
-                                          onChange={applicantFormik.handleChange}
+                                          onChange={
+                                            applicantFormik.handleChange
+                                          }
                                           onBlur={applicantFormik.handleBlur}
                                         />
                                         <TextField
@@ -2033,9 +2090,12 @@ const ApplicantSummary = () => {
                                           id="tenant_homeNumber"
                                           name="tenant_homeNumber"
                                           value={
-                                            applicantFormik.values.tenant_homeNumber
+                                            applicantFormik.values
+                                              .tenant_homeNumber
                                           }
-                                          onChange={applicantFormik.handleChange}
+                                          onChange={
+                                            applicantFormik.handleChange
+                                          }
                                           onBlur={applicantFormik.handleBlur}
                                         />
                                         <TextField
@@ -2049,7 +2109,9 @@ const ApplicantSummary = () => {
                                             applicantFormik.values
                                               .tenant_faxPhoneNumber
                                           }
-                                          onChange={applicantFormik.handleChange}
+                                          onChange={
+                                            applicantFormik.handleChange
+                                          }
                                           onBlur={applicantFormik.handleBlur}
                                         />
                                       </div>
@@ -2071,7 +2133,9 @@ const ApplicantSummary = () => {
                                           value={
                                             applicantFormik.values.tenant_email
                                           }
-                                          onChange={applicantFormik.handleChange}
+                                          onChange={
+                                            applicantFormik.handleChange
+                                          }
                                           onBlur={applicantFormik.handleBlur}
                                         />
                                       </div>
@@ -2124,12 +2188,13 @@ const ApplicantSummary = () => {
                                               ))}
                                             </DropdownMenu>
                                             {applicantFormik.errors &&
-                                              applicantFormik.errors?.rental_adress &&
-                                              applicantFormik.touched &&
-                                              applicantFormik.touched
-                                                ?.rental_adress &&
-                                              applicantFormik.values.rental_adress ===
-                                              "" ? (
+                                            applicantFormik.errors
+                                              ?.rental_adress &&
+                                            applicantFormik.touched &&
+                                            applicantFormik.touched
+                                              ?.rental_adress &&
+                                            applicantFormik.values
+                                              .rental_adress === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   applicantFormik.errors
@@ -2140,70 +2205,77 @@ const ApplicantSummary = () => {
                                           </Dropdown>
                                         </FormGroup>
                                       </div>
-                                      {console.log(unitData, 'ubnitFsttvb')}
-                                      {applicantFormik.values.rental_adress && unitData && unitData[0] && unitData[0].rental_units && (
-                                        <div>
-                                          <label
-                                            className="form-control-label"
-                                            htmlFor="input-unit"
-                                          >
-                                            Unit
-                                          </label>
-                                          <FormGroup style={{ marginLeft: "15px" }}>
-                                            <Dropdown
-                                              isOpen={unitDropdownOpen}
-                                              toggle={toggle10}
+                                      {console.log(unitData, "ubnitFsttvb")}
+                                      {applicantFormik.values.rental_adress &&
+                                        unitData &&
+                                        unitData[0] &&
+                                        unitData[0].rental_units && (
+                                          <div>
+                                            <label
+                                              className="form-control-label"
+                                              htmlFor="input-unit"
                                             >
-                                              <DropdownToggle caret>
-                                                {selectedUnit
-                                                  ? selectedUnit
-                                                  : "Select Unit"}
-                                              </DropdownToggle>
-                                              <DropdownMenu>
-                                                {unitData.length > 0 ? (
-                                                  unitData.map((unit) => (
-                                                    <DropdownItem
-                                                      key={unit._id}
-                                                      onClick={() =>
-                                                        handleUnitSelect(
-                                                          unit.rental_units
-                                                        )
-                                                      }
-                                                    >
-                                                      {unit.rental_units}
+                                              Unit
+                                            </label>
+                                            <FormGroup
+                                              style={{ marginLeft: "15px" }}
+                                            >
+                                              <Dropdown
+                                                isOpen={unitDropdownOpen}
+                                                toggle={toggle10}
+                                              >
+                                                <DropdownToggle caret>
+                                                  {selectedUnit
+                                                    ? selectedUnit
+                                                    : "Select Unit"}
+                                                </DropdownToggle>
+                                                <DropdownMenu>
+                                                  {unitData?.length > 0 ? (
+                                                    unitData.map((unit) => (
+                                                      <DropdownItem
+                                                        key={unit._id}
+                                                        onClick={() =>
+                                                          handleUnitSelect(
+                                                            unit.rental_units
+                                                          )
+                                                        }
+                                                      >
+                                                        {unit.rental_units}
+                                                      </DropdownItem>
+                                                    ))
+                                                  ) : (
+                                                    <DropdownItem disabled>
+                                                      No units available
                                                     </DropdownItem>
-                                                  ))
-                                                ) : (
-                                                  <DropdownItem disabled>
-                                                    No units available
-                                                  </DropdownItem>
-                                                )}
-                                              </DropdownMenu>
-                                              {applicantFormik.errors &&
-                                                applicantFormik.errors?.rental_units &&
+                                                  )}
+                                                </DropdownMenu>
+                                                {applicantFormik.errors &&
+                                                applicantFormik.errors
+                                                  ?.rental_units &&
                                                 applicantFormik.touched &&
-                                                applicantFormik.touched?.rental_units &&
-                                                applicantFormik.values.rental_units ===
-                                                "" ? (
-                                                <div style={{ color: "red" }}>
-                                                  {
-                                                    applicantFormik.errors
-                                                      .rental_units
-                                                  }
-                                                </div>
-                                              ) : null}
-                                            </Dropdown>
-                                          </FormGroup>
-                                        </div>
-                                      )}
+                                                applicantFormik.touched
+                                                  ?.rental_units &&
+                                                applicantFormik.values
+                                                  .rental_units === "" ? (
+                                                  <div style={{ color: "red" }}>
+                                                    {
+                                                      applicantFormik.errors
+                                                        .rental_units
+                                                    }
+                                                  </div>
+                                                ) : null}
+                                              </Dropdown>
+                                            </FormGroup>
+                                          </div>
+                                        )}
                                       <div style={{ marginTop: "10px" }}>
                                         <Button
                                           color="success"
                                           type="submit"
-                                        // onClick={() => {
-                                        //   handleEdit();
-                                        //   // setIsEdit(false);
-                                        // }}
+                                          // onClick={() => {
+                                          //   handleEdit();
+                                          //   // setIsEdit(false);
+                                          // }}
                                         >
                                           Save
                                         </Button>
@@ -2266,7 +2338,9 @@ const ApplicantSummary = () => {
                                         }}
                                         onClick={onClickEditButton}
                                       >
-                                        <EditIcon style={{ fontSize: "large" }} />
+                                        <EditIcon
+                                          style={{ fontSize: "large" }}
+                                        />
                                       </Typography>
                                     </div>
                                     <Typography variant="caption">
@@ -2283,7 +2357,10 @@ const ApplicantSummary = () => {
                                         <HomeIcon />
                                       </Typography>
                                       <Typography
-                                        sx={{ fontSize: 14, marginLeft: "10px" }}
+                                        sx={{
+                                          fontSize: 14,
+                                          marginLeft: "10px",
+                                        }}
                                         color="text.secondary"
                                         gutterBottom
                                       >
@@ -2302,7 +2379,10 @@ const ApplicantSummary = () => {
                                         <BusinessCenterIcon />
                                       </Typography>
                                       <Typography
-                                        sx={{ fontSize: 14, marginLeft: "10px" }}
+                                        sx={{
+                                          fontSize: 14,
+                                          marginLeft: "10px",
+                                        }}
                                         color="text.secondary"
                                         gutterBottom
                                       >
@@ -2321,7 +2401,10 @@ const ApplicantSummary = () => {
                                         <PhoneAndroidIcon />
                                       </Typography>
                                       <Typography
-                                        sx={{ fontSize: 14, marginLeft: "10px" }}
+                                        sx={{
+                                          fontSize: 14,
+                                          marginLeft: "10px",
+                                        }}
                                         color="text.secondary"
                                         gutterBottom
                                       >
@@ -2340,11 +2423,15 @@ const ApplicantSummary = () => {
                                         <EmailIcon />
                                       </Typography>
                                       <Typography
-                                        sx={{ fontSize: 14, marginLeft: "10px" }}
+                                        sx={{
+                                          fontSize: 14,
+                                          marginLeft: "10px",
+                                        }}
                                         color="text.secondary"
                                         gutterBottom
                                       >
-                                        {matchedApplicant?.tenant_email || "N/A"}
+                                        {matchedApplicant?.tenant_email ||
+                                          "N/A"}
                                       </Typography>
                                     </div>
                                   </CardContent>
@@ -2369,12 +2456,14 @@ const ApplicantSummary = () => {
                                         {/* Emergency Contact Relationship */}
                                         <div className="form-row pl-2">
                                           <p>
-                                            A rental application is not associated
-                                            with the applicant. A link to the online
-                                            rental application can be either emailed
-                                            directly to the applicant for completion
-                                            or the application details can be
-                                            entered into Buildium manually.
+                                            A rental application is not
+                                            associated with the applicant. A
+                                            link to the online rental
+                                            application can be either emailed
+                                            directly to the applicant for
+                                            completion or the application
+                                            details can be entered into Buildium
+                                            manually.
                                           </p>
                                         </div>
 
@@ -2458,9 +2547,11 @@ const ApplicantSummary = () => {
                                             <td>APPLICANT NAME:</td>
                                             <td>
                                               <strong>
-                                                {`${applicantDatas?.applicant_firstName
-                                                  } ${" "} ${applicantDatas?.applicant_lastName
-                                                  }`}
+                                                {`${
+                                                  applicantDatas?.applicant_firstName
+                                                } ${" "} ${
+                                                  applicantDatas?.applicant_lastName
+                                                }`}
                                               </strong>
                                             </td>
                                           </tr>
@@ -2497,7 +2588,9 @@ const ApplicantSummary = () => {
                                             <td>APPLICANT EMAIL:</td>
                                             <td>
                                               <strong>
-                                                {applicantDatas?.applicant_email}
+                                                {
+                                                  applicantDatas?.applicant_email
+                                                }
                                               </strong>
                                             </td>
                                           </tr>
@@ -2530,7 +2623,9 @@ const ApplicantSummary = () => {
                                             </td>
                                           </tr>
                                           <tr>
-                                            <td>EMERGENCY CONTACT RELATIONSHIP:</td>
+                                            <td>
+                                              EMERGENCY CONTACT RELATIONSHIP:
+                                            </td>
                                             <td>
                                               <strong>
                                                 {
@@ -2586,9 +2681,11 @@ const ApplicantSummary = () => {
                                             <td>RENTAL DATES:</td>
                                             <td>
                                               <strong>
-                                                {`${applicantDatas?.rental_data_from
-                                                  } ${"-"} ${applicantDatas?.rental_date_to
-                                                  }`}
+                                                {`${
+                                                  applicantDatas?.rental_data_from
+                                                } ${"-"} ${
+                                                  applicantDatas?.rental_date_to
+                                                }`}
                                               </strong>
                                             </td>
                                           </tr>
@@ -2597,7 +2694,9 @@ const ApplicantSummary = () => {
                                             <td>MONTHLY RENT:</td>
                                             <td>
                                               <strong>
-                                                {applicantDatas?.rental_monthlyRent}
+                                                {
+                                                  applicantDatas?.rental_monthlyRent
+                                                }
                                               </strong>
                                             </td>
                                           </tr>
@@ -2617,9 +2716,11 @@ const ApplicantSummary = () => {
                                             <td>LANDLORD NAME:</td>
                                             <td>
                                               <strong>
-                                                {`${applicantDatas?.rental_landlord_firstName
-                                                  } ${"-"} ${applicantDatas?.rental_landlord_lasttName
-                                                  }`}
+                                                {`${
+                                                  applicantDatas?.rental_landlord_firstName
+                                                } ${"-"} ${
+                                                  applicantDatas?.rental_landlord_lasttName
+                                                }`}
                                               </strong>
                                             </td>
                                           </tr>
@@ -2663,7 +2764,9 @@ const ApplicantSummary = () => {
                                             <td>EMPLOYER NAME:</td>
                                             <td>
                                               <strong>
-                                                {applicantDatas?.employment_name}
+                                                {
+                                                  applicantDatas?.employment_name
+                                                }
                                               </strong>
                                             </td>
                                           </tr>
@@ -2692,7 +2795,9 @@ const ApplicantSummary = () => {
                                             <td>EMPLOYER EMAIL:</td>
                                             <td>
                                               <strong>
-                                                {applicantDatas?.employment_email}
+                                                {
+                                                  applicantDatas?.employment_email
+                                                }
                                               </strong>
                                             </td>
                                           </tr>
@@ -2731,9 +2836,11 @@ const ApplicantSummary = () => {
                                             <td>SUPERVISOR NAME:</td>
                                             <td>
                                               <strong>
-                                                {`${applicantDatas?.employment_supervisor_first
-                                                  } ${" "} ${applicantDatas?.employment_supervisor_last
-                                                  }`}
+                                                {`${
+                                                  applicantDatas?.employment_supervisor_first
+                                                } ${" "} ${
+                                                  applicantDatas?.employment_supervisor_last
+                                                }`}
                                               </strong>
                                             </td>
                                           </tr>
@@ -2777,7 +2884,8 @@ const ApplicantSummary = () => {
                               width="50"
                               visible={loader2}
                             />
-                          </div>) :
+                          </div>
+                        ) : (
                           <Col>
                             {/* {Array.isArray(rentaldata) ? ( */}
                             <Grid container spacing={2}>
@@ -2787,7 +2895,7 @@ const ApplicantSummary = () => {
                                   item
                                   xs={12}
                                   sm={6}
-                                // key={index}
+                                  // key={index}
                                 >
                                   {/* {tenant.entries.map((entry) => ( */}
                                   <Box
@@ -2894,7 +3002,7 @@ const ApplicantSummary = () => {
                           <h3>No data available....</h3>
                         )} */}
                           </Col>
-                        }
+                        )}
                       </Row>
                     </TabPanel>
                     <TabPanel value="Rejected">
@@ -2914,7 +3022,8 @@ const ApplicantSummary = () => {
                               width="50"
                               visible={loader3}
                             />
-                          </div>) :
+                          </div>
+                        ) : (
                           <Col>
                             {/* {Array.isArray(rentaldata) ? ( */}
                             <Grid container spacing={2}>
@@ -2923,7 +3032,7 @@ const ApplicantSummary = () => {
                                   item
                                   xs={12}
                                   sm={6}
-                                // key={index}
+                                  // key={index}
                                 >
                                   {/* {tenant.entries.map((entry) => ( */}
                                   <Box
@@ -3030,12 +3139,14 @@ const ApplicantSummary = () => {
                           <h3>No data available....</h3>
                         )} */}
                           </Col>
-                        }
+                        )}
                       </Row>
                     </TabPanel>
                   </TabContext>
                 </Col>
-              </Row></>)}
+              </Row>
+            </>
+          )}
         </Card>
       </Container>
     </>

@@ -17,13 +17,13 @@ import {
   Label,
   Table,
 } from "reactstrap";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useState } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import VendorHeader from "components/Headers/VendorHeader";
-import swal from "sweetalert";
 import ClearIcon from "@mui/icons-material/Clear";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from "jwt-decode";
@@ -528,19 +528,24 @@ const VendorAddWork = () => {
     }
   }
 
+ 
   function handleResponse(response) {
-    if (response.status === 200) {
+    if (response.data.statusCode === 200) {
       navigate("/vendor/vendorworktable");
-      swal(
-        "Success!",
-        id ? "Workorder Updated Successfully" : "Workorder Added Successfully!",
-        "success"
-      );
+
+
+      toast.success(id ? "Workeorder  Updated successfully" : "Workeorder  Added successfully", {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     } else {
-      alert(response.data.message);
+      // Show an error toast
+      toast.error(response.data.message, {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     }
   }
-
   const WorkFormik = useFormik({
     initialValues: {
       work_subject: "",
@@ -2020,6 +2025,7 @@ const VendorAddWork = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

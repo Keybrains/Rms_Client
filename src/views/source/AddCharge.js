@@ -3,8 +3,9 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ClearIcon from "@mui/icons-material/Clear";
-import swal from "sweetalert";
 import {
   Button,
   Card,
@@ -316,14 +317,18 @@ const AddCharge = () => {
       );
 
       if (response.data.statusCode === 200) {
-        swal("Success", "Charges Added Successfully", "success");
+        toast.success('Charges Added Successfully', {
+          position: 'top-center',
+        })
         console.log(response, "response of object");
         navigate(
           `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
         );
       } else {
-        swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
       }
       console.log(state, "state");
 
@@ -449,7 +454,9 @@ const AddCharge = () => {
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
-        swal("Success", "Charges Update Successfully", "success");
+        toast.success('Charges Update Successfully', {
+          position: 'top-center',
+        })
         navigate(
           `/admin/rentrolldetail/${tenantDetails._id}/${tenantDetails.entries.entryIndex}`
         );
@@ -462,7 +469,9 @@ const AddCharge = () => {
         // }
         // //console.log(`/admin/rentrolldetail/${tenantId}/${entryIndex}`,"fdsfsdfsf")
       } else {
-        swal("Error", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
         console.error("Server Error:", response.data.message);
       }
     } catch (error) {
@@ -1346,6 +1355,7 @@ const AddCharge = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

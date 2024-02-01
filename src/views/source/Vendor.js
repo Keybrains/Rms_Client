@@ -18,6 +18,8 @@ import { jwtDecode } from "jwt-decode";
 import Header from "components/Headers/Header";
 import axios from "axios";
 import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { RotatingLines } from "react-loader-spinner";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -100,23 +102,29 @@ const Vendor = () => {
           );
 
           if (response.data.statusCode === 200) {
-            swal("Success!", "Vendor deleted successfully", "success");
+            toast.success('Vendor Deleted Successful!', {
+              position: 'top-center',
+            })
             getVendorData();
           } else if (response.data.statusCode === 201) {
-            swal(
-              "Warning!",
-              "Vendor already assigned to workorder!",
-              "warning"
-            );
+           
+            toast.warning('Vendor already assigned to workorder!', {
+              position: 'top-center',
+            })
             getVendorData();
           } else {
-            swal("", response.data.message, "error");
+            toast.error(response.data.message, {
+              position: 'top-center',
+            })
           }
         } catch (error) {
           console.error("Error deleting vendor:", error);
         }
       } else {
-        swal("Cancelled", "Vendor is safe :)", "info");
+        toast.success('Vendor is safe', {
+          position: 'top-center',
+        })
+
       }
     });
   };
@@ -439,6 +447,7 @@ const Vendor = () => {
         </Row>
         <br />
         <br />
+        <ToastContainer />
       </Container>
     </>
   );

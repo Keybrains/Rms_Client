@@ -28,6 +28,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
 import swal from "sweetalert";
 import Dialog from "@mui/material/Dialog";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -317,19 +319,25 @@ const TenantWork = () => {
           .then((response) => {
             console.log("Response from delete API:", response);
             if (response.data.statusCode === 200) {
-              swal("Success!", "Work Order deleted successfully", "success");
+              toast.success('Work Order deleted successfully!', {
+                position: 'top-center',
+              })
               setTimeout(() => {
                 getTenantDataAfterDelete();
               }, 200);
             } else {
-              swal("", response.data.message, "error");
+              toast.error(response.data.message, {
+                position: 'top-center',
+              })
             }
           })
           .catch((error) => {
             console.error("Error deleting work order:", error);
           });
       } else {
-        swal("Cancelled", "Work Order is safe :)", "info");
+        toast.success('Work Order is safe!', {
+          position: 'top-center',
+        })
       }
     });
   };
@@ -632,6 +640,7 @@ const TenantWork = () => {
         </Row>
         <br />
         <br />
+        <ToastContainer />
       </Container>
     </>
   );

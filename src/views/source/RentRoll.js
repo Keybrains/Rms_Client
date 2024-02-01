@@ -22,6 +22,8 @@ import Header from "components/Headers/Header";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -187,13 +189,20 @@ const RentRoll = () => {
       if (willDelete) {
         const res = await axios.delete(`${baseUrl}/leases/leases/${lease_id}`);
         if (res.data.statusCode === 200) {
-          swal("Success", res.data.message, "success");
+          toast.success(res.data.message, {
+            position: 'top-center',
+          })
           fetchData();
         } else {
-          swal("Warning", res.data.message, "warning");
+          toast.warning(res.data.message, {
+            position: 'top-center',
+          })
+
         }
       } else {
-        swal("Cancelled", "Tenant is safe :)", "info");
+        toast.success('Tenant is safe :)', {
+          position: 'top-center',
+        })
       }
     });
   };
@@ -545,6 +554,7 @@ const RentRoll = () => {
             )}
           </Grid>
         </Grid>
+        <ToastContainer />
       </Container>
     </>
   );

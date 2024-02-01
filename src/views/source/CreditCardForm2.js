@@ -12,7 +12,6 @@ import {
 } from "reactstrap";
 import * as yup from "yup";
 import axios from "axios";
-import swal from "sweetalert";
 import valid from "card-validator";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { RotatingLines } from "react-loader-spinner";
@@ -150,7 +149,9 @@ function CreditCardForm(props) {
     const isValidCard = validateCardNumber(values.card_number);
 
     if (!isValidCard) {
-      swal("Error", "Invalid credit card number", "error");
+      toast.error('Invalid credit card number', {
+        position: 'top-center',
+      })
       return;
     }
 
@@ -197,24 +198,29 @@ function CreditCardForm(props) {
             creditCardResponse.status === 201) &&
           customerVaultResponse.status === 200
         ) {
-          swal("Success", "Card Added Successfully", "success");
+          toast.success('Card Added Successfully', {
+            position: 'top-center',
+          })
           closeModal();
           getCreditCard();
           getMultipleCustomerVault();
         } else {
-          swal("Error", creditCardResponse.data.message, "error");
+          toast.error(creditCardResponse.data.message, {
+            position: 'top-center',
+          })
         }
       } else {
         // Handle the case where the response structure is not as expected
-        swal(
-          "Error",
-          "Unexpected response format from create-customer-vault API",
-          "error"
-        );
+       
+        toast.error('Unexpected response format from create-customer-vault API', {
+          position: 'top-center',
+        })
       }
     } catch (error) {
       console.error("Error:", error);
-      swal("Error", "Something went wrong!", "error");
+       toast.warning('Something went wrong!', {
+              position: 'top-center',
+            })
     } finally {
       setSubmitting(false);
     }
@@ -237,7 +243,9 @@ function CreditCardForm(props) {
         deleteRecordResponse.status === 200 &&
         deleteNMIResponse.status === 200
       ) {
-        swal("Success", "Card deleted successfully", "success");
+         toast.success('Card deleted successfully', {
+            position: 'top-center',
+          })
         getCreditCard(); // all vault id get from this function
       } else {
         // Handle errors, show a message, or log the error
@@ -272,13 +280,12 @@ function CreditCardForm(props) {
 
   //       if (putResponse.data.statusCode === 200) {
   //         closeModal();
-  //         swal("Success", "Payment Updated Successfully", "success");
   //       } else {
-  //         swal("Error", putResponse.data.message, "error");
+  //         
   //         console.error("Server Error:", putResponse.data.message);
   //       }
   //     } else {
-  //       swal("Error", response.data.message, "error");
+  //      
   //       console.error("Error:", response.data.message);
   //     }
   //   } catch (error) {
@@ -356,7 +363,9 @@ function CreditCardForm(props) {
       if (updateResponse.status === 200) {
         await Promise.all([getCreditCard(), getMultipleCustomerVault()]);
 
-        swal("Success", "Card updated successfully", "success");
+         toast.success('Card updated successfully', {
+            position: 'top-center',
+          })
 
         // Reset the form values and change button text back to "Add Card"
         setFormValues({});

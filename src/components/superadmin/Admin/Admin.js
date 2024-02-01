@@ -20,6 +20,8 @@ import { Button } from "react-bootstrap";
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -200,7 +202,10 @@ export default function Admin() {
             if (response.data.statusCode === 200) {
               getData();
               setSelected([]);
-              swal("", response.data.message, "success");
+              toast.success(response.data.message, {
+                position: 'top-center',
+                autoClose: 1000,
+              })
             }
           });
       }
@@ -244,13 +249,19 @@ export default function Admin() {
           console.log(res.data, "res.data");
           setModalShowForPopupForm(false);
           getData();
-          swal("Success", res.data?.message, "success");
+          toast.success( res.data?.message, {
+            position: 'top-center',
+            autoClose: 1000,
+          })
         } else {
-          swal("Error", res.data.message, "error");
+          toast.error( res.data.message, {
+            position: 'top-center',
+          })
         }
       } catch (error) {
-        console.error("Error:", error);
-        swal("Error", error, "error");
+        toast.error(error, {
+          position: 'top-center',
+        })
       }
     };
   } else {
@@ -264,11 +275,16 @@ export default function Admin() {
         if (response.data.statusCode === 200) {
           setModalShowForPopupForm(false);
           getData();
-          swal("Success", response.data?.message, "success");
+          toast.success(response.data?.message, {
+            position: 'top-center',
+            autoClose: 1000,
+          })
         }
       } catch (error) {
         console.error("Error:", error);
-        swal("Error", error, "error");
+        toast.error(error, {
+          position: 'top-center',
+        })
       }
     };
   }
@@ -439,6 +455,7 @@ export default function Admin() {
             </div>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

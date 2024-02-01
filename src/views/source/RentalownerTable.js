@@ -27,6 +27,8 @@ import axios from "axios";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 // import Button from "@mui/material/Button";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import swal from "sweetalert"; // Import sweetalert
 import { Link } from "react-router-dom";
 import InfoIcon from "@mui/icons-material/Info";
@@ -106,17 +108,25 @@ const RentalownerTable = () => {
           .then((response) => {
             if (response.data.statusCode === 200) {
               fetchRentalsData();
-              swal("Deleted!", "The tenant has been deleted.", "success");
+              toast.success('The tenant has been deleted!', {
+                position: 'top-center',
+              })
             } else {
-              swal("Error", response.data.message, "error");
+              toast.error(response.data.message, {
+                position: 'top-center',
+              })
             }
           })
           .catch((error) => {
             console.error("Error deleting tenant:", error);
-            swal("Error", error.message, "error");
+            toast.error(error.message, {
+              position: 'top-center',
+            })
           });
       } else {
-        swal("Cancelled", "Tenant is safe :)", "info");
+        toast.success('Tenant is safe :)', {
+          position: 'top-center',
+        })
       }
     });
   };
@@ -258,6 +268,7 @@ const RentalownerTable = () => {
             )}
           </div>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

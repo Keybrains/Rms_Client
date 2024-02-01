@@ -3,8 +3,8 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Col, FormGroup, Row } from "reactstrap";
 import * as yup from "yup";
 import axios from "axios";
-import swal from "sweetalert";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function CreditCardForm(props) {
   const { tenantId, closeModal, getCreditCard } = props;
 
@@ -34,7 +34,9 @@ function CreditCardForm(props) {
       "http://localhost:4000/api/creditcard/addCreditCard",
       object
     );
-    swal("Success", response.data.message, "success");
+    toast.success(response.data.message, {
+      position: 'top-center',
+    })
     closeModal();
     getCreditCard();
   };
@@ -119,6 +121,7 @@ function CreditCardForm(props) {
           </button>
         </Form>
       </Formik>
+      <ToastContainer />
     </div>
   );
 }

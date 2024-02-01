@@ -1,5 +1,4 @@
 import { Container, Row, Col } from "reactstrap";
-// import swal from "sweetalert";
 
 const AddAgentHeader = () => {
   return (

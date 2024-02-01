@@ -6,7 +6,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
 import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   Card,
   CardHeader,
@@ -90,28 +91,30 @@ const PropertiesTables = () => {
           .delete(`${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
-              swal(
-                "Success!",
-                "Rental property deleted successfully!",
-                "success"
-              );
+             
+              toast.success('Rental property deleted successfully!', {
+                position: 'top-center',
+              })
               getRentalsData(); // Refresh your rentals data or perform other actions
             } else if (response.data.statusCode === 201) {
-              swal(
-                "Warning!",
-                "Property already assigned to Tenant!",
-                "warning"
-              );
+             
+              toast.warning('Property already assigned to Tenant!', {
+                position: 'top-center',
+              })
               getRentalsData();
             } else {
-              swal("", response.data.message, "error");
+              toast.error(response.data.message, {
+                position: 'top-center',
+              })
             }
           })
           .catch((error) => {
             console.error("Error deleting rental property:", error);
           });
       } else {
-        swal("Cancelled", "Rental property is safe :)", "info");
+        toast.success('Rental property is safe', {
+          position: 'top-center',
+        })
       }
     });
   };
@@ -907,6 +910,7 @@ const PropertiesTables = () => {
         </Row>
         <br />
         <br />
+        <ToastContainer />
       </Container>
     </>
   );

@@ -32,7 +32,8 @@ import { RotatingLines } from "react-loader-spinner";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import * as yup from "yup";
-import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from "components/Headers/Header";
 import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
@@ -397,7 +398,9 @@ const TenantFinancial = () => {
       console.log(response.data, "response.data");
 
       if (response.data && response.data.statusCode === 100) {
-        swal("Success", "Payment Added Successfull", "success"); // Adjust the swal parameters as needed
+        toast.success('Payment Added Successfull!', {
+          position: 'top-center',
+        })
         // window.location.reload()
         await getGeneralLedgerData();
         console.log("Payment successful");
@@ -410,12 +413,18 @@ const TenantFinancial = () => {
         }
       } else {
         console.error("Unexpected response format:", response.data);
-        swal("Error", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
+
         // Handle other status codes or show an error message
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      swal("", error.message, "error");
+      toast.error(error.message, {
+        position: 'top-center',
+      })
+     
       // Handle the error (e.g., show an error message)
     } finally {
       setPaymentLoader(false); // Reset loader when the request completes (whether success or failure)
@@ -679,10 +688,14 @@ const TenantFinancial = () => {
       if (response.data.statusCode === 200) {
         closeModal();
         console.log("Response Data:", response.data);
-        swal("Success", "Payments Update Successfully", "success");
+        toast.success('Payments Update Successfully', {
+          position: 'top-center',
+        })
         navigate(`/tenant/tenantFinancial`);
       } else {
-        swal("Error", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
         console.error("Server Error:", response.data.message);
       }
     } catch (error) {
@@ -1430,6 +1443,7 @@ const TenantFinancial = () => {
             )}
           </div>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

@@ -1,6 +1,8 @@
 import axios from "axios";
 import { Button, Card, CardBody, Col, FormGroup, Row } from "reactstrap";
 import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ClearIcon from "@mui/icons-material/Clear";
 import { OpenImageDialog } from "components/OpenImageDialog";
 import { Autocomplete, TextField } from "@mui/material";
@@ -70,13 +72,17 @@ const handleDeleteUnit = (id) => {
       axios
         .delete(`${baseUrl}/propertyunit/propertyunit/` + id)
         .then((response) => {
-          swal("", "Your data is deleted", "success");
+          toast.success('your data is deleted', {
+            position: 'top-center',
+          })
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
-      swal("Cancelled", "Your data is safe", "error");
+      toast.success('your data is safe', {
+        position: 'top-center',
+      })
     }
   });
 };
@@ -89,14 +95,18 @@ const handleSubmit = async (rental_id, admin_id, object) => {
     const res = await axios.post(`${baseUrl}/unit/unit`, object);
     console.log(res.data.statusCode, "yashuj");
     if (res.data.statusCode === 200) {
-      swal("", res.data.message, "success");
+      toast.success(res.data.message, {
+        position: 'top-center',
+      })
       return false;
     } else {
       return true;
     }
   } catch (error) {
     console.error("Error:", error.message);
-    swal("", error.message, "error");
+    toast.error(error.message, {
+      position: 'top-center',
+    })
     return true;
   }
 };
@@ -107,14 +117,19 @@ const handleUnitDetailsEdit = async (unit_id, object) => {
     const res = await axios.put(`${baseUrl}/unit/unit/${unit_id}`, object);
     console.log(res.data.statusCode, "yashuj");
     if (res.data.statusCode === 200) {
-      swal("", res.data.message, "success");
+       toast.success(res.data.message, {
+            position: 'top-center',
+          })
+
       return false;
     } else {
       return true;
     }
   } catch (error) {
     console.error("Error:", error.message);
-    swal("", error.message, "error");
+    toast.error(error, {
+                  position: 'top-center',
+                })
     return true;
   }
 };
@@ -126,14 +141,18 @@ const addAppliancesSubmit = async (unit_id, admin_id, object) => {
   try {
     const res = await axios.post(`${baseUrl}/appliance/appliance`, object);
     if (res.data.statusCode === 200) {
-      swal("", res.data.message, "success");
+       toast.success(res.data.message, {
+            position: 'top-center',
+          })
       return false;
     } else {
       return true;
     }
   } catch (error) {
     console.error("Error:", error.message);
-    swal("", error.message, "error");
+    toast.error(error.message, {
+                  position: 'top-center',
+                })
     return true;
   }
 };
@@ -147,15 +166,21 @@ const editeAppliancesSubmit = async (object) => {
     );
     console.log(res.data.statusCode, "yashuj");
     if (res.data.statusCode === 200) {
-      swal("", res.data.message, "success");
+       toast.success(res.data.message, {
+            position: 'top-center',
+          })
       return false;
     } else {
-      swal("", res.data.message, "warning");
+       toast.warning(res.data.message, {
+              position: 'top-center',
+            })
       return true;
     }
   } catch (error) {
     console.error("Error:", error.message);
-    swal("", error.message, "error");
+    toast.error(error.message, {
+                  position: 'top-center',
+                })
     return true;
   }
 };
@@ -171,12 +196,16 @@ const deleteAppliance = async (appliance_id) => {
           `${baseUrl}/appliance/appliance/${appliance_id}`
         );
         if (res.data.statusCode === 200) {
-          swal("", res.data.message, "success");
+           toast.success(res.data.message, {
+            position: 'top-center',
+          })
           return res.data.statusCode;
         }
       } catch (error) {
         console.error("Error:", error.message);
-        swal("", error.message, "error");
+        toast.error(error.message, {
+                  position: 'top-center',
+                })
       }
     }
   });
@@ -673,6 +702,7 @@ const UnitEdite = ({
           </CardBody>
         </Card>
       </Col>
+         <ToastContainer />
     </Row>
   );
 };

@@ -23,10 +23,11 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import AddStaffMemberHeader from "components/Headers/AddStaffMemberHeader";
-import swal from "sweetalert";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddStaffMember = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -145,7 +146,10 @@ const AddStaffMember = () => {
         if (res.data.statusCode === 200) {
           handleResponse(res);
         } else if (res.data.statusCode === 201) {
-          swal("error", res.data.message, "error");
+          toast.error(res.data.message, {
+            position: 'top-center',
+            autoClose: 1000,
+          });
         }
       } else {
         const editUrl = `${baseUrl}/staffmember/staff_member/${id}`;
@@ -154,7 +158,10 @@ const AddStaffMember = () => {
         if (res.data.statusCode === 200) {
           handleResponse(res);
         } else if (res.data.statusCode === 400) {
-          swal("error", res.data.message, "error");
+          toast.error(res.data.message, {
+            position: 'top-center',
+            autoClose: 1000,
+          });
         }
       }
     } catch (error) {
@@ -166,21 +173,26 @@ const AddStaffMember = () => {
     }
   }
 
-  function handleResponse(response) {
-    if (response.status === 200) {
-      navigate("/"+admin+"/StaffMember");
-      swal(
-        "Success!",
-        id
-          ? "Staff Member updated successfully"
-          : "Staff Member added successfully!",
-        "success"
-      );
+ function handleResponse(response) {
+    const successMessage = id ? "Staff  updated successfully" : "Staff  added successfully";
+    const errorMessage = response.data.message;
+  
+    if (response.data.statusCode === 200) {
+      // Show success toast
+      toast.success(successMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+        onClose: () => navigate(`/${admin}/StaffMember`),
+      });
     } else {
-      alert(response.data.message);
+      // Show an error toast
+      toast.error(errorMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     }
   }
-
+  
   return (
     <>
       <AddStaffMemberHeader />
@@ -402,6 +414,8 @@ const AddStaffMember = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
+
       </Container>
     </>
   );

@@ -22,8 +22,9 @@ import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { Typography, colors } from "@mui/material";
-import swal from "sweetalert";
 import { IconButton } from "@mui/material";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
 const ResetPassword = () => {
@@ -50,13 +51,16 @@ const ResetPassword = () => {
       console.log("Admin ID:", adminRes.data);
       if (adminRes.data.statusCode === 200) {
         // Admin login successful
-        swal("Success!", "Admin Login Successful!", "success").then((value) => {
-          if (value) {
-            localStorage.setItem("token", adminRes.data.token);
+       
+        toast.success('Admin Login Successful!!', {
+          position: 'top-center',
+          autoClose: 500,
+        })
+        setTimeout(() => {
+          localStorage.setItem("token", adminRes.data.token);
             const jwt = jwtDecode(localStorage.getItem("token"));
             navigate(`/${jwt.company_name}/index`);
-          }
-        });
+        }, 1000)
       } else {
         // Admin login failed, try tenant login
         const tenantRes = await axios.post(`${baseUrl}/tenant/login`, {
@@ -71,19 +75,22 @@ const ResetPassword = () => {
           // Check if tenantData contains _id
           if (tenantData && tenantData._id) {
             //console.log("Tenant ID:", tenantData._id);
-            swal("Success!", "Tenant Login Successful!", "success").then(
-              (value) => {
-                if (value) {
-                  localStorage.setItem("token", tenantRes.data.token);
+           
+            toast.success('Tenant Login Successful!', {
+              position: 'top-center',
+              autoClose: 500,
+            })
+            setTimeout(() => {
+              localStorage.setItem("token", tenantRes.data.token);
                   localStorage.setItem("Tenant ID", tenantData._id);
                   localStorage.setItem("ID", tenantData._id);
                   navigate("/tenant/tenantdashboard");
-                }
-              }
-            );
+            }, 1000)
           } else {
             // Tenant login succeeded, but no _id found
-            swal("Error!", "Invalid tenant data", "error");
+            toast.error('Invalid tenant data', {
+              position: 'top-center',
+            })
           }
         } else {
           // Admin and tenant login failed, try agent login
@@ -100,19 +107,21 @@ const ResetPassword = () => {
             // Check if agentData contains _id
             if (agentData && agentData._id) {
               //console.log("Agent ID:", agentData._id);
-              swal("Success!", "Agent Login Successful!", "success").then(
-                (value) => {
-                  if (value) {
-                    localStorage.setItem("token", agentRes.data.token);
+              toast.success('Agent Login Successful!', {
+                position: 'top-center',
+                autoClose: 500,
+              })
+              setTimeout(() => {
+                localStorage.setItem("token", agentRes.data.token);
                     localStorage.setItem("Agent ID", agentData._id);
                     localStorage.setItem("ID", agentData._id);
                     navigate("/agent/AgentdashBoard");
-                  }
-                }
-              );
+              }, 1000)
             } else {
               // Agent login succeeded, but no _id found
-              swal("Error!", "Invalid agent data", "error");
+              toast.error('Invalid agent data', {
+                position: 'top-center',
+              })
             }
           } else {
             // All login attempts failed, try staff login
@@ -132,19 +141,22 @@ const ResetPassword = () => {
               // Check if staffData contains _id
               if (staffData && staffData._id) {
                 //console.log("Staff ID:", staffData._id);
-                swal("Success!", "Staff Login Successful!", "success").then(
-                  (value) => {
-                    if (value) {
-                      localStorage.setItem("token", staffRes.data.token);
+               
+                toast.success('Staff  Login Successful!!', {
+                  position: 'top-center',
+                  autoClose: 500,
+                })
+                setTimeout(() => {
+                  localStorage.setItem("token", staffRes.data.token);
                       localStorage.setItem("Staff ID", staffData._id);
                       localStorage.setItem("ID", staffData._id);
                       navigate("/staff/staffdashboard");
-                    }
-                  }
-                );
+                }, 1000)
               } else {
                 // Staff login succeeded, but no _id found
-                swal("Error!", "Invalid staff data", "error");
+                toast.error('Invalid Staff data', {
+                  position: 'top-center',
+                })
               }
             } else {
               // All login attempts failed, try vendor login
@@ -161,23 +173,25 @@ const ResetPassword = () => {
                 // Check if vendorData contains _id
                 if (vendorData && vendorData._id) {
                   //console.log("Vendor ID:", vendorData._id);
-                  swal("Success!", "Vendor Login Successful!", "success").then(
-                    (value) => {
-                      if (value) {
-                        localStorage.setItem("token", vendorRes.data.token);
+                  
+                  setTimeout(() => {
+                    localStorage.setItem("token", vendorRes.data.token);
                         localStorage.setItem("Vendor ID", vendorData._id);
                         localStorage.setItem("ID", vendorData._id);
                         navigate("/vendor/vendordashboard");
-                      }
-                    }
-                  );
+                  }, 1000)
                 } else {
                   // Vendor login succeeded, but no _id found
-                  swal("Error!", "Invalid vendor data", "error");
+                  toast.error('Invalid Vendor data', {
+                    position: 'top-center',
+                  })
+
                 }
               } else {
                 // All login attempts failed
-                swal("Error!", "Invalid credentials", "error");
+                toast.error('Invalid credentials ', {
+                  position: 'top-center',
+                })
               }
             }
           }
@@ -316,6 +330,7 @@ const ResetPassword = () => {
             </Form>
           </CardBody>
         </Card>
+        <ToastContainer />
       </Col>
     </>
   );

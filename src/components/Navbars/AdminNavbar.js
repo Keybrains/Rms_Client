@@ -50,7 +50,7 @@ const AdminNavbar = (props) => {
     // localStorage.removeItem("id");
     // navigate("/login");
   };
-  const { workorder_id } = useParams();
+  const { workorder_id, admin } = useParams();
   //console.log("workid:",workorder_id);
   const [vendorDetails, setVendorDetails] = useState({});
   const [rental_adress, setRentalAddress] = useState("");
@@ -164,7 +164,7 @@ const AdminNavbar = (props) => {
           <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
             <Button
               color="primary"
-              onClick={() => navigate("/admin/Plans")}
+              onClick={() => navigate("/"+admin+"/Plans")}
               size="sm"
               style={{
                 background: "rgb(48 52 58 / 70%)",

@@ -30,6 +30,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
 import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -94,10 +96,14 @@ const OutstandingBalance = () => {
       //console.log("Edit Response:", response);
 
       if (response.status === 200) {
-        swal("Success!", "Balance updated successfully", "success");
+        toast.success('Balance updated successfully', {
+          position: 'top-center',
+        })
         getTenantsDate(); // Refresh the data after successful edit
       } else {
-        swal("", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
       }
     } catch (error) {
       console.error("Error editing property:", error);
@@ -120,17 +126,23 @@ const OutstandingBalance = () => {
           })
           .then((response) => {
             if (response.data.statusCode === 200) {
-              swal("Success!", "Property deleted successfully", "success");
+              toast.success('Property deleted successfully', {
+                position: 'top-center',
+              })
               getTenantsDate();
             } else {
-              swal("", response.data.message, "error");
+              toast.error(response.data.message, {
+                position: 'top-center',
+              })
             }
           })
           .catch((error) => {
             console.error("Error deleting property:", error);
           });
       } else {
-        swal("Cancelled", "Property is safe :)", "info");
+        toast.success('Property is safe', {
+          position: 'top-center',
+        })
       }
     });
   };
@@ -388,6 +400,7 @@ const OutstandingBalance = () => {
             Save
           </Button>
         </DialogActions>
+        <ToastContainer />
       </Dialog>
     </>
   );
