@@ -209,6 +209,25 @@ const RentRollLeaseing = () => {
     }),
   });
 
+  const securityChargeFormik = useFormik({
+    initialValues: {
+      amount: "",
+      memo: "Security Deposite",
+      charge_type: "Security Deposite",
+      account: "Security Deposite",
+      date: moment().format("YYYY-MM-DD"),
+      is_paid: false,
+      is_lateFee: false,
+      ammount: rentChargeFormik.values.security_amount,
+    },
+    validationSchema: yup.object({
+      amount: yup.number().required("Required"),
+      account: yup.string().required("Required"),
+      charge_type: yup.string().required("Required"),
+      rent_cycle: yup.string().required("Required"),
+    }),
+  });
+
   let recurringChargeFormink = useFormik({
     initialValues: {
       amount: "",
@@ -391,49 +410,60 @@ const RentRollLeaseing = () => {
   const addLease = async () => {
     setLoader(true);
     if (file) {
-      for (let i = 0; i < file.length; i++) {
-        if (file[i].upload_file instanceof File) {
-          try {
-            console.log("object");
-            const form = new FormData();
-            form.append("files", file[i].upload_file)
-            const res = await axios.post(`${imageUrl}/images/upload`, form);
-            console.log(res, "yash");
-          } catch (error) {}
-        } else {
-          console.log("object2", file[i].upload_file);
-        }
+      try {
+        const uploadPromises = file.map(async (fileItem) => {
+          if (fileItem.upload_file instanceof File) {
+            try {
+              const form = new FormData();
+              form.append("files", fileItem.upload_file);
+
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
+
+              if (
+                res &&
+                res.data &&
+                res.data.files &&
+                res.data.files.length > 0
+              ) {
+                fileItem.upload_file = res.data.files[0].url;
+              } else {
+                console.error("Unexpected response format:", res);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
+          }
+        });
+
+        await Promise.all(uploadPromises);
+
+      } catch (error) {
+        console.error("Error processing file uploads:", error);
       }
+      console.log(file);
     }
-    // const securityCharge = {
-    //   ammount: rentChargeFormik.values.security_amount,
-    //   date: rentChargeFormik.values.date,
-    //   account: "Security Deposite",
-    //   charge_type: "Security Deposite",
-    //   memo: "Security Deposite",
-    //   is_paid: false,
-    //   is_lateFee: false,
-    // };
-    // const chargeData = [
-    //   ...recurringData,
-    //   ...oneTimeData,
-    //   securityCharge,
-    //   rentChargeFormik.values,
-    // ];
-    // const object = {
-    //   leaseData: { ...leaseFormik.values, admin_id: accessType.admin_id },
-    //   tenantData: { ...tenantFormik.values, admin_id: accessType.admin_id },
-    //   cosignerData: { ...cosignerFormik.values, admin_id: accessType.admin_id },
-    //   chargeData: [...chargeData, rentChargeFormik.values],
-    // };
-    // try {
-    //   const res = await axios.post(`${baseUrl}/leases/leases`, object);
-    //   if (res.data.statusCode === 200) {
-    //     swal("Success", "Lease Added Successfully", "success");
-    //   }
-    // } catch (error) {
-    //   console.error("Error:", error.message);
-    // }
+
+    const chargeData = [
+      ...recurringData,
+      ...oneTimeData,
+      securityChargeFormik.values,
+      rentChargeFormik.values,
+    ];
+    
+    const object = {
+      leaseData: { ...leaseFormik.values, admin_id: accessType.admin_id },
+      tenantData: { ...tenantFormik.values, admin_id: accessType.admin_id },
+      cosignerData: { ...cosignerFormik.values, admin_id: accessType.admin_id },
+      chargeData: [...chargeData, rentChargeFormik.values],
+    };
+    try {
+      const res = await axios.post(`${baseUrl}/leases/leases`, object);
+      if (res.data.statusCode === 200) {
+        swal("Success", "Lease Added Successfully", "success");
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
     setLoader(false);
   };
 
