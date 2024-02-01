@@ -107,7 +107,6 @@ const Rentals = () => {
       );
 
       values["rentalOwner_properties"] = selectedPropertyIds;
-      console.log(selectedPropertyIds, selectedPropertyData);
 
       // if (id === undefined) {
       //   const res = await axios.post(
@@ -736,7 +735,6 @@ const Rentals = () => {
                             ) : null}
                           </div>
                           <br />
-                          {console.log(rentalsFormik.values, "yash")}
                           <div className="input-group">
                             <div className="input-group-prepend">
                               <span className="input-group-text">

@@ -64,7 +64,6 @@ function AccountDialog(props) {
       charge_type: props.accountTypeName,
       admin_id: props.adminId,
     };
-    console.log(object);
     try {
       const res = await axios.post(`${baseUrl}/accounts/accounts`, object);
       if (res.status === 200) {

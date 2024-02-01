@@ -90,7 +90,6 @@ const Leaseing = () => {
     setLoader(true);
     try {
       const res = await axios.post(`${baseUrl}/tenants/tenants`, object);
-      console.log(res, object);
       if (res.data.statusCode === 200) {
         swal("Success", "Tenant Added Successfully", "success");
         handleCloseButtonClick();
@@ -113,7 +112,6 @@ const Leaseing = () => {
         `${baseUrl}/tenants/tenants/${tenant_id}`,
         object
       );
-      console.log(res, object);
       if (res.data.statusCode === 200) {
         swal("Success", "Tenant Updated Successfully", "success");
         handleCloseButtonClick();
@@ -588,7 +586,6 @@ const Leaseing = () => {
                               </FormGroup>
                             </Col>
                           </Row>
-                          {console.log(tenantFormik.values, "janak")}
                         </FormGroup>
                       </Col>
                     </Row>

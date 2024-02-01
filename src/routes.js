@@ -252,7 +252,7 @@ var routes = [
   },
 
   {
-    path: "/PropDetails/:id",
+    path: "/PropDetails/:rental_id",
     name: "Prop Details",
     component: <PropDetails />,
     layout: "/admin",
@@ -559,13 +559,6 @@ var routes = [
     component: <ApplicantSummary />,
     layout: "/admin",
   },
-  {
-    path: "/PropDetails/:id/:entryIndex",
-    name: "Prop Details",
-    component: <PropDetails />,
-    layout: "/admin",
-  },
-
   {
     path: "/tenantdetail/:tenantId/:entryIndex",
     name: "Tenant Detail",

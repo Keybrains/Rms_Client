@@ -158,7 +158,7 @@ const RentRollLeaseing = () => {
       lease_type: "",
       start_date: "",
       end_date: "",
-      uploaded_file: "",
+      uploaded_file: [],
       tenant_residentStatus: false,
     },
     validationSchema: yup.object({
@@ -192,13 +192,13 @@ const RentRollLeaseing = () => {
   const rentChargeFormik = useFormik({
     initialValues: {
       amount: "",
-      memo: "",
+      memo: "Last Month's Rent",
       charge_type: "Last Month's Rent",
       account: "Last Month's Rent",
       date: "",
       rent_cycle: "",
-      security_amount: "",
       is_paid: false,
+      is_repeatable: true,
       is_lateFee: false,
     },
     validationSchema: yup.object({
@@ -217,8 +217,8 @@ const RentRollLeaseing = () => {
       account: "Security Deposite",
       date: moment().format("YYYY-MM-DD"),
       is_paid: false,
+      is_repeatable: false,
       is_lateFee: false,
-      ammount: rentChargeFormik.values.security_amount,
     },
     validationSchema: yup.object({
       amount: yup.number().required("Required"),
@@ -228,23 +228,22 @@ const RentRollLeaseing = () => {
     }),
   });
 
-  let recurringChargeFormink = useFormik({
+  let recurringFormink = useFormik({
     initialValues: {
       amount: "",
-      memo: "",
+      memo: "Recurring Charge",
       charge_type: "Recurring Charge",
       account: "",
       date: "",
       rent_cycle: "",
+      is_repeatable: true,
       is_paid: false,
       is_lateFee: false,
     },
-
     validationSchema: yup.object({
       amount: yup.string().required("Required"),
       account: yup.string().required("Required"),
     }),
-
     onSubmit: (values, { resetForm }) => {
       if (editingIndex !== null) {
         setRecurringData((prevRecurringData) => {
@@ -262,23 +261,21 @@ const RentRollLeaseing = () => {
     },
   });
 
-  let oneTimeChargeFormik = useFormik({
+  let oneTimeFormik = useFormik({
     initialValues: {
       amount: "",
-      memo: "",
+      memo: "One Time Charge",
       charge_type: "One Time Charge",
       account: "",
       date: "",
-      rent_cycle: "",
+      is_repeatable: false,
       is_paid: false,
       is_lateFee: false,
     },
-
     validationSchema: yup.object({
       amount: yup.string().required("Required"),
       account: yup.string().required("Required"),
     }),
-
     onSubmit: (values, { resetForm }) => {
       if (editingIndex !== null) {
         setOneTimeData((prevOneTimeData) => {
@@ -384,34 +381,9 @@ const RentRollLeaseing = () => {
   //update lease
   const updateLease = async () => {
     setLoader(true);
-    try {
-      for (let i = 0; i < file.length; i++) {
-        if (file[i] instanceof File) {
-          console.log("object");
-        }
-        console.log("object2");
-      }
-
-      // const res = await axios.put(`${baseUrl}/leases/leases`);
-    } catch (error) {
-      console.error("Error:", error.message);
-    }
-    setLoader(false);
-  };
-  console.log(
-    leaseFormik.errors,
-    tenantFormik.errors,
-    rentChargeFormik.errors,
-    recurringChargeFormink.errors,
-    cosignerFormik.errors,
-    oneTimeChargeFormik.errors
-  );
-
-  const addLease = async () => {
-    setLoader(true);
     if (file) {
       try {
-        const uploadPromises = file.map(async (fileItem) => {
+        const uploadPromises = file.map(async (fileItem, i) => {
           if (fileItem.upload_file instanceof File) {
             try {
               const form = new FormData();
@@ -426,40 +398,113 @@ const RentRollLeaseing = () => {
                 res.data.files.length > 0
               ) {
                 fileItem.upload_file = res.data.files[0].url;
+                leaseFormik.setFieldValue(
+                  `uploaded_file[${i}]`,
+                  res.data.files[0].url
+                );
               } else {
                 console.error("Unexpected response format:", res);
               }
             } catch (error) {
               console.error("Error uploading file:", error);
             }
+          } else {
+            leaseFormik.setFieldValue(`uploaded_file[${i}]`, fileItem);
           }
         });
 
         await Promise.all(uploadPromises);
-
       } catch (error) {
         console.error("Error processing file uploads:", error);
       }
-      console.log(file);
+    }
+    try {
+      for (let i = 0; i < file.length; i++) {
+        if (file[i] instanceof File) {
+        }
+      }
+
+      // const res = await axios.put(`${baseUrl}/leases/leases`);
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
+    setLoader(false);
+  };
+  console.log(
+    leaseFormik.values,
+    tenantFormik.values,
+    rentChargeFormik.values,
+    recurringFormink.values,
+    cosignerFormik.values,
+    securityChargeFormik.values,
+    oneTimeFormik.values
+  );
+
+  const addLease = async () => {
+    setLoader(true);
+    if (file) {
+      try {
+        const uploadPromises = file.map(async (fileItem, i) => {
+          if (fileItem.upload_file instanceof File) {
+            try {
+              const form = new FormData();
+              form.append("files", fileItem.upload_file);
+
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
+
+              if (
+                res &&
+                res.data &&
+                res.data.files &&
+                res.data.files.length > 0
+              ) {
+                fileItem.upload_file = res.data.files[0].url;
+                leaseFormik.values.uploaded_file[i] = res.data.files[0].url;
+              } else {
+                console.error("Unexpected response format:", res);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
+          } else {
+            leaseFormik.values.uploaded_file[i] = fileItem;
+          }
+        });
+
+        await Promise.all(uploadPromises);
+      } catch (error) {
+        console.error("Error processing file uploads:", error);
+      }
     }
 
-    const chargeData = [
-      ...recurringData,
-      ...oneTimeData,
-      securityChargeFormik.values,
-      rentChargeFormik.values,
-    ];
-    
+    const reaccuringCharges = recurringData.map((item) => ({
+      ...item,
+      date: rentChargeFormik.values.date,
+      rent_cycle: rentChargeFormik.values.rent_cycle,
+    }));
+
+    const oneTimeCharges = oneTimeData.map((item) => ({
+      ...item,
+      date: rentChargeFormik.values.date,
+    }));
+
     const object = {
       leaseData: { ...leaseFormik.values, admin_id: accessType.admin_id },
       tenantData: { ...tenantFormik.values, admin_id: accessType.admin_id },
       cosignerData: { ...cosignerFormik.values, admin_id: accessType.admin_id },
-      chargeData: [...chargeData, rentChargeFormik.values],
+      chargeData: [
+        ...reaccuringCharges,
+        ...oneTimeCharges,
+        securityChargeFormik.values,
+        rentChargeFormik.values,
+      ],
     };
+    console.log(object, "yashu");
     try {
       const res = await axios.post(`${baseUrl}/leases/leases`, object);
       if (res.data.statusCode === 200) {
         swal("Success", "Lease Added Successfully", "success");
+        navigate(`/${admin}/RentRoll`)
       }
     } catch (error) {
       console.error("Error:", error.message);
@@ -586,6 +631,7 @@ const RentRollLeaseing = () => {
   const handleselectedRentCycle = (rentcycle) => {
     setSelectedRentCycle(rentcycle);
     rentChargeFormik.setFieldValue("rent_cycle", rentcycle);
+    recurringFormink.setFieldValue("rent_cycle", rentcycle);
 
     const startDate = rentChargeFormik.values.start_date;
     let nextDue_date;
@@ -619,15 +665,18 @@ const RentRollLeaseing = () => {
         nextDue_date = moment(startDate).add(1, "years").format("YYYY-MM-DD");
         dayFrequency = 365;
     }
+    recurringFormink.setFieldValue("date", nextDue_date);
+    oneTimeFormik.setFieldValue("date", nextDue_date);
     rentChargeFormik.setFieldValue("date", nextDue_date);
+    securityChargeFormik.setFieldValue("date", nextDue_date);
   };
 
   const handleClickOpenRecurring = () => {
-    recurringChargeFormink.resetForm();
+    recurringFormink.resetForm();
     setOpenRecurringDialog(true);
   };
   const handleClickOpenOneTimeCharge = () => {
-    oneTimeChargeFormik.resetForm();
+    oneTimeFormik.resetForm();
     setOpenOneTimeChargeDialog(true);
   };
 
@@ -655,7 +704,7 @@ const RentRollLeaseing = () => {
   const editeReccuring = (index) => {
     setOpenRecurringDialog(true);
     setEditingIndex(index);
-    recurringChargeFormink.setValues({
+    recurringFormink.setValues({
       amount: recurringData[index].amount,
       account: recurringData[index].account,
       memo: recurringData[index].memo,
@@ -670,7 +719,7 @@ const RentRollLeaseing = () => {
   const editOneTime = (index) => {
     setOpenOneTimeChargeDialog(true);
     setEditingIndex(index);
-    oneTimeChargeFormik.setValues({
+    oneTimeFormik.setValues({
       amount: oneTimeData[index].amount,
       account: oneTimeData[index].account,
       memo: oneTimeData[index].memo,
@@ -850,14 +899,12 @@ const RentRollLeaseing = () => {
       }
 
       setFile([...finalArray]);
-      leaseFormik.setFieldValue("upload_file", [...finalArray]);
     } else if (
       file.length >= 0 &&
       file.length <= 10 &&
       filesArray.length + file.length > 10
     ) {
       setFile([...file]);
-      leaseFormik.setFieldValue("upload_file", [...file]);
     } else {
       const finalArray = [];
 
@@ -874,7 +921,6 @@ const RentRollLeaseing = () => {
       }
 
       setFile([...file, ...finalArray]);
-      leaseFormik.setFieldValue("upload_file", [...file, ...finalArray]);
     }
   };
 
@@ -882,7 +928,6 @@ const RentRollLeaseing = () => {
     const newFile = [...file];
     newFile.splice(index, 1);
     setFile(newFile);
-    leaseFormik.setFieldValue("upload_file", newFile);
   };
 
   return (
@@ -2891,9 +2936,12 @@ const RentRollLeaseing = () => {
                                   type="date"
                                   name="date"
                                   onBlur={rentChargeFormik.handleBlur}
-                                  onChange={(e) =>
-                                    rentChargeFormik.handleChange(e)
-                                  }
+                                  onChange={(e) => {
+                                    rentChargeFormik.handleChange(e);
+                                    securityChargeFormik.handleChange(e);
+                                    recurringFormink.handleChange(e);
+                                    oneTimeFormik.handleChange(e);
+                                  }}
                                   value={rentChargeFormik.values.date}
                                 />
                               </FormGroup>
@@ -2947,10 +2995,10 @@ const RentRollLeaseing = () => {
                                 id="input-reserve"
                                 placeholder="$0.00"
                                 type="text"
-                                name="security_amount"
-                                onBlur={rentChargeFormik.handleBlur}
-                                onChange={rentChargeFormik.handleChange}
-                                value={rentChargeFormik.values.security_amount}
+                                name="amount"
+                                onBlur={securityChargeFormik.handleBlur}
+                                onChange={securityChargeFormik.handleChange}
+                                value={securityChargeFormik.values.amount}
                                 onInput={(e) => {
                                   const inputValue = e.target.value;
                                   const numericValue = inputValue.replace(
@@ -3036,9 +3084,8 @@ const RentRollLeaseing = () => {
                                       toggle={toggle8}
                                     >
                                       <DropdownToggle caret>
-                                        {recurringChargeFormink.values.account
-                                          ? recurringChargeFormink.values
-                                              .account
+                                        {recurringFormink.values.account
+                                          ? recurringFormink.values.account
                                           : "Select"}
                                       </DropdownToggle>
                                       <DropdownMenu
@@ -3049,15 +3096,12 @@ const RentRollLeaseing = () => {
                                           width: "100%",
                                         }}
                                         name="account"
-                                        onBlur={
-                                          recurringChargeFormink.handleBlur
-                                        }
+                                        onBlur={recurringFormink.handleBlur}
                                         onChange={(e) =>
-                                          recurringChargeFormink.handleChange(e)
+                                          recurringFormink.handleChange(e)
                                         }
                                         value={
-                                          recurringChargeFormink.values
-                                            .account || ""
+                                          recurringFormink.values.account || ""
                                         }
                                       >
                                         {accountsData.map((account) => (
@@ -3066,7 +3110,7 @@ const RentRollLeaseing = () => {
                                             "Recurring Charge" ? (
                                               <DropdownItem
                                                 onClick={() => {
-                                                  recurringChargeFormink.setFieldValue(
+                                                  recurringFormink.setFieldValue(
                                                     "account",
                                                     account.account
                                                   );
@@ -3090,17 +3134,13 @@ const RentRollLeaseing = () => {
                                           Add new account..
                                         </DropdownItem>
                                       </DropdownMenu>
-                                      {recurringChargeFormink.errors &&
-                                      recurringChargeFormink.errors.account &&
-                                      recurringChargeFormink.touched &&
-                                      recurringChargeFormink.touched.account &&
-                                      recurringChargeFormink.values.account ===
-                                        "" ? (
+                                      {recurringFormink.errors &&
+                                      recurringFormink.errors.account &&
+                                      recurringFormink.touched &&
+                                      recurringFormink.touched.account &&
+                                      recurringFormink.values.account === "" ? (
                                         <div style={{ color: "red" }}>
-                                          {
-                                            recurringChargeFormink.errors
-                                              .account
-                                          }
+                                          {recurringFormink.errors.account}
                                         </div>
                                       ) : null}
                                     </Dropdown>
@@ -3121,13 +3161,12 @@ const RentRollLeaseing = () => {
                                       placeholder="$0.00"
                                       type="text"
                                       name="amount"
-                                      onBlur={recurringChargeFormink.handleBlur}
+                                      onBlur={recurringFormink.handleBlur}
                                       value={
-                                        recurringChargeFormink.values.amount ||
-                                        ""
+                                        recurringFormink.values.amount || ""
                                       }
                                       onChange={(e) =>
-                                        recurringChargeFormink.handleChange(e)
+                                        recurringFormink.handleChange(e)
                                       }
                                       onInput={(e) => {
                                         const inputValue = e.target.value;
@@ -3138,14 +3177,13 @@ const RentRollLeaseing = () => {
                                         e.target.value = numericValue;
                                       }}
                                     />
-                                    {recurringChargeFormink.errors &&
-                                    recurringChargeFormink.errors.amount &&
-                                    recurringChargeFormink.touched &&
-                                    recurringChargeFormink.touched.amount &&
-                                    recurringChargeFormink.values.amount ===
-                                      "" ? (
+                                    {recurringFormink.errors &&
+                                    recurringFormink.errors.amount &&
+                                    recurringFormink.touched &&
+                                    recurringFormink.touched.amount &&
+                                    recurringFormink.values.amount === "" ? (
                                       <div style={{ color: "red" }}>
-                                        {recurringChargeFormink.errors.amount}
+                                        {recurringFormink.errors.amount}
                                       </div>
                                     ) : null}
                                   </FormGroup>
@@ -3162,15 +3200,13 @@ const RentRollLeaseing = () => {
                                     id="memo"
                                     type="text"
                                     name="memo"
-                                    onBlur={recurringChargeFormink.handleBlur}
+                                    onBlur={recurringFormink.handleBlur}
                                     onChange={(e) => {
-                                      recurringChargeFormink.values.memo =
+                                      recurringFormink.values.memo =
                                         e.target.value;
-                                      recurringChargeFormink.handleChange(e);
+                                      recurringFormink.handleChange(e);
                                     }}
-                                    value={
-                                      recurringChargeFormink.values.memo || ""
-                                    }
+                                    value={recurringFormink.values.memo || ""}
                                   />
                                 </FormGroup>
                               </div>
@@ -3183,7 +3219,7 @@ const RentRollLeaseing = () => {
                                   color: "white",
                                 }}
                                 onClick={() => {
-                                  recurringChargeFormink.handleSubmit();
+                                  recurringFormink.handleSubmit();
                                 }}
                               >
                                 Add
@@ -3231,8 +3267,8 @@ const RentRollLeaseing = () => {
                                       toggle={toggle7}
                                     >
                                       <DropdownToggle caret>
-                                        {oneTimeChargeFormik.values.account
-                                          ? oneTimeChargeFormik.values.account
+                                        {oneTimeFormik.values.account
+                                          ? oneTimeFormik.values.account
                                           : "Select"}
                                       </DropdownToggle>
                                       <DropdownMenu
@@ -3243,13 +3279,9 @@ const RentRollLeaseing = () => {
                                           width: "100%",
                                         }}
                                         name="account"
-                                        onBlur={oneTimeChargeFormik.handleBlur}
-                                        onChange={
-                                          oneTimeChargeFormik.handleChange
-                                        }
-                                        value={
-                                          oneTimeChargeFormik.values.account
-                                        }
+                                        onBlur={oneTimeFormik.handleBlur}
+                                        onChange={oneTimeFormik.handleChange}
+                                        value={oneTimeFormik.values.account}
                                       >
                                         {accountsData.map((account) => (
                                           <>
@@ -3257,7 +3289,7 @@ const RentRollLeaseing = () => {
                                             "One Time Charge" ? (
                                               <DropdownItem
                                                 onClick={() => {
-                                                  oneTimeChargeFormik.setFieldValue(
+                                                  oneTimeFormik.setFieldValue(
                                                     "account",
                                                     account.account
                                                   );
@@ -3279,14 +3311,13 @@ const RentRollLeaseing = () => {
                                           Add new account..
                                         </DropdownItem>
                                       </DropdownMenu>
-                                      {oneTimeChargeFormik.errors &&
-                                      oneTimeChargeFormik.errors.account &&
-                                      oneTimeChargeFormik.touched &&
-                                      oneTimeChargeFormik.touched.account &&
-                                      oneTimeChargeFormik.values.account ===
-                                        "" ? (
+                                      {oneTimeFormik.errors &&
+                                      oneTimeFormik.errors.account &&
+                                      oneTimeFormik.touched &&
+                                      oneTimeFormik.touched.account &&
+                                      oneTimeFormik.values.account === "" ? (
                                         <div style={{ color: "red" }}>
-                                          {oneTimeChargeFormik.errors.account}
+                                          {oneTimeFormik.errors.account}
                                         </div>
                                       ) : null}
                                     </Dropdown>
@@ -3307,11 +3338,9 @@ const RentRollLeaseing = () => {
                                       placeholder="$0.00"
                                       type="text"
                                       name="amount"
-                                      onBlur={oneTimeChargeFormik.handleBlur}
-                                      onChange={
-                                        oneTimeChargeFormik.handleChange
-                                      }
-                                      value={oneTimeChargeFormik.values.amount}
+                                      onBlur={oneTimeFormik.handleBlur}
+                                      onChange={oneTimeFormik.handleChange}
+                                      value={oneTimeFormik.values.amount}
                                       onInput={(e) => {
                                         const inputValue = e.target.value;
                                         const numericValue = inputValue.replace(
@@ -3319,17 +3348,17 @@ const RentRollLeaseing = () => {
                                           ""
                                         ); // Remove non-numeric characters
                                         e.target.value = numericValue;
-                                        oneTimeChargeFormik.values.amount =
+                                        oneTimeFormik.values.amount =
                                           numericValue;
                                       }}
                                     />
-                                    {oneTimeChargeFormik.errors &&
-                                    oneTimeChargeFormik.errors.amount &&
-                                    oneTimeChargeFormik.touched &&
-                                    oneTimeChargeFormik.touched.amount &&
-                                    oneTimeChargeFormik.values.amount === "" ? (
+                                    {oneTimeFormik.errors &&
+                                    oneTimeFormik.errors.amount &&
+                                    oneTimeFormik.touched &&
+                                    oneTimeFormik.touched.amount &&
+                                    oneTimeFormik.values.amount === "" ? (
                                       <div style={{ color: "red" }}>
-                                        {oneTimeChargeFormik.errors.amount}
+                                        {oneTimeFormik.errors.amount}
                                       </div>
                                     ) : null}
                                   </FormGroup>
@@ -3346,11 +3375,11 @@ const RentRollLeaseing = () => {
                                     id="input-unitadd12"
                                     type="text"
                                     name="memo"
-                                    onBlur={oneTimeChargeFormik.handleBlur}
-                                    onChange={oneTimeChargeFormik.handleChange}
-                                    value={oneTimeChargeFormik.values.memo}
+                                    onBlur={oneTimeFormik.handleBlur}
+                                    onChange={oneTimeFormik.handleChange}
+                                    value={oneTimeFormik.values.memo}
                                     onInput={(e) => {
-                                      oneTimeChargeFormik.values.memo =
+                                      oneTimeFormik.values.memo =
                                         e.target.value;
                                     }}
                                   />
@@ -3365,7 +3394,7 @@ const RentRollLeaseing = () => {
                                   color: "white",
                                 }}
                                 onClick={() => {
-                                  oneTimeChargeFormik.handleSubmit();
+                                  oneTimeFormik.handleSubmit();
                                 }}
                               >
                                 Add

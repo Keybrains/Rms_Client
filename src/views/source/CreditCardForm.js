@@ -46,11 +46,8 @@ function CreditCardForm(props) {
         validationSchema={paymentSchema}
         onSubmit={(values, { resetForm }) => {
           if (paymentSchema.isValid) {
-            console.log("Form submitted", values);
             handleSubmit(values);
             resetForm();
-          } else {
-            console.log("Form not submitted - validation failed");
           }
         }}
       >

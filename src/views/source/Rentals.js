@@ -99,7 +99,6 @@ const Rentals = () => {
 
   let rentalsFormik = useFormik({
     initialValues: {
-      rentalowner_id: "",
       rental_id: "",
       rental_adress: "",
       is_rent_on: false,

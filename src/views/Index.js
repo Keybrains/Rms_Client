@@ -140,7 +140,7 @@ const Index = (props) => {
 
         setData(newData);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 

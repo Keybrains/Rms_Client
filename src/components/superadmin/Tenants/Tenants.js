@@ -105,7 +105,6 @@ function Rows(props) {
 
 export default function Tenants() {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  console.log(baseUrl, "baseUrl");
   let cookies = new Cookies();
   // const history = useHistory();
   // React.useEffect(() => {
@@ -214,12 +213,9 @@ export default function Tenants() {
 
   if (!id) {
     handleSubmit = async (values) => {
-      console.log(values, "values");
       try {
         const res = await axios.post(`${baseUrl}/plans/plans`, values);
-        console.log(res, "res");
         if (res.data.statusCode === 200) {
-          console.log(res.data, "res.data");
           setModalShowForPopupForm(false);
           getData();
           swal("Success", res.data?.message, "success");

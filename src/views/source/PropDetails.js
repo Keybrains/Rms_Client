@@ -67,7 +67,7 @@ import {
 } from "./Functions/Units";
 import { jwtDecode } from "jwt-decode";
 
-const PropDetails2 = () => {
+const PropDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
 
@@ -119,14 +119,13 @@ const PropDetails2 = () => {
   const fetchRentalData = async () => {
     setLoader(true);
     try {
-      const response = await axios.get(
-        `${baseUrl}/rentals/rental_summary/${rental_id}`
-      );
+      const url = `${baseUrl}/rentals/rental_summary/${rental_id}`;
+      const response = await axios.get(url);
+      console.log(response, url, "yash1");
       setRentalData(response.data.data[0]);
       setPropertyTypeData(response.data.data[0].property_type_data);
       setRentalOwnerData(response.data.data[0].rental_owner_data);
       setStaffMemberData(response.data.data[0].staffmember_data);
-      console.log(response.data.data, "yash1");
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setLoading(false);
@@ -678,12 +677,6 @@ const PropDetails2 = () => {
                               </div>
                             </div>
                           </>
-                        ) : "error" ? (
-                          <tbody>
-                            <tr>
-                              <td>Error: error.message</td>
-                            </tr>
-                          </tbody>
                         ) : (
                           <tbody>
                             <tr>
@@ -2074,8 +2067,9 @@ const PropDetails2 = () => {
           addUnitDialogOpen={addUnitDialogOpen}
         />
       </Dialog>
+      {console.log(addAppliancesFormin, "yashu")}
     </>
   );
 };
 
-export default PropDetails2;
+export default PropDetails;

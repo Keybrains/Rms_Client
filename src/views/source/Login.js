@@ -93,13 +93,11 @@ const Login = () => {
           if (staffRes.status === 200) {
             const vendorData = staffRes.data;
             if (vendorData.statusCode === 200) {
-              console.log(vendorData);
               swal(
                 "Success!",
                 "Staff Member Login Successful!",
                 "success"
               ).then((value) => {
-                console.log(value);
                 if (value) {
                   localStorage.setItem("token", vendorData.staff_memberToken);
                   navigate("/staff/staffdashboard");
@@ -115,7 +113,6 @@ const Login = () => {
               email: values.email,
               password: values.password,
             });
-            console.log(vendorRes);
             if (vendorRes.status === 200) {
               const staffmemberData = vendorRes.data;
               if (staffmemberData.statusCode === 200) {
@@ -141,7 +138,7 @@ const Login = () => {
         // }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -167,16 +164,6 @@ const Login = () => {
       handleSubmit(values);
     },
   });
-
-  // React.useEffect(() => {
-
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     console.log("cookies get")
-  //   } else {
-  //     navigate("/admin/index");
-  //   }
-  // }, []);
 
   return (
     <>

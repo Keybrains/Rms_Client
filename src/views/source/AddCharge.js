@@ -246,8 +246,6 @@ const AddCharge = () => {
   const location = useLocation();
   const state = location.state && location.state;
   const tenantDetails = state ? state.tenantDetails : "";
-  console.log(state, "state");
-  console.log(tenantDetails, "tenantDetails");
 
   const { chargeId } = useParams();
 
@@ -263,7 +261,6 @@ const AddCharge = () => {
         files,
       ] of generalledgerFormik.values.charges_attachment.entries()) {
         if (files?.upload_file instanceof File) {
-          console.log(files?.upload_file, "myfile");
 
           const imageData = new FormData();
           imageData.append(`files`, files.upload_file);
@@ -277,7 +274,6 @@ const AddCharge = () => {
               },
             });
 
-            console.log(result, "imgs");
 
             // Update the original array with the uploaded file URL
             generalledgerFormik.values.charges_attachment[index].upload_file =
@@ -285,8 +281,6 @@ const AddCharge = () => {
           } catch (error) {
             console.error(error);
           }
-        } else {
-          console.log(files.upload_file, "myfile");
         }
       }
     }

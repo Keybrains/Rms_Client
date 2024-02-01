@@ -59,7 +59,7 @@ function AuthCheckAdmin() {
 			}
 
 		} catch (error) {
-			console.log("error in acheck admin exist", error)
+			console.error("error in acheck admin exist", error)
 		}
 	}
 

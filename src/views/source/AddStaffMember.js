@@ -150,7 +150,6 @@ const AddStaffMember = () => {
       } else {
         const editUrl = `${baseUrl}/staffmember/staff_member/${id}`;
         const res = await axios.put(editUrl, object);
-        console.log(object, res, "yash");
         if (res.data.statusCode === 200) {
           handleResponse(res);
         } else if (res.data.statusCode === 400) {

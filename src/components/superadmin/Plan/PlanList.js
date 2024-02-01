@@ -178,7 +178,6 @@ function Rows(props) {
 
 export default function PlanList() {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  console.log(baseUrl, "baseUrl");
   let cookies = new Cookies();
   // const history = useHistory();
   // React.useEffect(() => {
@@ -316,9 +315,7 @@ export default function PlanList() {
       try {
         values["features"] = inputFields;
         const res = await axios.post(`${baseUrl}/plans/plans`, values);
-        console.log(res, "res");
         if (res.data.statusCode === 200) {
-          console.log(res.data, "res.data");
           setModalShowForPopupForm(false);
           getData();
           swal("Success", res.data?.message, "success");
@@ -376,7 +373,6 @@ export default function PlanList() {
     },
   ]);
 
-  console.log(inputFields, "yash");
   const addInputField = () => {
     setInputFields([
       ...inputFields,
