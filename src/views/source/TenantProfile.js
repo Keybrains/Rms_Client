@@ -47,7 +47,7 @@ const TenantProfile = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/tenants/tenant_profile/1706511361072`
+        `${baseUrl}/tenants/tenant_profile/1706524047815`
       );
       // console.log(response.data.data);
       setTenantDetails(response.data.data);
