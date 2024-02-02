@@ -335,8 +335,7 @@ const Applicants = () => {
 						closeModal();
 						action.resetForm();
 						swal("Success!", "Applicant Added Successfully", "success");
-
-						navigate(`/${admin}/Applicants/${response.data.data._id}`);
+						navigate(`/${admin}/Applicants/${response.data.data.data.applicant_id}`);
 						setSelectedPropertyType("");
 						applicantFormik.setFieldValue("rental_adress", "");
 					}
@@ -436,7 +435,7 @@ const Applicants = () => {
 	};
 	useEffect(() => {
 		getApplicantData();
-	}, [accessType,isModalOpen]);
+	}, [accessType, isModalOpen]);
 
 	const deleteRentals = (id) => {
 		// Show a confirmation dialog to the user

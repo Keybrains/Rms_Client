@@ -38,6 +38,8 @@ import TAddWork from "views/source/TAddWork";
 import Workorder from "views/source/Workorder";
 import AddWorkorder from "views/source/AddWorkorder";
 import StaffProfile from "views/source/StaffProfile";
+import StaffPropertyDashboard from "views/source/StaffPropertyDashboard";
+import StaffPropertyDetail from "views/source/StaffPropertyDetail";
 import AgentProfile from "views/source/AgentProfile";
 import VendorWorkTable from "views/source/VendorWorkTable";
 import StaffWorkTable from "views/source/StaffWorkTable";
@@ -395,6 +397,16 @@ var routes = [
     component: <StaffProfile />,
     layout: "/staff",
   },
+
+  {
+    path: "/staffproperty",
+    name: "Property",
+    icon: "ni ni-pin-3 text-orange",
+    component: <StaffPropertyDashboard />,
+    layout: "/staff",
+  },
+
+  
   {
     path: "/agentprofile",
     name: "Profile",
@@ -409,7 +421,13 @@ var routes = [
     component: <VendorWorkTable />,
     layout: "/vendor",
   },
+  {
+    path: "/staffpropertydetail",
+    name: "Property",
 
+    component: <StaffPropertyDetail />,
+    layout: "/staff",
+  },
   {
     path: "/staffworkorder/:id",
     name: "Work Order",
@@ -438,7 +456,7 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/addvendor/:id",
+    path: "/addvendor/:vendor_id",
     component: <AddVendor />,
     layout: "/admin",
   },
@@ -459,6 +477,7 @@ var routes = [
     component: <Rentals />,
     layout: "/admin",
   },
+  
   {
     path: "/GeneralLedger",
     name: "General Ledger",

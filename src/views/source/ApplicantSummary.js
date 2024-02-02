@@ -113,9 +113,9 @@ const ApplicantSummary = () => {
     const storedCheckedItems =
       JSON.parse(localStorage.getItem("staticCheckedItems")) || [];
 
-    if (checked && !storedCheckedItems.includes(id)) {
+    if (checked && !storedCheckedItems?.includes(id)) {
       storedCheckedItems.push(id);
-    } else if (!checked && storedCheckedItems.includes(id)) {
+    } else if (!checked && storedCheckedItems?.includes(id)) {
       const index = storedCheckedItems.indexOf(id);
       storedCheckedItems.splice(index, 1);
     }
@@ -723,13 +723,14 @@ const ApplicantSummary = () => {
           console.log(matchedApplicant, "matchedApplicant");
           setMatchedApplicant(matchedApplicant);
           setMoveIn(matchedApplicant.applicant_status[0]);
-          setApplicantLoader(false);
+          // setApplicantLoader(false);
         }
       })
       .catch((err) => {
         console.error(err);
       });
-  };
+      setApplicantLoader(false);
+    };
 
   const onClickEditButton = async () => {
     setIsEdit(true);
@@ -1620,7 +1621,7 @@ const ApplicantSummary = () => {
                                     onChange={(e) =>
                                       handleChecklistChange(e, "CreditCheck")
                                     }
-                                    checked={checkedItems.includes("CreditCheck")}
+                                    checked={checkedItems?.includes("CreditCheck")}
                                   />{" "}
                                   Credit and background check <br />
                                   <input
@@ -1640,7 +1641,7 @@ const ApplicantSummary = () => {
                                         "EmploymentVerification"
                                       )
                                     }
-                                    checked={checkedItems.includes(
+                                    checked={checkedItems?.includes(
                                       "EmploymentVerification"
                                     )}
                                   />{" "}
@@ -1659,7 +1660,7 @@ const ApplicantSummary = () => {
                                     onChange={(e) =>
                                       handleChecklistChange(e, "ApplicationFee")
                                     }
-                                    checked={checkedItems.includes(
+                                    checked={checkedItems?.includes(
                                       "ApplicationFee"
                                     )}
                                   />{" "}
@@ -1678,7 +1679,7 @@ const ApplicantSummary = () => {
                                     onChange={(e) =>
                                       handleChecklistChange(e, "IncomeVerification")
                                     }
-                                    checked={checkedItems.includes(
+                                    checked={checkedItems?.includes(
                                       "IncomeVerification"
                                     )}
                                   />{" "}
@@ -1701,7 +1702,7 @@ const ApplicantSummary = () => {
                                         "LandlordVerification"
                                       )
                                     }
-                                    checked={checkedItems.includes(
+                                    checked={checkedItems?.includes(
                                       "LandlordVerification"
                                     )}
                                   />{" "}
@@ -1734,7 +1735,7 @@ const ApplicantSummary = () => {
                                               onChange={(e) =>
                                                 handleChecklistChange(e, item)
                                               }
-                                              checked={checkedItems.includes(item)}
+                                              checked={checkedItems?.includes(item)}
                                             />
                                           }
                                           label={
@@ -1824,7 +1825,7 @@ const ApplicantSummary = () => {
                                 </Button>
                               </div>
 
-                              {matchedApplicant?.applicant_NotesAndFile.length > 0 && (
+                              {matchedApplicant?.applicant_NotesAndFile?.length > 0 && (
                                 <>
                                   <Row
                                     className="w-100 my-3"
