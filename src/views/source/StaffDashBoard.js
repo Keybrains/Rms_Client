@@ -42,13 +42,30 @@ const StaffDashBoard = (props) => {
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
-
+  const bgStyle = {
+    backgroundColor: '#b3e6b3',
+    paddingLeft: "10px"
+    // width:"300px"
+  };
+  const spStyle = {
+    color: 'red',
+    // width:"300px"
+  };
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
     setChartExample1Data("data" + index);
   };
-  
+  const [showMoreNewOrders, setShowMoreNewOrders] = useState(false);
+  const [showMoreOverdueOrders, setShowMoreOverdueOrders] = useState(false);
+
+  const handleViewMoreNewOrders = () => {
+    setShowMoreNewOrders(!showMoreNewOrders);
+  };
+
+  const handleViewMoreOverdueOrders = () => {
+    setShowMoreOverdueOrders(!showMoreOverdueOrders);
+  };
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -56,7 +73,7 @@ const StaffDashBoard = (props) => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
-    } 
+    }
     else {
       navigate("/auth/login");
     }
@@ -66,27 +83,357 @@ const StaffDashBoard = (props) => {
     // background: `url(${require("../assets/img/us3.jpeg").default})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
-    minHeight: "70vh",
+    minHeight: "40vh",
     alignItems: "center",
     justifyContent: "center",
     // display: 'flex',
     fontFamily: "sans-serif",
-    fontSize: "30px",
+    fontSize: "35px",
     color: "black",
     // textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
   };
+  const subcardStyle = {
+    backgroundColor: "#033E3E",
+    border: "none",
+    minHeight: "25vh",
+    color: "#fff",
+    fontSize: "25px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.10)",
+  };
+  const subbcardStyle = {
+    backgroundColor: "#033E3E",
+    border: "none",
+    minHeight: "25vh",
+    color: "#fff",
+    fontSize: "25px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.10)",
+  };
+  const smallCardStyle = {
+    backgroundColor: '#ffffff', // Background color of the small cards
+    padding: '10px',
+    margin: '10px',
+    borderRadius: '8px',
+    textAlign: 'center',
+    height: '150px', // Adjusted height
+    boxShadow: '0px 2px 5px rgba(0, 0, 0, 1)', // Your desired box shadow
+  };
+
 
   return (
     <>
       <StaffHeader />
       {/* Page content */}
       <Container className="mt--7" fluid>
-        <div>
-          <Card>
-            <CardBody style={cardStyle}>Welcome to 302 Properties</CardBody>
+        <div className="mb-3">
+          <Card style={{
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            minHeight: "25vh",
+
+            justifyContent: "center",
+            // display: 'flex',
+            // fontFamily: "sans-serif",
+            fontSize: "20px",
+            color: "black",
+
+          }}>
+            <CardBody>
+              <Row >
+                <Col lg="12">
+                  <Card >
+                    <CardBody style={cardStyle} >
+                      <div style={{ textAlign: 'center' }}>Welcome to 302 Properties</div>
+                     
+                      <Row style={{ padding: '60px' }} className="d-flex justify-content-around">
+                        <Col lg="4" style={{ paddingLeft: "30px" , marginRight:"140px"}}>
+                          <Card style={subcardStyle}>
+                            {/* <CardHeader>Card 1</CardHeader> */}
+                            <CardBody className="d-flex flex-column justify-content-center  text-center">
+                              <div className="d-flex align-items-center flex-column p-3">
+                                <div
+                                  className="d-flex justify-content-center align-items-center"
+                                  style={{
+                                    color: "#CFD8DC",
+                                    width: "70px",
+                                    height: "70px",
+                                    fontSize: "30px",
+                                    borderRadius: "50%",
+                                    background:
+                                      "linear-gradient(125deg, #fff 10%,#033E3E,#263238)",
+                                  }}
+                                >
+                                  <i className="ni ni-pin-3"></i>
+                                </div>
+                                <div style={{ color: "cfd8dc", fontSize: "20px" }}>
+                                  Properties
+                                </div>
+                              </div>
+                              <div
+                                style={{
+                                  color: "#fff",
+                                  fontSize: "22px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                5
+                                {/* {data.rentals} */}
+                              </div>
+                              
+                            </CardBody>
+                          </Card>
+                        </Col>
+                        
+                        <Col lg="4" style={{ paddingLeft: "30px" }}>
+                          <Card style={subbcardStyle}>
+                            {/* <CardHeader>Card 2</CardHeader> */}
+                            <CardBody className="d-flex flex-column justify-content-center  text-center">
+                            <div className="d-flex align-items-center flex-column p-3">
+                                <div
+                                  className="d-flex justify-content-center align-items-center"
+                                  style={{
+                                    color: "#CFD8DC",
+                                    width: "70px",
+                                    height: "70px",
+                                    fontSize: "30px",
+                                    borderRadius: "50%",
+                                    background:
+                                      "linear-gradient(125deg, #fff 10%,#033E3E,#263238)",
+                                  }}
+                                >
+                                  <i className="ni ni-badge"></i>
+                                </div>
+                                <div style={{ color: "cfd8dc", fontSize: "20px" }}>
+                                  Work Order
+                                </div>
+                              </div>
+                              <div
+                                style={{
+                                  color: "#fff",
+                                   fontSize: "22px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                6
+                                {/* {data.rentals} */}
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Col>
+                       
+                      </Row>
+                      <Row lg="12" className="d-flex justify-content-around" >
+                        <Col lg="5" md="6" sm="12">
+                          <Card style={{
+                            justifyContent: "center",
+                            fontFamily: 'sans-serif',
+                            fontSize: '20px',
+                            color: 'black',
+                            boxShadow: '0px 2px 5px rgba(0, 0, 0, 1)', // Your desired box shadow
+                            // border:"0.5px solid black"
+                          }} >
+                            < CardBody>
+                              <div className="mb-2 d-flex justify-content-start">
+                                <span style={{ fontWeight: "bold", fontSize: "28px" }}> New Work Orders</span>
+                              </div>
+                              <div className="col-lg-2">
+                                <div className="d-flex justify-content-between mb-2">
+                                  <span className="">Total </span>
+                                  <span> 7 </span>
+                                </div>
+                              </div>
+                              <div style={bgStyle}>
+                                <div className="d-flex justify-content-start">
+                                  <span className="">Leakage in bathroom</span>
+
+                                </div>
+                                <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                  <label className="d-flex justify-content-between mb-1">
+                                    <span>13/01/2024</span>
+                                    <span>New</span>
+                                  </label>
+                                </div>
+                              </div>
+                              <div style={bgStyle}>
+                                <div className="d-flex justify-content-start">
+                                  <span className="">Leakage in bathroom</span>
+
+                                </div>
+                                <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                  <label className="d-flex justify-content-between mb-1">
+                                    <span>13/01/2024</span>
+                                    <span>New</span>
+                                  </label>
+                                </div>
+                              </div>
+                              <div style={bgStyle}>
+                                <div className="d-flex justify-content-start">
+                                  <span className="">Leakage in bathroom</span>
+
+                                </div>
+                                <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                  <label className="d-flex justify-content-between mb-1">
+                                    <span>13/01/2024</span>
+                                    <span>New</span>
+                                  </label>
+                                </div>
+                              </div>
+
+                              {showMoreNewOrders && (
+                                <>
+                                  <div style={bgStyle}>
+                                    <div className="d-flex justify-content-start">
+                                      <span className="">Leakage in bathroom</span>
+
+                                    </div>
+                                    <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                      <label className="d-flex justify-content-between mb-1">
+                                        <span>13/01/2024</span>
+                                        <span>New</span>
+                                      </label>
+                                    </div>
+                                  </div>
+
+                                  <div style={bgStyle}>
+                                    <div className="d-flex justify-content-start">
+                                      <span className="">Leakage in bathroom</span>
+
+                                    </div>
+                                    <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                      <label className="d-flex justify-content-between mb-1">
+                                        <span>13/01/2024</span>
+                                        <span>New</span>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                              <label
+                                className="d-flex justify-content-start"
+                                style={{ cursor: 'pointer', color: 'blue' }}
+                                onClick={handleViewMoreNewOrders}
+                              >
+                                {showMoreNewOrders ? 'View Less' : 'View All'}
+                              </label>
+                            </CardBody>
+                          </Card>
+                        </Col>
+
+                        <Col lg="5" md="6" sm="12">
+                          <Card style={{
+                            justifyContent: "center",
+                            fontFamily: 'sans-serif',
+                            fontSize: '20px',
+                            color: 'black',
+                            boxShadow: '0px 2px 5px rgba(0, 0, 0, 1)',
+                          }} >
+                            < CardBody>
+                              <div className="mb-2 d-flex justify-content-start">
+                                <span style={{ fontWeight: "bold", fontSize: "28px" }}> Overdue Work Orders</span>
+                              </div>
+                              <div className="col-lg-2">
+                                <div className="d-flex justify-content-between mb-2">
+                                  <span className="">Total </span>
+                                  <span> 5 </span>
+                                </div>
+                              </div>
+                              <div style={bgStyle}>
+                                <div className="d-flex justify-content-start">
+                                  <span className="">Leakage in bathroom</span>
+
+                                </div>
+                                <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                  <label style={spStyle} className="d-flex justify-content-between mb-1">
+                                    <span >30/01/2024</span>
+                                    <span>In progress</span>
+                                  </label>
+                                </div>
+                              </div>
+                              <div style={bgStyle}>
+                                <div className="d-flex justify-content-start">
+                                  <span className="">Leakage in bathroom</span>
+
+
+                                </div>
+                                <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                  <label style={spStyle} className="d-flex justify-content-between mb-1">
+                                    <span >30/01/2024</span>
+                                    <span>In progress</span>
+
+                                  </label>
+                                </div>
+                              </div>
+                              <div style={bgStyle}>
+                                <div className="d-flex justify-content-start">
+                                  <span className="">Leakage in bathroom</span>
+
+
+                                </div>
+                                <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                  <label style={spStyle} className="d-flex justify-content-between mb-1">
+                                    <span >30/01/2024</span>
+                                    <span>In progress</span>
+
+                                  </label>
+                                </div>
+                              </div>
+
+                              {showMoreOverdueOrders && (
+                                <>
+                                  <div style={bgStyle}>
+                                    <div className="d-flex justify-content-start">
+                                      <span className="">Leakage in bathroom</span>
+
+                                    </div>
+                                    <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                      <label style={spStyle} className="d-flex justify-content-between mb-1">
+                                        <span >30/01/2024</span>
+                                        <span>In progress</span>
+
+                                      </label>
+                                    </div>
+                                  </div>
+
+                                  <div style={bgStyle}>
+                                    <div className="d-flex justify-content-start">
+                                      <span className="">Leakage in bathroom</span>
+
+
+                                    </div>
+                                    <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                      <label style={spStyle} className="d-flex justify-content-between mb-1">
+                                        <span >30/01/2024</span>
+                                        <span>In progress</span>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                              <label
+                                className="d-flex justify-content-start"
+                                style={{ cursor: 'pointer', color: 'blue' }}
+                                onClick={handleViewMoreOverdueOrders}
+                              >
+                                {showMoreOverdueOrders ? 'View Less' : 'View All'}
+                              </label>
+                            </CardBody>
+                          </Card>
+                        </Col>
+                      </Row>
+                     
+                    </CardBody>
+                  </Card>
+                </Col>
+              </Row>
+            </CardBody>
           </Card>
         </div>
-      </Container>
+        <div>
+
+
+          {/* Small Cards */}
+
+        </div>
+      </Container >
     </>
   );
 };

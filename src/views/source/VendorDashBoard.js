@@ -44,7 +44,7 @@ const VendorDashBoard = (props) => {
   }
   const bgStyle = {
     backgroundColor: '#e4e6e7',
-    paddingLeft:"10px"
+    paddingLeft: "10px"
     // width:"300px"
   };
   const spStyle = {
@@ -97,7 +97,7 @@ const VendorDashBoard = (props) => {
               }} >
                 < CardBody>
                   <div className="mb-2 d-flex justify-content-start">
-                    <span style={{fontWeight:"bold",fontSize:"28px"}}> New Work Orders</span>
+                    <span style={{ fontWeight: "bold", fontSize: "28px" }}> New Work Orders</span>
                   </div>
                   <div className="col-lg-2">
                     <div className="d-flex justify-content-between mb-2">
@@ -219,7 +219,7 @@ const VendorDashBoard = (props) => {
               }} >
                 < CardBody>
                   <div className="mb-2 d-flex justify-content-start">
-                    <span style={{fontWeight:"bold",fontSize:"28px"}}> Overdue Work Orders</span>
+                    <span style={{ fontWeight: "bold", fontSize: "28px" }}> Overdue Work Orders</span>
                   </div>
                   <div className="col-lg-2">
                     <div className="d-flex justify-content-between mb-2">
@@ -235,7 +235,7 @@ const VendorDashBoard = (props) => {
                     <div className="col-lg-10" style={{ fontSize: "14px" }}>
                       <label className="d-flex justify-content-between mb-1">
                         <span style={spStyle}>30/01/2024</span>
-                     
+                        <span>In progress</span>
                       </label>
                     </div>
                   </div>
@@ -243,11 +243,13 @@ const VendorDashBoard = (props) => {
                     <div className="d-flex justify-content-start">
                       <span className="">Leakage in bathroom</span>
 
+
                     </div>
                     <div className="col-lg-10" style={{ fontSize: "14px" }}>
                       <label className="d-flex justify-content-between mb-1">
                         <span style={spStyle}>30/01/2024</span>
-                     
+                        <span>In progress</span>
+
                       </label>
                     </div>
                   </div>
@@ -255,11 +257,13 @@ const VendorDashBoard = (props) => {
                     <div className="d-flex justify-content-start">
                       <span className="">Leakage in bathroom</span>
 
+
                     </div>
                     <div className="col-lg-10" style={{ fontSize: "14px" }}>
                       <label className="d-flex justify-content-between mb-1">
                         <span style={spStyle}>30/01/2024</span>
-                     
+                        <span>In progress</span>
+
                       </label>
                     </div>
                   </div>
@@ -274,7 +278,8 @@ const VendorDashBoard = (props) => {
                         <div className="col-lg-10" style={{ fontSize: "14px" }}>
                           <label className="d-flex justify-content-between mb-1">
                             <span style={spStyle}>30/01/2024</span>
-                         
+                            <span>In progress</span>
+
                           </label>
                         </div>
                       </div>
@@ -283,11 +288,12 @@ const VendorDashBoard = (props) => {
                         <div className="d-flex justify-content-start">
                           <span className="">Leakage in bathroom</span>
 
+
                         </div>
                         <div className="col-lg-10" style={{ fontSize: "14px" }}>
                           <label className="d-flex justify-content-between mb-1">
                             <span style={spStyle}>30/01/2024</span>
-                         
+                            <span>In progress</span>
                           </label>
                         </div>
                       </div>
