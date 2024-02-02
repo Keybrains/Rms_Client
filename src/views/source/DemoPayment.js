@@ -39,10 +39,14 @@ import Edit from "@mui/icons-material/Edit";
 import moment from "moment";
 import axios from "axios";
 import valid from "card-validator";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoneyCheckAlt, faUndo } from '@fortawesome/free-solid-svg-icons';
 import CreditCardForm from "./CreditCardForm";
 
 const DemoPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const tenantId = "658a70ea75bd6d8f3b6dbfde";
+
   const [isEditable, setIsEditable] = useState(false);
   const [paymentId, setPaymentId] = useState("");
   const [rental_adress, setRentalAddress] = useState([]);
@@ -71,73 +75,6 @@ const DemoPayment = () => {
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   //const [addCard, setAddCard] = useState(false);
   const [isModalsOpen, setIsModalsOpen] = useState(false);
-
-  // const validateCardNumber = (cardNumber) => {
-  //   const numberValidation = valid.number(cardNumber);
-  //   return numberValidation.isPotentiallyValid && numberValidation.card;
-  // };
-
-  // const handleCorrect = async (values)=> {
-  //   const isValidCard = validateCardNumber(financialFormik.values.card_number);
-
-  //   const cardType = isValidCard.niceType;
-  
-  //   if (!isValidCard) {
-  //     swal("Error", "Invalid credit card number", "error");
-  //     return;
-  //   }
-  
-  //   try {
-  //     // Call the first API
-  //     const customerVaultResponse = await axios.post(`${baseUrl}/nmipayment/create-customer-vault`, {
-  //       first_name: "Manyaaaa", 
-  //       last_name: "Doe",
-  //       ccnumber: financialFormik.values.card_number,
-  //       ccexp: financialFormik.values.expiration_date,
-  //     });
-  
-  //     if (customerVaultResponse.data && customerVaultResponse.data.data) {
-  //       // Extract customer_vault_id from the first API response
-  //       const customerVaultId = customerVaultResponse.data.data.customer_vault_id;
-  //       const vaultResponse = customerVaultResponse.data.data.response_code;
-  
-  //       // Call the second API using the extracted customer_vault_id
-  //       const creditCardResponse = await axios.post(`${baseUrl}/creditcard/addCreditCard`, {
-  //         tenant_id: tenantId,
-  //         card_number: financialFormik.values.card_number,
-  //         exp_date: financialFormik.values.expiration_date,
-  //         card_type: cardType,
-  //         customer_vault_id: customerVaultId,
-  //         response_code: vaultResponse,
-  //       });
-  
-  //       console.log("Credit Card Response:", creditCardResponse.data);
-  //       console.log("Customer Vault Response:", customerVaultResponse.data);
-  
-  //       if (
-  //         creditCardResponse.status === 200 &&
-  //         customerVaultResponse.status === 200
-  //       ) {
-  //         swal("Success", "Card Added Successfully", "success");
-  //         //closeModal();
-  //         setAddCard(false);
-  //         getCreditCard();
-  //       } else {
-  //         swal("Error", creditCardResponse.data.message, "error");
-  //       }
-  //     } else {
-  //       // Handle the case where the response structure is not as expected
-  //       swal("Error", "Unexpected response format from create-customer-vault API", "error");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     swal("Error", "Something went wrong!", "error");
-  //   }
-  // };
-
-  // const handleIncorrect = () => {
-  //   setAddCard(false);
-  // };
 
   const openCardForm = () => {
     setIsModalsOpen(true);
@@ -243,62 +180,108 @@ const DemoPayment = () => {
 
   const [customervault, setCustomervault] = useState([]);
   const [cardDetalis, setCardDetails] = useState([]);
-  // const getCreditCard = async () => {
-  //   const response = await axios.get(
-  //     `${baseUrl}/creditcard/getCreditCard/${tenantId}`
-  //   );
-  //   setCardDetails(response.data);
-  // };
-
-  // useEffect(() => {
-  //   getCreditCard();
-  // }, [tenantId]);
+  const [isBilling, setIsBilling] = useState(false);
+  const [vaultId, setVaultId] = useState(false);
 
   const getCreditCard = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/creditcard/getCreditCard/${tenantId}`);
+      const response = await axios.get(
+        `${baseUrl}/creditcard/getCreditCards/${tenantId}`
+      );
       setCustomervault(response.data);
+      setVaultId(response.data.customer_vault_id);
+      getMultipleCustomerVault(response.data.customer_vault_id);
+  
+      const hasCustomerVaultId = response.data.some(
+        (card) => card.customer_vault_id
+      );
+  
+      if (hasCustomerVaultId) {
+        setIsBilling(true);
+      } else {
+        setIsBilling(false);
+      }
     } catch (error) {
-      console.error('Error fetching credit card details:', error);
+      console.error("Error fetching credit card details:", error);
+      setIsBilling(false);
     }
   };
-
+  
   const getMultipleCustomerVault = async (customerVaultIds) => {
     try {
-      const response = await axios.post(`${baseUrl}/nmipayment/get-multiple-customer-vault`, {
-        customer_vault_id: customerVaultIds,
-      });
-     // Extract relevant information from the API response
-     const extractedData = response.data.data.map((item) => ({
-        cc_number: item.customer.cc_number,
-        cc_exp: item.customer.cc_exp,
-        cc_type: item.customer.cc_type,
-        customer_vault_id: item.customer.customer_vault_id,
-      }));
+      setPaymentLoader(true);
+      if (customerVaultIds.length === 0) {
+        setCardDetails([]);
+        return;
+      }
 
-      // Update the cardDetails state
-      setCardDetails(extractedData);
-      console.log("object",response.data.data)
+      const response = await axios.post(
+        `${baseUrl}/nmipayment/get-billing-customer-vault`,
+        {
+          customer_vault_id: customerVaultIds,
+        }
+      );
+
+      console.log("vaibhav", response.data.data);
+
+      // Check if customer.billing is an array
+      const billingData = response.data.data.customer.billing;
+
+      if (Array.isArray(billingData)) {
+        const extractedData = billingData.map((item) => ({
+          billing_id: item["@attributes"].id,
+          cc_number: item.cc_number,
+          cc_exp: item.cc_exp,
+          cc_type: item.cc_type,
+          customer_vault_id: item.customer_vault_id,
+        }));
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+        console.log("objectss", extractedData);
+      } else if (billingData) {
+        // If there's only one record, create an array with a single item
+        const extractedData = [
+          {
+            billing_id: billingData["@attributes"].id,
+            cc_number: billingData.cc_number,
+            cc_exp: billingData.cc_exp,
+            cc_type: billingData.cc_type,
+            customer_vault_id: billingData.customer_vault_id,
+          },
+        ];
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+        console.log("objectss", extractedData);
+      } else {
+        console.error(
+          "Invalid response structure - customer.billing is not an array"
+        );
+        setPaymentLoader(false);
+        setCardDetails([]);
+      }
     } catch (error) {
-      console.error('Error fetching multiple customer vault records:', error);
+      console.error("Error fetching multiple customer vault records:", error);
+      setPaymentLoader(false);
     }
   };
-
+  
   useEffect(() => {
     getCreditCard();
   }, [tenantId]);
-
+  
   useEffect(() => {
     // Extract customer_vault_id values from cardDetails
-    const customerVaultIds = customervault?.map((card) => card.customer_vault_id);
-
+    const customerVaultIds = customervault?.card_detail?.map(
+      (card) => card.billing_id
+    ) || [];
+  
     if (customerVaultIds.length > 0) {
       // Call the API to get multiple customer vault records
       getMultipleCustomerVault(customerVaultIds);
     }
   }, [customervault]);
-
-  const tenantId = "658a70ea75bd6d8f3b6dbfde";
 
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
@@ -360,15 +343,18 @@ const DemoPayment = () => {
       unit: "",
       type2: "Payment",
       customer_vault_id: "",
+      billing_id: ""
     },
     validationSchema: yup.object({
-      first_name: yup.string().required("First name is required"),
-      last_name: yup.string().required("Last name is required"),
-      email_name: yup.string().required("Email is required"),
-      amount: yup.number().required("Amount is required"),
-      date: yup.date().required("Date is required"),
-      account: yup.string().required("Amount is required"),
-      paymentType: yup.string().required("Payment type is required"),
+      first_name: yup.string().required("Required"),
+      last_name: yup.string().required("Required"),
+      email_name: yup.string().required("Required"),
+      property: yup.string().required("Required"),
+      amount: yup.number().required("Required"),
+      date: yup.date().required("Required"),
+      account: yup.string().required("Required"),
+      paymentType: yup.string().required("Required"),
+      billing_id: yup.string().required("Creditcard is required"),
     }),
     onSubmit: (values, action) => {
       if (isEditable === true && paymentId) {
@@ -450,38 +436,18 @@ const DemoPayment = () => {
   const [paymentLoader, setPaymentLoader] = useState(false);
   const [selectedCreditCard, setSelectedCreditCard] = useState(null);
 
-  // const handleCreditCardSelection = (selectedCard) => {
-  //   if (selectedCreditCard === selectedCard.customer_vault_id) {
-  //     setSelectedCreditCard(null); // Unselect if already selected
-  //   } else {
-  //     setSelectedCreditCard(selectedCard.customer_vault_id); // Select the clicked card
-  //   }
-  // };
-
   const handleCreditCardSelection = (selectedCard) => {
     financialFormik.setValues({
       ...financialFormik.values,
-      customer_vault_id: selectedCard.customer_vault_id,
+      //customer_vault_id: selectedCard.customer_vault_id,
+      billing_id: selectedCard.billing_id
     });
   
-    setSelectedCreditCard(selectedCard.customer_vault_id);
+    setSelectedCreditCard(selectedCard.billing_id);
   };
-  
 
   const handleFinancialSubmit = async (values, action) => {
     let url = `${baseUrl}/nmipayment/postnmipayments`;
-
-    // if (selectedPaymentType === "Credit Card" && values.expiration_date) {
-    //   const dateParts = values.expiration_date.split("/");
-    //   if (dateParts.length !== 2) {
-    //     alert("Invalid date format");
-    //     return;
-    //   }
-    //   const month = dateParts[0].padStart(2, "0");
-    //   const year = dateParts[1].slice(-2);
-    //   values.expiration_date = `${month}${year}`;
-    //   // url = `${baseUrl}/nmipayment/sale`;
-    // }
     values.account = selectedAccount;
 
     try {
@@ -508,31 +474,22 @@ const DemoPayment = () => {
       }
 
       const creditCardDetails = cardDetalis.find(
-        (card) => card.customer_vault_id === selectedCreditCard,
-        console.log("miu", selectedCreditCard)
+        (card) => card.billing_id === selectedCreditCard,
       );
 
       if (creditCardDetails) {
-        // const [expMonth, expYear] = creditCardDetails.exp_date.split("/");
-        // const formattedExpirationDate = `${expMonth}/${expYear.slice(-2)}`;
-
-        // values.expiration_date = formattedExpirationDate;
-        // values.card_number = Number(selectedCreditCard.card_number);
-        values.customer_vault_id = selectedCreditCard;
+        values.customer_vault_id = vaultId;
+        values.billing_id = selectedCreditCard;
       } else {
         console.error(
           "Credit card details not found for selected card:",
           selectedCreditCard
-        );
-      }
+          );
+        }
 
       const response = await axios.post(url, {
         paymentDetails: values,
       });
-
-      // const response = await axios.post(url, {
-      //   paymentDetails: values,
-      // });
 
       if (
         response.data &&
@@ -727,7 +684,8 @@ const DemoPayment = () => {
         setSelectedUnit(responseData.unit);
         setSelectedAccount(responseData.account);
         setResponseData(responseData);
-        setSelectedCreditCard(responseData.customer_vault_id);
+        setVaultId(responseData.vaultId);
+        setSelectedCreditCard(responseData.billing_id);
         setPaymentId(id);
       } else {
         console.error("Error:", response.data.message);
@@ -756,6 +714,7 @@ const DemoPayment = () => {
           email_name: financialFormik.values.email_name,
           date: financialFormik.values.date,
           customer_vault_id: financialFormik.values.customer_vault_id,
+          billing_id: financialFormik.values.billing_id,
           check_number: financialFormik.values.check_number,
           paymentType: financialFormik.values.paymentType,
         };
@@ -767,7 +726,7 @@ const DemoPayment = () => {
           closeModal();
           await getGeneralLedgerData();
           swal("Success", "Payment Updated Successfully", "success");
-          navigate(`/tenant/tenantFinancial`);
+          navigate(`/admin/Payment`);
         } else {
           swal("Error", putResponse.data.message, "error");
           console.error("Server Error:", putResponse.data.message);
@@ -803,6 +762,8 @@ const DemoPayment = () => {
   
       const commonData = {
         transactionId: ResponseData.transactionid,
+        customer_vault_id: ResponseData.customer_vault_id,
+        billing_id: ResponseData.billing_id,
         tenantId: ResponseData.tenantId,
         amount: financialFormik.values.amount,
         paymentType: ResponseData.paymentType,
@@ -860,59 +821,7 @@ const DemoPayment = () => {
       setPaymentLoader(false);
     }
   };
-  
-
-  // const handleRefundClick = async () => {
-  //   try {
-  //     setPaymentLoader(true);
-  //     // Assuming 'item' is a prop or state variable
-  //     const { _id, paymentType, transactionid } = ResponseData;
-
-  //     const object = {
-  //       transactionId: ResponseData.transactionid,
-  //       tenantId: ResponseData.tenantId,
-  //       amount: financialFormik.values.amount,
-  //       paymentType: ResponseData.paymentType,
-  //       date: financialFormik.values.date,
-  //       first_name: ResponseData.first_name,
-  //       last_name: ResponseData.last_name,
-  //       email_name: ResponseData.email_name,
-  //       card_number: ResponseData.card_number,
-  //       account: ResponseData.account,
-  //       type2: ResponseData.type2,
-  //       memo: ResponseData.memo,
-  //       expiration_date: ResponseData.expiration_date,
-  //       cvv: ResponseData.cvv,
-  //       property: ResponseData.property,
-  //       unit: ResponseData.unit,
-  //     };
-
-  //     if (paymentType === "Credit Card") {
-  //       const response = await axios.post(`${baseUrl}/nmipayment/refund`, {
-  //         refundDetails: object,
-  //       });
-
-  //       if (response.data.status === 200) {
-  //         await setRefund(false);
-  //         swal("Success!", response.data.data, "success");
-  //         console.log("Navigating to /admin/Payment");
-  //         window.location.href = "/admin/Payment";
-  //       } else {
-  //         console.error("Failed to process refund:", response.statusText);
-  //       }
-  //     } else {
-  //       console.log("Refund is only available for Credit Card payments.");
-  //     }
-  //   } catch (error) {
-  //     if (error?.response?.data?.status === 400) {
-  //       swal("Warning!", error.response.data.data.error, "warning");
-  //     }
-  //     console.error("Error:", error);
-  //   } finally {
-  //     setPaymentLoader(false);
-  //   }
-  // };
-
+ 
   return (
     <>
       <Header />
@@ -1036,7 +945,13 @@ const DemoPayment = () => {
                                     style={{ position: "relative" }}
                                   >
                                     <td>{item?.date || "N/A"}</td>
-                                    <td>{item?.type2 || "Payment"}</td>
+                                    <td style={{color: item.type2 === "Refund" ? "darkred" : "green"}}> {item?.type2 === "Payment" && (
+                                        <FontAwesomeIcon icon={faMoneyCheckAlt} style={{ color: 'green' }} />
+                                      )}
+                                      {item?.type2 === "Refund" && (
+                                        <FontAwesomeIcon icon={faUndo} style={{ color: 'darkred' }} />
+                                      )}&nbsp;{item?.type2 || "Payment"}
+                                    </td>
                                     <td>{item?.status || "N/A"}</td>
                                     <td>
                                       {item?.transactionid ||
@@ -1291,6 +1206,12 @@ const DemoPayment = () => {
                           </DropdownItem>
                         ))}
                       </DropdownMenu>
+                      {financialFormik.touched.property &&
+                      financialFormik.errors.property ? (
+                        <div style={{ color: "red", marginBottom: "10px" }}>
+                          {financialFormik.errors.property}
+                        </div>
+                      ) : null}
                     </Dropdown>
                   </FormGroup>
                 </Col>
@@ -1364,8 +1285,13 @@ const DemoPayment = () => {
                       }}
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.amount}
-                      required
                     />
+                       {financialFormik.touched.amount &&
+                    financialFormik.errors.amount ? (
+                      <div style={{ color: "red", marginBottom: "10px" }}>
+                        {financialFormik.errors.amount}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
 
@@ -1472,6 +1398,12 @@ const DemoPayment = () => {
                             <></>
                           )}
                         </DropdownMenu>
+                        {financialFormik.touched.account &&
+                        financialFormik.errors.account ? (
+                          <div style={{ color: "red", marginBottom: "10px" }}>
+                            {financialFormik.errors.account}
+                          </div>
+                        ) : null}
                       </Dropdown>
                     </FormGroup>
                   </FormGroup>
@@ -1493,9 +1425,14 @@ const DemoPayment = () => {
                       onBlur={financialFormik.handleBlur}
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.first_name}
-                      required
                       disabled={refund === true}
                     />
+                     {financialFormik.touched.first_name &&
+                    financialFormik.errors.first_name ? (
+                      <div style={{ color: "red", marginBottom: "10px" }}>
+                        {financialFormik.errors.first_name}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
 
@@ -1515,9 +1452,14 @@ const DemoPayment = () => {
                       onBlur={financialFormik.handleBlur}
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.last_name}
-                      required
                       disabled={refund === true}
                     />
+                      {financialFormik.touched.last_name &&
+                    financialFormik.errors.last_name ? (
+                      <div style={{ color: "red", marginBottom: "10px" }}>
+                        {financialFormik.errors.last_name}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
               </Row>
@@ -1540,9 +1482,14 @@ const DemoPayment = () => {
                     value={financialFormik.values.email_name}
                     onBlur={financialFormik.handleBlur}
                     onChange={financialFormik.handleChange}
-                    required
                     disabled={refund === true}
                   />
+                   {financialFormik.touched.email_name &&
+                  financialFormik.errors.email_name ? (
+                    <div style={{ color: "red", marginBottom: "10px" }}>
+                      {financialFormik.errors.email_name}
+                    </div>
+                  ) : null}
                 </InputGroup>
               </FormGroup>
 
@@ -1562,6 +1509,12 @@ const DemoPayment = () => {
                       onBlur={financialFormik.handleBlur}
                       onChange={financialFormik.handleChange}
                     />
+                      {financialFormik.touched.date &&
+                    financialFormik.errors.date ? (
+                      <div style={{ color: "red", marginBottom: "10px" }}>
+                        {financialFormik.errors.date}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col>
@@ -1622,6 +1575,12 @@ const DemoPayment = () => {
                         Check
                       </DropdownItem>
                     </DropdownMenu>
+                    {financialFormik.touched.paymentType &&
+                    financialFormik.errors.paymentType ? (
+                      <div style={{ color: "red", marginBottom: "10px" }}>
+                        {financialFormik.errors.paymentType}
+                      </div>
+                    ) : null}
                   </Dropdown>
                 </FormGroup>
               </FormGroup>
@@ -1779,22 +1738,19 @@ const DemoPayment = () => {
                               </tr>
                               {cardDetalis.map((item, index) => (
                                 <tr
-                                  key={index}
-                                  style={{ marginBottom: "10px" }}
+                                key={index}
+                                style={{ marginBottom: "10px" }}
                                 >
                                     <td>
                                     <input
                                       type="checkbox"
                                       checked={
-                                        selectedCreditCard.toString() ===
-                                        item.customer_vault_id
+                                        selectedCreditCard  == item.billing_id
                                       }
                                       onChange={() =>
                                         handleCreditCardSelection(item)
                                       }
                                       />
-                                      {console.log("item", item, typeof item.customer_vault_id)}
-                                    {console.log("selectedCreditCard", selectedCreditCard, typeof selectedCreditCard)}
                                   </td>
                                   <td>
                                     <Typography
@@ -1836,7 +1792,7 @@ const DemoPayment = () => {
                                   </td>
 
                     
-                                  {selectedCreditCard === item.customer_vault_id && (
+                                  {selectedCreditCard === item.billing_id && (
                                     <td>
                                     <Row>
                                       <FormGroup>
@@ -1889,7 +1845,7 @@ const DemoPayment = () => {
                             }}
                             style={{
                               background: "white",
-                              color: "#3B2F2F",
+                              color: "blue",
                               marginRight: "10px",
                             }}
                           >

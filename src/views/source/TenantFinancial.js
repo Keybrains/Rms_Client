@@ -41,6 +41,8 @@ import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
 import moment from "moment";
 import valid from "card-validator";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMoneyCheckAlt, faUndo } from "@fortawesome/free-solid-svg-icons";
 import CreditCardForm from "./CreditCardForm";
 
 const TenantFinancial = () => {
@@ -72,73 +74,6 @@ const TenantFinancial = () => {
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const [refund, setRefund] = useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
-
-  // const validateCardNumber = (cardNumber) => {
-  //   const numberValidation = valid.number(cardNumber);
-  //   return numberValidation.isPotentiallyValid && numberValidation.card;
-  // };
-
-  // const handleCorrect = async (values)=> {
-  //   const isValidCard = validateCardNumber(financialFormik.values.card_number);
-
-  //   const cardType = isValidCard.niceType;
-
-  //   if (!isValidCard) {
-  //     swal("Error", "Invalid credit card number", "error");
-  //     return;
-  //   }
-
-  //   try {
-  //     // Call the first API
-  //     const customerVaultResponse = await axios.post(`${baseUrl}/nmipayment/create-customer-vault`, {
-  //       first_name: "Manyaaaa",
-  //       last_name: "Doe",
-  //       ccnumber: financialFormik.values.card_number,
-  //       ccexp: financialFormik.values.expiration_date,
-  //     });
-
-  //     if (customerVaultResponse.data && customerVaultResponse.data.data) {
-  //       // Extract customer_vault_id from the first API response
-  //       const customerVaultId = customerVaultResponse.data.data.customer_vault_id;
-  //       const vaultResponse = customerVaultResponse.data.data.response_code;
-
-  //       // Call the second API using the extracted customer_vault_id
-  //       const creditCardResponse = await axios.post(`${baseUrl}/creditcard/addCreditCard`, {
-  //         tenant_id: cookie_id,
-  //         card_number: financialFormik.values.card_number,
-  //         exp_date: financialFormik.values.expiration_date,
-  //         card_type: cardType,
-  //         customer_vault_id: customerVaultId,
-  //         response_code: vaultResponse,
-  //       });
-
-  //       console.log("Credit Card Response:", creditCardResponse.data);
-  //       console.log("Customer Vault Response:", customerVaultResponse.data);
-
-  //       if (
-  //         creditCardResponse.status === 200 &&
-  //         customerVaultResponse.status === 200
-  //       ) {
-  //         swal("Success", "Card Added Successfully", "success");
-  //         //closeModal();
-  //         setAddCard(false);
-  //         getCreditCard();
-  //       } else {
-  //         swal("Error", creditCardResponse.data.message, "error");
-  //       }
-  //     } else {
-  //       // Handle the case where the response structure is not as expected
-  //       swal("Error", "Unexpected response format from create-customer-vault API", "error");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //     swal("Error", "Something went wrong!", "error");
-  //   }
-  // };
-
-  // const handleIncorrect = () => {
-  //   setAddCard(false);
-  // };
 
   const openCardForm = () => {
     setIsModalsOpen(true);
@@ -210,6 +145,7 @@ const TenantFinancial = () => {
   // Event handler to close the modal
   const closeModal = () => {
     setIsModalOpen(false);
+    setActionType("");
   };
 
   const [loader, setLoader] = React.useState(true);
@@ -238,34 +174,87 @@ const TenantFinancial = () => {
 
   const [customervault, setCustomervault] = useState([]);
   const [cardDetalis, setCardDetails] = useState([]);
+  const [isBilling, setIsBilling] = useState(false);
+  const [vaultId, setVaultId] = useState(false);
 
   const getCreditCard = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/creditcard/getCreditCard/${cookie_id}`);
+      const response = await axios.get(
+        `${baseUrl}/creditcard/getCreditCards/${cookie_id}`
+      );
       setCustomervault(response.data);
+      setVaultId(response.data.customer_vault_id);
+      getMultipleCustomerVault(response.data.customer_vault_id);
+
+      const hasCustomerVaultId = response.data.some(
+        (card) => card.customer_vault_id
+      );
+
+      if (hasCustomerVaultId) {
+        setIsBilling(true);
+      } else {
+        setIsBilling(false);
+      }
     } catch (error) {
-      console.error('Error fetching credit card details:', error);
+      console.error("Error fetching credit card details:", error);
+      setIsBilling(false);
     }
   };
 
   const getMultipleCustomerVault = async (customerVaultIds) => {
     try {
-      const response = await axios.post(`${baseUrl}/nmipayment/get-multiple-customer-vault`, {
-        customer_vault_id: customerVaultIds,
-      });
-     // Extract relevant information from the API response
-     const extractedData = response.data.data.map((item) => ({
-        cc_number: item.customer.cc_number,
-        cc_exp: item.customer.cc_exp,
-        cc_type: item.customer.cc_type,
-        customer_vault_id: item.customer.customer_vault_id,
-      }));
+      setPaymentLoader(true);
+      if (customerVaultIds.length === 0) {
+        setCardDetails([]);
+        return;
+      }
 
-      // Update the cardDetails state
-      setCardDetails(extractedData);
-      console.log("object",response.data.data)
+      const response = await axios.post(
+        `${baseUrl}/nmipayment/get-billing-customer-vault`,
+        {
+          customer_vault_id: customerVaultIds,
+        }
+      );
+
+      // Check if customer.billing is an array
+      const billingData = response.data.data.customer.billing;
+
+      if (Array.isArray(billingData)) {
+        const extractedData = billingData.map((item) => ({
+          billing_id: item["@attributes"].id,
+          cc_number: item.cc_number,
+          cc_exp: item.cc_exp,
+          cc_type: item.cc_type,
+          customer_vault_id: item.customer_vault_id,
+        }));
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+      } else if (billingData) {
+        // If there's only one record, create an array with a single item
+        const extractedData = [
+          {
+            billing_id: billingData["@attributes"].id,
+            cc_number: billingData.cc_number,
+            cc_exp: billingData.cc_exp,
+            cc_type: billingData.cc_type,
+            customer_vault_id: billingData.customer_vault_id,
+          },
+        ];
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+        console.log("objectss", extractedData);
+      } else {
+        console.error(
+          "Invalid response structure - customer.billing is not an array"
+        );
+        setPaymentLoader(false);
+        setCardDetails([]);
+      }
     } catch (error) {
-      console.error('Error fetching multiple customer vault records:', error);
+      console.error("Error fetching multiple customer vault records:", error);
+      setPaymentLoader(false);
     }
   };
 
@@ -275,7 +264,8 @@ const TenantFinancial = () => {
 
   useEffect(() => {
     // Extract customer_vault_id values from cardDetails
-    const customerVaultIds = customervault?.map((card) => card.customer_vault_id);
+    const customerVaultIds =
+      customervault?.card_detail?.map((card) => card.billing_id) || [];
 
     if (customerVaultIds.length > 0) {
       // Call the API to get multiple customer vault records
@@ -331,15 +321,18 @@ const TenantFinancial = () => {
       unit: "",
       type2: "Payment",
       customer_vault_id: "",
+      billing_id: "",
     },
     validationSchema: yup.object({
-      first_name: yup.string().required("First name is required"),
-      last_name: yup.string().required("Last name is required"),
-      email_name: yup.string().required("Email is required"),
-      amount: yup.number().required("Amount is required"),
-      date: yup.date().required("Date is required"),
-      account: yup.string().required("Amount is required"),
-      paymentType: yup.string().required("Payment type is required"),
+      first_name: yup.string().required("Required"),
+      last_name: yup.string().required("Required"),
+      email_name: yup.string().required("Required"),
+      property: yup.string().required("Required"),
+      amount: yup.number().required("Required"),
+      date: yup.date().required("Required"),
+      account: yup.string().required("Required"),
+      paymentType: yup.string().required("Required"),
+      billing_id: yup.string().required("Creditcard is required"),
     }),
     onSubmit: (values, action) => {
       if (isEditable === true && paymentId) {
@@ -380,31 +373,6 @@ const TenantFinancial = () => {
     financialFormik.setFieldValue("unit", selectedUnit || "");
     financialFormik.setFieldValue("unit", property.rental_units || "");
   };
-
-  // const getGeneralLedgerData = async () => {
-  //   const apiUrl = `${baseUrl}/payment/merge_payment_charge/${cookie_id}`;
-
-  //   try {
-  //     const response = await axios.get(apiUrl);
-  //     setLoader(false);
-
-  //     if (response.data && response.data.data) {
-  //       const mergedData = response.data.data;
-  //       mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
-  //       const dataWithBalance = calculateBalance(mergedData);
-  //       console.log('first', response.data.data)
-  //       setGeneralLedgerData(dataWithBalance);
-  //     } else {
-  //       console.error("Unexpected response format:", response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getGeneralLedgerData();
-  // }, [cookie_id]);
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -453,72 +421,6 @@ const TenantFinancial = () => {
     getTenantData();
   }, [cookie_id]);
 
-  // const getGeneralLedgerData = async () => {
-  //   if (tenantDetails) {
-  //     try {
-  //       const promises = tenantDetails?.entries?.map(async (data, index) => {
-  //         const rental = data?.rental_adress;
-  //         const property_id = data?.property_id;
-  //         const unit = data?.rental_units;
-  //         if (rental && property_id && unit) {
-  //           const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${property_id}&unit=${unit}&tenant_id=${cookie_id}`;
-
-  //           try {
-  //             const response = await axios.get(url);
-  //             if (response.data && response.data.data) {
-  //               const mergedData = response.data.data;
-  //               return mergedData[0]?.unit[0];
-  //             } else {
-  //               console.error("Unexpected response format:", response.data);
-  //             }
-  //           } catch (error) {
-  //             console.error("Error fetching data:", error);
-  //           }
-  //         }
-  //         if (rental && property_id) {
-  //           const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${property_id}&tenant_id=${cookie_id}`;
-
-  //           try {
-  //             const response = await axios.get(url);
-  //             if (response.data && response.data.data) {
-  //               const mergedData = response.data.data;
-  //               return mergedData[0]?.unit[0];
-  //             } else {
-  //               console.error("Unexpected response format:", response.data);
-  //             }
-  //           } catch (error) {
-  //             console.error("Error fetching data:", error);
-  //           }
-  //         }
-  //         return null;
-  //       });
-
-  //       const results = await Promise.all(promises);
-  //       const validResults = results.filter((result) => result !== null);
-  //       setLoader(false);
-  //       setGeneralLedgerData((prevData) => [...validResults]);
-  //       const data = [...validResults];
-  //       const allPaymentAndCharges = data.flatMap((item) => {
-  //         if (item !== undefined) {
-  //           return item?.paymentAndCharges?.map((payment) => ({
-  //             paymentAndCharges: payment,
-  //             unit: item.unit,
-  //             unit_id: item.unit_id,
-  //             _id: item._id,
-  //           }));
-  //         }
-  //       });
-  //       setTotalPages(Math.ceil(allPaymentAndCharges.length / pageItem));
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getGeneralLedgerData();
-  // }, [tenantDetails, pageItem]);
-
   const navigate = useNavigate();
   useEffect(() => {
     getTenantData();
@@ -548,72 +450,17 @@ const TenantFinancial = () => {
   const [selectedCreditCard, setSelectedCreditCard] = useState(null);
 
   const handleCreditCardSelection = (selectedCard) => {
-    // Update the form values with the selected credit card's details
     financialFormik.setValues({
       ...financialFormik.values,
-      customer_vault_id: selectedCard.customer_vault_id,
-      // Add any other credit card details you want to update
+      //customer_vault_id: selectedCard.customer_vault_id,
+      billing_id: selectedCard.billing_id,
     });
-  
-    // Update the selected credit card state
-    setSelectedCreditCard(selectedCard.customer_vault_id);
+
+    setSelectedCreditCard(selectedCard.billing_id);
   };
-
-  // const getRentalData = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `${baseUrl}/rentals/rentals_property/${rental_adress}`
-  //     );
-  //     setpropertyDetails(response.data.data);
-  //     setpropertyLoading(false);
-  //   } catch (error) {
-  //     setpropertyError(error);
-  //     setpropertyLoading(false);
-  //   }
-  // };
-  // useEffect(() => {
-  //   if (rental_adress) {
-  //       console.log(`${baseUrl}/rentals/rentals_property/${rental_adress}`)
-  //       getRentalData();
-  //   }
-  //   //console.log(rental_adress)
-  // }, [rental_adress]);
-
-  // function navigateToTenantsDetails(rental_adress) {
-  //   navigate(`/tenant/tenantpropertydetail/${rental_adress}`);
-  //   // const tenantsDetailsURL = `/tenant/tenantpropertydetail/${rental_adress}`;
-  //   // window.location.href = tenantsDetailsURL;
-  //   // console.log("Rental Address", rental_adress);
-  // }
-  // const formatCardNumber = (inputValue) => {
-  //   if (typeof inputValue !== "string") {
-  //     return ""; // Return an empty string if inputValue is not a string
-  //   }
-
-  //   const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-  //   const formattedValue = numericValue
-  //     .replace(/(\d{4})/g, "$1 ") // Add a space after every four digits
-  //     .trim(); // Remove any trailing space
-
-  //   return formattedValue;
-  // };
-
-  // console.log(financialFormik.values,'financialFormik.values')
 
   const handleFinancialSubmit = async (values, action) => {
     let url = `${baseUrl}/nmipayment/postnmipayments`;
-
-    // if (selectedPaymentType === "Credit Card" && values.expiration_date) {
-    //   const dateParts = values.expiration_date.split("/");
-    //   if (dateParts.length !== 2) {
-    //     alert("Invalid date format");
-    //     return;
-    //   }
-    //   const month = dateParts[0].padStart(2, "0");
-    //   const year = dateParts[1].slice(-2);
-    //   values.expiration_date = `${month}${year}`;
-    //   // url = `${baseUrl}/nmipayment/sale`;
-    // }
     values.account = selectedAccount;
 
     try {
@@ -640,32 +487,21 @@ const TenantFinancial = () => {
       }
 
       const creditCardDetails = cardDetalis.find(
-        (card) => card.customer_vault_id === selectedCreditCard,
-        console.log("miu", selectedCreditCard)
+        (card) => card.billing_id === selectedCreditCard
       );
 
       if (creditCardDetails) {
-        // const [expMonth, expYear] = creditCardDetails.exp_date.split("/");
-        // const formattedExpirationDate = `${expMonth}/${expYear.slice(-2)}`;
-
-        // values.expiration_date = formattedExpirationDate;
-        // values.card_number = Number(selectedCreditCard.card_number);
-        values.customer_vault_id = selectedCreditCard;
+        values.customer_vault_id = vaultId;
+        values.billing_id = selectedCreditCard;
       } else {
         console.error(
           "Credit card details not found for selected card:",
           selectedCreditCard
         );
       }
-
-      console.log("values", values);
       const response = await axios.post(url, {
         paymentDetails: values,
       });
-
-      // const response = await axios.post(url, {
-      //   paymentDetails: values,
-      // });
 
       if (
         response.data &&
@@ -685,49 +521,6 @@ const TenantFinancial = () => {
       setPaymentLoader(false);
     }
   };
-
-  // const postCharge = async (unit_id) => {
-  //   const chargeObject = {
-  //     properties: {
-  //       rental_adress: selectedPropertyType,
-  //       property_id: financialFormik.values.propertyId,
-  //     },
-  //     unit: [
-  //       {
-  //         unit: selectedUnit,
-  //         unit_id: unit_id,
-  //         paymentAndCharges: [
-  //           {
-  //             type: "Payment",
-  //             charge_type: "",
-  //             account: selectedAccount,
-  //             amount: financialFormik.values.amount,
-  //             rental_adress: selectedPropertyType,
-  //             rent_cycle: "",
-  //             month_year: moment().format("MM-YYYY"),
-  //             date: moment().format("YYYY-MM-DD"),
-  //             memo: "",
-  //             tenant_id: cookie_id,
-  //             tenant_firstName:
-  //               tenantDetails.tenant_firstName +
-  //               " " +
-  //               tenantDetails.tenant_lastName,
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   };
-
-  //   const url = `${baseUrl}/payment_charge/payment_charge`;
-  //   await axios
-  //     .post(url, chargeObject)
-  //     .then((res) => {
-  //       console.log(res);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -758,11 +551,13 @@ const TenantFinancial = () => {
             .toLowerCase()
             .includes(searchQuery.toLowerCase())) ||
         (rental.amount &&
-          rental.amount.toString().includes(searchQuery.toLowerCase()))||
-          (rental.transactionid &&
-              rental.transactionid.toString().includes(searchQuery.toLowerCase()))||
-          (rental.status &&
-                rental.status.toLowerCase().includes(searchQuery.toLowerCase()))
+          rental.amount.toString().includes(searchQuery.toLowerCase())) ||
+        (rental.transactionid &&
+          rental.transactionid
+            .toString()
+            .includes(searchQuery.toLowerCase())) ||
+        (rental.status &&
+          rental.status.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     });
   };
@@ -906,7 +701,8 @@ const TenantFinancial = () => {
         setSelectedUnit(responseData.unit);
         setSelectedAccount(responseData.account);
         setResponseData(responseData);
-        setSelectedCreditCard(responseData.customer_vault_id);
+        setVaultId(responseData.vaultId);
+        setSelectedCreditCard(responseData.billing_id);
         setPaymentId(id);
       } else {
         console.error("Error:", response.data.message);
@@ -936,6 +732,7 @@ const TenantFinancial = () => {
           date: financialFormik.values.date,
           check_number: financialFormik.values.check_number,
           customer_vault_id: financialFormik.values.customer_vault_id,
+          billing_id: financialFormik.values.billing_id,
           paymentType: financialFormik.values.paymentType,
         };
 
@@ -946,7 +743,7 @@ const TenantFinancial = () => {
           closeModal();
           await getGeneralLedgerData();
           swal("Success", "Payment Updated Successfully", "success");
-          navigate(`/admin/Payment`);
+          navigate(`/tenant/tenantFinancial`);
         } else {
           swal("Error", putResponse.data.message, "error");
           console.error("Server Error:", putResponse.data.message);
@@ -974,7 +771,6 @@ const TenantFinancial = () => {
     setShowOptionsId(id);
   };
 
-  console.log(paymentId ? paymentId : "");
   return (
     <>
       <TenantsHeader />
@@ -1097,7 +893,29 @@ const TenantFinancial = () => {
                                     style={{ position: "relative" }}
                                   >
                                     <td>{item?.date || "N/A"}</td>
-                                    <td>{item?.type2 || "Payment"}</td>
+                                    <td
+                                      style={{
+                                        color:
+                                          item.type2 === "Refund"
+                                            ? "darkred"
+                                            : "green",
+                                      }}
+                                    >
+                                      {" "}
+                                      {item?.type2 === "Payment" && (
+                                        <FontAwesomeIcon
+                                          icon={faMoneyCheckAlt}
+                                          style={{ color: "green" }}
+                                        />
+                                      )}
+                                      {item?.type2 === "Refund" && (
+                                        <FontAwesomeIcon
+                                          icon={faUndo}
+                                          style={{ color: "darkred" }}
+                                        />
+                                      )}
+                                      &nbsp;{item?.type2 || "Payment"}
+                                    </td>
                                     <td>{item?.status || "N/A"}</td>
                                     <td>
                                       {item?.transactionid ||
@@ -1118,7 +936,8 @@ const TenantFinancial = () => {
                                         : "0"}
                                     </td>
                                     <td>
-                                      {item?.type2 === "Payment" && item?.status === "Pending" ? (
+                                      {item?.type2 === "Payment" &&
+                                      item?.status === "Pending" ? (
                                         <UncontrolledDropdown nav>
                                           <DropdownToggle
                                             className="pr-0"
@@ -1310,7 +1129,7 @@ const TenantFinancial = () => {
         <Form onSubmit={financialFormik.handleSubmit}>
           <ModalHeader toggle={closeModal} className="bg-secondary text-white">
             <strong style={{ fontSize: 18 }}>
-              {refund === true ? "Make Refund" : actionType || "Make Payment"}
+              {actionType || "Make Payment"}
             </strong>
           </ModalHeader>
 
@@ -1357,6 +1176,12 @@ const TenantFinancial = () => {
                           </DropdownItem>
                         ))}
                       </DropdownMenu>
+                      {financialFormik.touched.property &&
+                      financialFormik.errors.property ? (
+                        <div style={{ color: "red", marginBottom: "10px" }}>
+                          {financialFormik.errors.property}
+                        </div>
+                      ) : null}
                     </Dropdown>
                   </FormGroup>
                 </Col>
@@ -1430,8 +1255,13 @@ const TenantFinancial = () => {
                       }}
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.amount}
-                      required
                     />
+                    {financialFormik.touched.amount &&
+                    financialFormik.errors.amount ? (
+                      <div style={{ color: "red", marginBottom: "10px" }}>
+                        {financialFormik.errors.amount}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
 
@@ -1538,6 +1368,12 @@ const TenantFinancial = () => {
                             <></>
                           )}
                         </DropdownMenu>
+                        {financialFormik.touched.account &&
+                        financialFormik.errors.account ? (
+                          <div style={{ color: "red", marginBottom: "10px" }}>
+                            {financialFormik.errors.account}
+                          </div>
+                        ) : null}
                       </Dropdown>
                     </FormGroup>
                   </FormGroup>
@@ -1559,9 +1395,14 @@ const TenantFinancial = () => {
                       onBlur={financialFormik.handleBlur}
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.first_name}
-                      required
                       disabled
                     />
+                    {financialFormik.touched.first_name &&
+                    financialFormik.errors.first_name ? (
+                      <div style={{ color: "red", marginBottom: "10px" }}>
+                        {financialFormik.errors.first_name}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
 
@@ -1581,9 +1422,14 @@ const TenantFinancial = () => {
                       onBlur={financialFormik.handleBlur}
                       onChange={financialFormik.handleChange}
                       value={financialFormik.values.last_name}
-                      required
                       disabled
                     />
+                    {financialFormik.touched.last_name &&
+                    financialFormik.errors.last_name ? (
+                      <div style={{ color: "red", marginBottom: "10px" }}>
+                        {financialFormik.errors.last_name}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
               </Row>
@@ -1606,9 +1452,14 @@ const TenantFinancial = () => {
                     value={financialFormik.values.email_name}
                     onBlur={financialFormik.handleBlur}
                     onChange={financialFormik.handleChange}
-                    required
                     disabled
                   />
+                  {financialFormik.touched.email_name &&
+                  financialFormik.errors.email_name ? (
+                    <div style={{ color: "red", marginBottom: "10px" }}>
+                      {financialFormik.errors.email_name}
+                    </div>
+                  ) : null}
                 </InputGroup>
               </FormGroup>
 
@@ -1628,6 +1479,12 @@ const TenantFinancial = () => {
                       onBlur={financialFormik.handleBlur}
                       onChange={financialFormik.handleChange}
                     />
+                    {financialFormik.touched.date &&
+                    financialFormik.errors.date ? (
+                      <div style={{ color: "red", marginBottom: "10px" }}>
+                        {financialFormik.errors.date}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col>
@@ -1689,6 +1546,12 @@ const TenantFinancial = () => {
                         Check
                       </DropdownItem>
                     </DropdownMenu>
+                    {financialFormik.touched.paymentType &&
+                    financialFormik.errors.paymentType ? (
+                      <div style={{ color: "red", marginBottom: "10px" }}>
+                        {financialFormik.errors.paymentType}
+                      </div>
+                    ) : null}
                   </Dropdown>
                 </FormGroup>
               </FormGroup>
@@ -1810,6 +1673,7 @@ const TenantFinancial = () => {
                 //     ""
                 //   )}
                 // </>
+
                 <>
                   {refund === false ? (
                     <Card
@@ -1853,8 +1717,7 @@ const TenantFinancial = () => {
                                     <input
                                       type="checkbox"
                                       checked={
-                                        selectedCreditCard.toString() ===
-                                        item.customer_vault_id
+                                        selectedCreditCard == item.billing_id
                                       }
                                       onChange={() =>
                                         handleCreditCardSelection(item)
@@ -1900,8 +1763,7 @@ const TenantFinancial = () => {
                                     </Typography>
                                   </td>
 
-                                  {selectedCreditCard ===
-                                    item.customer_vault_id && (
+                                  {selectedCreditCard === item.billing_id && (
                                     <td>
                                       <Row>
                                         <FormGroup>
@@ -2081,7 +1943,7 @@ const TenantFinancial = () => {
                 type="submit"
                 // onClick={() => setRefund(false)}
               >
-                {refund === true ? "Make Refund" : actionType || "Make Payment"}
+                {actionType || "Make Payment"}
               </Button>
             )}
             <Button onClick={closeModal}>Cancel</Button>
