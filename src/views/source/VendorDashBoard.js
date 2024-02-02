@@ -61,38 +61,30 @@ const VendorDashBoard = (props) => {
     }
   }, [navigate]);
 
-  
   const cardStyle = {
-    // background: `url(${require("../assets/img/us3.jpeg").default})`, 
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    minHeight: '70vh',
-    alignItems: 'center',
+    // background: `url(${require("../assets/img/us3.jpeg").default})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    minHeight: "70vh",
+    alignItems: "center",
     justifyContent: "center",
     // display: 'flex',
-    fontFamily: 'sans-serif',
-    fontSize: '30px',
-    color: 'black',
+    fontFamily: "sans-serif",
+    fontSize: "30px",
+    color: "black",
     // textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
   };
-  
-
 
   return (
     <>
       <VendorHeader />
       {/* Page content */}
       <Container className="mt--7" fluid>
-          <div >
+        <div>
           <Card>
-            
-           <CardBody style={cardStyle}>
-              Welcome to 302 Properties
-            </CardBody>
+            <CardBody style={cardStyle}>Welcome to 302 Properties</CardBody>
           </Card>
-          
         </div>
-
       </Container>
     </>
   );
