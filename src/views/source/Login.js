@@ -18,8 +18,8 @@ import * as yup from "yup";
 import { jwtDecode } from "jwt-decode";
 import { useFormik } from "formik";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -27,7 +27,7 @@ import { Typography, colors } from "@mui/material";
 import { IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { AdminPanelSettingsRounded } from "@mui/icons-material";
-import swal from "sweetalert"
+import swal from "sweetalert";
 
 const Login = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -51,31 +51,23 @@ const Login = () => {
       if (adminRes.status === 200) {
         const adminData = adminRes.data;
         if (adminData.statusCode === 200) {
-          console.log("okk")
-          toast.success('Admin Login successfully!', {
-            position: 'top-center',
+          toast.success("Admin Login successfully!", {
+            position: "top-center",
             autoClose: 500,
-          })
+          });
           setTimeout(() => {
             localStorage.setItem("token", adminData.token);
-                const jwt = jwtDecode(localStorage.getItem("token"));
-                navigate(`/${jwt.company_name}/index`);
-          }, 1000)
-          // swal("Success!", "Admin Login Successful!", "success").then(
-          //   (value) => {
-          //     if (value) {
-          //       localStorage.setItem("token", adminData.token);
-          //       const jwt = jwtDecode(localStorage.getItem("token"));
-          //       navigate(`/${jwt.company_name}/index`);
-          //     }
-          //   }
-          // );
-         
+            const jwt = jwtDecode(localStorage.getItem("token"));
+            navigate(`/${jwt.company_name}/index`);
+          }, 1000);
         } else if (adminData.statusCode === 202) {
-          toast.error(' Invalid Admin Password. Please try again.', {
-            position: 'top-center',
+          toast.error(" Invalid Admin Password. Please try again.", {
+            position: "top-center",
           });
         } else {
+          toast.error("Invalid admin data", {
+            position: "top-center",
+          });
         }
       } else {
         const tenantRes = await axios.post(`${baseUrl}/tenants/login`, {
@@ -85,23 +77,25 @@ const Login = () => {
 
         if (tenantRes.status === 200) {
           const tenantData = tenantRes.data;
+          console.log(tenantData, "tenantData");
+          console.log(tenantData, "tenantData");
           if (tenantData.statusCode === 200) {
-            toast.success('Tenant Login Successful!', {
-              position: 'top-center',
+            toast.success("Tenant Login Successful!", {
+              position: "top-center",
               autoClose: 500,
-            })
+            });
             setTimeout(() => {
               localStorage.setItem("token", tenantRes.data.tenantToken);
-                  navigate("/tenant/tenantdashboard");
-            }, 1000)
+              navigate("/tenant/tenantdashboard");
+            }, 1000);
           } else if (tenantData.statusCode === 202) {
-            toast.warning('Error ocuures!', {
-              position: 'top-center',
-            })
+            toast.warning("Error ocuures!", {
+              position: "top-center",
+            });
           } else {
-            toast.error('Invalid tenant data', {
-              position: 'top-center',
-            })
+            toast.error("Invalid tenant data", {
+              position: "top-center",
+            });
           }
         } else {
           const staffRes = await axios.post(`${baseUrl}/staffmember/login`, {
@@ -112,23 +106,22 @@ const Login = () => {
             const vendorData = staffRes.data;
             if (vendorData.statusCode === 200) {
               console.log(vendorData);
-              toast.success('Staff Member Login Successful!!', {
-                position: 'top-center',
+              toast.success("Staff Member Login Successful!!", {
+                position: "top-center",
                 autoClose: 500,
-              })
+              });
               setTimeout(() => {
                 localStorage.setItem("token", vendorData.staff_memberToken);
-                    navigate("/staff/staffdashboard");
-              }, 1000)
-                
+                navigate("/staff/staffdashboard");
+              }, 1000);
             } else if (vendorData.statusCode === 202) {
-              toast.success('warnign ....', {
-                position: 'top-center',
-              })
+              toast.success("warnign ....", {
+                position: "top-center",
+              });
             } else {
-              toast.error('Invalid staff member data', {
-                position: 'top-center',
-              })
+              toast.error("Invalid staff member data", {
+                position: "top-center",
+              });
             }
           } else {
             const vendorRes = await axios.post(`${baseUrl}/vendor/login`, {
@@ -138,31 +131,27 @@ const Login = () => {
             if (vendorRes.status === 200) {
               const staffmemberData = vendorRes.data;
               if (staffmemberData.statusCode === 200) {
-
-                toast.success('Vendor Login Successful!', {
-                  position: 'top-center',
+                toast.success("Vendor Login Successful!", {
+                  position: "top-center",
                   autoClose: 500,
-                })
+                });
                 setTimeout(() => {
-                  localStorage.setItem(
-                    "token",
-                    staffmemberData.vendorToken
-                  );
+                  localStorage.setItem("token", staffmemberData.vendorToken);
                   navigate("/vendor/vendordashboard");
-                }, 1000)
+                }, 1000);
               } else if (staffmemberData.statusCode === 202) {
-                toast.warning('Warning ....', {
-                  position: 'top-center',
-                })
+                toast.warning("Warning ....", {
+                  position: "top-center",
+                });
               } else {
-                toast.error('Invalid Vendor data', {
-                  position: 'top-center',
-                })
+                toast.error("Invalid Vendor data", {
+                  position: "top-center",
+                });
               }
-            } else{
-              toast.error('Invalid User', {
-                position: 'top-center',
-              })
+            } else {
+              toast.error("Invalid User", {
+                position: "top-center",
+              });
             }
           }
         }

@@ -22,8 +22,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Dialog from "@mui/material/Dialog";
@@ -102,14 +102,14 @@ const StaffMember = () => {
       //console.log("Edit Response:", response);
 
       if (response.status === 200) {
-        toast.success('Staff Member updated successfully!', {
-          position: 'top-center',
-        })
+        toast.success("Staff Member updated successfully!", {
+          position: "top-center",
+        });
         getStaffMemberData(); // Refresh the data after successful edit
       } else {
         toast.error(response.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
         console.error("Edit request failed with status:", response.status);
       }
     } catch (error) {
@@ -134,35 +134,33 @@ const StaffMember = () => {
           .delete(`${baseUrl}/staffmember/staff_member/${id}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
-              toast.success('Staff Member deleted successfully!', {
-                position: 'top-center',
-              })
+              toast.success("Staff Member deleted successfully!", {
+                position: "top-center",
+              });
               getStaffMemberData();
             } else if (response.data.statusCode === 201) {
-              
-              toast.warning('Staff Member already assigned to workorder!', {
-                position: 'top-center',
-              })
+              toast.warning("Staff Member already assigned to workorder!", {
+                position: "top-center",
+              });
               getStaffMemberData();
             } else if (response.data.statusCode === 202) {
-             
-              toast.warning('Staff Member already assigned to property', {
-                position: 'top-center',
-              })
+              toast.warning("Staff Member already assigned to property", {
+                position: "top-center",
+              });
               getStaffMemberData();
             } else {
               toast.error(response.data.message, {
-                position: 'top-center',
-              })
+                position: "top-center",
+              });
             }
           })
           .catch((error) => {
             console.error("Error deleting:", error);
           });
       } else {
-        toast.success('Staff Member is safe :)', {
-          position: 'top-center',
-        })
+        toast.success("Staff Member is safe :)", {
+          position: "top-center",
+        });
       }
     });
   };
@@ -444,19 +442,19 @@ const StaffMember = () => {
                       </th>
                       <th scope="col">
                         Created at
-                        {sortBy.includes("createAt") ? (
-                          upArrow.includes("createAt") ? (
+                        {sortBy.includes("createdAt") ? (
+                          upArrow.includes("createdAt") ? (
                             <ArrowDownwardIcon
-                              onClick={() => sortData("createAt")}
+                              onClick={() => sortData("createdAt")}
                             />
                           ) : (
                             <ArrowUpwardIcon
-                              onClick={() => sortData("createAt")}
+                              onClick={() => sortData("createdAt")}
                             />
                           )
                         ) : (
                           <ArrowUpwardIcon
-                            onClick={() => sortData("createAt")}
+                            onClick={() => sortData("createdAt")}
                           />
                         )}
                       </th>
