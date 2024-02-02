@@ -38,7 +38,7 @@ const TenantProfile = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -47,9 +47,8 @@ const TenantProfile = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/tenants/tenant_profile/1706524047815`
+        `${baseUrl}/tenants/tenant_profile/${accessType?.tenant_id}`
       );
-      // console.log(response.data.data);
       setTenantDetails(response.data.data);
       // setLoading(false);
     } catch (error) {
@@ -61,17 +60,14 @@ const TenantProfile = () => {
 
   useEffect(() => {
     getTenantData();
-    // console.log(
-    //   `${baseUrl}/tenant/tenant/${cookie_id}/entries`
-    // );
-  }, [id]);
+  }, [accessType]);
 
   const getTenantData1 = async () => {
     try {
       const response = await axios.get(
         `${baseUrl}/tenant/tenant_summary/${cookie_id}`
       );
-      setTenantDetails1([response.data.data]);
+      setTenantDetails1(response.data.data);
       // console.log(response.data.data);
       // setLoading(false);
     } catch (error) {
@@ -116,9 +112,9 @@ const TenantProfile = () => {
                       style={{ width: "100%" }}
                     >
                       <div className="w-100">
-                        {Array.isArray(tenantDetails) ? (
-                          tenantDetails.map((tenantDetails, index) => (
-                            <div key={index}>
+                        {tenantDetails ? (
+                          // tenantDetails.map((tenantDetails, index) => (
+                            <div>
                               <Row
                                 className="w-100 my-3 "
                                 style={{
@@ -154,26 +150,26 @@ const TenantProfile = () => {
 
                                     <tr className="body">
                                       <td>
-                                        {tenantDetails?.tenant_firstName ||
+                                        {tenantDetails?.tenantData
+                                          ?.tenant_firstName || "N/A"}
+                                      </td>
+                                      <td>
+                                        {tenantDetails?.tenantData?.tenant_lastName ||
                                           "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails?.tenant_lastName ||
+                                        {tenantDetails?.tenantData?.tenant_phoneNumber ||
                                           "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails?.tenant_phoneNumber ||
-                                          "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails?.tenant_email || "N/A"}
+                                        {tenantDetails?.tenantData?.tenant_email || "N/A"}
                                       </td>
                                     </tr>
                                   </tbody>
                                 </Table>
                               </Row>
                             </div>
-                          ))
+                          // ))
                         ) : (
                           <tr>
                             <td>Loading Tenant details...</td>
@@ -191,8 +187,8 @@ const TenantProfile = () => {
                         >
                           <Col>Lease Details</Col>
                         </Row>
-                        {Array.isArray(tenantDetails) ? (
-                          tenantDetails.map((tenantDetails, index) => (
+                        {Array.isArray(tenantDetails?.leaseData) ? (
+                          tenantDetails.leaseData.map((tenantDetails, index) => (
                             <div key={index}>
                               <Row
                                 className="mb-1 m-0 p-0"
@@ -220,37 +216,38 @@ const TenantProfile = () => {
 
                                     <tr className="body">
                                       <td>
-                                        {tenantDetails?.rental_data
+                                        {tenantDetails?.rental
                                           ?.rental_adress || "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails?.lease_data
+                                        {tenantDetails?.lease
                                           ?.lease_type || "N/A"}
                                       </td>
 
                                       <td>
                                         {formatDateWithoutTime(
-                                          tenantDetails?.lease_data?.start_date
+                                          tenantDetails?.lease?.start_date
                                         ) || "N/A"}
                                       </td>
 
                                       <td>
                                         {formatDateWithoutTime(
-                                          tenantDetails?.lease_data?.end_date
+                                          tenantDetails?.lease?.end_date
                                         ) || "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails?.rental_data?.rent_cycle ||
-                                          "N/A"}
+                                        {tenantDetails?.rental
+                                          ?.rent_cycle || "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails?.rental_data?.amount ||
+                                        {tenantDetails?.rental?.amount ||
                                           "N/A"}
                                       </td>
 
                                       <td>
                                         {formatDateWithoutTime(
-                                          tenantDetails?.rental_data?.nextDue_date
+                                          tenantDetails?.rental
+                                            ?.nextDue_date
                                         ) || "N/A"}
                                       </td>
                                     </tr>

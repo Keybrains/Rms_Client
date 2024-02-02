@@ -30,10 +30,25 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { makeStyles } from "@mui/styles";
+import { jwtDecode } from "jwt-decode";
 
 const TenantNavbar = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const [accessType, setAccessType] = useState(null);
+  console.log(accessType, "accessType");
+
+  React.useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+      console.log(jwt, "--------------------");
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
+
   let [loader, setLoader] = React.useState(true);
 
   let cookies = new Cookies();
@@ -339,8 +354,8 @@ const TenantNavbar = (props) => {
                   </span> */}
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
-                      {vendorDetails.tenant_firstName}{" "}
-                      {vendorDetails.tenant_lastName}
+                      {accessType?.tenant_firstName}{" "}
+                      {accessType?.tenant_lastName}
                     </span>
                   </Media>
                 </Media>
