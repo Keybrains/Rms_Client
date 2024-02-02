@@ -93,7 +93,7 @@
 //                           <th
 //                             colSpan="2"
 //                             className="text-lg"
-//                             style={{ color: "#3B2F2F" }}
+//                             style={{ color: "#263238" }}
 //                           >
 //                             Personal Details
 //                           </th>

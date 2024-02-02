@@ -318,7 +318,7 @@ const getRentalData = async (addresses) => {
                 onKeyDown={toggleSidebar}
               >
                 <List style={{ width: '250px' }}>
-                  <h2 style={{color:'#3B2F2F',marginLeft:'15px'}}>
+                  <h2 style={{color:'#263238',marginLeft:'15px'}}>
                     Notifications
                   </h2>
                   <Divider />
@@ -352,7 +352,7 @@ const getRentalData = async (addresses) => {
                               <Button
                               variant="contained"
                              
-                              style={{ background:'#3B2F2F',color:'white',textTransform: 'none', fontSize: '12px' }}
+                              style={{ background:'#263238',color:'white',textTransform: 'none', fontSize: '12px' }}
                               onClick={() => navigateToDetails(data.workorder_id)}
                             >
                               View
