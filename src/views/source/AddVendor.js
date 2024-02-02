@@ -27,7 +27,7 @@ const AddVendor = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   // Initialize variables and state
   const navigate = useNavigate();
-  const { id, admin } = useParams();
+  const { vendor_id, admin } = useParams();
   const [showPassword, setShowPassword] = useState(false);
 
   // Define validation schema for form fields
@@ -50,12 +50,24 @@ const AddVendor = () => {
   // Initialize formik form
   const VendorFormik = useFormik({
     initialValues: {
+      admin_id: "",
       vendor_name: vendorData?.vendor_name || "",
       vendor_phoneNumber: vendorData?.vendor_phoneNumber || "",
       vendor_email: vendorData?.vendor_email || "",
       vendor_password: vendorData?.vendor_password || "",
     },
-    validationSchema,
+    validationSchema: yup.object({
+      vendor_name: yup.string().required("Requied"),
+      vendor_phoneNumber: yup.number().required("Requied"),
+      vendor_email: yup.string().required("Requied"),
+      vendor_password: yup.string()
+        .min(8, "Password is too short")
+        .matches(
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+          "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
+        )
+        .required("Required"),
+    }),
     onSubmit: handleSubmit,
   });
 
@@ -69,7 +81,7 @@ const AddVendor = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -77,10 +89,10 @@ const AddVendor = () => {
 
   // Fetch vendor data if editing an existing vendor
   useEffect(() => {
-    if (id) {
+    if (vendor_id) {
       axios
         .get(
-          `${baseUrl}/vendor/vendor_summary/${id}`
+          `${baseUrl}/vendor/get_vendor/${vendor_id}`
         )
         .then((response) => {
           const vendorData = response.data.data;
@@ -102,19 +114,22 @@ const AddVendor = () => {
           setIsLoading(false);
         });
     }
-  }, [id]);
+  }, [vendor_id]);
 
   // Handle form submission
   async function handleSubmit(values) {
+    VendorFormik.setFieldValue("admin_id", accessType.admin_id)
+    console.log(values)
     try {
-      if (id === undefined) {
+      if (vendor_id === undefined) {
         const res = await axios.post(
           `${baseUrl}/vendor/vendor`,
           values
         );
         handleResponse(res);
       } else {
-        const editUrl = `${baseUrl}/vendor/vendor/${id}`;
+        VendorFormik.setFieldValue("admin_id", accessType.admin_id)
+        const editUrl = `${baseUrl}/vendor/update_vendor/${vendor_id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
       }
@@ -139,7 +154,7 @@ const AddVendor = () => {
 
 
   function handleResponse(response) {
-    const successMessage = id ? "Vendor updated successfully" : "Vendor added successfully";
+    const successMessage = vendor_id ? "Vendor updated successfully" : "Vendor added successfully";
     const errorMessage = response.data.message;
   
     if (response.data.statusCode === 200) {
@@ -175,7 +190,7 @@ const AddVendor = () => {
                 <Row className="align-items-center">
                   <Col xs="8">
                     <h3 className="mb-0">
-                      {id ? "Edit Vendor" : "New Vendor"}
+                      {vendor_id ? "Edit Vendor" : "New Vendor"}
                     </h3>
                   </Col>
                 </Row>
@@ -201,14 +216,13 @@ const AddVendor = () => {
                             onBlur={VendorFormik.handleBlur}
                             onChange={VendorFormik.handleChange}
                             value={VendorFormik.values.vendor_name}
-                            required
                           />
-                          {/* {VendorFormik.touched.vendor_name &&
-                          VendorFormik.errors.vendor_name ? (
+                          {VendorFormik.touched.vendor_name &&
+                            VendorFormik.errors.vendor_name ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_name}
                             </div>
-                          ) : null} */}
+                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -238,17 +252,16 @@ const AddVendor = () => {
                               const numericValue = inputValue.replace(
                                 /\D/g,
                                 ""
-                              ); // Remove non-numeric characters
+                              );
                               e.target.value = numericValue;
                             }}
-                            required
                           />
-                          {/* {VendorFormik.touched.vendor_phoneNumber &&
-                          VendorFormik.errors.vendor_phoneNumber ? (
+                          {VendorFormik.touched.vendor_phoneNumber &&
+                            VendorFormik.errors.vendor_phoneNumber ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_phoneNumber}
                             </div>
-                          ) : null} */}
+                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -273,10 +286,9 @@ const AddVendor = () => {
                             onBlur={VendorFormik.handleBlur}
                             onChange={VendorFormik.handleChange}
                             value={VendorFormik.values.vendor_email}
-                            required
                           />
                           {VendorFormik.touched.vendor_email &&
-                          VendorFormik.errors.vendor_email ? (
+                            VendorFormik.errors.vendor_email ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_email}
                             </div>
@@ -306,7 +318,6 @@ const AddVendor = () => {
                               onBlur={VendorFormik.handleBlur}
                               onChange={VendorFormik.handleChange}
                               value={VendorFormik.values.vendor_password}
-                              required
                             />
                             <Button
                               type="button"
@@ -321,7 +332,7 @@ const AddVendor = () => {
                             </Button>
                           </div>
                           {VendorFormik.touched.vendor_password &&
-                          VendorFormik.errors.vendor_password ? (
+                            VendorFormik.errors.vendor_password ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_password}
                             </div>
@@ -336,12 +347,11 @@ const AddVendor = () => {
                     className="btn btn-primary ml-4"
                     style={{ background: "green" }}
                   >
-                    {id ? "Update Vendor" : "Add Vendor"}
+                    {vendor_id ? "Update Vendor" : "Add Vendor"}
                   </button>
 
                   <button
                     color="primary"
-                   //  href="#rms"
                     className="btn btn-primary"
                     onClick={handleCloseButtonClick}
                     size="sm"

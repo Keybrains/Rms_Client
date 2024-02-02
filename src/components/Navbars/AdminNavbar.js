@@ -33,7 +33,6 @@ import { makeStyles } from "@mui/styles";
 import { jwtDecode } from "jwt-decode";
 
 const AdminNavbar = (props) => {
-  const { admin } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   let navigate = useNavigate();
@@ -51,7 +50,7 @@ const AdminNavbar = (props) => {
     // localStorage.removeItem("id");
     // navigate("/login");
   };
-  const { workorder_id } = useParams();
+  const { workorder_id, admin } = useParams();
   //console.log("workid:",workorder_id);
   const [vendorDetails, setVendorDetails] = useState({});
   const [rental_adress, setRentalAddress] = useState("");

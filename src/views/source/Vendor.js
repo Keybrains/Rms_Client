@@ -23,7 +23,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { RotatingLines } from "react-loader-spinner";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { useNavigate , useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -32,7 +32,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 const Vendor = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
-  const {admin} = useParams()
+  const { admin } = useParams()
   const [vendorData, setVendorData] = useState([]);
   const [loader, setLoader] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,7 +63,7 @@ const Vendor = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -72,7 +72,7 @@ const Vendor = () => {
   const getVendorData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/vendor/vendor`
+        `${baseUrl}/vendor/vendors/${accessType.admin_id}`
       );
       setLoader(false);
       setVendorData(response.data.data);
@@ -82,6 +82,10 @@ const Vendor = () => {
       console.error("Error fetching data:", error);
     }
   };
+  useEffect(() => {
+    getVendorData();
+  }, [accessType]);
+
 
   const deleteVendor = async (id) => {
     // Show a confirmation dialog to the user
@@ -95,10 +99,7 @@ const Vendor = () => {
       if (willDelete) {
         try {
           const response = await axios.delete(
-            `${baseUrl}/vendor/delete_vendor`,
-            {
-              data: { _id: id },
-            }
+            `${baseUrl}/vendor/delete_vendor`, id
           );
 
           if (response.data.statusCode === 200) {
@@ -136,7 +137,7 @@ const Vendor = () => {
 
   const filterTenantsBySearch = () => {
     let filteredData = vendorData;
-  
+
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
       filteredData = filteredData.filter((tenant) => {
@@ -151,7 +152,7 @@ const Vendor = () => {
         return isMatch;
       });
     }
-  
+
     if (upArrow.length > 0) {
       upArrow.forEach((value) => {
         switch (value) {
@@ -170,7 +171,7 @@ const Vendor = () => {
         }
       });
     }
-  
+
     if (upArrow.length === 0) {
       upArrow.forEach((value) => {
         switch (value) {
@@ -189,7 +190,7 @@ const Vendor = () => {
         }
       });
     }
-  
+
     return filteredData;
   };
 
@@ -233,7 +234,7 @@ const Vendor = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/"+admin+"/addvendor")}
+              onClick={() => navigate("/" + admin + "/addvendor")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -281,8 +282,8 @@ const Vendor = () => {
                   <thead className="thead-light">
                     <tr>
                       <th scope="col">Name
-                      
-                      {sortBy.includes("vendor_name") ? (
+
+                        {sortBy.includes("vendor_name") ? (
                           upArrow.includes("vendor_name") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("vendor_name")}
@@ -298,7 +299,7 @@ const Vendor = () => {
                           />
                         )}</th>
                       <th scope="col">Phone Number
-                      {sortBy.includes("vendor_phoneNumber") ? (
+                        {sortBy.includes("vendor_phoneNumber") ? (
                           upArrow.includes("vendor_phoneNumber") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("vendor_phoneNumber")}
@@ -314,7 +315,7 @@ const Vendor = () => {
                           />
                         )}</th>
                       <th scope="col">Mail ID
-                      {sortBy.includes("vendor_email") ? (
+                        {sortBy.includes("vendor_email") ? (
                           upArrow.includes("vendor_email") ? (
                             <ArrowDownwardIcon
                               onClick={() => sortData("vendor_email")}
@@ -334,7 +335,7 @@ const Vendor = () => {
                   </thead>
                   <tbody>
                     {filterTenantsBySearchAndPage().map((vendor) => (
-                      <tr key={vendor._id}>
+                      <tr key={vendor.vendor_id}>
                         <td>{vendor.vendor_name}</td>
                         <td>{vendor.vendor_phoneNumber}</td>
                         <td>{vendor.vendor_email}</td>
@@ -342,14 +343,14 @@ const Vendor = () => {
                           <div style={{ display: "flex", gap: "5px" }}>
                             <div
                               style={{ cursor: "pointer" }}
-                              onClick={() => deleteVendor(vendor._id)}
+                              onClick={() => deleteVendor(vendor.vendor_id)}
                             >
                               <DeleteIcon />
                             </div>
                             &nbsp; &nbsp;
                             <div
                               style={{ cursor: "pointer" }}
-                              onClick={() => editVendor(vendor._id)}
+                              onClick={() => editVendor(vendor.vendor_id)}
                             >
                               <EditIcon />
                             </div>

@@ -242,7 +242,7 @@ const getRentalData = async (addresses) => {
   // creates the links that appear in the left menu / Sidebar
   const createLinks = (routes) => {
     const filteredRoutes = routes.filter(
-      (prop) => prop.path === "/profile" || prop.path === "/tenantdashboard" || prop.name === "Property" || prop.path === "/tenantwork" || prop.path === "/tenantFinancial"
+      (prop) => prop.path === "/profile" || prop.path === "/tenantdashboard" || prop.path === "/tenantproperty" || prop.path === "/tenantwork" || prop.path === "/tenantFinancial"
     );
     return filteredRoutes.map((prop, key) => {
       return (

@@ -227,12 +227,15 @@ const ResetPassword = () => {
 
   return (
     <>
+    
+   
       <Col lg="5" md="7">
         <Card
           className="bg-secondary shadow border-0"
-          onSubmit={loginFormik.handleSubmit}
+
         >
           <CardBody className="px-lg-5 py-lg-5">
+            
             <div className="text-center text-muted mb-4">
               <small>Change password</small>
             </div>
@@ -252,25 +255,13 @@ const ResetPassword = () => {
                     autoComplete="new-password"
                     name="password"
                     placeholder="Password"
-                    type={showPassword ? "text" : "password"}
-                    onBlur={loginFormik.handleBlur}
-                    onChange={loginFormik.handleChange}
-                    value={loginFormik.values.password}
+
+
                   />
 
-                  <IconButton
-                    type="button"
-                    style={{ padding: "7px" }}
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {<VisibilityIcon />}
-                  </IconButton>
+
                 </InputGroup>
-                {loginFormik.touched.password && loginFormik.errors.password ? (
-                  <Typography variant="caption" style={{ color: "red" }}>
-                    {loginFormik.errors.password}
-                  </Typography>
-                ) : null}
+
               </FormGroup>
               <FormGroup>
                 <label
@@ -290,25 +281,12 @@ const ResetPassword = () => {
                     autoComplete="new-password"
                     name="password"
                     placeholder="Password"
-                    type={showPassword ? "text" : "password"}
-                    onBlur={loginFormik.handleBlur}
-                    onChange={loginFormik.handleChange}
-                    value={loginFormik.values.password}
+                 
+
                   />
 
-                  <IconButton
-                    type="button"
-                    style={{ padding: "7px" }}
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {<VisibilityIcon />}
-                  </IconButton>
                 </InputGroup>
-                {loginFormik.touched.password && loginFormik.errors.password ? (
-                  <Typography variant="caption" style={{ color: "red" }}>
-                    {loginFormik.errors.password}
-                  </Typography>
-                ) : null}
+
               </FormGroup>
 
               <div className="text-center">
@@ -332,6 +310,9 @@ const ResetPassword = () => {
         </Card>
         <ToastContainer />
       </Col>
+     
+    
+
     </>
   );
 };

@@ -189,7 +189,7 @@ const StaffSidebar = (props) => {
   // creates the links that appear in the left menu / Sidebar
   const createLinks = (routes) => {
     const filteredRoutes = routes.filter(
-      (prop) => prop.path === "/StaffdashBoard" || prop.path === "/staffprofile" || prop.path === "/staffworktable"
+      (prop) => prop.path === "/StaffdashBoard" || prop.path === "/staffprofile" || prop.path === "/staffproperty" || prop.path === "/staffworktable"
     );
     return filteredRoutes.map((prop, key) => {
       return (

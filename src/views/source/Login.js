@@ -42,6 +42,11 @@ const Login = () => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+  const [rememberMe, setRememberMe] = useState(
+    localStorage.getItem("rememberedEmail") !== null
+  );
+
+  console.warn(rememberMe, "rememberMe")
 
   const handleSubmit = async (values) => {
     try {
@@ -49,6 +54,15 @@ const Login = () => {
       const adminRes = await axios.post(`${baseUrl}/admin/login`, values);
 
       if (adminRes.status === 200) {
+
+        if (rememberMe) {
+          // Save only the email in localStorage
+          localStorage.setItem("rememberedEmail", values.email);
+        } else {
+          // Clear any existing saved email
+          localStorage.removeItem("rememberedEmail");
+        }
+
         const adminData = adminRes.data;
         if (adminData.statusCode === 200) {
           toast.success("Admin Login successfully!", {
@@ -157,6 +171,8 @@ const Login = () => {
         }
         // }
       }
+     
+
     } catch (error) {
       console.error(error);
     } finally {
@@ -164,10 +180,11 @@ const Login = () => {
     }
   };
 
+
   let loginFormik = useFormik({
     initialValues: {
-      email: "",
-      password: "",
+      email: localStorage.getItem("rememberedEmail") || "",
+      password: "", // Do not retrieve password from localStorage
     },
     validationSchema: yup.object({
       email: yup.string().required("Required"),
@@ -190,7 +207,7 @@ const Login = () => {
       <Col lg="5" md="7">
         <Card
           className="bg-secondary shadow border-0"
-          onSubmit={loginFormik.handleSubmit}
+          onSubmit={(e) => loginFormik.handleSubmit(e, loginFormik.values.rememberMe)}
         >
           <CardBody className="px-lg-5 py-lg-5">
             <div className="text-center text-muted mb-4">
@@ -252,39 +269,38 @@ const Login = () => {
                   </Typography>
                 ) : null}
               </FormGroup>
-
               <div className="custom-control custom-control-alternative custom-checkbox">
                 <Row>
                   <Col>
                     <input
                       className="custom-control-input"
-                      id=" customCheckLogin"
+                      id="customCheckLogin"
                       type="checkbox"
+                      onChange={() => setRememberMe(!rememberMe)}
+                      checked={rememberMe}
                     />
                     <label
                       className="custom-control-label"
-                      htmlFor=" customCheckLogin"
+                      htmlFor="customCheckLogin"
                     >
                       <span className="text-muted">Remember me</span>
                     </label>
                   </Col>
+
+
                   <Col xs="6">
                     <label
                       className=""
                       // href="#rms"
                       onClick={() => navigate(`/auth/forgetpassword`)}
                     >
-                      <span
-                        className="text-muted mb-4"
-                        style={{ fontSize: "14px" }}
-                      >
-                        Forgot password?
-                      </span>
+                      <span className="text-muted mb-4" style={{ fontSize: "14px", cursor: "pointer" }}>Forgot password?</span>
                     </label>
                   </Col>
                 </Row>
                 <br />
               </div>
+
               <div className="text-center">
                 {/* <Button className="my-4" color="primary" type="button">
                     Sign in
@@ -299,6 +315,17 @@ const Login = () => {
                 >
                   {isLoading ? <CircularProgress size={24} /> : "Login"}
                 </Button>
+              </div>
+              <div className="d-flex justify-content-start mt-4">
+                <Row>
+                  <Col>
+                    <span className="text-muted">Don't have an account?</span>
+                    <a href="#" onClick={() => navigate(`/trial/trial-login`)}> Sign up</a>
+                  </Col>
+
+
+                </Row>
+                <br />
               </div>
               <br />
             </Form>
