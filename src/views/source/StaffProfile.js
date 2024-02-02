@@ -23,108 +23,99 @@ const StaffProfile = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
-  let cookie_id = localStorage.getItem("Staff ID");
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
-    } 
-    else {
+      setAccessType(jwt);
+    } else {
       navigate("/auth/login");
     }
   }, [navigate]);
-  
-  useEffect(() => {
-    const getStaffData = async () => {
-      try {
-        if (!cookie_id) {
-          throw new Error("Staff ID not found in cookies");
-        }
 
+  const getStaffData = async () => {
+    try {
+      if (accessType?.staffmember_id) {
         const response = await axios.get(
-          `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
+          `${baseUrl}/staffmember/staffmember_profile/${accessType?.staffmember_id}`
         );
         //console.log(response.data.data);
         setStaffDetails(response.data.data);
         setLoading(false);
-      } catch (error) {
-        console.error("Error fetching staff details:", error.message);
-        setError(error);
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching staff details:", error.message);
+      setError(error);
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     getStaffData();
-  }, [cookie_id, id]);
+  }, [accessType]);
 
   return (
     <>
       <StaffHeader />
       {/* Page content */}
       <Container className="mt--7" fluid>
-       
-         <Row>
+        <Row>
           <div className="col">
             <Card className="shadow" style={{ backgroundColor: "#FFFEFA" }}>
               <CardHeader className="border-0">
-                <h2 className="mb-0" style={{color:'#033E3E'}}>Personal Details</h2>
+                <h2 className="mb-0" style={{ color: "#033E3E" }}>
+                  Personal Details
+                </h2>
               </CardHeader>
-              <div className="table-responsive" style={{padding:"15px"}}>
-              
-                  <Table
-                    className="align-items-center table-flush"
-                    responsive
-                    style={{ width: "100%" }}
-                  >
-                    {loading ? (
-                      <tr>
-                        <td>Loading staff details...</td>
-                      </tr>
-                    ) : error ? (
-                      <tr>
-                        <td>Error: {error.message}</td>
-                      </tr>
-                    ) : staffDetails._id ? (
-                      <>
-                        <tbody
-                          className="tbbody p-0 m-0"
-                          style={{
-                            borderTopRightRadius: "5px",
-                            borderTopLeftRadius: "5px",
-                            borderBottomLeftRadius: "5px",
-                            borderBottomRightRadius: "5px",
-                          }}
-                        >
-                          <tr className="header">
-                            <th>First name</th>
-                            <th>Designation</th>
-                            <th>Phone Number</th>
-                            <th>Email</th>
-                          </tr>
-                          <>
-                            <>
-                              <tr className="body">
-                              <td>{staffDetails.staffmember_name}</td>
-                              <td>{staffDetails.staffmember_designation}</td>
-                              <td>{staffDetails.staffmember_phoneNumber}</td>
-                               <td>{staffDetails.staffmember_email}</td>
-                              </tr>
-                            </>
-                          </>
-                        </tbody>
-                      </>
-                    ) : (
-                      <tbody>
-                        <tr>
-                          <td>No vendor details found.</td>
+              <div className="table-responsive" style={{ padding: "15px" }}>
+                <Table
+                  className="align-items-center table-flush"
+                  responsive
+                  style={{ width: "100%" }}
+                >
+                  {loading ? (
+                    <tr>
+                      <td>Loading staff details...</td>
+                    </tr>
+                  ) : (
+                    // ) : staffDetails?.staffmember_id ? (
+                    <>
+                      <tbody
+                        className="tbbody p-0 m-0"
+                        style={{
+                          borderTopRightRadius: "5px",
+                          borderTopLeftRadius: "5px",
+                          borderBottomLeftRadius: "5px",
+                          borderBottomRightRadius: "5px",
+                        }}
+                      >
+                        <tr className="header">
+                          <th>First name</th>
+                          <th>Designation</th>
+                          <th>Phone Number</th>
+                          <th>Email</th>
                         </tr>
+                        <>
+                          <>
+                            <tr className="body">
+                              <td>{staffDetails?.staffmember_name}</td>
+                              <td>{staffDetails?.staffmember_designation}</td>
+                              <td>{staffDetails?.staffmember_phoneNumber}</td>
+                              <td>{staffDetails?.staffmember_email}</td>
+                            </tr>
+                          </>
+                        </>
                       </tbody>
-                    )}
-                  </Table>
-             
+                    </>
+                    // ) : (
+                    //   <tbody>
+                    //     <tr>
+                    //       <td>No vendor details found.</td>
+                    //     </tr>
+                    //   </tbody>
+                  )}
+                </Table>
               </div>
             </Card>
           </div>
