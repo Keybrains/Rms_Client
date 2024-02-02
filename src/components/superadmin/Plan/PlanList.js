@@ -19,7 +19,6 @@ import Tooltip from "@mui/material/Tooltip";
 import { Button } from "react-bootstrap";
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
-import swal from "sweetalert";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -34,6 +33,9 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Cookies from "universal-cookie";
 import moment from "moment";
+import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Switch from "@mui/material/Switch";
 // import { useHistory } from "react-router-dom";
 import { Circles } from "react-loader-spinner";
@@ -276,7 +278,10 @@ export default function PlanList() {
             if (response.data.statusCode === 200) {
               getData();
               setSelected([]);
-              swal("", response.data.message, "success");
+              toast.success(response.data.message, {
+                position: 'top-center',
+                autoClose: 1000,
+              })
             }
           });
       }
@@ -318,13 +323,19 @@ export default function PlanList() {
         if (res.data.statusCode === 200) {
           setModalShowForPopupForm(false);
           getData();
-          swal("Success", res.data?.message, "success");
+          toast.success( res.data?.message, {
+            position: 'top-center',
+           })
         } else {
-          swal("Error", res.data.message, "error");
+          toast.error( res.data.message, {
+            position: 'top-center',
+          })
         }
       } catch (error) {
         console.error("Error:", error);
-        swal("Error", error, "error");
+        toast.error(error, {
+          position: 'top-center',
+        })
       }
     };
   } else {
@@ -338,11 +349,15 @@ export default function PlanList() {
         if (response.data.statusCode === 200) {
           setModalShowForPopupForm(false);
           getData();
-          swal("Success", response.data?.message, "success");
+          toast.success(response.data?.message, {
+            position: 'top-center',
+          })
         }
       } catch (error) {
         console.error("Error:", error);
-        swal("Error", error, "error");
+        toast.warning(error, {
+          position: 'top-center',
+        })
       }
     };
   }
@@ -721,6 +736,7 @@ export default function PlanList() {
             </Dialog>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

@@ -16,14 +16,14 @@ import {
   DropdownItem,
   Label,
 } from "reactstrap";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useState } from "react";
 import axios from "axios";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import AddAgentHeader from "components/Headers/AddAgentHeader";
-import swal from "sweetalert";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
@@ -48,7 +48,7 @@ const AddAgent = () => {
 
   //     if (res.data.statusCode === 200) {
   //       navigate("/admin/Agent");
-  //       swal("Success!", "Agent added successfully!", "success");
+  //      
   //     } else {
   //       alert(res.data.message);
   //     }
@@ -144,16 +144,21 @@ const AddAgent = () => {
     }
   }
 
+ 
   function handleResponse(response) {
-    if (response.status === 200) {
+    if (response.data.statusCode === 200) {
       navigate("/admin/Agent");
-      swal(
-        "Success!",
-        id ? "Agent updated successfully" : "Agent added successfully!",
-        "success"
-      );
+      // Show success toast
+      toast.success(id ? "Agent  updated successfully" : "Agent  added successfully", {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     } else {
-      alert(response.data.message);
+      // Show an error toast
+      toast.error(response.data.message, {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     }
   }
   return (
@@ -357,7 +362,9 @@ const AddAgent = () => {
               </CardBody>
             </Card>
           </Col>
-        </Row>
+        </Row> 
+          <ToastContainer />
+
       </Container>
     </>
   );

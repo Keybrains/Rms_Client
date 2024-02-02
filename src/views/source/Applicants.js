@@ -29,6 +29,8 @@ import Cookies from "universal-cookie";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Checkbox from "@mui/material/Checkbox";
 import { RotatingLines } from "react-loader-spinner";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -302,7 +304,7 @@ const Applicants = () => {
     },
   });
 
-  console.warn(applicantFormik.errors, "applicantFormik");
+  console.warn(applicantFormik.values, "applicantFormik");
 
   const handleFormSubmit = (values, action) => {
     setBtnLoader(true);
@@ -328,7 +330,7 @@ const Applicants = () => {
 
       console.log(requestBody, "yash");
       axios
-        .post(`http://localhost:4000/api/applicant/applicant`, requestBody)
+        .post(`http://192.168.1.13:4000/api/applicant/applicant`, requestBody)
         .then((response) => {
           if (response.data.statusCode === 200) {
             closeModal();
@@ -437,19 +439,25 @@ const Applicants = () => {
           })
           .then((response) => {
             if (response.data.statusCode === 200) {
-              swal("Success!", "Applicants deleted successfully", "success");
+              toast.success("Applicants deleted successfully", {
+                position: "top-center",
+              });
               // getWorkData(); // Refresh your work order data or perform other actions
               // navigate(`admin/Applicants/${id}`);
               getApplicantData();
             } else {
-              swal("", response.data.message, "error");
+              toast.warning(response.data.message, {
+                position: "top-center",
+              });
             }
           })
           .catch((error) => {
             console.error("Error deleting work order:", error);
           });
       } else {
-        swal("Cancelled", "Applicants is safe :)", "info");
+        toast.warning("Applicant is safe!", {
+          position: "top-center",
+        });
       }
     });
   };
@@ -475,6 +483,50 @@ const Applicants = () => {
       });
     }
 
+    if (upArrow.length > 0) {
+      upArrow.forEach((sort) => {
+        switch (sort) {
+          case "rental_adress":
+            filteredData.sort((a, b) =>
+              a.rental_adress.localeCompare(b.rental_adress)
+            );
+            break;
+          case "applicant_lastName":
+            filteredData.sort((a, b) =>
+              a.applicant_lastName.localeCompare(b.applicant_lastName)
+            );
+            break;
+          case "applicant_firstName":
+            filteredData.sort((a, b) =>
+              a.applicant_firstName.localeCompare(b.applicant_firstName)
+            );
+            break;
+          case "tenant_mobileNumber":
+            filteredData.sort(
+              (a, b) => a.tenant_mobileNumber - b.tenant_mobileNumber
+            );
+            break;
+          case "applicant_email":
+            filteredData.sort((a, b) =>
+              a.applicant_email.localeCompare(b.applicant_email)
+            );
+            break;
+          case "start_date":
+            filteredData.sort(
+              (a, b) => new Date(a.start_date) - new Date(b.start_date)
+            );
+            break;
+          case "createAt":
+            filteredData.sort(
+              (a, b) => new Date(a.createAt) - new Date(b.createAt)
+            );
+            break;
+          default:
+            // If an unknown sort option is provided, do nothing
+            break;
+        }
+      });
+    }
     if (upArrow.length > 0) {
       upArrow.forEach((sort) => {
         switch (sort) {
@@ -968,6 +1020,8 @@ const Applicants = () => {
                                     paddingTop: "15px",
                                   }}
                                 >
+                                  {/* <FormControlLabel
+																		control={ */}
                                   <Checkbox
                                     type="checkbox"
                                     name="tenant"
@@ -980,8 +1034,16 @@ const Applicants = () => {
                                       setCheckedCheckbox(
                                         tenant.applicant_phoneNumber
                                       );
+                                      // const tenantInfo = `${tenant.applicant_firstName ||
+                                      // ""
+                                      // } ${tenant.applicant_lastName ||
+                                      // ""
+                                      // } ${tenant.applicant_phoneNumber ||
+                                      // ""
+                                      // } ${tenant.applicant_email ||
+                                      // ""
+                                      // }`;
                                       const tenantInfo = {
-                                        applicant_id: tenant.applicant_id,
                                         applicant_phoneNumber:
                                           tenant.applicant_phoneNumber,
                                         applicant_firstName:
@@ -1141,7 +1203,7 @@ const Applicants = () => {
                         </span>
                       </InputGroupAddon>
                       <Input
-                        id="tenant_businessNumber"
+                        id="tenant_workNumber"
                         type="text"
                         placeholder="Enter Business Number"
                         value={applicantFormik.values.tenant_businessNumber}
@@ -1291,6 +1353,7 @@ const Applicants = () => {
             </ModalFooter>
           </Form>
         </Modal>
+        <ToastContainer />
       </Container>
     </>
   );

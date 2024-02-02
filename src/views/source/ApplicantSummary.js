@@ -41,7 +41,8 @@ import NoteIcon from "@mui/icons-material/Note";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import swal from "sweetalert";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import greenTick from "../../assets/img/icons/common/green_tick.jpg";
 import { Link } from "react-router-dom";
 import {
@@ -114,11 +115,13 @@ const ApplicantSummary = () => {
       JSON.parse(localStorage.getItem("staticCheckedItems")) || [];
 
     if (checked && !storedCheckedItems?.includes(id)) {
+    if (checked && !storedCheckedItems?.includes(id)) {
       storedCheckedItems.push(id);
     } else if (!checked && storedCheckedItems?.includes(id)) {
       const index = storedCheckedItems.indexOf(id);
       storedCheckedItems.splice(index, 1);
     }
+  }
 
     localStorage.setItem(
       "staticCheckedItems",
@@ -326,7 +329,7 @@ const ApplicantSummary = () => {
 
   const navigateToLease = () => {
     axios
-      .get(`http://localhost:4000/api/applicant/applicant_summary/${id}`)
+      .get(`http://192.168.1.13:4000/api/applicant/applicant_summary/${id}`)
       .then((response) => {
         const applicantsData = response.data.data;
         const rentalAddress = applicantsData.rental_adress;
@@ -354,7 +357,7 @@ const ApplicantSummary = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/api/applicant/applicant_summary/${id}`)
+      .get(`http://192.168.1.13:4000/api/applicant/applicant_summary/${id}`)
       .then((applicants) => {
         axios
           .get(`${baseUrl}/rentals/property`)
@@ -873,7 +876,10 @@ const ApplicantSummary = () => {
   const handleSave = () => {
     if (newNote === "" || newFile === null) {
       // Display an alert or error message for incomplete fields
-      swal("Warning!", "Please fill in both the note and file.", "warning");
+      toast.warning("Please fill in both the note and file.", {
+        position: "top-center",
+      });
+
       return; // Prevent further execution
     }
 
@@ -886,7 +892,9 @@ const ApplicantSummary = () => {
       handleSubmit(); // Handle form submission or any other necessary actions
     } else {
       // Display an alert or error message for incomplete fields
-      swal("Warning!", "Please fill in both the note and file.", "warning");
+      toast.warning("Please fill in both the note and file.", {
+        position: "top-center",
+      });
     }
   };
 
@@ -912,12 +920,14 @@ const ApplicantSummary = () => {
 
     const deleteUrl = `${baseUrl}/applicant/applicant/note_attachment/${appId}/${document._id}`;
 
-    // swal if confirm than only delete
-    await axios
+    await axios 
       .delete(deleteUrl)
       .then((res) => {
         console.log(res.data);
-        swal("Success!", "Document deleted successfully", "success");
+        toast.success("Document deleted successfully", {
+          position: "top-center",
+        });
+
         // getNotesAndFiles();
         getApplicantData();
       })
@@ -999,7 +1009,7 @@ const ApplicantSummary = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/applicant/applicant_summary/${id}`
+          `http://192.168.1.13:4000/api/applicant/applicant_summary/${id}`
         );
 
         if (response.data && response.data.data) {
@@ -1119,10 +1129,14 @@ const ApplicantSummary = () => {
 
     if (responce.data.statusCode === 200) {
       setSendApplicantMailLoader(false);
-      swal("", "Application emailed", "success");
+      toast.success("Application emailed", {
+        position: "top-center",
+      });
     } else {
       setSendApplicantMailLoader(false);
-      swal("", responce.data.message, "error");
+      toast.error("error", {
+        position: "top-center",
+      });
     }
   };
 

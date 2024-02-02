@@ -165,7 +165,7 @@ const AdminNavbar = (props) => {
           <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
             <Button
               color="primary"
-              onClick={() => navigate("/" + admin + "/Plans")}
+              onClick={() => navigate("/"+admin+"/Plans")}
               size="sm"
               style={{
                 background: "rgb(48 52 58 / 70%)",

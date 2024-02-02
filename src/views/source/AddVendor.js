@@ -12,7 +12,8 @@ import {
   Col,
 } from "reactstrap";
 import axios from "axios";
-import swal from "sweetalert";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import * as yup from "yup";
@@ -127,19 +128,36 @@ const AddVendor = () => {
   }
 
   // Handle API response and navigation
+  // function handleResponse(response) {
+  //   if (response.status === 200) {
+  //     navigate("/"+admin+"/vendor");
+  //     
+  //   } else {
+  //     alert(response.data.message);
+  //   }
+  // }
+
+
   function handleResponse(response) {
-    if (response.status === 200) {
-      navigate("/"+admin+"/vendor");
-      swal(
-        "Success!",
-        id ? "Vendor updated successfully" : "Vendor added successfully!",
-        "success"
-      );
+    const successMessage = id ? "Vendor updated successfully" : "Vendor added successfully";
+    const errorMessage = response.data.message;
+  
+    if (response.data.statusCode === 200) {
+      // Show success toast
+      toast.success(successMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+        onClose: () => navigate(`/${admin}/vendor`),
+      });
     } else {
-      alert(response.data.message);
+      // Show an error toast
+      toast.error(errorMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     }
   }
-
+  
   // Handle cancel button click
   const handleCloseButtonClick = () => {
     navigate("../Vendor");
@@ -336,6 +354,8 @@ const AddVendor = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
+
       </Container>
     </>
   );

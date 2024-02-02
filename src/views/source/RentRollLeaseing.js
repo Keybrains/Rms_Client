@@ -1,5 +1,7 @@
 import { useFormik } from "formik";
 import moment from "moment";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -43,7 +45,6 @@ import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import CloseIcon from "@mui/icons-material/Close";
 import AccountDialog from "components/AccountDialog";
-import swal from "sweetalert";
 
 const RentRollLeaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -503,7 +504,11 @@ const RentRollLeaseing = () => {
     try {
       const res = await axios.post(`${baseUrl}/leases/leases`, object);
       if (res.data.statusCode === 200) {
-        swal("Success", "Lease Added Successfully", "success");
+        
+        toast.success('Lease Added Successfully', {
+          position: 'top-center',
+          autoClose: 1000,
+        })
         navigate(`/${admin}/RentRoll`)
       }
     } catch (error) {
@@ -765,7 +770,9 @@ const RentRollLeaseing = () => {
       ) {
         const res = await axios.post(`${baseUrl}/leases/check_lease`, object);
         if (res.data.statusCode === 201) {
-          swal("Warning", res.data.message, "warning");
+          toast.warning(res.data.message, {
+            position: 'top-center',
+          })
         }
         return res.data.statusCode;
       } else {
@@ -3855,6 +3862,7 @@ const RentRollLeaseing = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

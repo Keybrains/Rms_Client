@@ -18,6 +18,8 @@ import {
 } from "reactstrap";
 import Header from "components/Headers/Header";
 import React from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -68,22 +70,28 @@ const Agent = () => {
           })
           .then((response) => {
             if (response.data.statusCode === 200) {
-              swal("Success!", "Agent deleted successfully!", "success");
+              toast.success('Agent deleted successfully!', {
+                position: 'top-center',
+              })
               getAgentData(); // Refresh your agent data or perform other actions
             } 
             else if (response.data.statusCode === 201) {
-              swal("Warning!", "Agent already assigned to lease!", "warning");
+              toast.warning('Agent already assigned to lease!', {
+                position: 'top-center',
+              })
               getAgentData();
             } 
             else {
-              swal("", response.data.message, "error");
+              toast.error(response.data.message, {
+                position: 'top-center',
+              })
+              
             }
           })
           .catch((error) => {
             console.error("Error deleting agent:", error);
           });
       } else {
-        swal("Cancelled", "Agent is safe :)", "info");
       }
     });
   };
@@ -192,6 +200,7 @@ const Agent = () => {
             )}
           </div>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

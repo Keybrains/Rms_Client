@@ -23,9 +23,10 @@ import axios from "axios";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import AddWorkorderHeader from "components/Headers/AddWorkorderHeader";
-import swal from "sweetalert";
 import ClearIcon from "@mui/icons-material/Clear";
 import "react-datepicker/dist/react-datepicker.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { jwtDecode } from "jwt-decode";
@@ -488,22 +489,40 @@ const AddWorkorder = () => {
     setLoader(false);
   }
 
+  // function handleResponse(response) {
+  //   if (response.status === 200) {
+  //     if (rental_id) {
+  //       navigate(
+  //         `/${admin}/PropDetails/${WorkFormik.values.rental_id}/${rental_id}?source=task`
+  //       );
+  //     } else {
+  //       navigate("/"+admin+" /Workorder");
+  //     }
+  //     
+  //   } else {
+  //     alert(response.data.message);
+  //   }
+  // }
+  
   function handleResponse(response) {
-    if (response.status === 200) {
-      if (rental_id) {
-        navigate(
+    const successMessage = rental_id ? "Workorder updated successfully" : "Workorder added successfully";
+    const errorMessage = response.data.message;
+  
+    if (response.data.statusCode === 200) {
+      // Show success toast
+      toast.success(successMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+        onClose: () =>  navigate(
           `/${admin}/PropDetails/${WorkFormik.values.rental_id}/${rental_id}?source=task`
-        );
-      } else {
-        navigate("/"+admin+" /Workorder");
-      }
-      swal(
-        "Success!",
-        id ? "Workorder Updated Successfully" : "Workorder Added Successfully!",
-        "success"
-      );
+        ),
+      });
     } else {
-      alert(response.data.message);
+      // Show an error toast
+      toast.error(errorMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     }
   }
 
@@ -2147,6 +2166,7 @@ const AddWorkorder = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

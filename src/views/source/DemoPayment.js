@@ -30,7 +30,8 @@ import { RotatingLines } from "react-loader-spinner";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import * as yup from "yup";
-import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from "components/Headers/Header";
 import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
@@ -284,7 +285,9 @@ const DemoPayment = () => {
       console.log(response.data, "response.data");
 
       if (response.data && response.data.statusCode === 100) {
-        swal("Success!", "Payment Successful", "success");
+        toast.success('Payment Successful!', {
+          position: 'top-center',
+        })
         await getGeneralLedgerData();
         closeModal();
 
@@ -295,11 +298,15 @@ const DemoPayment = () => {
         }
       } else {
         console.error("Unexpected response format:", response.data);
-        swal("Error", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      swal("", error.message, "error");
+      toast.error(error.message, {
+        position: 'top-center',
+      })
     } finally {
       setPaymentLoader(false);
     }
@@ -545,10 +552,14 @@ const DemoPayment = () => {
       if (response.data.statusCode === 200) {
         closeModal();
         console.log("Response Data:", response.data);
-        swal("Success", "Payments Update Successfully", "success");
+        toast.success('Payments Update Successfully', {
+          position: 'top-center',
+        })
         navigate(`/tenant/tenantFinancial`);
       } else {
-        swal("Error", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
         console.error("Server Error:", response.data.message);
       }
     } catch (error) {
@@ -1372,6 +1383,7 @@ const DemoPayment = () => {
             <Button onClick={closeModal}>Cancel</Button>
           </ModalFooter>
         </Form>
+        <ToastContainer />
       </Modal>
     </>
   );

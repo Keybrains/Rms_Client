@@ -22,6 +22,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Dialog from "@mui/material/Dialog";
@@ -100,10 +102,14 @@ const StaffMember = () => {
       //console.log("Edit Response:", response);
 
       if (response.status === 200) {
-        swal("Success!", "Staff Member updated successfully!", "success");
+        toast.success('Staff Member updated successfully!', {
+          position: 'top-center',
+        })
         getStaffMemberData(); // Refresh the data after successful edit
       } else {
-        swal("", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
         console.error("Edit request failed with status:", response.status);
       }
     } catch (error) {
@@ -128,31 +134,35 @@ const StaffMember = () => {
           .delete(`${baseUrl}/staffmember/staff_member/${id}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
-              swal("Success!", "Staff Member deleted successfully!", "success");
+              toast.success('Staff Member deleted successfully!', {
+                position: 'top-center',
+              })
               getStaffMemberData();
             } else if (response.data.statusCode === 201) {
-              swal(
-                "Warning!",
-                "Staff Member already assigned to workorder!",
-                "warning"
-              );
+              
+              toast.warning('Staff Member already assigned to workorder!', {
+                position: 'top-center',
+              })
               getStaffMemberData();
             } else if (response.data.statusCode === 202) {
-              swal(
-                "Warning!",
-                "Staff Member already assigned to property!",
-                "warning"
-              );
+             
+              toast.warning('Staff Member already assigned to property', {
+                position: 'top-center',
+              })
               getStaffMemberData();
             } else {
-              swal("Error", response.data.message, "error");
+              toast.error(response.data.message, {
+                position: 'top-center',
+              })
             }
           })
           .catch((error) => {
             console.error("Error deleting:", error);
           });
       } else {
-        swal("Cancelled", "Staff Member is safe :)", "info");
+        toast.success('Staff Member is safe :)', {
+          position: 'top-center',
+        })
       }
     });
   };
@@ -643,6 +653,7 @@ const StaffMember = () => {
             Save
           </Button>
         </DialogActions>
+        <ToastContainer />
       </Dialog>
     </>
   );

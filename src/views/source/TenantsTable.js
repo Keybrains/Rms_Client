@@ -15,7 +15,8 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from "components/Headers/Header";
 import * as React from "react";
 import axios from "axios";
@@ -108,12 +109,18 @@ const TenantsTable = () => {
         );
         console.log(res);
         if (res.data.statusCode === 200) {
-          swal("Success", res.data.message, "success");
+          toast.success(res.data.message, {
+            position: 'top-center',
+          })
         } else {
-          swal("Warning", res.data.message, "warning");
+          toast.warning(res.data.message, {
+            position: 'top-center',
+          })
         }
       } else {
-        swal("Cancelled", "Tenant is safe :)", "info");
+        toast.success('Tenant is safe!', {
+          position: 'top-center',
+        })
       }
     });
   };
@@ -597,6 +604,7 @@ const TenantsTable = () => {
         </Row>
         <br />
         <br />
+        <ToastContainer />
       </Container>
     </>
   );

@@ -36,8 +36,8 @@ import EmailIcon from "@mui/icons-material/Email";
 import ClearIcon from "@mui/icons-material/Clear";
 import EditIcon from "@mui/icons-material/Edit";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import swal from "sweetalert";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   CardActions,
   CardContent,
@@ -969,11 +969,15 @@ const ApplicantForm = () => {
 
       if (response.status === 200) {
         // Check if the response status is 200
-        swal("Success!", response.data.message, "success");
+        toast.success(response.data.message, {
+          position: 'top-center',
+        })
         navigate("/admin/Applicants/");
       } else {
         // If the status is not 200, handle the error
-        swal("", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
       }
     } catch (error) {
       console.error("Error updating data:", error);
@@ -2025,6 +2029,7 @@ const ApplicantForm = () => {
             </div>
           </section>
         </Box>
+        <ToastContainer />
       </Container>
     </>
   );

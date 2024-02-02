@@ -39,7 +39,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useFormik } from "formik";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 //rentals
 import {
@@ -460,7 +461,10 @@ const Rentals = () => {
     };
     setSelectedRentalOwnerData(newrentalOwnerDetails);
     if (!rental_id) {
-      swal("Success!", "Rental Owner Added Successfully", "success");
+      toast.success('Rental Owner Added Successfully!', {
+        position: 'top-center',
+        autoClose: 500,
+      })
     }
     setDisplay(false);
   };
@@ -2563,6 +2567,8 @@ const Rentals = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
+
       </Container>
     </>
   );

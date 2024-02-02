@@ -23,6 +23,8 @@ import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
@@ -84,17 +86,24 @@ const [searchQuery, setSearchQuery] = useState("");
           })
           .then((response) => {
             if (response.data.statusCode === 200) {
-              swal("Success!", "Work Order deleted successfully", "success");
+              toast.success('Work Order deleted successfully', {
+                position: 'top-center',
+              })
               getWorkData(); // Refresh your work order data or perform other actions
             } else {
-              swal("", response.data.message, "error");
+              toast.error(response.data.message, {
+                position: 'top-center',
+              })
             }
           })
           .catch((error) => {
             console.error("Error deleting work order:", error);
           });
       } else {
-        swal("Cancelled", "Work Order is safe :)", "info");
+        toast.success('Work Orer is safe!', {
+          position: 'top-center',
+        })
+
       }
     });
   };
@@ -495,6 +504,7 @@ const [searchQuery, setSearchQuery] = useState("");
         </Row>
         <br />
         <br />
+        <ToastContainer />
       </Container>
     </>
   );

@@ -43,6 +43,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { set } from "date-fns";
 import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   CardActions,
   CardContent,
@@ -544,18 +546,26 @@ const RentRollDetail = () => {
             `${baseUrl}/payment_charge/delete_entry/${Id}`
           );
           if (response.data.statusCode === 200) {
-            swal("Success!", "Entry deleted successfully!", "success");
+            toast.success('Entry deleted successfully!', {
+              position: 'top-center',
+            })
             getGeneralLedgerData();
             getTenantData();
           } else {
-            swal("", response.data.message, "error");
+            toast.error(response.data.message, {
+              position: 'top-center',
+            })
           }
         } catch (error) {
           console.error("Error deleting entry:", error);
-          swal("", "Failed to delete entry", "error");
+          toast.error('Failed to delete entry', {
+            position: 'top-center',
+          })
         }
       } else {
-        swal("Cancelled", "Entry is safe :)", "info");
+        toast.success('Entry is safe', {
+          position: 'top-center',
+        })
       }
     });
   };
@@ -613,7 +623,9 @@ const RentRollDetail = () => {
         .then((res) => {
           console.log(res, "res");
           if (res.data.statusCode === 200) {
-            swal("Success!", "Move-out Successfully", "success");
+            toast.success('Move-out Successfully', {
+              position: 'top-center',
+            })
             // Close the modal if the status code is 200
             handleModalClose();
             getTenantData();
@@ -621,15 +633,16 @@ const RentRollDetail = () => {
           }
         })
         .catch((err) => {
-          swal("Error", "An error occurred while Move-out", "error");
+          toast.error('An error occurred while Move-out', {
+            position: 'top-center',
+          })
           console.error(err);
         });
     } else {
-      swal(
-        "Error",
-        "NOTICE GIVEN DATE && MOVE-OUT DATE must be required",
-        "error"
-      );
+  
+      toast.error('NOTICE GIVEN DATE && MOVE-OUT DATE must be required', {
+        position: 'top-center',
+      })
     }
   };
 
@@ -833,7 +846,7 @@ const RentRollDetail = () => {
   const [cardDetalis, setCardDetails] = useState([]);
   const getCreditCard = async () => {
     const response = await axios.get(
-      `http://localhost:4000/api/creditcard/getCreditCard/${tenantId}`
+      `http://192.168.1.13:4000/api/creditcard/getCreditCard/${tenantId}`
     );
     setCardDetails(response.data);
     console.log(response, "yashu");
@@ -2174,6 +2187,7 @@ const RentRollDetail = () => {
           />
         </ModalBody>
       </Modal>
+      <ToastContainer />
     </div>
   );
 };

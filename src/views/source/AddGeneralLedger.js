@@ -5,7 +5,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
 import Cookies from "universal-cookie";
-import swal from "sweetalert";
 import {
   Button,
   Card,
@@ -31,6 +30,8 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CloseIcon from "@mui/icons-material/Close";
 import { jwtDecode } from "jwt-decode";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddGeneralLedger = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -205,10 +206,15 @@ const AddGeneralLedger = () => {
       );
 
       if (response.data.statusCode === 200) {
-        swal("", response.data.message, "success");
+        toast.success(response.data.message, {
+          position: 'top-center',
+          autoClose: 1000,
+        })
         navigate("/"+admin+"/GeneralLedger");
       } else {
-        swal("", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
         console.error("Server Error:", response.data.message);
       }
     } catch (error) {
@@ -743,6 +749,7 @@ const AddGeneralLedger = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );
