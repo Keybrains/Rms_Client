@@ -49,19 +49,27 @@ function CreditCardForm(props) {
 
   const [customervault, setCustomervault] = useState([]);
   const [cardDetalis, setCardDetails] = useState([]);
+  const [isBilling, setIsBilling] = useState(false);
+  const [vaultId, setVaultId] = useState(false);
 
   const getCreditCard = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/creditcard/getCreditCard/${tenantId}`
+        `${baseUrl}/creditcard/getCreditCards/${tenantId}`
       );
       setCustomervault(response.data);
+      setVaultId(response.data.customer_vault_id);
+      getMultipleCustomerVault(response.data.customer_vault_id);
 
-      const ids = response.data;
-      const customerVaultIds = ids?.map((card) => card.customer_vault_id);
-      getMultipleCustomerVault(customerVaultIds);
+      const hasCustomerVaultId = "customer_vault_id" in response.data;
+      if (hasCustomerVaultId) {
+        setIsBilling(true);
+      } else {
+        setIsBilling(false);
+      }
     } catch (error) {
       console.error("Error fetching credit card details:", error);
+      setIsBilling(false);
     }
   };
 
@@ -74,44 +82,89 @@ function CreditCardForm(props) {
       }
 
       const response = await axios.post(
-        `${baseUrl}/nmipayment/get-multiple-customer-vault`,
+        `${baseUrl}/nmipayment/get-billing-customer-vault`,
         {
           customer_vault_id: customerVaultIds,
         }
       );
 
-      // Extract relevant information from the API response
-      const extractedData = response.data.data.map((item) => ({
-        cc_number: item.customer.cc_number,
-        cc_exp: item.customer.cc_exp,
-        cc_type: item.customer.cc_type,
-        customer_vault_id: item.customer.customer_vault_id,
-      }));
-      setPaymentLoader(false);
-      // Update the cardDetails state
-      setCardDetails(extractedData);
-      console.log("object", response.data.data);
+      console.log("vaibhav", response.data.data);
+
+      // Check if customer.billing is an array
+      const billingData = response.data.data.customer.billing;
+
+      if (Array.isArray(billingData)) {
+        const extractedData = billingData.map((item) => ({
+          billing_id: item["@attributes"].id,
+          cc_number: item.cc_number,
+          cc_exp: item.cc_exp,
+          cc_type: item.cc_type,
+          customer_vault_id: item.customer_vault_id,
+        }));
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+        console.log("objectss", extractedData);
+      } else if (billingData) {
+        // If there's only one record, create an array with a single item
+        const extractedData = [
+          {
+            billing_id: billingData["@attributes"].id,
+            cc_number: billingData.cc_number,
+            cc_exp: billingData.cc_exp,
+            cc_type: billingData.cc_type,
+            customer_vault_id: billingData.customer_vault_id,
+          },
+        ];
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+        console.log("objectss", extractedData);
+      } else {
+        console.error(
+          "Invalid response structure - customer.billing is not an array"
+        );
+        setPaymentLoader(false);
+        setCardDetails([]);
+      }
     } catch (error) {
       console.error("Error fetching multiple customer vault records:", error);
       setPaymentLoader(false);
     }
   };
-
   useEffect(() => {
     getCreditCard();
   }, [tenantId]);
 
   useEffect(() => {
     // Extract customer_vault_id values from cardDetails
-    const customerVaultIds = customervault?.map(
-      (card) => card.customer_vault_id
-    );
+    const customerVaultIds =
+      customervault?.card_detail?.map((card) => card.billing_id) || [];
 
     if (customerVaultIds.length > 0) {
       // Call the API to get multiple customer vault records
       getMultipleCustomerVault(customerVaultIds);
     }
   }, [customervault]);
+
+  console.log("isbilling", isBilling);
+  // useEffect(() => {
+  //   getCreditCard();
+  // }, [tenantId]);
+
+  // console.log("sssss",customervault)
+
+  // useEffect(() => {
+  //   // Extract customer_vault_id values from cardDetails
+  //   const customerVaultIds = customervault?.map(
+  //     (card) => card.billing_id
+  //   );
+
+  //   if (customerVaultIds.length > 0) {
+  //     // Call the API to get multiple customer vault records
+  //     getMultipleCustomerVault(customerVaultIds);
+  //   }
+  // }, [customervault]);
 
   const paymentSchema = yup.object({
     card_number: yup
@@ -146,20 +199,22 @@ function CreditCardForm(props) {
     return numberValidation.isPotentiallyValid && numberValidation.card;
   };
 
+  function generateRandomNumber(length) {
+    let randomNumber = "";
+    for (let i = 0; i < length; i++) {
+      randomNumber += Math.floor(Math.random() * 10);
+    }
+    return randomNumber;
+  }
+
   const handleSubmit = async (values) => {
     const isValidCard = validateCardNumber(values.card_number);
 
-    if (!isValidCard) {
-      swal("Error", "Invalid credit card number", "error");
-      return;
-    }
+    // Example: Generate a random number with length 10
+    const random10DigitNumber = generateRandomNumber(10);
 
-    try {
-      setSubmitting(true);
-      // Call the first API
-      const customerVaultResponse = await axios.post(
-        `${baseUrl}/nmipayment/create-customer-vault`,
-        {
+    const requestBody = isBilling
+      ? {
           first_name: values.first_name,
           last_name: values.last_name,
           ccnumber: values.card_number,
@@ -173,8 +228,39 @@ function CreditCardForm(props) {
           company: values.company,
           phone: values.phone,
           email: values.email,
+          customer_vault_id: vaultId,
+          billing_id: random10DigitNumber,
         }
-      );
+      : {
+          first_name: values.first_name,
+          last_name: values.last_name,
+          ccnumber: values.card_number,
+          ccexp: values.exp_date,
+          address1: values.address1,
+          address2: values.address2,
+          city: values.city,
+          state: values.state,
+          zip: values.zip,
+          country: values.country,
+          company: values.company,
+          phone: values.phone,
+          email: values.email,
+          billing_id: random10DigitNumber,
+        };
+
+    if (!isValidCard) {
+      swal("Error", "Invalid credit card number", "error");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      const url = isBilling
+        ? `${baseUrl}/nmipayment/create-customer-billing`
+        : `${baseUrl}/nmipayment/create-customer-vault`;
+      // Call the first API
+      const customerVaultResponse = await axios.post(url, requestBody);
 
       if (customerVaultResponse.data && customerVaultResponse.data.data) {
         // Extract customer_vault_id from the first API response
@@ -187,8 +273,9 @@ function CreditCardForm(props) {
           `${baseUrl}/creditcard/addCreditCard`,
           {
             tenant_id: tenantId,
-            customer_vault_id: customerVaultId,
+            customer_vault_id: isBilling ? vaultId : customerVaultId,
             response_code: vaultResponse,
+            billing_id: random10DigitNumber,
           }
         );
 
@@ -220,15 +307,14 @@ function CreditCardForm(props) {
     }
   };
 
-  const handleDeleteCard = async (customerVaultId) => {
+  const handleDeleteCard = async (customerVaultId, billingId) => {
     try {
       // Make parallel requests to delete from your record and NMI
       const [deleteRecordResponse, deleteNMIResponse] = await Promise.all([
-        axios.delete(
-          `${baseUrl}/creditcard/deleteCreditCard/${customerVaultId}`
-        ),
-        axios.post(`${baseUrl}/nmipayment/delete-customer-vault`, {
+        axios.delete(`${baseUrl}/creditcard/deleteCreditCard/${billingId}`),
+        axios.post(`${baseUrl}/nmipayment/delete-customer-billing`, {
           customer_vault_id: customerVaultId,
+          billing_id: billingId,
         }),
       ]);
 
@@ -384,13 +470,10 @@ function CreditCardForm(props) {
     }
   };
 
-
-
-  // ... (Previous code remains unchanged)
+  console.log("card details", cardDetalis);
 
   // Add a state to track the submit button text
   const [submitButtonText, setSubmitButtonText] = useState("Add Card");
-
 
   return (
     <div style={{ maxHeight: "530px", overflowY: "auto", overflowX: "hidden" }}>
@@ -731,7 +814,7 @@ function CreditCardForm(props) {
                     visible={paymentLoader}
                   />
                 </div>
-              ) : cardDetalis && cardDetalis.length > 0 ? (
+              ) :  cardDetalis && cardDetalis.length > 0 ? (
                 <Table responsive style={{ overflowX: "hidden" }}>
                   <tbody>
                     <tr>
@@ -782,7 +865,10 @@ function CreditCardForm(props) {
                           >
                             <DeleteIcon
                               onClick={() =>
-                                handleDeleteCard(item.customer_vault_id)
+                                handleDeleteCard(
+                                  item.customer_vault_id,
+                                  item.billing_id
+                                )
                               }
                               style={{
                                 cursor: "pointer",
