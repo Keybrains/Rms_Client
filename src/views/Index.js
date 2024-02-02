@@ -77,7 +77,7 @@ const Index = (props) => {
 
   console.warn(adminData, "data after decode")
 
-  // http://localhost:4000/api/admin/company/sst
+  // http://192.168.1.13:4000/api/admin/company/sst
 
   // statusCode 200 404
 
@@ -140,7 +140,7 @@ const Index = (props) => {
 
         setData(newData);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 

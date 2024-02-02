@@ -19,7 +19,8 @@ import Tooltip from "@mui/material/Tooltip";
 import { Button } from "react-bootstrap";
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
-import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -105,7 +106,6 @@ function Rows(props) {
 
 export default function Tenants() {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  console.log(baseUrl, "baseUrl");
   let cookies = new Cookies();
   // const history = useHistory();
   // React.useEffect(() => {
@@ -214,21 +214,23 @@ export default function Tenants() {
 
   if (!id) {
     handleSubmit = async (values) => {
-      console.log(values, "values");
       try {
         const res = await axios.post(`${baseUrl}/plans/plans`, values);
-        console.log(res, "res");
         if (res.data.statusCode === 200) {
-          console.log(res.data, "res.data");
           setModalShowForPopupForm(false);
           getData();
-          swal("Success", res.data?.message, "success");
+          toast.success( res.data?.message, {
+            position: 'top-center',
+          })
         } else {
-          swal("Error", res.data.message, "error");
+          toast.error( res.data.message, {
+            position: 'top-center',
+          })
         }
       } catch (error) {
-        console.error("Error:", error);
-        swal("Error", error, "error");
+        toast.error(error, {
+          position: 'top-center',
+        })
       }
     };
   } else {
@@ -242,11 +244,15 @@ export default function Tenants() {
         if (response.data.statusCode === 200) {
           setModalShowForPopupForm(false);
           getData();
-          swal("Success", response.data?.message, "success");
+          toast.success(response.data?.message, {
+            position: 'top-center',
+          })
         }
       } catch (error) {
         console.error("Error:", error);
-        swal("Error", error, "error");
+        toast.error(error, {
+          position: 'top-center',
+        })
       }
     };
   }

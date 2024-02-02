@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Card,
@@ -14,7 +14,6 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Label,
 } from "reactstrap";
 
 import {
@@ -24,31 +23,28 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
-import { useState } from "react";
-import AddPropertyTypeHeader from "components/Headers/AddPropertyTypeHeader.js";
-import axios from "axios";
-import * as yup from "yup";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
-import swal from "sweetalert";
+import axios from "axios";
+import * as yup from "yup";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Checkbox from "@mui/material/Checkbox";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
-import Checkbox from "@mui/material/Checkbox";
+import AddPropertyTypeHeader from "components/Headers/AddPropertyTypeHeader.js";
 
 const AddPropertyType = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { id , admin} = useParams();
-  const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
-  const [isMultiUnit, setIsMultiUnit] = React.useState(false);
+  const { id, admin } = useParams();
+  const [prodropdownOpen, setproDropdownOpen] = useState(false);
+  const [isMultiUnit, setIsMultiUnit] = useState(false);
 
-  const [selectedProperty, setSelectedProperty] = React.useState("");
+  const [selectedProperty, setSelectedProperty] = useState("");
 
   const toggle = () => setproDropdownOpen((prevState) => !prevState);
 
-  let navigate = useNavigate();
-  const handleCloseButtonClick = () => {
-    navigate("../PropertyType");
-  };
+  const navigate = useNavigate();
 
   const handleChangecheck = (e) => {
     setIsMultiUnit(e.target.checked);
@@ -70,16 +66,15 @@ const AddPropertyType = () => {
     }),
     onSubmit: (values) => {
       handleSubmit(values);
-      //console.log(values, "values");
     },
   });
 
   const [propertyType, setpropertyType] = useState(null);
 
-  let cookies = new Cookies();
+  const cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
@@ -88,7 +83,7 @@ const AddPropertyType = () => {
     }
   }, [navigate]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (id) {
       axios
         .get(`${baseUrl}/propertytype/property/type/${id}`)
@@ -96,7 +91,6 @@ const AddPropertyType = () => {
           const propertyData = response.data.data[0];
           setpropertyType(propertyType);
           setIsMultiUnit(propertyData.is_multiunit);
-          // console.log(propertyData);
 
           setSelectedProperty(propertyData.property_type || "Select");
 
@@ -114,7 +108,6 @@ const AddPropertyType = () => {
 
   async function handleSubmit(values) {
     try {
-      // Include isMultiUnit in the values to be sent to the server
       const object = {
         admin_id: accessType.admin_id,
         property_type: propertyFormik.values.property_type,
@@ -129,17 +122,23 @@ const AddPropertyType = () => {
         );
         if (res.data.statusCode === 200) {
           handleResponse(res);
+
         } else if (res.data.statusCode === 201) {
-          swal("error", res.data.message, "error");
+          toast.error(res.data.message, {
+            position: 'top-center',
+            autoClose: 1000,
+          });
         }
       } else {
         const editUrl = `${baseUrl}/propertytype/property_type/${id}`;
         const res = await axios.put(editUrl, object);
-        console.log(object, res, "yash");
         if (res.data.statusCode === 200) {
           handleResponse(res);
         } else if (res.data.statusCode === 400) {
-          swal("error", res.data.message, "error");
+          toast.error(res.data.message, {
+            position: 'top-center',
+            autoClose: 1000,
+          });
         }
       }
     } catch (error) {
@@ -147,34 +146,42 @@ const AddPropertyType = () => {
       if (error.response) {
         console.error("Response Data:", error.response.data);
       }
-      // Handle the error and display an error message to the user if necessary.
     }
   }
+
   function handleResponse(response) {
+    const successMessage = id ? "Property Type updated successfully" : "Property Type added successfully";
+    const errorMessage = response.data.message;
+  
     if (response.data.statusCode === 200) {
-      navigate("/"+admin+"/PropertyType");
-      swal(
-        "Success!",
-        id
-          ? "Property Type updated successfully"
-          : "Property Type added successfully!",
-        "success"
-      );
+      // Show success toast
+      toast.success(successMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+        onClose: () => navigate(`/${admin}/PropertyType`),
+      });
     } else {
-      alert(response.data.message);
+      // Show an error toast
+      toast.error(errorMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     }
   }
+  
+  
+
+  const handleCloseButtonClick = () => {
+    navigate("../PropertyType");
+  };
+
   return (
     <>
       <AddPropertyTypeHeader />
-      {/* Page content */}
       <Container className="mt--7" fluid>
         <Row>
           <Col className="order-xl-1" xl="12">
-            <Card
-              className="bg-secondary shadow"
-              onSubmit={propertyFormik.handleSubmit}
-            >
+            <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
@@ -185,7 +192,7 @@ const AddPropertyType = () => {
                 </Row>
               </CardHeader>
               <CardBody>
-                <Form>
+                <Form onSubmit={propertyFormik.handleSubmit}>
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
@@ -198,7 +205,6 @@ const AddPropertyType = () => {
                           </label>
                           <br />
                           <br />
-
                           <Dropdown isOpen={prodropdownOpen} toggle={toggle}>
                             <DropdownToggle caret>
                               {propertyFormik.values.property_type ||
@@ -284,30 +290,29 @@ const AddPropertyType = () => {
                     <br />
                   </div>
                   <Row>
-                    <button
+                    <Button
                       type="submit"
                       className="btn btn-primary ml-4"
-                      style={{ background: "green" }}
-                      // onClick={handleCloseButtonClick}
+                      style={{ background: "green", color:"white" }}
                     >
                       {id ? "Update Property Type" : "Add Property Type"}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       color="primary"
-                      //  href="#rms"
                       className="btn btn-primary"
                       onClick={handleCloseButtonClick}
                       size="sm"
                       style={{ background: "white", color: "black" }}
                     >
                       Cancel
-                    </button>
+                    </Button>
                   </Row>
                 </Form>
               </CardBody>
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

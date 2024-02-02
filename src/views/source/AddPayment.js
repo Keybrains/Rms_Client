@@ -4,7 +4,8 @@ import { useFormik } from "formik";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
-import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   Button,
   Card,
@@ -386,7 +387,9 @@ const AddPayment = () => {
               console.log(response, "response.data");
             } else {
               console.error("Unexpected response format:", response.data);
-              swal("", response.data.message, "error");
+              toast.error(response.data.message, {
+                position: 'top-center',
+              })
             }
           } catch (error) {
             console.log(error);
@@ -495,20 +498,28 @@ const AddPayment = () => {
             doc.save(`PaymentReceipt_${id}.pdf`);
           } else {
             if (!printReceipt) {
-              swal("Success!", "Payment added successfully", "success");
+              toast.success('Payment added successfully', {
+                position: 'top-center',
+              })
             } else {
-              swal("Error", "Failed to retrieve PDF summary", "error");
+              toast.error('Failed to retrieve PDF summary', {
+                position: 'top-center',
+              })
             }
           }
         } else {
-          swal("Error", "Failed to get 'id' from the response", "error");
+          toast.error('Failed to get ',id,' from the response', {
+            position: 'top-center',
+          })
         }
 
         navigate(
           `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
         ); // Navigate to the desired page
       } else {
-        swal("Error", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
         console.error("Server Error:", response.data.message);
       }
       try {
@@ -735,10 +746,14 @@ const AddPayment = () => {
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
-        swal("Success", "Payments Update Successfully", "success");
+        toast.success('Payments Update Successfully', {
+          position: 'top-center',
+        })
         navigate(`/admin/rentrolldetail/${tenantid}/${"01"}`);
       } else {
-        swal("Error", response.data.message, "error");
+        toast.error(response.data.message, {
+          position: 'top-center',
+        })
         console.error("Server Error:", response.data.message);
       }
     } catch (error) {
@@ -1859,6 +1874,7 @@ const AddPayment = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

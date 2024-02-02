@@ -180,7 +180,6 @@ const Sidebar = (props) => {
     );
     return filteredRoutes.map((prop, key) => {
       const path = prop.layout == "/"+admin+"" ? "/" + admin : "/" + admin;
-      console.log(path, "yash")
       return (
         <NavItem key={key}>
           <NavLink
@@ -214,7 +213,7 @@ const Sidebar = (props) => {
       }
 
     } catch (error) {
-      console.log("error in acheck admin exist", error)
+      console.error("error in acheck admin exist", error)
     }
   }
 

@@ -16,7 +16,9 @@ import {
   Input,
 } from "reactstrap";
 import axios from "axios";
-import swal from "sweetalert";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function AccountDialog(props) {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -64,19 +66,26 @@ function AccountDialog(props) {
       charge_type: props.accountTypeName,
       admin_id: props.adminId,
     };
-    console.log(object);
     try {
       const res = await axios.post(`${baseUrl}/accounts/accounts`, object);
       if (res.status === 200) {
-        swal("", res.data.message, "success");
+        toast.success('', res.data.message,'success', {
+          position: 'top-center',
+          autoClose: 500,
+        })
         accountFormik.resetForm();
         props.setAddBankAccountDialogOpen(false);
       } else {
-        swal("", res.data.message, "error");
+   
+        toast.error(res.data.message, {
+          position: 'top-center',
+        })
       }
     } catch (error) {
       if (error.response.status === 400) {
-        swal("", "Account already exists", "warning");
+        toast.warning('Account already exists', {
+          position: 'top-center',
+        })
       }
       accountFormik.resetForm();
     }
@@ -229,7 +238,9 @@ function AccountDialog(props) {
           Add
         </Button>
       </DialogActions>
+      <ToastContainer />
     </Dialog>
+    
   );
 }
 

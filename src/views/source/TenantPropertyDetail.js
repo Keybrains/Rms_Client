@@ -8,11 +8,11 @@ import { jwtDecode } from "jwt-decode";
 import { OpenImageDialog } from "components/OpenImageDialog";
 import Cookies from "universal-cookie";
 import card from "../../assets/img/theme/angular.jpg";
-import PropImage from "../../assets/img/icons/common/pexels-binyamin-mellish-186077.jpg"
+import PropImage from "../../assets/img/icons/common/pexels-binyamin-mellish-186077.jpg";
 
 const TenantPropertyDetail = () => {
+  const { lease_id } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { rental_adress } = useParams();
   const [propertyDetails, setPropertyDetails] = useState([]);
   const [propertyUnit, setPropertyUnit] = useState([]);
   const [propId, setPropId] = useState("");
@@ -37,35 +37,20 @@ const TenantPropertyDetail = () => {
     }
   }, [navigate]);
 
-useEffect(() => {
   const getRentalData = async () => {
     try {
-      if (!rental_adress) return;
-
-      const rentalSummaryUrl = `${baseUrl}/rentals/Rentals_summary/tenant/${rental_adress}`;
-      const summaryResponse = await axios.get(rentalSummaryUrl);
-
-      const propertyDetails = summaryResponse.data.data;
-      setPropertyDetails(propertyDetails);
-
-      if (propertyDetails.length > 0) {
-        const rentalId = propertyDetails[0]._id;
-        const unitUrl = `${baseUrl}/propertyunit/propertyunit/` + rentalId;
-
-        console.log('rentalId', rentalId);
-        console.log('unitUrl', unitUrl);
-
-        const unitResponse = await axios.get(unitUrl);
-        setPropertyUnit(unitResponse.data.data);
-      }
+      const res = await axios.get(
+        `${baseUrl}/tenants/tenant_summary/${lease_id}`
+      );
+      setPropertyDetails(res.data.data[0]);
     } catch (error) {
-      console.error('Error fetching rental data:', error);
+      console.error("Error fetching tenant details:", error);
     }
   };
 
-  getRentalData();
-}, [rental_adress, baseUrl]);
-
+  useEffect(() => {
+    getRentalData();
+  }, []);
 
   return (
     <>
@@ -80,7 +65,7 @@ useEffect(() => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/tenant/tenantproperty")}
               size="sm"
               style={{ background: "white", color: "#3B2F2F" }}
@@ -98,155 +83,201 @@ useEffect(() => {
                 <h3 className="mb-0">Summary</h3>
               </CardHeader>
               <div className="table-responsive">
-                {propertyDetails.map((propertyDetails) => (
+                {/* {propertyDetails?.map((propertyDetails) => ( */}
+                <>
+                  {/* {propertyDetails?.entries?.map((entry) => ( */}
                   <>
-                    {propertyDetails.entries.map((entry) => (
-                      <>
-                        <div className="row m-3">
-                          <div className="col-12">
-                            <div
-                              className="align-items-center table-flush"
-                              responsive
-                              style={{ width: "100%" }}
-                            >
-                              <div className="w-100">
-                                <div className="card mb-3 col-6">
-                                  <div className="row g-0">
-                                    <div className="col-md-4">
-                                      <img
-                                        src={entry.prop_image}
-                                        // src={PropImage}
-                                        alt="Property Details"
-                                        style={{ maxWidth: "8rem" }}
-                                      />
-                                    </div>
-                                    <div className="col-md-8">
-                                      <div className="card-body">
-                                        <h5 className="card-title" style={{color:'#3B2F2F'}}>
-                                          Property Details
-                                        </h5>
-                                        <p className="card-text">
-                                          <small className="text-muted">
-                                            Address
-                                          </small>
-                                        </p>
-                                        <p className="card-text">
-                                          {entry.property_type} |{" "}
-                                          {entry.rental_adress} 
-                                        
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
+                    <div className="row m-3">
+                      <div className="col-12">
+                        <div
+                          className="align-items-center table-flush"
+                          responsive
+                          style={{ width: "100%" }}
+                        >
+                          <div className="w-100">
+                            <div class="card mb-3 col-md-2">
+                              <div className="row g-0">
+                                <div className="col-md-4">
+                                  <img
+                                    className="mt-2 mb-2"
+                                    src={
+                                      propertyDetails?.rental_data
+                                        ?.prop_image || PropImage
+                                    }
+                                    // src={PropImage}
+                                    alt="Property Details"
+                                    style={{ maxWidth: "8rem" }}
+                                  />
                                 </div>
-                                <Row
-                                  className="w-100 my-3 "
+                                {/* <div className="col-md-8">
+                                  <div className="card-body">
+                                    <h5
+                                      className="card-title"
+                                      style={{ color: "#3B2F2F" }}
+                                    >
+                                      Property Details
+                                    </h5>
+                                    <p className="card-text">
+                                      <small className="text-muted">
+                                        Address
+                                      </small>
+                                    </p>
+                                    <p className="card-text">
+                                      {
+                                        propertyDetails?.property_type_data
+                                          ?.propertysub_type
+                                      }{" "}
+                                      |{" "}
+                                      {
+                                        propertyDetails?.rental_data
+                                          ?.rental_adress
+                                      }
+                                    </p>
+                                  </div>
+                                </div> */}
+                              </div>
+                            </div>
+                            <Row
+                              className="w-100 my-3 "
+                              style={{
+                                fontSize: "18px",
+                                textTransform: "capitalize",
+                                color: "#3B2F2F",
+                                fontWeight: "600",
+                                borderBottom: "1px solid #ddd",
+                              }}
+                            >
+                              <Col>Property Details</Col>
+                            </Row>
+                            <Row
+                              className="mb-1 m-0 p-0"
+                              style={{ fontSize: "12px", color: "#000" }}
+                            >
+                              <Table>
+                                <tbody
+                                  className="tbbody p-0 m-0"
                                   style={{
-                                    fontSize: "18px",
-                                    textTransform: "capitalize",
-                                    color:'#3B2F2F',
-                                    fontWeight: "600",
-                                    borderBottom: "1px solid #ddd",
-                                    
+                                    borderTopRightRadius: "5px",
+                                    borderTopLeftRadius: "5px",
+                                    borderBottomLeftRadius: "5px",
+                                    borderBottomRightRadius: "5px",
                                   }}
                                 >
-                                  <Col>Property Details</Col>
-                                </Row>
-                                <Row
-                                  className="mb-1 m-0 p-0"
-                                  style={{ fontSize: "12px", color: "#000" }}
-                                >
-                                  <Table>
-                                    <tbody
-                                      className="tbbody p-0 m-0"
-                                      style={{
-                                        borderTopRightRadius: "5px",
-                                        borderTopLeftRadius: "5px",
-                                        borderBottomLeftRadius: "5px",
-                                        borderBottomRightRadius: "5px",
-                                      }}
-                                    >
-                                      <tr className="header">
-                                        <th>Property Details</th>
-                                        <th>Address</th>
-                                        <th>City</th>
-                                        <th>Country</th>
-                                        <th>Post code</th>
-                                      </tr>
+                                  <tr className="header">
+                                    <th>Property Details</th>
+                                    <th>Address</th>
+                                    <th>City</th>
+                                    <th>Country</th>
+                                    <th>Post code</th>
+                                  </tr>
 
-                                      <tr className="body">
-                                        <td>{entry.property_type}</td>
-                                        <td>{entry.rental_adress}</td>
-                                        <td>{entry.rental_city}</td>
-                                        <td>{entry.rental_country}</td>
-                                        <td>{entry.rental_postcode}</td>
-                                      </tr>
-                                    </tbody>
-                                  </Table>
-                                </Row>
-                                <Row
-                                  className="w-100 my-3 "
+                                  <tr className="body">
+                                    <td>
+                                      {
+                                        propertyDetails?.rental_data
+                                          ?.property_type
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        propertyDetails?.rental_data
+                                          ?.rental_adress
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        propertyDetails?.rental_data
+                                          ?.rental_city
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        propertyDetails?.rental_data
+                                          ?.rental_country
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        propertyDetails?.rental_data
+                                          ?.rental_postcode
+                                      }
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </Table>
+                            </Row>
+                            <Row
+                              className="w-100 my-3 "
+                              style={{
+                                fontSize: "18px",
+                                textTransform: "capitalize",
+                                color: "#022d60",
+                                fontWeight: "600",
+                                borderBottom: "1px solid #ddd",
+                              }}
+                            >
+                              <Col style={{ color: "#3B2F2F" }}>
+                                Rental owner detail
+                              </Col>
+                            </Row>
+                            <Row
+                              className="mb-1 m-0 p-0"
+                              style={{ fontSize: "12px", color: "#000" }}
+                            >
+                              <Table>
+                                <tbody
+                                  className="tbbody p-0 m-0"
                                   style={{
-                                    fontSize: "18px",
-                                    textTransform: "capitalize",
-                                    color: "#022d60",
-                                    fontWeight: "600",
-                                    borderBottom: "1px solid #ddd",
+                                    borderTopRightRadius: "5px",
+                                    borderTopLeftRadius: "5px",
+                                    borderBottomLeftRadius: "5px",
+                                    borderBottomRightRadius: "5px",
                                   }}
                                 >
-                                  <Col style={{color:'#3B2F2F'}}>Rental owner detail</Col>
-                                </Row>
-                                <Row
-                                  className="mb-1 m-0 p-0"
-                                  style={{ fontSize: "12px", color: "#000" }}
-                                >
-                                  <Table>
-                                    <tbody
-                                      className="tbbody p-0 m-0"
-                                      style={{
-                                        borderTopRightRadius: "5px",
-                                        borderTopLeftRadius: "5px",
-                                        borderBottomLeftRadius: "5px",
-                                        borderBottomRightRadius: "5px",
-                                      }}
-                                    >
-                                      <tr className="header">
-                                        <th>First name</th>
-                                        <th>Last name</th>
-                                        <th>Compnay name</th>
-                                        <th>Email</th>
-                                        <th>Phone no</th>
-                                      </tr>
+                                  <tr className="header">
+                                    <th>First name</th>
+                                    <th>Last name</th>
+                                    <th>Compnay name</th>
+                                    <th>Email</th>
+                                    <th>Phone no</th>
+                                  </tr>
 
-                                      <tr className="body">
-                                        <td>
-                                          {
-                                            propertyDetails.rentalOwner_firstName
-                                          }
-                                        </td>
-                                        <td>
-                                          {propertyDetails.rentalOwner_lastName}
-                                        </td>
-                                        <td>
-                                          {
-                                            propertyDetails.rentalOwner_companyName
-                                          }
-                                        </td>
-                                        <td>
-                                          {
-                                            propertyDetails.rentalOwner_primaryEmail
-                                          }
-                                        </td>
-                                        <td>
-                                          {
-                                            propertyDetails.rentalOwner_phoneNumber
-                                          }
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </Table>
-                                </Row>
-                                {/* <Row
+                                  <tr className="body">
+                                    <td>
+                                      {
+                                        propertyDetails?.rentalowner_data
+                                          ?.rentalOwner_firstName
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        propertyDetails?.rentalowner_data
+                                          ?.rentalOwner_lastName
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        propertyDetails?.rentalowner_data
+                                          ?.rentalOwner_companyName
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        propertyDetails?.rentalowner_data
+                                          ?.rentalOwner_primaryEmail
+                                      }
+                                    </td>
+                                    <td>
+                                      {
+                                        propertyDetails?.rentalowner_data
+                                          ?.rentalOwner_phoneNumber
+                                      }
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </Table>
+                            </Row>
+                            {/* <Row
                                   className="w-100 my-3 "
                                   style={{
                                     fontSize: "18px",
@@ -284,110 +315,122 @@ useEffect(() => {
                                     </tbody>
                                   </Table>
                                 </Row> */}
-                                <Row
-                                  className="w-100 my-3 "
+                            <Row
+                              className="w-100 my-3 "
+                              style={{
+                                fontSize: "18px",
+                                textTransform: "capitalize",
+                                color: "#3B2F2F",
+                                fontWeight: "600",
+                                borderBottom: "1px solid #ddd",
+                              }}
+                            >
+                              <Col>Staff Details</Col>
+                            </Row>
+                            <Row
+                              className="mb-1 m-0 p-0"
+                              style={{ fontSize: "12px", color: "#000" }}
+                            >
+                              <Table>
+                                <tbody
+                                  className="tbbody p-0 m-0"
                                   style={{
-                                    fontSize: "18px",
-                                    textTransform: "capitalize",
-                                    color: "#3B2F2F",
-                                    fontWeight: "600",
-                                    borderBottom: "1px solid #ddd",
+                                    borderTopRightRadius: "5px",
+                                    borderTopLeftRadius: "5px",
+                                    borderBottomLeftRadius: "5px",
+                                    borderBottomRightRadius: "5px",
                                   }}
                                 >
-                                  <Col>Staff Details</Col>
-                                </Row>
-                                <Row
-                                  className="mb-1 m-0 p-0"
-                                  style={{ fontSize: "12px", color: "#000" }}
-                                >
-                                  <Table>
-                                    <tbody
-                                      className="tbbody p-0 m-0"
-                                      style={{
-                                        borderTopRightRadius: "5px",
-                                        borderTopLeftRadius: "5px",
-                                        borderBottomLeftRadius: "5px",
-                                        borderBottomRightRadius: "5px",
-                                      }}
-                                    >
-                                      <tr className="header">
-                                        <th>Staff member</th>
-                                      </tr>
+                                  <tr className="header">
+                                    <th>Staff member</th>
+                                  </tr>
 
-                                      <tr className="body">
-                                        <td>{entry.staffMember || "No staff member assigned"}</td>
-                                      </tr>
-                                    </tbody>
-                                  </Table>
-                                </Row>
-                                <Row
-                                  className="w-100 my-3 "
+                                  <tr className="body">
+                                    <td>
+                                      {propertyDetails?.staffmember_data
+                                        ?.staffmember_name ||
+                                        "No staff member assigned"}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </Table>
+                            </Row>
+                            <Row
+                              className="w-100 my-3 "
+                              style={{
+                                fontSize: "18px",
+                                textTransform: "capitalize",
+                                color: "#3B2F2F",
+                                fontWeight: "600",
+                                borderBottom: "1px solid #ddd",
+                              }}
+                            >
+                              <Col>Unit Details</Col>
+                            </Row>
+                            <Row
+                              className="mb-1 m-0 p-0"
+                              style={{ fontSize: "12px", color: "#000" }}
+                            >
+                              <Table>
+                                <tbody
+                                  className="tbbody p-0 m-0"
                                   style={{
-                                    fontSize: "18px",
-                                    textTransform: "capitalize",
-                                    color: "#3B2F2F",
-                                    fontWeight: "600",
-                                    borderBottom: "1px solid #ddd",
+                                    borderTopRightRadius: "5px",
+                                    borderTopLeftRadius: "5px",
+                                    borderBottomLeftRadius: "5px",
+                                    borderBottomRightRadius: "5px",
                                   }}
                                 >
-                                  <Col>Unit Details</Col>
-                                </Row>
-                                <Row
-                                  className="mb-1 m-0 p-0"
-                                  style={{ fontSize: "12px", color: "#000" }}
-                                >
-                                  <Table>
-                                    <tbody
-                                      className="tbbody p-0 m-0"
-                                      style={{
-                                        borderTopRightRadius: "5px",
-                                        borderTopLeftRadius: "5px",
-                                        borderBottomLeftRadius: "5px",
-                                        borderBottomRightRadius: "5px",
-                                      }}
-                                    >
-                                      <tr className="header">
-                                        <th>Unit</th>
-                                        <th>Unit address</th>
-                                        <th>Bed</th>
-                                        <th>Bath</th>
-                                        <th>Squrefit</th>
-                                      </tr>
+                                  <tr className="header">
+                                    <th>Unit</th>
+                                    <th>Unit address</th>
+                                    <th>Bed</th>
+                                    <th>Bath</th>
+                                    <th>Squrefit</th>
+                                  </tr>
 
-                                      {propertyUnit.map((unit, index) => (
-                                        <tr
-                                          key={index}
-                                          onClick={() => {
-                                            // setPropSummary(true);
-                                            setPropId(unit._id);
-                                            setClickedObject(unit);
-                                          }}
-                                          style={{ cursor: "pointer" }}
-                                        >
-                                          <td>{unit.rental_units || "N/A"}</td>
-                                          <td>
-                                            {unit.rental_unitsAdress +
-                                              "," +
-                                              unit.rental_adress || "N/A"}
-                                          </td>
-                                          <td>{unit.rental_bed || "N/A"}</td>
+                                  <tr
+                                    // key={index}
+                                    // onClick={() => {
+                                    //   // setPropSummary(true);
+                                    //   setPropId(unit._id);
+                                    //   setClickedObject(unit);
+                                    // }}
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <td>
+                                      {propertyDetails?.unit_data
+                                        ?.rental_unit || "N/A"}
+                                    </td>
+                                    <td>
+                                      {propertyDetails?.unit_data
+                                        ?.rental_unit_adress || "N/A"}
+                                    </td>
+                                    <td>
+                                      {propertyDetails?.unit_data?.rental_bed ||
+                                        "N/A"}
+                                    </td>
 
-                                          <td>{unit.rental_bath || "N/A"}</td>
-                                          <td>{unit.rental_sqft || "N/A"}</td>
-
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </Table>
-                                </Row>
-                              </div>
-                            </div>
+                                    <td>
+                                      {propertyDetails?.unit_data
+                                        ?.rental_bath || "N/A"}
+                                    </td>
+                                    <td>
+                                      {propertyDetails?.unit_data
+                                        ?.rental_sqft || "N/A"}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </Table>
+                            </Row>
                           </div>
                         </div>
-                      </>
-                    ))}
+                      </div>
+                    </div>
                   </>
-                ))}
+                  {/* ))} */}
+                </>
+                {/* ))} */}
               </div>
             </Card>
           </div>

@@ -22,6 +22,8 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import swal from "sweetalert";
 import { useNavigate, useParams } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -129,28 +131,30 @@ const PropertyType = () => {
           .then((response) => {
             //console.log(response.data);
             if (response.data.statusCode === 200) {
-              swal(
-                "Success!",
-                "Property Type deleted successfully!",
-                "success"
-              );
+             
+              toast.success('Property Type deleted successfully!', {
+                position:'top-center',
+              })
               getPropertyData();
             } else if (response.data.statusCode === 201) {
               // Handle the case where property is already assigned
-              swal(
-                "Warning!",
-                "Property Type already assigned. Deletion not allowed.",
-                "warning"
-              );
+             
+              toast.warning('Property Type already assigned. Deletion not allowed.', {
+                position: 'top-center',
+              })
             } else {
-              swal("error", response.data.message, "error");
+              toast.error(response.data.message, {
+                position: 'top-center',
+              })
             }
           })
           .catch((error) => {
             console.error("Error deleting property:", error);
           });
       } else {
-        swal("Cancelled", "Property is safe :)", "info");
+        toast.success('property is safe :)', {
+          position: 'top-center',
+        })
       }
     });
   };
@@ -549,6 +553,7 @@ const PropertyType = () => {
             )}
           </div>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

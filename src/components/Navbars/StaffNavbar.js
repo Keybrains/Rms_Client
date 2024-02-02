@@ -24,8 +24,24 @@ import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { jwtDecode } from "jwt-decode";
 
 const StaffNavbar = (props) => {
+
+
+  const [accessType, setAccessType] = useState(null);
+  React.useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
+
+
+
+
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let cookies = new Cookies();
   let Logout = () => {
@@ -238,7 +254,7 @@ const StaffNavbar = (props) => {
                     />
                   </span> */}
                   <Media className="ml-2 d-none d-lg-block">
-                    <span className="mb-0 text-sm font-weight-bold">{vendorDetails.staffmember_name}</span>
+                    <span className="mb-0 text-sm font-weight-bold">{accessType?.staffmember_name}</span>
                   </Media>
                 </Media>
               </DropdownToggle>

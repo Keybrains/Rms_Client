@@ -18,7 +18,9 @@ import TenantHeader from "components/Headers/TenantHeader";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { ToastContainer, toast } from 'react-toastify';
 import swal from "sweetalert";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Leaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -90,15 +92,22 @@ const Leaseing = () => {
     setLoader(true);
     try {
       const res = await axios.post(`${baseUrl}/tenants/tenants`, object);
-      console.log(res, object);
       if (res.data.statusCode === 200) {
-        swal("Success", "Tenant Added Successfully", "success");
+        toast.success('Tenant Added successfully!', {
+          position: 'top-center',
+          autoClose: 500,
+        })
         handleCloseButtonClick();
       } else {
-        swal("Warning", res.data.message, "warning");
+        toast.warning(res.data.message, {
+          position: 'top-center',
+        })
       }
     } catch (error) {
-      swal("", error.message, "error");
+    
+      toast.error(error.message, {
+        position: 'top-center',
+      })
       console.error("Error:", error.message);
     }
     setLoader(false);
@@ -113,7 +122,6 @@ const Leaseing = () => {
         `${baseUrl}/tenants/tenants/${tenant_id}`,
         object
       );
-      console.log(res, object);
       if (res.data.statusCode === 200) {
         swal("Success", "Tenant Updated Successfully", "success");
         handleCloseButtonClick();
@@ -588,7 +596,6 @@ const Leaseing = () => {
                               </FormGroup>
                             </Col>
                           </Row>
-                          {console.log(tenantFormik.values, "janak")}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -706,6 +713,7 @@ const Leaseing = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );

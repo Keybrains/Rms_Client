@@ -21,7 +21,6 @@ import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
 //import RentalHeader from "components/Headers/RentalHeader.js";
 import RentalownerHeder from "components/Headers/RentalownerHeder.js";
-import swal from "sweetalert";
 
 import Checkbox from "@mui/material/Checkbox";
 import Dialog from "@mui/material/Dialog";
@@ -37,7 +36,8 @@ import TextField from "@mui/material/TextField";
 import axios from "axios";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';import { useNavigate, useParams } from "react-router-dom";
 import { AddBox, InboxOutlined, Numbers } from "@mui/icons-material";
 import { faLeftLong, faRightLeft } from "@fortawesome/free-solid-svg-icons";
 import { Hidden } from "@material-ui/core";
@@ -54,7 +54,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 // const Rental = () => {
 //   const handleFormSubmit = () => {
-//     swal("Success!", "Rental owner added successfully", "success");
+//
 //   };
 // };
 
@@ -107,7 +107,6 @@ const Rentals = () => {
       );
 
       values["rentalOwner_properties"] = selectedPropertyIds;
-      console.log(selectedPropertyIds, selectedPropertyData);
 
       // if (id === undefined) {
       //   const res = await axios.post(
@@ -165,19 +164,43 @@ const Rentals = () => {
     fetchPropertyData();
   }, []);
 
+  
   function handleResponse(response) {
-    if (response.status === 200) {
-      swal(
-        "Success!",
-        id ? "property updated successfully" : "property added successfully!",
-        "success"
-      );
-      navigate("/" + admin + "/RentalownerTable");
+    if (response.data.statusCode === 200) {
+      navigate(`/${admin}/RentalownerTable`);
+
+      // Show success toast
+      toast.success(id ? "Rental Owner  updated successfully" : "Rental Owner  added successfully", {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     } else {
-      alert(response.data.message);
+      // Show an error toast
+      toast.error(response.data.message, {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     }
   }
-
+  function handleResponse(response) {
+    const successMessage = id ? "Property  updated successfully" : "Property  added successfully";
+    const errorMessage = response.data.message;
+  
+    if (response.data.statusCode === 200) {
+      // Show success toast
+      toast.success(successMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+        onClose: () => navigate(`/${admin}/RentalownerTable`),
+      });
+    } else {
+      // Show an error toast
+      toast.error(errorMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+      });
+    }
+  }
   let rentalsFormik = useFormik({
     initialValues: {
       rentalowner_firstName: "",
@@ -736,7 +759,6 @@ const Rentals = () => {
                             ) : null}
                           </div>
                           <br />
-                          {console.log(rentalsFormik.values, "yash")}
                           <div className="input-group">
                             <div className="input-group-prepend">
                               <span className="input-group-text">
@@ -1154,6 +1176,8 @@ const Rentals = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
+
       </Container>
     </>
   );

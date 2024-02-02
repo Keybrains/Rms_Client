@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import swal from "sweetalert";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Button,
@@ -68,11 +69,15 @@ const Forgetmail = () => {
         const data = await response.json();
 
         if (response.ok) {
-          swal("Success!", "Password Changed Successfully", "success");
+          toast.success('Password Changed Successfully!', {
+            position: 'top-center',
+          })
           navigate(`/auth/login`)
         } else {
           setError(data.message);
-          swal("error!", "Failed To Change Password", "error");
+          toast.error('Failed To Change Password', {
+            position: 'top-center',
+          })
 
         }
       } catch (error) {
@@ -101,9 +106,11 @@ const Forgetmail = () => {
       const data = {
         tenant_email: mail
       }
-      const res = await axios.post("http://localhost:4000/api/tenant/passwordmail", data);
+      const res = await axios.post("http://192.168.1.13:4000/api/tenant/passwordmail", data);
       if (res) {
-        swal("Success!","Mail Sent Successfully","success");
+        toast.success('Mail Sent Successfully', {
+          position: 'top-center',
+        })
         navigate(`/auth/login`)
       }
       setIsLoading(false);
@@ -167,6 +174,7 @@ const Forgetmail = () => {
           </Form>
         </CardBody>
       </Card>
+      <ToastContainer />
     </Col>
   );
 };

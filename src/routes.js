@@ -260,7 +260,7 @@ var routes = [
   },
 
   {
-    path: "/PropDetails/:id",
+    path: "/PropDetails/:rental_id",
     name: "Prop Details",
     component: <PropDetails />,
     layout: "/admin",
@@ -585,20 +585,13 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/PropDetails/:id/:entryIndex",
-    name: "Prop Details",
-    component: <PropDetails />,
-    layout: "/admin",
-  },
-
-  {
     path: "/tenantdetail/:tenantId/:entryIndex",
     name: "Tenant Detail",
     component: <TenantDetailPage />,
     layout: "/admin",
   },
   {
-    path: "/tenantpropertydetail/:rental_adress",
+    path: "/tenantpropertydetail/:lease_id",
     name: "Tenant Property Detail",
     component: <TenantPropertyDetail />,
     layout: "/tenant",

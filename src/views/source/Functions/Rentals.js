@@ -1,6 +1,6 @@
 import axios from "axios";
-import swal from "sweetalert";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
 export const dialogPaperStyles = {
@@ -45,14 +45,20 @@ export const editProperty = async (
       object
     );
     if (res.data.statusCode === 200) {
-      swal("Success!", res.data.message, "success");
+      toast.success( res.data.message, {
+        position: 'top-center',
+      })
       return false;
     } else {
-      swal("", res.data.message, "warning");
+      toast.warning(res.data.message, {
+        position: 'top-center',
+      })
     }
   } catch (error) {
     console.error("Error:", error.message);
-    swal("Error", "An error occurred while adding the property", "error");
+    toast.error('An error occurred while adding the property', {
+      position: 'top-center',
+    })
   }
 };
 
@@ -67,6 +73,7 @@ export const handleSubmit = async (
       rentalOwner: {
         admin_id: admin_id,
         rentalOwner_firstName: rentalOwners.rentalOwner_firstName,
+        rentalowner_id: rentalOwners.rentalowner_id,
         rentalOwner_lastName: rentalOwners.rentalOwner_lastName,
         rentalOwner_companyName: rentalOwners.rentalOwner_companyName,
         rentalOwner_primaryEmail: rentalOwners.rentalOwner_primaryEmail,
@@ -123,19 +130,29 @@ export const handleSubmit = async (
               };
             }),
     };
+    console.log(object, "khushi")
     const res = await axios.post(`${baseUrl}/rentals/rentals`, object);
     if (res.data.statusCode === 200) {
-      swal("Success!", "Property Added Successfully", "success");
+      toast.success('Property Added Successfully!', {
+        position: 'top-center',
+      })
       return false;
     } else {
       if (res.data.statusCode === 201) {
-        swal("Failed!", res.data.message, "error");
+        toast.error(res.data.message, {
+          position: 'top-center',
+        })
       } else {
-        swal("", res.data.message, "error");
+        toast.error(res.data.message, {
+          position: 'top-center',
+        })
+
       }
     }
   } catch (error) {
     console.error("Error:", error.message);
-    swal("Error", "An error occurred while adding the property", "error");
+    toast.error('An error occurred while adding the property', {
+      position: 'top-center',
+    })
   }
 };

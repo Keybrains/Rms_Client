@@ -17,13 +17,13 @@ import {
   Label,
   Table,
 } from "reactstrap";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useState } from "react";
 import axios from "axios";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import TenantHeader from "components/Headers/TenantsHeader";
-import swal from "sweetalert";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import "react-datepicker/dist/react-datepicker.css";
@@ -315,16 +315,24 @@ const TAddWork = () => {
     }
   };
 
+  
   function handleResponse(response) {
-    if (response.status === 200) {
-      navigate("/tenant/tenantwork");
-      swal(
-        "Success!",
-        id ? "Workorder updated successfully" : "Workorder added successfully!",
-        "success"
-      );
+    const successMessage = id ? "Workorder updated successfully" : "Workorder added successfully";
+    const errorMessage = response.data.message;
+  
+    if (response.data.statusCode === 200) {
+      // Show success toast
+      toast.success(successMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+        onClose: () => navigate("/tenant/tenantwork"),
+      });
     } else {
-      alert(response.data.message);
+      // Show an error toast
+      toast.error(errorMessage, {
+        position: 'top-center',
+        autoClose: 1000,
+      });
     }
   }
 
@@ -1074,6 +1082,7 @@ const TAddWork = () => {
             </Card>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );
