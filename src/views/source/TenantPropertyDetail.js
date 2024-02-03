@@ -68,7 +68,7 @@ const TenantPropertyDetail = () => {
               //  href="#rms"
               onClick={() => navigate("/tenant/tenantproperty")}
               size="sm"
-              style={{ background: "white", color: "#3B2F2F" }}
+              style={{ background: "white", color: "#263238" }}
             >
               Back
             </Button>
@@ -113,7 +113,7 @@ const TenantPropertyDetail = () => {
                                   <div className="card-body">
                                     <h5
                                       className="card-title"
-                                      style={{ color: "#3B2F2F" }}
+                                      style={{ color: "#263238" }}
                                     >
                                       Property Details
                                     </h5>
@@ -142,7 +142,7 @@ const TenantPropertyDetail = () => {
                               style={{
                                 fontSize: "18px",
                                 textTransform: "capitalize",
-                                color: "#3B2F2F",
+                                color: "#263238",
                                 fontWeight: "600",
                                 borderBottom: "1px solid #ddd",
                               }}
@@ -216,7 +216,7 @@ const TenantPropertyDetail = () => {
                                 borderBottom: "1px solid #ddd",
                               }}
                             >
-                              <Col style={{ color: "#3B2F2F" }}>
+                              <Col style={{ color: "#263238" }}>
                                 Rental owner detail
                               </Col>
                             </Row>
@@ -320,7 +320,7 @@ const TenantPropertyDetail = () => {
                               style={{
                                 fontSize: "18px",
                                 textTransform: "capitalize",
-                                color: "#3B2F2F",
+                                color: "#263238",
                                 fontWeight: "600",
                                 borderBottom: "1px solid #ddd",
                               }}
@@ -360,7 +360,7 @@ const TenantPropertyDetail = () => {
                               style={{
                                 fontSize: "18px",
                                 textTransform: "capitalize",
-                                color: "#3B2F2F",
+                                color: "#263238",
                                 fontWeight: "600",
                                 borderBottom: "1px solid #ddd",
                               }}

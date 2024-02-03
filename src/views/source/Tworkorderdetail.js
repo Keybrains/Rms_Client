@@ -352,7 +352,7 @@ const TWorkOrderDetails = () => {
                       background: "none",
                       textTransform: "capitalize",
                       cursor: "pointer",
-                      color: activeButton === "Summary" ? "#3B2F2F" : "inherit",
+                      color: activeButton === "Summary" ? "#263238" : "inherit",
                       // textDecoration: activeButton === 'Summary' ? 'underline' : 'none',
                     }}
                     onMouseEnter={() => handleMouseEnter("Summary")}
@@ -369,7 +369,7 @@ const TWorkOrderDetails = () => {
                       background: "none",
                       textTransform: "capitalize",
                       cursor: "pointer",
-                      color: activeButton === "Task" ? "#3B2F2F" : "inherit",
+                      color: activeButton === "Task" ? "#263238" : "inherit",
                       // textDecoration: activeButton === 'Task' ? 'underline' : 'none',
                     }}
                     onMouseEnter={() => handleMouseEnter("Task")}
@@ -420,7 +420,7 @@ const TWorkOrderDetails = () => {
                                 <Box flex="1">
                                   <h2
                                     className="text text-lg"
-                                    style={{ color: "#3B2F2F" }}
+                                    style={{ color: "#263238" }}
                                   >
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
@@ -579,7 +579,7 @@ const TWorkOrderDetails = () => {
                               >
                                 <h2
                                   className="text text-lg"
-                                  style={{ color: "#3B2F2F" }}
+                                  style={{ color: "#263238" }}
                                 >
                                   Parts and Labor
                                 </h2>
@@ -674,7 +674,7 @@ const TWorkOrderDetails = () => {
                               <Grid item xs={3} sm={3.5} md={3} lg={2} xl={2}>
                                 <h2
                                   className="text-lg"
-                                  style={{ color: "#3B2F2F" }}
+                                  style={{ color: "#263238" }}
                                 >
                                   Updates
                                 </h2>
@@ -814,7 +814,7 @@ const TWorkOrderDetails = () => {
                                 color: "#5e72e4",
                               }}
                             >
-                              <h2 className="text" style={{ color: "#3B2F2F" }}>
+                              <h2 className="text" style={{ color: "#263238" }}>
                                 Contacts
                               </h2>
                             </Box>
@@ -917,7 +917,7 @@ const TWorkOrderDetails = () => {
                               >
                                 <h2
                                   className="text"
-                                  style={{ color: "#3B2F2F" }}
+                                  style={{ color: "#263238" }}
                                 >
                                   Property
                                 </h2>
@@ -1314,7 +1314,7 @@ const TWorkOrderDetails = () => {
                               </span>
                               <h2
                                 className="text-lg"
-                                style={{ color: "#3B2F2F" }}
+                                style={{ color: "#263238" }}
                               >
                                 {outstandDetails.work_subject || "N/A"}
                               </h2>
@@ -1438,7 +1438,7 @@ const TWorkOrderDetails = () => {
                               >
                                 <h2
                                   className="text"
-                                  style={{ color: "#3B2F2F" }}
+                                  style={{ color: "#263238" }}
                                 >
                                   Images
                                 </h2>

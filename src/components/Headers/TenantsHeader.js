@@ -4,7 +4,7 @@ const TenantsHeader = () => {
   return (
     <>
       <div className="header pb-8 pt-5 pt-md-8" style={{
-          background: '#3B2F2F'
+          background: '#263238'
         }}>
         <Container fluid>
           <div className="header-body">

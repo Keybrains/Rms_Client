@@ -120,7 +120,7 @@ const TenantProfile = () => {
                                 style={{
                                   fontSize: "18px",
                                   textTransform: "capitalize",
-                                  color: "#3B2F2F",
+                                  color: "#263238",
                                   fontWeight: "600",
                                   borderBottom: "1px solid #ddd",
                                 }}
@@ -180,7 +180,7 @@ const TenantProfile = () => {
                           style={{
                             fontSize: "18px",
                             textTransform: "capitalize",
-                            color: "#3B2F2F",
+                            color: "#263238",
                             fontWeight: "600",
                             borderBottom: "1px solid #ddd",
                           }}
