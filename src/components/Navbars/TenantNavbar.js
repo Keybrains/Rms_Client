@@ -275,7 +275,7 @@ const TenantNavbar = (props) => {
                 onKeyDown={toggleSidebar}
               >
                 <List style={{ width: "350px" }}>
-                  <h2 style={{ color: "#3B2F2F", marginLeft: "15px" }}>
+                  <h2 style={{ color: "#263238", marginLeft: "15px" }}>
                     Notifications
                   </h2>
                   <Divider />
@@ -306,7 +306,7 @@ const TenantNavbar = (props) => {
                                     variant="contained"
                                     color="primary"
                                     style={{
-                                      background: "#3B2F2F",
+                                      background: "#263238",
                                       color: "white",
                                       textTransform: "none",
                                       fontSize: "12px",
