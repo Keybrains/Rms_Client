@@ -19,7 +19,7 @@ import {
 import { jwtDecode } from "jwt-decode";
 import { CardContent, Typography } from "@mui/material";
 import { RotatingLines } from "react-loader-spinner";
-import CreditCardForm from "./CreditCardForm";
+//import CreditCardForm from "./CreditCardForm";
 
 const TenantDetailPage = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -281,29 +281,29 @@ const TenantDetailPage = () => {
       )
     : "-";
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openCardForm = () => {
-    setIsModalOpen(true);
-  };
+  // const openCardForm = () => {
+  //   setIsModalOpen(true);
+  // };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    getCreditCard()
-  };
+  // const closeModal = () => {
+  //   setIsModalOpen(false);
+  //   getCreditCard()
+  // };
 
-  const [cardDetalis, setCardDetails] = useState([]);
-  const getCreditCard = async () => {
-    const response = await axios.get(
-      `https://propertymanager.cloudpress.host/api/creditcard/getCreditCard/${tenantId}`
-    );
-    setCardDetails(response.data);
-    console.log(response, "yashu");
-  };
+  // const [cardDetalis, setCardDetails] = useState([]);
+  // const getCreditCard = async () => {
+  //   const response = await axios.get(
+  //     `https://propertymanager.cloudpress.host/api/creditcard/getCreditCard/${tenantId}`
+  //   );
+  //   setCardDetails(response.data);
+  //   console.log(response, "yashu");
+  // };
 
-  useEffect(() => {
-    getCreditCard();
-  }, [tenantId]);
+  // useEffect(() => {
+  //   getCreditCard();
+  // }, [tenantId]);
 
   return (
     <div>
@@ -1028,7 +1028,7 @@ const TenantDetailPage = () => {
         </Row>
         <br />
         <br />
-        <Modal isOpen={isModalOpen} toggle={closeModal} style={{ maxWidth: '950px'}}>
+        {/* <Modal isOpen={isModalOpen} toggle={closeModal} style={{ maxWidth: '950px'}}>
           <ModalHeader toggle={closeModal} className="bg-secondary text-white">
             <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
           </ModalHeader>
@@ -1039,7 +1039,7 @@ const TenantDetailPage = () => {
               //getCreditCard={getCreditCard}
             />
           </ModalBody>
-        </Modal>
+        </Modal> */}
       </Container>
     </div>
   );
