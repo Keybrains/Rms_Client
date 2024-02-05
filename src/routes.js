@@ -37,7 +37,6 @@ import TenantWork from "views/source/TenantWork";
 import TAddWork from "views/source/TAddWork";
 import Workorder from "views/source/Workorder";
 import AddWorkorder from "views/source/AddWorkorder";
-import AddWorkorder2 from "views/source/AddWorkorder2";
 import StaffProfile from "views/source/StaffProfile";
 import StaffPropertyDashboard from "views/source/StaffPropertyDashboard";
 import StaffPropertyDetail from "views/source/StaffPropertyDetail";
@@ -390,12 +389,6 @@ var routes = [
     component: <AddWorkorder />,
     layout: "/admin",
   },
-  {
-    path: "/addworkorder2",
-    component: <AddWorkorder2 />,
-    layout: "/admin",
-  },
-
   {
     path: "/staffprofile",
     name: "Profile",
