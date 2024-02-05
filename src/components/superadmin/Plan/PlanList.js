@@ -34,8 +34,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Cookies from "universal-cookie";
 import moment from "moment";
 import swal from "sweetalert";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Switch from "@mui/material/Switch";
 // import { useHistory } from "react-router-dom";
 import { Circles } from "react-loader-spinner";
@@ -279,9 +279,9 @@ export default function PlanList() {
               getData();
               setSelected([]);
               toast.success(response.data.message, {
-                position: 'top-center',
+                position: "top-center",
                 autoClose: 1000,
-              })
+              });
             }
           });
       }
@@ -323,19 +323,19 @@ export default function PlanList() {
         if (res.data.statusCode === 200) {
           setModalShowForPopupForm(false);
           getData();
-          toast.success( res.data?.message, {
-            position: 'top-center',
-           })
+          toast.success(res.data?.message, {
+            position: "top-center",
+          });
         } else {
-          toast.error( res.data.message, {
-            position: 'top-center',
-          })
+          toast.error(res.data.message, {
+            position: "top-center",
+          });
         }
       } catch (error) {
         console.error("Error:", error);
         toast.error(error, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
       }
     };
   } else {
@@ -350,14 +350,14 @@ export default function PlanList() {
           setModalShowForPopupForm(false);
           getData();
           toast.success(response.data?.message, {
-            position: 'top-center',
-          })
+            position: "top-center",
+          });
         }
       } catch (error) {
         console.error("Error:", error);
         toast.warning(error, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
       }
     };
   }
@@ -607,6 +607,12 @@ export default function PlanList() {
                       editData && editData.plan_price
                         ? editData.plan_price
                         : "",
+                    billing_interval:
+                      editData && editData.billing_interval
+                        ? editData.billing_interval
+                        : "",
+                    plan_days:
+                      editData && editData.plan_days ? editData.plan_days : "",
                     // billing_interval:
                     //   editData && editData.billing_interval
                     //     ? editData.billing_interval
@@ -662,6 +668,58 @@ export default function PlanList() {
                             </div>
                           ) : null}
                         </div>
+
+                        <div className="mt-3">
+                          <FormControl fullWidth>
+                            <InputLabel size="small">
+                              Select Billing-Interval
+                            </InputLabel>
+                            <Select
+                              size="small"
+                              label="Select Billing-Interval"
+                              name="billing_interval"
+                              value={values.billing_interval}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                              MenuProps={{
+                                style: {
+                                  maxHeight: 210,
+                                },
+                              }}
+                            >
+                              <MenuItem value={"Monthly"}>Monthly</MenuItem>
+                              <MenuItem value={"Annual"}>Annual</MenuItem>
+                              <MenuItem value={"Days"}>Days</MenuItem>
+                            </Select>
+                            {touched.billing_interval &&
+                            errors.billing_interval ? (
+                              <div className="text-danger">
+                                {errors.billing_interval}
+                              </div>
+                            ) : null}
+                          </FormControl>
+                        </div>
+
+                        {values.billing_interval === "Days" ? (
+                          <div className="mt-3">
+                            <TextField
+                              type="number"
+                              size="small"
+                              fullWidth
+                              placeholder="Add Days *"
+                              label="Add Days *"
+                              name="plan_days"
+                              value={values.plan_days}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                            />
+                            {touched.plan_days && errors.plan_days ? (
+                              <div className="text-danger">
+                                {errors.plan_days}
+                              </div>
+                            ) : null}
+                          </div>
+                        ) : null}
 
                         <div className="col-sm-8">
                           {inputFields.map((data, index) => {

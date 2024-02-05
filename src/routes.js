@@ -430,7 +430,6 @@ var routes = [
   {
     path: "/staffpropertydetail",
     name: "Property",
-
     component: <StaffPropertyDetail />,
     layout: "/staff",
   },
