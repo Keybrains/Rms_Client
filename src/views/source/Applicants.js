@@ -136,6 +136,7 @@ const Applicants = () => {
       console.error("Error handling selected property:", error);
     }
   };
+
   const [unitId, setUnitId] = useState(null);
   const handleUnitSelect = (selectedUnit) => {
     setSelectedUnit(selectedUnit.rental_unit_adress);
@@ -146,28 +147,27 @@ const Applicants = () => {
     ); // Update the formik state here
   };
 
-  // Step 2: Event handler to open the modal
   const openModal = () => {
     setIsModalOpen(true);
   };
 
-  // Event handler to close the modal
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
-  const getRentalsData = async () => {
+  const getTableData = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/applicant/applicant`);
+      const response = await axios.get(`${baseUrl}/applicant/applicant/${admin}`);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setRentalsData(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-
+  
+  console.log("manu",rentalsData)
   useEffect(() => {
-    getRentalsData();
+    getTableData();
   }, [pageItem]);
 
   const startIndex = (currentPage - 1) * pageItem;
@@ -466,7 +466,7 @@ const Applicants = () => {
 
     if (searchQuery) {
       filteredData = filteredData.filter((tenant) => {
-        const isRentalAddressMatch = tenant.rental_adress
+        const isRentalAddressMatch = tenant.rental_data.rental_adress
           .toLowerCase()
           .includes(searchQuery.toLowerCase());
         const isFirstNameMatch = (
@@ -620,7 +620,7 @@ const Applicants = () => {
         <br />
         <Row>
           <div className="col">
-            {!loader ? (
+            {loader ? (
               <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                 <RotatingLines
                   strokeColor="grey"
@@ -776,31 +776,30 @@ const Applicants = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filterTenantsBySearchAndPage().map((applicant, index) => (
+                    {rentalsData.map((applicant, index) => (
                       <tr
                         key={index}
                         onClick={() =>
-                          navigate(`/${admin}/Applicants/${applicant._id}`)
+                          navigate(`/${admin}/Applicants/${applicant.applicant_id}`)
                         }
-                      >
-                        {console.log(applicant, "Applicant")}
+                      >      
                         <td>{applicant.applicant_firstName}</td>
                         <td>{applicant.applicant_lastName}</td>
                         <td>{applicant.applicant_email}</td>
                         <td>{applicant.applicant_phoneNumber}</td>
                         <td>
-                          {applicant.rental_adress}{" "}
-                          {applicant.rental_units
-                            ? " - " + applicant.rental_units
+                          {applicant.rental_data.rental_adress}{" "}
+                          {applicant.unit_data && applicant.unit_data.rental_unit
+                            ? " - " + applicant.unit_data.rental_unit
                             : null}
                         </td>
 
                         <td>
-                          {applicant?.applicant_status[0]?.status ||
+                          {applicant?.applicant_status?.status ||
                             "Undecided"}
                         </td>
-                        <td>{applicant.createAt}</td>
-                        <td>{applicant.updateAt || " - "}</td>
+                        <td>{applicant.createdAt}</td>
+                        <td>{applicant.updatedAt || " - "}</td>
                         <td>
                           <DeleteIcon
                             onClick={(e) => {
