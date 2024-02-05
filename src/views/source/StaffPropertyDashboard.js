@@ -39,6 +39,7 @@ const StaffPropertyDashboard = () => {
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
   let cookie_id = localStorage.getItem("Tenant ID");
+  console.log(cookie_id, "cookie_id")
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
