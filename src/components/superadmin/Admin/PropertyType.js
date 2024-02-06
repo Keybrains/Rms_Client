@@ -304,7 +304,7 @@ export default function PropertyType() {
       <Container className="mt--8 ml--10" fluid>
         <Row>
           <Col>
-            <nav
+          <nav
               className="navbar navbar-expand-lg navbar-light bg-light mb-1"
               style={{ cursor: "pointer", borderRadius: "15px" }}
             >
@@ -312,7 +312,7 @@ export default function PropertyType() {
                 <ul className="navbar-nav">
                   <li className="nav-item">
                     <Link
-                      to={`/superadmin/staffmember${admin_id}`}
+                      to={`/superadmin/staffmember/${admin_id}`}
                       className="nav-link"
                     >
                       Staff Member
@@ -327,7 +327,7 @@ export default function PropertyType() {
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <Link to="/superadmin/properties" className="nav-link">
+                    <Link to={`/superadmin/properties/${admin_id}`} className="nav-link">
                       Properties
                     </Link>
                   </li>

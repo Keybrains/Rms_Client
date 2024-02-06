@@ -41,7 +41,7 @@ import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 
 import { Col, Container, Row } from "reactstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
@@ -83,12 +83,20 @@ function Rows(props) {
       >
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
         <TableCell align="left">{row?.rental_adress}</TableCell>
-        <TableCell align="left">{row?.property_type_data?.property_type}</TableCell>
-        <TableCell align="left">{row?.property_type_data?.propertysub_type}</TableCell>
-        <TableCell align="left">{row?.rental_owner_data?.rentalOwner_firstName} {row?.rental_owner_data?.rentalOwner_lastName}</TableCell>
-        <TableCell align="left">{row?.rental_owner_data?.rentalOwner_companyName}</TableCell>
+        <TableCell align="left">
+          {row?.property_type_data?.property_type}
+        </TableCell>
+        <TableCell align="left">
+          {row?.property_type_data?.propertysub_type}
+        </TableCell>
+        <TableCell align="left">
+          {row?.rental_owner_data?.rentalOwner_firstName}{" "}
+          {row?.rental_owner_data?.rentalOwner_lastName}
+        </TableCell>
+        <TableCell align="left">
+          {row?.rental_owner_data?.rentalOwner_companyName}
+        </TableCell>
         <TableCell align="left">{row?.rental_city}</TableCell>
-      
       </TableRow>
     </React.Fragment>
   );
@@ -109,21 +117,19 @@ export default function Properties() {
   let [loader, setLoader] = React.useState(true);
   let [countData, setCountData] = useState(0);
   const [adminName, setAdminName] = useState();
+  const { admin_id } = useParams();
 
   // pagination
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
     try {
-      const res = await axios.get(
-        `${baseUrl}/rentals/properties/1705469527218`,
-        {
-          params: {
-            pageSize: rowsPerPage,
-            pageNumber: page,
-          },
-        }
-      );
+      const res = await axios.get(`${baseUrl}/rentals/properties/${admin_id}`, {
+        params: {
+          pageSize: rowsPerPage,
+          pageNumber: page,
+        },
+      });
       setLoader(false);
       setPropertyType(res.data.data);
       setAdminName(res.data.data[0].admin);
@@ -313,17 +319,23 @@ export default function Properties() {
               <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
                   <li className="nav-item">
-                    <Link to="/superadmin/staffmember" className="nav-link">
+                    <Link
+                      to={`/superadmin/staffmember/${admin_id}`}
+                      className="nav-link"
+                    >
                       Staff Member
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <Link to="/superadmin/propertytype" className="nav-link">
+                    <Link
+                      to={`/superadmin/propertytype/${admin_id}`}
+                      className="nav-link"
+                    >
                       Property Type
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <Link to="/superadmin/properties" className="nav-link">
+                    <Link to={`/superadmin/properties/${admin_id}`} className="nav-link">
                       Properties
                     </Link>
                   </li>

@@ -319,17 +319,26 @@ export default function StaffMember() {
               <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
                   <li className="nav-item">
-                    <Link to="/superadmin/staffmember" className="nav-link">
+                    <Link
+                      to={`/superadmin/staffmember/${admin_id}`}
+                      className="nav-link"
+                    >
                       Staff Member
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <Link to={`/superadmin/propertytype/${admin_id}`} className="nav-link">
+                    <Link
+                      to={`/superadmin/propertytype/${admin_id}`}
+                      className="nav-link"
+                    >
                       Property Type
                     </Link>
                   </li>
                   <li className="nav-item">
-                    <Link to="/superadmin/properties" className="nav-link">
+                    <Link
+                      to={`/superadmin/properties/${admin_id}`}
+                      className="nav-link"
+                    >
                       Properties
                     </Link>
                   </li>
