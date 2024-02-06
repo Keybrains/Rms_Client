@@ -41,7 +41,7 @@ import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 
 import { Col, Container, Row } from "reactstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
@@ -51,7 +51,7 @@ const headCells = [
     label: "Name",
   },
   {
-    label: "Company Name",
+    label: "Designation",
   },
   {
     label: "Mobile",
@@ -60,7 +60,10 @@ const headCells = [
     label: "Email",
   },
   {
-    label: "Date",
+    label: "Updated At",
+  },
+  {
+    label: "Created At",
   },
 ];
 
@@ -72,31 +75,18 @@ function Rows(props) {
     <React.Fragment>
       <TableRow
         hover
-        onClick={(event) => {
-          handleClick(event, row._id);
-          navigate(`/superadmin/staffmember/${row?.admin_id}`)
-        }}
+        onClick={(event) => handleClick(event, row._id)}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
         selected={isItemSelected}
       >
-        <TableCell align="center" padding="checkbox">
-          <Checkbox
-            color="primary"
-            checked={isItemSelected}
-            inputProps={{
-              "aria-labelledby": labelId,
-            }}
-          />
-        </TableCell>
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
-        <TableCell align="left">
-          <img src={ProfileIcon} /> {row?.first_name} {row?.last_name}
-        </TableCell>
-        <TableCell align="left">{row?.company_name}</TableCell>
-        <TableCell align="left">{row?.phone_number}</TableCell>
-        <TableCell align="left">{row?.email}</TableCell>
+        <TableCell align="left">{row?.staffmember_name}</TableCell>
+        <TableCell align="left">{row?.staffmember_designation}</TableCell>
+        <TableCell align="left">{row?.staffmember_phoneNumber}</TableCell>
+        <TableCell align="left">{row?.staffmember_email}</TableCell>
+        <TableCell align="left">{row?.updatedAt}</TableCell>
         <TableCell align="left">
           {new Date(row.createdAt).toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -109,7 +99,7 @@ function Rows(props) {
   );
 }
 
-export default function Admin() {
+export default function StaffMember() {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let cookies = new Cookies();
   // const history = useHistory();
@@ -120,23 +110,29 @@ export default function Admin() {
   //   }
   // }, [cookies]);
 
-  let [adminData, setAdminData] = useState([]);
+  const [propertyType, setPropertyType] = useState([]);
   let [loader, setLoader] = React.useState(true);
   let [countData, setCountData] = useState(0);
+  const [adminName, setAdminName] = useState();
+  const { admin_id } = useParams();
 
   // pagination
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
     try {
-      const res = await axios.get(`${baseUrl}/admin/admin`, {
-        params: {
-          pageSize: rowsPerPage,
-          pageNumber: page,
-        },
-      });
+      const res = await axios.get(
+        `${baseUrl}/staffmember/staffmember/${admin_id}`,
+        {
+          params: {
+            pageSize: rowsPerPage,
+            pageNumber: page,
+          },
+        }
+      );
       setLoader(false);
-      setAdminData(res.data.data);
+      setPropertyType(res.data.data);
+      setAdminName(res.data.data[0].admin);
       setCountData(res.data.count); // Make sure to adjust the key here
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -161,7 +157,7 @@ export default function Admin() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = adminData?.map((n) => n._id);
+      const newSelected = propertyType?.map((n) => n._id);
       setSelected(newSelected);
       return;
     }
@@ -226,7 +222,7 @@ export default function Admin() {
     if (res.data.statusCode === 200) {
       if (values !== "") {
         setSearchLoader(false);
-        setAdminData(res.data.data);
+        setPropertyType(res.data.data);
         setCountData(res.data.count);
       } else {
         setSearchLoader(false);
@@ -308,12 +304,39 @@ export default function Admin() {
   //     return null;
   //   };
 
+  const navigate = useNavigate();
+
   return (
     <>
       <SuperAdminHeader />
       <Container className="mt--8 ml--10" fluid>
         <Row>
           <Col>
+            <nav
+              className="navbar navbar-expand-lg navbar-light bg-light mb-1"
+              style={{ cursor: "pointer", borderRadius: "15px" }}
+            >
+              <div className="collapse navbar-collapse" id="navbarNav">
+                <ul className="navbar-nav">
+                  <li className="nav-item">
+                    <Link to="/superadmin/staffmember" className="nav-link">
+                      Staff Member
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to={`/superadmin/propertytype/${admin_id}`} className="nav-link">
+                      Property Type
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/superadmin/properties" className="nav-link">
+                      Properties
+                    </Link>
+                  </li>
+                  {/* Add more links as needed */}
+                </ul>
+              </div>
+            </nav>
             <div>
               <Paper
                 sx={{
@@ -338,7 +361,7 @@ export default function Admin() {
                     id="tableTitle"
                     component="div"
                   >
-                    Admin
+                    Staff member: {adminName?.first_name} {adminName?.last_name}
                   </Typography>
 
                   {/* <form className="form-inline">
@@ -390,23 +413,6 @@ export default function Admin() {
                         <TableRow>
                           {/* <TableCell align="center"></TableCell> */}
 
-                          <TableCell align="center" padding="checkbox">
-                            <Checkbox
-                              color="primary"
-                              indeterminate={
-                                selected.length > 0 &&
-                                selected.length < adminData?.length
-                              }
-                              checked={
-                                adminData?.length > 0 &&
-                                selected.length === adminData?.length
-                              }
-                              onChange={handleSelectAllClick}
-                              inputProps={{
-                                "aria-label": "select all desserts",
-                              }}
-                            />
-                          </TableCell>
                           {headCells.map((headCell, id) => {
                             return (
                               <TableCell
@@ -422,7 +428,7 @@ export default function Admin() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {adminData?.map((row, index) => {
+                        {propertyType?.map((row, index) => {
                           const isItemSelected = isSelected(row._id);
                           const labelId = `enhanced-table-checkbox-${index}`;
                           return (

@@ -329,7 +329,7 @@ const ApplicantSummary = () => {
 
   const navigateToLease = () => {
     axios
-      .get(`http://192.168.1.13:4000/api/applicant/applicant_summary/${id}`)
+      .get(`http://192.168.1.11:4000/api/applicant/applicant_summary/${id}`)
       .then((response) => {
         const applicantsData = response.data.data;
         const rentalAddress = applicantsData.rental_adress;
@@ -357,7 +357,7 @@ const ApplicantSummary = () => {
 
   useEffect(() => {
     axios
-      .get(`http://192.168.1.13:4000/api/applicant/applicant_summary/${id}`)
+      .get(`http://192.168.1.11:4000/api/applicant/applicant_summary/${id}`)
       .then((applicants) => {
         axios
           .get(`${baseUrl}/rentals/property`)
@@ -1009,7 +1009,7 @@ const ApplicantSummary = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.1.13:4000/api/applicant/applicant_summary/${id}`
+          `http://192.168.1.11:4000/api/applicant/applicant_summary/${id}`
         );
 
         if (response.data && response.data.data) {

@@ -46,7 +46,7 @@ const Login = () => {
     localStorage.getItem("rememberedEmail") !== null
   );
 
-  console.warn(rememberMe, "rememberMe")
+  console.warn(rememberMe, "rememberMe");
 
   const handleSubmit = async (values) => {
     try {
@@ -54,7 +54,6 @@ const Login = () => {
       const adminRes = await axios.post(`${baseUrl}/admin/login`, values);
 
       if (adminRes.status === 200) {
-
         if (rememberMe) {
           // Save only the email in localStorage
           localStorage.setItem("rememberedEmail", values.email);
@@ -91,8 +90,6 @@ const Login = () => {
 
         if (tenantRes.status === 200) {
           const tenantData = tenantRes.data;
-          console.log(tenantData, "tenantData");
-          console.log(tenantData, "tenantData");
           if (tenantData.statusCode === 200) {
             toast.success("Tenant Login Successful!", {
               position: "top-center",
@@ -119,7 +116,6 @@ const Login = () => {
           if (staffRes.status === 200) {
             const vendorData = staffRes.data;
             if (vendorData.statusCode === 200) {
-              console.log(vendorData);
               toast.success("Staff Member Login Successful!!", {
                 position: "top-center",
                 autoClose: 500,
@@ -171,15 +167,12 @@ const Login = () => {
         }
         // }
       }
-     
-
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
-
 
   let loginFormik = useFormik({
     initialValues: {
@@ -207,7 +200,9 @@ const Login = () => {
       <Col lg="5" md="7">
         <Card
           className="bg-secondary shadow border-0"
-          onSubmit={(e) => loginFormik.handleSubmit(e, loginFormik.values.rememberMe)}
+          onSubmit={(e) =>
+            loginFormik.handleSubmit(e, loginFormik.values.rememberMe)
+          }
         >
           <CardBody className="px-lg-5 py-lg-5">
             <div className="text-center text-muted mb-4">
@@ -287,14 +282,18 @@ const Login = () => {
                     </label>
                   </Col>
 
-
                   <Col xs="6">
                     <label
                       className=""
                       // href="#rms"
                       onClick={() => navigate(`/auth/forgetpassword`)}
                     >
-                      <span className="text-muted mb-4" style={{ fontSize: "14px", cursor: "pointer" }}>Forgot password?</span>
+                      <span
+                        className="text-muted mb-4"
+                        style={{ fontSize: "14px", cursor: "pointer" }}
+                      >
+                        Forgot password?
+                      </span>
                     </label>
                   </Col>
                 </Row>
@@ -320,10 +319,11 @@ const Login = () => {
                 <Row>
                   <Col>
                     <span className="text-muted">Don't have an account?</span>
-                    <a href="#" onClick={() => navigate(`/trial/trial-login`)}> Sign up</a>
+                    <a href="#" onClick={() => navigate(`/trial/trial-login`)}>
+                      {" "}
+                      Sign up
+                    </a>
                   </Col>
-
-
                 </Row>
                 <br />
               </div>

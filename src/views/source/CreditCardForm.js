@@ -31,7 +31,7 @@ function CreditCardForm(props) {
       exp_date: values.exp_date,
     };
     const response = await axios.post(
-      "http://192.168.1.13:4000/api/creditcard/addCreditCard",
+      "http://192.168.1.11:4000/api/creditcard/addCreditCard",
       object
     );
     toast.success(response.data.message, {

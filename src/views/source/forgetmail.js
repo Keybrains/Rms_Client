@@ -106,7 +106,7 @@ const Forgetmail = () => {
       const data = {
         tenant_email: mail
       }
-      const res = await axios.post("http://192.168.1.13:4000/api/tenant/passwordmail", data);
+      const res = await axios.post("http://192.168.1.11:4000/api/tenant/passwordmail", data);
       if (res) {
         toast.success('Mail Sent Successfully', {
           position: 'top-center',
