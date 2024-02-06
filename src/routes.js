@@ -392,7 +392,6 @@ var routes = [
     component: <AddWorkorder />,
     layout: "/admin",
   },
-
   {
     path: "/staffprofile",
     name: "Profile",
