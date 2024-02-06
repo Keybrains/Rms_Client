@@ -42,6 +42,7 @@ import valid from "card-validator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoneyCheckAlt, faUndo } from "@fortawesome/free-solid-svg-icons";
 import CreditCardForm from "./CreditCardForm";
+import SurchargeForm from "./Surcharge";
 
 const DemoPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -75,9 +76,18 @@ const DemoPayment = () => {
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   //const [addCard, setAddCard] = useState(false);
   const [isModalsOpen, setIsModalsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const openCardForm = () => {
     setIsModalsOpen(true);
+  };
+
+  const openSurchargeForm = () => {
+    setIsOpen(true);
+  };
+
+  const closeSurchargeModel = () => {
+    setIsOpen(false);
   };
 
   const closeModals = () => {
@@ -113,11 +123,14 @@ const DemoPayment = () => {
     }
   };
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   const openModal = () => {
     //   financialFormik.setFieldValue("tenantId", cookie_id);
     //   financialFormik.setFieldValue("first_name", tenantDetails.tenant_firstName);
     //   financialFormik.setFieldValue("last_name", tenantDetails.tenant_lastName);
     //   financialFormik.setFieldValue("email_name", tenantDetails.tenant_email);
+    setIsSubmitted(false);
     financialFormik.setValues({
       account: "",
       amount: "",
@@ -130,13 +143,13 @@ const DemoPayment = () => {
       unit: "",
       property: "",
       paymentType: "",
-      card_number: "",
-      expiration_date: "",
       check_number: "",
       customer_vault_id: "",
+      surcharge_percent: "",
     });
 
     // Update other selected values
+    // setSurchargePercentage(0);
     setSelectedCreditCard("");
     setSelectedPaymentType("");
     setSelectedPropertyType("");
@@ -277,31 +290,6 @@ const DemoPayment = () => {
     }
   }, [customervault]);
 
-  function formatDateWithoutTime(dateString) {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${month}-${day}-${year}`;
-  }
-
-  const calculateBalance = (data) => {
-    let balance = 0;
-    for (let i = data.length - 1; i >= 0; i--) {
-      const currentEntry = data[i];
-      for (let j = currentEntry.entries.length - 1; j >= 0; j--) {
-        if (currentEntry.type === "Charge") {
-          balance += currentEntry.entries[j].charges_amount;
-        } else if (currentEntry.type === "Payment") {
-          balance -= currentEntry.entries[j].amount;
-        }
-        data[i].entries[j].balance = balance;
-      }
-    }
-    return data;
-  };
-
   React.useEffect(() => {
     fetch(`${baseUrl}/rentals/allproperty`)
       .then((response) => response.json())
@@ -317,6 +305,8 @@ const DemoPayment = () => {
       });
   }, []);
 
+  const [totalAmount1, setTotalAmount1] = useState();
+
   const financialFormik = useFormik({
     initialValues: {
       first_name: "",
@@ -326,6 +316,7 @@ const DemoPayment = () => {
       card_number: "",
       amount: "",
       surcharge: "",
+      surcharge_percent: "",
       date: "",
       memo: "",
       paymentType: "",
@@ -349,9 +340,9 @@ const DemoPayment = () => {
       date: yup.date().required("Required"),
       account: yup.string().required("Required"),
       paymentType: yup.string().required("Required"),
-      billing_id: yup.string().required("Creditcard is required"),
     }),
     onSubmit: (values, action) => {
+      setIsSubmitted(true);
       if (isEditable === true && paymentId) {
         editpayment(paymentId);
       } else if (refund === true && paymentId) {
@@ -441,16 +432,35 @@ const DemoPayment = () => {
     setSelectedCreditCard(selectedCard.billing_id);
   };
 
+  // Fetch data from the API
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `${baseUrl}/surcharge/surcharge/65c2286de41c9056bb233a85`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const data = await response.json();
+      if (data.data) {
+        setSurchargePercentage(data.data.surcharge_percent);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const handleFinancialSubmit = async (values, action) => {
     let url = `${baseUrl}/nmipayment/postnmipayments`;
     values.account = selectedAccount;
 
     try {
       setPaymentLoader(true);
-
       const financialDate = new Date(values.date);
       const currentDate = new Date();
-
       if (
         selectedPaymentType === "Credit Card" &&
         financialDate > currentDate
@@ -458,16 +468,19 @@ const DemoPayment = () => {
         url = `${baseUrl}/nmipayment/postnmipayments`;
         values.status = "Pending";
         values.type2 = "Payment";
+        values.surcharge_percent = surchargePercentage;
+        values.total_amount = calculateTotalAmount();
       } else if (selectedPaymentType === "Credit Card") {
         url = `${baseUrl}/nmipayment/sale`;
         values.status = "Success";
         values.type2 = "Payment";
+        values.total_amount = calculateTotalAmount();
       } else {
         url = `${baseUrl}/nmipayment/postnmipayments`;
         values.status = "Success";
         values.type2 = "Payment";
+        values.total_amount = calculateTotalAmount();
       }
-      console.log("object",totalAmount1)
 
       const creditCardDetails = cardDetalis.find(
         (card) => card.billing_id === selectedCreditCard
@@ -666,6 +679,7 @@ const DemoPayment = () => {
         financialFormik.setValues({
           account: responseData.account || "",
           amount: responseData.amount || "",
+          surcharge_percent: responseData.surcharge_percent || "",
           first_name: responseData.first_name || "",
           last_name: responseData.last_name || "",
           email_name: responseData.email_name || "",
@@ -677,6 +691,7 @@ const DemoPayment = () => {
           check_number: responseData.check_number || "",
         });
         // Update other selected values
+        // setSurchargePercentage(responseData.surcharge_percent);
         setSelectedPaymentType(responseData.paymentType);
         setSelectedPropertyType(responseData.property);
         setSelectedUnit(responseData.unit);
@@ -703,6 +718,7 @@ const DemoPayment = () => {
       if (response.data.statusCode === 200) {
         const updatedValues = {
           amount: financialFormik.values.amount,
+          surcharge: financialFormik.values.surcharge,
           account: financialFormik.values.account,
           first_name: financialFormik.values.first_name,
           last_name: financialFormik.values.last_name,
@@ -715,6 +731,7 @@ const DemoPayment = () => {
           billing_id: financialFormik.values.billing_id,
           check_number: financialFormik.values.check_number,
           paymentType: financialFormik.values.paymentType,
+          total_amount: calculateTotalAmount(),
         };
 
         const putUrl = `${baseUrl}/nmipayment/updatepayment/${id}`;
@@ -766,14 +783,13 @@ const DemoPayment = () => {
         amount: financialFormik.values.amount,
         paymentType: ResponseData.paymentType,
         date: financialFormik.values.date,
+        total_amount: calculateTotalAmount(),
         first_name: ResponseData.first_name,
         last_name: ResponseData.last_name,
         email_name: ResponseData.email_name,
-        card_number: ResponseData.card_number,
         account: ResponseData.account,
         type2: ResponseData.type2,
         memo: financialFormik.values.memo,
-        expiration_date: ResponseData.expiration_date,
         cvv: ResponseData.cvv,
         property: ResponseData.property,
         unit: ResponseData.unit,
@@ -824,35 +840,30 @@ const DemoPayment = () => {
     }
   };
 
-  const [surchargePercentage, setSurchargePercentage] = useState(0);
-  const [surcharge, setSurcharge] = useState(null);
-
-  // Update surcharge percentage
-  const handleSurchargeChange = (e) => {
-    const inputValue = e.target.value;
-    const numericValue = inputValue.replace(/[^0-9.]/g, "");
-    const validNumericValue = numericValue.replace(/(\.\d*\.|\D+)/g, "$1");
-    setSurchargePercentage(parseFloat(validNumericValue));
-    financialFormik.handleChange(e); // Don't forget to update the formik state
-  };
+  const [surchargePercentage, setSurchargePercentage] = useState();
 
   // Calculate total amount after surcharge
-  const calculateTotalAmount = () => {
-    const amount = parseFloat(financialFormik.values.amount) || 0;
+// Calculate total amount after surcharge
+const calculateTotalAmount = () => {
+  const amount = parseFloat(financialFormik.values.amount) || 0;
+  let totalAmount = amount;
+
+  if (selectedPaymentType === "Credit Card") {
     const surchargeAmount = (amount * surchargePercentage) / 100;
-    financialFormik.setFieldValue('surcharge', surchargeAmount);
-    return amount + surchargeAmount;
-  };
+    financialFormik.setFieldValue("surcharge", surchargeAmount);
+    totalAmount += surchargeAmount;
+  }
 
-  // Display total amount on the UI
+  return totalAmount;
+};
 
-  const [totalAmount1, setTotalAmount1] = useState();
+
   // const totalAmount = calculateTotalAmount();
 
   useEffect(() => {
     const totalAmount = calculateTotalAmount();
     setTotalAmount1(totalAmount);
-  }, [financialFormik.values]);
+  }, [financialFormik.values.amount, surchargePercentage,selectedPaymentType]);
 
   return (
     <>
@@ -865,7 +876,24 @@ const DemoPayment = () => {
               <h1 style={{ color: "white", marginLeft: "20px" }}>Ledger</h1>
             </FormGroup>
           </Col>
-          <Col xs="1.5" sm="1.5">
+          <Col xs="1.5" sm="1">
+            <Button
+              color="primary"
+              onClick={() => {
+                openSurchargeForm();
+              }}
+              size="sm"
+              style={{
+                background: "white",
+                color: "blue",
+                marginRight: "-10px",
+                marginLeft: "-20px",
+              }}
+            >
+              Add Surcharge
+            </Button>
+          </Col>
+          <Col xs="1.5" sm="1">
             <Button
               color="primary"
               onClick={() => {
@@ -875,15 +903,17 @@ const DemoPayment = () => {
               style={{
                 background: "white",
                 color: "blue",
-                marginRight: "20px",
-                marginLeft: "10px",
+                // marginRight: "10px",
+                // marginLeft: "10px",
+                paddingLeft: "20px",
+                paddingRight: "20px",
               }}
             >
               Add Cards
             </Button>
           </Col>
 
-          <Col xs="1.5" sm="1.8">
+          <Col xs="1.5" sm="1">
             <Button
               color="primary"
               onClick={() => {
@@ -891,7 +921,12 @@ const DemoPayment = () => {
                 setIsEditable(false);
               }}
               size="sm"
-              style={{ background: "white", color: "blue" }}
+              style={{
+                background: "white",
+                color: "blue",
+                marginRight: "-10px",
+                marginLeft: "-20px",
+              }}
             >
               Make Payment
             </Button>
@@ -1010,17 +1045,18 @@ const DemoPayment = () => {
                                     <td>
                                       ${" "}
                                       {item?.type2 === "Refund"
-                                        ? item?.amount
+                                        ? item?.total_amount
                                         : "0"}
                                     </td>
                                     <td>
                                       ${" "}
                                       {item?.type2 !== "Refund"
-                                        ? item?.amount
+                                        ? item?.total_amount
                                         : "0"}
                                     </td>
                                     <td>
-                                      {item?.type2 === "Payment" ? (
+                                      {item?.type2 === "Payment" &&
+                                      item?.status !== "Failure" ? (
                                         <UncontrolledDropdown nav>
                                           <DropdownToggle
                                             className="pr-0"
@@ -1787,85 +1823,9 @@ const DemoPayment = () => {
                           </Button>
                         </div>
                         <br />
-                        {/* 
-                        {addCard &&  (
-                            <Row>
-                            <Col sm='5'>
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Card Number *
-                                </label>
-                                <InputGroup>
-                                  <Input
-                                    type="string"
-                                    id="card_number"
-                                    placeholder="0000 0000 0000 0000"
-                                    name="card_number"
-                                    value={financialFormik.values.card_number}
-                                    onBlur={financialFormik.handleBlur}
-                                    onChange={(e) => {
-                                      // const inputValue = e.target.value;
-                                      // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-                                      // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
-                                      // // const formattedValue = formatCardNumber(limitedValue);
-                                      // e.target.value = limitedValue;
-                                      financialFormik.handleChange(e);
-                                    }}
-                                    required
-                                    disabled={refund === true}
-                                  />
-                                </InputGroup>
-                              </FormGroup>
-                            </Col>
-  
-                            <Col sm='4'>
-                              <FormGroup>
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Expiration Date *
-                                </label>
-                                <Input
-                                  type="text"
-                                  id="expiration_date"
-                                  name="expiration_date"
-                                  onBlur={financialFormik.handleBlur}
-                                  onChange={financialFormik.handleChange}
-                                  value={financialFormik.values.expiration_date}
-                                  placeholder="MM/YYYY"
-                                  required
-                                  disabled={refund === true}
-                                  
-                                />
-                             
-                              </FormGroup>
-                            </Col>
-
-                            <Col sm='3'>
-                                <div style={{marginTop:'30px'}}>
-                                  <span
-                                    style={{ cursor: 'pointer', marginRight: '10px',fontSize:'20px',color:'green'}}
-                                    onClick={handleCorrect}
-                                  >
-                                    ✔️
-                                  </span>
-                                  <span
-                                    style={{ cursor: 'pointer',fontSize:'20px' }}
-                                    onClick={handleIncorrect}
-                                  >
-                                    ❌
-                                  </span>
-                                </div>
-                              </Col>
-                          </Row>
-                        )  
-                        } */}
                       </CardContent>
-                      <Col md="6">
+
+                      {/* <Col md="6">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -1874,22 +1834,22 @@ const DemoPayment = () => {
                             Surcharge Percentage *
                           </label>
                           <Input
-                            type="text"
-                            id="surcharge"
+                            type="number"
+                            id="surcharge_percent"
                             placeholder="Enter percentage"
-                            name="surcharge"
+                            name="surcharge_percent"
                             onBlur={financialFormik.handleBlur}
-                            onInput={handleSurchargeChange}
-                            //value={financialFormik.values.surcharge}
+                            onChange={handleSurchargeChange}
+                            value={financialFormik.values.surcharge_percent}
                           />
-                          {financialFormik.touched.surcharge &&
-                          financialFormik.errors.surcharge ? (
+                          {financialFormik.touched.surcharge_percent &&
+                          financialFormik.errors.surcharge_percent ? (
                             <div style={{ color: "red", marginBottom: "10px" }}>
-                              {financialFormik.errors.surcharge}
+                              {financialFormik.errors.surcharge_percent}
                             </div>
                           ) : null}
                         </FormGroup>
-                      </Col>
+                      </Col> */}
                     </Card>
                   ) : (
                     ""
@@ -1923,7 +1883,7 @@ const DemoPayment = () => {
             <div>
               Total Amount to be Paid:{" "}
               <strong style={{ color: "green" }}>
-                $ {totalAmount1}{" "}
+                $ {totalAmount1 || financialFormik.values.amount || 0}{" "}
               </strong>
             </div>
           </ModalBody>
@@ -1958,6 +1918,22 @@ const DemoPayment = () => {
           <CreditCardForm
             tenantId={tenantId}
             closeModal={closeModals}
+            //getCreditCard={getCreditCard}
+          />
+        </ModalBody>
+      </Modal>
+
+      <Modal isOpen={isOpen} toggle={closeSurchargeModel}>
+        <ModalHeader
+          toggle={closeSurchargeModel}
+          className="bg-secondary text-white"
+        >
+          <strong style={{ fontSize: 18 }}>Add Surcharge</strong>
+        </ModalHeader>
+        <ModalBody>
+          <SurchargeForm
+            ///tenantId={tenantId}
+            closeModal={closeSurchargeModel}
             //getCreditCard={getCreditCard}
           />
         </ModalBody>
