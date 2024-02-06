@@ -71,6 +71,9 @@ import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoar
 import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
 import SuperAdminAdmin from "components/superadmin/Admin/Admin";
 import SuperAdminTenants from "components/superadmin/Tenants/Tenants";
+import SuperAdminPropertyType from "components/superadmin/Admin/PropertyType";
+import SuperAdminStaffMember from "components/superadmin/Admin/StaffMember";
+import SuperAdminProperties from "components/superadmin/Admin/Properties";
 import ResetPassword from "views/source/Resetpassword";
 
 var routes = [
@@ -389,7 +392,6 @@ var routes = [
     component: <AddWorkorder />,
     layout: "/admin",
   },
-
   {
     path: "/staffprofile",
     name: "Profile",
@@ -422,9 +424,8 @@ var routes = [
     layout: "/vendor",
   },
   {
-    path: "/staffpropertydetail",
+    path: "/staffpropertydetail/:lease_id",
     name: "Property",
-
     component: <StaffPropertyDetail />,
     layout: "/staff",
   },
@@ -667,6 +668,27 @@ var routes = [
     name: "Tenant",
     icon: "ni ni-pin-3 text-orange",
     component: <SuperAdminTenants />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/propertytype/:admin_id",
+    name: "Property Type",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminPropertyType />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/staffmember/:admin_id",
+    name: "Staff-Member",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminStaffMember />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/properties/:admin_id",
+    name: "Properties",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminProperties />,
     layout: "/superadmin",
   },
 ];

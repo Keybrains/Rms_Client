@@ -53,7 +53,6 @@ const TenantProperty = () => {
         `${baseUrl}/tenants/tenant_property/${accessType.tenant_id}`
       );
       setPropertyDetails(allTenants.data.data);
-      console.log(allTenants.data.data, "allTenants.data.data");
       setLoader(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -182,7 +181,7 @@ const TenantProperty = () => {
                   </Col>
                 </Row>
               </CardHeader>
-              {!loader || rental_adress.length > 0 ? (
+              {!loader || rental_adress?.length > 0 ? (
                 <div className="table-responsive">
                   <>
                     <Table
@@ -265,7 +264,7 @@ const TenantProperty = () => {
                                 //     address.rental_adress
                                 //   )
                                 // }
-                                onClick={()=> navigate(`/tenant/tenantpropertydetail/${address.lease_id}`)}
+                                onClick={()=> navigate(`/tenant/tenantpropertydetail/${address?.lease_id}`)}
                                 style={{ cursor: "pointer" }}
                               >
                                 <td
@@ -277,14 +276,14 @@ const TenantProperty = () => {
                                 //   textAlign: "center",
                                 // }}
                                 >
-                                  {address.rental_adress}{" "}
-                                  {address.rental_units
-                                    ? " - " + address.rental_units
+                                  {address?.rental_adress}{" "}
+                                  {address?.rental_units
+                                    ? " - " + address?.rental_units
                                     : null}
                                 </td>
 
-                                <td>{address.start_date}</td>
-                                <td>{address.end_date}</td>
+                                <td>{address?.start_date}</td>
+                                <td>{address?.end_date}</td>
                               </tr>
                             </>
                           )

@@ -37,13 +37,11 @@ const TenantNavbar = (props) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [accessType, setAccessType] = useState(null);
-  console.log(accessType, "accessType");
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
-      console.log(jwt, "--------------------");
     } else {
       navigate("/auth/login");
     }

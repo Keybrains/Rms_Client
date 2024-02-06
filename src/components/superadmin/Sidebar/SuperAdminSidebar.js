@@ -42,7 +42,7 @@ import {
 } from "reactstrap";
 
 const SuperAdminSidebar = (props) => {
-  const {admin} = useParams()
+  const { admin } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
@@ -169,7 +169,8 @@ const SuperAdminSidebar = (props) => {
   const createLinks = (routes) => {
     const filteredRoutes = routes.filter(
       (prop) =>
-        (prop.name === "Plans" ||
+        (
+          prop.name === "Plans" ||
           prop.name === "Dashboard" ||
           prop.name === "Admin" ||
           prop.name === "Staff-Member") &&

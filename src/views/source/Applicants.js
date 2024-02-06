@@ -330,7 +330,7 @@ const Applicants = () => {
 
       console.log(requestBody, "yash");
       axios
-        .post(`http://192.168.1.13:4000/api/applicant/applicant`, requestBody)
+        .post(`http://192.168.1.11:4000/api/applicant/applicant`, requestBody)
         .then((response) => {
           if (response.data.statusCode === 200) {
             closeModal();
