@@ -202,10 +202,12 @@ function CreditCardForm(props) {
   function generateRandomNumber(length) {
     let randomNumber = "";
     for (let i = 0; i < length; i++) {
-      randomNumber += Math.floor(Math.random() * 10);
+      randomNumber += Math.floor(Math.random() * 9) + 1;
     }
     return randomNumber;
   }
+
+  
 
   const handleSubmit = async (values) => {
     const isValidCard = validateCardNumber(values.card_number);

@@ -85,6 +85,16 @@ const TenantFinancial = () => {
     getMultipleCustomerVault();
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openSurchargeForm = () => {
+    setIsOpen(true);
+  };
+
+  const closeSurchargeModel = () => {
+    setIsOpen(false);
+  };
+
   const handleSearch = (e) => {
     setSearchQueryy(e.target.value);
   };
@@ -120,10 +130,9 @@ const TenantFinancial = () => {
       unit: "",
       property: "",
       paymentType: "",
-      card_number: "",
-      expiration_date: "",
       check_number: "",
       customer_vault_id: "",
+      surcharge_percent: "",
     });
     financialFormik.setFieldValue("tenantId", cookie_id);
     financialFormik.setFieldValue("first_name", tenantDetails.tenant_firstName);
@@ -273,33 +282,7 @@ const TenantFinancial = () => {
     }
   }, [customervault]);
 
-  function formatDateWithoutTime(dateString) {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${month}-${day}-${year}`;
-  }
-
-  const calculateBalance = (data) => {
-    // console.log(data);
-    let balance = 0;
-    for (let i = data.length - 1; i >= 0; i--) {
-      const currentEntry = data[i];
-      for (let j = currentEntry.entries.length - 1; j >= 0; j--) {
-        if (currentEntry.type === "Charge") {
-          balance += currentEntry.entries[j].charges_amount;
-        } else if (currentEntry.type === "Payment") {
-          balance -= currentEntry.entries[j].amount;
-        }
-        data[i].entries[j].balance = balance;
-      }
-    }
-
-    //console.log("data",data)
-    return data;
-  };
+  const [totalAmount1, setTotalAmount1] = useState();
 
   const financialFormik = useFormik({
     initialValues: {
@@ -308,7 +291,9 @@ const TenantFinancial = () => {
       check_number: "",
       email_name: "",
       card_number: "",
-      amount: "",
+      amount: "",     
+      surcharge: "",
+      surcharge_percent: "",
       date: "",
       memo: "",
       paymentType: "",
@@ -332,7 +317,7 @@ const TenantFinancial = () => {
       date: yup.date().required("Required"),
       account: yup.string().required("Required"),
       paymentType: yup.string().required("Required"),
-      billing_id: yup.string().required("Creditcard is required"),
+      //billing_id: yup.string().required("Creditcard is required"),
     }),
     onSubmit: (values, action) => {
       if (isEditable === true && paymentId) {
@@ -459,6 +444,27 @@ const TenantFinancial = () => {
     setSelectedCreditCard(selectedCard.billing_id);
   };
 
+    // Fetch data from the API
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `${baseUrl}/surcharge/surcharge/65c2286de41c9056bb233a85`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+        if (data.data) {
+          setSurchargePercentage(data.data.surcharge_percent);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    useEffect(() => {
+      fetchData();
+    }, []);
+
   const handleFinancialSubmit = async (values, action) => {
     let url = `${baseUrl}/nmipayment/postnmipayments`;
     values.account = selectedAccount;
@@ -476,14 +482,18 @@ const TenantFinancial = () => {
         url = `${baseUrl}/nmipayment/postnmipayments`;
         values.status = "Pending";
         values.type2 = "Payment";
+        values.surcharge_percent = surchargePercentage;
+        values.total_amount = calculateTotalAmount();
       } else if (selectedPaymentType === "Credit Card") {
         url = `${baseUrl}/nmipayment/sale`;
         values.status = "Success";
         values.type2 = "Payment";
+        values.total_amount = calculateTotalAmount();
       } else {
         url = `${baseUrl}/nmipayment/postnmipayments`;
         values.status = "Success";
         values.type2 = "Payment";
+        values.total_amount = calculateTotalAmount();
       }
 
       const creditCardDetails = cardDetalis.find(
@@ -685,6 +695,7 @@ const TenantFinancial = () => {
         financialFormik.setValues({
           account: responseData.account || "",
           amount: responseData.amount || "",
+          surcharge_percent: responseData.surcharge_percent || "",
           first_name: responseData.first_name || "",
           last_name: responseData.last_name || "",
           email_name: responseData.email_name || "",
@@ -722,6 +733,7 @@ const TenantFinancial = () => {
       if (response.data.statusCode === 200) {
         const updatedValues = {
           amount: financialFormik.values.amount,
+          surcharge: financialFormik.values.surcharge,
           account: financialFormik.values.account,
           first_name: financialFormik.values.first_name,
           last_name: financialFormik.values.last_name,
@@ -730,10 +742,11 @@ const TenantFinancial = () => {
           memo: financialFormik.values.memo,
           email_name: financialFormik.values.email_name,
           date: financialFormik.values.date,
-          check_number: financialFormik.values.check_number,
           customer_vault_id: financialFormik.values.customer_vault_id,
           billing_id: financialFormik.values.billing_id,
+          check_number: financialFormik.values.check_number,
           paymentType: financialFormik.values.paymentType,
+          total_amount: calculateTotalAmount(),
         };
 
         const putUrl = `${baseUrl}/nmipayment/updatepayment/${id}`;
@@ -770,6 +783,31 @@ const TenantFinancial = () => {
     setShowOptions(!showOptions);
     setShowOptionsId(id);
   };
+  
+  const [surchargePercentage, setSurchargePercentage] = useState();
+
+  // Calculate total amount after surcharge
+// Calculate total amount after surcharge
+const calculateTotalAmount = () => {
+  const amount = parseFloat(financialFormik.values.amount) || 0;
+  let totalAmount = amount;
+
+  if (selectedPaymentType === "Credit Card") {
+    const surchargeAmount = (amount * surchargePercentage) / 100;
+    financialFormik.setFieldValue("surcharge", surchargeAmount);
+    totalAmount += surchargeAmount;
+  }
+
+  return totalAmount;
+};
+
+
+  // const totalAmount = calculateTotalAmount();
+
+  useEffect(() => {
+    const totalAmount = calculateTotalAmount();
+    setTotalAmount1(totalAmount);
+  }, [financialFormik.values.amount, surchargePercentage,selectedPaymentType]);
 
   return (
     <>
@@ -926,13 +964,13 @@ const TenantFinancial = () => {
                                     <td>
                                       ${" "}
                                       {item?.type2 === "Refund"
-                                        ? item?.amount
+                                        ? item?.total_amount
                                         : "0"}
                                     </td>
                                     <td>
                                       ${" "}
                                       {item?.type2 !== "Refund"
-                                        ? item?.amount
+                                        ? item?.total_amount
                                         : "0"}
                                     </td>
                                     <td>
@@ -1930,6 +1968,12 @@ const TenantFinancial = () => {
                   </FormGroup>
                 </>
               ) : null}
+            </div>
+            <div>
+              Total Amount to be Paid:{" "}
+              <strong style={{ color: "green" }}>
+                $ {totalAmount1 || financialFormik.values.amount || 0}{" "}
+              </strong>
             </div>
           </ModalBody>
           <ModalFooter>
