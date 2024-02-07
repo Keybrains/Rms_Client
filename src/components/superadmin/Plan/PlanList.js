@@ -18,6 +18,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import Tooltip from "@mui/material/Tooltip";
 import { Button } from "react-bootstrap";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -29,6 +30,9 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
+import { Radio, RadioGroup, FormGroup } from "@mui/material";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Cookies from "universal-cookie";
@@ -312,6 +316,7 @@ export default function PlanList() {
   //   edit machine-type here
   let [modalShowForPopupForm, setModalShowForPopupForm] = React.useState(false);
   let [id, setId] = React.useState();
+  const [showBillingPeriods, setShowBillingPeriods] = useState(false);
 
   var handleSubmit;
 
@@ -362,7 +367,7 @@ export default function PlanList() {
     };
   }
 
-  //    // "add fom logic"
+  // "add form logic"
   let [editData, setEditData] = React.useState({});
 
   //   auto form fill up in edit
@@ -407,7 +412,7 @@ export default function PlanList() {
     list[index][name] = value;
     setInputFields(list);
   };
-
+  const navigate = useNavigate();
   return (
     <>
       <SuperAdminHeader />
@@ -420,16 +425,18 @@ export default function PlanList() {
                   <Button
                     className="text-capitalize"
                     size="small"
-                    onClick={() => {
-                      setModalShowForPopupForm(true);
-                      setId(null);
-                      setEditData({});
-                      setInputFields([
-                        {
-                          features: "",
-                        },
-                      ]);
-                    }}
+                    // onClick={() => {
+                    //   setModalShowForPopupForm(true);
+                    //   setId(null);
+                    //   setShowBillingPeriods(false);
+                    //   setEditData({});
+                    //   setInputFields([
+                    //     {
+                    //       features: "",
+                    //     },
+                    //   ]);
+                    // }}
+                    onClick={() => navigate("/superadmin/addplan")}
                     variant="contained"
                     style={{ backgroundColor: "#4A5073", color: "#ffffff" }} // Set background color and text color
                   >
@@ -638,7 +645,7 @@ export default function PlanList() {
                             size="small"
                             fullWidth
                             placeholder="Add Plan *"
-                            label="Add Plan *"
+                            label="Plan Name*"
                             name="plan_name"
                             value={values.plan_name}
                             onBlur={handleBlur}
@@ -656,7 +663,7 @@ export default function PlanList() {
                             size="small"
                             fullWidth
                             placeholder="Add Price *"
-                            label="Add Plan Price *"
+                            label="Cost Per Billing Cycle *"
                             name="plan_price"
                             value={values.plan_price}
                             onBlur={handleBlur}
@@ -672,7 +679,7 @@ export default function PlanList() {
                         <div className="mt-3">
                           <FormControl fullWidth>
                             <InputLabel size="small">
-                              Select Billing-Interval
+                              Plan Billing Interval
                             </InputLabel>
                             <Select
                               size="small"
@@ -721,15 +728,50 @@ export default function PlanList() {
                           </div>
                         ) : null}
 
-                        <div className="col-sm-8">
+                        {values.billing_interval === "Monthly" ? (
+                          <div className="mt-3">
+                            <FormControl fullWidth>
+                              <InputLabel size="small">
+                                Charge on Day of Month *
+                              </InputLabel>
+                              <Select
+                                size="small"
+                                fullWidth
+                                label="Charge on Day of Month *"
+                                name="day_of_month"
+                                value={values.day_of_month}
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                MenuProps={{
+                                  style: {
+                                    maxHeight: 250,
+                                  },
+                                }}
+                              >
+                                {[...Array(28).keys()].map((day) => (
+                                  <MenuItem key={day + 1} value={day + 1}>
+                                    {day + 1}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          </div>
+                        ) : null}
+
+                        <div className="mt-3">
+                          <FormLabel component="legend">
+                            Add Features:
+                          </FormLabel>
                           {inputFields.map((data, index) => {
                             const { features } = data;
                             return (
-                              <div className="row my-3" key={index}>
+                              <div className="row" key={index}>
                                 <div className="col">
                                   <div className="form-group">
                                     <TextField
                                       type="text"
+                                      size="small"
+                                      fullWidth
                                       onChange={(evnt) =>
                                         handleFeaturesChange(index, evnt)
                                       }
@@ -740,15 +782,15 @@ export default function PlanList() {
                                     />
                                   </div>
                                 </div>
-
-                                <div className="col">
+                                <div className="">
                                   {inputFields.length !== 1 ? (
-                                    <button
-                                      className="btn btn-outline-danger"
+                                    <div
+                                      className="mt-2"
+                                      style={{ cursor: "pointer" }}
                                       onClick={removeInputFields}
                                     >
-                                      x
-                                    </button>
+                                      ✖️
+                                    </div>
                                   ) : (
                                     ""
                                   )}
@@ -756,26 +798,160 @@ export default function PlanList() {
                               </div>
                             );
                           })}
-
                           <div className="row">
                             <div className="col-sm-12">
-                              <div
-                                className="btn btn-outline-success "
+                              <button
+                                className="btn btn-outline-primary"
+                                sm
                                 onClick={addInputField}
                               >
                                 Add New
-                              </div>
+                              </button>
                             </div>
                           </div>
+                        </div>
+                        <div className="mt-3">
+                          <FormControl component="fieldset">
+                            <FormLabel component="legend">
+                              Set how many times you wish to charge the
+                              customer?
+                            </FormLabel>
+                            <RadioGroup
+                              aria-label="billingOption"
+                              name="billingOption"
+                              value={values.billingOption}
+                              onChange={handleChange}
+                            >
+                              <FormControlLabel
+                                value="autoRenew"
+                                control={<Radio />}
+                                onChange={() => setShowBillingPeriods(true)}
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Auto renew plan after term expires
+                                  </span>
+                                }
+                              />
+                              <FormControlLabel
+                                value="chargeUntilTerm"
+                                control={<Radio />}
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Charge customers until their term commitment
+                                    expires
+                                  </span>
+                                }
+                                onChange={() => setShowBillingPeriods(false)}
+                              />
+                              <FormControlLabel
+                                value="chargeUntilCancellation"
+                                control={<Radio />}
+                                onChange={() => setShowBillingPeriods(false)}
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Charge customers until cancellation, no term
+                                    commitment
+                                  </span>
+                                }
+                              />
+                            </RadioGroup>
+                          </FormControl>
+                        </div>
+
+                        {showBillingPeriods && (
+                          <div className="mt-2 mb-3">
+                            <TextField
+                              type="number"
+                              size="small"
+                              fullWidth
+                              placeholder="Add Number *"
+                              label="Number of Billing Periods *"
+                              name="plan_periods"
+                              value={values.plan_periods}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                            />
+                            {touched.plan_periods && errors.plan_periods ? (
+                              <div className="text-danger">
+                                {errors.plan_periods}
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
+
+                        <div className="mt-3">
+                          <FormControl component="fieldset">
+                            <FormLabel component="legend">
+                              Additional Options:
+                            </FormLabel>
+                            <FormGroup>
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={values.earlyCancellationFee}
+                                    onChange={handleChange}
+                                    name="earlyCancellationFee"
+                                  />
+                                }
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Set early membership cancellation fee
+                                  </span>
+                                }
+                              />
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={values.changePlan}
+                                    onChange={handleChange}
+                                    name="changePlan"
+                                  />
+                                }
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Allow member to change plan
+                                  </span>
+                                }
+                              />
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={values.cancelMembership}
+                                    onChange={handleChange}
+                                    name="cancelMembership"
+                                  />
+                                }
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Allow member to cancel billing/membership
+                                  </span>
+                                }
+                              />
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={values.pauseMembership}
+                                    onChange={handleChange}
+                                    name="pauseMembership"
+                                  />
+                                }
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Allow member to pause billing/membership
+                                  </span>
+                                }
+                              />
+                            </FormGroup>
+                          </FormControl>
                         </div>
 
                         {!id ? (
                           <Button
                             className="mt-3"
                             type="submit"
-                            variant="primary"
+                            variant="success"
                           >
-                            Add
+                            Add Plan
                           </Button>
                         ) : (
                           <Button
@@ -783,9 +959,17 @@ export default function PlanList() {
                             type="submit"
                             variant="warning"
                           >
-                            Update
+                            Update Plan
                           </Button>
                         )}
+                        <Button
+                          className="mt-3"
+                          type=""
+                          variant=""
+                          onClick={() => setModalShowForPopupForm(false)}
+                        >
+                          Cancel
+                        </Button>
                       </div>
                     </Form>
                   )}
