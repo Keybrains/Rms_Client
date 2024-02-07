@@ -50,12 +50,10 @@ const AddWorkorder = () => {
   const [selectedVendor, setSelectedVendor] = useState("Select");
   const [selectedCharge, setSelectedCharge] = useState("Select");
   const [selectedTenant, setSelectedTenant] = useState("Select");
-  const [selectedTenantData, setSelectedTenantData] = useState({});
   const [selectedEntry, setSelectedEntry] = useState("Select");
   const [selecteduser, setSelecteduser] = useState("Select");
   const [selectedStatus, setSelectedStatus] = useState("Select");
   const [unitData, setUnitData] = useState([]);
-  const [selectedAccount, setSelectedAccount] = useState("");
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
 
   const toggle1 = () => setpropdropdownOpen((prevState) => !prevState);
@@ -236,54 +234,89 @@ const AddWorkorder = () => {
       if (id) {
         try {
           const response = await axios.get(
-            `${baseUrl}/workorder/workorder_summary/${id}`
+            `${baseUrl}/work-order/work-order/${id}`
           );
 
-          const vendorData = response.data.data;
-          setWorkOrderData(vendorData);
+          const {
+            workOrderData,
+            partsData,
+            rentalAdress,
+            rentalUnit,
+            staffMember,
+            vendor,
+            tenantData,
+          } = response.data.data;
+          setWorkOrderData(workOrderData);
 
-          const formattedDueDate = vendorData.due_date
-            ? new Date(vendorData.due_date).toISOString().split("T")[0]
+          const formattedDueDate = workOrderData.due_date
+            ? new Date(workOrderData.due_date).toISOString().split("T")[0]
             : "";
 
-          setVid(vendorData._id);
+          setVid(workOrderData.workOrder_id);
 
           try {
-            const units = await fetchUnitsByProperty(vendorData.rental_adress);
+            const units = await fetchUnitsByProperty(rentalAdress.rental_id);
             setUnitData(units);
           } catch (error) {
             console.error(error, "error");
           }
-          setSelectedUnit(vendorData.rental_units || "Select");
-          setSelectedProp(vendorData.rental_adress || "Select");
-          setSelectedCategory(vendorData.work_category || "Select");
-          setSelectedVendor(vendorData.vendor_name || "Select");
-          setSelectedCharge(vendorData.work_charge || "Select");
-          setSelectedEntry(vendorData.entry_allowed || "Select");
-          setSelecteduser(vendorData.staffmember_name || "Select");
-          setSelectedStatus(vendorData.status || "Select");
-          setSelectedPriority(vendorData.priority || "Select");
-          setSelectedAccount(vendorData.account_type || "Select");
-          setWorkOrderImage(vendorData.workOrderImage || []);
 
-          const entriesData = vendorData.entries || [];
+          setSelectedUnit(rentalUnit.rental_unit || "Select");
+          setSelectedProp(rentalAdress.rental_adress || "Select");
+          setSelectedCategory(workOrderData.work_category || "Select");
+          setSelectedVendor(vendor.vendor_name || "Select");
+          setSelectedCharge(workOrderData.work_charge_to || "Select");
+          setSelectedEntry(
+            workOrderData.entry_allowed === true ? "Yes" : "No" || "Select"
+          );
+          setSelecteduser(staffMember.staffmember_name || "Select");
+          setSelectedStatus(workOrderData.status || "Select");
+          setSelectedPriority(workOrderData.priority || "Select");
+          setWorkOrderImage(workOrderData.workOrder_images || []);
+
           WorkFormik.setValues({
-            work_subject: vendorData.work_subject || "",
-            rental_units: vendorData.rental_units || "",
-            invoice_number: vendorData.invoice_number || "",
-            work_charge: vendorData.work_charge || "",
-            detail: vendorData.detail || "",
-            entry_contact: vendorData.entry_contact || "",
-            work_performed: vendorData.work_performed || "",
-            vendor_note: vendorData.vendor_note || "",
-            due_date: formattedDueDate,
-            final_total_amount: vendorData.final_total_amount || "",
-            entries: entriesData.map((entry) => ({
-              part_qty: entry.part_qty || "",
-              account_type: entry.account_type || "Select",
-              description: entry.description || "",
-              part_price: entry.part_price || "",
-              total_amount: entry.total_amount || "",
+            invoice_number: workOrderData?.invoice_number || "",
+            work_charge: workOrderData?.work_charge || "",
+            detail: workOrderData?.detail || "",
+            entry_contact: workOrderData?.entry_contact || "",
+            final_total_amount: workOrderData?.final_total_amount || "",
+
+            work_subject: workOrderData?.work_subject || "",
+            rental_adress: rentalAdress?.rental_adress || "",
+            rental_unit: rentalUnit?.rental_unit || "",
+            rental_id: rentalAdress.rental_id || "",
+            work_category: workOrderData?.work_category || "",
+            vendor_name: vendor?.vendor_name || "",
+            vendor_id: vendor?.vendor_id || "",
+            unit_id: rentalUnit?.unit_id || "",
+            tenant_id: tenantData?.tenant_id || "",
+            tenant_name:
+              tenantData?.tenant_firstName +
+                " " +
+                tenantData?.tenant_lastName || "",
+            invoice_number: "",
+            work_charge: workOrderData?.work_charge_to || "",
+            entry_allowed:
+              workOrderData.entry_allowed === true ? "Yes" : "No" || "",
+            detail: "",
+            entry_contact: "",
+            work_performed: workOrderData?.work_performed || "",
+            vendor_note: workOrderData?.vendor_note || "",
+            staffmember_name: staffMember?.staffmember_name || "",
+            staffmember_id: staffMember?.staffmember_id || "",
+            status: workOrderData?.status || "",
+            due_date: formattedDueDate || "",
+            priority: workOrderData?.priority || "",
+            workOrderImage: workOrderData?.workOrder_images || "",
+            final_total_amount: "",
+            statusUpdatedBy: "Admin",
+            entries: partsData.map((part) => ({
+              part_qty: part?.parts_quantity || "",
+              account_type: part?.account || "Select",
+              description: part?.description || "",
+              charge_type: "Workorder Charge",
+              part_price: part?.parts_price || "",
+              total_amount: part?.amount || "",
               dropdownOpen: false,
             })),
           });
@@ -318,7 +351,6 @@ const AddWorkorder = () => {
                 res.data.files &&
                 res.data.files.length > 0
               ) {
-                // Ensure the `image` array has enough space for the current index
                 image[i] = res.data.files[0].url;
               } else {
                 console.error("Unexpected response format:", res);
@@ -327,7 +359,6 @@ const AddWorkorder = () => {
               console.error("Error uploading file:", error);
             }
           } else {
-            // Ensure the `image` array has enough space for the current index
             image[i] = fileItem;
           }
         });
@@ -402,6 +433,7 @@ const AddWorkorder = () => {
       vendor_name: "",
       vendor_id: "",
       unit_id: "",
+      tenant_name: "",
       tenant_id: "",
       invoice_number: "",
       work_charge: "",
@@ -421,7 +453,7 @@ const AddWorkorder = () => {
       entries: [
         {
           part_qty: "",
-          account_type: selectedAccount,
+          account_type: "",
           description: "",
           part_price: "",
           charge_type: "Workorder Charge",
@@ -460,7 +492,6 @@ const AddWorkorder = () => {
       );
       if (res.data.statusCode === 200) {
         setPropertyData(res.data.data);
-        // console.log(res, "yash1");
       } else if (res.data.statusCode === 201) {
         setPropertyData([]);
       }
@@ -645,41 +676,6 @@ const AddWorkorder = () => {
   useEffect(() => {
     getTenantData();
   }, [selectedCharge, selectedUnit, selectedProp]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     // try {
-  //     //   const response = await axios.get(
-  //     //     `${baseUrl}/rentals/rentals_workorder/${rental_id}`
-  //     //   );
-
-  //     //   setSelectedProp(response.data.data.entry.rental_adress);
-  //     //   WorkFormik.setFieldValue(
-  //     //     "rental_adress",
-  //     //     response.data.data.entry.rental_adress
-  //     //   );
-  //     //   WorkFormik.setFieldValue(
-  //     //     "rental_id",
-  //     //     response.data.data.rentalOwner._id
-  //     //   );
-  //     //   setSelectedUnit("");
-  //     //   try {
-  //     //     const units = await fetchUnitsByProperty(
-  //     //       response.data.data.entry.rental_adress
-  //     //     );
-  //     //     setUnitData(units);
-  //     //   } catch (error) {
-  //     //     console.error("Error handling selected property:", error);
-  //     //   }
-  //     // } catch (error) {
-  //     //   console.error("Error: ", error.message);
-  //     // }
-  //   };
-
-  //   fetchData();
-  // }, [rental_id]);
-
-  // console.log(WorkFormik.values, "yash");
 
   return (
     <>
@@ -1715,14 +1711,23 @@ const AddWorkorder = () => {
                                 <DropdownMenu style={{ width: "100%" }}>
                                   {tenantsDetails?.map((item) => (
                                     <DropdownItem
-                                      key={item?._id}
+                                      key={item?.tenant_id}
                                       onClick={() => {
                                         setSelectedTenant(
                                           item?.tenant_firstName +
                                             " " +
                                             item?.tenant_lastName
                                         );
-                                        setSelectedTenantData(item);
+                                        WorkFormik.setFieldValue(
+                                          "tenant_name",
+                                          item?.tenant_firstName +
+                                            " " +
+                                            item?.tenant_lastName
+                                        );
+                                        WorkFormik.setFieldValue(
+                                          "tenant_id",
+                                          item?.tenant_id
+                                        );
                                       }}
                                     >
                                       {item?.tenant_firstName +
