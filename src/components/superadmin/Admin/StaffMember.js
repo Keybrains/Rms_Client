@@ -41,7 +41,7 @@ import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 
 import { Col, Container, Row } from "reactstrap";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
@@ -110,7 +110,7 @@ export default function StaffMember() {
   //   }
   // }, [cookies]);
 
-  const [propertyType, setPropertyType] = useState([]);
+  const [staffMemberData, setStaffMemberData] = useState([]);
   let [loader, setLoader] = React.useState(true);
   let [countData, setCountData] = useState(0);
   const [adminName, setAdminName] = useState();
@@ -131,7 +131,7 @@ export default function StaffMember() {
         }
       );
       setLoader(false);
-      setPropertyType(res.data.data);
+      setStaffMemberData(res.data.data);
       setAdminName(res.data.data[0].admin);
       setCountData(res.data.count); // Make sure to adjust the key here
     } catch (error) {
@@ -157,7 +157,7 @@ export default function StaffMember() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = propertyType?.map((n) => n._id);
+      const newSelected = staffMemberData?.map((n) => n._id);
       setSelected(newSelected);
       return;
     }
@@ -222,7 +222,7 @@ export default function StaffMember() {
     if (res.data.statusCode === 200) {
       if (values !== "") {
         setSearchLoader(false);
-        setPropertyType(res.data.data);
+        setStaffMemberData(res.data.data);
         setCountData(res.data.count);
       } else {
         setSearchLoader(false);
@@ -319,24 +319,93 @@ export default function StaffMember() {
               <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
                   <li className="nav-item">
-                    <Link to="/superadmin/staffmember" className="nav-link">
+                    <NavLink
+                      to={`/superadmin/staffmember/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
+                    >
                       Staff Member
-                    </Link>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <Link to={`/superadmin/propertytype/${admin_id}`} className="nav-link">
+                    <NavLink
+                      to={`/superadmin/propertytype/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
+                    >
                       Property Type
-                    </Link>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <Link to="/superadmin/properties" className="nav-link">
+                    <NavLink
+                      to={`/superadmin/properties/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
+                    >
                       Properties
-                    </Link>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/rental-owner/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
+                    >
+                      Rental Owner
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/tenant/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
+                    >
+                      Tenant
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/unit/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Unit
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/lease/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Lease
+                    </NavLink>
                   </li>
                   {/* Add more links as needed */}
                 </ul>
               </div>
             </nav>
+
             <div>
               <Paper
                 sx={{
@@ -428,7 +497,7 @@ export default function StaffMember() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {propertyType?.map((row, index) => {
+                        {staffMemberData?.map((row, index) => {
                           const isItemSelected = isSelected(row._id);
                           const labelId = `enhanced-table-checkbox-${index}`;
                           return (

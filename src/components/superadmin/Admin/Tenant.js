@@ -1,3 +1,7 @@
+
+
+
+
 import * as React from "react";
 import Box from "@mui/material/Box";
 import { alpha } from "@mui/material/styles";
@@ -41,23 +45,20 @@ import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 
 import { Col, Container, Row } from "reactstrap";
-import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, NavLink } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const headCells = [
   {
-    label: "Main Type",
+    label: "Tenant Name",
   },
   {
-    label: "Sub Type",
+    label: "Phone",
   },
   {
-    label: "Created At",
-  },
-  {
-    label: "Updated At",
+    label: "Email",
   },
 ];
 
@@ -77,22 +78,18 @@ function Rows(props) {
         selected={isItemSelected}
       >
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
-        <TableCell align="left">{row?.property_type}</TableCell>
-        <TableCell align="left">{row?.propertysub_type}</TableCell>
-        <TableCell align="left">{row?.updatedAt}</TableCell>
         <TableCell align="left">
-          {new Date(row.createdAt).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-          })}
+          <img src={ProfileIcon} /> {row?.tenant_firstName}{" "}
+          {row?.tenant_lastName}
         </TableCell>
+        <TableCell align="left">{row?.tenant_phoneNumber}</TableCell>
+        <TableCell align="left">{row?.tenant_email}</TableCell>
       </TableRow>
     </React.Fragment>
   );
 }
 
-export default function PropertyType() {
+export default function Tenant() {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let cookies = new Cookies();
   // const history = useHistory();
@@ -103,7 +100,7 @@ export default function PropertyType() {
   //   }
   // }, [cookies]);
 
-  const [propertyType, setPropertyType] = useState([]);
+  const [tenantData, setTenantData] = useState([])
   let [loader, setLoader] = React.useState(true);
   let [countData, setCountData] = useState(0);
   const [adminName, setAdminName] = useState();
@@ -114,7 +111,7 @@ export default function PropertyType() {
   const getData = async () => {
     try {
       const res = await axios.get(
-        `${baseUrl}/propertytype/property_type/${admin_id}`,
+        `${baseUrl}/tenants/tenant/get/${admin_id}`,
         {
           params: {
             pageSize: rowsPerPage,
@@ -123,8 +120,8 @@ export default function PropertyType() {
         }
       );
       setLoader(false);
-      setPropertyType(res.data.data);
-      setAdminName(res.data.data[0].admin);
+      setTenantData(res.data.data);
+      setAdminName(res.data.data[0]?.admin_data);
       setCountData(res.data.count); // Make sure to adjust the key here
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -149,7 +146,7 @@ export default function PropertyType() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = propertyType?.map((n) => n._id);
+      const newSelected = tenantData?.map((n) => n._id);
       setSelected(newSelected);
       return;
     }
@@ -214,7 +211,7 @@ export default function PropertyType() {
     if (res.data.statusCode === 200) {
       if (values !== "") {
         setSearchLoader(false);
-        setPropertyType(res.data.data);
+        setTenantData(res.data.data);
         setCountData(res.data.count);
       } else {
         setSearchLoader(false);
@@ -298,7 +295,6 @@ export default function PropertyType() {
 
   const navigate = useNavigate();
   const { admin_id } = useParams();
-
   return (
     <>
       <SuperAdminHeader />
@@ -322,7 +318,7 @@ export default function PropertyType() {
                   </li>
                   <li className="nav-item">
                     <NavLink
-                      to={`/superadmin/propertytype/${admin_id}`}
+                      to={`/superadmin/tenantData/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
                     >
@@ -402,8 +398,7 @@ export default function PropertyType() {
                     id="tableTitle"
                     component="div"
                   >
-                    Property Type: {adminName?.first_name}{" "}
-                    {adminName?.last_name}
+                    Tenant: {adminName?.first_name} {adminName?.last_name}
                   </Typography>
 
                   {/* <form className="form-inline">
@@ -470,7 +465,7 @@ export default function PropertyType() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {propertyType?.map((row, index) => {
+                        {tenantData?.map((row, index) => {
                           const isItemSelected = isSelected(row._id);
                           const labelId = `enhanced-table-checkbox-${index}`;
                           return (

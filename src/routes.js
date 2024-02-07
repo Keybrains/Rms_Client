@@ -70,10 +70,13 @@ import DemoPayment from "views/source/DemoPayment";
 import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
 import SuperAdminPlanList from "components/superadmin/Plan/PlanList";
 import SuperAdminAdmin from "components/superadmin/Admin/Admin";
-import SuperAdminTenants from "components/superadmin/Tenants/Tenants";
 import SuperAdminPropertyType from "components/superadmin/Admin/PropertyType";
 import SuperAdminStaffMember from "components/superadmin/Admin/StaffMember";
 import SuperAdminProperties from "components/superadmin/Admin/Properties";
+import SuperAdminRentalOwner from "components/superadmin/Admin/RentalOwner";
+import SuperAdminTenat from "components/superadmin/Admin/Tenant";
+import SuperAdminUnit from "components/superadmin/Admin/Unit";
+import SuperAdminLease from "components/superadmin/Admin/Leasing";
 import ResetPassword from "views/source/Resetpassword";
 
 var routes = [
@@ -408,7 +411,6 @@ var routes = [
     layout: "/staff",
   },
 
-  
   {
     path: "/agentprofile",
     name: "Profile",
@@ -478,7 +480,7 @@ var routes = [
     component: <Rentals />,
     layout: "/admin",
   },
-  
+
   {
     path: "/GeneralLedger",
     name: "General Ledger",
@@ -664,13 +666,6 @@ var routes = [
     layout: "/superadmin",
   },
   {
-    path: "/tenant",
-    name: "Tenant",
-    icon: "ni ni-pin-3 text-orange",
-    component: <SuperAdminTenants />,
-    layout: "/superadmin",
-  },
-  {
     path: "/propertytype/:admin_id",
     name: "Property Type",
     icon: "ni ni-pin-3 text-orange",
@@ -689,6 +684,34 @@ var routes = [
     name: "Properties",
     icon: "ni ni-pin-3 text-orange",
     component: <SuperAdminProperties />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/rental-owner/:admin_id",
+    name: "Properties",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminRentalOwner />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/tenant/:admin_id",
+    name: "Tenant",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminTenat />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/unit/:admin_id",
+    name: "Unit",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminUnit />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/lease/:admin_id",
+    name: "Unit",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminLease />,
     layout: "/superadmin",
   },
 ];

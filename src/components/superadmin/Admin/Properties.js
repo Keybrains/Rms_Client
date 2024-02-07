@@ -41,8 +41,9 @@ import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 
 import { Col, Container, Row } from "reactstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
+
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -83,12 +84,20 @@ function Rows(props) {
       >
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
         <TableCell align="left">{row?.rental_adress}</TableCell>
-        <TableCell align="left">{row?.property_type_data?.property_type}</TableCell>
-        <TableCell align="left">{row?.property_type_data?.propertysub_type}</TableCell>
-        <TableCell align="left">{row?.rental_owner_data?.rentalOwner_firstName} {row?.rental_owner_data?.rentalOwner_lastName}</TableCell>
-        <TableCell align="left">{row?.rental_owner_data?.rentalOwner_companyName}</TableCell>
+        <TableCell align="left">
+          {row?.property_type_data?.property_type}
+        </TableCell>
+        <TableCell align="left">
+          {row?.property_type_data?.propertysub_type}
+        </TableCell>
+        <TableCell align="left">
+          {row?.rental_owner_data?.rentalOwner_firstName}{" "}
+          {row?.rental_owner_data?.rentalOwner_lastName}
+        </TableCell>
+        <TableCell align="left">
+          {row?.rental_owner_data?.rentalOwner_companyName}
+        </TableCell>
         <TableCell align="left">{row?.rental_city}</TableCell>
-      
       </TableRow>
     </React.Fragment>
   );
@@ -105,28 +114,26 @@ export default function Properties() {
   //   }
   // }, [cookies]);
 
-  const [propertyType, setPropertyType] = useState([]);
+  const [propertiesData, setPropertiesData] = useState([])
   let [loader, setLoader] = React.useState(true);
   let [countData, setCountData] = useState(0);
   const [adminName, setAdminName] = useState();
+  const { admin_id } = useParams();
 
   // pagination
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
     try {
-      const res = await axios.get(
-        `${baseUrl}/rentals/properties/1705469527218`,
-        {
-          params: {
-            pageSize: rowsPerPage,
-            pageNumber: page,
-          },
-        }
-      );
+      const res = await axios.get(`${baseUrl}/rentals/properties/${admin_id}`, {
+        params: {
+          pageSize: rowsPerPage,
+          pageNumber: page,
+        },
+      });
       setLoader(false);
-      setPropertyType(res.data.data);
-      setAdminName(res.data.data[0].admin);
+      setPropertiesData(res.data.data);
+      setAdminName(res.data.data[0].admin_data);
       setCountData(res.data.count); // Make sure to adjust the key here
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -151,7 +158,7 @@ export default function Properties() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = propertyType?.map((n) => n._id);
+      const newSelected = propertiesData?.map((n) => n._id);
       setSelected(newSelected);
       return;
     }
@@ -216,7 +223,7 @@ export default function Properties() {
     if (res.data.statusCode === 200) {
       if (values !== "") {
         setSearchLoader(false);
-        setPropertyType(res.data.data);
+        setPropertiesData(res.data.data);
         setCountData(res.data.count);
       } else {
         setSearchLoader(false);
@@ -306,26 +313,74 @@ export default function Properties() {
       <Container className="mt--8 ml--10" fluid>
         <Row>
           <Col>
-            <nav
+          <nav
               className="navbar navbar-expand-lg navbar-light bg-light mb-1"
               style={{ cursor: "pointer", borderRadius: "15px" }}
             >
               <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
                   <li className="nav-item">
-                    <Link to="/superadmin/staffmember" className="nav-link">
+                    <NavLink
+                      to={`/superadmin/staffmember/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
                       Staff Member
-                    </Link>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <Link to="/superadmin/propertytype" className="nav-link">
+                    <NavLink
+                      to={`/superadmin/propertytype/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
                       Property Type
-                    </Link>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <Link to="/superadmin/properties" className="nav-link">
+                    <NavLink
+                      to={`/superadmin/properties/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
                       Properties
-                    </Link>
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/rental-owner/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Rental Owner
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/tenant/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Tenant
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/unit/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Unit
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/lease/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Lease
+                    </NavLink>
                   </li>
                   {/* Add more links as needed */}
                 </ul>
@@ -355,7 +410,7 @@ export default function Properties() {
                     id="tableTitle"
                     component="div"
                   >
-                    Staff member: {adminName?.first_name} {adminName?.last_name}
+                    Properties: {adminName?.first_name} {adminName?.last_name}
                   </Typography>
 
                   {/* <form className="form-inline">
@@ -422,7 +477,7 @@ export default function Properties() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {propertyType?.map((row, index) => {
+                        {propertiesData?.map((row, index) => {
                           const isItemSelected = isSelected(row._id);
                           const labelId = `enhanced-table-checkbox-${index}`;
                           return (
