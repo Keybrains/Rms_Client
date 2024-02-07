@@ -122,18 +122,7 @@ const TenantFinancial = () => {
   };
   // Step 2: Event handler to open the modal
   const openModal = () => {
-    financialFormik.setValues({
-      account: "",
-      amount: "",
-      date: "",
-      memo: "",
-      unit: "",
-      property: "",
-      paymentType: "",
-      check_number: "",
-      customer_vault_id: "",
-      surcharge_percent: "",
-    });
+    financialFormik.resetForm();
     financialFormik.setFieldValue("tenantId", cookie_id);
     financialFormik.setFieldValue("first_name", tenantDetails.tenant_firstName);
     financialFormik.setFieldValue("last_name", tenantDetails.tenant_lastName);
@@ -677,7 +666,6 @@ const TenantFinancial = () => {
         break;
       }
     }
-
     return formattedDate || "Invalid Date";
   };
 
@@ -1714,10 +1702,14 @@ const calculateTotalAmount = () => {
 
                 <>
                   {refund === false ? (
+                 
                     <Card
                       className="w-100 mt-3"
                       style={{ background: "#F4F6FF" }}
                     >
+                         <label className="form-control-label" htmlFor="input-property">
+                    Credit card transactions will charge <strong style={{color:'blue'}}>{surchargePercentage}%</strong>
+                  </label>
                       <CardContent>
                         {/* Card Details */}
                         <div
