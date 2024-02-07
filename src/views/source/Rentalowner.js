@@ -108,17 +108,17 @@ const Rentals = () => {
 
       values["rentalOwner_properties"] = selectedPropertyIds;
 
-      // if (id === undefined) {
-      //   const res = await axios.post(
-      //     `${baseUrl}/rentalowner/rentalowner`,
-      //     values
-      //   );
-      //   handleResponse(res);
-      // } else {
-      //   const editUrl = `${baseUrl}/rentalowner/rentalowner/${id}`;
-      //   const res = await axios.put(editUrl, values);
-      //   handleResponse(res);
-      // }
+      if (id === undefined) {
+        const res = await axios.post(
+          `${baseUrl}/rentalowner/rentalowner`,
+          values
+        );
+        handleResponse(res);
+      } else {
+        const editUrl = `${baseUrl}/rentalowner/rentalowner/${id}`;
+        const res = await axios.put(editUrl, values);
+        handleResponse(res);
+      }
     } catch (error) {
       console.error("Error:", error);
       if (error.response) {

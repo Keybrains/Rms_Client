@@ -19,8 +19,9 @@ import Tooltip from "@mui/material/Tooltip";
 import { Button } from "react-bootstrap";
 import { useState } from "react";
 import TextField from "@mui/material/TextField";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import swal from "sweetalert";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -40,31 +41,26 @@ import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 
 import { Col, Container, Row } from "reactstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
+import ProfileIcon from "../Images/profile.png";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const headCells = [
   {
-    label: "Admin Name",
-  },
-  {
     label: "Tenant Name",
   },
   {
-    label: "Unit Number",
+    label: "Lease",
   },
   {
-    label: "Phone",
+    label: "Lease Type",
   },
   {
-    label: "Email",
+    label: "Status",
   },
   {
-    label: "Start-End Date",
-  },
-  {
-    label: "CreateAt",
+    label: "Rental Company Name",
   },
 ];
 
@@ -72,13 +68,23 @@ function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
   const navigate = useNavigate();
 
+  const getStatus = (startDate, endDate) => {
+    const currentDate = new Date();
+    const startDateObj = new Date(startDate);
+    const endDateObj = new Date(endDate);
+
+    if (currentDate >= startDateObj && currentDate <= endDateObj) {
+      return "Tenant";
+    } else {
+      return "Future Tenant";
+    }
+  };
+
   return (
     <React.Fragment>
       <TableRow
         hover
-        style={{ cursor: "pointer" }}
-        // onClick={(event) => handleClick(event, row._id)}
-        // onClick={() => navigate(`/superadmin/rentals/${row.admin_id}`)}
+        onClick={(event) => handleClick(event, row._id)}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
@@ -86,25 +92,27 @@ function Rows(props) {
       >
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
         <TableCell align="left">
-          {row?.tenant_firstName} {row?.tenant_lastName}
+          {row?.tenant_data?.tenant_firstName}{" "}
+          {row?.tenant_data?.tenant_lastName}
         </TableCell>
-        <TableCell align="left">{row?.staffmember_name}</TableCell>
-        <TableCell align="left">{row?.staffmember_designation}</TableCell>
-        <TableCell align="left">{row.staffmember_phoneNumber}</TableCell>
-        <TableCell align="left">{row.staffmember_email}</TableCell>
         <TableCell align="left">
-          {new Date(row.createdAt).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-          })}
+          {row?.unit_data?.rental_unit_adress} - {row?.unit_data?.rental_unit}
         </TableCell>
+        <TableCell align="left">{row?.lease_type}</TableCell>
+        <TableCell align="left">
+          {getStatus(row.start_date, row.end_date)}
+        </TableCell>
+
+        <TableCell align="left">
+          {row?.start_date} to {row?.end_date}
+        </TableCell>
+        <TableCell align="left">{row?.rental_city}</TableCell>
       </TableRow>
     </React.Fragment>
   );
 }
 
-export default function Tenants() {
+export default function Leasing() {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let cookies = new Cookies();
   // const history = useHistory();
@@ -115,23 +123,26 @@ export default function Tenants() {
   //   }
   // }, [cookies]);
 
-  let [adminData, setAdminData] = useState([]);
+  const [propertiesData, setPropertiesData] = useState([]);
   let [loader, setLoader] = React.useState(true);
   let [countData, setCountData] = useState(0);
+  const [adminName, setAdminName] = useState();
+  const { admin_id } = useParams();
 
   // pagination
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
     try {
-      const res = await axios.get(`${baseUrl}/tenants/tenant`, {
+      const res = await axios.get(`${baseUrl}/leases/lease/get/${admin_id}`, {
         params: {
           pageSize: rowsPerPage,
           pageNumber: page,
         },
       });
       setLoader(false);
-      setAdminData(res.data.data);
+      setPropertiesData(res.data.data);
+      setAdminName(res.data.data[0].admin_data);
       setCountData(res.data.count); // Make sure to adjust the key here
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -156,7 +167,7 @@ export default function Tenants() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = adminData?.map((n) => n._id);
+      const newSelected = propertiesData?.map((n) => n._id);
       setSelected(newSelected);
       return;
     }
@@ -185,19 +196,43 @@ export default function Tenants() {
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
+  // Delete selected
+  var handleDelete = () => {
+    swal("Are You Sure You Want TO Delete ?", {
+      buttons: ["No", "Yes"],
+    }).then(async (buttons) => {
+      if (buttons === true) {
+        axios
+          .delete(`${baseUrl}/admin/admin`, {
+            data: selected,
+          })
+          .then((response) => {
+            if (response.data.statusCode === 200) {
+              getData();
+              setSelected([]);
+              toast.success(response.data.message, {
+                position: "top-center",
+                autoClose: 1000,
+              });
+            }
+          });
+      }
+    });
+  };
+
   //
   // Searchbar
   const [searchLoader, setSearchLoader] = useState(false);
   let handleSearchData = async (values) => {
     setSearchLoader(true);
     // const token = cookies.get("token");
-    let res = await axios.post(`${baseUrl}/staffmember/search`, {
+    let res = await axios.post(`${baseUrl}/plans/search`, {
       search: values,
     });
     if (res.data.statusCode === 200) {
       if (values !== "") {
         setSearchLoader(false);
-        setAdminData(res.data.data);
+        setPropertiesData(res.data.data);
         setCountData(res.data.count);
       } else {
         setSearchLoader(false);
@@ -219,18 +254,19 @@ export default function Tenants() {
         if (res.data.statusCode === 200) {
           setModalShowForPopupForm(false);
           getData();
-          toast.success( res.data?.message, {
-            position: 'top-center',
-          })
+          toast.success(res.data?.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
         } else {
-          toast.error( res.data.message, {
-            position: 'top-center',
-          })
+          toast.error(res.data.message, {
+            position: "top-center",
+          });
         }
       } catch (error) {
         toast.error(error, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
       }
     };
   } else {
@@ -245,14 +281,15 @@ export default function Tenants() {
           setModalShowForPopupForm(false);
           getData();
           toast.success(response.data?.message, {
-            position: 'top-center',
-          })
+            position: "top-center",
+            autoClose: 1000,
+          });
         }
       } catch (error) {
         console.error("Error:", error);
         toast.error(error, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
       }
     };
   }
@@ -277,12 +314,87 @@ export default function Tenants() {
   //     return null;
   //   };
 
+  const navigate = useNavigate();
+
   return (
     <>
       <SuperAdminHeader />
       <Container className="mt--8 ml--10" fluid>
         <Row>
           <Col>
+            <nav
+              className="navbar navbar-expand-lg navbar-light bg-light mb-1"
+              style={{ cursor: "pointer", borderRadius: "15px" }}
+            >
+              <div className="collapse navbar-collapse" id="navbarNav">
+                <ul className="navbar-nav">
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/staffmember/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Staff Member
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/propertytype/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Property Type
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/properties/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Properties
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/rental-owner/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Rental Owner
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/tenant/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Tenant
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/unit/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Unit
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/lease/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Lease
+                    </NavLink>
+                  </li>
+                  {/* Add more links as needed */}
+                </ul>
+              </div>
+            </nav>
             <div>
               <Paper
                 sx={{
@@ -307,10 +419,10 @@ export default function Tenants() {
                     id="tableTitle"
                     component="div"
                   >
-                    Tenant
+                    Lease: {adminName?.first_name} {adminName?.last_name}
                   </Typography>
 
-                  <form className="form-inline">
+                  {/* <form className="form-inline">
                     <input
                       id="serchbar-size"
                       className="form-control mr-sm-2"
@@ -319,7 +431,25 @@ export default function Tenants() {
                       placeholder="Search"
                       aria-label="Search"
                     />
-                  </form>
+                  </form> */}
+
+                  <>
+                    {selected.length > 0 ? (
+                      <Tooltip title="Delete">
+                        <IconButton onClick={() => handleDelete()}>
+                          <img
+                            src={deleterecord}
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              margin: "10px",
+                              alignItems: "center",
+                            }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+                    ) : null}
+                  </>
                 </Toolbar>
 
                 {loader || searchLoader ? (
@@ -339,6 +469,8 @@ export default function Tenants() {
                     <Table aria-label="collapsible table">
                       <TableHead>
                         <TableRow>
+                          {/* <TableCell align="center"></TableCell> */}
+
                           {headCells.map((headCell, id) => {
                             return (
                               <TableCell
@@ -354,7 +486,7 @@ export default function Tenants() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {adminData?.map((row, index) => {
+                        {propertiesData?.map((row, index) => {
                           const isItemSelected = isSelected(row._id);
                           const labelId = `enhanced-table-checkbox-${index}`;
                           return (
@@ -386,6 +518,7 @@ export default function Tenants() {
             </div>
           </Col>
         </Row>
+        <ToastContainer />
       </Container>
     </>
   );
