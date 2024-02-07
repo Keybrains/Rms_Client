@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FormGroup, Input, Button, Row, Col } from 'reactstrap'; // Assuming you're using Reactstrap
+import { FormGroup, Input, Button, Row, Col, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap'; // Assuming you're using Reactstrap
 import { useFormik } from 'formik';
 import swal from 'sweetalert';
 
@@ -62,21 +62,30 @@ function SurchargeForm(props) {
     <div style={{ maxHeight: "530px", overflowY: "auto", overflowX: "hidden" }}>
       <form onSubmit={surchargeFormik.handleSubmit}>
         <div>
+          <label className="form" htmlFor="input-property">
+                 Change Surcharge Percentage as required
+                </label>
           <Row>
             <Col md="6">
               <FormGroup>
                 <label className="form-control-label" htmlFor="input-property">
                   Percentage *
                 </label>
-                <Input
-                  type="text"
-                  id="surcharge_percent"
-                  placeholder="Enter Percentage"
-                  name="surcharge_percent"
-                  onBlur={surchargeFormik.handleBlur}
-                  onChange={surchargeFormik.handleChange}
-                  value={surchargeFormik.values.surcharge_percent}
-                />
+                <InputGroup>
+                    <Input
+                    type="text"
+                    id="surcharge_percent"
+                    placeholder="Enter Percentage"
+                    name="surcharge_percent"
+                    onBlur={surchargeFormik.handleBlur}
+                    onChange={surchargeFormik.handleChange}
+                    value={surchargeFormik.values.surcharge_percent}
+                    />
+                    <InputGroupAddon addonType="append">
+                    <InputGroupText>%</InputGroupText>
+                    </InputGroupAddon>
+                </InputGroup>
+
                 {surchargeFormik.touched.surcharge_percent && 
                   surchargeFormik.errors.surcharge_percent ? (
                   <div style={{ color: "red", marginBottom: "10px" }}>

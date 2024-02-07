@@ -131,22 +131,7 @@ const DemoPayment = () => {
     //   financialFormik.setFieldValue("last_name", tenantDetails.tenant_lastName);
     //   financialFormik.setFieldValue("email_name", tenantDetails.tenant_email);
     setIsSubmitted(false);
-    financialFormik.setValues({
-      account: "",
-      amount: "",
-      surcharge: "",
-      first_name: "",
-      last_name: "",
-      email_name: "",
-      date: "",
-      memo: "",
-      unit: "",
-      property: "",
-      paymentType: "",
-      check_number: "",
-      customer_vault_id: "",
-      surcharge_percent: "",
-    });
+    financialFormik.resetForm();
 
     // Update other selected values
     // setSurchargePercentage(0);
@@ -360,7 +345,6 @@ const DemoPayment = () => {
       selectedPropertyType || property.property || ""
     );
     financialFormik.setFieldValue("unit", selectedUnit || "");
-
     setUnit(property.rental_unit);
     setPropertyId(property.property_id);
     setSelectedUnit("");
@@ -372,7 +356,7 @@ const DemoPayment = () => {
         units.filter(
           (item) => item.rental_units !== undefined && item.rental_units !== ""
         )
-      ); // Set the received units in the unitData state
+      );
     } catch (error) {
       console.error("Error handling selected property:", error);
     }
@@ -428,7 +412,6 @@ const DemoPayment = () => {
       //customer_vault_id: selectedCard.customer_vault_id,
       billing_id: selectedCard.billing_id,
     });
-
     setSelectedCreditCard(selectedCard.billing_id);
   };
 
@@ -843,27 +826,24 @@ const DemoPayment = () => {
   const [surchargePercentage, setSurchargePercentage] = useState();
 
   // Calculate total amount after surcharge
-// Calculate total amount after surcharge
-const calculateTotalAmount = () => {
-  const amount = parseFloat(financialFormik.values.amount) || 0;
-  let totalAmount = amount;
+  const calculateTotalAmount = () => {
+    const amount = parseFloat(financialFormik.values.amount) || 0;
+    let totalAmount = amount;
 
-  if (selectedPaymentType === "Credit Card") {
-    const surchargeAmount = (amount * surchargePercentage) / 100;
-    financialFormik.setFieldValue("surcharge", surchargeAmount);
-    totalAmount += surchargeAmount;
-  }
-
-  return totalAmount;
-};
-
+    if (selectedPaymentType === "Credit Card") {
+      const surchargeAmount = (amount * surchargePercentage) / 100;
+      financialFormik.setFieldValue("surcharge", surchargeAmount);
+      totalAmount += surchargeAmount;
+    }
+    return totalAmount;
+  };
 
   // const totalAmount = calculateTotalAmount();
 
   useEffect(() => {
     const totalAmount = calculateTotalAmount();
     setTotalAmount1(totalAmount);
-  }, [financialFormik.values.amount, surchargePercentage,selectedPaymentType]);
+  }, [financialFormik.values.amount, surchargePercentage, selectedPaymentType]);
 
   return (
     <>
@@ -886,8 +866,6 @@ const calculateTotalAmount = () => {
               style={{
                 background: "white",
                 color: "blue",
-                marginRight: "-10px",
-                marginLeft: "-20px",
               }}
             >
               Add Surcharge
@@ -903,10 +881,6 @@ const calculateTotalAmount = () => {
               style={{
                 background: "white",
                 color: "blue",
-                // marginRight: "10px",
-                // marginLeft: "10px",
-                paddingLeft: "20px",
-                paddingRight: "20px",
               }}
             >
               Add Cards
@@ -924,8 +898,6 @@ const calculateTotalAmount = () => {
               style={{
                 background: "white",
                 color: "blue",
-                marginRight: "-10px",
-                marginLeft: "-20px",
               }}
             >
               Make Payment
@@ -1679,9 +1651,12 @@ const calculateTotalAmount = () => {
                       className="w-100 mt-3"
                       style={{ background: "#F4F6FF" }}
                     >
+                             <label className="form-control-label" htmlFor="input-property">
+                   &nbsp; Credit card transactions will charge <strong style={{color:'blue'}}>{surchargePercentage}%</strong>
+                  </label>
                       <CardContent>
                         {/* Card Details */}
-                        <div
+                        {/* <div
                           style={{ display: "flex", flexDirection: "column" }}
                         >
                           <Typography
@@ -1697,7 +1672,7 @@ const calculateTotalAmount = () => {
                           >
                             Credit Cards
                           </Typography>
-                        </div>
+                        </div> */}
                         {cardDetalis && cardDetalis.length > 0 && (
                           <Table responsive>
                             <tbody>
