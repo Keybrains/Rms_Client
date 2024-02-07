@@ -86,8 +86,8 @@ const RentalownerTable = () => {
     fetchRentalsData();
   }, [accessType]);
 
-  function navigateToRentRollDetails(rentalOwnerId) {
-    navigate(`/${admin}/rentalownerdetail/${rentalOwnerId}`);
+  function navigateToRentRollDetails(rentalowner_id) {
+    navigate(`/${admin}/rentalownerdetail/${rentalowner_id}`);
   }
 
   const editRentalOwner = (id) => {
