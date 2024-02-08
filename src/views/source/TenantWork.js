@@ -38,6 +38,7 @@ import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { useEffect } from "react";
 
 const TenantWork = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -98,10 +99,10 @@ const TenantWork = () => {
   const [accessType, setAccessType] = useState(null);
   let cookie_id = localStorage.getItem("Tenant ID");
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -110,7 +111,7 @@ const TenantWork = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
+        `${baseUrl}/tenant/tenant_summary/${accessType.tenant_id}`
       );
       const entries = response.data.data.entries;
 
@@ -361,11 +362,6 @@ const TenantWork = () => {
     // setOnClickUpArrow(!onClickUpArrow);
   };
 
-  React.useEffect(() => {
-    // setLoader(false);
-    // filterRentalsBySearch();
-    getRentalData();
-  }, [upArrow, sortBy]);
   return (
     <>
       <TenantsHeader />

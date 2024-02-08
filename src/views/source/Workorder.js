@@ -50,22 +50,20 @@ const Workorder = () => {
       const response = await axios.get(
         `${baseUrl}/work-order/work-orders/${accessType?.admin_id}`
       );
-      const filteredData = response.data.data.filter((item) => {
-        return { 
-          workOrder_id: item.workOrderData.workOrder_id, 
-          work_subject: item.workOrderData.work_subject, 
-          work_category: item.workOrderData.work_category, 
-          status: item.workOrderData.status, 
-          createdAt: item.workOrderData.createdAt, 
-          updatedAt: item.workOrderData.updatedAt, 
-          rental_id: item.rentalAdress.rental_id, 
-          rental_adress: item.rentalAdress.rental_adress, 
-          unit_id: item.rentalUnit.unit_id, 
-          rental_unit: item.rentalUnit.rental_unit, 
-          staffmember_id: item.staffMember.staffmember_id, 
-          staffmember_name: item.staffMember.staffmember_name, 
-        };
-      });
+      const filteredData = response.data.data.map((item) => ({
+        workOrder_id: item.workOrderData.workOrder_id,
+        work_subject: item.workOrderData.work_subject,
+        work_category: item.workOrderData.work_category,
+        status: item.workOrderData.status,
+        createdAt: item.workOrderData.createdAt,
+        updateAt: item.workOrderData.updatedAt,
+        rental_id: item.rentalAdress.rental_id,
+        rental_adress: item.rentalAdress.rental_adress,
+        unit_id: item.rentalUnit.unit_id,
+        rental_unit: item.rentalUnit.rental_unit,
+        staffmember_id: item.staffMember.staffmember_id,
+        staffmember_name: item.staffMember.staffmember_name,
+      }));    
       setWorkData(filteredData);
       setLoader(false);
       setTotalPages(Math.ceil(filteredData.length / pageItem));
