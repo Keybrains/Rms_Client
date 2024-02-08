@@ -68,13 +68,17 @@ function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
   const navigate = useNavigate();
 
+  // const handleLoginClick = () => {
+  //   window.open("/login", "_blank");
+  // };
+
   return (
     <React.Fragment>
       <TableRow
         hover
         onClick={(event) => {
           handleClick(event, row._id);
-          navigate(`/superadmin/staffmember/${row?.admin_id}`)
+          // navigate(`/superadmin/staffmember/${row?.admin_id}`);
         }}
         role="checkbox"
         aria-checked={isItemSelected}
@@ -104,6 +108,9 @@ function Rows(props) {
             year: "2-digit",
           })}
         </TableCell>
+        {/* <TableCell align="left">
+          <button onClick={handleLoginClick}>Login</button>
+        </TableCell> */}
       </TableRow>
     </React.Fragment>
   );
