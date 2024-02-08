@@ -830,7 +830,7 @@ const DemoPayment = () => {
     const amount = parseFloat(financialFormik.values.amount) || 0;
     let totalAmount = amount;
 
-    if (selectedPaymentType === "Credit Card") {
+    if (selectedPaymentType === "Credit Card" && !refund) {
       const surchargeAmount = (amount * surchargePercentage) / 100;
       financialFormik.setFieldValue("surcharge", surchargeAmount);
       totalAmount += surchargeAmount;
