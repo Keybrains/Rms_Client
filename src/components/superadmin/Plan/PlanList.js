@@ -781,7 +781,6 @@ export default function PlanList() {
                                       placeholder="Features"
                                     />
                                   </div>
-                                </div>
                                 <div className="">
                                   {inputFields.length !== 1 ? (
                                     <div
@@ -794,6 +793,7 @@ export default function PlanList() {
                                   ) : (
                                     ""
                                   )}
+                                </div>
                                 </div>
                               </div>
                             );
