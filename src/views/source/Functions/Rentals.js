@@ -1,6 +1,6 @@
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const baseUrl = process.env.REACT_APP_BASE_URL;
 
 export const dialogPaperStyles = {
@@ -45,20 +45,20 @@ export const editProperty = async (
       object
     );
     if (res.data.statusCode === 200) {
-      toast.success( res.data.message, {
-        position: 'top-center',
-      })
+      toast.success(res.data.message, {
+        position: "top-center",
+      });
       return false;
     } else {
       toast.warning(res.data.message, {
-        position: 'top-center',
-      })
+        position: "top-center",
+      });
     }
   } catch (error) {
     console.error("Error:", error.message);
-    toast.error('An error occurred while adding the property', {
-      position: 'top-center',
-    })
+    toast.error("An error occurred while adding the property", {
+      position: "top-center",
+    });
   }
 };
 
@@ -80,6 +80,10 @@ export const handleSubmit = async (
         rentalOwner_phoneNumber: rentalOwners.rentalOwner_phoneNumber,
         rentalOwner_homeNumber: rentalOwners.rentalOwner_homeNumber,
         rentalOwner_businessNumber: rentalOwners.rentalOwner_businessNumber,
+        city: rentalOwners.city,
+        state: rentalOwners.state,
+        country: rentalOwners.country,
+        postal_code: rentalOwners.postal_code,
       },
       rental: {
         admin_id: admin_id,
@@ -130,29 +134,28 @@ export const handleSubmit = async (
               };
             }),
     };
-    console.log(object, "khushi")
+    console.log(object, "khushi");
     const res = await axios.post(`${baseUrl}/rentals/rentals`, object);
     if (res.data.statusCode === 200) {
-      toast.success('Property Added Successfully!', {
-        position: 'top-center',
-      })
+      toast.success("Property Added Successfully!", {
+        position: "top-center",
+      });
       return false;
     } else {
       if (res.data.statusCode === 201) {
         toast.error(res.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
       } else {
         toast.error(res.data.message, {
-          position: 'top-center',
-        })
-
+          position: "top-center",
+        });
       }
     }
   } catch (error) {
     console.error("Error:", error.message);
-    toast.error('An error occurred while adding the property', {
-      position: 'top-center',
-    })
+    toast.error("An error occurred while adding the property", {
+      position: "top-center",
+    });
   }
 };
