@@ -163,7 +163,7 @@ const Sidebar = (props) => {
     const filteredRoutes = routes.filter(
       (prop) =>
         prop.name === "Rentals" ||
-        prop.name === "Dashboard" ||
+        prop.path === "/index" ||
         prop.name === "Add Property Type" ||
         prop.name === "Add Staff Member" 
         // prop.name === "Add Agent"
