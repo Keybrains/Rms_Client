@@ -14,7 +14,6 @@ import RentalownerTable from "views/source/RentalownerTable";
 import Listings from "views/source/Listings";
 import Applicants from "views/source/Applicants";
 import RentRoll from "views/source/RentRoll";
-// import SumProperties from "views/source/SumProperties";
 import OutstandingBalance from "views/source/OutstandingBalance";
 import TenantDetailPage from "views/source/TenantDetailPage";
 import RentRollDetail from "views/source/RentRollDetail";
@@ -61,6 +60,17 @@ import Changepassword from "views/source/Changepassword";
 import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
 import DemoPayment from "views/source/DemoPayment";
+import SuperAdminDashBoard from "../src/superadmin/Dashboard/DashBoard";
+import SuperAdminPlanList from "../src/superadmin/Plan/PlanList";
+import SuperAdminAdmin from "../src/superadmin/Admin/Admin";
+import Plans from "views/source/Plans";
+// import SuperAdminPropertyType from "../src/superadmin/Admin/PropertyType";
+// import SuperAdminStaffMember from "../src/superadmin/Admin/StaffMember";
+// import SuperAdminProperties from "../src/superadmin/Admin/Properties";
+// import SuperAdminRentalOwner from "../src/superadmin/Admin/RentalOwner";
+// import SuperAdminTenat from "../src/superadmin/Admin/Tenant";
+// import SuperAdminUnit from "../src/superadmin/Admin/Unit";
+// import SuperAdminLease from "../src/superadmin/Admin/";
 
 var routes = [
   {
@@ -82,6 +92,11 @@ var routes = [
     name: "User Profile",
     icon: "ni ni-single-02 text-yellow",
     component: <Profile />,
+    layout: "/admin",
+  },
+  {
+    path: "/Plans",
+    component: <Plans />,
     layout: "/admin",
   },
   {
@@ -625,6 +640,79 @@ var routes = [
     path:"/trial-login",
     component: <TrialLogin />,
     layout: "/trial"
-  }
+  },
+   // ==========================  Super Admin ===================================================
+
+   {
+    path: "/superadmin-dashboard",
+    name: "Dashboard",
+    icon: "ni ni-tv-2 text-primary",
+    component: <SuperAdminDashBoard />,
+    layout: "/superadmin",
+  },
+
+  {
+    path: "/plans",
+    name: "Plans",
+    icon: "ni ni-collection text-green",
+    component: <SuperAdminPlanList />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/admin",
+    name: "Admin",
+    icon: "ni ni-app text-orange",
+    component: <SuperAdminAdmin />,
+    layout: "/superadmin",
+  },
+  // {
+  //   path: "/propertytype/:admin_id",
+  //   name: "Property Type",
+  //   icon: "ni ni-pin-3 text-orange",
+  //   component: <SuperAdminPropertyType />,
+  //   layout: "/superadmin",
+  // },
+  // {
+  //   path: "/staffmember/:admin_id",
+  //   name: "Staff-Member",
+  //   icon: "ni ni-pin-3 text-orange",
+  //   component: <SuperAdminStaffMember />,
+  //   layout: "/superadmin",
+  // },
+  // {
+  //   path: "/properties/:admin_id",
+  //   name: "Properties",
+  //   icon: "ni ni-pin-3 text-orange",
+  //   component: <SuperAdminProperties />,
+  //   layout: "/superadmin",
+  // },
+  // {
+  //   path: "/rental-owner/:admin_id",
+  //   name: "Properties",
+  //   icon: "ni ni-pin-3 text-orange",
+  //   component: <SuperAdminRentalOwner />,
+  //   layout: "/superadmin",
+  // },
+  // {
+  //   path: "/tenant/:admin_id",
+  //   name: "Tenant",
+  //   icon: "ni ni-pin-3 text-orange",
+  //   component: <SuperAdminTenat />,
+  //   layout: "/superadmin",
+  // },
+  // {
+  //   path: "/unit/:admin_id",
+  //   name: "Unit",
+  //   icon: "ni ni-pin-3 text-orange",
+  //   component: <SuperAdminUnit />,
+  //   layout: "/superadmin",
+  // },
+  // {
+  //   path: "/lease/:admin_id",
+  //   name: "Unit",
+  //   icon: "ni ni-pin-3 text-orange",
+  //   component: <SuperAdminLease />,
+  //   layout: "/superadmin",
+  // },
 ];
 export default routes;
