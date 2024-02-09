@@ -57,7 +57,19 @@ const headCells = [
     label: "Plan Name",
   },
   {
+    label: "Free/Paid",
+  },
+  {
     label: "Price",
+  },
+  {
+    label: "Duration",
+  },
+  {
+    label: "Max Add.",
+  },
+  {
+    label: "Annual Discount",
   },
   {
     label: "Date",
@@ -98,8 +110,30 @@ function Rows(props) {
         </TableCell>
 
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
-        <TableCell align="center">{row.plan_name}</TableCell>
-        <TableCell align="center">{row.plan_price}</TableCell>
+        <TableCell align="center">{row?.plan_name}</TableCell>
+        <TableCell align="center">
+          {row?.is_free_trial ? (
+            <span className="badge badge-pill bg-warning text-dark">Free</span>
+          ) : (
+            <span className="badge badge-pill bg-success">Paid</span>
+          )}
+        </TableCell>
+        <TableCell align="center">{row?.plan_price}</TableCell>
+        <TableCell align="center">
+          {row.is_free_trial === true ? row?.plan_days : "Monthly"}
+        </TableCell>
+        <TableCell align="center">{row?.maximum_add}</TableCell>
+        <TableCell align="center">
+          {/* {row?.annual_discount === null ? "-" : row?.annual_discount + "%"} */}
+          {row?.annual_discount === null ? (
+            "-"
+          ) : (
+            // row?.annual_discount + "%"
+            <span class="badge badge-pill badge-info">
+              {row?.annual_discount + "%"}
+            </span>
+          )}
+        </TableCell>
         {/* <TableCell align="center">{row.plan_duration_monts}</TableCell> */}
         <TableCell align="center">
           {new Date(row.createdAt).toLocaleDateString("en-GB", {
@@ -614,21 +648,25 @@ export default function PlanList() {
                       editData && editData.plan_price
                         ? editData.plan_price
                         : "",
-                    billing_interval:
-                      editData && editData.billing_interval
-                        ? editData.billing_interval
+                    maximum_add:
+                      editData && editData.maximum_add
+                        ? editData.maximum_add
                         : "",
                     plan_days:
                       editData && editData.plan_days ? editData.plan_days : "",
-                    // billing_interval:
-                    //   editData && editData.billing_interval
-                    //     ? editData.billing_interval
-                    //     : "",
+                    is_annual_discount:
+                      editData && editData.is_annual_discount
+                        ? editData.is_annual_discount === "true"
+                        : false,
+                    annual_discount:
+                      editData && editData.annual_discount
+                        ? editData.annual_discount
+                        : "",
                   }}
                   validationSchema={Yup.object().shape({
                     plan_name: Yup.string().required("Required"),
                     plan_price: Yup.number().required("Required"),
-                    // billing_interval: Yup.number().required("Required"),
+                    maximum_add: Yup.number().required("Required"),
                   })}
                   onSubmit={(values, { resetForm }) => {
                     handleSubmit(values);
@@ -639,6 +677,7 @@ export default function PlanList() {
                     <Form>
                       {/* <FormikValues /> */}
                       <div>
+                        {/* Plan Name */}
                         <div className="mt-3">
                           <TextField
                             type="text"
@@ -657,6 +696,8 @@ export default function PlanList() {
                             </div>
                           ) : null}
                         </div>
+
+                        {/* Plan Price */}
                         <div className="mt-3">
                           <TextField
                             type="number"
@@ -676,38 +717,8 @@ export default function PlanList() {
                           ) : null}
                         </div>
 
-                        <div className="mt-3">
-                          <FormControl fullWidth>
-                            <InputLabel size="small">
-                              Plan Billing Interval
-                            </InputLabel>
-                            <Select
-                              size="small"
-                              label="Select Billing-Interval"
-                              name="billing_interval"
-                              value={values.billing_interval}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              MenuProps={{
-                                style: {
-                                  maxHeight: 210,
-                                },
-                              }}
-                            >
-                              <MenuItem value={"Monthly"}>Monthly</MenuItem>
-                              <MenuItem value={"Annual"}>Annual</MenuItem>
-                              <MenuItem value={"Days"}>Days</MenuItem>
-                            </Select>
-                            {touched.billing_interval &&
-                            errors.billing_interval ? (
-                              <div className="text-danger">
-                                {errors.billing_interval}
-                              </div>
-                            ) : null}
-                          </FormControl>
-                        </div>
-
-                        {values.billing_interval === "Days" ? (
+                        {/*  Add Days (If set plna price 0 means this is free plan so after show add Days how many days this plan for free) */}
+                        {values.plan_price === 0 ? (
                           <div className="mt-3">
                             <TextField
                               type="number"
@@ -728,40 +739,114 @@ export default function PlanList() {
                           </div>
                         ) : null}
 
-                        {values.billing_interval === "Monthly" ? (
+                        {/* Set Interval (this plan for how many time Monthly/Annually) */}
+                        {/* {values.plan_price !== 0 ? (
                           <div className="mt-3">
                             <FormControl fullWidth>
                               <InputLabel size="small">
-                                Charge on Day of Month *
+                                Plan Billing Interval
                               </InputLabel>
                               <Select
                                 size="small"
-                                fullWidth
-                                label="Charge on Day of Month *"
-                                name="day_of_month"
-                                value={values.day_of_month}
+                                label="Select Billing-Interval"
+                                name="billing_interval"
+                                value={values.billing_interval}
                                 onBlur={handleBlur}
                                 onChange={handleChange}
                                 MenuProps={{
                                   style: {
-                                    maxHeight: 250,
+                                    maxHeight: 210,
                                   },
                                 }}
                               >
-                                {[...Array(28).keys()].map((day) => (
-                                  <MenuItem key={day + 1} value={day + 1}>
-                                    {day + 1}
-                                  </MenuItem>
-                                ))}
+                                <MenuItem value={"Monthly"}>Monthly</MenuItem>
+                                <MenuItem value={"Annual"}>Annual</MenuItem>
                               </Select>
+                              {touched.billing_interval &&
+                              errors.billing_interval ? (
+                                <div className="text-danger">
+                                  {errors.billing_interval}
+                                </div>
+                              ) : null}
                             </FormControl>
+                          </div>
+                        ) : null} */}
+
+                        {values.plan_price === 0 ||
+                        values.plan_price === "" ? null : (
+                          <div className="mt-3">
+                            <FormControl fullWidth>
+                              <InputLabel size="small">
+                                Anuual Discount?
+                              </InputLabel>
+                              <Select
+                                size="small"
+                                label="Anuual Discount?"
+                                name="is_annual_discount"
+                                value={values.is_annual_discount}
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                MenuProps={{
+                                  style: {
+                                    maxHeight: 210,
+                                  },
+                                }}
+                              >
+                                <MenuItem value={true}>Yes</MenuItem>
+                                <MenuItem value={false}>No</MenuItem>
+                              </Select>
+                              {touched.is_annual_discount &&
+                              errors.is_annual_discount ? (
+                                <div className="text-danger">
+                                  {errors.is_annual_discount}
+                                </div>
+                              ) : null}
+                            </FormControl>
+                          </div>
+                        )}
+
+                        {values.is_annual_discount === true ? (
+                          <div className="mt-3">
+                            <TextField
+                              type="number"
+                              size="small"
+                              fullWidth
+                              placeholder="Add Annual Discount *"
+                              label="Add Annual Discount *"
+                              name="annual_discount"
+                              value={values.annual_discount}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                            />
+                            {touched.annual_discount &&
+                            errors.annual_discount ? (
+                              <div className="text-danger">
+                                {errors.annual_discount}
+                              </div>
+                            ) : null}
                           </div>
                         ) : null}
 
                         <div className="mt-3">
-                          <FormLabel component="legend">
-                            Add Features:
-                          </FormLabel>
+                          <TextField
+                            type="number"
+                            size="small"
+                            fullWidth
+                            placeholder="Maximum Add Count *"
+                            label="Maximum Add Count *"
+                            name="maximum_add"
+                            value={values.maximum_add}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                          />
+                          {touched.maximum_add && errors.maximum_add ? (
+                            <div className="text-danger">
+                              {errors.maximum_add}
+                            </div>
+                          ) : null}
+                        </div>
+
+                        <div className="col-sm-8">
                           {inputFields.map((data, index) => {
                             const { features } = data;
                             return (
