@@ -162,7 +162,7 @@ const TenantWork = () => {
   const navigateToDetails = (tenantId) => {
     // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
     navigate(`/tenant/Tworkorderdetail/${tenantId}`);
-    //console.log(tenantId);
+    console.log(tenantId,"mansi");
   };
 
   const filterRentalsBySearch = () => {
@@ -459,17 +459,17 @@ const TenantWork = () => {
                   <tbody>
                     {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
-                        key={rental._id}
-                        onClick={() => navigateToDetails(rental.workorder_id)}
+                        key={rental.workOrder_id}
+                        onClick={() => navigateToDetails(rental?.workorder_data.workOrder_id)}
                         style={{ cursor: "pointer" }}
                       >
-                        <td>{rental.work_subject}</td>
-                        <td>{rental.rental_adress}</td>
-                        <td>{rental.work_category}</td>
+                        <td>{rental?.workorder_data?.work_subject}</td>
+                        <td>{rental?.rental_data?.rental_adress}  {rental?.unit_data?.rental_unit ? " - " + rental?.unit_data?.rental_unit : null}</td>
+                        <td>{rental?.workorder_data?.work_category}</td>
                         {/* <td>{rental.staffmember_name}</td>
                         <td>{rental.status}</td> */}
-                        <td>{rental.createdAt}</td>
-                        <td>{rental.updateAt || "-"}</td>
+                        <td>{rental?.workorder_data?.createdAt}</td>
+                        <td>{rental?.workorder_data?.updatedAt || "-"}</td>
                         <td>
                           <div style={{ display: "flex", gap: "5px" }}>
                             <div

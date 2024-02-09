@@ -38,7 +38,7 @@ import { useFormik } from "formik";
 const TWorkOrderDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
-  //console.log(id);
+  console.log(id);
   const [outstandDetails, setoutstandDetails] = useState({});
   const [showTenantTable, setShowTenantTable] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -81,11 +81,12 @@ const TWorkOrderDetails = () => {
   const getOutstandData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/workorder/workorder_summary/${id}`
+        `${baseUrl}/work-order/workorder_details/${id}`
       );
-      setoutstandDetails(response.data.data);
+      setoutstandDetails(response.data.data[0]);
+      console.log(response.data.data[0],"janak")
       setLoading(false);
-      setWorkOrderStatus(response.data.data.workorder_status.reverse());
+      //setWorkOrderStatus(response.data.data.workorder_status.reverse());
       setImageDetails(response.data.data.workOrderImage);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
@@ -123,23 +124,23 @@ const TWorkOrderDetails = () => {
     setSelecteduser(staff);
     // WorkFormik.values.staffmember_name = staff;
   };
-  React.useEffect(() => {
-    getOutstandData();
-    fetch(`${baseUrl}/addstaffmember/find_staffmember`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setstaffData(data.data);
-        } else {
-          // Handle error
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        // Handle network error
-        console.error("Network error:", error);
-      });
-  }, [id]);
+  // React.useEffect(() => {
+  //   getOutstandData();
+  //   fetch(`${baseUrl}/addstaffmember/find_staffmember`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.statusCode === 200) {
+  //         setstaffData(data.data);
+  //       } else {
+  //         // Handle error
+  //         console.error("Error:", data.message);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       // Handle network error
+  //       console.error("Network error:", error);
+  //     });
+  // }, [id]);
   React.useEffect(() => {
     getOutstandData();
   }, [id]);
@@ -220,8 +221,8 @@ const TWorkOrderDetails = () => {
 
   const total = () => {
     let total = 0;
-    outstandDetails?.entries.map((item) => {
-      total = total + item.total_amount;
+    outstandDetails?.partsandcharge_data?.map((item) => {
+      total = total + item.amount;
     });
     return total;
   };
@@ -263,24 +264,24 @@ const TWorkOrderDetails = () => {
   let cookie_id = localStorage.getItem("Tenant ID");
   const [tenantsDetails, setTenantsDetails] = useState();
 
-  const getTenantData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenant/tenant/${cookie_id}/entries`
-      );
-      // console.log(response.data.data);
-      setTenantsDetails(response.data.data[0]);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-      setLoading(false);
-    }
-  };
+  // const getTenantData = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${baseUrl}/tenant/tenant/${cookie_id}/entries`
+  //     );
+  //     // console.log(response.data.data);
+  //     setTenantsDetails(response.data.data[0]);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error("Error fetching tenant details:", error);
+  //     setError(error);
+  //     setLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    getTenantData();
-  }, [cookie_id]);
+  // useEffect(() => {
+  //   getTenantData();
+  // }, [cookie_id]);
 
   const [propertyDetails, setPropertyDetails] = useState({});
   const getPropertyData = async () => {
@@ -389,7 +390,7 @@ const TWorkOrderDetails = () => {
                           <div>Loading Work Order details...</div>
                         ) : error ? (
                           <div>Error: {error.message}</div>
-                        ) : outstandDetails.workorder_id ? (
+                        ) : outstandDetails.workOrder_id ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -425,7 +426,7 @@ const TWorkOrderDetails = () => {
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
                                   <span>
-                                    {outstandDetails.rental_adress || "N/A"}
+                                    {outstandDetails.property_data.rental_adress || "N/A"}
                                   </span>
                                 </Box>
                               </Box>
@@ -479,7 +480,7 @@ const TWorkOrderDetails = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails.entry_allowed || "N/A"}
+                                        {outstandDetails?.entry_allowed ? "Yes" : "No"}
                                     </span>
                                   </FormGroup>
                                   <FormGroup marginBottom="20px">
@@ -500,7 +501,7 @@ const TWorkOrderDetails = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails.vendor_note || "N/A"}
+                                      {outstandDetails.vendor_notes || "N/A"}
                                     </span>
                                   </FormGroup>
                                 </Box>
@@ -536,7 +537,7 @@ const TWorkOrderDetails = () => {
                                       <SmallSummaryCard
                                         label="Due Date"
                                         value={
-                                          outstandDetails.due_date || "N/A"
+                                          outstandDetails.date || "N/A"
                                         }
                                         textTruncate // add this prop to enable text truncation
                                       />
@@ -564,8 +565,8 @@ const TWorkOrderDetails = () => {
                                 </Box>
                               </Box>
                             </Box>
-                            {outstandDetails?.entries?.length > 0 &&
-                            outstandDetails?.entries[0].part_qty ? (
+                            {outstandDetails?.partsandcharge_data?.length > 0 &&
+                            outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -605,14 +606,14 @@ const TWorkOrderDetails = () => {
                                     </thead>
                                     <tbody>
                                       {/* Add your table rows dynamically here */}
-                                      {outstandDetails?.entries.map(
+                                      {outstandDetails?.partsandcharge_data.map(
                                         (item, index) => (
                                           <tr key={index}>
                                             <td style={tableCellStyle}>
-                                              {item.part_qty}
+                                              {item.parts_quantity}
                                             </td>
                                             <td style={tableCellStyle}>
-                                              {item.account_type}
+                                              {item.account}
                                             </td>
                                             <td style={tableCellStyle}>
                                               {item.description}
@@ -623,7 +624,7 @@ const TWorkOrderDetails = () => {
                                                 textAlign: "right",
                                               }}
                                             >
-                                              ${item.part_price}
+                                              ${item.parts_price}
                                             </td>
                                             <td
                                               style={{
@@ -631,7 +632,7 @@ const TWorkOrderDetails = () => {
                                                 textAlign: "right",
                                               }}
                                             >
-                                              ${item.total_amount}
+                                              ${item.amount}
                                             </td>
                                           </tr>
                                         )

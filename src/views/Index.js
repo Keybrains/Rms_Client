@@ -105,7 +105,7 @@ const Index = (props) => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
       setAdminData(jwt)
     } else {
       navigate("/auth/login");
@@ -119,23 +119,22 @@ const Index = (props) => {
     staff: 0,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        const response1 = await axios.get(`${baseUrl}/tenant/tenants/count`);
-        const response2 = await axios.get(`${baseUrl}/rentals/rentals/count`);
+        console.log("firsti")
+        const response1 = await axios.get(`${baseUrl}/tenants/tenant_count/${accessType.admin_id}`);
+        const response2 = await axios.get(`${baseUrl}/rentals/rental_count/${accessType.admin_id}`);
         const response3 = await axios.get(
-          `${baseUrl}/rentals/rentalowner/count`
-        );
+          `${baseUrl}/rental_owner/rental_owner_count/${accessType.admin_id}`);
         const response4 = await axios.get(
-          `${baseUrl}/addstaffmember/staff/count`
-        );
-
+          `${baseUrl}/staffmember/staff_count/${accessType.admin_id}`);
+        console.log(response1, "firsti")
         const newData = {
-          tenants: response1.data.totalCount,
-          rentals: response2.data.totalCount,
-          rentalowner: response3.data.totalCount,
-          staff: response4.data.totalCount,
+          tenants: response1.data.count,
+          rentals: response2.data.count,
+          rentalowner: response3.data.count,
+          staff: response4.data.count,
         };
 
         setData(newData);
@@ -145,7 +144,7 @@ const Index = (props) => {
     };
 
     fetchData();
-  }, []);
+  }, [accessType]);
 
   return (
     <>
@@ -155,7 +154,7 @@ const Index = (props) => {
           <Col
             xl="3"
             onClick={() => {
-              navigate("/"+admin+"/propertiesTable");
+              navigate("/" + admin + "/propertiesTable");
             }}
           >
             <Card
@@ -197,7 +196,7 @@ const Index = (props) => {
           <Col
             xl="3"
             onClick={() => {
-              navigate("/"+admin+"/TenantsTable");
+              navigate("/" + admin + "/TenantsTable");
             }}
           >
             <Card
@@ -239,7 +238,7 @@ const Index = (props) => {
           <Col
             xl="3"
             onClick={() => {
-              navigate("/"+admin+"/propertiesTable");
+              navigate("/" + admin + "/propertiesTable");
             }}
           >
             <Card
@@ -281,7 +280,7 @@ const Index = (props) => {
           <Col
             xl="3"
             onClick={() => {
-              navigate("/"+admin+"/StaffMember");
+              navigate("/" + admin + "/StaffMember");
             }}
           >
             <Card
