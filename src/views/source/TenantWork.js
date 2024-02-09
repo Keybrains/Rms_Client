@@ -461,7 +461,7 @@ useEffect(() => {
                           />
                         )}
                       </th>
-                      {/* <th scope="col">
+                      <th scope="col">
                         Assigned
                         {sortBy.includes("staffmember_name") ? (
                           upArrow.includes("staffmember_name") ? (
@@ -479,7 +479,7 @@ useEffect(() => {
                           />
                         )}
                       </th>
-                      <th scope="col">Status</th> */}
+                      <th scope="col">Status</th>
                       <th scope="col">Created At</th>
                       <th scope="col">Updated At</th>
                       <th scope="col">ACTION</th>
@@ -490,16 +490,16 @@ useEffect(() => {
                     {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
                         key={rental.workOrder_id}
-                        onClick={() => navigateToDetails(rental?.workorder_data.workOrder_id)}
+                        onClick={() => navigateToDetails(rental?.workOrder_id)}
                         style={{ cursor: "pointer" }}
                       >
-                        <td>{rental?.workorder_data?.work_subject}</td>
-                        <td>{rental?.rental_data?.rental_adress}  {rental?.unit_data?.rental_unit ? " - " + rental?.unit_data?.rental_unit : null}</td>
-                        <td>{rental?.workorder_data?.work_category}</td>
-                        {/* <td>{rental.staffmember_name}</td>
-                        <td>{rental.status}</td> */}
-                        <td>{rental?.workorder_data?.createdAt}</td>
-                        <td>{rental?.workorder_data?.updatedAt || "-"}</td>
+                        <td>{rental?.work_subject}</td>
+                        <td>{rental?.rental_adress}  {rental?.rental_unit ? " - " + rental?.rental_unit : null}</td>
+                        <td>{rental?.work_category}</td>
+                        <td>{rental?.staffmember_name}</td>
+                        <td>{rental?.status}</td>
+                        <td>{rental?.createdAt}</td>
+                        <td>{rental?.updatedAt || "-"}</td>
                         <td>
                         <div style={{ display: "flex", gap: "5px" }}>
                               <div
@@ -507,8 +507,7 @@ useEffect(() => {
                                  onClick={(e) => {
                                    e.stopPropagation();
                                    editworkorder(
-                                    rental.workorder_id,
-                                    //rental.entries.entryIndex
+                                    rental.workorder_id
                                    );
                                  }}
                               >
