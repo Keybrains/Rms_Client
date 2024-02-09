@@ -1,4 +1,3 @@
-
 import {
   Badge,
   Card,
@@ -28,8 +27,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
 import swal from "sweetalert";
 import Dialog from "@mui/material/Dialog";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -72,7 +71,7 @@ const TenantWork = () => {
   //console.log(rental_adress);
   const { id } = useParams();
   //console.log(id, tenantDetails);
- 
+
   //console.log("cookie_id:", cookie_id);
   //console.log(rental_adress);
   const [loading, setLoading] = useState(true);
@@ -94,11 +93,11 @@ const TenantWork = () => {
 
   // let cookies = new Cookies();
   // Check Authe(token)
- 
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
   let cookie_id = localStorage.getItem("Tenant ID");
-  
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
@@ -123,7 +122,7 @@ const TenantWork = () => {
           .map((entry) => entry.rental_units)
           .join("^");
         setTenantDetails(response.data.data);
-        getRentalData(rentalAddresses,rentalUnits);
+        getRentalData(rentalAddresses, rentalUnits);
         //getVendorDetails(rentalAddresses);
       } else {
         console.error("No rental addresses found.");
@@ -150,56 +149,11 @@ const TenantWork = () => {
     setCurrentPage(page);
   };
 
-  const getRentalData = async (addresses,units) => {
-    if(units===""){
-      try {
-        const response = await axios.get(
-          `${baseUrl}/workorder/workorder/tenant/${addresses}`
-          );
+  const getRentalData = async (addresses, units) => {
+    
+  };
 
-      if (Array.isArray(response.data.data)) {
-        // Response is an array of work orders
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setWorkData((prevData) => [...prevData, ...response.data.data]);
-      } else if (typeof response.data.data === "object") {
-        // Response is a single work order object
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setWorkData((prevData) => [...prevData, response.data.data]);
-      } else {
-        console.error(
-          "Response data is not an array or object:",
-          response.data.data
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching work order data:", error);
-    }
-  }else{
-    try {
-      const response = await axios.get(
-        `${baseUrl}/workorder/workorder/tenant/${addresses}/${units}`
-      );
-      if (Array.isArray(response.data.data)) {
-        // Response is an array of work orders
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setWorkData((prevData) => [...prevData, ...response.data.data]);
-      } else if (typeof response.data.data === "object") {
-        // Response is a single work order object
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setWorkData((prevData) => [...prevData, response.data.data]);
-      } else {
-        console.error(
-          "Response data is not an array or object:",
-          response.data.data
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching work order data:", error);
-  }
-  }
-}
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (rentalAddress && rentalAddress.length > 0) {
       setLoader(true);
     }
@@ -213,34 +167,46 @@ const TenantWork = () => {
 
   const filterRentalsBySearch = () => {
     let filteredData = [...workData]; // Create a copy of workData to avoid mutating the original array
-  
+
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
       filteredData = filteredData.filter((work) => {
         return (
-          (work.rental_adress && work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.work_subject && work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.work_category && work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.staffmember_name && work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery))
+          (work.rental_adress &&
+            work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.work_subject &&
+            work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.work_category &&
+            work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.staffmember_name &&
+            work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery))
         );
       });
     }
-  
+
     if (upArrow.length > 0) {
       const sortingArrows = upArrow;
       sortingArrows.forEach((value) => {
         switch (value) {
           case "rental_adress":
-            filteredData.sort((a, b) => a.rental_adress.localeCompare(b.rental_adress));
+            filteredData.sort((a, b) =>
+              a.rental_adress.localeCompare(b.rental_adress)
+            );
             break;
           case "work_subject":
-            filteredData.sort((a, b) => a.work_subject.localeCompare(b.work_subject));
+            filteredData.sort((a, b) =>
+              a.work_subject.localeCompare(b.work_subject)
+            );
             break;
           case "work_category":
-            filteredData.sort((a, b) => a.work_category.localeCompare(b.work_category));
+            filteredData.sort((a, b) =>
+              a.work_category.localeCompare(b.work_category)
+            );
             break;
           case "staffmember_name":
-            filteredData.sort((a, b) => a.staffmember_name.localeCompare(b.staffmember_name));
+            filteredData.sort((a, b) =>
+              a.staffmember_name.localeCompare(b.staffmember_name)
+            );
             break;
           default:
             // If an unknown sort option is provided, do nothing
@@ -248,15 +214,17 @@ const TenantWork = () => {
         }
       });
     }
-  
+
     return filteredData;
   };
+
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
     return paginatedData;
   };
-  const getRentalDataAfterDelete = async (addresses,units) => {
+
+  const getRentalDataAfterDelete = async (addresses, units) => {
     try {
       const response = await axios.get(
         `${baseUrl}/workorder/workorder/tenant/${addresses}`
@@ -279,6 +247,7 @@ const TenantWork = () => {
       console.error("Error fetching work order data:", error);
     }
   };
+
   const getTenantDataAfterDelete = async () => {
     try {
       const response = await axios.get(
@@ -304,6 +273,7 @@ const TenantWork = () => {
       setLoader(false);
     }
   };
+
   const deleteworkorder = (workorder_id) => {
     // Show a confirmation dialog to the user
     swal({
@@ -320,29 +290,29 @@ const TenantWork = () => {
           .then((response) => {
             console.log("Response from delete API:", response);
             if (response.data.statusCode === 200) {
-              toast.success('Work Order deleted successfully!', {
-                position: 'top-center',
-              })
+              toast.success("Work Order deleted successfully!", {
+                position: "top-center",
+              });
               setTimeout(() => {
                 getTenantDataAfterDelete();
               }, 200);
             } else {
               toast.error(response.data.message, {
-                position: 'top-center',
-              })
+                position: "top-center",
+              });
             }
           })
           .catch((error) => {
             console.error("Error deleting work order:", error);
           });
       } else {
-        toast.success('Work Order is safe!', {
-          position: 'top-center',
-        })
+        toast.success("Work Order is safe!", {
+          position: "top-center",
+        });
       }
     });
   };
-  
+
   const editworkorder = (id) => {
     navigate(`/tenant/taddwork/?id=${id}`);
     console.log(id, "workorder_id");
@@ -378,7 +348,7 @@ const TenantWork = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/tenant/taddwork")}
               size="sm"
               style={{ background: "white", color: "black" }}
@@ -424,7 +394,7 @@ const TenantWork = () => {
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
-                <thead className="thead-light">
+                  <thead className="thead-light">
                     <tr>
                       <th scope="col">
                         Work Order
@@ -480,25 +450,6 @@ const TenantWork = () => {
                           />
                         )}
                       </th>
-                      {/* <th scope="col">
-                        Assigned
-                        {sortBy.includes("staffmember_name") ? (
-                          upArrow.includes("staffmember_name") ? (
-                            <ArrowDownwardIcon
-                              onClick={() => sortData("staffmember_name")}
-                            />
-                          ) : (
-                            <ArrowUpwardIcon
-                              onClick={() => sortData("staffmember_name")}
-                            />
-                          )
-                        ) : (
-                          <ArrowUpwardIcon
-                            onClick={() => sortData("staffmember_name")}
-                          />
-                        )}
-                      </th>
-                      <th scope="col">Status</th> */}
                       <th scope="col">Created At</th>
                       <th scope="col">Updated At</th>
                       <th scope="col">ACTION</th>
@@ -520,20 +471,20 @@ const TenantWork = () => {
                         <td>{rental.createdAt}</td>
                         <td>{rental.updateAt || "-"}</td>
                         <td>
-                        <div style={{ display: "flex", gap: "5px" }}>
-                              <div
-                                 style={{ cursor: "pointer" }}
-                                 onClick={(e) => {
-                                   e.stopPropagation();
-                                   editworkorder(
-                                    rental.workorder_id,
-                                    //rental.entries.entryIndex
-                                   );
-                                 }}
-                              >
-                                <EditIcon/>
-                              </div>
-                              <div
+                          <div style={{ display: "flex", gap: "5px" }}>
+                            <div
+                              style={{ cursor: "pointer" }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                editworkorder(
+                                  rental.workorder_id
+                                  //rental.entries.entryIndex
+                                );
+                              }}
+                            >
+                              <EditIcon />
+                            </div>
+                            <div
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -541,8 +492,8 @@ const TenantWork = () => {
                               }}
                             >
                               <DeleteIcon />
-                              </div>
                             </div>
+                          </div>
                         </td>
                       </tr>
                     ))}
