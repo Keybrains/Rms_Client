@@ -75,7 +75,7 @@ function Rows(props) {
     <React.Fragment>
       <TableRow
         hover
-        onClick={(event) => handleClick(event, row._id)}
+        // onClick={(event) => handleClick(event, row._id)}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
@@ -216,8 +216,9 @@ export default function StaffMember() {
   let handleSearchData = async (values) => {
     setSearchLoader(true);
     // const token = cookies.get("token");
-    let res = await axios.post(`${baseUrl}/plans/search`, {
+    let res = await axios.post(`${baseUrl}/staffmember/search`, {
       search: values,
+      admin_id: admin_id
     });
     if (res.data.statusCode === 200) {
       if (values !== "") {
@@ -304,6 +305,23 @@ export default function StaffMember() {
   //     return null;
   //   };
 
+
+  const [adminDataCount, setAdminDataCount] = useState()
+  const adminCount = async () => {
+    try {
+      // Make an HTTP request to your API endpoint with the adminId
+     const res  =  await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+      setAdminDataCount(res.data)
+    } catch (error) {
+      console.error('Error occurred while calling API:', error);
+    }
+  };
+
+  React.useEffect(() =>{
+    adminCount()
+  },[admin_id])
+
+
   const navigate = useNavigate();
 
   return (
@@ -328,7 +346,7 @@ export default function StaffMember() {
                         borderRadius: "0 0 10px 10px",
                       }}
                     >
-                      Staff Member
+                      Staff Member({adminDataCount?.staff_member})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -341,7 +359,7 @@ export default function StaffMember() {
                         borderRadius: "0 0 10px 10px",
                       }}
                     >
-                      Property Type
+                      Property Type({adminDataCount?.property_type})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -354,7 +372,7 @@ export default function StaffMember() {
                         borderRadius: "0 0 10px 10px",
                       }}
                     >
-                      Properties
+                      Properties({adminDataCount?.rentals_properties})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -367,7 +385,7 @@ export default function StaffMember() {
                         borderRadius: "0 0 10px 10px",
                       }}
                     >
-                      Rental Owner
+                      Rental Owner({adminDataCount?.rental_owner})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -380,7 +398,7 @@ export default function StaffMember() {
                         borderRadius: "0 0 10px 10px",
                       }}
                     >
-                      Tenant
+                      Tenant({adminDataCount?.tenant})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -389,7 +407,7 @@ export default function StaffMember() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                      Unit
+                      Unit({adminDataCount?.unit})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -398,7 +416,7 @@ export default function StaffMember() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                      Lease
+                      Lease({adminDataCount?.lease})
                     </NavLink>
                   </li>
                   {/* Add more links as needed */}
@@ -433,7 +451,7 @@ export default function StaffMember() {
                     Staff member: {adminName?.first_name} {adminName?.last_name}
                   </Typography>
 
-                  {/* <form className="form-inline">
+                  <form className="form-inline">
                     <input
                       id="serchbar-size"
                       className="form-control mr-sm-2"
@@ -442,9 +460,9 @@ export default function StaffMember() {
                       placeholder="Search"
                       aria-label="Search"
                     />
-                  </form> */}
+                  </form>
 
-                  <>
+                  {/* <>
                     {selected.length > 0 ? (
                       <Tooltip title="Delete">
                         <IconButton onClick={() => handleDelete()}>
@@ -460,7 +478,7 @@ export default function StaffMember() {
                         </IconButton>
                       </Tooltip>
                     ) : null}
-                  </>
+                  </> */}
                 </Toolbar>
 
                 {loader || searchLoader ? (
