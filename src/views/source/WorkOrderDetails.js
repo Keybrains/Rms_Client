@@ -147,7 +147,6 @@ const WorkOrderDetails = () => {
   });
 
   const updateValues = async () => {
-    console.log(selectedStatus, "selected status");
     handleDialogClose();
     const formatedDate = updateWorkorderFormik.values.due_date
       ? new Date(updateWorkorderFormik.values.due_date)

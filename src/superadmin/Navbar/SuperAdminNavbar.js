@@ -1,3 +1,6 @@
+
+
+
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
 import Cookies from "universal-cookie";
@@ -31,7 +34,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { makeStyles } from '@mui/styles';
 
-const AdminNavbar = (props) => {
+const SuperAdminNavbar = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   let navigate = useNavigate();
@@ -145,18 +148,6 @@ const AdminNavbar = (props) => {
             {props.brandText}
           </Link>
           <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
-          <Button
-              color="primary"
-              onClick={() => navigate("/admin/Plans")}
-              size="sm"
-              style={{
-                background: "rgb(48 52 58 / 70%)",
-                color: "#ffff",
-                marginRight: "20px"
-              }}
-            >
-              Buy Now
-            </Button>
             <FormGroup className="mb-0" onClick={toggleSidebar} style={{ cursor: 'pointer', position: 'relative' }}>
               <NotificationsIcon style={{ color: 'white', fontSize: '30px' }} />
               {notificationCount > 0 && (
@@ -240,15 +231,15 @@ const AdminNavbar = (props) => {
             <UncontrolledDropdown nav>
               <DropdownToggle className="pr-0" nav>
                 <Media className="align-items-center">
-                  <span className="avatar avatar-sm rounded-circle">
+                  {/* <span className="avatar avatar-sm rounded-circle">
                     <img
                       alt="..."
-                      src={require("../../assets/img/theme/team-4-800x800.jpg")}
+                      src={require("../../assets/img/theme/team-1-800x800.jpg")}
                     />
-                  </span>
+                  </span> */}
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
-                      Admin
+                      Super Admin
                     </span>
                   </Media>
                 </Media>
@@ -257,22 +248,7 @@ const AdminNavbar = (props) => {
                 <DropdownItem className="noti-title" header tag="div">
                   <h6 className="text-overflow m-0">Welcome</h6>
                 </DropdownItem>
-                {/* <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-single-02" />
-                  <span>My profile</span>
-                </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-settings-gear-65" />
-                  <span>Settings</span>
-                </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-calendar-grid-58" />
-                  <span>Activity</span>
-                </DropdownItem>
-                <DropdownItem to="/admin/user-profile" tag={Link}>
-                  <i className="ni ni-support-16" />
-                  <span>Support</span> 
-                </DropdownItem>*/}
+             
                 <DropdownItem divider />
                 <DropdownItem
                   //  href="#rms" 
@@ -292,4 +268,4 @@ const AdminNavbar = (props) => {
   );
 };
 
-export default AdminNavbar;
+export default SuperAdminNavbar;
