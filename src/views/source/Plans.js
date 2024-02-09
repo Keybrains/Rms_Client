@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 import RentalHeader from "components/Headers/PlanHeader";
 import { Container, Row, Col, Button } from "reactstrap";
 
 function Plans() {
+  const {  admin } = useParams();
+  let navigate = useNavigate();
   const [plans, setPlans] = useState([]);
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
@@ -85,6 +88,7 @@ function Plans() {
                     type="button"
                     className="btn btn-secondary first-button"
                     style={{ background: "linear-gradient(87deg, #11cdef 0, #1171ef 100%)", color: "white" }}
+                    onClick={() => navigate("/"+admin+"/Planpurches")}
                   >
                     Get Started
                   </Button>
