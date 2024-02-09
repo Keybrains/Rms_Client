@@ -181,14 +181,15 @@ const Login = () => {
     },
     validationSchema: yup.object({
       email: yup.string().required("Required"),
-      password: yup
-        .string()
-        .required("No Password Provided")
-        .min(8, "Password is too short")
-        .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-          "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
-        ),
+      password: yup.string().required("Required"),
+      // password: yup
+      //   .string()
+      //   .required("No Password Provided")
+      //   .min(8, "Password is too short")
+      //   .matches(
+      //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+      //     "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
+      //   ),
     }),
     onSubmit: (values) => {
       handleSubmit(values);

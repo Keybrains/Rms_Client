@@ -68,16 +68,35 @@ function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
   const navigate = useNavigate();
 
-  // const handleLoginClick = () => {
-  //   window.open("/login", "_blank");
+ 
+
+  // const handleLoginButtonClick = async () => {
+  //   try {
+  //     // Make an HTTP request to your API endpoint
+  //     await axios.get('http://localhost:4000/api/test');
+  //     console.log('API called successfully');
+  //   } catch (error) {
+  //     console.error('Error occurred while calling API:', error);
+  //   }
   // };
+
+
+    const handleLoginButtonClick = async () => {
+      try {
+        // Make an HTTP request to your API endpoint with the adminId
+        await axios.get(`http://localhost:4000/api/test/${row.admin_id}`);
+        console.log('API called successfully');
+      } catch (error) {
+        console.error('Error occurred while calling API:', error);
+      }
+    };
 
   return (
     <React.Fragment>
       <TableRow
         hover
         onClick={(event) => {
-          handleClick(event, row._id);
+          handleClick(event, row.admin_id);
           // navigate(`/superadmin/staffmember/${row?.admin_id}`);
         }}
         role="checkbox"
@@ -108,6 +127,12 @@ function Rows(props) {
             year: "2-digit",
           })}
         </TableCell>
+
+        <TableCell align="left">
+      <Button onClick={handleLoginButtonClick}>Login</Button>
+    </TableCell>
+
+
         {/* <TableCell align="left">
           <button onClick={handleLoginClick}>Login</button>
         </TableCell> */}
@@ -168,7 +193,7 @@ export default function Admin() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = adminData?.map((n) => n._id);
+      const newSelected = adminData?.map((n) => n.admin_id);
       setSelected(newSelected);
       return;
     }
@@ -215,6 +240,11 @@ export default function Admin() {
                 position: "top-center",
                 autoClose: 1000,
               });
+            } else {
+              toast.error(response.data.message, {
+                position: "top-center",
+                autoClose: 1000,
+              });
             }
           });
       }
@@ -251,11 +281,23 @@ export default function Admin() {
   if (!id) {
     handleSubmit = async (values) => {
       try {
-        const res = await axios.post(`${baseUrl}/plans/plans`, values);
+        values["is_addby_superdmin"] = true;
+        values["role"] = "admin";
+        const res = await axios.post(`${baseUrl}/admin/register`, values);
         if (res.data.statusCode === 200) {
           setModalShowForPopupForm(false);
           getData();
           toast.success(res.data?.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
+        } else if (res.data.statusCode === 401) {
+          toast.error(res.data?.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
+        } else if (res.data.statusCode === 402) {
+          toast.error(res.data?.message, {
             position: "top-center",
             autoClose: 1000,
           });
@@ -322,6 +364,24 @@ export default function Admin() {
         <Row>
           <Col>
             <div>
+              <div id="main-btn-add-machinetype">
+                <div className="d-flex flex-row justify-content-end mb-2">
+                  <Button
+                    className="text-capitalize"
+                    size="small"
+                    onClick={() => {
+                      setModalShowForPopupForm(true);
+                      setId(null);
+                      setEditData({});
+                    }}
+                    variant="contained"
+                    style={{ backgroundColor: "#4A5073", color: "#ffffff" }} // Set background color and text color
+                  >
+                    Add Admin
+                  </Button>
+                </div>
+              </div>
+
               <Paper
                 sx={{
                   width: "100%",
@@ -430,7 +490,7 @@ export default function Admin() {
                       </TableHead>
                       <TableBody>
                         {adminData?.map((row, index) => {
-                          const isItemSelected = isSelected(row._id);
+                          const isItemSelected = isSelected(row.admin_id);
                           const labelId = `enhanced-table-checkbox-${index}`;
                           return (
                             <Rows
@@ -459,6 +519,186 @@ export default function Admin() {
                 )}
               </Paper>
             </div>
+            <Dialog
+              fullWidth
+              open={modalShowForPopupForm}
+              onClose={() => setModalShowForPopupForm(false)}
+            >
+              <DialogTitle>{"Admin Form"}</DialogTitle>
+              <DialogContent dividers>
+                <Formik
+                  initialValues={{
+                    first_name:
+                      editData && editData.first_name
+                        ? editData.first_name
+                        : "",
+                    last_name:
+                      editData && editData.last_name ? editData.last_name : "",
+                    email: editData && editData.email ? editData.email : "",
+                    company_name:
+                      editData && editData.company_name
+                        ? editData.company_name
+                        : "",
+
+                    phone_number:
+                      editData && editData.phone_number
+                        ? editData.phone_number
+                        : "",
+                    password:
+                      editData && editData.password ? editData.password : "",
+                  }}
+                  validationSchema={Yup.object().shape({
+                    first_name: Yup.string().required("Required"),
+                    last_name: Yup.string().required("Required"),
+                    email: Yup.string().required("Required"),
+                    company_name: Yup.string().required("Required"),
+                    phone_number: Yup.number().required("Required"),
+                    password: Yup.string().required("Required"),
+                  })}
+                  onSubmit={(values, { resetForm }) => {
+                    handleSubmit(values);
+                    resetForm(values);
+                  }}
+                >
+                  {({ values, errors, touched, handleBlur, handleChange }) => (
+                    <Form>
+                      {/* <FormikValues /> */}
+                      <div>
+                        {/* Plan Name */}
+                        <div className="mt-3">
+                          <TextField
+                            type="text"
+                            size="small"
+                            fullWidth
+                            placeholder="First Name *"
+                            label="First Name *"
+                            name="first_name"
+                            value={values.first_name}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                          />
+                          {touched.first_name && errors.first_name ? (
+                            <div className="text-danger">
+                              {errors.first_name}
+                            </div>
+                          ) : null}
+                        </div>
+
+                        {/* Plan Price */}
+                        <div className="mt-3">
+                          <TextField
+                            type="text"
+                            size="small"
+                            fullWidth
+                            placeholder="Last Name *"
+                            label="Last Name *"
+                            name="last_name"
+                            value={values.last_name}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                          />
+                          {touched.last_name && errors.last_name ? (
+                            <div className="text-danger">
+                              {errors.last_name}
+                            </div>
+                          ) : null}
+                        </div>
+
+                        <div className="mt-3">
+                          <TextField
+                            type="text"
+                            size="small"
+                            fullWidth
+                            placeholder="Email *"
+                            label="Email *"
+                            name="email"
+                            value={values.email}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                          />
+                          {touched.email && errors.email ? (
+                            <div className="text-danger">{errors.email}</div>
+                          ) : null}
+                        </div>
+
+                        <div className="mt-3">
+                          <TextField
+                            type="text"
+                            size="small"
+                            fullWidth
+                            placeholder="Company Name *"
+                            label="Company Name *"
+                            name="company_name"
+                            value={values.company_name}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                          />
+                          {touched.company_name && errors.company_name ? (
+                            <div className="text-danger">
+                              {errors.company_name}
+                            </div>
+                          ) : null}
+                        </div>
+
+                        <div className="mt-3">
+                          <TextField
+                            type="number"
+                            size="small"
+                            fullWidth
+                            placeholder="Phone Number *"
+                            label="Phone Number *"
+                            name="phone_number"
+                            value={values.phone_number}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                          />
+                          {touched.phone_number && errors.phone_number ? (
+                            <div className="text-danger">
+                              {errors.phone_number}
+                            </div>
+                          ) : null}
+                        </div>
+
+                        <div className="mt-3">
+                          <TextField
+                            type="text"
+                            size="small"
+                            fullWidth
+                            placeholder="Password *"
+                            label="Password *"
+                            name="password"
+                            value={values.password}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                          />
+                          {touched.password && errors.password ? (
+                            <div className="text-danger">{errors.password}</div>
+                          ) : null}
+                        </div>
+
+                        {!id ? (
+                          <Button
+                            className="mt-3"
+                            type="submit"
+                            variant="primary"
+                          >
+                            Add
+                          </Button>
+                        ) : (
+                          <Button
+                            className="mt-3"
+                            type="submit"
+                            variant="warning"
+                          >
+                            Update
+                          </Button>
+                        )}
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
+              </DialogContent>
+            </Dialog>
           </Col>
         </Row>
         <ToastContainer />
