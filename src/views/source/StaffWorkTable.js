@@ -45,7 +45,8 @@ const StaffWorkTable = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
+      // console.log(accessType.staffmember_id,"id is -==-==-==-==-==-==-==")
     } else {
       navigate("/auth/login");
     }
@@ -53,28 +54,29 @@ const StaffWorkTable = () => {
 
   let cookie_id = localStorage.getItem("Staff ID");
 
-  const getWorkData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
-      );
-      if (response.data && response.data.data) {
-        //console.log(response.data.data);
-        setStaffDetails(response.data.data);
-        setStaffMember(response.data.data.staffmember_name);
-        setTotalPages(Math.ceil(response.data.data.length / pageItem)||1);
-      } else {
-        console.error("Invalid or missing data in API response.");
-      }
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  // const getWorkData = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
+  //     );
+  //     if (response.data && response.data.data) {
+  //       console.log(response.data.data,"sonani");
+  //       setStaffDetails(response.data.data);
+        
+  //       setStaffMember(response.data.data.staffmember_name);
+  //       setTotalPages(Math.ceil(response.data.data.length / pageItem)||1);
+  //     } else {
+  //       console.error("Invalid or missing data in API response.");
+  //     }
+  //     setLoader(false);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    getWorkData();
-  }, [pageItem]);
+  // useEffect(() => {
+  //   getWorkData();
+  // }, [pageItem]);
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -86,21 +88,24 @@ const StaffWorkTable = () => {
   const getRentalData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/workorder/workorder/by-staff-member/${staffmember_name}`
+        `${baseUrl}/work-order/staff_work/${accessType.staffmember_id}`
       );
       setWorkData(response.data.data);
-      //console.log(response.data);
-    } catch (error) {
+      console.log(response.data.data,'this is fetched data')
+      setStaffMember(response.data.data.staffmember_name);
+      setTotalPages(Math.ceil(response.data.data.length / pageItem)||1);    } catch (error) {
       console.error("Error fetching work order data:", error);
     }
   };
+  useEffect(() => {
+    getRentalData();
+   }, [pageItem]);
 
   React.useEffect(() => {
-    if (staffmember_name) {
+    if (accessType) {
       getRentalData();
     }
-    ////console.log(staffmember_name)
-  }, [staffmember_name]);
+  }, [accessType]);
 
   // Log staffmember_name after setting it
   //console.log("staffmember_name:", staffmember_name);
@@ -108,7 +113,7 @@ const StaffWorkTable = () => {
   const navigateToDetails = (workorder_id) => {
     // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
     navigate(`/staff/staffworkdetails/${workorder_id}`);
-    //console.log(workorder_id);
+    console.log(workorder_id,'id is -===0');
   };
 
   // const filterRentalsBySearch = () => {
@@ -169,7 +174,7 @@ const StaffWorkTable = () => {
         <br />
         <Row>
           <div className="col">
-            {loader ? (
+            {/* {loader ? (
               <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                 <RotatingLines
                   strokeColor="grey"
@@ -179,7 +184,7 @@ const StaffWorkTable = () => {
                   visible={loader}
                 />
               </div>
-            ) : (
+            ) : ( */}
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row>
@@ -207,7 +212,7 @@ const StaffWorkTable = () => {
                       <th scope="col">Work Order</th>
                       <th scope="col">Property</th>
                       <th scope="col">Category</th>
-                      <th scope="col">Assigned</th>
+                      <th scope="col">priority</th>
                       <th scope="col">Status</th>
                       <th scope="col">Created At</th>
                       <th scope="col">Updated At</th>
@@ -216,14 +221,14 @@ const StaffWorkTable = () => {
                   <tbody>
                     {filterTenantsBySearchAndPage().map((vendor) => (
                       <tr
-                        key={vendor._id}
-                        onClick={() => navigateToDetails(vendor.workorder_id)}
+                        key={vendor.workorder_id}
+                        onClick={() => navigateToDetails(vendor.workOrder_id)}
                         style={{ cursor: "pointer" }}
                       >
                         <td>{vendor.work_subject}</td>
-                        <td>{vendor.rental_adress} {vendor.rental_units ? " - " + vendor.rental_units : null}</td>
+                        <td>{vendor.rental_data.rental_adress}-{vendor.unit_data.rental_unit} {vendor.unit_data.rental_unit ? " - " + vendor.unit_data.rental_unit : null}</td>
                         <td>{vendor.work_category}</td>
-                        <td>{vendor.staffmember_name}</td>
+                        <td>{vendor.priority}</td>
                         <td>{vendor.status}</td>
                         <td>{vendor.createdAt}</td>
                         <td>{vendor.updateAt || "-"}</td>
@@ -314,7 +319,7 @@ const StaffWorkTable = () => {
                   <></>
                 )}
               </Card>
-            )}
+            {/* )} */}
           </div>
         </Row>
         <br />

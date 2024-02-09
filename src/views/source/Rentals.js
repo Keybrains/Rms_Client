@@ -1179,7 +1179,7 @@ const Rentals = () => {
                                         className="form-control-label"
                                         htmlFor="input-address"
                                       >
-                                        Alternative Email *
+                                        Alternative Email
                                       </label>
                                       <br />
                                       <InputGroup
@@ -1190,7 +1190,6 @@ const Rentals = () => {
                                         }}
                                       >
                                         <Input
-                                          required
                                           id="standard-multiline-static"
                                           className="popinput"
                                           type="text"

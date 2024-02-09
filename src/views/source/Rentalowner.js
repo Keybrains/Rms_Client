@@ -36,8 +36,9 @@ import TextField from "@mui/material/TextField";
 import axios from "axios";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate, useParams } from "react-router-dom";
 import { AddBox, InboxOutlined, Numbers } from "@mui/icons-material";
 import { faLeftLong, faRightLeft } from "@fortawesome/free-solid-svg-icons";
 import { Hidden } from "@material-ui/core";
@@ -108,17 +109,17 @@ const Rentals = () => {
 
       values["rentalOwner_properties"] = selectedPropertyIds;
 
-      // if (id === undefined) {
-      //   const res = await axios.post(
-      //     `${baseUrl}/rentalowner/rentalowner`,
-      //     values
-      //   );
-      //   handleResponse(res);
-      // } else {
-      //   const editUrl = `${baseUrl}/rentalowner/rentalowner/${id}`;
-      //   const res = await axios.put(editUrl, values);
-      //   handleResponse(res);
-      // }
+      if (id === undefined) {
+        const res = await axios.post(
+          `${baseUrl}/rentalowner/rentalowner`,
+          values
+        );
+        handleResponse(res);
+      } else {
+        const editUrl = `${baseUrl}/rentalowner/rentalowner/${id}`;
+        const res = await axios.put(editUrl, values);
+        handleResponse(res);
+      }
     } catch (error) {
       console.error("Error:", error);
       if (error.response) {
@@ -158,45 +159,53 @@ const Rentals = () => {
         setPropertyData(response.data.data);
       } catch (error) {
         console.error("Error fetching countries:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchPropertyData();
   }, []);
 
-  
   function handleResponse(response) {
     if (response.data.statusCode === 200) {
       navigate(`/${admin}/RentalownerTable`);
 
       // Show success toast
-      toast.success(id ? "Rental Owner  updated successfully" : "Rental Owner  added successfully", {
-        position: 'top-center',
-        autoClose: 1000,
-      });
+      toast.success(
+        id
+          ? "Rental Owner  updated successfully"
+          : "Rental Owner  added successfully",
+        {
+          position: "top-center",
+          autoClose: 1000,
+        }
+      );
     } else {
       // Show an error toast
       toast.error(response.data.message, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
       });
     }
   }
   function handleResponse(response) {
-    const successMessage = id ? "Property  updated successfully" : "Property  added successfully";
+    const successMessage = id
+      ? "Property  updated successfully"
+      : "Property  added successfully";
     const errorMessage = response.data.message;
-  
+
     if (response.data.statusCode === 200) {
       // Show success toast
       toast.success(successMessage, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
         onClose: () => navigate(`/${admin}/RentalownerTable`),
       });
     } else {
       // Show an error toast
       toast.error(errorMessage, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
       });
     }
@@ -1177,7 +1186,6 @@ const Rentals = () => {
           </Col>
         </Row>
         <ToastContainer />
-
       </Container>
     </>
   );

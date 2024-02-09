@@ -14,18 +14,16 @@ import {
   DropdownItem,
 } from "reactstrap";
 
-// core components
 import Header from "components/Headers/Header";
 import * as React from "react";
 import { useState } from "react";
-import { useNavigate , useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Cookies from "universal-cookie";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -34,44 +32,58 @@ import { useEffect } from "react";
 
 const Workorder = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  let navigate = useNavigate();
-  let [workData, setWorkData] = useState();
-  let [loader, setLoader] = React.useState(true);
-  const {admin} = useParams()
-const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [totalPages, setTotalPages] = React.useState(1);
-  const [pageItem, setPageItem] = React.useState(10);
-  const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
-  const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const navigate = useNavigate();
+  const { admin } = useParams();
+  const [workData, setWorkData] = useState();
+  const [loader, setLoader] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageItem, setPageItem] = useState(10);
+  const [leasedropdownOpen, setLeaseDropdownOpen] = useState(false);
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
+  const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
   const getWorkData = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/workorder/workorder`);
-      setWorkData(response.data.data);
+      const response = await axios.get(
+        `${baseUrl}/work-order/work-orders/${accessType?.admin_id}`
+      );
+      const filteredData = response.data.data.map((item) => ({
+        workOrder_id: item.workOrderData.workOrder_id,
+        work_subject: item.workOrderData.work_subject,
+        work_category: item.workOrderData.work_category,
+        status: item.workOrderData.status,
+        createdAt: item.workOrderData.createdAt,
+        updateAt: item.workOrderData.updatedAt,
+        rental_id: item.rentalAdress.rental_id,
+        rental_adress: item.rentalAdress.rental_adress,
+        unit_id: item.rentalUnit.unit_id,
+        rental_unit: item.rentalUnit.rental_unit,
+        staffmember_id: item.staffMember.staffmember_id,
+        staffmember_name: item.staffMember.staffmember_name,
+      }));    
+      setWorkData(filteredData);
       setLoader(false);
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
-      // //console.log(response.data);
+      setTotalPages(Math.ceil(filteredData.length / pageItem));
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  let cookies = new Cookies();
-  const [accessType, setAccessType] = useState(null);
 
-  React.useEffect(() => {
+  const [accessType, setAccessType] = useState();
+
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
 
   const deleteRentals = (id) => {
-    // Show a confirmation dialog to the user
     swal({
       title: "Are you sure?",
       text: "Once deleted, you will not be able to recover this work order!",
@@ -86,31 +98,30 @@ const [searchQuery, setSearchQuery] = useState("");
           })
           .then((response) => {
             if (response.data.statusCode === 200) {
-              toast.success('Work Order deleted successfully', {
-                position: 'top-center',
-              })
-              getWorkData(); // Refresh your work order data or perform other actions
+              toast.success("Work Order deleted successfully", {
+                position: "top-center",
+              });
+              getWorkData();
             } else {
               toast.error(response.data.message, {
-                position: 'top-center',
-              })
+                position: "top-center",
+              });
             }
           })
           .catch((error) => {
             console.error("Error deleting work order:", error);
           });
       } else {
-        toast.success('Work Orer is safe!', {
-          position: 'top-center',
-        })
-
+        toast.success("Work Orer is safe!", {
+          position: "top-center",
+        });
       }
     });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     getWorkData();
-  }, [pageItem]);
+  }, [accessType]);
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -122,60 +133,52 @@ const [searchQuery, setSearchQuery] = useState("");
     setCurrentPage(page);
   };
   const editWorkOrder = (id) => {
-    console.log(id,'id male che')
+    console.log(id, "id male che");
     navigate(`/${admin} /addworkorder/${id}`);
-    //console.log(id);
   };
 
-  // const filterRentalsBySearch = () => {
-  //   if (!searchQuery) {
-  //     return workData;
-  //   }
-
-  //   return workData.filter((rental) => {
-  //     const lowerCaseQuery = searchQuery.toLowerCase();
-  //     return (
-  //       rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.status.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.rental_adress.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.staffmember_name.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.priority.toLowerCase().includes(lowerCaseQuery)
-  //       // rental.due_date.formattedDate.includes(lowerCaseQuery)
-  //     );
-  //   });
-  // };
   const filterRentalsBySearch = () => {
-    let filteredData = [...workData]; // Create a copy of workData to avoid mutating the original array
-  
+    let filteredData = [...workData];
+
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
-      // setCurrentPage(1);
       filteredData = filteredData.filter((work) => {
         return (
-          (work.rental_adress && work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.work_subject && work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.work_category && work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.staffmember_name && work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery))
+          (work.rental_adress &&
+            work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.work_subject &&
+            work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.work_category &&
+            work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.staffmember_name &&
+            work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery))
         );
       });
     }
-  
+
     if (upArrow.length > 0) {
       const sortingArrows = upArrow;
       sortingArrows.forEach((value) => {
         switch (value) {
           case "rental_adress":
-            filteredData.sort((a, b) => a.rental_adress.localeCompare(b.rental_adress));
+            filteredData.sort((a, b) =>
+              a.rental_adress.localeCompare(b.rental_adress)
+            );
             break;
           case "work_subject":
-            filteredData.sort((a, b) => a.work_subject.localeCompare(b.work_subject));
+            filteredData.sort((a, b) =>
+              a.work_subject.localeCompare(b.work_subject)
+            );
             break;
           case "work_category":
-            filteredData.sort((a, b) => a.work_category.localeCompare(b.work_category));
+            filteredData.sort((a, b) =>
+              a.work_category.localeCompare(b.work_category)
+            );
             break;
           case "staffmember_name":
-            filteredData.sort((a, b) => a.staffmember_name.localeCompare(b.staffmember_name));
+            filteredData.sort((a, b) =>
+              a.staffmember_name.localeCompare(b.staffmember_name)
+            );
             break;
           default:
             // If an unknown sort option is provided, do nothing
@@ -183,13 +186,10 @@ const [searchQuery, setSearchQuery] = useState("");
         }
       });
     }
-  
+
     return filteredData;
   };
-  
-  
-  
-            
+
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
@@ -197,14 +197,12 @@ const [searchQuery, setSearchQuery] = useState("");
   };
 
   const navigateToDetails = (workorder_id) => {
-    // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
     navigate(`/${admin} /workorderdetail/${workorder_id}`);
     //console.log(workorder_id);
   };
   console.log(workData, "workData");
   console.log(sortBy, "sortBy");
   console.log(upArrow, "upArrow");
-
 
   const sortData = (value) => {
     if (!sortBy.includes(value)) {
@@ -221,15 +219,8 @@ const [searchQuery, setSearchQuery] = useState("");
   };
 
   useEffect(() => {
-    // setLoader(false);
-    // filterRentalsBySearch();
-    getWorkData();
-    
-  }, [upArrow, sortBy]);
-  
-  useEffect(() => {
-      setCurrentPage(1);
-  },[searchQuery])
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   return (
     <>
@@ -248,7 +239,7 @@ const [searchQuery, setSearchQuery] = useState("");
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/"+admin+"/addworkorder")}
+              onClick={() => navigate("/" + admin + "/addworkorder")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -381,7 +372,12 @@ const [searchQuery, setSearchQuery] = useState("");
                         style={{ cursor: "pointer" }}
                       >
                         <td>{rental.work_subject}</td>
-                        <td>{rental.rental_adress} {rental.rental_units ? " - " + rental.rental_units : null}</td> 
+                        <td>
+                          {rental.rental_adress}{" "}
+                          {rental.rental_units
+                            ? " - " + rental.rental_units
+                            : null}
+                        </td>
                         <td>{rental.work_category}</td>
                         <td>{rental.staffmember_name || "-"}</td>
                         <td>{rental.status || "-"}</td>
@@ -400,7 +396,7 @@ const [searchQuery, setSearchQuery] = useState("");
                               <DeleteIcon />
                             </div>
                             &nbsp; &nbsp; &nbsp;
-                            {console.log(rental,'rental js')}
+                            {console.log(rental, "rental js")}
                             <div
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {

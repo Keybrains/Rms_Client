@@ -24,7 +24,7 @@ import CreditCardForm from "./CreditCardForm";
 const TenantDetailPage = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [loader, setLoader] = React.useState(true);
-  const { tenantId, entryIndex } = useParams();
+  const { id } = useParams();
   const [tenantDetails, setTenantDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -47,7 +47,7 @@ const TenantDetailPage = () => {
     }
   }, [navigate]);
 
-  // const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+  // const apiUrl = `${baseUrl}/tenant/tenant_summary/${id}/entry/${entryIndex}`;
   // const getTenantData = async () => {
   //   try {
   //     const response = await axios.get(apiUrl);
@@ -69,76 +69,68 @@ const TenantDetailPage = () => {
   //   }
   // };
 
+  console.log(id, "MANU")
   const getTenantData = async () => {
     try {
-      const apiUrl = `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`;
+      const apiUrl = `http://192.168.1.11:4000/api/tenants/tenant_details/${id}`;
       const response = await axios.get(apiUrl);
-      console.log(response.data.data, "huihyui");
-      setTenantDetails(response.data.data);
-      //console.log(response.data.data, "hiiii");
-      const rental = response.data.data.entries.rental_adress;
-      const unit = response.data.data.entries.rental_units;
-      const unitId = response.data.data.entries.unit_id;
-      const propertysId = response.data.data.entries.property_id;
-      console.log(propertysId, "propertysId");
+      console.log(response.data.data[0], "huihyui");
+      setTenantDetails(response.data.data[0]);
+      // const rental = response.data.data[0].lease_data[0].rental_adress;
+      // const unit = response.data.data[0].lease_data[0].rental_unit;
+      // const unitId = response.data.data[0].lease_data[0].unit_id;
+      // const propertysId = response.data.data[0].lease_data[0].rental_id;
+      // console.log(propertysId, "propertysId");
 
-      setRental(rental);
-      // setUnit(unit);
-      // setUnitId(unitId);
-      setPropertyId(propertysId);
-      console.log(response.data.data.entries.rental_units, "res.daya dhstab");
+      // setRental(rental);
+      // setPropertyId(propertysId);
       if (unitId && unit) {
-        console.log("1");
-        const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${propertysId}&unit=${unit}&tenant_id=${tenantId}`;
-        console.log(url, "huewfjnmk");
-        axios
-          .get(url)
-          .then((response) => {
-            setLoader(false);
+        // console.log("1");
+        // const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${propertysId}&unit=${unit}&tenant_id=${id}`;
+        // console.log(url, "huewfjnmk");
+        // axios
+        //   .get(url)
+        //   .then((response) => {
+        //     setLoader(false);
 
-            if (response.data && response.data.data) {
-              const mergedData = response.data.data;
-              console.log(mergedData, "mergedData1");
+        //     if (response.data && response.data.data) {
+        //       const mergedData = response.data.data;
+        //       console.log(mergedData, "mergedData1");
 
-              setGeneralLedgerData(mergedData[0]?.unit[0]);
-            } else {
-              console.error("Unexpected response format:", response.data);
-            }
-          })
-          .catch((error) => {
-            console.error("Error fetching data:", error);
-          });
+        //       setGeneralLedgerData(mergedData[0]?.unit[0]);
+        //     } else {
+        //       console.error("Unexpected response format:", response.data);
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.error("Error fetching data:", error);
+        //   });
       } else {
-        console.log("2");
+        // console.log("2");
 
-        const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${tenantId}`;
+        // const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${id}`;
 
-        console.log(url, "huewfjnmk");
+        // console.log(url, "huewfjnmk");
 
-        axios
-          .get(url)
-          .then((response) => {
-            setLoader(false);
+        // axios
+        //   .get(url)
+        //   .then((response) => {
+        //     setLoader(false);
 
-            if (response.data && response.data.data) {
-              const mergedData = response.data.data;
-              console.log(mergedData, "mergedData2");
+        //     if (response.data && response.data.data) {
+        //       const mergedData = response.data.data;
+        //       console.log(mergedData, "mergedData2");
 
-              setGeneralLedgerData(mergedData[0]?.unit[0]);
-            } else {
-              console.error("Unexpected response format:", response.data);
-            }
-          })
-          .catch((error) => {
-            console.error("Error fetching data:", error);
-          });
+        //       setGeneralLedgerData(mergedData[0]?.unit[0]);
+        //     } else {
+        //       console.error("Unexpected response format:", response.data);
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.error("Error fetching data:", error);
+        //   });
       }
       setUnitId(unitId);
-
-      // setPropertyId(propertyId);
-
-      setRental(rental);
-      // console.log(rental, "hell");
       setUnit(unit);
       setLoading(false);
     } catch (error) {
@@ -150,7 +142,7 @@ const TenantDetailPage = () => {
 
   useEffect(() => {
     getTenantData();
-  }, [tenantId, entryIndex]);
+  }, [id]);
 
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
@@ -179,80 +171,80 @@ const TenantDetailPage = () => {
     return data;
   };
   const [balance, setBalance] = useState("");
-  const getGeneralLedgerData = async () => {
-    const apiUrl = `${baseUrl}/payment/merge_payment_charge/${tenantId}`;
-    try {
-      const response = await axios.get(apiUrl);
-      if (response.data && response.data.data) {
-        const mergedData = response.data.data;
-        // console.log(mergedData)
-        mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
-        const dataWithBalance = calculateBalance(mergedData);
-        setBalance(dataWithBalance[0].entries[0].balance);
-      } else {
-        console.error("Unexpected response format:", response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-  useEffect(() => {
-    getGeneralLedgerData();
-  }, [tenantId]);
+  // const getGeneralLedgerData = async () => {
+  //   const apiUrl = `${baseUrl}/payment/merge_payment_charge/${id}`;
+  //   try {
+  //     const response = await axios.get(apiUrl);
+  //     if (response.data && response.data.data) {
+  //       const mergedData = response.data.data;
+  //       // console.log(mergedData)
+  //       mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
+  //       const dataWithBalance = calculateBalance(mergedData);
+  //       setBalance(dataWithBalance[0].entries[0].balance);
+  //     } else {
+  //       console.error("Unexpected response format:", response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getGeneralLedgerData();
+  // }, [id]);
 
   const [myData, setMyData] = useState([]);
 
-  const doSomething = async () => {
-    let responce = await axios.get(`${baseUrl}/tenant/tenants`);
-    const data = responce.data.data;
-    const filteredData = data.filter((item) => item._id === tenantId);
-    setMyData(filteredData);
-  };
+  // const doSomething = async () => {
+  //   let responce = await axios.get(`${baseUrl}/tenant/tenants`);
+  //   const data = responce.data.data;
+  //   const filteredData = data.filter((item) => item._id === id);
+  //   setMyData(filteredData);
+  // };
 
-  useEffect(() => {
-    doSomething();
-  }, []);
+  // useEffect(() => {
+  //   doSomething();
+  // }, []);
 
   const [myData1, setMyData1] = useState([]);
   console.log("myData1:", myData1);
-  const doSomething1 = async () => {
-    try {
-      let response = await axios.get(`${baseUrl}/tenant/tenants`);
-      const data = response.data.data;
+  // const doSomething1 = async () => {
+  //   try {
+  //     let response = await axios.get(`${baseUrl}/tenant/tenants`);
+  //     const data = response.data.data;
 
-      const filteredData = data.filter((item, index) => {
-        // Replace 'tenantId' with the specific ID you're looking for
-        return item._id === tenantId && item.entries.entryIndex === entryIndex;
-      });
+  //     const filteredData = data.filter((item, index) => {
+  //       // Replace 'id' with the specific ID you're looking for
+  //       return item._id === id && item.entries.entryIndex === entryIndex;
+  //     });
 
-      setMyData1(filteredData);
-    } catch (error) {
-      // Handle errors here
-      console.error("Error fetching data:", error);
-    }
-  };
+  //     setMyData1(filteredData);
+  //   } catch (error) {
+  //     // Handle errors here
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    doSomething1();
-  }, []);
+  // useEffect(() => {
+  //   doSomething1();
+  // }, []);
 
-  const getStatus = (startDate, endDate) => {
-    const today = new Date();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+  // const getStatus = (startDate, endDate) => {
+  //   const today = new Date();
+  //   const start = new Date(startDate);
+  //   const end = new Date(endDate);
 
-    if (today >= start && today <= end) {
-      return "Active";
-    } else if (today < start) {
-      return "FUTURE";
-    } else if (today > end) {
-      return "EXPIRED";
-    } else {
-      return "-";
-    }
-  };
+  //   if (today >= start && today <= end) {
+  //     return "Active";
+  //   } else if (today < start) {
+  //     return "FUTURE";
+  //   } else if (today > end) {
+  //     return "EXPIRED";
+  //   } else {
+  //     return "-";
+  //   }
+  // };
 
-  //sahil20231206
+  // //sahil20231206
   const getStatus1 = (startDate, endDate) => {
     const today = new Date();
     const start = new Date(startDate);
@@ -268,18 +260,18 @@ const TenantDetailPage = () => {
       return "-";
     }
   };
-  //sahil20231206
-  // Filter the specific entry based on entryIndex from URL parameters
-  const selectedEntry = myData.find(
-    (item) => item.entries.entryIndex === entryIndex
-  );
-  // Check if the entry exists and then display the status
-  const status = selectedEntry
-    ? getStatus1(
-        selectedEntry.entries.start_date,
-        selectedEntry.entries.end_date
-      )
-    : "-";
+  // //sahil20231206
+  // // Filter the specific entry based on entryIndex from URL parameters
+  // const selectedEntry = myData.find(
+  //   (item) => item.entries === entryIndex
+  //   );
+  //   // Check if the entry exists and then display the status
+  //   const status = selectedEntry
+  //   ? getStatus1(
+  //       selectedEntry.entries.start_date,
+  //       selectedEntry.entries.end_date
+  //       )
+  //   : "-";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -290,19 +282,20 @@ const TenantDetailPage = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  console.log("first", tenantDetails)
 
   const [cardDetalis, setCardDetails] = useState([]);
-  const getCreditCard = async () => {
-    const response = await axios.get(
-      `http://192.168.1.11:4000/api/creditcard/getCreditCard/${tenantId}`
-    );
-    setCardDetails(response.data);
-    console.log(response, "yashu");
-  };
+  // const getCreditCard = async () => {
+  //   const response = await axios.get(
+  //     `${baseUrl}/creditcard/getCreditCard/${id}`
+  //   );
+  //   setCardDetails(response.data);
+  //   console.log(response, "yashu");
+  // };
 
-  useEffect(() => {
-    getCreditCard();
-  }, [tenantId]);
+  // useEffect(() => {
+  //   getCreditCard();
+  // }, [id]);
 
   return (
     <div>
@@ -326,13 +319,13 @@ const TenantDetailPage = () => {
                 </h1>
               )}
               <h5 style={{ color: "white" }}>
-                {status} |{" "}
-                {tenantDetails._id ? tenantDetails.entries.rental_adress : " "}
+                {/* {status} |{" "}
+                {tenantDetails._id ? tenantDetails.lease_data[0].rental_adress : " "}
                 {tenantDetails._id &&
-                tenantDetails.entries.rental_units !== undefined &&
-                tenantDetails.entries.rental_units !== ""
-                  ? ` - ${tenantDetails.entries.rental_units}`
-                  : ""}
+                tenantDetails.lease_data[0].rental_unit !== undefined &&
+                tenantDetails.lease_data[0].rental_unit !== ""
+                  ? ` - ${tenantDetails.lease_data[0].rental_unit}`
+                  : ""} */}
               </h5>
             </FormGroup>
           </Col>
@@ -382,7 +375,7 @@ const TenantDetailPage = () => {
                             <td>Error: {error.message}</td>
                           </tr>
                         </tbody>
-                      ) : tenantDetails._id ? (
+                      ) : tenantDetails.tenant_id ? (
                         <>
                           <div className="w-100">
                             <Row
@@ -424,7 +417,7 @@ const TenantDetailPage = () => {
                               </Col>
                               <Col>
                                 <a
-                                  href={`tel:${tenantDetails.tenant_mobileNumber}`}
+                                  href={`tel:${tenantDetails.tenant_phoneNumber}`}
                                 >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -436,7 +429,7 @@ const TenantDetailPage = () => {
                                   >
                                     <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511zM11 .5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V1.707l-4.146 4.147a.5.5 0 0 1-.708-.708L14.293 1H11.5a.5.5 0 0 1-.5-.5" />
                                   </svg>{" "}
-                                  {tenantDetails.tenant_mobileNumber || "N/A"}
+                                  {tenantDetails.tenant_phoneNumber || "N/A"}
                                 </a>
                               </Col>
                               <Col style={{ textTransform: "lowercase" }}>
@@ -502,10 +495,10 @@ const TenantDetailPage = () => {
                                   <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
                                 </svg>{" "}
                                 {formatDateWithoutTime(
-                                  tenantDetails.birth_date
+                                  tenantDetails.tenant_birthDate
                                 ) || "N/A"}
                               </Col>
-                              <Col>{tenantDetails.textpayer_id || "N/A"}</Col>
+                              <Col>{tenantDetails.taxPayer_id || "N/A"}</Col>
                               <Col>{tenantDetails.comments || "N/A"}</Col>
                             </Row>
                             <Row
@@ -541,15 +534,15 @@ const TenantDetailPage = () => {
                                 color: "#000",
                               }}
                             >
-                              <Col>{tenantDetails.contact_name || "N/A"}</Col>
+                              <Col>{tenantDetails.emergency_contact.name || "N/A"}</Col>
                               <Col>
-                                {tenantDetails.relationship_tenants || "N/A"}
+                                {tenantDetails.emergency_contact.relation || "N/A"}
                               </Col>
                               <Col style={{ textTransform: "lowercase" }}>
-                                {tenantDetails.email || "N/A"}
+                                {tenantDetails.emergency_contact.email || "N/A"}
                               </Col>
                               <Col>
-                                {tenantDetails.emergency_PhoneNumber || "N/A"}
+                                {tenantDetails.emergency_contact.phoneNumber || "N/A"}
                               </Col>
                             </Row>
                           </div>
@@ -596,49 +589,27 @@ const TenantDetailPage = () => {
                               <th>Type</th>
                               <th>Rent</th>
                             </tr>
-                            {myData ? (
-                              <>
-                                {myData.map((item) => (
-                                  <>
-                                    <tr className="body">
-                                      <td>
-                                        {getStatus(
-                                          item.entries.start_date,
-                                          item.entries.end_date
-                                        )}
-                                      </td>
-                                      <td>
-                                        <Link
-                                          to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
-                                          onClick={(e) => {
-                                            console.log(item._id, "Tenant Id");
-                                            console.log(
-                                              item.entries.entryIndex,
-                                              "Entry Index"
-                                            );
-                                          }}
-                                        >
-                                          {formatDateWithoutTime(
-                                            item.entries.start_date
-                                          ) +
-                                            " To " +
-                                            formatDateWithoutTime(
-                                              item.entries.end_date
-                                            ) || "N/A"}
-                                        </Link>
-                                      </td>
-                                      <td>
-                                        {item.entries.rental_adress || "N/A"}
-                                      </td>
-                                      <td>
-                                        {item.entries.lease_type || "N/A"}
-                                      </td>
-                                      <td>{item.entries.amount}</td>
-                                    </tr>
-                                  </>
-                                ))}
-                              </>
-                            ) : null}
+                            {tenantDetails?.leaseData?.map((item) => (
+                              <tr className="body" key={item.lease_id}>
+                                    <td>{getStatus1(item.start_date, item.end_date)}</td>
+                                <td>
+                                  <Link
+                                    to={`/admin/rentrolldetail/`}
+                                    onClick={(e) => {
+                                      // console.log(item._id, "Tenant Id");
+                                    }}
+                                  >
+                                    {formatDateWithoutTime(item.start_date) +
+                                      " To " +
+                                      formatDateWithoutTime(item.end_date) ||
+                                      "N/A"}
+                                  </Link>
+                                </td>
+                                <td>{item.rental_adress || "N/A"}</td>
+                                <td>{item.lease_type || "N/A"}</td>
+                                <td>{item.amount || "N/A"}</td>
+                              </tr>
+                            ))}
                           </tbody>
                         </Table>
                       </Row>
@@ -679,7 +650,7 @@ const TenantDetailPage = () => {
                                     color="text.secondary"
                                     gutterBottom
                                   >
-                                    {getStatus(
+                                    {/* {getStatus(
                                       item.entries.start_date,
                                       item.entries.end_date
                                     )
@@ -690,7 +661,7 @@ const TenantDetailPage = () => {
                                         item.entries.end_date
                                       )
                                         .substring(1)
-                                        .toLowerCase()}
+                                        .toLowerCase()} */}
                                   </Typography>
 
                                   <Typography
@@ -880,7 +851,7 @@ const TenantDetailPage = () => {
                                 ////  href="#rms"
                                 onClick={() =>
                                   navigate(
-                                    `/admin/AddPayment/${tenantId}/${entryIndex}`,
+                                    `/admin/AddPayment/${id}`,
                                     {
                                       state: {
                                         unit_name: unit,
@@ -909,11 +880,11 @@ const TenantDetailPage = () => {
                                       cursor: "pointer",
                                       color: "blue",
                                     }}
-                                    // onClick={() => handleChange("Financial")}
+                                  // onClick={() => handleChange("Financial")}
                                   >
                                     <Link
-                                      to={`/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`}
-                                      onClick={(e) => {}}
+                                      to={`/admin/rentrolldetail/${id}?source=payment`}
+                                      onClick={(e) => { }}
                                     >
                                       Lease Ledger
                                     </Link>
@@ -1033,9 +1004,9 @@ const TenantDetailPage = () => {
           </ModalHeader>
           <ModalBody>
             <CreditCardForm
-              tenantId={tenantId}
+              id={id}
               closeModal={closeModal}
-              getCreditCard={getCreditCard}
+            // getCreditCard={getCreditCard}
             />
           </ModalBody>
         </Modal>

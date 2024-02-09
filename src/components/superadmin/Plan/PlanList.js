@@ -18,6 +18,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import Tooltip from "@mui/material/Tooltip";
 import { Button } from "react-bootstrap";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -29,6 +30,9 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormLabel from "@mui/material/FormLabel";
+import { Radio, RadioGroup, FormGroup } from "@mui/material";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Cookies from "universal-cookie";
@@ -53,7 +57,19 @@ const headCells = [
     label: "Plan Name",
   },
   {
+    label: "Free/Paid",
+  },
+  {
     label: "Price",
+  },
+  {
+    label: "Duration",
+  },
+  {
+    label: "Max Add.",
+  },
+  {
+    label: "Annual Discount",
   },
   {
     label: "Date",
@@ -94,8 +110,30 @@ function Rows(props) {
         </TableCell>
 
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
-        <TableCell align="center">{row.plan_name}</TableCell>
-        <TableCell align="center">{row.plan_price}</TableCell>
+        <TableCell align="center">{row?.plan_name}</TableCell>
+        <TableCell align="center">
+          {row?.is_free_trial ? (
+            <span className="badge badge-pill bg-warning text-dark">Free</span>
+          ) : (
+            <span className="badge badge-pill bg-success">Paid</span>
+          )}
+        </TableCell>
+        <TableCell align="center">{row?.plan_price}</TableCell>
+        <TableCell align="center">
+          {row.is_free_trial === true ? row?.plan_days : "Monthly"}
+        </TableCell>
+        <TableCell align="center">{row?.maximum_add}</TableCell>
+        <TableCell align="center">
+          {/* {row?.annual_discount === null ? "-" : row?.annual_discount + "%"} */}
+          {row?.annual_discount === null ? (
+            "-"
+          ) : (
+            // row?.annual_discount + "%"
+            <span class="badge badge-pill badge-info">
+              {row?.annual_discount + "%"}
+            </span>
+          )}
+        </TableCell>
         {/* <TableCell align="center">{row.plan_duration_monts}</TableCell> */}
         <TableCell align="center">
           {new Date(row.createdAt).toLocaleDateString("en-GB", {
@@ -312,6 +350,7 @@ export default function PlanList() {
   //   edit machine-type here
   let [modalShowForPopupForm, setModalShowForPopupForm] = React.useState(false);
   let [id, setId] = React.useState();
+  const [showBillingPeriods, setShowBillingPeriods] = useState(false);
 
   var handleSubmit;
 
@@ -362,7 +401,7 @@ export default function PlanList() {
     };
   }
 
-  //    // "add fom logic"
+  // "add form logic"
   let [editData, setEditData] = React.useState({});
 
   //   auto form fill up in edit
@@ -407,7 +446,7 @@ export default function PlanList() {
     list[index][name] = value;
     setInputFields(list);
   };
-
+  const navigate = useNavigate();
   return (
     <>
       <SuperAdminHeader />
@@ -420,16 +459,18 @@ export default function PlanList() {
                   <Button
                     className="text-capitalize"
                     size="small"
-                    onClick={() => {
-                      setModalShowForPopupForm(true);
-                      setId(null);
-                      setEditData({});
-                      setInputFields([
-                        {
-                          features: "",
-                        },
-                      ]);
-                    }}
+                    // onClick={() => {
+                    //   setModalShowForPopupForm(true);
+                    //   setId(null);
+                    //   setShowBillingPeriods(false);
+                    //   setEditData({});
+                    //   setInputFields([
+                    //     {
+                    //       features: "",
+                    //     },
+                    //   ]);
+                    // }}
+                    onClick={() => navigate("/superadmin/addplan")}
                     variant="contained"
                     style={{ backgroundColor: "#4A5073", color: "#ffffff" }} // Set background color and text color
                   >
@@ -607,21 +648,25 @@ export default function PlanList() {
                       editData && editData.plan_price
                         ? editData.plan_price
                         : "",
-                    billing_interval:
-                      editData && editData.billing_interval
-                        ? editData.billing_interval
+                    maximum_add:
+                      editData && editData.maximum_add
+                        ? editData.maximum_add
                         : "",
                     plan_days:
                       editData && editData.plan_days ? editData.plan_days : "",
-                    // billing_interval:
-                    //   editData && editData.billing_interval
-                    //     ? editData.billing_interval
-                    //     : "",
+                    is_annual_discount:
+                      editData && editData.is_annual_discount
+                        ? editData.is_annual_discount === "true"
+                        : false,
+                    annual_discount:
+                      editData && editData.annual_discount
+                        ? editData.annual_discount
+                        : "",
                   }}
                   validationSchema={Yup.object().shape({
                     plan_name: Yup.string().required("Required"),
                     plan_price: Yup.number().required("Required"),
-                    // billing_interval: Yup.number().required("Required"),
+                    maximum_add: Yup.number().required("Required"),
                   })}
                   onSubmit={(values, { resetForm }) => {
                     handleSubmit(values);
@@ -632,13 +677,14 @@ export default function PlanList() {
                     <Form>
                       {/* <FormikValues /> */}
                       <div>
+                        {/* Plan Name */}
                         <div className="mt-3">
                           <TextField
                             type="text"
                             size="small"
                             fullWidth
                             placeholder="Add Plan *"
-                            label="Add Plan *"
+                            label="Plan Name*"
                             name="plan_name"
                             value={values.plan_name}
                             onBlur={handleBlur}
@@ -650,13 +696,15 @@ export default function PlanList() {
                             </div>
                           ) : null}
                         </div>
+
+                        {/* Plan Price */}
                         <div className="mt-3">
                           <TextField
                             type="number"
                             size="small"
                             fullWidth
                             placeholder="Add Price *"
-                            label="Add Plan Price *"
+                            label="Cost Per Billing Cycle *"
                             name="plan_price"
                             value={values.plan_price}
                             onBlur={handleBlur}
@@ -669,38 +717,8 @@ export default function PlanList() {
                           ) : null}
                         </div>
 
-                        <div className="mt-3">
-                          <FormControl fullWidth>
-                            <InputLabel size="small">
-                              Select Billing-Interval
-                            </InputLabel>
-                            <Select
-                              size="small"
-                              label="Select Billing-Interval"
-                              name="billing_interval"
-                              value={values.billing_interval}
-                              onBlur={handleBlur}
-                              onChange={handleChange}
-                              MenuProps={{
-                                style: {
-                                  maxHeight: 210,
-                                },
-                              }}
-                            >
-                              <MenuItem value={"Monthly"}>Monthly</MenuItem>
-                              <MenuItem value={"Annual"}>Annual</MenuItem>
-                              <MenuItem value={"Days"}>Days</MenuItem>
-                            </Select>
-                            {touched.billing_interval &&
-                            errors.billing_interval ? (
-                              <div className="text-danger">
-                                {errors.billing_interval}
-                              </div>
-                            ) : null}
-                          </FormControl>
-                        </div>
-
-                        {values.billing_interval === "Days" ? (
+                        {/*  Add Days (If set plna price 0 means this is free plan so after show add Days how many days this plan for free) */}
+                        {values.plan_price === 0 ? (
                           <div className="mt-3">
                             <TextField
                               type="number"
@@ -721,15 +739,124 @@ export default function PlanList() {
                           </div>
                         ) : null}
 
+                        {/* Set Interval (this plan for how many time Monthly/Annually) */}
+                        {/* {values.plan_price !== 0 ? (
+                          <div className="mt-3">
+                            <FormControl fullWidth>
+                              <InputLabel size="small">
+                                Plan Billing Interval
+                              </InputLabel>
+                              <Select
+                                size="small"
+                                label="Select Billing-Interval"
+                                name="billing_interval"
+                                value={values.billing_interval}
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                MenuProps={{
+                                  style: {
+                                    maxHeight: 210,
+                                  },
+                                }}
+                              >
+                                <MenuItem value={"Monthly"}>Monthly</MenuItem>
+                                <MenuItem value={"Annual"}>Annual</MenuItem>
+                              </Select>
+                              {touched.billing_interval &&
+                              errors.billing_interval ? (
+                                <div className="text-danger">
+                                  {errors.billing_interval}
+                                </div>
+                              ) : null}
+                            </FormControl>
+                          </div>
+                        ) : null} */}
+
+                        {values.plan_price === 0 ||
+                        values.plan_price === "" ? null : (
+                          <div className="mt-3">
+                            <FormControl fullWidth>
+                              <InputLabel size="small">
+                                Anuual Discount?
+                              </InputLabel>
+                              <Select
+                                size="small"
+                                label="Anuual Discount?"
+                                name="is_annual_discount"
+                                value={values.is_annual_discount}
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                MenuProps={{
+                                  style: {
+                                    maxHeight: 210,
+                                  },
+                                }}
+                              >
+                                <MenuItem value={true}>Yes</MenuItem>
+                                <MenuItem value={false}>No</MenuItem>
+                              </Select>
+                              {touched.is_annual_discount &&
+                              errors.is_annual_discount ? (
+                                <div className="text-danger">
+                                  {errors.is_annual_discount}
+                                </div>
+                              ) : null}
+                            </FormControl>
+                          </div>
+                        )}
+
+                        {values.is_annual_discount === true ? (
+                          <div className="mt-3">
+                            <TextField
+                              type="number"
+                              size="small"
+                              fullWidth
+                              placeholder="Add Annual Discount *"
+                              label="Add Annual Discount *"
+                              name="annual_discount"
+                              value={values.annual_discount}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                            />
+                            {touched.annual_discount &&
+                            errors.annual_discount ? (
+                              <div className="text-danger">
+                                {errors.annual_discount}
+                              </div>
+                            ) : null}
+                          </div>
+                        ) : null}
+
+                        <div className="mt-3">
+                          <TextField
+                            type="number"
+                            size="small"
+                            fullWidth
+                            placeholder="Maximum Add Count *"
+                            label="Maximum Add Count *"
+                            name="maximum_add"
+                            value={values.maximum_add}
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                          />
+                          {touched.maximum_add && errors.maximum_add ? (
+                            <div className="text-danger">
+                              {errors.maximum_add}
+                            </div>
+                          ) : null}
+                        </div>
+
                         <div className="col-sm-8">
                           {inputFields.map((data, index) => {
                             const { features } = data;
                             return (
-                              <div className="row my-3" key={index}>
+                              <div className="row" key={index}>
                                 <div className="col">
                                   <div className="form-group">
                                     <TextField
                                       type="text"
+                                      size="small"
+                                      fullWidth
                                       onChange={(evnt) =>
                                         handleFeaturesChange(index, evnt)
                                       }
@@ -739,43 +866,177 @@ export default function PlanList() {
                                       placeholder="Features"
                                     />
                                   </div>
-                                </div>
-
-                                <div className="col">
+                                <div className="">
                                   {inputFields.length !== 1 ? (
-                                    <button
-                                      className="btn btn-outline-danger"
+                                    <div
+                                      className="mt-2"
+                                      style={{ cursor: "pointer" }}
                                       onClick={removeInputFields}
                                     >
-                                      x
-                                    </button>
+                                      ✖️
+                                    </div>
                                   ) : (
                                     ""
                                   )}
                                 </div>
+                                </div>
                               </div>
                             );
                           })}
-
                           <div className="row">
                             <div className="col-sm-12">
-                              <div
-                                className="btn btn-outline-success "
+                              <button
+                                className="btn btn-outline-primary"
+                                sm
                                 onClick={addInputField}
                               >
                                 Add New
-                              </div>
+                              </button>
                             </div>
                           </div>
+                        </div>
+                        <div className="mt-3">
+                          <FormControl component="fieldset">
+                            <FormLabel component="legend">
+                              Set how many times you wish to charge the
+                              customer?
+                            </FormLabel>
+                            <RadioGroup
+                              aria-label="billingOption"
+                              name="billingOption"
+                              value={values.billingOption}
+                              onChange={handleChange}
+                            >
+                              <FormControlLabel
+                                value="autoRenew"
+                                control={<Radio />}
+                                onChange={() => setShowBillingPeriods(true)}
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Auto renew plan after term expires
+                                  </span>
+                                }
+                              />
+                              <FormControlLabel
+                                value="chargeUntilTerm"
+                                control={<Radio />}
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Charge customers until their term commitment
+                                    expires
+                                  </span>
+                                }
+                                onChange={() => setShowBillingPeriods(false)}
+                              />
+                              <FormControlLabel
+                                value="chargeUntilCancellation"
+                                control={<Radio />}
+                                onChange={() => setShowBillingPeriods(false)}
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Charge customers until cancellation, no term
+                                    commitment
+                                  </span>
+                                }
+                              />
+                            </RadioGroup>
+                          </FormControl>
+                        </div>
+
+                        {showBillingPeriods && (
+                          <div className="mt-2 mb-3">
+                            <TextField
+                              type="number"
+                              size="small"
+                              fullWidth
+                              placeholder="Add Number *"
+                              label="Number of Billing Periods *"
+                              name="plan_periods"
+                              value={values.plan_periods}
+                              onBlur={handleBlur}
+                              onChange={handleChange}
+                            />
+                            {touched.plan_periods && errors.plan_periods ? (
+                              <div className="text-danger">
+                                {errors.plan_periods}
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
+
+                        <div className="mt-3">
+                          <FormControl component="fieldset">
+                            <FormLabel component="legend">
+                              Additional Options:
+                            </FormLabel>
+                            <FormGroup>
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={values.earlyCancellationFee}
+                                    onChange={handleChange}
+                                    name="earlyCancellationFee"
+                                  />
+                                }
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Set early membership cancellation fee
+                                  </span>
+                                }
+                              />
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={values.changePlan}
+                                    onChange={handleChange}
+                                    name="changePlan"
+                                  />
+                                }
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Allow member to change plan
+                                  </span>
+                                }
+                              />
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={values.cancelMembership}
+                                    onChange={handleChange}
+                                    name="cancelMembership"
+                                  />
+                                }
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Allow member to cancel billing/membership
+                                  </span>
+                                }
+                              />
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={values.pauseMembership}
+                                    onChange={handleChange}
+                                    name="pauseMembership"
+                                  />
+                                }
+                                label={
+                                  <span style={{ fontSize: "0.8rem" }}>
+                                    Allow member to pause billing/membership
+                                  </span>
+                                }
+                              />
+                            </FormGroup>
+                          </FormControl>
                         </div>
 
                         {!id ? (
                           <Button
                             className="mt-3"
                             type="submit"
-                            variant="primary"
+                            variant="success"
                           >
-                            Add
+                            Add Plan
                           </Button>
                         ) : (
                           <Button
@@ -783,9 +1044,17 @@ export default function PlanList() {
                             type="submit"
                             variant="warning"
                           >
-                            Update
+                            Update Plan
                           </Button>
                         )}
+                        <Button
+                          className="mt-3"
+                          type=""
+                          variant=""
+                          onClick={() => setModalShowForPopupForm(false)}
+                        >
+                          Cancel
+                        </Button>
                       </div>
                     </Form>
                   )}
