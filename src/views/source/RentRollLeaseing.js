@@ -1,7 +1,7 @@
 import { useFormik } from "formik";
 import moment from "moment";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -348,7 +348,12 @@ const RentRollLeaseing = () => {
         )
         .required("Required"),
     }),
-    onSubmit: () => {
+    onSubmit: (values) => {
+      setSelectedTenantData({
+        tenant_firstName: values.tenant_firstName,
+        tenant_lastName: values.tenant_lastName,
+        tenant_phoneNumber: values.tenant_phoneNumber,
+      });
       setOpenTenantsDialog(false);
       setDisplay(false);
     },
@@ -504,12 +509,11 @@ const RentRollLeaseing = () => {
     try {
       const res = await axios.post(`${baseUrl}/leases/leases`, object);
       if (res.data.statusCode === 200) {
-        
-        toast.success('Lease Added Successfully', {
-          position: 'top-center',
+        toast.success("Lease Added Successfully", {
+          position: "top-center",
           autoClose: 1000,
-        })
-        navigate(`/${admin}/RentRoll`)
+        });
+        navigate(`/${admin}/RentRoll`);
       }
     } catch (error) {
       console.error("Error:", error.message);
@@ -602,19 +606,6 @@ const RentRollLeaseing = () => {
         tenant_firstName,
         tenant_lastName,
         tenant_phoneNumber,
-        tenant_alternativeNumber,
-        tenant_email,
-        tenant_alternativeEmail,
-        tenant_password,
-        tenant_birthDate,
-        taxPayer_id,
-        comments,
-        emergency_contact: {
-          name,
-          relation,
-          email,
-          phoneNumber,
-        },
       });
     } else {
       setCheckedCheckbox("");
@@ -771,8 +762,8 @@ const RentRollLeaseing = () => {
         const res = await axios.post(`${baseUrl}/leases/check_lease`, object);
         if (res.data.statusCode === 201) {
           toast.warning(res.data.message, {
-            position: 'top-center',
-          })
+            position: "top-center",
+          });
         }
         return res.data.statusCode;
       } else {
@@ -2062,7 +2053,7 @@ const RentRollLeaseing = () => {
                                                           className="form-control-alternative"
                                                           id="input-unitadd7"
                                                           type="text"
-                                                          name=".emergency_contactemail"
+                                                          name="emergency_contact.email"
                                                           onBlur={
                                                             tenantFormik.handleBlur
                                                           }
@@ -2108,7 +2099,7 @@ const RentRollLeaseing = () => {
                                                               inputValue.replace(
                                                                 /\D/g,
                                                                 ""
-                                                              ); // Remove non-numeric characters
+                                                              );
                                                             e.target.value =
                                                               numericValue;
                                                           }}

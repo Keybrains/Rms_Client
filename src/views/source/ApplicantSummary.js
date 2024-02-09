@@ -918,7 +918,7 @@ const ApplicantSummary = () => {
   };
 
   const handleClearRow = async (document, appId) => {
-    const deleteUrl = `${baseUrl}/applicant/applicant/note_attachment/${appId}/${document._id}`;
+    const deleteUrl = `${baseUrl}/applicant/applicant/note_attachment/${id}/${document._id}`;
 
     await axios 
       .delete(deleteUrl)
