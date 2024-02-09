@@ -394,7 +394,7 @@ const PropDetails = () => {
                             <>
                               <div className="col-md-4 mt-2">
                                 <label
-                                  htmlFor="prop_image"
+                                  htmlFor="rental_image"
                                   style={{
                                     width: "260px",
                                     height: "180px",
@@ -402,8 +402,8 @@ const PropDetails = () => {
                                 >
                                   <img
                                     src={
-                                      rentalData?.prop_image
-                                        ? rentalData?.prop_image
+                                      rentalData?.rental_image
+                                        ? rentalData?.rental_image
                                         : fone
                                     }
                                     className="img-fluid rounded-start card-image"
@@ -416,8 +416,8 @@ const PropDetails = () => {
                                   />
                                 </label>
                                 <TextField
-                                  id="prop_image"
-                                  name="prop_image"
+                                  id="rental_image"
+                                  name="rental_image"
                                   type="file"
                                   inputProps={{
                                     accept: "image/*",

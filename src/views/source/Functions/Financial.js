@@ -52,7 +52,6 @@ const handleImageChange = async (event, rental_id) => {
   const formData = new FormData();
   formData.append(`files`, files[0]);
 
-  console.log(files, "yashuj");
   var image;
   try {
     const result = await axios.post(`${imageUrl}/images/upload`, formData, {
@@ -60,21 +59,22 @@ const handleImageChange = async (event, rental_id) => {
         "Content-Type": "multipart/form-data",
       },
     });
-    console.log(result, "yashuj");
+    
     image = {
-      prop_image: result.data.files[0].url,
+      rental_image: result.data.files[0].url,
     };
   } catch (error) {
-    console.error(error, "yashuj");
+    console.error(error, "Error");
   }
-  console.log(image, "yashuj");
-  // axios
-  //   .put(`${baseUrl}/rentals/proparty_image/${rental_id}`, image)
-  //   .then((response) => {
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
+  console.log(image, "yash")
+  axios
+    .put(`http://localhost:4000/api/rentals/proparty_image/${rental_id}`, image)
+    .then((response) => {
+      console.log(response, "yash")
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 export {
