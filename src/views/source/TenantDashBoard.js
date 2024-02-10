@@ -32,14 +32,39 @@ import {
 import TenantsHeader from "components/Headers/TenantsHeader";
 
 const TenantDashBoard = (props) => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
-  const [accessType, setAccessType] = useState(null);
   let navigate = useNavigate();
+  
+  const [accessType, setAccessType] = useState(null);
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
+const[propertycount,setpropertycount] = useState()
+  const fetchPropertyCount = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/tenants/property_count/${accessType.tenant_id}`);
+      console.log(res.data.data, "khushi");
+      setpropertycount(res.data.data)
+    } catch (error) {
+      console.error("Error: ", error.message);
+    }
+  }
+
+  useEffect(() => {
+    fetchPropertyCount();
+  }, [accessType])
 
   const toggleNavs = (e, index) => {
     // e.preventDefault();
@@ -134,7 +159,8 @@ const TenantDashBoard = (props) => {
                             fontWeight: "bold",
                           }}
                         >
-                         8
+                         {/* 8 */}
+                         {propertycount}
                         </div>
                       </CardBody>
                     </Card>
@@ -158,7 +184,7 @@ const TenantDashBoard = (props) => {
                             <i className="ni ni-badge"></i>
                           </div>
                           <div style={{ color: "#263238", fontSize: "20px" }}>
-                            Staff Members
+                            Work Orders
                           </div>
                         </div>
                         <div

@@ -16,6 +16,7 @@ import Applicants from "views/source/Applicants";
 import RentRoll from "views/source/RentRoll";
 // import SumProperties from "views/source/SumProperties";
 import Plans from "views/source/Plans";
+import Planpurches from 'views/source/Planpurches'
 import OutstandingBalance from "views/source/OutstandingBalance";
 import TenantDetailPage from "views/source/TenantDetailPage";
 import RentRollDetail from "views/source/RentRollDetail";
@@ -664,6 +665,12 @@ var routes = [
     name: "Addplans",
     component: <SuperAdminAddplan />,
     layout: "/superadmin",
+  },
+  {
+    path: "/Planpurches",
+    name: "Purchase Plan",
+    component: <Planpurches />,
+    layout: "/admin",
   },
   {
     path: "/admin",

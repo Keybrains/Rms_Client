@@ -25,7 +25,7 @@ import { Grid } from "@mui/material";
 const StaffWorkDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { workorder_id } = useParams();
-  //console.log(workorder_id);
+  console.log(workorder_id,"id is");
   const [outstandDetails, setoutstandDetails] = useState({});
   const [showTenantTable, setShowTenantTable] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -40,10 +40,11 @@ const StaffWorkDetails = () => {
   const getOutstandData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/workorder/workorder_summary/${workorder_id}`
+        `${baseUrl}/work-order/workorder_details/${workorder_id}`
       );
       setoutstandDetails(response.data.data);
-      setWorkOrderStatus(response.data.data.workorder_status.reverse());
+   
+      setWorkOrderStatus(response.data.data);
       setLoading(false);
       setImageDetails(response.data.data.workOrderImage);
     } catch (error) {
@@ -52,6 +53,8 @@ const StaffWorkDetails = () => {
       setLoading(false);
     }
   };
+  console.log(workOrderStatus,'this is ')
+  console.log(outstandDetails,"data is  ")
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -91,25 +94,25 @@ const StaffWorkDetails = () => {
 
   const [propertyDetails, setPropertyDetails] = useState({});
   const getPropertyData = async () => {
-    if (outstandDetails.rental_units === "") {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}`
-        );
-        setPropertyDetails(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching tenant details:", error);
-      }
-    } else if (outstandDetails.rental_adress && outstandDetails.rental_units) {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
-        );
-        setPropertyDetails(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching tenant details:", error);
-      }
-    }
+    // if (outstandDetails.rental_units === "") {
+    //   try {
+    //     const response = await axios.get(
+    //       `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}`
+    //     );
+    //     setPropertyDetails(response.data[0]);
+    //   } catch (error) {
+    //     console.error("Error fetching tenant details:", error);
+    //   }
+    // } else if (outstandDetails.rental_adress && outstandDetails.rental_units) {
+    //   try {
+    //     const response = await axios.get(
+    //       `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
+    //     );
+    //     setPropertyDetails(response.data[0]);
+    //   } catch (error) {
+    //     console.error("Error fetching tenant details:", error);
+    //   }
+    // }
   };
 
   React.useEffect(() => {
@@ -118,41 +121,41 @@ const StaffWorkDetails = () => {
 
   const [tenantsDetails, setTenantsDetails] = useState();
 
-  const getTenantsData = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/tenant/findData`, {
-        params: {
-          rental_adress: propertyDetails?.rental_adress,
-          rental_units: propertyDetails?.rental_units,
-        },
-      });
-      response.data.map((data) => {
-        data.entries.map((item) => {
-          const currentDate = new Date();
-          const sdate = new Date(item.start_date);
-          const edate = new Date(item.end_date);
+  // const getTenantsData = async () => {
+  //   try {
+  //     const response = await axios.get(`${baseUrl}/tenant/findData`, {
+  //       params: {
+  //         rental_adress: propertyDetails?.rental_adress,
+  //         rental_units: propertyDetails?.rental_units,
+  //       },
+  //     });
+  //     response.data.map((data) => {
+  //       data.entries.map((item) => {
+  //         const currentDate = new Date();
+  //         const sdate = new Date(item.start_date);
+  //         const edate = new Date(item.end_date);
 
-          // Compare the current date with start and end dates
-          if (
-            currentDate >= sdate &&
-            currentDate < edate &&
-            item.rental_adress === propertyDetails?.rental_adress &&
-            item.rental_units === propertyDetails?.rental_units
-          ) {
-            // console.log('Response is OK');
-            setTenantsDetails(data);
-          }
-        });
-      });
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-    }
-  };
+  //         // Compare the current date with start and end dates
+  //         if (
+  //           currentDate >= sdate &&
+  //           currentDate < edate &&
+  //           item.rental_adress === propertyDetails?.rental_adress &&
+  //           item.rental_units === propertyDetails?.rental_units
+  //         ) {
+  //           // console.log('Response is OK');
+  //           setTenantsDetails(data);
+  //         }
+  //       });
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching tenant details:", error);
+  //     setError(error);
+  //   }
+  // };
 
-  React.useEffect(() => {
-    getTenantsData();
-  }, [propertyDetails]);
+  // React.useEffect(() => {
+  //   getTenantsData();
+  // }, [propertyDetails]);
 
   const tableHeaderStyle = {
     border: "1px solid #ccc",
@@ -175,7 +178,7 @@ const StaffWorkDetails = () => {
 
   const total = () => {
     let total = 0;
-    outstandDetails?.entries.map((item) => {
+    outstandDetails?.partsandcharge_data?.map((item) => {
       total = total + item.total_amount;
     });
     return total;
@@ -282,7 +285,7 @@ const StaffWorkDetails = () => {
                           <div>Loading Work Order details...</div>
                         ) : error ? (
                           <div>Error: {error.message}</div>
-                        ) : outstandDetails.workorder_id ? (
+                        ) : outstandDetails?.workOrder_id ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -318,7 +321,7 @@ const StaffWorkDetails = () => {
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
                                   <span>
-                                    {outstandDetails.rental_adress || "N/A"}
+                                    {outstandDetails.property_data.rental_adress || "N/A"}
                                   </span>
                                 </Box>
                               </Box>
@@ -457,8 +460,8 @@ const StaffWorkDetails = () => {
                                 </Box>
                               </Box>
                             </Box>
-                            {outstandDetails?.entries?.length > 0 &&
-                            outstandDetails?.entries[0].part_qty ? (
+                            {outstandDetails?.partsandcharge_data?.length > 0 &&
+                            outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -498,7 +501,7 @@ const StaffWorkDetails = () => {
                                     </thead>
                                     <tbody>
                                       {/* Add your table rows dynamically here */}
-                                      {outstandDetails?.entries.map(
+                                      {outstandDetails?.partsandcharge_data?.map(
                                         (item, index) => (
                                           <tr key={index}>
                                             <td style={tableCellStyle}>
@@ -685,7 +688,7 @@ const StaffWorkDetails = () => {
                         )}
                       </Col>
                       <Col lg="4" md="12">
-                        {outstandDetails?.workorder_id ? (
+                        {outstandDetails?.workOrder_id ? (
                           <Box
                             border="1px solid #ccc"
                             borderRadius="8px"
@@ -736,7 +739,7 @@ const StaffWorkDetails = () => {
                                 </span>
                               </Box>
                             </Box>
-                            {tenantsDetails &&
+                            {/* {tenantsDetails &&
                             typeof tenantsDetails === "object" ? (
                               <Box
                                 style={{
@@ -778,10 +781,10 @@ const StaffWorkDetails = () => {
                                   </span>
                                 </Box>
                               </Box>
-                            ) : null}
+                            ) : null} */}
                           </Box>
                         ) : null}
-                        {propertyDetails ? (
+                        {outstandDetails ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -792,7 +795,7 @@ const StaffWorkDetails = () => {
                               flexDirection="column"
                               alignItems="center" // Center content horizontally
                             >
-                              <Box
+                              {/* <Box
                                 borderBottom="1px solid #ccc"
                                 style={{
                                   width: "100%",
@@ -927,7 +930,7 @@ const StaffWorkDetails = () => {
                                     )}
                                   </span>
                                 </Box>
-                              </Box>
+                              </Box> */}
                             </Box>
                           </>
                         ) : (
