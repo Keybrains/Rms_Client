@@ -221,7 +221,7 @@ const StaffWorkTable = () => {
                   <tbody>
                     {filterTenantsBySearchAndPage().map((vendor) => (
                       <tr
-                        key={vendor.workorder_id}
+                        key={vendor.workOrder_id}
                         onClick={() => navigateToDetails(vendor.workOrder_id)}
                         style={{ cursor: "pointer" }}
                       >
