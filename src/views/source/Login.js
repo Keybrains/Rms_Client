@@ -77,10 +77,6 @@ const Login = () => {
           toast.error(" Invalid Admin Password. Please try again.", {
             position: "top-center",
           });
-        } else {
-          toast.error("Invalid admin data", {
-            position: "top-center",
-          });
         }
       } else {
         const tenantRes = await axios.post(`${baseUrl}/tenants/login`, {
@@ -101,10 +97,6 @@ const Login = () => {
             }, 1000);
           } else if (tenantData.statusCode === 202) {
             toast.warning("Error ocuures!", {
-              position: "top-center",
-            });
-          } else {
-            toast.error("Invalid tenant data", {
               position: "top-center",
             });
           }
@@ -128,10 +120,6 @@ const Login = () => {
               toast.success("warnign ....", {
                 position: "top-center",
               });
-            } else {
-              toast.error("Invalid staff member data", {
-                position: "top-center",
-              });
             }
           } else {
             const vendorRes = await axios.post(`${baseUrl}/vendor/login`, {
@@ -151,10 +139,6 @@ const Login = () => {
                 }, 1000);
               } else if (staffmemberData.statusCode === 202) {
                 toast.warning("Warning ....", {
-                  position: "top-center",
-                });
-              } else {
-                toast.error("Invalid Vendor data", {
                   position: "top-center",
                 });
               }
