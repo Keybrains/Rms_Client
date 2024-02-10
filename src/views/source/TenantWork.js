@@ -150,14 +150,15 @@ const TenantWork = () => {
     setCurrentPage(page);
   };
 
-  const getRentalData = async (addresses,units) => {
-    if(units===""){
+  const getRentalData = async () => {
+   
       try {
         const response = await axios.get(
-          `${baseUrl}/workorder/workorder/tenant/${addresses}`
+          `${baseUrl}/work-order/tenant_work/${accessType.tenant_id}`
           );
 
       if (Array.isArray(response.data.data)) {
+        console.log(response.data.data,"janak")
         // Response is an array of work orders
         setTotalPages(Math.ceil(response.data.data.length / pageItem));
         setWorkData((prevData) => [...prevData, ...response.data.data]);
@@ -173,42 +174,23 @@ const TenantWork = () => {
       }
     } catch (error) {
       console.error("Error fetching work order data:", error);
-    }
-  }else{
-    try {
-      const response = await axios.get(
-        `${baseUrl}/workorder/workorder/tenant/${addresses}/${units}`
-      );
-      if (Array.isArray(response.data.data)) {
-        // Response is an array of work orders
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setWorkData((prevData) => [...prevData, ...response.data.data]);
-      } else if (typeof response.data.data === "object") {
-        // Response is a single work order object
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setWorkData((prevData) => [...prevData, response.data.data]);
-      } else {
-        console.error(
-          "Response data is not an array or object:",
-          response.data.data
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching work order data:", error);
-  }
-  }
+    } 
 }
 
-  React.useEffect(() => {
-    if (rentalAddress && rentalAddress.length > 0) {
-      setLoader(true);
-    }
-  }, [rentalAddress]);
+useEffect(() => {
+  getRentalData();
+}, [accessType]);
+
+  // React.useEffect(() => {
+  //   if (rentalAddress && rentalAddress.length > 0) {
+  //     setLoader(true);
+  //   }
+  // }, [rentalAddress]);
 
   const navigateToDetails = (tenantId) => {
     // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
     navigate(`/tenant/Tworkorderdetail/${tenantId}`);
-    //console.log(tenantId);
+    console.log(tenantId,"mansi");
   };
 
   const filterRentalsBySearch = () => {
@@ -242,13 +224,9 @@ const TenantWork = () => {
           case "staffmember_name":
             filteredData.sort((a, b) => a.staffmember_name.localeCompare(b.staffmember_name));
             break;
-          default:
-            // If an unknown sort option is provided, do nothing
-            break;
         }
       });
     }
-  
     return filteredData;
   };
   const filterTenantsBySearchAndPage = () => {
@@ -480,7 +458,7 @@ const TenantWork = () => {
                           />
                         )}
                       </th>
-                      {/* <th scope="col">
+                      <th scope="col">
                         Assigned
                         {sortBy.includes("staffmember_name") ? (
                           upArrow.includes("staffmember_name") ? (
@@ -498,7 +476,7 @@ const TenantWork = () => {
                           />
                         )}
                       </th>
-                      <th scope="col">Status</th> */}
+                      <th scope="col">Status</th>
                       <th scope="col">Created At</th>
                       <th scope="col">Updated At</th>
                       <th scope="col">ACTION</th>
@@ -508,17 +486,17 @@ const TenantWork = () => {
                   <tbody>
                     {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
-                        key={rental._id}
-                        onClick={() => navigateToDetails(rental.workorder_id)}
+                        key={rental.workOrder_id}
+                        onClick={() => navigateToDetails(rental?.workOrder_id)}
                         style={{ cursor: "pointer" }}
                       >
-                        <td>{rental.work_subject}</td>
-                        <td>{rental.rental_adress}</td>
-                        <td>{rental.work_category}</td>
-                        {/* <td>{rental.staffmember_name}</td>
-                        <td>{rental.status}</td> */}
-                        <td>{rental.createdAt}</td>
-                        <td>{rental.updateAt || "-"}</td>
+                        <td>{rental?.work_subject}</td>
+                        <td>{rental?.rental_adress}  {rental?.rental_unit ? " - " + rental?.rental_unit : null}</td>
+                        <td>{rental?.work_category}</td>
+                        <td>{rental?.staffmember_name}</td>
+                        <td>{rental?.status}</td>
+                        <td>{rental?.createdAt}</td>
+                        <td>{rental?.updatedAt || "-"}</td>
                         <td>
                         <div style={{ display: "flex", gap: "5px" }}>
                               <div
@@ -526,8 +504,7 @@ const TenantWork = () => {
                                  onClick={(e) => {
                                    e.stopPropagation();
                                    editworkorder(
-                                    rental.workorder_id,
-                                    //rental.entries.entryIndex
+                                    rental.workorder_id
                                    );
                                  }}
                               >

@@ -304,6 +304,23 @@ export default function Leasing() {
     setEditData(datas);
   };
 
+  const [adminDataCount, setAdminDataCount] = useState();
+  const adminCount = async () => {
+    try {
+      // Make an HTTP request to your API endpoint with the adminId
+      const res = await axios.get(
+        `${baseUrl}/admin/admin_count/${admin_id}`
+      );
+      setAdminDataCount(res.data);
+    } catch (error) {
+      console.error("Error occurred while calling API:", error);
+    }
+  };
+
+  React.useEffect(() => {
+    adminCount();
+  }, [admin_id]);
+
   // Formik
   //   let [ProductDetailsFormik, setProductDetailsFormik] = useState({});
   //   const FormikValues = () => {
@@ -333,8 +350,12 @@ export default function Leasing() {
                       to={`/superadmin/staffmember/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Staff Member
+                      Staff Member({adminDataCount?.staff_member})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -342,8 +363,12 @@ export default function Leasing() {
                       to={`/superadmin/propertytype/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Property Type
+                      Property Type({adminDataCount?.property_type})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -351,8 +376,12 @@ export default function Leasing() {
                       to={`/superadmin/properties/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Properties
+                      Properties({adminDataCount?.rentals_properties})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -360,8 +389,12 @@ export default function Leasing() {
                       to={`/superadmin/rental-owner/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Rental Owner
+                      Rental Owner({adminDataCount?.rental_owner})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -369,8 +402,12 @@ export default function Leasing() {
                       to={`/superadmin/tenant/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Tenant
+                      Tenant({adminDataCount?.tenant})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -379,7 +416,7 @@ export default function Leasing() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                      Unit
+                      Unit({adminDataCount?.unit})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -388,7 +425,7 @@ export default function Leasing() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                      Lease
+                      Lease({adminDataCount?.lease})
                     </NavLink>
                   </li>
                   {/* Add more links as needed */}

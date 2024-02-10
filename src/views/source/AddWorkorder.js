@@ -234,88 +234,87 @@ const AddWorkorder = () => {
       if (id) {
         try {
           const response = await axios.get(
-            `${baseUrl}/work-order/work-order/${id}`
+            `${baseUrl}/work-order/workorder_details/${id}`
           );
           const {
-            workOrderData,
-            partsData,
-            rentalAdress,
-            rentalUnit,
-            staffMember,
-            vendor,
-            tenantData,
+            partsandcharge_data,
+            property_data,
+            unit_data,
+            staff_data,
+            vendor_data,
+            tenant_data,
           } = response.data.data;
-          setWorkOrderData(workOrderData);
+          setWorkOrderData(response.data.data);
 
-          const formattedDueDate = workOrderData.date
-            ? new Date(workOrderData.date).toISOString().split("T")[0]
+          const formattedDueDate = response.data.data.date
+            ? new Date(response.data.data.date).toISOString().split("T")[0]
             : "";
 
-          setVid(workOrderData.workOrder_id);
+          setVid(response.data.data.workOrder_id);
 
           try {
-            const units = await fetchUnitsByProperty(rentalAdress.rental_id);
+            const units = await fetchUnitsByProperty(property_data.rental_id);
             setUnitData(units);
           } catch (error) {
             console.error(error, "error");
           }
 
-          setSelectedUnit(rentalUnit.rental_unit || "Select");
-          setSelectedProp(rentalAdress.rental_adress || "Select");
-          setSelectedCategory(workOrderData.work_category || "Select");
-          setSelectedVendor(vendor.vendor_name || "Select");
-          setSelectedCharge(workOrderData.work_charge_to || "Select");
+          setSelectedUnit(unit_data.rental_unit || "Select");
+          setSelectedProp(property_data.rental_adress || "Select");
+          setSelectedCategory(response.data.data.work_category || "Select");
+          setSelectedVendor(vendor_data.vendor_name || "Select");
+          setSelectedCharge(response.data.data.work_charge_to || "Select");
           setSelectedEntry(
-            workOrderData.entry_allowed === true ? "Yes" : "No" || "Select"
+            response.data.data.entry_allowed === true ? "Yes" : "No" || "Select"
           );
-          setSelecteduser(staffMember.staffmember_name || "Select");
-          setSelectedStatus(workOrderData.status || "Select");
-          setSelectedPriority(workOrderData.priority || "Select");
-          setWorkOrderImage(workOrderData.workOrder_images || []);
-          setSelectedFiles(workOrderData.workOrder_images || []);
+          setSelecteduser(staff_data.staffmember_name || "Select");
+          setSelectedStatus(response.data.data.status || "Select");
+          setSelectedPriority(response.data.data.priority || "Select");
+          setWorkOrderImage(response.data.data.workOrder_images || []);
+          setSelectedFiles(response.data.data.workOrder_images || []);
 
           setSelectedTenant(
-            tenantData.tenant_firstName + " " + tenantData.tenant_lastName ||
+            tenant_data.tenant_firstName + " " + tenant_data.tenant_lastName ||
               "Select"
           );
 
           WorkFormik.setValues({
-            invoice_number: workOrderData?.invoice_number || "",
-            work_charge: workOrderData?.work_charge || "",
-            detail: workOrderData?.detail || "",
-            entry_contact: workOrderData?.entry_contact || "",
-            final_total_amount: workOrderData?.final_total_amount || "",
+            invoice_number: response.data.data?.invoice_number || "",
+            work_charge: response.data.data?.work_charge || "",
+            detail: response.data.data?.detail || "",
+            entry_contact: response.data.data?.entry_contact || "",
+            final_total_amount: response.data.data?.final_total_amount || "",
 
-            work_subject: workOrderData?.work_subject || "",
-            rental_adress: rentalAdress?.rental_adress || "",
-            rental_unit: rentalUnit?.rental_unit || "",
-            rental_id: rentalAdress.rental_id || "",
-            work_category: workOrderData?.work_category || "",
-            vendor_name: vendor?.vendor_name || "",
-            vendor_id: vendor?.vendor_id || "",
-            unit_id: rentalUnit?.unit_id || "",
-            tenant_id: tenantData?.tenant_id || "",
+            work_subject: response.data.data?.work_subject || "",
+            rental_adress: property_data?.rental_adress || "",
+            rental_unit: unit_data?.rental_unit || "",
+            rental_id: property_data.rental_id || "",
+            work_category: response.data.data?.work_category || "",
+            vendor_name: vendor_data?.vendor_name || "",
+            vendor_id: vendor_data?.vendor_id || "",
+            unit_id: unit_data?.unit_id || "",
+            tenant_id: tenant_data?.tenant_id || "",
             tenant_name:
-              tenantData?.tenant_firstName +
+              tenant_data?.tenant_firstName +
                 " " +
-                tenantData?.tenant_lastName || "",
+                tenant_data?.tenant_lastName || "",
             invoice_number: "",
-            work_charge: workOrderData?.work_charge_to || "",
+            work_charge: response.data.data?.work_charge_to || "",
             entry_allowed:
-              workOrderData.entry_allowed === true ? "Yes" : "No" || "",
+              response.data.data.entry_allowed === true ? "Yes" : "No" || "",
             detail: "",
             entry_contact: "",
-            work_performed: workOrderData?.work_performed || "",
-            vendor_note: workOrderData?.vendor_notes || "",
-            staffmember_name: staffMember?.staffmember_name || "",
-            staffmember_id: staffMember?.staffmember_id || "",
-            status: workOrderData?.status || "",
+            work_performed: response.data.data?.work_performed || "",
+            vendor_note: response.data.data?.vendor_notes || "",
+            staffmember_name: staff_data?.staffmember_name || "",
+            staffmember_id: staff_data?.staffmember_id || "",
+            status: response.data.data?.status || "",
             due_date: formattedDueDate || "",
-            priority: workOrderData?.priority || "",
-            workOrderImage: workOrderData?.workOrder_images || "",
+            priority: response.data.data?.priority || "",
+            workOrderImage: response.data.data?.workOrder_images || "",
             final_total_amount: "",
             statusUpdatedBy: "Admin",
-            entries: partsData.map((part) => ({
+            entries: partsandcharge_data.map((part) => ({
               part_qty: part?.parts_quantity || "",
               parts_id: part?.parts_id || "",
               account_type: part?.account || "Select",
@@ -650,7 +649,7 @@ const AddWorkorder = () => {
     };
     console.log(object, "yashu");
     try {
-      const res = await axios.put(`${baseUrl}/work-order/work-order/${id}`);
+      const res = await axios.put(`http://localhost:4000/api/work-order/work-order/${id}`, object);
       console.log(res);
     } catch (error) {}
     setLoader(false);

@@ -67,7 +67,7 @@ function Rows(props) {
     <React.Fragment>
       <TableRow
         hover
-        onClick={(event) => handleClick(event, row._id)}
+        // onClick={(event) => handleClick(event, row._id)}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
@@ -168,38 +168,15 @@ export default function Unit() {
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  // Delete selected
-  var handleDelete = () => {
-    swal("Are You Sure You Want TO Delete ?", {
-      buttons: ["No", "Yes"],
-    }).then(async (buttons) => {
-      if (buttons === true) {
-        axios
-          .delete(`${baseUrl}/admin/admin`, {
-            data: selected,
-          })
-          .then((response) => {
-            if (response.data.statusCode === 200) {
-              getData();
-              setSelected([]);
-              toast.success(response.data.message, {
-                position: "top-center",
-                autoClose: 1000,
-              });
-            }
-          });
-      }
-    });
-  };
-
   //
   // Searchbar
   const [searchLoader, setSearchLoader] = useState(false);
   let handleSearchData = async (values) => {
     setSearchLoader(true);
     // const token = cookies.get("token");
-    let res = await axios.post(`${baseUrl}/plans/search`, {
+    let res = await axios.post(`${baseUrl}/unit/search`, {
       search: values,
+      admin_id: admin_id,
     });
     if (res.data.statusCode === 200) {
       if (values !== "") {
@@ -276,6 +253,22 @@ export default function Unit() {
     setEditData(datas);
   };
 
+  const [adminDataCount, setAdminDataCount] = useState();
+  console.log(adminDataCount, "adminDataCount");
+  const adminCount = async () => {
+    try {
+      // Make an HTTP request to your API endpoint with the adminId
+      const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+      setAdminDataCount(res.data);
+    } catch (error) {
+      console.error("Error occurred while calling API:", error);
+    }
+  };
+
+  React.useEffect(() => {
+    adminCount();
+  }, [admin_id]);
+
   // Formik
   //   let [ProductDetailsFormik, setProductDetailsFormik] = useState({});
   //   const FormikValues = () => {
@@ -305,17 +298,25 @@ export default function Unit() {
                       to={`/superadmin/staffmember/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Staff Member
+                      Staff Member({adminDataCount?.staff_member})
                     </NavLink>
                   </li>
                   <li className="nav-item">
                     <NavLink
-                      to={`/superadmin/unitData/${admin_id}`}
+                      to={`/superadmin/propertytype/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Property Type
+                      Property Type({adminDataCount?.property_type})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -323,8 +324,12 @@ export default function Unit() {
                       to={`/superadmin/properties/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Properties
+                      Properties({adminDataCount?.rentals_properties})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -332,8 +337,12 @@ export default function Unit() {
                       to={`/superadmin/rental-owner/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Rental Owner
+                      Rental Owner({adminDataCount?.rental_owner})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -341,8 +350,12 @@ export default function Unit() {
                       to={`/superadmin/tenant/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Tenant
+                      Tenant({adminDataCount?.tenant})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -351,7 +364,7 @@ export default function Unit() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                      Unit
+                      Unit({adminDataCount?.unit})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -360,7 +373,7 @@ export default function Unit() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                      Lease
+                      Lease({adminDataCount?.lease})
                     </NavLink>
                   </li>
                   {/* Add more links as needed */}
@@ -394,7 +407,7 @@ export default function Unit() {
                     Unit: {adminName?.first_name} {adminName?.last_name}
                   </Typography>
 
-                  {/* <form className="form-inline">
+                  <form className="form-inline">
                     <input
                       id="serchbar-size"
                       className="form-control mr-sm-2"
@@ -403,25 +416,7 @@ export default function Unit() {
                       placeholder="Search"
                       aria-label="Search"
                     />
-                  </form> */}
-
-                  <>
-                    {selected.length > 0 ? (
-                      <Tooltip title="Delete">
-                        <IconButton onClick={() => handleDelete()}>
-                          <img
-                            src={deleterecord}
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                              margin: "10px",
-                              alignItems: "center",
-                            }}
-                          />
-                        </IconButton>
-                      </Tooltip>
-                    ) : null}
-                  </>
+                  </form>
                 </Toolbar>
 
                 {loader || searchLoader ? (
