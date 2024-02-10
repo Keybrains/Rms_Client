@@ -94,19 +94,19 @@ const StaffWorkDetails = () => {
 
   const [propertyDetails, setPropertyDetails] = useState({});
   const getPropertyData = async () => {
-    // if (outstandDetails.rental_units === "") {
+    // if (outstandDetails?.rental_units === "") {
     //   try {
     //     const response = await axios.get(
-    //       `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}`
+    //       `${baseUrl}/propertyunit/property/${outstandDetails?.rental_adress}`
     //     );
     //     setPropertyDetails(response.data[0]);
     //   } catch (error) {
     //     console.error("Error fetching tenant details:", error);
     //   }
-    // } else if (outstandDetails.rental_adress && outstandDetails.rental_units) {
+    // } else if (outstandDetails?.rental_adress && outstandDetails?.rental_units) {
     //   try {
     //     const response = await axios.get(
-    //       `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
+    //       `${baseUrl}/propertyunit/property/${outstandDetails?.rental_adress}/${outstandDetails?.rental_units}`
     //     );
     //     setPropertyDetails(response.data[0]);
     //   } catch (error) {
@@ -179,7 +179,7 @@ const StaffWorkDetails = () => {
   const total = () => {
     let total = 0;
     outstandDetails?.partsandcharge_data?.map((item) => {
-      total = total + item.total_amount;
+      total = total + item.amount;
     });
     return total;
   };
@@ -318,10 +318,10 @@ const StaffWorkDetails = () => {
                                     className="text text-lg"
                                     style={{ color: "#033E3E" }}
                                   >
-                                    {outstandDetails.work_subject || "N/A"}
+                                    {outstandDetails?.work_subject || "N/A"}
                                   </h2>
                                   <span>
-                                    {outstandDetails.property_data.rental_adress || "N/A"}
+                                    {outstandDetails?.property_data?.rental_adress || "N/A"}
                                   </span>
                                 </Box>
                               </Box>
@@ -354,7 +354,7 @@ const StaffWorkDetails = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails.work_performed || "N/A"}
+                                      {outstandDetails?.work_performed || "N/A"}
                                     </span>
                                   </FormGroup>
                                   <FormGroup marginBottom="20px">
@@ -375,7 +375,7 @@ const StaffWorkDetails = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails.entry_allowed || "N/A"}
+                                     {outstandDetails?.entry_allowed ? "Yes" : "No"}
                                     </span>
                                   </FormGroup>
                                   <FormGroup marginBottom="20px">
@@ -396,7 +396,7 @@ const StaffWorkDetails = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails.vendor_note || "N/A"}
+                                      {outstandDetails?.vendor_notes || "N/A"}
                                     </span>
                                   </FormGroup>
                                 </Box>
@@ -415,7 +415,7 @@ const StaffWorkDetails = () => {
                                     <Col style={{ padding: "0 8px" }}>
                                       <SmallSummaryCard
                                         label="Status"
-                                        value={outstandDetails.status || "N/A"}
+                                        value={outstandDetails?.status || "N/A"}
                                         textTruncate // add this prop to enable text truncation
                                       />
                                     </Col>
@@ -432,7 +432,7 @@ const StaffWorkDetails = () => {
                                       <SmallSummaryCard
                                         label="Due Date"
                                         value={
-                                          outstandDetails.due_date || "N/A"
+                                          outstandDetails?.date || "N/A"
                                         }
                                         textTruncate // add this prop to enable text truncation
                                       />
@@ -450,7 +450,7 @@ const StaffWorkDetails = () => {
                                       <SmallSummaryCard
                                         label="Assignees"
                                         value={
-                                          outstandDetails.staffmember_name ||
+                                          outstandDetails?.staff_data.staffmember_name ||
                                           "N/A"
                                         }
                                         textTruncate // add this prop to enable text truncation
@@ -505,10 +505,10 @@ const StaffWorkDetails = () => {
                                         (item, index) => (
                                           <tr key={index}>
                                             <td style={tableCellStyle}>
-                                              {item.part_qty}
+                                              {item.parts_quantity}
                                             </td>
                                             <td style={tableCellStyle}>
-                                              {item.account_type}
+                                              {item.account}
                                             </td>
                                             <td style={tableCellStyle}>
                                               {item.description}
@@ -519,7 +519,7 @@ const StaffWorkDetails = () => {
                                                 textAlign: "right",
                                               }}
                                             >
-                                              ${item.part_price}
+                                              ${item.parts_price}
                                             </td>
                                             <td
                                               style={{
@@ -527,7 +527,7 @@ const StaffWorkDetails = () => {
                                                 textAlign: "right",
                                               }}
                                             >
-                                              ${item.total_amount}
+                                              ${item.amount}
                                             </td>
                                           </tr>
                                         )
@@ -576,8 +576,8 @@ const StaffWorkDetails = () => {
                                 </h2>
                               </Grid>
 
-                              {outstandDetails.workorder_status &&
-                                outstandDetails.workorder_status.length > 0 &&
+                              {outstandDetails?.workorder_status &&
+                                outstandDetails?.workorder_status.length > 0 &&
                                 workOrderStatus.map((item, index) => (
                                   <Grid item xs={12}>
                                     <Box
@@ -735,12 +735,12 @@ const StaffWorkDetails = () => {
                               >
                                 <span style={detailstyle}>Vendor</span> <br />
                                 <span>
-                                  {outstandDetails?.vendor_name || "N/A"}
+                                  {outstandDetails?.vendor_data.vendor_name || "N/A"}
                                 </span>
                               </Box>
                             </Box>
-                            {/* {tenantsDetails &&
-                            typeof tenantsDetails === "object" ? (
+                            {outstandDetails?.tenant_data &&
+                            typeof outstandDetails?.tenant_data === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -770,10 +770,10 @@ const StaffWorkDetails = () => {
                                 >
                                   <span style={detailstyle}>Tenant</span> <br />
                                   <span>
-                                    {tenantsDetails.tenant_firstName ? (
+                                    {outstandDetails?.tenant_data.tenant_firstName ? (
                                       <>
-                                        {tenantsDetails.tenant_firstName}{" "}
-                                        {tenantsDetails.tenant_lastName}
+                                        {outstandDetails?.tenant_data.tenant_firstName}{" "}
+                                        {outstandDetails?.tenant_data.tenant_lastName}
                                       </>
                                     ) : (
                                       ""
@@ -781,7 +781,7 @@ const StaffWorkDetails = () => {
                                   </span>
                                 </Box>
                               </Box>
-                            ) : null} */}
+                            ) : null}
                           </Box>
                         ) : null}
                         {outstandDetails ? (
@@ -795,7 +795,7 @@ const StaffWorkDetails = () => {
                               flexDirection="column"
                               alignItems="center" // Center content horizontally
                             >
-                              {/* <Box
+                              <Box
                                 borderBottom="1px solid #ccc"
                                 style={{
                                   width: "100%",
@@ -811,8 +811,8 @@ const StaffWorkDetails = () => {
                                   Property
                                 </h3>
                               </Box>
-                              {Array.isArray(
-                                propertyDetails?.propertyres_image
+                              {/* {Array.isArray(
+                                // propertyDetails?.propertyres_image
                               ) ||
                               Array.isArray(propertyDetails?.property_image) ? (
                                 <Box
@@ -866,7 +866,7 @@ const StaffWorkDetails = () => {
                                     )}
                                   </Box>
                                 </Box>
-                              ) : null}
+                              ) : null} */}
                               <Box
                                 style={{
                                   width: "100%",
@@ -883,9 +883,9 @@ const StaffWorkDetails = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails?.rental_adress || "N/A"}
-                                    {propertyDetails?.rental_units ? (
-                                      " (" + propertyDetails?.rental_units + ")"
+                                    {outstandDetails?.property_data?.rental_adress || "N/A"}
+                                    {outstandDetails?.property_data?.rental_units ? (
+                                      " (" + outstandDetails?.property_data?.rental_units + ")"
                                     ) : (
                                       <></>
                                     )}
@@ -908,29 +908,29 @@ const StaffWorkDetails = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails.rental_city ? (
-                                      <>{propertyDetails.rental_city},</>
+                                    {outstandDetails?.property_data?.rental_city ? (
+                                      <>{outstandDetails?.property_data?.rental_city},</>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_state ? (
-                                      <>{propertyDetails.rental_state},</>
+                                    {outstandDetails?.property_data?.rental_state ? (
+                                      <>{outstandDetails?.property_data?.rental_state},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}<br/>
+                                    {outstandDetails?.property_data?.rental_country ? (
+                                      <>{outstandDetails?.property_data?.rental_country},</>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_country ? (
-                                      <>{propertyDetails.rental_country},</>
-                                    ) : (
-                                      ""
-                                    )}{" "}
-                                    {propertyDetails.rental_postcode ? (
-                                      <>{propertyDetails.rental_postcode}.</>
+                                    {outstandDetails?.property_data?.rental_postcode ? (
+                                      <>{outstandDetails?.property_data?.rental_postcode}.</>
                                     ) : (
                                       ""
                                     )}
                                   </span>
                                 </Box>
-                              </Box> */}
+                              </Box>
                             </Box>
                           </>
                         ) : (
@@ -973,37 +973,37 @@ const StaffWorkDetails = () => {
                                 style={{
                                   border: "2px solid",
                                   borderColor:
-                                    outstandDetails.priority === "High"
+                                    outstandDetails?.priority === "High"
                                       ? "red"
-                                      : outstandDetails.priority === "Medium"
+                                      : outstandDetails?.priority === "Medium"
                                       ? "green"
-                                      : outstandDetails.priority === "Low"
+                                      : outstandDetails?.priority === "Low"
                                       ? "#FFD700"
                                       : "inherit",
                                   borderRadius: "15px",
                                   padding: "2px",
                                   fontSize: "15px",
                                   color:
-                                    outstandDetails.priority === "High"
+                                    outstandDetails?.priority === "High"
                                       ? "red"
-                                      : outstandDetails.priority === "Medium"
+                                      : outstandDetails?.priority === "Medium"
                                       ? "green"
-                                      : outstandDetails.priority === "Low"
+                                      : outstandDetails?.priority === "Low"
                                       ? "#FFD700"
                                       : "inherit",
                                 }}
                               >
-                                &nbsp;{outstandDetails.priority}&nbsp;
+                                &nbsp;{outstandDetails?.priority}&nbsp;
                               </span>
                               <h2
                                 className="text-lg"
                                 style={{ color: "#033E3E" }}
                               >
-                                {outstandDetails.work_subject || "N/A"}
+                                {outstandDetails?.work_subject || "N/A"}
                               </h2>
 
                               <span className="">
-                                {outstandDetails.rental_adress || "N/A"}
+                                {outstandDetails?.property_data?.rental_adress || "N/A"}
                               </span>
                             </Col>
                           </Row>
@@ -1019,7 +1019,7 @@ const StaffWorkDetails = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails.work_performed || "N/A"}
+                                  {outstandDetails?.work_performed || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1035,7 +1035,7 @@ const StaffWorkDetails = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails.status || "N/A"}
+                                  {outstandDetails?.status || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1051,7 +1051,7 @@ const StaffWorkDetails = () => {
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
                                   {formatDateWithoutTime(
-                                    outstandDetails.due_date
+                                    outstandDetails?.date
                                   ) || "N/A"}
                                 </span>
                               </FormGroup>
@@ -1068,7 +1068,7 @@ const StaffWorkDetails = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails.staffmember_name || "N/A"}
+                                  {outstandDetails?.staff_data.staffmember_name || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1082,8 +1082,7 @@ const StaffWorkDetails = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails.entry_allowed || "N/A"}
-                                </span>
+                                {outstandDetails?.entry_allowed ? "Yes" : "No"}                                </span>
                               </FormGroup>
                             </Col>
                           </Row>
@@ -1099,7 +1098,7 @@ const StaffWorkDetails = () => {
                       margin={"20px"}
                     > */}
 
-                        {propertyDetails ? (
+                        {outstandDetails ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -1127,7 +1126,7 @@ const StaffWorkDetails = () => {
                                 </h2>
                               </Box>
 
-                              {imagedetails && imagedetails.length > 0 ? (
+                              {outstandDetails?.workOrder_images && outstandDetails?.workOrder_images.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",
@@ -1138,7 +1137,7 @@ const StaffWorkDetails = () => {
                                     justifyContent: "center",
                                   }}
                                 >
-                                  {imagedetails.map((imageUrl, index) => (
+                                  {outstandDetails?.workOrder_images .map((imageUrl, index) => (
                                     <Box
                                       key={index}
                                       width="48%"
@@ -1176,8 +1175,8 @@ const StaffWorkDetails = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails.rental_adress || "N/A"} (
-                                    {propertyDetails.rental_units})
+                                    {outstandDetails?.property_data?.rental_adress || "N/A"} (
+                                    {outstandDetails?.unit_data.rental_unit})
                                   </span>
                                 </Box>
                               </Box>
@@ -1197,23 +1196,23 @@ const StaffWorkDetails = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails.rental_city ? (
-                                      <>{propertyDetails.rental_city},</>
+                                    {outstandDetails?.property_data?.rental_city ? (
+                                      <>{outstandDetails?.property_data?.rental_city},</>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_state ? (
-                                      <>{propertyDetails.rental_state},</>
+                                    {outstandDetails?.property_data?.rental_state ? (
+                                      <>{outstandDetails?.property_data?.rental_state},</>
+                                    ) : (
+                                      ""
+                                    )}{" "}<br/>
+                                    {outstandDetails?.property_data?.rental_country ? (
+                                      <>{outstandDetails?.property_data?.rental_country},</>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_country ? (
-                                      <>{propertyDetails.rental_country},</>
-                                    ) : (
-                                      ""
-                                    )}{" "}
-                                    {propertyDetails.rental_postcode ? (
-                                      <>{propertyDetails.rental_postcode}.</>
+                                    {outstandDetails?.property_data?.rental_postcode ? (
+                                      <>{outstandDetails?.property_data?.rental_postcode}.</>
                                     ) : (
                                       ""
                                     )}
