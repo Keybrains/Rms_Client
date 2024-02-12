@@ -505,7 +505,6 @@ const RentRollLeaseing = () => {
         rentChargeFormik.values,
       ],
     };
-    console.log(object, "yashu");
     try {
       const res = await axios.post(`${baseUrl}/leases/leases`, object);
       if (res.data.statusCode === 200) {

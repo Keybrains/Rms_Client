@@ -74,14 +74,15 @@ const PropDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-  const source = queryParams.get("source");
-  const { rental_id } = useParams();
+  const { rental_id, admin } = useParams();
 
   const [value, setValue] = React.useState("summary");
   const [rentalData, setRentalData] = useState();
   const [rentalOwnerData, setRentalOwnerData] = useState("");
   const [propertyTypeData, setPropertyTypeData] = useState("");
   const [propertyUnitData, setpropertyUnitData] = useState("");
+  const [tenantsData, setTenantsData] = useState("");
+  const [workOrderData, setWorkOrderData] = useState("");
   const [staffMemberData, setStaffMemberData] = useState("");
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
   const [clickedUnitObject, setClickedUnitObject] = useState([]);
@@ -102,7 +103,6 @@ const PropDetails = () => {
   const [addAppliances, setAddAppliances] = useState(false);
   const [unitImage, setUnitImage] = useState([]);
   const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
-  const [addUnitDialogOpen, setAddUnitDialogOpen] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [openEdite, setOpenEdite] = useState("");
   const [accessType, setAccessType] = useState(null);
@@ -121,15 +121,15 @@ const PropDetails = () => {
     try {
       const url = `${baseUrl}/rentals/rental_summary/${rental_id}`;
       const response = await axios.get(url);
-      console.log(response, url, "yash1");
       setRentalData(response.data.data[0]);
       setPropertyTypeData(response.data.data[0].property_type_data);
       setRentalOwnerData(response.data.data[0].rental_owner_data);
       setStaffMemberData(response.data.data[0].staffmember_data);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
-      setLoading(false);
     }
+    setLoading(false);
+    setPropImageLoader(false);
   };
 
   const fetchUnitsData = async () => {
@@ -141,13 +141,41 @@ const PropDetails = () => {
       setpropertyUnitData(response.data.data);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
-      setLoading(false);
     }
+    setLoading(false);
+  };
+
+  const fetchTenantData = async () => {
+    setLoader(true);
+    try {
+      const response = await axios.get(
+        `${baseUrl}/tenants/rental_tenant/${rental_id}`
+      );
+      setTenantsData(response.data.data);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+    }
+    setLoading(false);
+  };
+
+  const fetchWorkOrderData = async () => {
+    setLoader(true);
+    try {
+      const response = await axios.get(
+        `${baseUrl}/work-order/rental_workorder/${rental_id}`
+      );
+      setWorkOrderData(response.data.data);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchRentalData();
     fetchUnitsData();
+    fetchTenantData();
+    fetchWorkOrderData();
   }, [rental_id]);
 
   const fetchApplianceData = async () => {
@@ -216,7 +244,6 @@ const PropDetails = () => {
       try {
         let res;
 
-        console.log(values, "yashuj");
         if (clickedUnitObject.unit_id) {
           res = await handleUnitDetailsEdit(clickedUnitObject?.unit_id, values);
         } else {
@@ -322,6 +349,23 @@ const PropDetails = () => {
     setPhotoresDialogOpen((prevState) => !prevState);
   };
 
+  const countTenantsByUnit = () => {
+    for (const tenant of tenantsData) {
+      for (const unit of propertyUnitData) {
+        if (tenant.unit_id === unit.unit_id) {
+          console.log("object yashu");
+        }
+        console.log("object yashu2");
+      }
+    }
+  };
+
+  useEffect(() => {
+    countTenantsByUnit();
+  }, [tenantsData, propertyUnitData]);
+
+  console.log(tenantsData, propertyUnitData, "yashh");
+
   return (
     <>
       <Header />
@@ -337,7 +381,7 @@ const PropDetails = () => {
             <Button
               color="primary"
               onClick={() => {
-                navigate("/admin/propertiesTable");
+                navigate("/" + admin + "/propertiesTable");
                 setClickedUnitObject([]);
               }}
               size="sm"
@@ -423,9 +467,19 @@ const PropDetails = () => {
                                     accept: "image/*",
                                     multiple: false,
                                   }}
-                                  onChange={(e) =>
-                                    handleImageChange(e, rentalData.rental_id)
-                                  }
+                                  onChange={async (e) => {
+                                    setPropImageLoader(true);
+                                    const res = await handleImageChange(
+                                      e,
+                                      rentalData.rental_id
+                                    );
+                                    if (res === true) {
+                                      fetchRentalData();
+                                    } else {
+                                      console.error("Image upload failed");
+                                      setPropImageLoader(false);
+                                    }
+                                  }}
                                   style={{ display: "none" }}
                                 />
                               </div>
@@ -1242,9 +1296,6 @@ const PropDetails = () => {
                             size="l"
                             onClick={() => {
                               setOpenEdite(true);
-                              setAddUnitDialogOpen(
-                                propertyTypeData.property_type
-                              );
                             }}
                           >
                             <span className="btn-inner--text">Add Unit</span>
@@ -2064,10 +2115,9 @@ const PropDetails = () => {
           unitImage={unitImage}
           fileData={fileData}
           togglePhotoresDialog={togglePhotoresDialog}
-          addUnitDialogOpen={addUnitDialogOpen}
+          addUnitDialogOpen={propertyTypeData.property_type}
         />
       </Dialog>
-      {console.log(addAppliancesFormin, "yashu")}
     </>
   );
 };

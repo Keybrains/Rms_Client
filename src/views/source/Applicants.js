@@ -328,14 +328,12 @@ const Applicants = () => {
         },
       };
 
-      console.log(requestBody, "yash");
       axios
         .post(`http://192.168.1.11:4000/api/applicant/applicant`, requestBody)
         .then((response) => {
           if (response.data.statusCode === 200) {
             closeModal();
             action.resetForm();
-            console.log(response, "yash");
             swal("Success!", "Applicant Added Successfully", "success");
 
             navigate(

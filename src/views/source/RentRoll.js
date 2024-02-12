@@ -67,7 +67,6 @@ const RentRoll = () => {
       if (response.data.statusCode === 200) {
         const data = response.data.data;
         const transformedData = data.map((item) => {
-          console.log(item, "yashu");
           return {
             tenant_id: item?.tenant?.tenant_id,
             tenant_firstName: item?.tenant?.tenant_firstName,
@@ -412,7 +411,6 @@ const RentRoll = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {console.log(tenantsData, "yash")}
                     {filterTenantsBySearchAndPage()?.map((tenant) => (
                       <>
                         <tr

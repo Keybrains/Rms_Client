@@ -134,7 +134,7 @@ const Workorder = () => {
   };
   const editWorkOrder = (id) => {
     console.log(id, "id male che");
-    navigate(`/${admin} /addworkorder/${id}`);
+    navigate(`/${admin}/addworkorder/${id}`);
   };
 
   const filterRentalsBySearch = () => {
@@ -401,7 +401,7 @@ const Workorder = () => {
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                editWorkOrder(rental.workorder_id);
+                                editWorkOrder(rental.workOrder_id);
                               }}
                             >
                               <EditIcon />

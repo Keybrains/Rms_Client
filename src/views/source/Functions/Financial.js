@@ -53,29 +53,30 @@ const handleImageChange = async (event, rental_id) => {
   formData.append(`files`, files[0]);
 
   var image;
+
   try {
     const result = await axios.post(`${imageUrl}/images/upload`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    
+
     image = {
       rental_image: result.data.files[0].url,
     };
+
+    const response = await axios.put(`${baseUrl}/rentals/proparty_image/${rental_id}`, image);
+    if (response.data.statusCode === 200) {
+      return true;
+    } else {
+      return false;
+    }
   } catch (error) {
     console.error(error, "Error");
+    return false;
   }
-  console.log(image, "yash")
-  axios
-    .put(`http://localhost:4000/api/rentals/proparty_image/${rental_id}`, image)
-    .then((response) => {
-      console.log(response, "yash")
-    })
-    .catch((err) => {
-      console.log(err);
-    });
 };
+
 
 export {
   financialTypeArray,

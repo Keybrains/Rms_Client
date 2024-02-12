@@ -78,7 +78,7 @@ const Rentals = () => {
   const handleCountrySelection = (value) => {
     setSelectedState(value);
     setstateDropdownOpen(true);
-    rentalsFormik.setFieldValue("rentalOwner_country", value);
+    rentalsFormik.setFieldValue("country", value);
   };
 
   let cookies = new Cookies();
@@ -224,11 +224,11 @@ const Rentals = () => {
       rentalOwner_homeNumber: "",
       rentalOwner_businessNumber: "",
       rentalOwner_telephoneNumber: "",
-      rentalOwner_streetAdress: "",
-      rentalOwner_city: "",
-      rentalOwner_state: "",
-      rentalOwner_zip: "",
-      rentalOwner_country: "",
+      street_address: "",
+      city: "",
+      state: "",
+      postal_code: "",
+      country: "",
       rentalOwner_comments: "",
       texpayer_id: "",
       rentalOwner_properties: [],
@@ -290,7 +290,7 @@ const Rentals = () => {
           const rentalOwnerdata = response.data.data;
           setRentalOwnerData(rentalOwnerData);
           setIsLoading(false);
-          setSelectedState(rentalOwnerdata.rentalOwner_country || "Select");
+          setSelectedState(rentalOwnerdata.country || "Select");
 
           rentalsFormik.setValues({
             rentalowner_firstName: rentalOwnerdata.rentalowner_firstName || "",
@@ -311,12 +311,12 @@ const Rentals = () => {
               rentalOwnerdata.rentalOwner_businessNumber || "",
             rentalOwner_telephoneNumber:
               rentalOwnerdata.rentalOwner_telephoneNumber || "",
-            rentalOwner_streetAdress:
-              rentalOwnerdata.rentalOwner_streetAdress || "",
-            rentalOwner_city: rentalOwnerdata.rentalOwner_city || "",
-            rentalOwner_state: rentalOwnerdata.rentalOwner_state || "",
-            rentalOwner_zip: rentalOwnerdata.rentalOwner_zip || "",
-            rentalOwner_country: rentalOwnerdata.rentalOwner_country || "",
+            street_address:
+              rentalOwnerdata.street_address || "",
+            city: rentalOwnerdata.city || "",
+            state: rentalOwnerdata.state || "",
+            postal_code: rentalOwnerdata.postal_code || "",
+            country: rentalOwnerdata.country || "",
             rentalOwner_comments: rentalOwnerdata.rentalOwner_comments || "",
             rentalOwner_companyName:
               rentalOwnerdata.rentalOwner_companyName || "",
@@ -819,20 +819,20 @@ const Rentals = () => {
                         </FormGroup>
                         <Input
                           type="text"
-                          id="rentalOwner_streetAdress"
+                          id="street_address"
                           placeholder="Address"
                           onBlur={rentalsFormik.handleBlur}
                           onChange={rentalsFormik.handleChange}
-                          value={rentalsFormik.values.rentalOwner_streetAdress}
+                          value={rentalsFormik.values.street_address}
                         />
-                        {rentalsFormik.touched.rentalOwner_streetAdress &&
-                        rentalsFormik.errors.rentalOwner_streetAdress ? (
+                        {rentalsFormik.touched.street_address &&
+                        rentalsFormik.errors.street_address ? (
                           <div
                             style={{
                               color: "red",
                             }}
                           >
-                            {rentalsFormik.errors.rentalOwner_streetAdress}
+                            {rentalsFormik.errors.street_address}
                           </div>
                         ) : null}
                       </Col>
@@ -850,19 +850,19 @@ const Rentals = () => {
                           </label>
                           <Input
                             type="text"
-                            id="rentalOwner_city"
+                            id="city"
                             placeholder="City"
                             onChange={rentalsFormik.handleChange}
-                            value={rentalsFormik.values.rentalOwner_city}
+                            value={rentalsFormik.values.city}
                           />
-                          {rentalsFormik.touched.rentalOwner_city &&
-                          rentalsFormik.errors.rentalOwner_city ? (
+                          {rentalsFormik.touched.city &&
+                          rentalsFormik.errors.city ? (
                             <div
                               style={{
                                 color: "red",
                               }}
                             >
-                              {rentalsFormik.errors.rentalOwner_city}
+                              {rentalsFormik.errors.city}
                             </div>
                           ) : null}
                         </FormGroup>
@@ -878,19 +878,19 @@ const Rentals = () => {
 
                           <Input
                             type="text"
-                            id="rentalOwner_state"
+                            id="state"
                             placeholder="State"
                             onChange={rentalsFormik.handleChange}
-                            value={rentalsFormik.values.rentalOwner_state}
+                            value={rentalsFormik.values.state}
                           />
-                          {rentalsFormik.touched.rentalOwner_state &&
-                          rentalsFormik.errors.rentalOwner_state ? (
+                          {rentalsFormik.touched.state &&
+                          rentalsFormik.errors.state ? (
                             <div
                               style={{
                                 color: "red",
                               }}
                             >
-                              {rentalsFormik.errors.rentalOwner_state}
+                              {rentalsFormik.errors.state}
                             </div>
                           ) : null}
                         </FormGroup>
@@ -957,10 +957,10 @@ const Rentals = () => {
                             </label>
                             <Input
                               type="text"
-                              id="rentalOwner_zip"
+                              id="postal_code"
                               placeholder="Postal code"
                               onChange={rentalsFormik.handleChange}
-                              value={rentalsFormik.values.rentalOwner_zip}
+                              value={rentalsFormik.values.postal_code}
                               onInput={(e) => {
                                 const inputValue = e.target.value;
                                 const numericValue = inputValue.replace(
@@ -971,14 +971,14 @@ const Rentals = () => {
                               }}
                               style={{ width: "235px" }}
                             />
-                            {rentalsFormik.touched.rentalOwner_zip &&
-                            rentalsFormik.errors.rentalOwner_zip ? (
+                            {rentalsFormik.touched.postal_code &&
+                            rentalsFormik.errors.postal_code ? (
                               <div
                                 style={{
                                   color: "red",
                                 }}
                               >
-                                {rentalsFormik.errors.rentalOwner_zip}
+                                {rentalsFormik.errors.postal_code}
                               </div>
                             ) : null}
                           </FormGroup>

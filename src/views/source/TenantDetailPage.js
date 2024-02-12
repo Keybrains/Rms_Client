@@ -285,17 +285,6 @@ const TenantDetailPage = () => {
   console.log("first", tenantDetails)
 
   const [cardDetalis, setCardDetails] = useState([]);
-  // const getCreditCard = async () => {
-  //   const response = await axios.get(
-  //     `${baseUrl}/creditcard/getCreditCard/${id}`
-  //   );
-  //   setCardDetails(response.data);
-  //   console.log(response, "yashu");
-  // };
-
-  // useEffect(() => {
-  //   getCreditCard();
-  // }, [id]);
 
   return (
     <div>

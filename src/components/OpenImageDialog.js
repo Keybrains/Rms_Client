@@ -6,6 +6,8 @@ const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
+  backgroundColor: "white",
+  padding: "20px",
   transform: "translate(-50%, -50%)",
   width: 600, // Default width for larger screens
   height: 400, // Default height for larger screens
@@ -41,7 +43,7 @@ export const OpenImageDialog = (props) => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          backgroundColor: "white",
+          backgroundColor: "transparent",
           border: "2px solid #000",
           padding: "2rem",
         }}
