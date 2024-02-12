@@ -69,12 +69,12 @@ const TenantDetailPage = () => {
   //   }
   // };
 
-  console.log(id, "MANU")
+  console.log(id, "janak")
   const getTenantData = async () => {
     try {
-      const apiUrl = `http://192.168.1.11:4000/api/tenants/tenant_details/${id}`;
+      const apiUrl = `${baseUrl}/tenants/tenant_details/${id}`;
       const response = await axios.get(apiUrl);
-      console.log(response.data.data[0], "huihyui");
+      console.log(response.data.data[0], "jack");
       setTenantDetails(response.data.data[0]);
       // const rental = response.data.data[0].lease_data[0].rental_adress;
       // const unit = response.data.data[0].lease_data[0].rental_unit;

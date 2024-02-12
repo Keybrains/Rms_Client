@@ -29,6 +29,12 @@ import {
   Form,
 } from "reactstrap";
 import Tab from "@mui/material/Tab";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
+import MailIcon from "@mui/icons-material/Mail";
+import HomeIcon from "@mui/icons-material/Home";
+import LogoutIcon from "@mui/icons-material/Logout";
+import DoneIcon from "@mui/icons-material/Done";
 import fone from "../../assets/img/icons/common/property_bg.png";
 import { RotatingLines } from "react-loader-spinner";
 import moment from "moment";
@@ -40,6 +46,7 @@ import { OpenImageDialog } from "components/OpenImageDialog";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
+
 
 //financial
 import {
@@ -106,6 +113,68 @@ const PropDetails = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [openEdite, setOpenEdite] = useState("");
   const [accessType, setAccessType] = useState(null);
+  
+
+  // =====================================================================
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handleMoveOutClick = () => {
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  // ============================================================================
+
+  const [moveOutDate, setMoveOutDate] = useState("");
+  const [noticeGivenDate, setNoticeGivenDate] = useState("");
+
+  // useEffect(() => {
+  //   // Set noticeGivenDate to the current date when the component mounts
+  //   const currentDate = new Date().toISOString().split("T")[0];
+  //   setNoticeGivenDate(currentDate);
+  // }, []);
+  // const handleMoveout = () => {
+  //   if (moveOutDate && noticeGivenDate) {
+  //     const updatedApplicant = {
+  //       moveout_date: moveOutDate,
+  //       moveout_notice_given_date: noticeGivenDate,
+  //       end_date: moveOutDate,
+  //     };
+
+  //     axios
+  //       .put(
+  //         `${baseUrl}/tenant/moveout/${tenantId}/${entryIndex}`,
+  //         updatedApplicant
+  //       )
+  //       .then((res) => {
+  //         console.log(res, "res");
+  //         if (res.data.statusCode === 200) {
+  //           toast.success('Move-out Successfully', {
+  //             position: 'top-center',
+  //           })
+  //           // Close the modal if the status code is 200
+  //           handleModalClose();
+  //           getTenantData();
+  //           tenantsData();
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         toast.error('An error occurred while Move-out', {
+  //           position: 'top-center',
+  //         })
+  //         console.error(err);
+  //       });
+  //   } else {
+  
+  //     toast.error('NOTICE GIVEN DATE && MOVE-OUT DATE must be required', {
+  //       position: 'top-center',
+  //     })
+  //   }
+  // };
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -376,12 +445,12 @@ const PropDetails = () => {
                       <Tab
                         label="Task"
                         style={{ textTransform: "none" }}
-                        value="task"
+                        value="Task"
                       />
                       <Tab
                         label={`Tenant (0)`}
                         style={{ textTransform: "none" }}
-                        value="tenant"
+                        value="Tenant"
                       />
                     </TabList>
                   </Box>
@@ -585,13 +654,11 @@ const PropDetails = () => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${
-                                                          rentalOwnerData.rentalOwner_firstName ||
+                                                        {`${rentalOwnerData.rentalOwner_firstName ||
                                                           "N/A"
-                                                        } ${
-                                                          rentalOwnerData.rentalOwner_lastName ||
+                                                          } ${rentalOwnerData.rentalOwner_lastName ||
                                                           "N/A"
-                                                        }`}
+                                                          }`}
                                                       </td>
                                                       <td>
                                                         {rentalOwnerData.rentalOwner_companyName ||
@@ -658,10 +725,9 @@ const PropDetails = () => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${
-                                                          staffMemberData?.staffmember_name ||
+                                                        {`${staffMemberData?.staffmember_name ||
                                                           "No staff member assigned"
-                                                        }`}
+                                                          }`}
                                                       </td>
                                                     </tr>
                                                   </>
@@ -706,7 +772,7 @@ const PropDetails = () => {
                             {financialType
                               ? financialType
                               : "Month to date" &&
-                                setFinancialType("Month to date")}
+                              setFinancialType("Month to date")}
                           </DropdownToggle>
                           <DropdownMenu>
                             {financialTypeArray.map((subtype, index) => (
@@ -857,7 +923,7 @@ const PropDetails = () => {
                                           fontWeight: "bold",
                                           backgroundColor: "#f0f0f0",
                                         }}
-                                        //colSpan="2"
+                                      //colSpan="2"
                                       >
                                         Net income
                                       </th>
@@ -972,7 +1038,7 @@ const PropDetails = () => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                    //colSpan="2"
+                                  //colSpan="2"
                                   >
                                     Net income
                                   </th>
@@ -982,13 +1048,13 @@ const PropDetails = () => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                    //colSpan="2"
+                                  //colSpan="2"
                                   >
                                     {netIncome >= 0
                                       ? `$${netIncome.toFixed(2)}`
                                       : `$(${Math.abs(netIncome || 0).toFixed(
-                                          2
-                                        )})`}
+                                        2
+                                      )})`}
                                   </th>
                                 </tr>
                               </React.Fragment>
@@ -1179,9 +1245,8 @@ const PropDetails = () => {
                                   $
                                   {totals[0] - totals2[0] >= 0
                                     ? (totals[0] - totals2[0]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[0] - totals2[0]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[0] - totals2[0]).toFixed(2)
+                                    })`}
                                 </th>
                                 <th
                                   style={{
@@ -1193,9 +1258,8 @@ const PropDetails = () => {
                                   $
                                   {totals[1] - totals2[1] >= 0
                                     ? (totals[1] - totals2[1]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[1] - totals2[1]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[1] - totals2[1]).toFixed(2)
+                                    })`}
                                 </th>
                                 <th
                                   style={{
@@ -1207,9 +1271,8 @@ const PropDetails = () => {
                                   $
                                   {totals[2] - totals2[2] >= 0
                                     ? (totals[2] - totals2[2]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[2] - totals2[2]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[2] - totals2[2]).toFixed(2)
+                                    })`}
                                 </th>
                               </tr>
                             </tbody>
@@ -1281,8 +1344,8 @@ const PropDetails = () => {
                                     {unit.tenant_firstName == null
                                       ? "-"
                                       : unit.tenant_firstName +
-                                        " " +
-                                        unit.tenant_lastName}
+                                      " " +
+                                      unit.tenant_lastName}
                                   </td>
                                   <td onClick={(e) => openEditeTab(e, unit)}>
                                     <EditIcon />
@@ -1649,8 +1712,8 @@ const PropDetails = () => {
                                       <th>Rent</th>
                                     </tr>
                                     {clickedUnitObject &&
-                                    clickedUnitObject?.tenant_firstName &&
-                                    clickedUnitObject?.tenant_lastName ? (
+                                      clickedUnitObject?.tenant_firstName &&
+                                      clickedUnitObject?.tenant_lastName ? (
                                       <>
                                         <tr className="body">
                                           <td>
@@ -1660,11 +1723,11 @@ const PropDetails = () => {
                                           </td>
                                           <td>
                                             {clickedUnitObject?.start_date &&
-                                            clickedUnitObject?.end_date ? (
+                                              clickedUnitObject?.end_date ? (
                                               <>
                                                 <Link
                                                   to={`/admin/tenantdetail/${clickedUnitObject?._id}`}
-                                                  onClick={(e) => {}}
+                                                  onClick={(e) => { }}
                                                 >
                                                   {formatDateWithoutTime(
                                                     clickedUnitObject?.start_date
@@ -1681,10 +1744,10 @@ const PropDetails = () => {
                                           </td>
                                           <td>
                                             {clickedUnitObject?.tenant_firstName &&
-                                            clickedUnitObject?.tenant_lastName
+                                              clickedUnitObject?.tenant_lastName
                                               ? clickedUnitObject?.tenant_firstName +
-                                                " " +
-                                                clickedUnitObject?.tenant_lastName
+                                              " " +
+                                              clickedUnitObject?.tenant_lastName
                                               : "N/A"}
                                           </td>
                                           <td>
@@ -2031,7 +2094,136 @@ const PropDetails = () => {
 
                   <TabPanel value="task"></TabPanel>
 
-                  <TabPanel value="tenant"></TabPanel>
+                  <TabPanel value="Tenant">
+                    <CardHeader className="border-0">
+
+                    </CardHeader>
+                    <Row>
+
+                      <Col>
+
+                        <Grid container spacing={2}>
+
+                          <Grid
+                            item
+                            xs={12}
+                            sm={6}
+                          // key={index}
+                          >
+
+                            <Box
+                              // key={index}
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              padding="16px"
+                              maxWidth="400px"
+                              margin="20px"
+                            >
+                              <Row>
+                                <Col lg="2">
+                                  <Box
+                                    width="40px"
+                                    height="40px"
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    backgroundColor="grey"
+                                    borderRadius="8px"
+                                    color="white"
+                                    fontSize="24px"
+                                  >
+                                    <AssignmentIndIcon />
+                                  </Box>
+                                </Col>
+
+                                <Col lg="5">
+                                  <div
+                                    style={{
+                                      color: "blue",
+                                      height: "40px",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    John Doe
+                                  </div>
+                                  <div
+                                    style={{
+                                      color: "blue",
+                                      height: "40px",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    United State of America President Street 
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      paddingTop: "3px",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "2px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <PhoneAndroidIcon />
+                                    </Typography>
+                                    8527419630
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "7px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <MailIcon />
+
+                                    </Typography>
+                                    test@gmail.com
+                                  </div>
+
+
+                                </Col>
+                                <Col lg="5">
+                                   <div
+                                        className="d-flex justify-content-end h5"
+                                        onClick={handleMoveOutClick}
+                                        style={{ cursor: "pointer" }}
+                                      >
+                                        <LogoutIcon fontSize="small" /> Move out
+                                      </div>
+                                      
+                                </Col>
+                              </Row>
+                            </Box>
+
+                          </Grid>
+
+                        </Grid>
+
+                      </Col>
+
+                    </Row>
+                  </TabPanel>
                 </TabContext>
               </Col>
             </Card>
