@@ -1,7 +1,3 @@
-
-
-
-
 import * as React from "react";
 import Box from "@mui/material/Box";
 import { alpha } from "@mui/material/styles";
@@ -100,7 +96,7 @@ export default function Tenant() {
   //   }
   // }, [cookies]);
 
-  const [tenantData, setTenantData] = useState([])
+  const [tenantData, setTenantData] = useState([]);
   let [loader, setLoader] = React.useState(true);
   let [countData, setCountData] = useState(0);
   const [adminName, setAdminName] = useState();
@@ -110,15 +106,12 @@ export default function Tenant() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
     try {
-      const res = await axios.get(
-        `${baseUrl}/tenants/tenant/get/${admin_id}`,
-        {
-          params: {
-            pageSize: rowsPerPage,
-            pageNumber: page,
-          },
-        }
-      );
+      const res = await axios.get(`${baseUrl}/tenants/tenant/get/${admin_id}`, {
+        params: {
+          pageSize: rowsPerPage,
+          pageNumber: page,
+        },
+      });
       setLoader(false);
       setTenantData(res.data.data);
       setAdminName(res.data.data[0]?.admin_data);
@@ -205,8 +198,9 @@ export default function Tenant() {
   let handleSearchData = async (values) => {
     setSearchLoader(true);
     // const token = cookies.get("token");
-    let res = await axios.post(`${baseUrl}/plans/search`, {
+    let res = await axios.post(`${baseUrl}/tenants/search`, {
       search: values,
+      admin_id: admin_id,
     });
     if (res.data.statusCode === 200) {
       if (values !== "") {
@@ -283,6 +277,22 @@ export default function Tenant() {
     setEditData(datas);
   };
 
+  const [adminDataCount, setAdminDataCount] = useState();
+  console.log(adminDataCount, "adminDataCount");
+  const adminCount = async () => {
+    try {
+      // Make an HTTP request to your API endpoint with the adminId
+      const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+      setAdminDataCount(res.data);
+    } catch (error) {
+      console.error("Error occurred while calling API:", error);
+    }
+  };
+
+  React.useEffect(() => {
+    adminCount();
+  }, [admin_id]);
+
   // Formik
   //   let [ProductDetailsFormik, setProductDetailsFormik] = useState({});
   //   const FormikValues = () => {
@@ -312,17 +322,25 @@ export default function Tenant() {
                       to={`/superadmin/staffmember/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Staff Member
+                      Staff Member({adminDataCount?.staff_member})
                     </NavLink>
                   </li>
                   <li className="nav-item">
                     <NavLink
-                      to={`/superadmin/tenantData/${admin_id}`}
+                      to={`/superadmin/propertytype/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Property Type
+                      Property Type({adminDataCount?.property_type})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -330,8 +348,12 @@ export default function Tenant() {
                       to={`/superadmin/properties/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Properties
+                      Properties({adminDataCount?.rentals_properties})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -339,8 +361,12 @@ export default function Tenant() {
                       to={`/superadmin/rental-owner/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Rental Owner
+                      Rental Owner({adminDataCount?.rental_owner})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -348,8 +374,12 @@ export default function Tenant() {
                       to={`/superadmin/tenant/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Tenant
+                      Tenant({adminDataCount?.tenant})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -358,7 +388,7 @@ export default function Tenant() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                      Unit
+                      Unit({adminDataCount?.unit})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -367,7 +397,7 @@ export default function Tenant() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                      Lease
+                      Lease({adminDataCount?.lease})
                     </NavLink>
                   </li>
                   {/* Add more links as needed */}
@@ -401,7 +431,7 @@ export default function Tenant() {
                     Tenant: {adminName?.first_name} {adminName?.last_name}
                   </Typography>
 
-                  {/* <form className="form-inline">
+                  <form className="form-inline">
                     <input
                       id="serchbar-size"
                       className="form-control mr-sm-2"
@@ -410,7 +440,7 @@ export default function Tenant() {
                       placeholder="Search"
                       aria-label="Search"
                     />
-                  </form> */}
+                  </form>
 
                   <>
                     {selected.length > 0 ? (

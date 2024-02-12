@@ -26,14 +26,15 @@ const UserHeader = () => {
         className="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
         style={{
           minHeight: "600px",
-          backgroundImage:
-            "url(" + require("../../assets/img/theme/profile-cover.jpg") + ")",
-          backgroundSize: "cover",
-          backgroundPosition: "center top",
+          // backgroundImage:
+          //   "url(" + require("../../assets/img/theme/profile-cover.jpg") + ")",
+          // backgroundSize: "cover",
+          // backgroundPosition: "center top",
+          background: "linear-gradient(87deg, #11cdef 0, #1171ef 100%)"
         }}
       >
         {/* Mask */}
-        <span className="mask bg-gradient-default opacity-8" />
+        <span className="mask  opacity-8" />
         {/* Header container */}
         <Container className="d-flex align-items-center" fluid>
           <Row>
@@ -43,13 +44,13 @@ const UserHeader = () => {
                 This is your profile page. You can see the progress you've made
                 here.
               </p>
-              <Button
+              {/* <Button
                 color="info"
                //  href="#rms"
                 onClick={(e) => e.preventDefault()}
               >
                 Edit profile
-              </Button>
+              </Button> */}
             </Col>
           </Row>
         </Container>

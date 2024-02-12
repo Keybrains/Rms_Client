@@ -90,6 +90,7 @@ function Rows(props) {
         console.error('Error occurred while calling API:', error);
       }
     };
+  
 
   return (
     <React.Fragment>
@@ -97,7 +98,7 @@ function Rows(props) {
         hover
         onClick={(event) => {
           handleClick(event, row.admin_id);
-          // navigate(`/superadmin/staffmember/${row?.admin_id}`);
+          navigate(`/superadmin/staffmember/${row?.admin_id}`);
         }}
         role="checkbox"
         aria-checked={isItemSelected}

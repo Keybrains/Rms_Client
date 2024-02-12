@@ -208,8 +208,9 @@ export default function PropertyType() {
   let handleSearchData = async (values) => {
     setSearchLoader(true);
     // const token = cookies.get("token");
-    let res = await axios.post(`${baseUrl}/plans/search`, {
+    let res = await axios.post(`${baseUrl}/propertytype/search`, {
       search: values,
+      admin_id:admin_id
     });
     if (res.data.statusCode === 200) {
       if (values !== "") {
@@ -286,6 +287,22 @@ export default function PropertyType() {
     setEditData(datas);
   };
 
+  const [adminDataCount, setAdminDataCount] = useState()
+  console.log(adminDataCount, "adminDataCount")
+  const adminCount = async () => {
+    try {
+      // Make an HTTP request to your API endpoint with the adminId
+     const res  =  await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+      setAdminDataCount(res.data)
+    } catch (error) {
+      console.error('Error occurred while calling API:', error);
+    }
+  };
+
+  React.useEffect(() =>{
+    adminCount()
+  },[admin_id])
+
   // Formik
   //   let [ProductDetailsFormik, setProductDetailsFormik] = useState({});
   //   const FormikValues = () => {
@@ -305,7 +322,7 @@ export default function PropertyType() {
       <Container className="mt--8 ml--10" fluid>
         <Row>
           <Col>
-            <nav
+          <nav
               className="navbar navbar-expand-lg navbar-light bg-light mb-1"
               style={{ cursor: "pointer", borderRadius: "15px" }}
             >
@@ -316,8 +333,12 @@ export default function PropertyType() {
                       to={`/superadmin/staffmember/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Staff Member
+                      Staff Member({adminDataCount?.staff_member})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -325,8 +346,12 @@ export default function PropertyType() {
                       to={`/superadmin/propertytype/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Property Type
+                      Property Type({adminDataCount?.property_type})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -334,8 +359,12 @@ export default function PropertyType() {
                       to={`/superadmin/properties/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Properties
+                      Properties({adminDataCount?.rentals_properties})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -343,8 +372,12 @@ export default function PropertyType() {
                       to={`/superadmin/rental-owner/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Rental Owner
+                      Rental Owner({adminDataCount?.rental_owner})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -352,8 +385,12 @@ export default function PropertyType() {
                       to={`/superadmin/tenant/${admin_id}`}
                       className="nav-link"
                       activeClassName="active"
+                      style={{
+                        borderBottom: "2px solid transparent",
+                        borderRadius: "0 0 10px 10px",
+                      }}
                     >
-                      Tenant
+                      Tenant({adminDataCount?.tenant})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -362,7 +399,7 @@ export default function PropertyType() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                      Unit
+                      Unit({adminDataCount?.unit})
                     </NavLink>
                   </li>
                   <li className="nav-item">
@@ -371,7 +408,7 @@ export default function PropertyType() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                      Lease
+                      Lease({adminDataCount?.lease})
                     </NavLink>
                   </li>
                   {/* Add more links as needed */}
@@ -406,7 +443,7 @@ export default function PropertyType() {
                     {adminName?.last_name}
                   </Typography>
 
-                  {/* <form className="form-inline">
+                  <form className="form-inline">
                     <input
                       id="serchbar-size"
                       className="form-control mr-sm-2"
@@ -415,7 +452,7 @@ export default function PropertyType() {
                       placeholder="Search"
                       aria-label="Search"
                     />
-                  </form> */}
+                  </form>
 
                   <>
                     {selected.length > 0 ? (
