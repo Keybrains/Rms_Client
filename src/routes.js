@@ -571,7 +571,7 @@ var routes = [
     layout: "/tenant",
   },
   {
-    path: "/vendorworkdetail/:id",
+    path: "/vendorworkdetail/:workorder_id",
     name: "Work Order",
     icon: "ni ni-badge text-green",
     component: <VendorWorkDetail />,
