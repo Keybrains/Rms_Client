@@ -17,7 +17,12 @@ import {
   InputGroup,
   InputGroupAddon,
   Row,
+  ModalHeader,
+  ModalBody,
+  Modal,
 } from "reactstrap";
+import AddpropertyModal from "./AddpropertyModal"
+import StaffMemberModal from "./StaffMemberModal"
 import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -482,6 +487,23 @@ const Rentals = () => {
     setSelectedPropType(propertyType);
     setPropType(propertyType.property_type);
   };
+  const openCardForm = () => {
+    console.log("Opening card form"); 
+    setIsModalOpen(true);
+  };
+  const openCardForm1= () => {
+    console.log("Opening card form"); 
+    setisMOdalopen1(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setisMOdalopen1(false)
+  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMOdalopen1,setisMOdalopen1] = useState(false)
+  console.log(isModalOpen, "isModalOpen");
+  const { tenantId, entryIndex } = useParams();
 
   return (
     <>
@@ -563,9 +585,15 @@ const Rentals = () => {
                                     >
                                       {subtype.propertysub_type}
                                     </DropdownItem>
+                                    
                                   ))}
+                                
                                 </React.Fragment>
                               ))}
+                                  <DropdownItem style={{borderTop:"1px solid grey"}}   onClick={() => openCardForm()}>
+                                      {/* {subtype.propertysub_type} */}
+                                      Add new Properties
+                                    </DropdownItem>
                             </DropdownMenu>
                           </Dropdown>
                           {
@@ -1719,6 +1747,10 @@ const Rentals = () => {
                                     {user.staffmember_name}
                                   </DropdownItem>
                                 ))}
+                                        <DropdownItem onClick={() => openCardForm1()}>
+                                    {/* {user.staffmember_name} */}
+                                    hello ji
+                                  </DropdownItem>
                               </DropdownMenu>
                             </Dropdown>
                           </FormGroup>
@@ -2566,6 +2598,33 @@ const Rentals = () => {
             </Card>
           </Col>
         </Row>
+
+        <Modal isOpen={isModalOpen} toggle={closeModal}>
+        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Add new Properties</strong>
+        </ModalHeader>
+        <ModalBody>
+          <AddpropertyModal
+            tenantId={tenantId}
+            closeModal={closeModal}
+            // getCreditCard={getCreditCard}
+          />
+        </ModalBody>
+      </Modal>
+
+
+      <Modal isOpen={isMOdalopen1} toggle={closeModal}>
+        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Add new Staff Member</strong>
+        </ModalHeader>
+        <ModalBody>
+          <StaffMemberModal
+            tenantId={tenantId}
+            closeModal={closeModal}
+            // getCreditCard={getCreditCard}
+          />
+        </ModalBody>
+      </Modal>
         <ToastContainer />
 
       </Container>

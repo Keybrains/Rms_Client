@@ -20,7 +20,11 @@ import {
   DropdownMenu,
   DropdownItem,
   Collapse,
+  ModalHeader,
+  ModalBody,
+  Modal,
 } from "reactstrap";
+import RentRollModal from "./StaffMemberModal"
 import * as yup from "yup";
 import LeaseHeader from "components/Headers/LeaseHeader.js";
 import { jwtDecode } from "jwt-decode";
@@ -383,6 +387,25 @@ const RentRollLeaseing = () => {
       setCosignerData(values);
     },
   });
+
+
+
+  // kp-----------------------
+
+  const openCardForm = () => {
+    console.log("Opening card form"); // Add this line
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  
+  const { tenantId, entryIndex } = useParams();
+
+  // kp-----------------------
 
   //update lease
   const updateLease = async () => {
@@ -983,6 +1006,9 @@ const RentRollLeaseing = () => {
                                   {property.rental_adress}
                                 </DropdownItem>
                               ))}
+                              <DropdownItem onClick={() => openCardForm()}>
+                                  hie
+                                </DropdownItem>
                             </DropdownMenu>
                             {leaseFormik.errors &&
                             leaseFormik.errors?.rental_id &&
@@ -3852,6 +3878,19 @@ const RentRollLeaseing = () => {
             </Card>
           </Col>
         </Row>
+
+        <Modal isOpen={isModalOpen} toggle={closeModal}>
+        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Add new Properties</strong>
+        </ModalHeader>
+        <ModalBody>
+          <RentRollModal
+            tenantId={tenantId}
+            closeModal={closeModal}
+            // getCreditCard={getCreditCard}
+          />
+        </ModalBody>
+      </Modal>
         <ToastContainer />
       </Container>
     </>
