@@ -11,6 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+import "./nav.css";
 import Toolbar from "@mui/material/Toolbar";
 import axios from "axios";
 import Checkbox from "@mui/material/Checkbox";
@@ -218,7 +219,7 @@ export default function StaffMember() {
     // const token = cookies.get("token");
     let res = await axios.post(`${baseUrl}/staffmember/search`, {
       search: values,
-      admin_id: admin_id
+      admin_id: admin_id,
     });
     if (res.data.statusCode === 200) {
       if (values !== "") {
@@ -305,22 +306,20 @@ export default function StaffMember() {
   //     return null;
   //   };
 
-
-  const [adminDataCount, setAdminDataCount] = useState()
+  const [adminDataCount, setAdminDataCount] = useState();
   const adminCount = async () => {
     try {
       // Make an HTTP request to your API endpoint with the adminId
-     const res  =  await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
-      setAdminDataCount(res.data)
+      const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+      setAdminDataCount(res.data);
     } catch (error) {
-      console.error('Error occurred while calling API:', error);
+      console.error("Error occurred while calling API:", error);
     }
   };
 
-  React.useEffect(() =>{
-    adminCount()
-  },[admin_id])
-
+  React.useEffect(() => {
+    adminCount();
+  }, [admin_id]);
 
   const navigate = useNavigate();
 
@@ -331,7 +330,7 @@ export default function StaffMember() {
         <Row>
           <Col>
             <nav
-              className="navbar navbar-expand-lg navbar-light bg-light mb-1"
+              className="navbar navbar-expand-lg navbar-light bg-light mb-1 main-nav"
               style={{ cursor: "pointer", borderRadius: "15px" }}
             >
               <div className="collapse navbar-collapse" id="navbarNav">
@@ -423,6 +422,46 @@ export default function StaffMember() {
                 </ul>
               </div>
             </nav>
+            <div class="input-group mb-3 nav-drop">
+              <select
+                class="form-select p-2"
+                aria-label="Disabled select example"
+                onChange={(e) => {
+                  const selectedValue = e.target.value;
+                  if (selectedValue === "1") {
+                    window.location.href = `/superadmin/staffmember/${admin_id}`;
+                  } else if (selectedValue === "2") {
+                    window.location.href = `/superadmin/propertytype/${admin_id}`;
+                  } else if (selectedValue === "3") {
+                    window.location.href = `/superadmin/properties/${admin_id}`;
+                  } else if (selectedValue === "4") {
+                    window.location.href = `/superadmin/rental-owner/${admin_id}`;
+                  } else if (selectedValue === "5") {
+                    window.location.href = `/superadmin/tenant/${admin_id}`;
+                  } else if (selectedValue === "6") {
+                    window.location.href = `/superadmin/unit/${admin_id}`;
+                  } else if (selectedValue === "7") {
+                    window.location.href = `/superadmin/lease/${admin_id}`;
+                  }
+                }}
+                style={{
+                  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                  background:
+                    " linear-gradient(87deg, #11cdef 0, #1171ef 100%)",
+                  border: "none",
+                  borderRadius: "20px",
+                }}
+              >
+                <option selected>Open this select menu</option>
+                <option value="1">Staff Member</option>
+                <option value="2">Property Type</option>
+                <option value="3">Properties</option>
+                <option value="4">Rental Owner</option>
+                <option value="5">Tenant</option>
+                <option value="6">Unit</option>
+                <option value="7">Lease</option>
+              </select>
+            </div>
 
             <div>
               <Paper
@@ -438,8 +477,8 @@ export default function StaffMember() {
                   sx={{
                     pl: { sm: 2 },
                     pr: { xs: 1, sm: 1 },
-                    bgcolor: "#fff", // Set the background color here
-                    color: "white", // Set the font color to white
+                    bgcolor: "#fff", 
+                    color: "white",
                   }}
                 >
                   <Typography

@@ -311,8 +311,8 @@ export default function Tenant() {
       <Container className="mt--8 ml--10" fluid>
         <Row>
           <Col>
-            <nav
-              className="navbar navbar-expand-lg navbar-light bg-light mb-1"
+          <nav
+              className="navbar navbar-expand-lg navbar-light bg-light mb-1 main-nav"
               style={{ cursor: "pointer", borderRadius: "15px" }}
             >
               <div className="collapse navbar-collapse" id="navbarNav">
@@ -404,6 +404,46 @@ export default function Tenant() {
                 </ul>
               </div>
             </nav>
+            <div class="input-group mb-3 nav-drop">
+              <select
+                class="form-select p-2"
+                aria-label="Disabled select example"
+                onChange={(e) => {
+                  const selectedValue = e.target.value;
+                  if (selectedValue === "1") {
+                    window.location.href = `/superadmin/staffmember/${admin_id}`;
+                  } else if (selectedValue === "2") {
+                    window.location.href = `/superadmin/propertytype/${admin_id}`;
+                  } else if (selectedValue === "3") {
+                    window.location.href = `/superadmin/properties/${admin_id}`;
+                  } else if (selectedValue === "4") {
+                    window.location.href = `/superadmin/rental-owner/${admin_id}`;
+                  } else if (selectedValue === "5") {
+                    window.location.href = `/superadmin/tenant/${admin_id}`;
+                  } else if (selectedValue === "6") {
+                    window.location.href = `/superadmin/unit/${admin_id}`;
+                  } else if (selectedValue === "7") {
+                    window.location.href = `/superadmin/lease/${admin_id}`;
+                  }
+                }}
+                style={{
+                  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                  background:
+                    " linear-gradient(87deg, #11cdef 0, #1171ef 100%)",
+                  border: "none",
+                  borderRadius: "20px",
+                }}
+              >
+                <option selected>Open this select menu</option>
+                <option value="1">Staff Member</option>
+                <option value="2">Property Type</option>
+                <option value="3">Properties</option>
+                <option value="4">Rental Owner</option>
+                <option value="5">Tenant</option>
+                <option value="6">Unit</option>
+                <option value="7">Lease</option>
+              </select>
+            </div>
             <div>
               <Paper
                 sx={{
