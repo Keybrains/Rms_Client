@@ -71,7 +71,6 @@ import CreditCardForm from "./CreditCardForm";
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, entryIndex } = useParams();
-  console.log(tenantId, entryIndex, "tenantId, entryIndex");
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const source = queryParams.get("source");

@@ -370,7 +370,7 @@ const getStatus =  (startDate, endDate) => {
     }
   };
 
-  const fileData = (e, type) => {
+  const fileData = (e) => {
     setSelectedFiles((prevSelectedFiles) => [
       ...prevSelectedFiles,
       ...e.target.files,
@@ -402,8 +402,6 @@ const getStatus =  (startDate, endDate) => {
   useEffect(() => {
     countTenantsByUnit();
   }, [tenantsData, propertyUnitData]);
-
-  console.log(tenantsData, propertyUnitData, "yashh");
 
   return (
     <>
@@ -1368,13 +1366,7 @@ const getStatus =  (startDate, endDate) => {
                                 >
                                   <td>{unit.rental_unit || "N/A"}</td>
                                   <td>{unit.rental_unit_adress || "N/A"}</td>
-                                  <td>
-                                    {unit.tenant_firstName == null
-                                      ? "-"
-                                      : unit.tenant_firstName +
-                                        " " +
-                                        unit.tenant_lastName}
-                                  </td>
+                                  <td>{unit?.counts ? unit?.counts : 0}</td>
                                   <td onClick={(e) => openEditeTab(e, unit)}>
                                     <EditIcon />
                                   </td>

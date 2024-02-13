@@ -47,7 +47,7 @@ const RentRoll = () => {
   const navigateToRentRollDetails = (tenantId) => {
     navigate(`/${admin}/rentrolldetail/${tenantId}`);
   };
-  let cookies = new Cookies();
+  
   const [accessType, setAccessType] = useState(null);
 
   useEffect(() => {
