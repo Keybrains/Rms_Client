@@ -43,8 +43,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { set } from "date-fns";
 import swal from "sweetalert";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   CardActions,
   CardContent,
@@ -561,26 +561,26 @@ const RentRollDetail = () => {
             `${baseUrl}/payment_charge/delete_entry/${Id}`
           );
           if (response.data.statusCode === 200) {
-            toast.success('Entry deleted successfully!', {
-              position: 'top-center',
-            })
+            toast.success("Entry deleted successfully!", {
+              position: "top-center",
+            });
             getGeneralLedgerData();
             getTenantData();
           } else {
             toast.error(response.data.message, {
-              position: 'top-center',
-            })
+              position: "top-center",
+            });
           }
         } catch (error) {
           console.error("Error deleting entry:", error);
-          toast.error('Failed to delete entry', {
-            position: 'top-center',
-          })
+          toast.error("Failed to delete entry", {
+            position: "top-center",
+          });
         }
       } else {
-        toast.success('Entry is safe', {
-          position: 'top-center',
-        })
+        toast.success("Entry is safe", {
+          position: "top-center",
+        });
       }
     });
   };
@@ -638,9 +638,9 @@ const RentRollDetail = () => {
         .then((res) => {
           console.log(res, "res");
           if (res.data.statusCode === 200) {
-            toast.success('Move-out Successfully', {
-              position: 'top-center',
-            })
+            toast.success("Move-out Successfully", {
+              position: "top-center",
+            });
             // Close the modal if the status code is 200
             handleModalClose();
             getTenantData();
@@ -648,16 +648,15 @@ const RentRollDetail = () => {
           }
         })
         .catch((err) => {
-          toast.error('An error occurred while Move-out', {
-            position: 'top-center',
-          })
+          toast.error("An error occurred while Move-out", {
+            position: "top-center",
+          });
           console.error(err);
         });
     } else {
-  
-      toast.error('NOTICE GIVEN DATE && MOVE-OUT DATE must be required', {
-        position: 'top-center',
-      })
+      toast.error("NOTICE GIVEN DATE && MOVE-OUT DATE must be required", {
+        position: "top-center",
+      });
     }
   };
 
@@ -878,7 +877,7 @@ const RentRollDetail = () => {
           <Col xs="12" sm="6">
             <FormGroup className="">
               {loading ? (
-                <tbody> 
+                <tbody>
                   <tr>
                     <td></td>
                   </tr>
@@ -908,7 +907,6 @@ const RentRollDetail = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              //  href="#rms"
               onClick={() => navigate("/admin/RentRoll")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -917,17 +915,19 @@ const RentRollDetail = () => {
             </Button>
           </Col>
         </Row>
+
         <Row>
-          <div className="col">
-            <Card className="shadow">
+          <div className="col table-responsive" style={{overflow:"auto"}}>
+            <Card className="shadow" style={{overflow:"auto"}}>
               <CardHeader className="border-0"></CardHeader>
               <Col>
-                <TabContext value={value}>
-                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <TabContext value={value} style={{overflow:"auto"}}>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider" }} >
                     <TabList
                       onChange={(e, newValue) => handleChange(newValue)}
                       aria-label="lab API tabs example"
                       value={value}
+                      
                     >
                       <Tab
                         label="Summary"
