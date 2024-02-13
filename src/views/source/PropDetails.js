@@ -102,6 +102,7 @@ const PropDetails = () => {
   const [month, setMonth] = useState([]);
   const [addAppliances, setAddAppliances] = useState(false);
   const [unitImage, setUnitImage] = useState([]);
+  const [unitLeases, setunitLeases] = useState([]);
   const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [openEdite, setOpenEdite] = useState("");
@@ -170,6 +171,44 @@ const PropDetails = () => {
     }
     setLoading(false);
   };
+  console.log(workOrderData, "kk");
+
+  const fatchunit = async () => {
+    setLoader(true);
+    try {
+      const response = await axios.get(
+        `${baseUrl}/leases/unit_leases/${clickedUnitObject?.unit_id}`
+      );
+      setunitLeases(response.data.data);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+    }
+    setLoading(false);
+  };
+  console.log(unitLeases, "dd");
+  useEffect(() => {
+    fatchunit();
+  }, [clickedUnitObject]);
+
+  console.log("clickedUnitObject?.unit_id", clickedUnitObject?.unit_id);
+
+const getStatus =  (startDate, endDate) => {
+  const today = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (today >= start && today <= end) {
+
+    return "Active";
+  } else if (today < start) {
+    return "Future";
+  } else if (today > end) {
+    return "Expired";
+  } else {
+    return "-";
+  }
+};
+
 
   useEffect(() => {
     fetchRentalData();
@@ -181,7 +220,7 @@ const PropDetails = () => {
   const fetchApplianceData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/appliance/appliance/${clickedUnitObject.unit_id}`
+        `${baseUrl}/appliance/appliance/${clickedUnitObject.id}`
       );
       setApplianceData(response.data.data);
     } catch (error) {
@@ -331,7 +370,7 @@ const PropDetails = () => {
     }
   };
 
-  const fileData = (e, type) => {
+  const fileData = (e) => {
     setSelectedFiles((prevSelectedFiles) => [
       ...prevSelectedFiles,
       ...e.target.files,
@@ -363,8 +402,6 @@ const PropDetails = () => {
   useEffect(() => {
     countTenantsByUnit();
   }, [tenantsData, propertyUnitData]);
-
-  console.log(tenantsData, propertyUnitData, "yashh");
 
   return (
     <>
@@ -417,6 +454,7 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="units"
                       />
+
                       <Tab
                         label="Task"
                         style={{ textTransform: "none" }}
@@ -1328,13 +1366,7 @@ const PropDetails = () => {
                                 >
                                   <td>{unit.rental_unit || "N/A"}</td>
                                   <td>{unit.rental_unit_adress || "N/A"}</td>
-                                  <td>
-                                    {unit.tenant_firstName == null
-                                      ? "-"
-                                      : unit.tenant_firstName +
-                                        " " +
-                                        unit.tenant_lastName}
-                                  </td>
+                                  <td>{unit?.counts ? unit?.counts : 0}</td>
                                   <td onClick={(e) => openEditeTab(e, unit)}>
                                     <EditIcon />
                                   </td>
@@ -1699,68 +1731,36 @@ const PropDetails = () => {
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
-                                    {clickedUnitObject &&
-                                    clickedUnitObject?.tenant_firstName &&
-                                    clickedUnitObject?.tenant_lastName ? (
-                                      <>
-                                        <tr className="body">
+                                    {unitLeases &&
+                                      unitLeases.length > 0 &&
+                                      unitLeases.map((unit, index) => (
+                                        <tr
+                                          key={index}
+                                          onClick={() => {
+                                            setPropSummary(true);
+                                            setClickedUnitObject(unit);
+                                          }}
+                                          style={{ cursor: "pointer" }}
+                                          className="w-100"
+                                        >
                                           <td>
-                                            {clickedUnitObject?.start_date
-                                              ? "Active"
-                                              : "Inactive"}
-                                          </td>
-                                          <td>
-                                            {clickedUnitObject?.start_date &&
-                                            clickedUnitObject?.end_date ? (
-                                              <>
-                                                <Link
-                                                  to={`/admin/tenantdetail/${clickedUnitObject?._id}`}
-                                                  onClick={(e) => {}}
-                                                >
-                                                  {formatDateWithoutTime(
-                                                    clickedUnitObject?.start_date
-                                                  ) +
-                                                    "-" +
-                                                    formatDateWithoutTime(
-                                                      clickedUnitObject?.end_date
-                                                    )}
-                                                </Link>
-                                              </>
-                                            ) : (
-                                              "N/A"
+                                            {getStatus(
+                                              unit.lease.start_date,
+                                              unit.lease.end_date
                                             )}
                                           </td>
                                           <td>
-                                            {clickedUnitObject?.tenant_firstName &&
-                                            clickedUnitObject?.tenant_lastName
-                                              ? clickedUnitObject?.tenant_firstName +
-                                                " " +
-                                                clickedUnitObject?.tenant_lastName
-                                              : "N/A"}
+                                            {unit.lease.start_date},
+                                            {unit.lease.end_date}
                                           </td>
                                           <td>
-                                            {clickedUnitObject?.lease_type ||
-                                              "N/A"}
+                                            {unit.tenant.tenant_firstName}{" "}
+                                            {unit.tenant.tenant_lastName}
                                           </td>
-                                          <td>
-                                            {clickedUnitObject?.amount || "N/A"}
-                                          </td>
+                                          <td>{unit.lease.lease_type}</td>
+                                          <td>{unit.charge.amount}</td>
                                         </tr>
-                                      </>
-                                    ) : (
-                                      <tr>
-                                        <td>
-                                          <Typography
-                                            variant="body2"
-                                            color="textSecondary"
-                                            component="p"
-                                          >
-                                            You don't have any leases for this
-                                            unit right now.
-                                          </Typography>
-                                        </td>
-                                      </tr>
-                                    )}
+                                      ))}
                                   </tbody>
                                 </Table>
                               </Row>
@@ -2080,7 +2080,68 @@ const PropDetails = () => {
                     )}
                   </TabPanel>
 
-                  <TabPanel value="task"></TabPanel>
+                  <TabPanel value="task">
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      <Button
+                        className="btn-icon btn-2"
+                        color="primary"
+                        style={{
+                          background: "white",
+                          color: "blue",
+                          display: propertyTypeData.is_multiunit
+                            ? "block"
+                            : "none",
+                        }}
+                        size="l"
+                        onClick={() => {
+                          setOpenEdite(true);
+                        }}
+                      >
+                        <span className="btn-inner--text">Add Task</span>
+                      </Button>
+                    </div>
+                    <Table
+                      className="align-items-center table-flush"
+                      responsive
+                    >
+                      <thead className="thead-light">
+                        <tr>
+                          <th scope="col">TASK</th>
+                          <th scope="col">CATEGORY</th>
+                          <th scope="col">ASSIGNED TO </th>
+                          <th scope="col">STATUS</th>
+                          <th scope="col">DUE DATE</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {workOrderData &&
+                          workOrderData.length > 0 &&
+                          workOrderData.map((unit, index) => (
+                            <tr
+                              key={index}
+                              onClick={() => {
+                                setPropSummary(true);
+                                setClickedUnitObject(unit);
+                              }}
+                              style={{ cursor: "pointer" }}
+                              className="w-100"
+                            >
+                              <td>{unit.work_subject}</td>
+                              <td>{unit.work_category}</td>
+                              <td>{unit.staffmember_name}</td>
+                              <td>{unit.status}</td>
+                              <td>{unit.date}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </Table>
+                  </TabPanel>
 
                   <TabPanel value="tenant"></TabPanel>
                 </TabContext>

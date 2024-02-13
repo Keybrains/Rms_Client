@@ -3,8 +3,8 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ClearIcon from "@mui/icons-material/Clear";
 import {
   Button,
@@ -40,6 +40,7 @@ const AddCharge = () => {
   const { tenantId, entryIndex } = useParams();
   const [file, setFile] = useState([]);
   const [accountData, setAccountData] = useState([]);
+  const [AccountsData, setAccountsData] = useState([]);
   const [propertyData, setPropertyData] = useState([]);
   const [recdropdownOpen, setrecDropdownOpen] = useState(false);
   const [rentAddress, setRentAddress] = useState([]);
@@ -114,7 +115,7 @@ const AddCharge = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -262,7 +263,6 @@ const AddCharge = () => {
         files,
       ] of generalledgerFormik.values.charges_attachment.entries()) {
         if (files?.upload_file instanceof File) {
-
           const imageData = new FormData();
           imageData.append(`files`, files.upload_file);
 
@@ -274,7 +274,6 @@ const AddCharge = () => {
                 "Content-Type": "multipart/form-data",
               },
             });
-
 
             // Update the original array with the uploaded file URL
             generalledgerFormik.values.charges_attachment[index].upload_file =
@@ -311,9 +310,9 @@ const AddCharge = () => {
       );
 
       if (response.data.statusCode === 200) {
-        toast.success('Charges Added Successfully', {
-          position: 'top-center',
-        })
+        toast.success("Charges Added Successfully", {
+          position: "top-center",
+        });
         console.log(response, "response of object");
         navigate(
           `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
@@ -321,8 +320,8 @@ const AddCharge = () => {
       } else {
         console.error("Server Error:", response.data.message);
         toast.error(response.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
       }
       console.log(state, "state");
 
@@ -448,9 +447,9 @@ const AddCharge = () => {
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
-        toast.success('Charges Update Successfully', {
-          position: 'top-center',
-        })
+        toast.success("Charges Update Successfully", {
+          position: "top-center",
+        });
         navigate(
           `/admin/rentrolldetail/${tenantDetails._id}/${tenantDetails.entries.entryIndex}`
         );
@@ -464,8 +463,8 @@ const AddCharge = () => {
         // //console.log(`/admin/rentrolldetail/${tenantId}/${entryIndex}`,"fdsfsdfsf")
       } else {
         toast.error(response.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
         console.error("Server Error:", response.data.message);
       }
     } catch (error) {
@@ -660,37 +659,42 @@ const AddCharge = () => {
   const [oneTimeCharges, setOneTimeCharges] = useState([]);
   const [RecAccountNames, setRecAccountNames] = useState([]);
 
-  const fetchingRecAccountNames = async () => {
-    fetch(`${baseUrl}/recurringAcc/find_accountname`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setRecAccountNames(data.data);
-        } else {
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Network error:", error);
-      });
+  const fetchAccounts = async () => {
+    try {
+      const res = await axios.get(
+        `${baseUrl}/accounts/accounts/${accessType.admin_id}`
+      );
+      console.log("accessType.admin_id", accessType.admin_id);
+      if (res.data.statusCode === 200) {
+        setAccountsData(res.data.data);
+        console.log("123", res.data.data);
+      } else if (res.data.statusCode === 201) {
+        setAccountsData([]);
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+    }
   };
 
-  const fetchingOneTimeCharges = async () => {
-    fetch(`${baseUrl}/onetimecharge/find_accountname`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setOneTimeCharges(data.data);
-        } else {
-          console.error("Error:", data.message);
-        }
-      });
+  const distributeAccounts = (accounts) => {
+    const accounts1 = accounts.filter(
+      (item) => item.charge_type === "Recurring Charge"
+    );
+    setRecAccountNames(accounts1);
+    const accounts2 = accounts.filter(
+      (item) => item.charge_type === "One Time Charge"
+    );
+    setOneTimeCharges(accounts2);
   };
 
   useEffect(() => {
-    fetchingRecAccountNames();
-    fetchingOneTimeCharges();
-  }, []);
+    distributeAccounts(AccountsData);
+  }, [AccountsData]);
+
+  console.log(AccountsData, "AccountsData");
+  useEffect(() => {
+    fetchAccounts();
+  }, [accessType]);
 
   const popoverContent = (
     <Popover id="popover-content">
@@ -974,12 +978,12 @@ const AddCharge = () => {
                                                       key={item._id}
                                                       onClick={() =>
                                                         handleAccountSelection(
-                                                          item.account_name,
+                                                          item.account,
                                                           index
                                                         )
                                                       }
                                                     >
-                                                      {item.account_name}
+                                                      {item.account}
                                                     </DropdownItem>
                                                   )
                                                 )}
@@ -1000,12 +1004,12 @@ const AddCharge = () => {
                                                     key={item._id}
                                                     onClick={() =>
                                                       handleAccountSelection(
-                                                        item.account_name,
+                                                        item.account,
                                                         index
                                                       )
                                                     }
                                                   >
-                                                    {item.account_name}
+                                                    {item.account}
                                                   </DropdownItem>
                                                 ))}
                                               </>

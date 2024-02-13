@@ -71,11 +71,11 @@ import CreditCardForm from "./CreditCardForm";
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { tenantId, entryIndex } = useParams();
-  console.log(tenantId, entryIndex, "tenantId, entryIndex");
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const source = queryParams.get("source");
   const [tenantDetails, setTenantDetails] = useState([]);
+  const[Lease ,setLease ] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -444,6 +444,21 @@ const RentRollDetail = () => {
   useEffect(() => {
     doSomething();
   }, []);
+
+
+  const Leasedetail = async () => {
+    setLoader(true);
+    try {
+      const response = await axios.get(
+        `${baseUrl}/leases/unit_leases/${tenantId}`
+      );
+      setLease(response.data.data);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+    }
+    setLoading(false);
+  };
+  console.log(Lease,"abc")
 
   const [myData1, setMyData1] = useState([]);
   console.log("myData1:", myData1);
@@ -1205,7 +1220,7 @@ const RentRollDetail = () => {
                                           >
                                             Due date :
                                           </Typography>
-                                          {myData1.map((item, index) => (
+                                          {myData1?.map((item, index) => (
                                             <Typography
                                               key={index}
                                               sx={{

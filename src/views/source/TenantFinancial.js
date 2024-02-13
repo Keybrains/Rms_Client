@@ -32,8 +32,8 @@ import { RotatingLines } from "react-loader-spinner";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import * as yup from "yup";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Header from "components/Headers/Header";
 import { useFormik } from "formik";
 import Edit from "@mui/icons-material/Edit";
@@ -42,6 +42,7 @@ import moment from "moment";
 const TenantFinancial = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [rental_adress, setRentalAddress] = useState([]);
+  const [Ledger, setLedger] = useState([]);
   const [propertyDetails, setPropertyDetails] = useState([]);
   const [propertyLoading, setPropertyLoading] = useState(true);
   const [propertyError, setPropertyError] = useState(null);
@@ -78,6 +79,22 @@ const TenantFinancial = () => {
   const toggle10 = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
+
+  const fetchLedger = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/payment/tenant_financial/${"1706075745904"}`
+      );
+      console.log(response, "yash");
+      setLedger(response.data.data);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+    }
+  };
+  console.log("dhruvi", Ledger);
+  useEffect(() => {
+    fetchLedger();
+  }, [accessType]);
 
   const fetchUnitsByProperty = async (propertyType) => {
     try {
@@ -135,6 +152,7 @@ const TenantFinancial = () => {
     //console.log("data",data)
     return data;
   };
+
   const financialFormik = useFormik({
     initialValues: {
       first_name: "",
@@ -225,11 +243,12 @@ const TenantFinancial = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
+  console.log(accessType, "123");
 
   const getTenantData = async () => {
     try {
@@ -274,7 +293,7 @@ const TenantFinancial = () => {
           const unit = data?.rental_units;
           if (rental && property_id && unit) {
             const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${property_id}&unit=${unit}&tenant_id=${cookie_id}`;
-           
+
             try {
               const response = await axios.get(url);
               if (response.data && response.data.data) {
@@ -390,7 +409,7 @@ const TenantFinancial = () => {
     values.expiration_date = `${month}${year}`;
 
     try {
-      setPaymentLoader(true);
+      // setPaymentLoader(true);
       const response = await axios.post(url, {
         paymentDetails: values,
       });
@@ -398,9 +417,9 @@ const TenantFinancial = () => {
       console.log(response.data, "response.data");
 
       if (response.data && response.data.statusCode === 100) {
-        toast.success('Payment Added Successfull!', {
-          position: 'top-center',
-        })
+        toast.success("Payment Added Successfull!", {
+          position: "top-center",
+        });
         // window.location.reload()
         await getGeneralLedgerData();
         console.log("Payment successful");
@@ -414,20 +433,20 @@ const TenantFinancial = () => {
       } else {
         console.error("Unexpected response format:", response.data);
         toast.error(response.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
 
         // Handle other status codes or show an error message
       }
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error(error.message, {
-        position: 'top-center',
-      })
-     
+        position: "top-center",
+      });
+
       // Handle the error (e.g., show an error message)
     } finally {
-      setPaymentLoader(false); // Reset loader when the request completes (whether success or failure)
+      // setPaymentLoader(false); // Reset loader when the request completes (whether success or failure)
     }
   };
 
@@ -688,14 +707,14 @@ const TenantFinancial = () => {
       if (response.data.statusCode === 200) {
         closeModal();
         console.log("Response Data:", response.data);
-        toast.success('Payments Update Successfully', {
-          position: 'top-center',
-        })
+        toast.success("Payments Update Successfully", {
+          position: "top-center",
+        });
         navigate(`/tenant/tenantFinancial`);
       } else {
         toast.error(response.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
         console.error("Server Error:", response.data.message);
       }
     } catch (error) {
@@ -743,7 +762,7 @@ const TenantFinancial = () => {
         <br />
         <Row>
           <div className="col">
-            {loader ? (
+            {!loader ? (
               <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                 <RotatingLines
                   strokeColor="grey"
@@ -758,7 +777,7 @@ const TenantFinancial = () => {
                 <Container className="mt--10" fluid>
                   <Row>
                     <div className="col">
-                      {loader ? (
+                      {!loader ? (
                         <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                           <RotatingLines
                             strokeColor="grey"
@@ -810,84 +829,32 @@ const TenantFinancial = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              {filterTenantsBySearchAndPage().map(
-                                (data, dataIndex) => (
-                                  <React.Fragment key={dataIndex}>
-                                    <tr
-                                      key={`${data?.paymentAndCharges._id}_${dataIndex}`}
-                                    >
-                                      <td>
-                                        {formatDateWithoutTime(
-                                          data?.paymentAndCharges.type ===
-                                            "Charge"
-                                            ? data?.paymentAndCharges.date
-                                            : data?.paymentAndCharges.date
-                                        ) || "N/A"}
-                                      </td>
-                                      <td>{data?.paymentAndCharges.type}</td>
-                                      <td>
-                                        {data?.paymentAndCharges.type ===
-                                        "Charge"
-                                          ? data?.paymentAndCharges.account
-                                          : data?.paymentAndCharges.account}
-                                      </td>
-                                      <td>
-                                        {data?.paymentAndCharges.type ===
-                                        "Charge"
-                                          ? data?.paymentAndCharges.charges_memo
-                                          : data?.paymentAndCharges.memo}
-                                      </td>
-                                      <td>
-                                        {data?.paymentAndCharges.type ===
-                                        "Charge"
-                                          ? `$${data?.paymentAndCharges.amount}`
-                                          : "-"}
-                                      </td>
-                                      <td>
-                                        {data?.paymentAndCharges.type ===
-                                        "Payment"
-                                          ? `$${data?.paymentAndCharges.amount}`
-                                          : "-"}
-                                      </td>
-                                      <td>
-                                        {data?.paymentAndCharges.Total !==
-                                        undefined ? (
-                                          data?.paymentAndCharges.Total ===
-                                          null ? (
-                                            <>0</>
-                                          ) : data?.paymentAndCharges.Total >=
-                                            0 ? (
-                                            `$${data?.paymentAndCharges.Total}`
-                                          ) : (
-                                            `$(${Math.abs(
-                                              data?.paymentAndCharges.Total
-                                            )})`
-                                          )
-                                        ) : (
-                                          "0"
-                                        )}
-                                      </td>
-                                      <td>
-                                        {data?.paymentAndCharges.type ===
-                                        "Payment" ? (
-                                          <div
-                                            style={{ cursor: "pointer" }}
-                                            onClick={() => {
-                                              getEditeData(
-                                                data?.paymentAndCharges?._id
-                                              );
-                                            }}
-                                          >
-                                            <EditIcon />
-                                          </div>
-                                        ) : (
-                                          <div>-</div>
-                                        )}
-                                      </td>
-                                    </tr>
-                                  </React.Fragment>
-                                )
-                              )}
+                              {Ledger &&
+                                Ledger.length > 0 &&
+                                Ledger.map((unit, index) => (
+                                  <tr
+                                    key={index}
+                                    style={{ cursor: "pointer" }}
+                                    className="w-100"
+                                  >
+                                    <td>{unit.date || "N/A"}</td>
+                                    <td>{unit.type || "N/A"}</td>
+                                    <td>{unit.account || "N/A"}</td>
+                                    <td>{unit.memo || "N/A"}</td>
+                                    {unit.type === "charge" ? (
+                                      <td> {unit.amount}</td>
+                                    ) : (
+                                      <td>-</td>
+                                    )}
+                                    {unit.type === "payment" ? (
+                                      <td> {unit.amount}</td>
+                                    ) : (
+                                      <td>-</td>
+                                    )}
+                                    <td>{unit.balance}</td>
+                                    <td></td>
+                                  </tr>
+                                ))}
                             </tbody>
                           </Table>
                           {paginatedData.length > 0 ? (
