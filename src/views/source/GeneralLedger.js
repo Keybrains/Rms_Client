@@ -91,7 +91,7 @@ const GeneralLedger = () => {
         console.error("Network error:", error);
       });
   }, []);
- let cookies = new Cookies();
+  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {

@@ -477,7 +477,7 @@ export default function StaffMember() {
                   sx={{
                     pl: { sm: 2 },
                     pr: { xs: 1, sm: 1 },
-                    bgcolor: "#fff", 
+                    bgcolor: "#fff",
                     color: "white",
                   }}
                 >

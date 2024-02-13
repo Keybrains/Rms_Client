@@ -16,7 +16,7 @@ import Applicants from "views/source/Applicants";
 import RentRoll from "views/source/RentRoll";
 // import SumProperties from "views/source/SumProperties";
 import Plans from "views/source/Plans";
-import Planpurches from 'views/source/Planpurches'
+import Planpurches from "views/source/Planpurches";
 import OutstandingBalance from "views/source/OutstandingBalance";
 import TenantDetailPage from "views/source/TenantDetailPage";
 import RentRollDetail from "views/source/RentRollDetail";
@@ -65,7 +65,8 @@ import Changepassword from "views/source/Changepassword";
 import Forgetmail from "views/source/forgetmail";
 import TrialLogin from "views/source/TrialLogin";
 import DemoPayment from "views/source/DemoPayment";
-
+import SurchargeForm from "views/source/Surcharge";
+import SurchargeTable from "views/source/SurchargeTable";
 // ==========================  Super Admin ===================================================
 
 import SuperAdminDashBoard from "../src/components/superadmin/Dashboard/DashBoard";
@@ -641,6 +642,21 @@ var routes = [
     path: "/trial-login",
     component: <TrialLogin />,
     layout: "/trial",
+  },
+  {
+    path: "/add_surcharge",
+    component: <SurchargeForm />,
+    layout: "/admin",
+  },
+  {
+    path: "/add_surcharge/:surcharge_id",
+    component: <SurchargeForm />,
+    layout: "/admin",
+  },
+  {
+    path: "/surcharge",
+    component: <SurchargeTable />,
+    layout: "/admin",
   },
 
   // ==========================  Super Admin ===================================================
