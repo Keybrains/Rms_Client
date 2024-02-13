@@ -255,7 +255,7 @@ var routes = [
   },
 
   {
-    path: "/rentrolldetail/:tenantId/:entryIndex",
+    path: "/rentrolldetail/:tenantId",
     name: "Rent Roll Detail",
     component: <RentRollDetail />,
     layout: "/admin",
