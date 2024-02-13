@@ -581,6 +581,7 @@ const RentRollLeaseing = () => {
       emergency_contact: { name, relation, email, phoneNumber },
     } = tenant;
     if (event.target.checked) {
+      setOpenTenantsDialog(false);
       setShowTenantTable(false);
       tenantFormik.setValues({
         tenant_id,
