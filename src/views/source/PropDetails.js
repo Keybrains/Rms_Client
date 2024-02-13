@@ -29,7 +29,6 @@ import {
   Form,
   ModalHeader,
   ModalBody,
-
   ModalFooter,
   Modal,
 } from "reactstrap";
@@ -51,7 +50,6 @@ import { OpenImageDialog } from "components/OpenImageDialog";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
-
 
 //financial
 import {
@@ -78,7 +76,7 @@ import {
   deleteAppliance,
 } from "./Functions/Units";
 import { jwtDecode } from "jwt-decode";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 
 const PropDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -121,7 +119,6 @@ const PropDetails = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [openEdite, setOpenEdite] = useState("");
   const [accessType, setAccessType] = useState(null);
-
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -209,23 +206,21 @@ const PropDetails = () => {
 
   console.log("clickedUnitObject?.unit_id", clickedUnitObject?.unit_id);
 
-const getStatus =  (startDate, endDate) => {
-  const today = new Date();
+  const getStatus = (startDate, endDate) => {
+    const today = new Date();
     const start = new Date(startDate);
     const end = new Date(endDate);
 
     if (today >= start && today <= end) {
-
-    return "Active";
-  } else if (today < start) {
-    return "Future";
-  } else if (today > end) {
-    return "Expired";
-  } else {
-    return "-";
-  }
-};
-
+      return "Active";
+    } else if (today < start) {
+      return "Future";
+    } else if (today > end) {
+      return "Expired";
+    } else {
+      return "-";
+    }
+  };
 
   useEffect(() => {
     fetchRentalData();
@@ -420,18 +415,16 @@ const getStatus =  (startDate, endDate) => {
     countTenantsByUnit();
   }, [tenantsData, propertyUnitData]);
 
-
   // =====================================================================
 
   const [showModal, setShowModal] = useState(false);
   const [clickedObject, setClickedObject] = useState({});
-  console.log(clickedObject, "kk")
+  console.log(clickedObject, "kk");
   const handleMoveOutClick = (tenant) => {
     console.log("Move out button clicked");
     setClickedObject(tenant);
     setShowModal(true);
   };
-
 
   const handleModalClose = () => {
     setShowModal(false);
@@ -448,7 +441,7 @@ const getStatus =  (startDate, endDate) => {
     setNoticeGivenDate(currentDate);
   }, []);
   const handleMoveout = (lease_id) => {
-    console.log(moveOutDate, noticeGivenDate, lease_id, "yashuj")
+    console.log(moveOutDate, noticeGivenDate, lease_id, "yashuj");
     if (moveOutDate && noticeGivenDate) {
       const updatedApplicant = {
         moveout_date: moveOutDate,
@@ -463,25 +456,24 @@ const getStatus =  (startDate, endDate) => {
         .then((res) => {
           console.log(res, "res");
           if (res.data.statusCode === 200) {
-            toast.success('Move-out Successfully', {
-              position: 'top-center',
-            })
+            toast.success("Move-out Successfully", {
+              position: "top-center",
+            });
             // Close the modal if the status code is 200
             handleModalClose();
             tenantsData();
           }
         })
         .catch((err) => {
-          toast.error('An error occurred while Move-out', {
-            position: 'top-center',
-          })
+          toast.error("An error occurred while Move-out", {
+            position: "top-center",
+          });
           console.error(err);
         });
     } else {
-
-      toast.error('NOTICE GIVEN DATE && MOVE-OUT DATE must be required', {
-        position: 'top-center',
-      })
+      toast.error("NOTICE GIVEN DATE && MOVE-OUT DATE must be required", {
+        position: "top-center",
+      });
     }
   };
   return (
@@ -493,13 +485,10 @@ const getStatus =  (startDate, endDate) => {
         </ModalHeader>
         <ModalBody>
           <div>
-            Select tenants to move out. If
-            everyone is moving, the lease will end
-            on the last move-out date. If some
-            tenants are staying, you’ll need to
-            renew the lease. Note: Renters
-            insurance policies will be permanently
-            deleted upon move-out.
+            Select tenants to move out. If everyone is moving, the lease will
+            end on the last move-out date. If some tenants are staying, you’ll
+            need to renew the lease. Note: Renters insurance policies will be
+            permanently deleted upon move-out.
           </div>
           <hr />
           {/* {rentaldata?.map((country) => ( */}
@@ -518,13 +507,14 @@ const getStatus =  (startDate, endDate) => {
                   <td>
                     {clickedObject.rental_adress}
                     {clickedObject.rental_unit !== "" &&
-                      clickedObject.rental_unit !== undefined ? `- ${clickedObject.rental_unit}` : null}
+                    clickedObject.rental_unit !== undefined
+                      ? `- ${clickedObject.rental_unit}`
+                      : null}
                   </td>
                   <td>Fixed</td>
                   <td>
-                    {clickedObject.start_date}{' '} {clickedObject.end_date}
+                    {clickedObject.start_date} {clickedObject.end_date}
                   </td>
-
                 </tr>
                 {/* Add more rows dynamically based on your data */}
               </tbody>
@@ -541,7 +531,8 @@ const getStatus =  (startDate, endDate) => {
                 {/* Example rows */}
                 <tr>
                   <td>
-                    {clickedObject.tenant_firstName} {clickedObject.tenant_lastName}
+                    {clickedObject.tenant_firstName}{" "}
+                    {clickedObject.tenant_lastName}
                   </td>
                   <td>
                     <div className="col">
@@ -550,12 +541,7 @@ const getStatus =  (startDate, endDate) => {
                         className="form-control"
                         placeholder="Notice Given Date"
                         value={noticeGivenDate}
-
-                        onChange={(e) =>
-                          setNoticeGivenDate(
-                            e.target.value
-                          )
-                        }
+                        onChange={(e) => setNoticeGivenDate(e.target.value)}
                       />
                     </div>
                   </td>
@@ -566,11 +552,7 @@ const getStatus =  (startDate, endDate) => {
                         className="form-control"
                         placeholder="Move-out Date"
                         value={moveOutDate}
-                        onChange={(e) =>
-                          setMoveOutDate(
-                            e.target.value
-                          )
-                        }
+                        onChange={(e) => setMoveOutDate(e.target.value)}
                       />
                     </div>
                   </td>
@@ -579,7 +561,6 @@ const getStatus =  (startDate, endDate) => {
               </tbody>
             </Table>
           </React.Fragment>
-
         </ModalBody>
         <ModalFooter>
           <Button
@@ -868,11 +849,13 @@ const getStatus =  (startDate, endDate) => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${rentalOwnerData.rentalOwner_firstName ||
+                                                        {`${
+                                                          rentalOwnerData.rentalOwner_firstName ||
                                                           "N/A"
-                                                          } ${rentalOwnerData.rentalOwner_lastName ||
+                                                        } ${
+                                                          rentalOwnerData.rentalOwner_lastName ||
                                                           "N/A"
-                                                          }`}
+                                                        }`}
                                                       </td>
                                                       <td>
                                                         {rentalOwnerData.rentalOwner_companyName ||
@@ -939,9 +922,10 @@ const getStatus =  (startDate, endDate) => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${staffMemberData?.staffmember_name ||
+                                                        {`${
+                                                          staffMemberData?.staffmember_name ||
                                                           "No staff member assigned"
-                                                          }`}
+                                                        }`}
                                                       </td>
                                                     </tr>
                                                   </>
@@ -986,7 +970,7 @@ const getStatus =  (startDate, endDate) => {
                             {financialType
                               ? financialType
                               : "Month to date" &&
-                              setFinancialType("Month to date")}
+                                setFinancialType("Month to date")}
                           </DropdownToggle>
                           <DropdownMenu>
                             {financialTypeArray.map((subtype, index) => (
@@ -1137,7 +1121,7 @@ const getStatus =  (startDate, endDate) => {
                                           fontWeight: "bold",
                                           backgroundColor: "#f0f0f0",
                                         }}
-                                      //colSpan="2"
+                                        //colSpan="2"
                                       >
                                         Net income
                                       </th>
@@ -1252,7 +1236,7 @@ const getStatus =  (startDate, endDate) => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                  //colSpan="2"
+                                    //colSpan="2"
                                   >
                                     Net income
                                   </th>
@@ -1262,13 +1246,13 @@ const getStatus =  (startDate, endDate) => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                  //colSpan="2"
+                                    //colSpan="2"
                                   >
                                     {netIncome >= 0
                                       ? `$${netIncome.toFixed(2)}`
                                       : `$(${Math.abs(netIncome || 0).toFixed(
-                                        2
-                                      )})`}
+                                          2
+                                        )})`}
                                   </th>
                                 </tr>
                               </React.Fragment>
@@ -1459,8 +1443,9 @@ const getStatus =  (startDate, endDate) => {
                                   $
                                   {totals[0] - totals2[0] >= 0
                                     ? (totals[0] - totals2[0]).toFixed(2)
-                                    : `(${-1 * (totals[0] - totals2[0]).toFixed(2)
-                                    })`}
+                                    : `(${
+                                        -1 * (totals[0] - totals2[0]).toFixed(2)
+                                      })`}
                                 </th>
                                 <th
                                   style={{
@@ -1472,8 +1457,9 @@ const getStatus =  (startDate, endDate) => {
                                   $
                                   {totals[1] - totals2[1] >= 0
                                     ? (totals[1] - totals2[1]).toFixed(2)
-                                    : `(${-1 * (totals[1] - totals2[1]).toFixed(2)
-                                    })`}
+                                    : `(${
+                                        -1 * (totals[1] - totals2[1]).toFixed(2)
+                                      })`}
                                 </th>
                                 <th
                                   style={{
@@ -1485,8 +1471,9 @@ const getStatus =  (startDate, endDate) => {
                                   $
                                   {totals[2] - totals2[2] >= 0
                                     ? (totals[2] - totals2[2]).toFixed(2)
-                                    : `(${-1 * (totals[2] - totals2[2]).toFixed(2)
-                                    })`}
+                                    : `(${
+                                        -1 * (totals[2] - totals2[2]).toFixed(2)
+                                      })`}
                                 </th>
                               </tr>
                             </tbody>
@@ -1555,8 +1542,8 @@ const getStatus =  (startDate, endDate) => {
                                     {unit.tenant_firstName == null
                                       ? "-"
                                       : unit.tenant_firstName +
-                                      " " +
-                                      unit.tenant_lastName}
+                                        " " +
+                                        unit.tenant_lastName}
                                   </td>
                                   <td onClick={(e) => openEditeTab(e, unit)}>
                                     <EditIcon />
@@ -1922,9 +1909,10 @@ const getStatus =  (startDate, endDate) => {
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
+                                    {console.log(unitLeases, "yashu")}
                                     {clickedUnitObject &&
-                                      clickedUnitObject?.tenant_firstName &&
-                                      clickedUnitObject?.tenant_lastName ? (
+                                    clickedUnitObject?.tenant_firstName &&
+                                    clickedUnitObject?.tenant_lastName ? (
                                       <>
                                         <tr className="body">
                                           <td>
@@ -1934,11 +1922,11 @@ const getStatus =  (startDate, endDate) => {
                                           </td>
                                           <td>
                                             {clickedUnitObject?.start_date &&
-                                              clickedUnitObject?.end_date ? (
+                                            clickedUnitObject?.end_date ? (
                                               <>
                                                 <Link
                                                   to={`/admin/tenantdetail/${clickedUnitObject?._id}`}
-                                                  onClick={(e) => { }}
+                                                  onClick={(e) => {}}
                                                 >
                                                   {formatDateWithoutTime(
                                                     clickedUnitObject?.start_date
@@ -1955,20 +1943,24 @@ const getStatus =  (startDate, endDate) => {
                                           </td>
                                           <td>
                                             {clickedUnitObject?.tenant_firstName &&
-                                              clickedUnitObject?.tenant_lastName
+                                            clickedUnitObject?.tenant_lastName
                                               ? clickedUnitObject?.tenant_firstName +
-                                              " " +
-                                              clickedUnitObject?.tenant_lastName
+                                                " " +
+                                                clickedUnitObject?.tenant_lastName
                                               : "N/A"}
                                           </td>
                                           <td>
-                                            {unit.tenant.tenant_firstName}{" "}
-                                            {unit.tenant.tenant_lastName}
+                                            {clickedUnitObject?.lease_type ||
+                                              "N/A"}
                                           </td>
-                                          <td>{unit.lease.lease_type}</td>
-                                          <td>{unit.charge.amount}</td>
+                                          <td>
+                                            {clickedUnitObject?.amount || "N/A"}
+                                          </td>
                                         </tr>
-                                      ))}
+                                      </>
+                                    ) : (
+                                      ""
+                                    )}
                                   </tbody>
                                 </Table>
                               </Row>
@@ -2290,14 +2282,140 @@ const getStatus =  (startDate, endDate) => {
 
                   <TabPanel value="task"></TabPanel>
 
-                  <TabPanel value="tenant"></TabPanel>
+                  <TabPanel value="Tenant">
+                    <CardHeader className="border-0"></CardHeader>
+                    <Row>
+                      <Col>
+                        <Grid container spacing={2}>
+                          {tenantsData.map((tenant, index) => (
+                            // <Grid item xs={12} sm={6} >
+                            <Box
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              padding="16px"
+                              // maxWidth="400px"
+                              margin="10px"
+                              key={index}
+                            >
+                              <Row>
+                                <Col lg="2">
+                                  <Box
+                                    width="40px"
+                                    height="40px"
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    backgroundColor="grey"
+                                    borderRadius="8px"
+                                    color="white"
+                                    fontSize="24px"
+                                  >
+                                    <AssignmentIndIcon />
+                                  </Box>
+                                </Col>
+                                <Col lg="7">
+                                  <div
+                                    style={{
+                                      color: "blue",
+                                      height: "40px",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.tenant_firstName}{" "}
+                                    {tenant.tenant_lastName}
+                                  </div>
+                                  <div
+                                    style={{
+                                      color: "blue",
+                                      height: "40px",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.rental_adress} {""}
+                                    {tenant.rental_unit !== "" &&
+                                    tenant.rental_unit !== undefined
+                                      ? `- ${tenant.rental_unit}`
+                                      : null}
+                                  </div>
+                                  <div
+                                    style={{
+                                      // display: "flex",
+                                      // alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.start_date} to {tenant.end_date}
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      paddingTop: "3px",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "2px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <PhoneAndroidIcon />
+                                    </Typography>
+                                    {tenant.tenant_phoneNumber}
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "7px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <MailIcon />
+                                    </Typography>
+                                    {tenant.tenant_email}
+                                  </div>
+                                </Col>
+                                <Col lg="3">
+                                  <div
+                                    className="d-flex justify-content(-end h5"
+                                    onClick={() => handleMoveOutClick(tenant)}
+                                    style={{
+                                      cursor: "pointer",
+                                      fontSize: "12px",
+                                    }}
+                                  >
+                                    <LogoutIcon fontSize="small" /> Move out
+                                  </div>
+                                </Col>
+                              </Row>
+                            </Box>
+                            // </Grid>
+                          ))}
+                        </Grid>
+                      </Col>
+                    </Row>
+                  </TabPanel>
                 </TabContext>
               </Col>
             </Card>
           </div>
         </Row>
       </Container>
-
 
       <Dialog open={openEdite} onClose={closeModal}>
         <DialogTitle>Edit Unit Details</DialogTitle>

@@ -1644,7 +1644,6 @@ const RentRollDetail = () => {
                       <Col>
                         {Array.isArray(rentaldata) ? (
                           <Grid container spacing={2}>
-                            {console.log(rentaldata, "rentalsdat")}
                             {rentaldata.map((tenant, index) => (
                               <Grid item xs={12} sm={6} key={index}>
                                 {tenant.entries.map((entry) => (

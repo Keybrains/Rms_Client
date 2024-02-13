@@ -81,6 +81,7 @@ import SuperAdminTenat from "components/superadmin/Admin/Tenant";
 import SuperAdminUnit from "components/superadmin/Admin/Unit";
 import SuperAdminLease from "components/superadmin/Admin/Leasing";
 import ResetPassword from "views/source/Resetpassword";
+import RentRollDetail2 from "views/source/RentRollDetail copy";
 
 var routes = [
   {
@@ -259,6 +260,12 @@ var routes = [
     path: "/rentrolldetail/:tenantId",
     name: "Rent Roll Detail",
     component: <RentRollDetail />,
+    layout: "/admin",
+  },
+  {
+    path: "/rentrolldetail2/:lease_id",
+    name: "Rent Roll Detail",
+    component: <RentRollDetail2 />,
     layout: "/admin",
   },
   {
