@@ -75,6 +75,7 @@ const RentRollDetail2 = () => {
 
   const [accessType, setAccessType] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -84,6 +85,125 @@ const RentRollDetail2 = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
+
+  //set lease data
+  const [leaseData, setLeaseData] = useState([]);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const fetchLeaseData = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(
+        `${baseUrl}/leases/lease_summary/${lease_id}`
+      );
+      setLeaseData(res.data.data);
+    } catch (error) {
+      console.error("Error: ", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //set financial data
+  const [financialData, setFinancialData] = useState([]);
+  const fetchfinancialData = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(
+        `${baseUrl}/payment/charges_payments/${lease_id}`
+      );
+      setFinancialData(res.data.data);
+      setTotalAmount(res.data.totalAmount);
+    } catch (error) {
+      console.error("Error: ", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const [tenantDetails, setTenantDetails] = useState([]);
+  const fetchTenantsData = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${baseUrl}/tenants/leases/${lease_id}`);
+      console.log(res.data.data, "jayu");
+    } catch (error) {
+      console.error("Error: ", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeaseData();
+    fetchfinancialData();
+    fetchTenantsData();
+  }, [lease_id]);
+
+  const [value, setValue] = useState("Summary");
+  const handleChange = (value) => {
+    setValue(value);
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openCardForm = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const [showModal, setShowModal] = useState(false);
+  const handleMoveOutClick = () => {
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const toggle = () => setDropdownOpen((prevState) => !prevState);
+
+  const handleOptionClick = (option) => {
+    // generatePDF(option);
+    // handleClose();
+  };
+
+  const [cardDetalis, setCardDetails] = useState([]);
+  // const getCreditCard = async () => {
+  //   const response = await axios.get(
+  //     `${baseUrl}/creditcard/getCreditCard/${lease_id}`
+  //   );
+  //   setCardDetails(response.data);
+  // };
+
+  function formatDateWithoutTime(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${month}-${day}-${year}`;
+  }
+
+  const getStatus = (startDate, endDate) => {
+    const today = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (today >= start && today <= end) {
+      return "Active";
+    } else if (today < start) {
+      return "FUTURE";
+    } else if (today > end) {
+      return "EXPIRED";
+    } else {
+      return "-";
+    }
+  };
+
+  console.log(leaseData, "yashu");
 
   return (
     <div>
@@ -101,20 +221,17 @@ const RentRollDetail2 = () => {
               ) : (
                 <>
                   <h1 style={{ color: "white" }}>
-                    {/* {tenantDetails.tenant_firstName +
+                    {leaseData?.tenant_firstName +
                       " " +
-                      tenantDetails.tenant_lastName} */}
+                      leaseData?.tenant_lastName}
                   </h1>
                   <h5 style={{ color: "white" }}>
-                    {/* {status} |{" "}
-                    {tenantDetails._id
-                      ? tenantDetails.entries.rental_adress
-                      : " "}
-                    {tenantDetails._id &&
-                    tenantDetails.entries.rental_units !== undefined &&
-                    tenantDetails.entries.rental_units !== ""
-                      ? ` - ${tenantDetails.entries.rental_units}`
-                      : ""} */}
+                    {leaseData?.rental_adress ? leaseData?.rental_adress : " "}
+                    {leaseData?.rental_unit &&
+                    leaseData?.rental_unit !== undefined &&
+                    leaseData?.rental_unit !== ""
+                      ? ` - ${leaseData?.rental_unit}`
+                      : ""}
                   </h5>
                 </>
               )}
@@ -123,7 +240,6 @@ const RentRollDetail2 = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              //  href="#rms"
               onClick={() => navigate("/admin/RentRoll")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -161,6 +277,7 @@ const RentRollDetail2 = () => {
                       />
                     </TabList>
                   </Box>
+
                   <TabPanel value="Summary">
                     <Row>
                       <div className="col">
@@ -181,13 +298,7 @@ const RentRollDetail2 = () => {
                                         <td>Loading tenant details...</td>
                                       </tr>
                                     </tbody>
-                                  ) : error ? (
-                                    <tbody>
-                                      <tr>
-                                        <td>Error: {error.message}</td>
-                                      </tr>
-                                    </tbody>
-                                  ) : tenantDetails._id ? (
+                                  ) : leaseData?.lease_id ? (
                                     <div className="w-100">
                                       <Row
                                         className="w-100 my-3"
@@ -222,27 +333,21 @@ const RentRollDetail2 = () => {
                                         }}
                                       >
                                         <Col>
-                                          {tenantDetails?.entries
-                                            .rental_adress +
+                                          {leaseData?.rental_adress +
                                             " " +
-                                            tenantDetails?.entries
-                                              .rental_units || "N/A"}
+                                            leaseData?.rental_unit || "N/A"}
                                         </Col>
                                         <Col>
-                                          {tenantDetails.entries
-                                            .rentalOwner_firstName
-                                            ? tenantDetails.entries
-                                                .rentalOwner_firstName +
+                                          {leaseData?.rentalOwner_firstName
+                                            ? leaseData?.rentalOwner_firstName +
                                               " " +
-                                              tenantDetails.entries
-                                                .rentalOwner_lastName
+                                              leaseData?.rentalOwner_lastName
                                             : "N/A"}
                                         </Col>
                                         <Col>
-                                          {tenantDetails?.tenant_firstName +
+                                          {leaseData?.tenant_firstName +
                                             " " +
-                                            tenantDetails?.tenant_lastName ||
-                                            "N/A"}
+                                            leaseData?.tenant_lastName || "N/A"}
                                         </Col>
                                       </Row>
                                     </div>
@@ -291,43 +396,40 @@ const RentRollDetail2 = () => {
                                           <th>Type</th>
                                           <th>Rent</th>
                                         </tr>
-                                        {myData ? (
+                                        {leaseData ? (
                                           <>
-                                            {myData.map((item) => (
-                                              <tr
-                                                key={item._id}
-                                                className="body"
-                                              >
-                                                <td>
-                                                  {getStatus(
-                                                    item.entries.start_date,
-                                                    item.entries.end_date
-                                                  )}
-                                                </td>
-                                                <td>
-                                                  <Link
-                                                    to={`/admin/rentrolldetail/${item._id}/${item.entries.entryIndex}`}
-                                                  >
-                                                    {formatDateWithoutTime(
-                                                      item.entries.start_date
-                                                    ) +
-                                                      " To " +
-                                                      formatDateWithoutTime(
-                                                        item.entries.end_date
-                                                      ) || "N/A"}
-                                                  </Link>
-                                                </td>
-                                                <td>
-                                                  {item.entries.rental_adress ||
-                                                    "N/A"}
-                                                </td>
-                                                <td>
-                                                  {item.entries.lease_type ||
-                                                    "N/A"}
-                                                </td>
-                                                <td>{item.entries.amount}</td>
-                                              </tr>
-                                            ))}
+                                            <tr
+                                              key={leaseData?.lease_id}
+                                              className="body"
+                                            >
+                                              <td>
+                                                {getStatus(
+                                                  leaseData?.start_date,
+                                                  leaseData?.end_date
+                                                )}
+                                              </td>
+                                              <td>
+                                                <Link
+                                                  to={`/${admin}/rentrolldetail/${leaseData?.lease_id}}`}
+                                                >
+                                                  {formatDateWithoutTime(
+                                                    leaseData?.start_date
+                                                  ) +
+                                                    " To " +
+                                                    formatDateWithoutTime(
+                                                      leaseData?.end_date
+                                                    ) || "N/A"}
+                                                </Link>
+                                              </td>
+                                              <td>
+                                                {leaseData?.rental_adress ||
+                                                  "N/A"}
+                                              </td>
+                                              <td>
+                                                {leaseData?.lease_type || "N/A"}
+                                              </td>
+                                              <td>{leaseData?.amount}</td>
+                                            </tr>
                                           </>
                                         ) : null}
                                       </tbody>
@@ -362,15 +464,7 @@ const RentRollDetail2 = () => {
                                           fontWeight: "bold",
                                         }}
                                       >
-                                        {GeneralLedgerData &&
-                                          GeneralLedgerData.paymentAndCharges &&
-                                          GeneralLedgerData.paymentAndCharges
-                                            .length > 0 &&
-                                          "$" +
-                                            Math.abs(
-                                              GeneralLedgerData
-                                                .paymentAndCharges[0].Total
-                                            )}
+                                        {totalAmount}
                                       </Typography>
                                     </div>
                                     <hr
@@ -402,20 +496,17 @@ const RentRollDetail2 = () => {
                                             >
                                               Rent:
                                             </Typography>
-                                            {myData1.map((item, index) => (
-                                              <Typography
-                                                key={index}
-                                                sx={{
-                                                  fontSize: 14,
-                                                  fontWeight: "bold",
-                                                  marginRight: "10px",
-                                                }}
-                                                color="text.secondary"
-                                                gutterBottom
-                                              >
-                                                ${item.entries.amount}
-                                              </Typography>
-                                            ))}
+                                            <Typography
+                                              sx={{
+                                                fontSize: 14,
+                                                fontWeight: "bold",
+                                                marginRight: "10px",
+                                              }}
+                                              color="text.secondary"
+                                              gutterBottom
+                                            >
+                                              {leaseData?.amount}
+                                            </Typography>
                                           </div>
                                         </div>
                                         <div
@@ -423,6 +514,7 @@ const RentRollDetail2 = () => {
                                             display: "flex",
                                             flexDirection: "row",
                                             marginTop: "10px",
+                                            marginRight: "10px",
                                           }}
                                         >
                                           <Typography
@@ -433,22 +525,19 @@ const RentRollDetail2 = () => {
                                             color="text.secondary"
                                             gutterBottom
                                           >
-                                            Due date :
+                                            Due date:
                                           </Typography>
-                                          {myData1.map((item, index) => (
-                                            <Typography
-                                              key={index}
-                                              sx={{
-                                                fontSize: 14,
-                                                fontWeight: "bold",
-                                                marginRight: "10px",
-                                              }}
-                                              color="text.secondary"
-                                              gutterBottom
-                                            >
-                                              {item.entries.nextDue_date}
-                                            </Typography>
-                                          ))}
+                                          <Typography
+                                            sx={{
+                                              fontSize: 14,
+                                              fontWeight: "bold",
+                                              marginRight: "10px",
+                                            }}
+                                            color="text.secondary"
+                                            gutterBottom
+                                          >
+                                            {leaseData?.date}
+                                          </Typography>
                                         </div>
                                       </div>
                                     </>
@@ -464,7 +553,7 @@ const RentRollDetail2 = () => {
                                         color="primary"
                                         onClick={() =>
                                           navigate(
-                                            `/${admin}/AddPayment/${tenantId}/$}`
+                                            `/${admin}/AddPayment/${lease_id}`
                                           )
                                         }
                                         style={{
@@ -475,27 +564,24 @@ const RentRollDetail2 = () => {
                                       >
                                         Receive Payment
                                       </Button>
-                                      {myData1.map((item, index) => (
-                                        <Typography
-                                          key={index}
-                                          sx={{
-                                            fontSize: 14,
-                                            marginLeft: "10px",
-                                            paddingTop: "10px",
-                                            cursor: "pointer",
-                                            color: "blue",
-                                          }}
+                                      <Typography
+                                        // key={index}
+                                        sx={{
+                                          fontSize: 14,
+                                          marginLeft: "10px",
+                                          paddingTop: "10px",
+                                          cursor: "pointer",
+                                          color: "blue",
+                                        }}
+                                      >
+                                        <Link
+                                          to={`/${admin}/rentrolldetail/${lease_id}`}
+                                          onClick={() => setValue(`Financial`)}
                                         >
-                                          <Link
-                                            to={`/${admin}/rentrolldetail/${tenantId}/$}?source=payment`}
-                                            onClick={() =>
-                                              setValue(`Financial`)
-                                            }
-                                          >
-                                            Lease Ledger
-                                          </Link>
-                                        </Typography>
-                                      ))}
+                                          Lease Ledger
+                                        </Link>
+                                      </Typography>
+                                      {/* ))} */}
                                     </div>
                                   </CardContent>
                                 </Card>
@@ -603,6 +689,7 @@ const RentRollDetail2 = () => {
                       </div>
                     </Row>
                   </TabPanel>
+
                   <TabPanel value="Financial">
                     <Container className="mt--10" fluid>
                       <Row>
@@ -618,16 +705,8 @@ const RentRollDetail2 = () => {
                         >
                           <Button
                             color="primary"
-                            ////  href="#rms"
                             onClick={() =>
-                              navigate(`/admin/AddPayment/${tenantId}/$}`, {
-                                state: {
-                                  unit_name: unit,
-                                  unit_id: unitId,
-                                  property_id: propertyId,
-                                  rental_adress: rental,
-                                },
-                              })
+                              navigate(`/${admin}/AddPayment/${lease_id}`)
                             }
                             style={{
                               background: "white",
@@ -639,16 +718,8 @@ const RentRollDetail2 = () => {
                           </Button>
                           <Button
                             color="primary"
-                            ////  href="#rms"
                             onClick={() =>
-                              navigate(`/admin/AddCharge/${tenantId}/$}`, {
-                                state: {
-                                  unit_name: unit,
-                                  unit_id: unitId,
-                                  property_id: propertyId,
-                                  rental_adress: rental,
-                                },
-                              })
+                              navigate(`/${admin}/AddCharge/${lease_id}`)
                             }
                             style={{ background: "white", color: "blue" }}
                           >
@@ -724,111 +795,105 @@ const RentRollDetail2 = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {GeneralLedgerData &&
-                                    GeneralLedgerData?.paymentAndCharges?.map(
-                                      (generalledger) => (
-                                        <>
-                                          {console.log(
-                                            GeneralLedgerData,
-                                            "GeneralLedgerData"
-                                          )}
-                                          <tr key={`${generalledger._id}`}>
-                                            <td>{generalledger.date || "-"}</td>
-                                            <td>{generalledger.type || "-"}</td>
-                                            <td>
-                                              {generalledger.account || "-"}
-                                            </td>
-                                            <td>{generalledger.memo || "-"}</td>
-                                            <td>
-                                              {generalledger.type === "Charge"
-                                                ? "$" + generalledger.amount
-                                                : "-"}
-                                            </td>
-                                            <td>
-                                              {generalledger.type === "Payment"
-                                                ? "$" + generalledger.amount
-                                                : "-"}
-                                            </td>
-                                            <td>
-                                              {generalledger.Total !== undefined
-                                                ? generalledger.Total >= 0
-                                                  ? `$${generalledger.Total}`
-                                                  : `$(${Math.abs(
-                                                      generalledger.Total
-                                                    )})`
-                                                : "0"}
-                                              {/* {calculateBalance(
-                                                  generalledger.type,
-                                                  entry,
-                                                  index
-                                                )} */}
-                                            </td>
-                                            <td>
-                                              <div
-                                                style={{
-                                                  display: "flex",
-                                                  gap: "5px",
-                                                }}
-                                              >
-                                                {generalledger.type ===
-                                                  "Charge" && (
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
+                                  {financialData &&
+                                    financialData?.map((generalledger) => (
+                                      <>
+                                        <tr
+                                          key={`${
+                                            generalledger?.payment_id ||
+                                            generalledger?.charge_id
+                                          }`}
+                                        >
+                                          <td>{generalledger.date || "-"}</td>
+                                          <td>{generalledger.type || "-"}</td>
+                                          <td>
+                                            {generalledger.account || "-"}
+                                          </td>
+                                          <td>{generalledger.memo || "-"}</td>
+                                          <td>
+                                            {generalledger.type === "charge"
+                                              ? "$" + generalledger.amount
+                                              : "-"}
+                                          </td>
+                                          <td>
+                                            {generalledger.type === "payment"
+                                              ? "$" + generalledger.amount
+                                              : "-"}
+                                          </td>
+                                          <td>
+                                            {generalledger.balance !== undefined
+                                              ? generalledger.balance >= 0
+                                                ? `$${generalledger.balance}`
+                                                : `$(${Math.abs(
+                                                    generalledger.balance
+                                                  )})`
+                                              : "0"}
+                                          </td>
+                                          <td>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                gap: "5px",
+                                              }}
+                                            >
+                                              {generalledger.type ===
+                                                "charge" && (
+                                                <div
+                                                  style={{
+                                                    cursor: "pointer",
+                                                  }}
+                                                >
+                                                  <DeleteIcon
+                                                    onClick={() => {
+                                                      console.log(
+                                                        generalledger,
+                                                        "geennennene"
+                                                      );
+                                                      // deleteCharge(
+                                                      //   generalledger._id
+                                                      // );
                                                     }}
-                                                  >
-                                                    <DeleteIcon
-                                                      onClick={() => {
-                                                        console.log(
-                                                          generalledger,
-                                                          "geennennene"
-                                                        );
-                                                        deleteCharge(
-                                                          generalledger._id
-                                                        );
-                                                      }}
-                                                    />
-                                                  </div>
-                                                )}
+                                                  />
+                                                </div>
+                                              )}
 
-                                                {generalledger.type ===
-                                                  "Charge" && (
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      editcharge(
-                                                        generalledger._id
-                                                      );
-                                                    }}
-                                                  >
-                                                    <EditIcon />
-                                                  </div>
-                                                )}
-                                                {generalledger.type ===
-                                                  "Payment" && (
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      editpayment(
-                                                        generalledger._id
-                                                      );
-                                                    }}
-                                                  >
-                                                    <EditIcon />
-                                                  </div>
-                                                )}
-                                              </div>
-                                            </td>
-                                          </tr>
-                                        </>
-                                      )
-                                    )}
+                                              {generalledger.type ===
+                                                "charge" && (
+                                                <div
+                                                  style={{
+                                                    cursor: "pointer",
+                                                  }}
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    // editcharge(
+                                                    //   generalledger._id
+                                                    // );
+                                                  }}
+                                                >
+                                                  <EditIcon />
+                                                </div>
+                                              )}
+                                              {generalledger.type ===
+                                                "payment" && (
+                                                <div
+                                                  style={{
+                                                    cursor: "pointer",
+                                                  }}
+                                                  onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    // editpayment(
+                                                    //   generalledger._id
+                                                    // );
+                                                  }}
+                                                >
+                                                  <EditIcon />
+                                                </div>
+                                              )}
+                                            </div>
+                                          </td>
+                                        </tr>
+                                      </>
+                                    ))}
                                 </tbody>
                               </Table>
                             </Card>
@@ -839,315 +904,296 @@ const RentRollDetail2 = () => {
                       <br />
                     </Container>
                   </TabPanel>
+
                   <TabPanel value="Tenant">
                     <CardHeader className="border-0">
                       <span>
                         <span>Property :</span>
                         <h2 style={{ color: "blue" }}>
-                          {rental}
-                          {unit && `- ${unit}`}
+                          {leaseData?.rental_adress +
+                            " - " +
+                            leaseData?.rental_unit}
                         </h2>
                       </span>
                     </CardHeader>
                     <Row>
                       <Col>
-                        {Array.isArray(rentaldata) ? (
+                        {Array.isArray(tenantDetails) ? (
                           <Grid container spacing={2}>
-                            {console.log(rentaldata, "rentalsdat")}
-                            {rentaldata.map((tenant, index) => (
-                              <Grid item xs={12} sm={6} key={index}>
-                                {tenant.entries.map((entry) => (
-                                  <Box
-                                    key={index}
-                                    border="1px solid #ccc"
-                                    borderRadius="8px"
-                                    padding="16px"
-                                    maxWidth="700px"
-                                    margin="20px"
-                                  >
-                                    {!entry.moveout_notice_given_date ? (
-                                      <div
-                                        className="d-flex justify-content-end h5"
-                                        onClick={handleMoveOutClick}
-                                        style={{ cursor: "pointer" }}
-                                      >
-                                        <LogoutIcon fontSize="small" /> Move out
-                                      </div>
-                                    ) : (
-                                      <div
-                                        className="d-flex justify-content-end h5"
-                                        // style={{ cursor: "pointer" }}
-                                      >
-                                        <DoneIcon fontSize="small" /> Move Out
-                                      </div>
-                                    )}
-
-                                    <Modal
-                                      show={showModal}
-                                      onHide={handleModalClose}
+                            {tenantDetails.map((tenant, index) => (
+                              <Grid item xs={12} sm={6}>
+                                <Box
+                                  key={index}
+                                  border="1px solid #ccc"
+                                  borderRadius="8px"
+                                  padding="16px"
+                                  maxWidth="700px"
+                                  margin="20px"
+                                >
+                                  {!tenant?.moveout_notice_given_date ? (
+                                    <div
+                                      className="d-flex justify-content-end h5"
+                                      onClick={handleMoveOutClick}
+                                      style={{ cursor: "pointer" }}
                                     >
-                                      <Modal.Header>
-                                        <Modal.Title>
-                                          Move out tenants
-                                        </Modal.Title>
-                                      </Modal.Header>
-                                      <Modal.Body>
-                                        <div>
-                                          Select tenants to move out. If
-                                          everyone is moving, the lease will end
-                                          on the last move-out date. If some
-                                          tenants are staying, you’ll need to
-                                          renew the lease. Note: Renters
-                                          insurance policies will be permanently
-                                          deleted upon move-out.
-                                        </div>
-                                        <hr />
-                                        {/* {rentaldata?.map((country) => ( */}
-                                        <React.Fragment>
-                                          <Table striped bordered responsive>
-                                            <thead>
-                                              <tr>
-                                                <th>Address / Unit</th>
-                                                <th>LEASE TYPE</th>
-                                                <th>START - END</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              {/* Example rows */}
-                                              <tr>
-                                                <td>
-                                                  {entry.rental_adress
-                                                    ? entry.rental_adress
-                                                    : ""}{" "}
-                                                  {entry.rental_units
-                                                    ? entry.rental_units
-                                                    : ""}
-                                                </td>
-                                                <td>Fixed</td>
-                                                <td>
-                                                  {entry.start_date
-                                                    ? entry.start_date
-                                                    : ""}{" "}
-                                                  {entry.end_date
-                                                    ? entry.end_date
-                                                    : ""}
-                                                </td>
-                                              </tr>
-                                              {/* Add more rows dynamically based on your data */}
-                                            </tbody>
-                                          </Table>
-                                          <Table striped bordered responsive>
-                                            <thead>
-                                              <tr>
-                                                <th>TENANT</th>
-                                                <th>NOTICE GIVEN DATE</th>
-                                                <th>MOVE-OUT DATE</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              {/* Example rows */}
-                                              <tr>
-                                                <td>
-                                                  {tenant.tenant_firstName +
-                                                    " "}{" "}
-                                                  {tenant.tenant_lastName}
-                                                </td>
-                                                <td>
-                                                  <div className="col">
-                                                    <input
-                                                      type="date"
-                                                      className="form-control"
-                                                      placeholder="Notice Given Date"
-                                                      value={noticeGivenDate}
-                                                      // onChange={(e) =>
-                                                      //   setMoveOutDate(
-                                                      //     e.target.value
-                                                      //   )
-                                                      // }
-                                                      onChange={(e) =>
-                                                        setNoticeGivenDate(
-                                                          e.target.value
-                                                        )
-                                                      }
-                                                    />
-                                                  </div>
-                                                </td>
-                                                <td>
-                                                  <div className="col">
-                                                    <input
-                                                      type="date"
-                                                      className="form-control"
-                                                      placeholder="Move-out Date"
-                                                      value={moveOutDate}
-                                                      onChange={(e) =>
-                                                        setMoveOutDate(
-                                                          e.target.value
-                                                        )
-                                                      }
-                                                    />
-                                                  </div>
-                                                </td>
-                                              </tr>
-                                              {/* Add more rows dynamically based on your data */}
-                                            </tbody>
-                                          </Table>
-                                        </React.Fragment>
-                                        {/* ))} */}
-                                      </Modal.Body>
-                                      <Modal.Footer>
-                                        <Button
-                                          style={{ backgroundColor: "#008000" }}
-                                          onClick={handleMoveout}
-                                        >
-                                          Move out
-                                        </Button>
-                                        <Button
-                                          style={{ backgroundColor: "#ffffff" }}
-                                          onClick={handleModalClose}
-                                        >
-                                          Close
-                                        </Button>
-                                        {/* You can add additional buttons or actions as needed */}
-                                      </Modal.Footer>
-                                    </Modal>
+                                      <LogoutIcon fontSize="small" /> Move out
+                                    </div>
+                                  ) : (
+                                    <div className="d-flex justify-content-end h5">
+                                      <DoneIcon fontSize="small" /> Move Out
+                                    </div>
+                                  )}
 
-                                    <Row>
-                                      <Col lg="2">
-                                        <Box
-                                          width="40px"
-                                          height="40px"
-                                          display="flex"
-                                          alignItems="center"
-                                          justifyContent="center"
-                                          backgroundColor="grey"
-                                          borderRadius="8px"
-                                          color="white"
-                                          fontSize="24px"
-                                        >
-                                          <AssignmentIndIcon />
-                                        </Box>
-                                      </Col>
+                                  <Modal
+                                    show={showModal}
+                                    onHide={handleModalClose}
+                                  >
+                                    <Modal.Header>
+                                      <Modal.Title>
+                                        Move out tenants
+                                      </Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                      <div>
+                                        Select tenants to move out. If everyone
+                                        is moving, the lease will end on the
+                                        last move-out date. If some tenants are
+                                        staying, you’ll need to renew the lease.
+                                        Note: Renters insurance policies will be
+                                        permanently deleted upon move-out.
+                                      </div>
+                                      <hr />
+                                      <React.Fragment>
+                                        <Table striped bordered responsive>
+                                          <thead>
+                                            <tr>
+                                              <th>Address / Unit</th>
+                                              <th>LEASE TYPE</th>
+                                              <th>START - END</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            <tr>
+                                              <td>
+                                                {tenant.rental_adress
+                                                  ? tenant.rental_adress
+                                                  : ""}{" "}
+                                                {tenant.rental_units
+                                                  ? tenant.rental_units
+                                                  : ""}
+                                              </td>
+                                              <td>Fixed</td>
+                                              <td>
+                                                {tenant.start_date
+                                                  ? tenant.start_date
+                                                  : ""}{" "}
+                                                {tenant.end_date
+                                                  ? tenant.end_date
+                                                  : ""}
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                        </Table>
+                                        <Table striped bordered responsive>
+                                          <thead>
+                                            <tr>
+                                              <th>TENANT</th>
+                                              <th>NOTICE GIVEN DATE</th>
+                                              <th>MOVE-OUT DATE</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {/* Example rows */}
+                                            <tr>
+                                              <td>
+                                                {tenant.tenant_firstName + " "}{" "}
+                                                {tenant.tenant_lastName}
+                                              </td>
+                                              <td>
+                                                <div className="col">
+                                                  <input
+                                                    type="date"
+                                                    className="form-control"
+                                                    placeholder="Notice Given Date"
+                                                    // value={noticeGivenDate}
+                                                    // onChange={(e) =>
+                                                    //   setNoticeGivenDate(
+                                                    //     e.target.value
+                                                    //   )
+                                                    // }
+                                                  />
+                                                </div>
+                                              </td>
+                                              <td>
+                                                <div className="col">
+                                                  <input
+                                                    type="date"
+                                                    className="form-control"
+                                                    placeholder="Move-out Date"
+                                                    // value={moveOutDate}
+                                                    // onChange={(e) =>
+                                                    //   setMoveOutDate(
+                                                    //     e.target.value
+                                                    //   )
+                                                    // }
+                                                  />
+                                                </div>
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                        </Table>
+                                      </React.Fragment>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                      <Button
+                                        style={{ backgroundColor: "#008000" }}
+                                        // onClick={handleMoveout}
+                                      >
+                                        Move out
+                                      </Button>
+                                      <Button
+                                        style={{ backgroundColor: "#ffffff" }}
+                                        // onClick={handleModalClose}
+                                      >
+                                        Close
+                                      </Button>
+                                    </Modal.Footer>
+                                  </Modal>
 
-                                      <Col lg="7">
-                                        <div
+                                  <Row>
+                                    <Col lg="2">
+                                      <Box
+                                        width="40px"
+                                        height="40px"
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        backgroundColor="grey"
+                                        borderRadius="8px"
+                                        color="white"
+                                        fontSize="24px"
+                                      >
+                                        <AssignmentIndIcon />
+                                      </Box>
+                                    </Col>
+
+                                    <Col lg="7">
+                                      <div
+                                        style={{
+                                          color: "blue",
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        {tenant.tenant_firstName || "N/A"}
+                                        {tenant.tenant_lastName || "N/A"}
+                                        <br></br>
+                                        {tenant.rental_adress}
+                                        {tenant.rental_unit !== "" &&
+                                        tenant.rental_unit !== undefined
+                                          ? ` - ${tenant.rental_unit}`
+                                          : null}
+                                      </div>
+
+                                      <div>
+                                        {" "}
+                                        {formatDateWithoutTime(
+                                          tenant.start_date
+                                        ) || "N/A"}{" "}
+                                        to{" "}
+                                        {formatDateWithoutTime(
+                                          tenant.end_date
+                                        ) || "N/A"}
+                                      </div>
+
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "row",
+                                          marginTop: "10px",
+                                        }}
+                                      >
+                                        <Typography
                                           style={{
-                                            color: "blue",
-                                            fontWeight: "bold",
+                                            paddingRight: "3px",
+                                            fontSize: "2px",
+                                            color: "black",
                                           }}
                                         >
-                                          {tenant.tenant_firstName || "N/A"}{" "}
-                                          {tenant.tenant_lastName || "N/A"}
-                                          <br></br>
-                                          {entry.rental_adress}
-                                          {entry.rental_units !== "" &&
-                                          entry.rental_units !== undefined
-                                            ? ` - ${entry.rental_units}`
-                                            : null}
-                                        </div>
+                                          <PhoneAndroidIcon />
+                                        </Typography>
+                                        {tenant.tenant_phoneNumber || "N/A"}
+                                      </div>
 
-                                        <div>
-                                          {" "}
-                                          {formatDateWithoutTime(
-                                            entry.start_date
-                                          ) || "N/A"}{" "}
-                                          to{" "}
-                                          {formatDateWithoutTime(
-                                            entry.end_date
-                                          ) || "N/A"}
-                                        </div>
-
-                                        <div
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          flexDirection: "row",
+                                          marginTop: "10px",
+                                        }}
+                                      >
+                                        <Typography
                                           style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
+                                            paddingRight: "3px",
+                                            fontSize: "7px",
+                                            color: "black",
                                           }}
                                         >
-                                          <Typography
-                                            style={{
-                                              paddingRight: "3px",
-                                              fontSize: "2px",
-                                              color: "black",
-                                            }}
-                                          >
-                                            <PhoneAndroidIcon />
-                                          </Typography>
-                                          {tenant.tenant_mobileNumber || "N/A"}
-                                        </div>
-
-                                        <div
+                                          <MailIcon />
+                                        </Typography>
+                                        {tenant.tenant_email || "N/A"}
+                                      </div>
+                                      <div
+                                        style={
+                                          tenant.moveout_notice_given_date
+                                            ? {
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }
+                                            : {
+                                                display: "none",
+                                              }
+                                        }
+                                      >
+                                        <Typography
                                           style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            marginTop: "10px",
+                                            paddingRight: "3px",
+                                            color: "black",
                                           }}
                                         >
-                                          <Typography
-                                            style={{
-                                              paddingRight: "3px",
-                                              fontSize: "7px",
-                                              color: "black",
-                                            }}
-                                          >
-                                            <MailIcon />
-                                          </Typography>
-                                          {tenant.tenant_email || "N/A"}
-                                        </div>
-                                        <div
-                                          style={
-                                            entry.moveout_notice_given_date
-                                              ? {
-                                                  // display:"block",
-                                                  display: "flex",
-                                                  flexDirection: "row",
-                                                  marginTop: "10px",
-                                                }
-                                              : {
-                                                  display: "none",
-                                                }
-                                          }
+                                          Notice date:
+                                        </Typography>
+                                        {tenant.moveout_notice_given_date ||
+                                          "N/A"}
+                                      </div>
+                                      <div
+                                        style={
+                                          tenant.moveout_date
+                                            ? {
+                                                // display:"block",
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                marginTop: "10px",
+                                              }
+                                            : {
+                                                display: "none",
+                                              }
+                                        }
+                                      >
+                                        <Typography
+                                          style={{
+                                            paddingRight: "3px",
+                                            // fontSize: "7px",
+                                            color: "black",
+                                          }}
                                         >
-                                          <Typography
-                                            style={{
-                                              paddingRight: "3px",
-                                              // fontSize: "7px",
-                                              color: "black",
-                                            }}
-                                          >
-                                            Notice date:
-                                          </Typography>
-                                          {entry.moveout_notice_given_date ||
-                                            "N/A"}
-                                        </div>
-                                        <div
-                                          style={
-                                            entry.moveout_date
-                                              ? {
-                                                  // display:"block",
-                                                  display: "flex",
-                                                  flexDirection: "row",
-                                                  marginTop: "10px",
-                                                }
-                                              : {
-                                                  display: "none",
-                                                }
-                                          }
-                                        >
-                                          <Typography
-                                            style={{
-                                              paddingRight: "3px",
-                                              // fontSize: "7px",
-                                              color: "black",
-                                            }}
-                                          >
-                                            Move out:
-                                          </Typography>
-                                          {entry.moveout_date || "N/A"}
-                                        </div>
-                                      </Col>
-                                    </Row>
-                                  </Box>
-                                ))}
+                                          Move out:
+                                        </Typography>
+                                        {tenant.moveout_date || "N/A"}
+                                      </div>
+                                    </Col>
+                                  </Row>
+                                </Box>
                               </Grid>
                             ))}
                           </Grid>
@@ -1181,19 +1227,7 @@ const RentRollDetail2 = () => {
                                   fontWeight: "bold",
                                 }}
                               >
-                                {console.log(
-                                  GeneralLedgerData,
-                                  "GeneralLeder Data"
-                                )}
-                                {GeneralLedgerData &&
-                                  GeneralLedgerData.paymentAndCharges &&
-                                  GeneralLedgerData.paymentAndCharges.length >
-                                    0 &&
-                                  "$" +
-                                    Math.abs(
-                                      GeneralLedgerData.paymentAndCharges[0]
-                                        .Total
-                                    )}
+                                {totalAmount}
                               </Typography>
                             </div>
                             <hr
@@ -1202,57 +1236,9 @@ const RentRollDetail2 = () => {
                                 marginBottom: "6px",
                               }}
                             />
-                            {/* Display entries data */}
-                            {/* {paymentData.entries &&
-                          paymentData.entries.length > 0 && ( */}
                             <>
                               <div>
-                                {/* {paymentData.entries.map(
-                                  (entry, index) => ( */}
                                 <div className="entry-container">
-                                  {/* <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                      marginBottom: "5px",
-                                    }}
-                                  >
-                                    <Typography
-                                      sx={{
-                                        fontSize: 14,
-                                        fontWeight: "bold",
-                                        marginRight: "10px",
-                                      }}
-                                      color="text.secondary"
-                                      gutterBottom
-                                    >
-                                      Prepayments:
-                                    </Typography>
-                                    <Typography sx={{ fontSize: 14 }}>
-                                       entry.amount 
-                                    </Typography>
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                      marginBottom: "5px",
-                                    }}
-                                  >
-                                    <Typography
-                                      sx={{
-                                        fontSize: 14,
-                                        fontWeight: "bold",
-                                        marginRight: "10px",
-                                      }}
-                                      color="text.secondary"
-                                      gutterBottom
-                                    >
-                                      Deposite held:
-                                    </Typography>
-                                  </div> */}
                                   <div
                                     style={{
                                       display: "flex",
@@ -1272,25 +1258,21 @@ const RentRollDetail2 = () => {
                                     >
                                       Rent:
                                     </Typography>
-                                    {myData1.map((item) => (
-                                      <>
-                                        <Typography
-                                          sx={{
-                                            fontSize: 14,
-                                            fontWeight: "bold",
-                                            marginRight: "10px",
-                                          }}
-                                          color="text.secondary"
-                                          gutterBottom
-                                        >
-                                          ${item.entries.amount}
-                                        </Typography>
-                                      </>
-                                    ))}
+                                    <>
+                                      <Typography
+                                        sx={{
+                                          fontSize: 14,
+                                          fontWeight: "bold",
+                                          marginRight: "10px",
+                                        }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        {leaseData?.amount}
+                                      </Typography>
+                                    </>
                                   </div>
                                 </div>
-                                {/* )
-                                )} */}
                               </div>
                               <div
                                 style={{
@@ -1309,24 +1291,21 @@ const RentRollDetail2 = () => {
                                 >
                                   Due date :
                                 </Typography>
-                                {myData1.map((item) => (
-                                  <>
-                                    <Typography
-                                      sx={{
-                                        fontSize: 14,
-                                        fontWeight: "bold",
-                                        marginRight: "10px",
-                                      }}
-                                      color="text.secondary"
-                                      gutterBottom
-                                    >
-                                      {item.entries.nextDue_date}
-                                    </Typography>
-                                  </>
-                                ))}
+                                <>
+                                  <Typography
+                                    sx={{
+                                      fontSize: 14,
+                                      fontWeight: "bold",
+                                      marginRight: "10px",
+                                    }}
+                                    color="text.secondary"
+                                    gutterBottom
+                                  >
+                                    {leaseData?.date}
+                                  </Typography>
+                                </>
                               </div>
                             </>
-                            {/* )} */}
                             <div
                               style={{
                                 display: "flex",
@@ -1336,16 +1315,8 @@ const RentRollDetail2 = () => {
                             >
                               <Button
                                 color="primary"
-                                ////  href="#rms"
                                 onClick={() =>
-                                  navigate({
-                                    state: {
-                                      unit_name: unit,
-                                      unit_id: unitId,
-                                      property_id: propertyId,
-                                      rental_adress: rental,
-                                    },
-                                  })
+                                  navigate(`/${admin}/AddPayment/${lease_id}`)
                                 }
                                 style={{
                                   background: "white",
@@ -1355,30 +1326,26 @@ const RentRollDetail2 = () => {
                               >
                                 Receive Payment
                               </Button>
-
-                              {myData1.map((item) => (
-                                <>
-                                  <Typography
-                                    sx={{
-                                      fontSize: 14,
-                                      marginLeft: "10px",
-                                      paddingTop: "10px",
-                                      cursor: "pointer",
-                                      color: "blue",
+                              <>
+                                <Typography
+                                  sx={{
+                                    fontSize: 14,
+                                    marginLeft: "10px",
+                                    paddingTop: "10px",
+                                    cursor: "pointer",
+                                    color: "blue",
+                                  }}
+                                >
+                                  <Link
+                                    to={`/admin/rentrolldetail/${lease_id}/?source=payment`}
+                                    onClick={() => {
+                                      setValue(`Financial`);
                                     }}
-                                    // onClick={() => handleChange("Financial")}
                                   >
-                                    <Link
-                                      to={`/admin/rentrolldetail/${tenantId}/?source=payment`}
-                                      onClick={() => {
-                                        setValue(`Financial`);
-                                      }}
-                                    >
-                                      Lease Ledger
-                                    </Link>
-                                  </Typography>
-                                </>
-                              ))}
+                                    Lease Ledger
+                                  </Link>
+                                </Typography>
+                              </>
                             </div>
                           </CardContent>
                         </Card>
@@ -1400,11 +1367,11 @@ const RentRollDetail2 = () => {
           <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
         </ModalHeader>
         <ModalBody>
-          <CreditCardForm
-            tenantId={tenantId}
+          {/* <CreditCardForm
+            lease_id={lease_id}
             closeModal={closeModal}
             getCreditCard={getCreditCard}
-          />
+          /> */}
         </ModalBody>
       </Modal>
       <ToastContainer />

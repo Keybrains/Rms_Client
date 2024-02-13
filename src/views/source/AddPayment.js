@@ -4,8 +4,8 @@ import { useFormik } from "formik";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Button,
   Card,
@@ -45,10 +45,8 @@ import { OverlayTrigger } from "react-bootstrap";
 const AddPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
-  const { tenantId, entryIndex } = useParams();
-  const { paymentId } = useParams();
-  const [id, setId] = useState("");
-  const [index, setIndex] = useState("");
+  const { lease_id } = useParams();
+  const { payment_id } = useParams();
   const [file, setFile] = useState([]);
   const [accountData, setAccountData] = useState([]);
   const [propertyData, setPropertyData] = useState([]);
@@ -56,25 +54,18 @@ const AddPayment = () => {
   const [prodropdownOpen, setproDropdownOpen] = useState(false);
   const [recdropdownOpen, setrecDropdownOpen] = useState(false);
   const [rentAddress, setRentAddress] = useState([]);
-  const [tenantid, setTenantid] = useState(""); // Add this line
-  const [tenantentryIndex, setTenantentryindex] = useState(""); // Add this line
+  const [tenantid, setTenantid] = useState("");
+  const [tenantentryIndex, setTenantentryindex] = useState("");
   const [printReceipt, setPrintReceipt] = useState(false);
-  // const [limitedValue,setLimitedValue]=useState(null);
+  const [accessType, setAccessType] = useState(null);
 
   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
   const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
 
-  let cookies = new Cookies();
-  const [accessType, setAccessType] = useState(null);
-
-  const location = useLocation();
-  const state = location.state && location.state;
-  const paymentState = state;
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     } else {
       navigate("/auth/login");
     }
@@ -142,37 +133,27 @@ const AddPayment = () => {
   });
 
   const handleCloseButtonClick = () => {
-    navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
+    navigate(`/admin/rentrolldetail/${lease_id}/}`);
   };
-
-  // const handleSavePaymentButtonClick = () => {
-  //   navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
-  // };
 
   useEffect(() => {
     fetchTenantData();
-    // Make an HTTP GET request to your Express API endpoint
     fetch(`${baseUrl}/tenant/tenant-name/tenant/${rentAddress}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
           setPropertyData(data.data);
         } else {
-          // Handle error
           console.error("Error:", data.message);
         }
       })
       .catch((error) => {
-        // Handle network error
         console.error("Network error:", error);
       });
   }, [rentAddress]);
 
   const handleAccountSelection = (value, index) => {
-    //console.log("Selected index:", index);
-
     const updatedEntries = [...generalledgerFormik.values.entries];
-    //console.log("Current entries:", updatedEntries);
 
     if (updatedEntries[index]) {
       updatedEntries[index].account = value;
@@ -221,7 +202,7 @@ const AddPayment = () => {
 
   const handleRemoveRow = (index) => {
     const updatedEntries = [...generalledgerFormik.values.entries];
-    updatedEntries.splice(index, 1); // Remove the entry at the specified index
+    updatedEntries.splice(index, 1);
     generalledgerFormik.setValues({
       ...generalledgerFormik.values,
       entries: updatedEntries,
@@ -230,7 +211,7 @@ const AddPayment = () => {
 
   const handleRemoveRow2 = (index) => {
     const updatedEntries = [...formikForAnotherData.values.entries];
-    updatedEntries.splice(index, 1); // Remove the entry at the specified index
+    updatedEntries.splice(index, 1);
     formikForAnotherData.setValues({
       ...formikForAnotherData.values,
       entries: updatedEntries,
@@ -239,17 +220,15 @@ const AddPayment = () => {
 
   const [tenantData, setTenantData] = useState([]);
   const [propertyId, setPropertyId] = useState("");
-  // const [propertyData, setPropertyData] = useState([]);
 
   const fetchTenantData = async () => {
-    fetch(`${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`)
+    fetch(`${baseUrl}/tenant/tenant_summary/${lease_id}/entry/}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
           const tenantDatas = data.data;
           setTenantData(tenantDatas);
           const rentalAddress = tenantDatas.entries.rental_adress;
-          // console.log(tenantDatas.entries.property_id, "propertyId");
           setSelectedRec(
             `${tenantDatas.tenant_firstName} ${tenantDatas.tenant_lastName}`
           );
@@ -280,13 +259,9 @@ const AddPayment = () => {
       });
   }, []);
 
-  if (generalledgerFormik.values.values) {
-  }
-  // console.log(property,'proeprty')
   const [loader, setLoader] = useState(false);
 
   const formatExpirationDate = (date) => {
-    // Assuming date is in the format "MM/YYYY"
     const [month, year] = date.split("/");
     return `${month}${year}`;
   };
@@ -314,18 +289,13 @@ const AddPayment = () => {
               },
             });
 
-            // Update the original array with the uploaded file URL
             generalledgerFormik.values.attachment[index].upload_file =
               result.data.files[0].url;
           } catch (error) {
             console.error(error);
           }
-        } else {
-          console.log(files.upload_file, "myfile2");
         }
       }
-    } else {
-      console.error("Attachment is not an array");
     }
     const rentalAddress = generalledgerFormik.values.rental_adress;
     values["total_amount"] = total_amount;
@@ -375,7 +345,7 @@ const AddPayment = () => {
               amount: values.amount,
               expiration_date: formatExpirationDate(values.expiration_date),
               cvv: values.cvv,
-              tenantId: tenantData._id,
+              lease_id: tenantData._id,
               propertyId: tenantData?.entries?.property_id,
               unitId: tenantData?.entries?.unit_id,
             };
@@ -388,8 +358,8 @@ const AddPayment = () => {
             } else {
               console.error("Unexpected response format:", response.data);
               toast.error(response.data.message, {
-                position: 'top-center',
-              })
+                position: "top-center",
+              });
             }
           } catch (error) {
             console.log(error);
@@ -498,28 +468,26 @@ const AddPayment = () => {
             doc.save(`PaymentReceipt_${id}.pdf`);
           } else {
             if (!printReceipt) {
-              toast.success('Payment added successfully', {
-                position: 'top-center',
-              })
+              toast.success("Payment added successfully", {
+                position: "top-center",
+              });
             } else {
-              toast.error('Failed to retrieve PDF summary', {
-                position: 'top-center',
-              })
+              toast.error("Failed to retrieve PDF summary", {
+                position: "top-center",
+              });
             }
           }
         } else {
-          toast.error('Failed to get ',id,' from the response', {
-            position: 'top-center',
-          })
+          toast.error("Failed to get ", id, " from the response", {
+            position: "top-center",
+          });
         }
 
-        navigate(
-          `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
-        ); // Navigate to the desired page
+        navigate(`/admin/rentrolldetail/${lease_id}/}?source=payment`); // Navigate to the desired page
       } else {
         toast.error(response.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
         console.error("Server Error:", response.data.message);
       }
       try {
@@ -530,9 +498,6 @@ const AddPayment = () => {
           },
           unit: [
             {
-              unit: (state && state.unit_name) || "",
-              unit_id: (state && state.unit_id) || "",
-
               paymentAndCharges: [
                 ...generalledgerFormik.values.entries.map((entry) => ({
                   type: "Payment",
@@ -593,13 +558,10 @@ const AddPayment = () => {
   };
 
   const fileData = (files) => {
-    //setImgLoader(true);
-    // console.log(files, "file");
     const filesArray = [...files];
 
     if (filesArray.length <= 10 && file.length === 0) {
       const finalArray = [];
-      // i want to loop and create object
       for (let i = 0; i < filesArray.length; i++) {
         const object = {
           upload_file: filesArray[i],
@@ -608,7 +570,6 @@ const AddPayment = () => {
           upload_by: localStorage.getItem("user_id"),
           file_name: filesArray[i].name,
         };
-        // Do something with the object... push it to final array
         finalArray.push(object);
       }
       setFile([...finalArray]);
@@ -631,7 +592,6 @@ const AddPayment = () => {
           upload_by: localStorage.getItem("user_id"),
           file_name: filesArray[i].name,
         };
-        // Do something with the object... push it to final array
         finalArray.push(object);
       }
       setFile([...file, ...finalArray]);
@@ -651,8 +611,7 @@ const AddPayment = () => {
     if (typeof item !== "string") {
       const url = URL.createObjectURL(item);
       window.open(url, "_blank");
-    }
-    else {
+    } else {
       window.open(item, "_blank");
     }
   };
@@ -661,7 +620,7 @@ const AddPayment = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/payment_charge/get_entry/${paymentId}`
+          `${baseUrl}/payment_charge/get_entry/${payment_id}`
         );
         if (response.data.statusCode === 200) {
           setFile(response.data.data.charges_attachment);
@@ -687,10 +646,9 @@ const AddPayment = () => {
     };
 
     fetchData();
-  }, [paymentId]);
+  }, [payment_id]);
 
   const editpayment = async (id, values) => {
-    const arrayOfNames = file.map((item) => item.name);
     const attachmentEntries =
       generalledgerFormik?.values?.attachment?.entries() || [];
 
@@ -746,14 +704,14 @@ const AddPayment = () => {
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
-        toast.success('Payments Update Successfully', {
-          position: 'top-center',
-        })
+        toast.success("Payments Update Successfully", {
+          position: "top-center",
+        });
         navigate(`/admin/rentrolldetail/${tenantid}/${"01"}`);
       } else {
         toast.error(response.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
         console.error("Server Error:", response.data.message);
       }
     } catch (error) {
@@ -777,7 +735,7 @@ const AddPayment = () => {
   const getAllCharges = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/payment_charge/financial_unit?rental_adress=${state.rental_adress}&property_id=${state.property_id}&unit=${state.unit_name}&tenant_id=${tenantId}`
+        `${baseUrl}/payment_charge/financial_unit`
       );
       if (response.data.statusCode === 200) {
         const allPaymentAndCharges = response.data.data.flatMap((item) =>
@@ -791,15 +749,11 @@ const AddPayment = () => {
         );
         const separatedChargeData = {};
         const separatedPaymentData = {};
-
-        // Iterate over the chargeData and organize it based on charge_type
         chargeData.forEach((item) => {
           const { account } = item;
           if (!separatedChargeData[account]) {
-            // If the array for charge_type doesn't exist, create it
             separatedChargeData[account] = [item];
           } else {
-            // If the array for charge_type already exists, push the item to it
             separatedChargeData[account].push(item);
           }
         });
@@ -923,7 +877,15 @@ const AddPayment = () => {
   useEffect(() => {
     fetchingRecAccountNames();
     fetchingOneTimeCharges();
+    getCharges();
   }, []);
+
+  const getCharges = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/payment/charges_payments/${lease_id}`);
+      console.log(res, "yashuj");
+    } catch (error) {}
+  };
 
   return (
     <>
@@ -946,7 +908,7 @@ const AddPayment = () => {
                 <Row className="align-items-center">
                   <Col xs="8">
                     <h3 className="mb-0">
-                      {paymentId ? "Edit Payment" : "New Payment"}
+                      {payment_id ? "Edit Payment" : "New Payment"}
                     </h3>
                   </Col>
                 </Row>
@@ -1828,7 +1790,7 @@ const AddPayment = () => {
                           >
                             Loading...
                           </button>
-                        ) : paymentId ? (
+                        ) : payment_id ? (
                           <button
                             type="submit"
                             className="btn btn-primary"
@@ -1836,7 +1798,7 @@ const AddPayment = () => {
                             onClick={(e) => {
                               e.preventDefault();
                               editpayment(
-                                paymentId,
+                                payment_id,
                                 generalledgerFormik.values
                               );
                             }}
