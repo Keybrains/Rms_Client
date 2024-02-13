@@ -56,7 +56,6 @@ const Profile = () => {
       navigate("/auth/login");
     }
   }, [accessType]);
- 
 
   const [userProfile, setUserProfile] = useState();
   const getUserProfile = async () => {
@@ -97,10 +96,12 @@ const Profile = () => {
                     {userProfile?.first_name?.slice(0, 1).toUpperCase()}
                   </div>
                   <div className="mt-3">
-                  <h4>{userProfile?.first_name}&nbsp;{userProfile?.first_name}</h4>
-                  <p>{userProfile?.email}</p>
-                  <p>{userProfile?.phone_number}</p>
-                </div>
+                    <h4>
+                      {userProfile?.first_name}&nbsp;{userProfile?.first_name}
+                    </h4>
+                    <p>{userProfile?.email}</p>
+                    <p>{userProfile?.phone_number}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -226,7 +227,6 @@ const Profile = () => {
                         </FormGroup>
                       </Col>
 
-
                       <Col lg="6">
                         <FormGroup>
                           <label
@@ -245,7 +245,6 @@ const Profile = () => {
                           />
                         </FormGroup>
                       </Col>
-                      
                     </Row>
                     <Row>
                       <Col lg="6">

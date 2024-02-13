@@ -570,7 +570,6 @@ const DemoPayment = () => {
     }
   };
 
-  // console.log(filterTenantsBySearchAndPage(), "yash");
   return (
     <>
       <Header />
@@ -929,11 +928,6 @@ const DemoPayment = () => {
                     </Dropdown>
                   </FormGroup>
                 </Col>
-                {console.log(
-                  financialFormik.errors,
-                  "yash",
-                  selectedPaymentType
-                )}
                 <Col md="6">
                   {unitData && unitData.length !== 0 ? (
                     <>

@@ -849,7 +849,6 @@ const RentRollDetail = () => {
       `http://192.168.1.11:4000/api/creditcard/getCreditCard/${tenantId}`
     );
     setCardDetails(response.data);
-    console.log(response, "yashu");
   };
 
   useEffect(() => {

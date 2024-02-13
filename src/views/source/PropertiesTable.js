@@ -287,7 +287,6 @@ const PropertiesTables = () => {
           case "-rental_adress":
             filteredData.sort((a, b) => {
               const comparison = a.rental_adress.localeCompare(b.rental_adress);
-              console.log(comparison, -comparison, "yash");
               return upArrow.includes("-rental_adress")
                 ? -comparison
                 : comparison;

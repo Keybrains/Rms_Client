@@ -27,6 +27,11 @@ import {
   Row,
   Table,
   Form,
+  ModalHeader,
+  ModalBody,
+
+  ModalFooter,
+  Modal,
 } from "reactstrap";
 import Tab from "@mui/material/Tab";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
@@ -73,6 +78,7 @@ import {
   deleteAppliance,
 } from "./Functions/Units";
 import { jwtDecode } from "jwt-decode";
+import { ToastContainer, toast } from 'react-toastify';
 
 const PropDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -81,14 +87,16 @@ const PropDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-  const source = queryParams.get("source");
-  const { rental_id } = useParams();
+  const { rental_id, admin } = useParams();
 
   const [value, setValue] = React.useState("summary");
   const [rentalData, setRentalData] = useState();
   const [rentalOwnerData, setRentalOwnerData] = useState("");
   const [propertyTypeData, setPropertyTypeData] = useState("");
   const [propertyUnitData, setpropertyUnitData] = useState("");
+  const [tenantsData, setTenantsData] = useState([]);
+  const [tenantsCount, setTenantsCount] = useState(0);
+  const [workOrderData, setWorkOrderData] = useState("");
   const [staffMemberData, setStaffMemberData] = useState("");
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
   const [clickedUnitObject, setClickedUnitObject] = useState([]);
@@ -109,72 +117,10 @@ const PropDetails = () => {
   const [addAppliances, setAddAppliances] = useState(false);
   const [unitImage, setUnitImage] = useState([]);
   const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
-  const [addUnitDialogOpen, setAddUnitDialogOpen] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [openEdite, setOpenEdite] = useState("");
   const [accessType, setAccessType] = useState(null);
-  
 
-  // =====================================================================
-
-  const [showModal, setShowModal] = useState(false);
-
-  const handleMoveOutClick = () => {
-    setShowModal(true);
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
-  };
-
-  // ============================================================================
-
-  const [moveOutDate, setMoveOutDate] = useState("");
-  const [noticeGivenDate, setNoticeGivenDate] = useState("");
-
-  // useEffect(() => {
-  //   // Set noticeGivenDate to the current date when the component mounts
-  //   const currentDate = new Date().toISOString().split("T")[0];
-  //   setNoticeGivenDate(currentDate);
-  // }, []);
-  // const handleMoveout = () => {
-  //   if (moveOutDate && noticeGivenDate) {
-  //     const updatedApplicant = {
-  //       moveout_date: moveOutDate,
-  //       moveout_notice_given_date: noticeGivenDate,
-  //       end_date: moveOutDate,
-  //     };
-
-  //     axios
-  //       .put(
-  //         `${baseUrl}/tenant/moveout/${tenantId}/${entryIndex}`,
-  //         updatedApplicant
-  //       )
-  //       .then((res) => {
-  //         console.log(res, "res");
-  //         if (res.data.statusCode === 200) {
-  //           toast.success('Move-out Successfully', {
-  //             position: 'top-center',
-  //           })
-  //           // Close the modal if the status code is 200
-  //           handleModalClose();
-  //           getTenantData();
-  //           tenantsData();
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         toast.error('An error occurred while Move-out', {
-  //           position: 'top-center',
-  //         })
-  //         console.error(err);
-  //       });
-  //   } else {
-  
-  //     toast.error('NOTICE GIVEN DATE && MOVE-OUT DATE must be required', {
-  //       position: 'top-center',
-  //     })
-  //   }
-  // };
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -190,15 +136,15 @@ const PropDetails = () => {
     try {
       const url = `${baseUrl}/rentals/rental_summary/${rental_id}`;
       const response = await axios.get(url);
-      console.log(response, url, "yash1");
       setRentalData(response.data.data[0]);
       setPropertyTypeData(response.data.data[0].property_type_data);
       setRentalOwnerData(response.data.data[0].rental_owner_data);
       setStaffMemberData(response.data.data[0].staffmember_data);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
-      setLoading(false);
     }
+    setLoading(false);
+    setPropImageLoader(false);
   };
 
   const fetchUnitsData = async () => {
@@ -210,13 +156,43 @@ const PropDetails = () => {
       setpropertyUnitData(response.data.data);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
-      setLoading(false);
     }
+    setLoading(false);
+  };
+
+  const fetchTenantData = async () => {
+    setLoader(true);
+    try {
+      const response = await axios.get(
+        `${baseUrl}/tenants/rental_tenant/${rental_id}`
+      );
+      setTenantsData(response.data.data);
+      setTenantsCount(response.data.count);
+      console.log(response.data.data, "ja");
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+    }
+    setLoading(false);
+  };
+
+  const fetchWorkOrderData = async () => {
+    setLoader(true);
+    try {
+      const response = await axios.get(
+        `${baseUrl}/work-order/rental_workorder/${rental_id}`
+      );
+      setWorkOrderData(response.data.data);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchRentalData();
     fetchUnitsData();
+    fetchTenantData();
+    fetchWorkOrderData();
   }, [rental_id]);
 
   const fetchApplianceData = async () => {
@@ -285,7 +261,6 @@ const PropDetails = () => {
       try {
         let res;
 
-        console.log(values, "yashuj");
         if (clickedUnitObject.unit_id) {
           res = await handleUnitDetailsEdit(clickedUnitObject?.unit_id, values);
         } else {
@@ -391,9 +366,200 @@ const PropDetails = () => {
     setPhotoresDialogOpen((prevState) => !prevState);
   };
 
+  const countTenantsByUnit = () => {
+    for (const tenant of tenantsData) {
+      for (const unit of propertyUnitData) {
+        if (tenant.unit_id === unit.unit_id) {
+          console.log("object yashu");
+        }
+        console.log("object yashu2");
+      }
+    }
+  };
+
+  useEffect(() => {
+    countTenantsByUnit();
+  }, [tenantsData, propertyUnitData]);
+
+  console.log(tenantsData, propertyUnitData, "yashh");
+
+
+  // =====================================================================
+
+  const [showModal, setShowModal] = useState(false);
+  const [clickedObject, setClickedObject] = useState({});
+  console.log(clickedObject, "kk")
+  const handleMoveOutClick = (tenant) => {
+    console.log("Move out button clicked");
+    setClickedObject(tenant);
+    setShowModal(true);
+  };
+
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  // ============================================================================
+
+  const [moveOutDate, setMoveOutDate] = useState("");
+  const [noticeGivenDate, setNoticeGivenDate] = useState("");
+
+  useEffect(() => {
+    // Set noticeGivenDate to the current date when the component mounts
+    const currentDate = new Date().toISOString().split("T")[0];
+    setNoticeGivenDate(currentDate);
+  }, []);
+  const handleMoveout = (lease_id) => {
+    console.log(moveOutDate, noticeGivenDate, lease_id, "yashuj")
+    if (moveOutDate && noticeGivenDate) {
+      const updatedApplicant = {
+        moveout_date: moveOutDate,
+        moveout_notice_given_date: noticeGivenDate,
+      };
+
+      axios
+        .put(
+          `http://192.168.1.103:4000/api/leases/lease_moveout/${lease_id}`,
+          updatedApplicant
+        )
+        .then((res) => {
+          console.log(res, "res");
+          if (res.data.statusCode === 200) {
+            toast.success('Move-out Successfully', {
+              position: 'top-center',
+            })
+            // Close the modal if the status code is 200
+            handleModalClose();
+            tenantsData();
+          }
+        })
+        .catch((err) => {
+          toast.error('An error occurred while Move-out', {
+            position: 'top-center',
+          })
+          console.error(err);
+        });
+    } else {
+
+      toast.error('NOTICE GIVEN DATE && MOVE-OUT DATE must be required', {
+        position: 'top-center',
+      })
+    }
+  };
   return (
     <>
       <Header />
+      <Modal isOpen={showModal}>
+        <ModalHeader className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Move out tenants</strong>
+        </ModalHeader>
+        <ModalBody>
+          <div>
+            Select tenants to move out. If
+            everyone is moving, the lease will end
+            on the last move-out date. If some
+            tenants are staying, you’ll need to
+            renew the lease. Note: Renters
+            insurance policies will be permanently
+            deleted upon move-out.
+          </div>
+          <hr />
+          {/* {rentaldata?.map((country) => ( */}
+          <React.Fragment>
+            <Table striped bordered responsive>
+              <thead>
+                <tr>
+                  <th>Address / Unit</th>
+                  <th>LEASE TYPE</th>
+                  <th>START - END</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Example rows */}
+                <tr>
+                  <td>
+                    {clickedObject.rental_adress}
+                    {clickedObject.rental_unit !== "" &&
+                      clickedObject.rental_unit !== undefined ? `- ${clickedObject.rental_unit}` : null}
+                  </td>
+                  <td>Fixed</td>
+                  <td>
+                    {clickedObject.start_date}{' '} {clickedObject.end_date}
+                  </td>
+
+                </tr>
+                {/* Add more rows dynamically based on your data */}
+              </tbody>
+            </Table>
+            <Table striped bordered responsive>
+              <thead>
+                <tr>
+                  <th>TENANT</th>
+                  <th>NOTICE GIVEN DATE</th>
+                  <th>MOVE-OUT DATE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Example rows */}
+                <tr>
+                  <td>
+                    {clickedObject.tenant_firstName} {clickedObject.tenant_lastName}
+                  </td>
+                  <td>
+                    <div className="col">
+                      <input
+                        type="date"
+                        className="form-control"
+                        placeholder="Notice Given Date"
+                        value={noticeGivenDate}
+
+                        onChange={(e) =>
+                          setNoticeGivenDate(
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                  </td>
+                  <td>
+                    <div className="col">
+                      <input
+                        type="date"
+                        className="form-control"
+                        placeholder="Move-out Date"
+                        value={moveOutDate}
+                        onChange={(e) =>
+                          setMoveOutDate(
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                  </td>
+                </tr>
+                {/* Add more rows dynamically based on your data */}
+              </tbody>
+            </Table>
+          </React.Fragment>
+
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            style={{ backgroundColor: "#008000" }}
+            onClick={() => handleMoveout(clickedObject.lease_id)}
+          >
+            Move out
+          </Button>
+          <Button
+            style={{ backgroundColor: "#ffffff" }}
+            onClick={handleModalClose}
+          >
+            Close
+          </Button>
+          {/* You can add additional buttons or actions as needed */}
+        </ModalFooter>
+      </Modal>
       <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
@@ -406,7 +572,7 @@ const PropDetails = () => {
             <Button
               color="primary"
               onClick={() => {
-                navigate("/admin/propertiesTable");
+                navigate("/" + admin + "/propertiesTable");
                 setClickedUnitObject([]);
               }}
               size="sm"
@@ -448,7 +614,7 @@ const PropDetails = () => {
                         value="Task"
                       />
                       <Tab
-                        label={`Tenant (0)`}
+                        label={`Tenant (${tenantsCount})`}
                         style={{ textTransform: "none" }}
                         value="Tenant"
                       />
@@ -492,9 +658,19 @@ const PropDetails = () => {
                                     accept: "image/*",
                                     multiple: false,
                                   }}
-                                  onChange={(e) =>
-                                    handleImageChange(e, rentalData.rental_id)
-                                  }
+                                  onChange={async (e) => {
+                                    setPropImageLoader(true);
+                                    const res = await handleImageChange(
+                                      e,
+                                      rentalData.rental_id
+                                    );
+                                    if (res === true) {
+                                      fetchRentalData();
+                                    } else {
+                                      console.error("Image upload failed");
+                                      setPropImageLoader(false);
+                                    }
+                                  }}
                                   style={{ display: "none" }}
                                 />
                               </div>
@@ -1305,9 +1481,6 @@ const PropDetails = () => {
                             size="l"
                             onClick={() => {
                               setOpenEdite(true);
-                              setAddUnitDialogOpen(
-                                propertyTypeData.property_type
-                              );
                             }}
                           >
                             <span className="btn-inner--text">Add Unit</span>
@@ -2095,30 +2268,21 @@ const PropDetails = () => {
                   <TabPanel value="task"></TabPanel>
 
                   <TabPanel value="Tenant">
-                    <CardHeader className="border-0">
-
-                    </CardHeader>
+                    <CardHeader className="border-0"></CardHeader>
                     <Row>
-
                       <Col>
-
                         <Grid container spacing={2}>
-
-                          <Grid
-                            item
-                            xs={12}
-                            sm={6}
-                          // key={index}
-                          >
-
+                          {tenantsData.map((tenant, index) => (
+                            // <Grid item xs={12} sm={6} >
                             <Box
-                              // key={index}
                               border="1px solid #ccc"
                               borderRadius="8px"
                               padding="16px"
-                              maxWidth="400px"
-                              margin="20px"
+                              // maxWidth="400px"
+                              margin="10px"
+                              key={index}
                             >
+
                               <Row>
                                 <Col lg="2">
                                   <Box
@@ -2135,8 +2299,7 @@ const PropDetails = () => {
                                     <AssignmentIndIcon />
                                   </Box>
                                 </Col>
-
-                                <Col lg="5">
+                                <Col lg="7">
                                   <div
                                     style={{
                                       color: "blue",
@@ -2147,7 +2310,8 @@ const PropDetails = () => {
                                       justifyContent: "start",
                                     }}
                                   >
-                                    John Doe
+                                    {tenant.tenant_firstName} {tenant.tenant_lastName}
+
                                   </div>
                                   <div
                                     style={{
@@ -2159,7 +2323,18 @@ const PropDetails = () => {
                                       justifyContent: "start",
                                     }}
                                   >
-                                    United State of America President Street 
+                                    {tenant.rental_adress} {""}
+                                    {tenant.rental_unit !== "" &&
+                                      tenant.rental_unit !== undefined ? `- ${tenant.rental_unit}` : null}
+                                  </div>
+                                  <div
+                                    style={{
+                                      // display: "flex",
+                                      // alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.start_date} to {tenant.end_date}
                                   </div>
                                   <div
                                     style={{
@@ -2178,9 +2353,8 @@ const PropDetails = () => {
                                     >
                                       <PhoneAndroidIcon />
                                     </Typography>
-                                    8527419630
+                                    {tenant.tenant_phoneNumber}
                                   </div>
-
                                   <div
                                     style={{
                                       display: "flex",
@@ -2196,40 +2370,36 @@ const PropDetails = () => {
                                       }}
                                     >
                                       <MailIcon />
-
                                     </Typography>
-                                    test@gmail.com
+                                    {tenant.tenant_email}
+                                  </div>
+                                </Col>
+                                <Col lg="3">
+                                  <div
+                                    className="d-flex justify-content(-end h5"
+                                    onClick={() => handleMoveOutClick(tenant)}
+                                    style={{ cursor: "pointer", fontSize: "12px" }}
+                                  >
+                                    <LogoutIcon fontSize="small" /> Move out
                                   </div>
 
-
-                                </Col>
-                                <Col lg="5">
-                                   <div
-                                        className="d-flex justify-content-end h5"
-                                        onClick={handleMoveOutClick}
-                                        style={{ cursor: "pointer" }}
-                                      >
-                                        <LogoutIcon fontSize="small" /> Move out
-                                      </div>
-                                      
                                 </Col>
                               </Row>
                             </Box>
-
-                          </Grid>
-
+                            // </Grid>
+                          ))}
                         </Grid>
-
                       </Col>
-
                     </Row>
                   </TabPanel>
+
                 </TabContext>
               </Col>
             </Card>
           </div>
         </Row>
       </Container>
+
 
       <Dialog open={openEdite} onClose={closeModal}>
         <DialogTitle>Edit Unit Details</DialogTitle>
@@ -2256,10 +2426,9 @@ const PropDetails = () => {
           unitImage={unitImage}
           fileData={fileData}
           togglePhotoresDialog={togglePhotoresDialog}
-          addUnitDialogOpen={addUnitDialogOpen}
+          addUnitDialogOpen={propertyTypeData.property_type}
         />
       </Dialog>
-      {console.log(addAppliancesFormin, "yashu")}
     </>
   );
 };

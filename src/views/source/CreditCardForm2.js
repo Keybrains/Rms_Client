@@ -462,7 +462,6 @@ function CreditCardForm(props) {
                     />
                   </FormGroup>
                 </Col>
-                {console.log(formik.values, "yash")}
 
                 <Col xs="12" sm="4">
                   <FormGroup>

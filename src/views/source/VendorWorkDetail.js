@@ -32,7 +32,7 @@ import { jwtDecode } from "jwt-decode";
 
 const VendorWorkDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { id } = useParams();
+  const { workorder_id } = useParams();
   //console.log(id);
   const [outstandDetails, setoutstandDetails] = useState({});
   const [showTenantTable, setShowTenantTable] = useState(false);
@@ -52,13 +52,13 @@ const VendorWorkDetail = () => {
 
   const getOutstandData = async () => {
     try {
-      const response = await axios.get(
-        `${baseUrl}/workorder/workorder_summary/${id}`
-      );
+      const url = `${baseUrl}/work-order/workorder_details/${workorder_id}`;
+      const response = await axios.get(url);
+      console.log(response.data.data);
       setoutstandDetails(response.data.data);
       setLoading(false);
-      setWorkOrderStatus(response.data.data.workorder_status.reverse());
-      setImageDetails(response.data.data.workOrderImage);
+      //setWorkOrderStatus(response.data.data.workorder_status.reverse());
+      setImageDetails(response.data.data.workOrder_images);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
@@ -99,29 +99,29 @@ const VendorWorkDetail = () => {
   }, [navigate]);
   React.useEffect(() => {
     getOutstandData();
-  }, [id]);
+  }, [workorder_id]);
 
   const [propertyDetails, setPropertyDetails] = useState({});
   const getPropertyData = async () => {
-    if (outstandDetails.rental_units === "") {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}`
-        );
-        setPropertyDetails(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching tenant details:", error);
-      }
-    } else if (outstandDetails.rental_adress && outstandDetails.rental_units) {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
-        );
-        setPropertyDetails(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching tenant details:", error);
-      }
-    }
+    // if (outstandDetails.rental_units === "") {
+    //   try {
+    //     const response = await axios.get(
+    //       `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}`
+    //     );
+    //     setPropertyDetails(response.data[0]);
+    //   } catch (error) {
+    //     console.error("Error fetching tenant details:", error);
+    //   }
+    // } else if (outstandDetails.rental_adress && outstandDetails.rental_units) {
+    //   try {
+    //     const response = await axios.get(
+    //       `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
+    //     );
+    //     setPropertyDetails(response.data[0]);
+    //   } catch (error) {
+    //     console.error("Error fetching tenant details:", error);
+    //   }
+    // }
   };
 
   React.useEffect(() => {
@@ -130,41 +130,41 @@ const VendorWorkDetail = () => {
 
   const [tenantsDetails, setTenantsDetails] = useState();
 
-  const getTenantsData = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/tenant/findData`, {
-        params: {
-          rental_adress: propertyDetails?.rental_adress,
-          rental_units: propertyDetails?.rental_units,
-        },
-      });
-      response.data.map((data) => {
-        data.entries.map((item) => {
-          const currentDate = new Date();
-          const sdate = new Date(item.start_date);
-          const edate = new Date(item.end_date);
+  // const getTenantsData = async () => {
+  //   try {
+  //     const response = await axios.get(`${baseUrl}/tenant/findData`, {
+  //       params: {
+  //         rental_adress: propertyDetails?.rental_adress,
+  //         rental_units: propertyDetails?.rental_units,
+  //       },
+  //     });
+  //     response.data.map((data) => {
+  //       data.entries.map((item) => {
+  //         const currentDate = new Date();
+  //         const sdate = new Date(item.start_date);
+  //         const edate = new Date(item.end_date);
 
-          // Compare the current date with start and end dates
-          if (
-            currentDate >= sdate &&
-            currentDate < edate &&
-            item.rental_adress === propertyDetails?.rental_adress &&
-            item.rental_units === propertyDetails?.rental_units
-          ) {
-            // console.log('Response is OK');
-            setTenantsDetails(data);
-          }
-        });
-      });
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-    }
-  };
+  //         // Compare the current date with start and end dates
+  //         if (
+  //           currentDate >= sdate &&
+  //           currentDate < edate &&
+  //           item.rental_adress === propertyDetails?.rental_adress &&
+  //           item.rental_units === propertyDetails?.rental_units
+  //         ) {
+  //           // console.log('Response is OK');
+  //           setTenantsDetails(data);
+  //         }
+  //       });
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching tenant details:", error);
+  //     setError(error);
+  //   }
+  // };
 
-  React.useEffect(() => {
-    getTenantsData();
-  }, [propertyDetails]);
+  // React.useEffect(() => {
+  //   getTenantsData();
+  // }, [propertyDetails]);
 
   const tableHeaderStyle = {
     border: "1px solid #ccc",
@@ -187,8 +187,8 @@ const VendorWorkDetail = () => {
 
   const total = () => {
     let total = 0;
-    outstandDetails?.entries.map((item) => {
-      total = total + item.total_amount;
+    outstandDetails?.partsandcharge_data?.map((item) => {
+      total = total + item.amount;
     });
     return total;
   };
@@ -290,7 +290,9 @@ const VendorWorkDetail = () => {
                   <Button
                     color="primary"
                     //  href="#rms"
-                    onClick={() => navigate(`/vendor/vendoraddwork/${id}`)}
+                    onClick={() =>
+                      navigate(`/vendor/vendoraddwork/${workorder_id}`)
+                    }
                     size="sm"
                     style={{ background: "#36013F", color: "white" }}
                   >
@@ -307,7 +309,7 @@ const VendorWorkDetail = () => {
                           <div>Loading Work Order details...</div>
                         ) : error ? (
                           <div>Error: {error.message}</div>
-                        ) : outstandDetails.workorder_id ? (
+                        ) : outstandDetails?.workOrder_id ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -343,7 +345,8 @@ const VendorWorkDetail = () => {
                                     {outstandDetails.work_subject || "N/A"}
                                   </h2>
                                   <span>
-                                    {outstandDetails.rental_adress || "N/A"}
+                                    {outstandDetails.property_data
+                                      .rental_adress || "N/A"}
                                   </span>
                                 </Box>
                               </Box>
@@ -390,6 +393,7 @@ const VendorWorkDetail = () => {
                                     >
                                       Permission to enter
                                     </label>
+
                                     <span
                                       style={{
                                         fontSize: "13px",
@@ -397,7 +401,9 @@ const VendorWorkDetail = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails.entry_allowed || "N/A"}
+                                      {outstandDetails?.entry_allowed
+                                        ? "Yes"
+                                        : "No"}
                                     </span>
                                   </FormGroup>
                                   <FormGroup marginBottom="20px">
@@ -418,7 +424,7 @@ const VendorWorkDetail = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails.vendor_note || "N/A"}
+                                      {outstandDetails.vendor_notes || "N/A"}
                                     </span>
                                   </FormGroup>
                                 </Box>
@@ -453,9 +459,7 @@ const VendorWorkDetail = () => {
                                     <Col style={{ padding: "0 8px" }}>
                                       <SmallSummaryCard
                                         label="Due Date"
-                                        value={
-                                          outstandDetails.due_date || "N/A"
-                                        }
+                                        value={outstandDetails.date || "N/A"}
                                         textTruncate // add this prop to enable text truncation
                                       />
                                     </Col>
@@ -472,8 +476,8 @@ const VendorWorkDetail = () => {
                                       <SmallSummaryCard
                                         label="Assignees"
                                         value={
-                                          outstandDetails.staffmember_name ||
-                                          "N/A"
+                                          outstandDetails.staff_data
+                                            .staffmember_name || "N/A"
                                         }
                                         textTruncate // add this prop to enable text truncation
                                       />
@@ -482,8 +486,8 @@ const VendorWorkDetail = () => {
                                 </Box>
                               </Box>
                             </Box>
-                            {outstandDetails?.entries?.length > 0 &&
-                            outstandDetails?.entries[0].part_qty ? (
+                            {outstandDetails?.partsandcharge_data?.length > 0 &&
+                            outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -523,14 +527,14 @@ const VendorWorkDetail = () => {
                                     </thead>
                                     <tbody>
                                       {/* Add your table rows dynamically here */}
-                                      {outstandDetails?.entries.map(
+                                      {outstandDetails?.partsandcharge_data?.map(
                                         (item, index) => (
                                           <tr key={index}>
                                             <td style={tableCellStyle}>
-                                              {item.part_qty}
+                                              {item.parts_quantity}
                                             </td>
                                             <td style={tableCellStyle}>
-                                              {item.account_type}
+                                              {item.account}
                                             </td>
                                             <td style={tableCellStyle}>
                                               {item.description}
@@ -541,7 +545,7 @@ const VendorWorkDetail = () => {
                                                 textAlign: "right",
                                               }}
                                             >
-                                              ${item.part_price}
+                                              ${item.parts_price}
                                             </td>
                                             <td
                                               style={{
@@ -549,7 +553,7 @@ const VendorWorkDetail = () => {
                                                 textAlign: "right",
                                               }}
                                             >
-                                              ${item.total_amount}
+                                              ${item.amount}
                                             </td>
                                           </tr>
                                         )
@@ -806,7 +810,7 @@ const VendorWorkDetail = () => {
                             ) : null}
                           </Box>
                         ) : null}
-                        {propertyDetails ? (
+                        {outstandDetails ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -834,9 +838,12 @@ const VendorWorkDetail = () => {
                                 </h3>
                               </Box>
                               {Array.isArray(
-                                propertyDetails?.propertyres_image
+                                outstandDetails.propertyDetails
+                                  ?.propertyres_image
                               ) ||
-                              Array.isArray(propertyDetails?.property_image) ? (
+                              Array.isArray(
+                                outstandDetails.propertyDetails?.property_image
+                              ) ? (
                                 <Box
                                   style={{
                                     width: "100%",
@@ -852,7 +859,8 @@ const VendorWorkDetail = () => {
                                       textAlign: "center",
                                     }}
                                   >
-                                    {propertyDetails?.propertyres_image &&
+                                    {outstandDetails.propertyDetails
+                                      ?.propertyres_image &&
                                     propertyDetails
                                       ?.propertyres_image[0]?.[0] ? (
                                       <img
@@ -868,12 +876,14 @@ const VendorWorkDetail = () => {
                                           border: "1px solid #ccc",
                                         }}
                                       />
-                                    ) : propertyDetails?.property_image &&
+                                    ) : outstandDetails.propertyDetails
+                                        ?.property_image &&
                                       propertyDetails
                                         ?.property_image[0]?.[0] ? (
                                       <img
                                         src={
-                                          propertyDetails.property_image[0][0]
+                                          outstandDetails.propertyDetails
+                                            ?.property_image[0][0]
                                         }
                                         alt="property"
                                         style={{
@@ -905,9 +915,12 @@ const VendorWorkDetail = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails?.rental_adress || "N/A"}
-                                    {propertyDetails?.rental_units ? (
-                                      " (" + propertyDetails?.rental_units + ")"
+                                    {outstandDetails.property_data
+                                      ?.rental_adress || "N/A"}
+                                    {outstandDetails.unit_data?.rental_unit ? (
+                                      " (" +
+                                      outstandDetails.unit_data?.rental_unit +
+                                      ")"
                                     ) : (
                                       <></>
                                     )}
@@ -930,23 +943,52 @@ const VendorWorkDetail = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails.rental_city ? (
-                                      <>{propertyDetails.rental_city},</>
+                                    {outstandDetails.property_data
+                                      ?.rental_city ? (
+                                      <>
+                                        {
+                                          outstandDetails.property_data
+                                            ?.rental_city
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_state ? (
-                                      <>{propertyDetails.rental_state},</>
+                                    {outstandDetails.property_data
+                                      ?.rental_state ? (
+                                      <>
+                                        {
+                                          outstandDetails.property_data
+                                            ?.rental_state
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_country ? (
-                                      <>{propertyDetails.rental_country},</>
+                                    <br />
+                                    {outstandDetails.property_data
+                                      ?.rental_country ? (
+                                      <>
+                                        {
+                                          outstandDetails.property_data
+                                            ?.rental_country
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_postcode ? (
-                                      <>{propertyDetails.rental_postcode}.</>
+                                    {outstandDetails.property_data
+                                      ?.rental_postcode ? (
+                                      <>
+                                        {
+                                          outstandDetails.property_data
+                                            ?.rental_postcode
+                                        }
+                                        .
+                                      </>
                                     ) : (
                                       ""
                                     )}
@@ -1025,7 +1067,15 @@ const VendorWorkDetail = () => {
                               </h2>
 
                               <span className="">
-                                {outstandDetails.rental_adress || "N/A"}
+                                {outstandDetails.property_data?.rental_adress ||
+                                  "N/A"}
+                                {outstandDetails.unit_data?.rental_unit ? (
+                                  " (" +
+                                  outstandDetails.unit_data?.rental_unit +
+                                  ")"
+                                ) : (
+                                  <></>
+                                )}
                               </span>
                             </Col>
                           </Row>
@@ -1072,9 +1122,7 @@ const VendorWorkDetail = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {formatDateWithoutTime(
-                                    outstandDetails.due_date
-                                  ) || "N/A"}
+                                  {outstandDetails.date || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1090,7 +1138,8 @@ const VendorWorkDetail = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails.staffmember_name || "N/A"}
+                                  {outstandDetails.staff_data
+                                    .staffmember_name || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1104,7 +1153,9 @@ const VendorWorkDetail = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails.entry_allowed || "N/A"}
+                                  {outstandDetails?.entry_allowed
+                                    ? "Yes"
+                                    : "No"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1121,7 +1172,7 @@ const VendorWorkDetail = () => {
                       margin={"20px"}
                     > */}
 
-                        {propertyDetails ? (
+                        {outstandDetails ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -1198,8 +1249,9 @@ const VendorWorkDetail = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails.rental_adress || "N/A"} (
-                                    {propertyDetails.rental_units})
+                                    {outstandDetails.property_data
+                                      ?.rental_adress || "N/A"}{" "}
+                                    ({outstandDetails.unit_data?.rental_unit})
                                   </span>
                                 </Box>
                               </Box>
@@ -1219,23 +1271,51 @@ const VendorWorkDetail = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails.rental_city ? (
-                                      <>{propertyDetails.rental_city},</>
+                                    {outstandDetails.propertyDetails
+                                      ?.rental_city ? (
+                                      <>
+                                        {
+                                          outstandDetails.propertyDetails
+                                            ?.rental_city
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_state ? (
-                                      <>{propertyDetails.rental_state},</>
+                                    {outstandDetails.propertyDetails
+                                      ?.rental_state ? (
+                                      <>
+                                        {
+                                          outstandDetails.propertyDetails
+                                            ?.rental_state
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_country ? (
-                                      <>{propertyDetails.rental_country},</>
+                                    {outstandDetails.propertyDetails
+                                      ?.rental_country ? (
+                                      <>
+                                        {
+                                          outstandDetails.propertyDetails
+                                            ?.rental_country
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails.rental_postcode ? (
-                                      <>{propertyDetails.rental_postcode}.</>
+                                    {outstandDetails.propertyDetails
+                                      ?.rental_postcode ? (
+                                      <>
+                                        {
+                                          outstandDetails.propertyDetails
+                                            ?.rental_postcode
+                                        }
+                                        .
+                                      </>
                                     ) : (
                                       ""
                                     )}

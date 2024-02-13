@@ -34,20 +34,8 @@ const VendorWorkTable = () => {
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
-  const getWorkData = async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/workorder/workorder`);
-      setLoader(false);
-      setWorkData(response.data.data);
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+ 
 
-  useEffect(() => {
-    getWorkData();
-  }, [pageItem]);
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -61,11 +49,33 @@ const VendorWorkTable = () => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
+      // console.log(jwt,"jwt")
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
+  const getWorkData = async () => {
+    try {
+      const response = await axios.get(`http://192.168.1.38:4000/api/work-order/vendor_work/${accessType.vendor_id}`);
+      console.log(response.data.data,"khu")
+      console.log("object",accessType.vendor_id)
+      setLoader(false);
+      setWorkData(response.data.data);
+      setTotalPages(Math.ceil(response.data.data.length / pageItem));
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    getWorkData();
+  }, [accessType]);
+
+
+  useEffect(() => {
+    getWorkData();
+  }, [pageItem]);
+
 
   const navigateToDetails = (workorder_id) => {
     // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
@@ -170,23 +180,24 @@ const VendorWorkTable = () => {
                       <th scope="col">Work Order</th>
                       <th scope="col">Property</th>
                       <th scope="col">Category</th>
-                      <th scope="col">Assigned</th>
+                      <th scope="col">priority</th>
                       <th scope="col">Status</th>
                       <th scope="col">Created At</th>
                       <th scope="col">Updated At</th>
                     </tr>
                   </thead>
                   <tbody>
+                
                     {filterTenantsBySearchAndPage().map((vendor) => (
                       <tr
-                        key={vendor._id}
-                        onClick={() => navigateToDetails(vendor.workorder_id)}
+                        key={vendor.vendor_id}
+                        onClick={() => navigateToDetails(vendor.workOrder_id)}
                         style={{ cursor: "pointer" }}
                       >
                         <td>{vendor.work_subject}</td>
-                        <td>{vendor.rental_adress}</td>
+                        <td>{vendor.rental_data.rental_adress} {vendor.unit_data.rental_unit ? " - " + vendor.unit_data.rental_unit : null}</td>
                         <td>{vendor.work_category}</td>
-                        <td>{vendor.staffmember_name}</td>
+                        <td>{vendor.priority}</td>
                         <td>{vendor.status}</td>
                         <td>{vendor.createdAt}</td>
                         <td>{vendor.updateAt || "-"}</td>
@@ -277,7 +288,7 @@ const VendorWorkTable = () => {
                   <></>
                 )}
               </Card>
-            )}
+             )} 
           </div>
         </Row>
         <br />

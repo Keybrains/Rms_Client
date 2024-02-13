@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Button, Card, CardBody, Col, FormGroup, Row } from "reactstrap";
 import swal from "sweetalert";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ClearIcon from "@mui/icons-material/Clear";
 import { OpenImageDialog } from "components/OpenImageDialog";
 import { Autocomplete, TextField } from "@mui/material";
@@ -72,17 +72,17 @@ const handleDeleteUnit = (id) => {
       axios
         .delete(`${baseUrl}/propertyunit/propertyunit/` + id)
         .then((response) => {
-          toast.success('your data is deleted', {
-            position: 'top-center',
-          })
+          toast.success("your data is deleted", {
+            position: "top-center",
+          });
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
-      toast.success('your data is safe', {
-        position: 'top-center',
-      })
+      toast.success("your data is safe", {
+        position: "top-center",
+      });
     }
   });
 };
@@ -93,11 +93,10 @@ const handleSubmit = async (rental_id, admin_id, object) => {
   object.rental_id = rental_id;
   try {
     const res = await axios.post(`${baseUrl}/unit/unit`, object);
-    console.log(res.data.statusCode, "yashuj");
     if (res.data.statusCode === 200) {
       toast.success(res.data.message, {
-        position: 'top-center',
-      })
+        position: "top-center",
+      });
       return false;
     } else {
       return true;
@@ -105,8 +104,8 @@ const handleSubmit = async (rental_id, admin_id, object) => {
   } catch (error) {
     console.error("Error:", error.message);
     toast.error(error.message, {
-      position: 'top-center',
-    })
+      position: "top-center",
+    });
     return true;
   }
 };
@@ -115,11 +114,10 @@ const handleSubmit = async (rental_id, admin_id, object) => {
 const handleUnitDetailsEdit = async (unit_id, object) => {
   try {
     const res = await axios.put(`${baseUrl}/unit/unit/${unit_id}`, object);
-    console.log(res.data.statusCode, "yashuj");
     if (res.data.statusCode === 200) {
-       toast.success(res.data.message, {
-            position: 'top-center',
-          })
+      toast.success(res.data.message, {
+        position: "top-center",
+      });
 
       return false;
     } else {
@@ -128,8 +126,8 @@ const handleUnitDetailsEdit = async (unit_id, object) => {
   } catch (error) {
     console.error("Error:", error.message);
     toast.error(error, {
-                  position: 'top-center',
-                })
+      position: "top-center",
+    });
     return true;
   }
 };
@@ -141,9 +139,9 @@ const addAppliancesSubmit = async (unit_id, admin_id, object) => {
   try {
     const res = await axios.post(`${baseUrl}/appliance/appliance`, object);
     if (res.data.statusCode === 200) {
-       toast.success(res.data.message, {
-            position: 'top-center',
-          })
+      toast.success(res.data.message, {
+        position: "top-center",
+      });
       return false;
     } else {
       return true;
@@ -151,8 +149,8 @@ const addAppliancesSubmit = async (unit_id, admin_id, object) => {
   } catch (error) {
     console.error("Error:", error.message);
     toast.error(error.message, {
-                  position: 'top-center',
-                })
+      position: "top-center",
+    });
     return true;
   }
 };
@@ -164,23 +162,22 @@ const editeAppliancesSubmit = async (object) => {
       `${baseUrl}/appliance/appliance/${object.appliance_id}`,
       object
     );
-    console.log(res.data.statusCode, "yashuj");
     if (res.data.statusCode === 200) {
-       toast.success(res.data.message, {
-            position: 'top-center',
-          })
+      toast.success(res.data.message, {
+        position: "top-center",
+      });
       return false;
     } else {
-       toast.warning(res.data.message, {
-              position: 'top-center',
-            })
+      toast.warning(res.data.message, {
+        position: "top-center",
+      });
       return true;
     }
   } catch (error) {
     console.error("Error:", error.message);
     toast.error(error.message, {
-                  position: 'top-center',
-                })
+      position: "top-center",
+    });
     return true;
   }
 };
@@ -196,16 +193,16 @@ const deleteAppliance = async (appliance_id) => {
           `${baseUrl}/appliance/appliance/${appliance_id}`
         );
         if (res.data.statusCode === 200) {
-           toast.success(res.data.message, {
-            position: 'top-center',
-          })
+          toast.success(res.data.message, {
+            position: "top-center",
+          });
           return res.data.statusCode;
         }
       } catch (error) {
         console.error("Error:", error.message);
         toast.error(error.message, {
-                  position: 'top-center',
-                })
+          position: "top-center",
+        });
       }
     }
   });
@@ -231,339 +228,132 @@ const UnitEdite = ({
         <Card style={{ position: "relative" }}>
           <CardBody>
             <form onSubmit={addUnitFormik.handleSubmit}>
-              {clickedObject?.rental_unit ? (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <div>
-                      <h5>Unit Number</h5>
-                    </div>
-                    <TextField
-                      type="text"
-                      size="small"
-                      id="rental_unit"
-                      name="rental_unit"
-                      value={addUnitFormik.values.rental_unit}
-                      onChange={addUnitFormik.handleChange}
-                      onBlur={addUnitFormik.handleBlur}
-                    />
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <div>
+                  <h5>Unit Number</h5>
+                </div>
+                <TextField
+                  type="text"
+                  size="small"
+                  id="rental_unit"
+                  name="rental_unit"
+                  value={addUnitFormik.values.rental_unit}
+                  onChange={addUnitFormik.handleChange}
+                  onBlur={addUnitFormik.handleBlur}
+                />
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  marginTop: "10px",
+                }}
+              >
+                <div>
+                  <h5>Street Address</h5>
+                </div>
+                <TextField
+                  type="text"
+                  size="small"
+                  id="rental_unit_adress"
+                  name="rental_unit_adress"
+                  value={addUnitFormik.values.rental_unit_adress}
+                  onChange={addUnitFormik.handleChange}
+                  onBlur={addUnitFormik.handleBlur}
+                />
+              </div>
+              <Row
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  marginTop: "10px",
+                }}
+              >
+                <Col>
+                  <div>
+                    <h5>SQFT</h5>
                   </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      marginTop: "10px",
-                    }}
-                  >
-                    <div>
-                      <h5>Street Address</h5>
-                    </div>
-                    <TextField
-                      type="text"
-                      size="small"
-                      id="rental_unit_adress"
-                      name="rental_unit_adress"
-                      value={addUnitFormik.values.rental_unit_adress}
-                      onChange={addUnitFormik.handleChange}
-                      onBlur={addUnitFormik.handleBlur}
-                    />
-                  </div>
-                  <Row
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      marginTop: "10px",
-                    }}
-                  >
+                  <TextField
+                    type="text"
+                    size="small"
+                    id="rental_sqft"
+                    name="rental_sqft"
+                    value={addUnitFormik.values.rental_sqft}
+                    onChange={addUnitFormik.handleChange}
+                    onBlur={addUnitFormik.handleBlur}
+                  />
+                </Col>
+                {addUnitDialogOpen === "Residential" ? (
+                  <>
                     <Col>
                       <div>
-                        <h5>SQFT</h5>
+                        <h5>Bath</h5>
                       </div>
-                      <TextField
-                        type="text"
+                      <Autocomplete
+                        className="form-control-alternative"
+                        id="input-unitadd"
+                        freeSolo
                         size="small"
-                        id="rental_sqft"
-                        name="rental_sqft"
-                        value={addUnitFormik.values.rental_sqft}
-                        onChange={addUnitFormik.handleChange}
-                        onBlur={addUnitFormik.handleBlur}
-                      />
-                    </Col>
-                    {clickedObject?.rental_bath ? (
-                      <Col>
-                        <div>
-                          <h5>Bath</h5>
-                        </div>
-                        <Autocomplete
-                          className="form-control-alternative"
-                          id="input-unitadd"
-                          freeSolo
-                          size="small"
-                          value={addUnitFormik.values.rental_bath}
-                          options={bathArray.map((option) => option)}
-                          onChange={(event, newValue) => {
-                            addUnitFormik.setFieldValue(
-                              `rental_bath`,
-                              newValue
-                            );
-                          }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              name={`rental_bath`}
-                              id={`rental_bath`}
-                              value={addUnitFormik.values.rental_bath}
-                              onChange={(e) => {
-                                const newValue = e.target.value;
-                                addUnitFormik.setFieldValue(
-                                  `rental_bath`,
-                                  newValue
-                                );
-                              }}
-                            />
-                          )}
-                        />
-                      </Col>
-                    ) : null}
-                    {clickedObject?.rental_bed ? (
-                      <Col>
-                        <div>
-                          <h5>Bed</h5>
-                        </div>
-                        <Autocomplete
-                          className="form-control-alternative"
-                          id="input-unitadd"
-                          freeSolo
-                          size="small"
-                          value={addUnitFormik.values.rental_bed}
-                          options={roomsArray.map((option) => option)}
-                          onChange={(event, newValue) => {
-                            addUnitFormik.setFieldValue(`rental_bed`, newValue);
-                          }}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              name={`rental_bed`}
-                              id={`rental_bed`}
-                              value={addUnitFormik.values.rental_bed}
-                              onChange={(e) => {
-                                addUnitFormik.setFieldValue(
-                                  `rental_bed`,
-                                  e.target.value
-                                );
-                              }}
-                            />
-                          )}
-                        />
-                      </Col>
-                    ) : null}
-                  </Row>
-                </>
-              ) : addUnitDialogOpen === "" ? (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <div>
-                      <h5>Unit Number</h5>
-                    </div>
-                    <TextField
-                      type="text"
-                      size="small"
-                      id="unit_number"
-                      name="unit_number"
-                      value={addUnitFormik.values.unit_number}
-                      onChange={addUnitFormik.handleChange}
-                      onBlur={addUnitFormik.handleBlur}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      marginTop: "10px",
-                    }}
-                  >
-                    <div>
-                      <h5>Street Address</h5>
-                    </div>
-                    <TextField
-                      type="text"
-                      size="small"
-                      id="address1"
-                      name="address1"
-                      value={addUnitFormik.values.address1}
-                      onChange={addUnitFormik.handleChange}
-                      onBlur={addUnitFormik.handleBlur}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      marginTop: "10px",
-                    }}
-                  >
-                    <div>
-                      <div>
-                        <h5>SQFT</h5>
-                      </div>
-                      <TextField
-                        type="text"
-                        size="small"
-                        id="rental_sqft"
-                        name="rental_sqft"
-                        value={addUnitFormik.values.rental_sqft}
-                        onChange={addUnitFormik.handleChange}
-                        onBlur={addUnitFormik.handleBlur}
-                      />
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <div>
-                      <h5>Unit Number</h5>
-                    </div>
-                    <TextField
-                      type="text"
-                      size="small"
-                      id="rental_unit"
-                      name="rental_unit"
-                      value={addUnitFormik.values.rental_unit}
-                      onChange={addUnitFormik.handleChange}
-                      onBlur={addUnitFormik.handleBlur}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      marginTop: "10px",
-                    }}
-                  >
-                    <div>
-                      <h5>Street Address</h5>
-                    </div>
-                    <TextField
-                      type="text"
-                      size="small"
-                      id="rental_unit_adress"
-                      name="rental_unit_adress"
-                      value={addUnitFormik.values.rental_unit_adress}
-                      onChange={addUnitFormik.handleChange}
-                      onBlur={addUnitFormik.handleBlur}
-                    />
-                  </div>
-                  <Row
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      marginTop: "10px",
-                    }}
-                  >
-                    <Col>
-                      <div>
-                        <h5>SQFT</h5>
-                      </div>
-                      <TextField
-                        type="text"
-                        size="small"
-                        id="rental_sqft"
-                        name="rental_sqft"
-                        value={addUnitFormik.values.rental_sqft}
-                        onChange={addUnitFormik.handleChange}
-                        onBlur={addUnitFormik.handleBlur}
-                      />
-                    </Col>
-                    {addUnitDialogOpen === "Residential" ? (
-                      <>
-                        <Col>
-                          <div>
-                            <h5>Bath</h5>
-                          </div>
-                          <Autocomplete
-                            className="form-control-alternative"
-                            id="input-unitadd"
-                            freeSolo
-                            size="small"
+                        value={addUnitFormik.values.rental_bath}
+                        options={bathArray.map((option) => option)}
+                        onChange={(event, newValue) => {
+                          addUnitFormik.setFieldValue(`rental_bath`, newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            name={`rental_bath`}
+                            id={`rental_bath`}
                             value={addUnitFormik.values.rental_bath}
-                            options={bathArray.map((option) => option)}
-                            onChange={(event, newValue) => {
+                            onChange={(e) => {
+                              const newValue = e.target.value;
                               addUnitFormik.setFieldValue(
                                 `rental_bath`,
                                 newValue
                               );
                             }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                name={`rental_bath`}
-                                id={`rental_bath`}
-                                value={addUnitFormik.values.rental_bath}
-                                onChange={(e) => {
-                                  const newValue = e.target.value;
-                                  addUnitFormik.setFieldValue(
-                                    `rental_bath`,
-                                    newValue
-                                  );
-                                }}
-                              />
-                            )}
                           />
-                        </Col>
-                        <Col>
-                          <div>
-                            <h5>Bed</h5>
-                          </div>
-                          <Autocomplete
-                            className="form-control-alternative"
-                            id="input-unitadd"
-                            freeSolo
-                            size="small"
+                        )}
+                      />
+                    </Col>
+                    <Col>
+                      <div>
+                        <h5>Bed</h5>
+                      </div>
+                      <Autocomplete
+                        className="form-control-alternative"
+                        id="input-unitadd"
+                        freeSolo
+                        size="small"
+                        value={addUnitFormik.values.rental_bed}
+                        options={roomsArray.map((option) => option)}
+                        onChange={(event, newValue) => {
+                          addUnitFormik.setFieldValue(`rental_bed`, newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            name={`rental_bed`}
+                            id={`rental_bed`}
                             value={addUnitFormik.values.rental_bed}
-                            options={roomsArray.map((option) => option)}
-                            onChange={(event, newValue) => {
+                            onChange={(e) => {
                               addUnitFormik.setFieldValue(
                                 `rental_bed`,
-                                newValue
+                                e.target.value
                               );
                             }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                name={`rental_bed`}
-                                id={`rental_bed`}
-                                value={addUnitFormik.values.rental_bed}
-                                onChange={(e) => {
-                                  addUnitFormik.setFieldValue(
-                                    `rental_bed`,
-                                    e.target.value
-                                  );
-                                }}
-                              />
-                            )}
                           />
-                        </Col>
-                      </>
-                    ) : null}
-                  </Row>
-                </>
-              )}
-
+                        )}
+                      />
+                    </Col>
+                  </>
+                ) : null}
+              </Row>
               <div
                 style={{
                   display: "flex",
@@ -655,6 +445,7 @@ const UnitEdite = ({
                                   maxHeight: "100%",
                                   maxWidth: "100%",
                                   borderRadius: "10px",
+                                  cursor: "pointer",
                                 }}
                                 onClick={() => {
                                   setSelectedImage(unitImg);
@@ -670,7 +461,7 @@ const UnitEdite = ({
                                   right: "-12px",
                                 }}
                                 onClick={() =>
-                                  clearSelectedPhoto(index, "propertyres_image")
+                                  clearSelectedPhoto(index, "rental_images")
                                 }
                               />
                             </div>
@@ -702,7 +493,7 @@ const UnitEdite = ({
           </CardBody>
         </Card>
       </Col>
-         <ToastContainer />
+      <ToastContainer />
     </Row>
   );
 };

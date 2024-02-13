@@ -422,7 +422,6 @@ const AddWorkorder = () => {
           });
         }
       }
-      console.log(res.data.data, "yashuj");
     } catch (error) {
       console.error("Error: ", error.message);
     }
@@ -633,6 +632,7 @@ const AddWorkorder = () => {
         work_charge_to: WorkFormik.values.work_charge || "",
         status: WorkFormik.values.status || "",
         date: WorkFormik.values.due_date || "",
+        updated_by: { admin_id: accessType.admin_id },
       },
       parts: WorkFormik.values.entries.map((item) => {
         return {
@@ -647,9 +647,11 @@ const AddWorkorder = () => {
         };
       }),
     };
-    console.log(object, "yashu");
     try {
-      const res = await axios.put(`http://localhost:4000/api/work-order/work-order/${id}`, object);
+      const res = await axios.put(
+        `${baseUrl}/work-order/work-order/${id}`,
+        object
+      );
       console.log(res);
     } catch (error) {}
     setLoader(false);

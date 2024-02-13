@@ -82,7 +82,6 @@ const TrialLogin = () => {
 
     try {
       const response = await axios.post(`${baseUrl}/admin/register`, object);
-      console.log(response, "yash");
     } catch (error) {
       console.error("Error:", error.message);
     }
