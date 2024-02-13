@@ -27,8 +27,19 @@ import {
   Row,
   Table,
   Form,
+  ModalHeader,
+  ModalBody,
+
+  ModalFooter,
+  Modal,
 } from "reactstrap";
 import Tab from "@mui/material/Tab";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
+import MailIcon from "@mui/icons-material/Mail";
+import HomeIcon from "@mui/icons-material/Home";
+import LogoutIcon from "@mui/icons-material/Logout";
+import DoneIcon from "@mui/icons-material/Done";
 import fone from "../../assets/img/icons/common/property_bg.png";
 import { RotatingLines } from "react-loader-spinner";
 import moment from "moment";
@@ -40,6 +51,7 @@ import { OpenImageDialog } from "components/OpenImageDialog";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
+
 
 //financial
 import {
@@ -66,6 +78,7 @@ import {
   deleteAppliance,
 } from "./Functions/Units";
 import { jwtDecode } from "jwt-decode";
+import { ToastContainer, toast } from 'react-toastify';
 
 const PropDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -81,7 +94,8 @@ const PropDetails = () => {
   const [rentalOwnerData, setRentalOwnerData] = useState("");
   const [propertyTypeData, setPropertyTypeData] = useState("");
   const [propertyUnitData, setpropertyUnitData] = useState("");
-  const [tenantsData, setTenantsData] = useState("");
+  const [tenantsData, setTenantsData] = useState([]);
+  const [tenantsCount, setTenantsCount] = useState(0);
   const [workOrderData, setWorkOrderData] = useState("");
   const [staffMemberData, setStaffMemberData] = useState("");
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
@@ -107,6 +121,7 @@ const PropDetails = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [openEdite, setOpenEdite] = useState("");
   const [accessType, setAccessType] = useState(null);
+
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -153,6 +168,8 @@ const PropDetails = () => {
         `${baseUrl}/tenants/rental_tenant/${rental_id}`
       );
       setTenantsData(response.data.data);
+      setTenantsCount(response.data.count);
+      console.log(response.data.data, "ja");
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
@@ -403,9 +420,183 @@ const getStatus =  (startDate, endDate) => {
     countTenantsByUnit();
   }, [tenantsData, propertyUnitData]);
 
+
+  // =====================================================================
+
+  const [showModal, setShowModal] = useState(false);
+  const [clickedObject, setClickedObject] = useState({});
+  console.log(clickedObject, "kk")
+  const handleMoveOutClick = (tenant) => {
+    console.log("Move out button clicked");
+    setClickedObject(tenant);
+    setShowModal(true);
+  };
+
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  // ============================================================================
+
+  const [moveOutDate, setMoveOutDate] = useState("");
+  const [noticeGivenDate, setNoticeGivenDate] = useState("");
+
+  useEffect(() => {
+    // Set noticeGivenDate to the current date when the component mounts
+    const currentDate = new Date().toISOString().split("T")[0];
+    setNoticeGivenDate(currentDate);
+  }, []);
+  const handleMoveout = (lease_id) => {
+    console.log(moveOutDate, noticeGivenDate, lease_id, "yashuj")
+    if (moveOutDate && noticeGivenDate) {
+      const updatedApplicant = {
+        moveout_date: moveOutDate,
+        moveout_notice_given_date: noticeGivenDate,
+      };
+
+      axios
+        .put(
+          `http://192.168.1.103:4000/api/leases/lease_moveout/${lease_id}`,
+          updatedApplicant
+        )
+        .then((res) => {
+          console.log(res, "res");
+          if (res.data.statusCode === 200) {
+            toast.success('Move-out Successfully', {
+              position: 'top-center',
+            })
+            // Close the modal if the status code is 200
+            handleModalClose();
+            tenantsData();
+          }
+        })
+        .catch((err) => {
+          toast.error('An error occurred while Move-out', {
+            position: 'top-center',
+          })
+          console.error(err);
+        });
+    } else {
+
+      toast.error('NOTICE GIVEN DATE && MOVE-OUT DATE must be required', {
+        position: 'top-center',
+      })
+    }
+  };
   return (
     <>
       <Header />
+      <Modal isOpen={showModal}>
+        <ModalHeader className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Move out tenants</strong>
+        </ModalHeader>
+        <ModalBody>
+          <div>
+            Select tenants to move out. If
+            everyone is moving, the lease will end
+            on the last move-out date. If some
+            tenants are staying, you’ll need to
+            renew the lease. Note: Renters
+            insurance policies will be permanently
+            deleted upon move-out.
+          </div>
+          <hr />
+          {/* {rentaldata?.map((country) => ( */}
+          <React.Fragment>
+            <Table striped bordered responsive>
+              <thead>
+                <tr>
+                  <th>Address / Unit</th>
+                  <th>LEASE TYPE</th>
+                  <th>START - END</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Example rows */}
+                <tr>
+                  <td>
+                    {clickedObject.rental_adress}
+                    {clickedObject.rental_unit !== "" &&
+                      clickedObject.rental_unit !== undefined ? `- ${clickedObject.rental_unit}` : null}
+                  </td>
+                  <td>Fixed</td>
+                  <td>
+                    {clickedObject.start_date}{' '} {clickedObject.end_date}
+                  </td>
+
+                </tr>
+                {/* Add more rows dynamically based on your data */}
+              </tbody>
+            </Table>
+            <Table striped bordered responsive>
+              <thead>
+                <tr>
+                  <th>TENANT</th>
+                  <th>NOTICE GIVEN DATE</th>
+                  <th>MOVE-OUT DATE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Example rows */}
+                <tr>
+                  <td>
+                    {clickedObject.tenant_firstName} {clickedObject.tenant_lastName}
+                  </td>
+                  <td>
+                    <div className="col">
+                      <input
+                        type="date"
+                        className="form-control"
+                        placeholder="Notice Given Date"
+                        value={noticeGivenDate}
+
+                        onChange={(e) =>
+                          setNoticeGivenDate(
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                  </td>
+                  <td>
+                    <div className="col">
+                      <input
+                        type="date"
+                        className="form-control"
+                        placeholder="Move-out Date"
+                        value={moveOutDate}
+                        onChange={(e) =>
+                          setMoveOutDate(
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                  </td>
+                </tr>
+                {/* Add more rows dynamically based on your data */}
+              </tbody>
+            </Table>
+          </React.Fragment>
+
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            style={{ backgroundColor: "#008000" }}
+            onClick={() => handleMoveout(clickedObject.lease_id)}
+          >
+            Move out
+          </Button>
+          <Button
+            style={{ backgroundColor: "#ffffff" }}
+            onClick={handleModalClose}
+          >
+            Close
+          </Button>
+          {/* You can add additional buttons or actions as needed */}
+        </ModalFooter>
+      </Modal>
       <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
@@ -458,12 +649,12 @@ const getStatus =  (startDate, endDate) => {
                       <Tab
                         label="Task"
                         style={{ textTransform: "none" }}
-                        value="task"
+                        value="Task"
                       />
                       <Tab
-                        label={`Tenant (0)`}
+                        label={`Tenant (${tenantsCount})`}
                         style={{ textTransform: "none" }}
-                        value="tenant"
+                        value="Tenant"
                       />
                     </TabList>
                   </Box>
@@ -677,13 +868,11 @@ const getStatus =  (startDate, endDate) => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${
-                                                          rentalOwnerData.rentalOwner_firstName ||
+                                                        {`${rentalOwnerData.rentalOwner_firstName ||
                                                           "N/A"
-                                                        } ${
-                                                          rentalOwnerData.rentalOwner_lastName ||
+                                                          } ${rentalOwnerData.rentalOwner_lastName ||
                                                           "N/A"
-                                                        }`}
+                                                          }`}
                                                       </td>
                                                       <td>
                                                         {rentalOwnerData.rentalOwner_companyName ||
@@ -750,10 +939,9 @@ const getStatus =  (startDate, endDate) => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${
-                                                          staffMemberData?.staffmember_name ||
+                                                        {`${staffMemberData?.staffmember_name ||
                                                           "No staff member assigned"
-                                                        }`}
+                                                          }`}
                                                       </td>
                                                     </tr>
                                                   </>
@@ -798,7 +986,7 @@ const getStatus =  (startDate, endDate) => {
                             {financialType
                               ? financialType
                               : "Month to date" &&
-                                setFinancialType("Month to date")}
+                              setFinancialType("Month to date")}
                           </DropdownToggle>
                           <DropdownMenu>
                             {financialTypeArray.map((subtype, index) => (
@@ -949,7 +1137,7 @@ const getStatus =  (startDate, endDate) => {
                                           fontWeight: "bold",
                                           backgroundColor: "#f0f0f0",
                                         }}
-                                        //colSpan="2"
+                                      //colSpan="2"
                                       >
                                         Net income
                                       </th>
@@ -1064,7 +1252,7 @@ const getStatus =  (startDate, endDate) => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                    //colSpan="2"
+                                  //colSpan="2"
                                   >
                                     Net income
                                   </th>
@@ -1074,13 +1262,13 @@ const getStatus =  (startDate, endDate) => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                    //colSpan="2"
+                                  //colSpan="2"
                                   >
                                     {netIncome >= 0
                                       ? `$${netIncome.toFixed(2)}`
                                       : `$(${Math.abs(netIncome || 0).toFixed(
-                                          2
-                                        )})`}
+                                        2
+                                      )})`}
                                   </th>
                                 </tr>
                               </React.Fragment>
@@ -1271,9 +1459,8 @@ const getStatus =  (startDate, endDate) => {
                                   $
                                   {totals[0] - totals2[0] >= 0
                                     ? (totals[0] - totals2[0]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[0] - totals2[0]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[0] - totals2[0]).toFixed(2)
+                                    })`}
                                 </th>
                                 <th
                                   style={{
@@ -1285,9 +1472,8 @@ const getStatus =  (startDate, endDate) => {
                                   $
                                   {totals[1] - totals2[1] >= 0
                                     ? (totals[1] - totals2[1]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[1] - totals2[1]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[1] - totals2[1]).toFixed(2)
+                                    })`}
                                 </th>
                                 <th
                                   style={{
@@ -1299,9 +1485,8 @@ const getStatus =  (startDate, endDate) => {
                                   $
                                   {totals[2] - totals2[2] >= 0
                                     ? (totals[2] - totals2[2]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[2] - totals2[2]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[2] - totals2[2]).toFixed(2)
+                                    })`}
                                 </th>
                               </tr>
                             </tbody>
@@ -1366,7 +1551,13 @@ const getStatus =  (startDate, endDate) => {
                                 >
                                   <td>{unit.rental_unit || "N/A"}</td>
                                   <td>{unit.rental_unit_adress || "N/A"}</td>
-                                  <td>{unit?.counts ? unit?.counts : 0}</td>
+                                  <td>
+                                    {unit.tenant_firstName == null
+                                      ? "-"
+                                      : unit.tenant_firstName +
+                                      " " +
+                                      unit.tenant_lastName}
+                                  </td>
                                   <td onClick={(e) => openEditeTab(e, unit)}>
                                     <EditIcon />
                                   </td>
@@ -1731,27 +1922,44 @@ const getStatus =  (startDate, endDate) => {
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
-                                    {unitLeases &&
-                                      unitLeases.length > 0 &&
-                                      unitLeases.map((unit, index) => (
-                                        <tr
-                                          key={index}
-                                          onClick={() => {
-                                            setPropSummary(true);
-                                            setClickedUnitObject(unit);
-                                          }}
-                                          style={{ cursor: "pointer" }}
-                                          className="w-100"
-                                        >
+                                    {clickedUnitObject &&
+                                      clickedUnitObject?.tenant_firstName &&
+                                      clickedUnitObject?.tenant_lastName ? (
+                                      <>
+                                        <tr className="body">
                                           <td>
-                                            {getStatus(
-                                              unit.lease.start_date,
-                                              unit.lease.end_date
+                                            {clickedUnitObject?.start_date
+                                              ? "Active"
+                                              : "Inactive"}
+                                          </td>
+                                          <td>
+                                            {clickedUnitObject?.start_date &&
+                                              clickedUnitObject?.end_date ? (
+                                              <>
+                                                <Link
+                                                  to={`/admin/tenantdetail/${clickedUnitObject?._id}`}
+                                                  onClick={(e) => { }}
+                                                >
+                                                  {formatDateWithoutTime(
+                                                    clickedUnitObject?.start_date
+                                                  ) +
+                                                    "-" +
+                                                    formatDateWithoutTime(
+                                                      clickedUnitObject?.end_date
+                                                    )}
+                                                </Link>
+                                              </>
+                                            ) : (
+                                              "N/A"
                                             )}
                                           </td>
                                           <td>
-                                            {unit.lease.start_date},
-                                            {unit.lease.end_date}
+                                            {clickedUnitObject?.tenant_firstName &&
+                                              clickedUnitObject?.tenant_lastName
+                                              ? clickedUnitObject?.tenant_firstName +
+                                              " " +
+                                              clickedUnitObject?.tenant_lastName
+                                              : "N/A"}
                                           </td>
                                           <td>
                                             {unit.tenant.tenant_firstName}{" "}
@@ -2080,76 +2288,141 @@ const getStatus =  (startDate, endDate) => {
                     )}
                   </TabPanel>
 
-                  <TabPanel value="task">
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      <Button
-                        className="btn-icon btn-2"
-                        color="primary"
-                        style={{
-                          background: "white",
-                          color: "blue",
-                          display: propertyTypeData.is_multiunit
-                            ? "block"
-                            : "none",
-                        }}
-                        size="l"
-                        onClick={() => {
-                          setOpenEdite(true);
-                        }}
-                      >
-                        <span className="btn-inner--text">Add Task</span>
-                      </Button>
-                    </div>
-                    <Table
-                      className="align-items-center table-flush"
-                      responsive
-                    >
-                      <thead className="thead-light">
-                        <tr>
-                          <th scope="col">TASK</th>
-                          <th scope="col">CATEGORY</th>
-                          <th scope="col">ASSIGNED TO </th>
-                          <th scope="col">STATUS</th>
-                          <th scope="col">DUE DATE</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {workOrderData &&
-                          workOrderData.length > 0 &&
-                          workOrderData.map((unit, index) => (
-                            <tr
+                  <TabPanel value="task"></TabPanel>
+
+                  <TabPanel value="Tenant">
+                    <CardHeader className="border-0"></CardHeader>
+                    <Row>
+                      <Col>
+                        <Grid container spacing={2}>
+                          {tenantsData.map((tenant, index) => (
+                            // <Grid item xs={12} sm={6} >
+                            <Box
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              padding="16px"
+                              // maxWidth="400px"
+                              margin="10px"
                               key={index}
-                              onClick={() => {
-                                setPropSummary(true);
-                                setClickedUnitObject(unit);
-                              }}
-                              style={{ cursor: "pointer" }}
-                              className="w-100"
                             >
-                              <td>{unit.work_subject}</td>
-                              <td>{unit.work_category}</td>
-                              <td>{unit.staffmember_name}</td>
-                              <td>{unit.status}</td>
-                              <td>{unit.date}</td>
-                            </tr>
+
+                              <Row>
+                                <Col lg="2">
+                                  <Box
+                                    width="40px"
+                                    height="40px"
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    backgroundColor="grey"
+                                    borderRadius="8px"
+                                    color="white"
+                                    fontSize="24px"
+                                  >
+                                    <AssignmentIndIcon />
+                                  </Box>
+                                </Col>
+                                <Col lg="7">
+                                  <div
+                                    style={{
+                                      color: "blue",
+                                      height: "40px",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.tenant_firstName} {tenant.tenant_lastName}
+
+                                  </div>
+                                  <div
+                                    style={{
+                                      color: "blue",
+                                      height: "40px",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.rental_adress} {""}
+                                    {tenant.rental_unit !== "" &&
+                                      tenant.rental_unit !== undefined ? `- ${tenant.rental_unit}` : null}
+                                  </div>
+                                  <div
+                                    style={{
+                                      // display: "flex",
+                                      // alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.start_date} to {tenant.end_date}
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      paddingTop: "3px",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "2px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <PhoneAndroidIcon />
+                                    </Typography>
+                                    {tenant.tenant_phoneNumber}
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "7px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <MailIcon />
+                                    </Typography>
+                                    {tenant.tenant_email}
+                                  </div>
+                                </Col>
+                                <Col lg="3">
+                                  <div
+                                    className="d-flex justify-content(-end h5"
+                                    onClick={() => handleMoveOutClick(tenant)}
+                                    style={{ cursor: "pointer", fontSize: "12px" }}
+                                  >
+                                    <LogoutIcon fontSize="small" /> Move out
+                                  </div>
+
+                                </Col>
+                              </Row>
+                            </Box>
+                            // </Grid>
                           ))}
-                      </tbody>
-                    </Table>
+                        </Grid>
+                      </Col>
+                    </Row>
                   </TabPanel>
 
-                  <TabPanel value="tenant"></TabPanel>
                 </TabContext>
               </Col>
             </Card>
           </div>
         </Row>
       </Container>
+
 
       <Dialog open={openEdite} onClose={closeModal}>
         <DialogTitle>Edit Unit Details</DialogTitle>
