@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import RentalHeader from "components/Headers/PlanHeader";
 import {
   Container,
@@ -13,6 +13,30 @@ import "./plan.css";
 
 function Planpurches() {
   const [Continue, setContinue] = useState(false);
+  const [states, setStates] = useState([]);
+  const [countries, setCountries] = useState([]);
+  // const [continueClicked, setContinue] = useState(false);
+
+  useEffect(() => {
+    // Fetch data from the API
+    fetch("https://restcountries.com/v3.1/all?fields=name")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Fetched data:', data);
+        // Extract states and countries from the API response
+        const statesList = data.map((country) => country.subregion);
+        const countriesList = data.map((country) => country.name.common);
+
+        // Remove duplicate values
+        const uniqueStates = Array.from(new Set(statesList));
+        const uniqueCountries = Array.from(new Set(countriesList));
+
+        // Update state
+        setStates(uniqueStates);
+        setCountries(uniqueCountries);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
   return (
     <>
       <RentalHeader />
@@ -30,11 +54,10 @@ function Planpurches() {
                 className="homee-section card h-100 premium-cards "
                 style={{
                   boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-                  
                 }}
               >
                 <div className=" card-body mb-5">
-                  <div className="homee-section"> 
+                  <div className="homee-section">
                     <b style={{ color: "rgb(10, 37, 59)" }}>
                       <h2>1. Enter the company Address</h2>
                     </b>
@@ -57,14 +80,14 @@ function Planpurches() {
                         </label>
 
                         <Input
-                          className="mb-1"
-                          style={{ width: "550px" }}
+                          className="mb-1 add"
+                          style={{ width: "60%" }}
                           type="text"
                           required
                         />
                         <Input
-                          className=""
-                          style={{ width: "550px" }}
+                          className="mb-1 "
+                          style={{  width:"60%"}}
                           type="text"
                         />
                       </FormGroup>
@@ -79,12 +102,12 @@ function Planpurches() {
 
                           <Input
                             className="mb-1"
-                            style={{ width: "170px" }}
+                            style={{ width: "80%" }}
                             type="text"
                             required
                           />
                         </FormGroup>
-                        <FormGroup className="mx-3">
+                        <FormGroup className="">
                           <label
                             className="form-control-label"
                             htmlFor="input-member"
@@ -94,18 +117,14 @@ function Planpurches() {
 
                           <Input
                             className="mb-1"
-                            style={{ width: "170px" }}
-                            type="select" // Set the type to "select" for dropdown
+                             style={{ width: "78%" }}
+                            type="text" 
                             required
-                          >
-                            {/* Options for the dropdown */}
-                            <option value="">Select State</option>
-                            <option value="state1">State 1</option>
-                            <option value="state2">State 2</option>
-                          </Input>
+                          />
+                            
                         </FormGroup>
 
-                        <FormGroup className="mx-2">
+                        <FormGroup className="">
                           <label
                             className="form-control-label"
                             htmlFor="input-member"
@@ -115,7 +134,7 @@ function Planpurches() {
 
                           <Input
                             className="mb-1"
-                            style={{ width: "170px" }}
+                             style={{ width: "80%" }}
                             type="number"
                             required
                           />
@@ -123,21 +142,24 @@ function Planpurches() {
                       </div>
                       <FormGroup>
                         <label
-                          className="form-control-label"
+                          className="form-control-label "
                           htmlFor="input-member"
                         >
                           COUNTRY
                         </label>
 
                         <Input
-                          className="mb-1"
-                          style={{ width: "550px" }}
+                          className="mb-1 add"
+                          style={{ width: "60%" }}
                           type="select"
                           required
                         >
-                          <option value="">Select State</option>
-                          <option value="state1">COUNTRY 1</option>
-                          <option value="state2">COUNTRY 2</option>
+                          <option value="">Select Country</option>
+                          {countries.map((country, index) => (
+                            <option key={index} value={country}>
+                              {country}
+                            </option>
+                          ))}
                         </Input>
                       </FormGroup>
                       <Button
@@ -176,18 +198,18 @@ function Planpurches() {
                               Subtotal
                               <hr />
                             </b>
-                            <div className="d-flex">
+                            <div className="d-flex justify-content-between">
                               <p>Growth - Annual Subscription 10% Discount</p>
-                              <p style={{ paddingLeft: "57%" }}>$1,880.00</p>
+                              <p>$1,880.00</p>
                             </div>
                             <p className="mb-5">
                               10 unit plan - 2/6/2024 to 2/5/2025
                             </p>
-                            <div className="d-flex">
+                            <div className="d-flex justify-content-between">
                               <p style={{ fontWeight: "bolder" }}>TOTAL:</p>
                               <p
                                 style={{
-                                  paddingLeft: "84%",
+                                  // paddingLeft: "84%",
                                   fontWeight: "bolder",
                                 }}
                               >
@@ -213,44 +235,45 @@ function Planpurches() {
                               <hr />
                             </b>
 
-                            <div className="d-flex">
+                            <div className="d-flex carddd">
                               <label
-                                className="form-control-label px-5 mb-3"
+                                className="form-control-label  mb-3"
                                 htmlFor="input-member"
                               >
                                 Card type
                               </label>
                               <Input
                                 className="mb-3"
-                                style={{ width: "400px", marginLeft: "57px" }}
+                                style={{ width: "50%", marginLeft: "77px" }}
                                 type="text"
                                 required
                               />
                             </div>
-                            <div className="d-flex">
+                            <div className="d-flex carddd">
                               <label
-                                className="form-control-label px-5 mb-3"
+                                className="form-control-label mb-3"
                                 htmlFor="input-member"
                               >
                                 Card Number
                               </label>
                               <Input
                                 className="mb-3"
-                                style={{ width: "400px", marginLeft: "29px" }}
+                                style={{ width: "50%", marginLeft: "49px" }}
                                 type="text"
                                 required
                               />
                             </div>
-                            <div className="d-flex">
+                            <div className="d-flex carddd">
                               <label
-                                className="form-control-label px-5"
+                                className="form-control-label "
                                 htmlFor="input-member"
                               >
                                 Expiration Date{" "}
                               </label>
+                              <div className=" d-flex" style={{}}>
                               <Input
-                                className="mb-1"
-                                style={{ width: "180px", marginLeft: "16px" }}
+                                className="mb-3 dateyear"
+                                style={{ width: "80%", marginLeft: "36px" }}
                                 type="select"
                                 required
                               >
@@ -278,8 +301,8 @@ function Planpurches() {
                                 /
                               </p>
                               <Input
-                                className=""
-                                style={{ width: "180px" }}
+                                className="mb-3 dateyear"
+                                style={{ width: "80%" }}
                                 type="select"
                                 required
                               >
@@ -297,55 +320,57 @@ function Planpurches() {
                                 <option value="state2">2033</option>
                                 <option value="state2">2034</option>
                               </Input>
+                              </div>
                             </div>
-                            <div className="d-flex">
+                            <div className="d-flex carddd">
                               <label
-                                className="form-control-label px-5"
+                                className="form-control-label "
                                 htmlFor="input-member"
                               >
                                 CVV{" "}
                               </label>
                               <Input
-                                className="mb-1"
-                                style={{ width: "400px", marginLeft: "93px" }}
+                                className="mb-3"
+                                style={{ width: "50%", marginLeft: "113px" }}
                                 type="text"
                                 required
                               />
                             </div>
-                            <div className="d-flex">
+                            <div className="d-flex carddd">
                               <label
-                                className="form-control-label px-5"
+                                className="form-control-label "
                                 htmlFor="input-member"
                               >
                                 Cardholder Name{" "}
                               </label>
                               <Input
-                                className="mb-1"
-                                style={{ width: "400px" }}
+                                className="mb-3"
+                                style={{ width: "50%", marginLeft: "20px" }}
                                 type="text"
                                 required
                               />
                             </div>
                             <Button
                               size="sm"
+                            
                               style={{
                                 background: "black",
                                 color: "white",
                                 width: "100px",
                                 height: "50px",
-                                marginLeft: "218px",
+                               justifyContent:'center',
                                 marginTop: "40px",
                               }}
-                              className="mb-5"
+                              className="mb-5 justify-content-center"
                             >
                               Submit
                             </Button>
                           </div>
                         </div>
                       </>
-                    ) : (
-                      ""
-                    )}
+                     ) : ( 
+                      "" 
+                   )} 
                   </div>
                 </div>
               </div>
