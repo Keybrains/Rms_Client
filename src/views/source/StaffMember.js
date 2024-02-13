@@ -469,8 +469,8 @@ const StaffMember = () => {
                         <td>{staff.staffmember_designation}</td>
                         <td>{staff.staffmember_phoneNumber}</td>
                         <td>{staff.staffmember_email}</td>
-                        <td>{staff.createAt}</td>
-                        <td>{staff.updateAt ? staff.updateAt : "-"}</td>
+                        <td>{staff.createdAt}</td>
+                        <td>{staff.updatedAt ? staff.updatedAt : "-"}</td>
                         <td>
                           <div style={{ display: "flex" }}>
                             <div

@@ -197,13 +197,13 @@ const RentalOwnerDetail = () => {
                                   }}
                                 >
                                   <Col>
-                                    {rentalOwnerDetails.rentalOwner_streetAdress ||
+                                    {rentalOwnerDetails.street_address ||
                                       "N/A"}
                                   </Col>
                                   <Col>
-                                    {rentalOwnerDetails.rentalOwner_city || "N/A"}
+                                    {rentalOwnerDetails.city || "N/A"}
                                   </Col>
-                                  <Col>  {rentalOwnerDetails.rentalOwner_state || "N/A"}</Col>
+                                  <Col>  {rentalOwnerDetails.state || "N/A"}</Col>
                                 </Row>
                                 <Row
                                   className="w-100 mb-1"
@@ -229,10 +229,10 @@ const RentalOwnerDetail = () => {
                                   }}
                                 >
                                   <Col>
-                                    {rentalOwnerDetails.rentalOwner_country || "N/A"}
+                                    {rentalOwnerDetails.country || "N/A"}
                                   </Col>
                                   <Col>
-                                    {rentalOwnerDetails.rentalOwner_zip || "N/A"}
+                                    {rentalOwnerDetails.postal_code || "N/A"}
                                   </Col>
                                   <Col>
 
@@ -441,7 +441,7 @@ const RentalOwnerDetail = () => {
                                 >
                                   <Col>{rentalOwnerDetails.text_identityType || "N/A"}</Col>
                                   <Col>
-                                    {rentalOwnerDetails.textpayer_id || "N/A"}
+                                    {rentalOwnerDetails.texpayer_id || "N/A"}
                                   </Col>
 
                                 </Row>

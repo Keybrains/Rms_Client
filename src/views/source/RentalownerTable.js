@@ -57,7 +57,7 @@ const RentalownerTable = () => {
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
