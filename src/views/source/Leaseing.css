@@ -71,3 +71,9 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -ms-inner-background: white;
 }
+
+@media screen and (max-width: 600px) {
+  .MuiTab-root {
+    min-width: auto !important;
+  }
+}

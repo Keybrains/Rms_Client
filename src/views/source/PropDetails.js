@@ -27,8 +27,18 @@ import {
   Row,
   Table,
   Form,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Modal,
 } from "reactstrap";
 import Tab from "@mui/material/Tab";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
+import MailIcon from "@mui/icons-material/Mail";
+import HomeIcon from "@mui/icons-material/Home";
+import LogoutIcon from "@mui/icons-material/Logout";
+import DoneIcon from "@mui/icons-material/Done";
 import fone from "../../assets/img/icons/common/property_bg.png";
 import { RotatingLines } from "react-loader-spinner";
 import moment from "moment";
@@ -66,6 +76,7 @@ import {
   deleteAppliance,
 } from "./Functions/Units";
 import { jwtDecode } from "jwt-decode";
+import { ToastContainer, toast } from "react-toastify";
 
 const PropDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -81,7 +92,8 @@ const PropDetails = () => {
   const [rentalOwnerData, setRentalOwnerData] = useState("");
   const [propertyTypeData, setPropertyTypeData] = useState("");
   const [propertyUnitData, setpropertyUnitData] = useState("");
-  const [tenantsData, setTenantsData] = useState("");
+  const [tenantsData, setTenantsData] = useState([]);
+  const [tenantsCount, setTenantsCount] = useState(0);
   const [workOrderData, setWorkOrderData] = useState("");
   const [staffMemberData, setStaffMemberData] = useState("");
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
@@ -102,6 +114,7 @@ const PropDetails = () => {
   const [month, setMonth] = useState([]);
   const [addAppliances, setAddAppliances] = useState(false);
   const [unitImage, setUnitImage] = useState([]);
+  const [unitLeases, setunitLeases] = useState([]);
   const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [openEdite, setOpenEdite] = useState("");
@@ -152,6 +165,8 @@ const PropDetails = () => {
         `${baseUrl}/tenants/rental_tenant/${rental_id}`
       );
       setTenantsData(response.data.data);
+      setTenantsCount(response.data.count);
+      console.log(response.data.data, "ja");
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
@@ -170,6 +185,42 @@ const PropDetails = () => {
     }
     setLoading(false);
   };
+  console.log(workOrderData, "kk");
+
+  const fatchunit = async () => {
+    setLoader(true);
+    try {
+      const response = await axios.get(
+        `${baseUrl}/leases/unit_leases/${clickedUnitObject?.unit_id}`
+      );
+      setunitLeases(response.data.data);
+    } catch (error) {
+      console.error("Error fetching tenant details:", error);
+    }
+    setLoading(false);
+  };
+  console.log(unitLeases, "dd");
+  useEffect(() => {
+    fatchunit();
+  }, [clickedUnitObject]);
+
+  console.log("clickedUnitObject?.unit_id", clickedUnitObject?.unit_id);
+
+  const getStatus = (startDate, endDate) => {
+    const today = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (today >= start && today <= end) {
+      return "Active";
+    } else if (today < start) {
+      return "Future";
+    } else if (today > end) {
+      return "Expired";
+    } else {
+      return "-";
+    }
+  };
 
   useEffect(() => {
     fetchRentalData();
@@ -181,7 +232,7 @@ const PropDetails = () => {
   const fetchApplianceData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/appliance/appliance/${clickedUnitObject.unit_id}`
+        `${baseUrl}/appliance/appliance/${clickedUnitObject.id}`
       );
       setApplianceData(response.data.data);
     } catch (error) {
@@ -364,9 +415,169 @@ const PropDetails = () => {
     countTenantsByUnit();
   }, [tenantsData, propertyUnitData]);
 
+  // =====================================================================
+
+  const [showModal, setShowModal] = useState(false);
+  const [clickedObject, setClickedObject] = useState({});
+  console.log(clickedObject, "kk");
+  const handleMoveOutClick = (tenant) => {
+    console.log("Move out button clicked");
+    setClickedObject(tenant);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  // ============================================================================
+
+  const [moveOutDate, setMoveOutDate] = useState("");
+  const [noticeGivenDate, setNoticeGivenDate] = useState("");
+
+  useEffect(() => {
+    // Set noticeGivenDate to the current date when the component mounts
+    const currentDate = new Date().toISOString().split("T")[0];
+    setNoticeGivenDate(currentDate);
+  }, []);
+  const handleMoveout = (lease_id) => {
+    console.log(moveOutDate, noticeGivenDate, lease_id, "yashuj");
+    if (moveOutDate && noticeGivenDate) {
+      const updatedApplicant = {
+        moveout_date: moveOutDate,
+        moveout_notice_given_date: noticeGivenDate,
+      };
+
+      axios
+        .put(
+          `http://192.168.1.103:4000/api/leases/lease_moveout/${lease_id}`,
+          updatedApplicant
+        )
+        .then((res) => {
+          console.log(res, "res");
+          if (res.data.statusCode === 200) {
+            toast.success("Move-out Successfully", {
+              position: "top-center",
+            });
+            // Close the modal if the status code is 200
+            handleModalClose();
+            tenantsData();
+          }
+        })
+        .catch((err) => {
+          toast.error("An error occurred while Move-out", {
+            position: "top-center",
+          });
+          console.error(err);
+        });
+    } else {
+      toast.error("NOTICE GIVEN DATE && MOVE-OUT DATE must be required", {
+        position: "top-center",
+      });
+    }
+  };
   return (
     <>
       <Header />
+      <Modal isOpen={showModal}>
+        <ModalHeader className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Move out tenants</strong>
+        </ModalHeader>
+        <ModalBody>
+          <div>
+            Select tenants to move out. If everyone is moving, the lease will
+            end on the last move-out date. If some tenants are staying, you’ll
+            need to renew the lease. Note: Renters insurance policies will be
+            permanently deleted upon move-out.
+          </div>
+          <hr />
+          {/* {rentaldata?.map((country) => ( */}
+          <React.Fragment>
+            <Table striped bordered responsive>
+              <thead>
+                <tr>
+                  <th>Address / Unit</th>
+                  <th>LEASE TYPE</th>
+                  <th>START - END</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Example rows */}
+                <tr>
+                  <td>
+                    {clickedObject.rental_adress}
+                    {clickedObject.rental_unit !== "" &&
+                    clickedObject.rental_unit !== undefined
+                      ? `- ${clickedObject.rental_unit}`
+                      : null}
+                  </td>
+                  <td>Fixed</td>
+                  <td>
+                    {clickedObject.start_date} {clickedObject.end_date}
+                  </td>
+                </tr>
+                {/* Add more rows dynamically based on your data */}
+              </tbody>
+            </Table>
+            <Table striped bordered responsive>
+              <thead>
+                <tr>
+                  <th>TENANT</th>
+                  <th>NOTICE GIVEN DATE</th>
+                  <th>MOVE-OUT DATE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* Example rows */}
+                <tr>
+                  <td>
+                    {clickedObject.tenant_firstName}{" "}
+                    {clickedObject.tenant_lastName}
+                  </td>
+                  <td>
+                    <div className="col">
+                      <input
+                        type="date"
+                        className="form-control"
+                        placeholder="Notice Given Date"
+                        value={noticeGivenDate}
+                        onChange={(e) => setNoticeGivenDate(e.target.value)}
+                      />
+                    </div>
+                  </td>
+                  <td>
+                    <div className="col">
+                      <input
+                        type="date"
+                        className="form-control"
+                        placeholder="Move-out Date"
+                        value={moveOutDate}
+                        onChange={(e) => setMoveOutDate(e.target.value)}
+                      />
+                    </div>
+                  </td>
+                </tr>
+                {/* Add more rows dynamically based on your data */}
+              </tbody>
+            </Table>
+          </React.Fragment>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            style={{ backgroundColor: "#008000" }}
+            onClick={() => handleMoveout(clickedObject.lease_id)}
+          >
+            Move out
+          </Button>
+          <Button
+            style={{ backgroundColor: "#ffffff" }}
+            onClick={handleModalClose}
+          >
+            Close
+          </Button>
+          {/* You can add additional buttons or actions as needed */}
+        </ModalFooter>
+      </Modal>
       <Container className="mt--8" fluid>
         <Row>
           <Col xs="12" sm="6">
@@ -415,15 +626,16 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="units"
                       />
+
                       <Tab
                         label="Task"
                         style={{ textTransform: "none" }}
-                        value="task"
+                        value="Task"
                       />
                       <Tab
-                        label={`Tenant (0)`}
+                        label={`Tenant (${tenantsCount})`}
                         style={{ textTransform: "none" }}
-                        value="tenant"
+                        value="Tenant"
                       />
                     </TabList>
                   </Box>
@@ -1326,7 +1538,13 @@ const PropDetails = () => {
                                 >
                                   <td>{unit.rental_unit || "N/A"}</td>
                                   <td>{unit.rental_unit_adress || "N/A"}</td>
-                                  <td>{unit?.counts ? unit?.counts : 0}</td>
+                                  <td>
+                                    {unit.tenant_firstName == null
+                                      ? "-"
+                                      : unit.tenant_firstName +
+                                        " " +
+                                        unit.tenant_lastName}
+                                  </td>
                                   <td onClick={(e) => openEditeTab(e, unit)}>
                                     <EditIcon />
                                   </td>
@@ -1691,6 +1909,7 @@ const PropDetails = () => {
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
+                                    {console.log(unitLeases, "yashu")}
                                     {clickedUnitObject &&
                                     clickedUnitObject?.tenant_firstName &&
                                     clickedUnitObject?.tenant_lastName ? (
@@ -1740,18 +1959,7 @@ const PropDetails = () => {
                                         </tr>
                                       </>
                                     ) : (
-                                      <tr>
-                                        <td>
-                                          <Typography
-                                            variant="body2"
-                                            color="textSecondary"
-                                            component="p"
-                                          >
-                                            You don't have any leases for this
-                                            unit right now.
-                                          </Typography>
-                                        </td>
-                                      </tr>
+                                      ""
                                     )}
                                   </tbody>
                                 </Table>
@@ -2074,7 +2282,134 @@ const PropDetails = () => {
 
                   <TabPanel value="task"></TabPanel>
 
-                  <TabPanel value="tenant"></TabPanel>
+                  <TabPanel value="Tenant">
+                    <CardHeader className="border-0"></CardHeader>
+                    <Row>
+                      <Col>
+                        <Grid container spacing={2}>
+                          {tenantsData.map((tenant, index) => (
+                            // <Grid item xs={12} sm={6} >
+                            <Box
+                              border="1px solid #ccc"
+                              borderRadius="8px"
+                              padding="16px"
+                              // maxWidth="400px"
+                              margin="10px"
+                              key={index}
+                            >
+                              <Row>
+                                <Col lg="2">
+                                  <Box
+                                    width="40px"
+                                    height="40px"
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    backgroundColor="grey"
+                                    borderRadius="8px"
+                                    color="white"
+                                    fontSize="24px"
+                                  >
+                                    <AssignmentIndIcon />
+                                  </Box>
+                                </Col>
+                                <Col lg="7">
+                                  <div
+                                    style={{
+                                      color: "blue",
+                                      height: "40px",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.tenant_firstName}{" "}
+                                    {tenant.tenant_lastName}
+                                  </div>
+                                  <div
+                                    style={{
+                                      color: "blue",
+                                      height: "40px",
+                                      fontWeight: "bold",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.rental_adress} {""}
+                                    {tenant.rental_unit !== "" &&
+                                    tenant.rental_unit !== undefined
+                                      ? `- ${tenant.rental_unit}`
+                                      : null}
+                                  </div>
+                                  <div
+                                    style={{
+                                      // display: "flex",
+                                      // alignItems: "center",
+                                      justifyContent: "start",
+                                    }}
+                                  >
+                                    {tenant.start_date} to {tenant.end_date}
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      paddingTop: "3px",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "2px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <PhoneAndroidIcon />
+                                    </Typography>
+                                    {tenant.tenant_phoneNumber}
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography
+                                      style={{
+                                        paddingRight: "3px",
+                                        fontSize: "7px",
+                                        color: "black",
+                                      }}
+                                    >
+                                      <MailIcon />
+                                    </Typography>
+                                    {tenant.tenant_email}
+                                  </div>
+                                </Col>
+                                <Col lg="3">
+                                  <div
+                                    className="d-flex justify-content(-end h5"
+                                    onClick={() => handleMoveOutClick(tenant)}
+                                    style={{
+                                      cursor: "pointer",
+                                      fontSize: "12px",
+                                    }}
+                                  >
+                                    <LogoutIcon fontSize="small" /> Move out
+                                  </div>
+                                </Col>
+                              </Row>
+                            </Box>
+                            // </Grid>
+                          ))}
+                        </Grid>
+                      </Col>
+                    </Row>
+                  </TabPanel>
                 </TabContext>
               </Col>
             </Card>
