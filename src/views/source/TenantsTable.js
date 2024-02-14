@@ -111,15 +111,18 @@ const TenantsTable = () => {
         if (res.data.statusCode === 200) {
           toast.success(res.data.message, {
             position: 'top-center',
+            autoClose: 800,
           })
         } else {
           toast.warning(res.data.message, {
             position: 'top-center',
+            autoClose: 800,
           })
         }
       } else {
         toast.success('Tenant is safe!', {
           position: 'top-center',
+          autoClose: 800,
         })
       }
     });
@@ -500,7 +503,7 @@ const TenantsTable = () => {
                               >
                                 <EditIcon />
                               </div>
-                              <div
+                              {/* <div
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -508,7 +511,7 @@ const TenantsTable = () => {
                                 }}
                               >
                                 <PictureAsPdfIcon />
-                              </div>
+                              </div> */}
                             </div>
                           </td>
                         </tr>

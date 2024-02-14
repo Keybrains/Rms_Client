@@ -216,64 +216,58 @@ const RentalownerTable = () => {
                     </Col>
                   </Row>
                 </CardHeader>
-                {filterRentalOwnersBySearch()?.length > 0 ? (
-                  <Table className="align-items-center table-flush" responsive>
-                    <thead className="thead-light">
-                      <tr>
-                        <th scope="col">First Name</th>
-                        <th scope="col">Last Name</th>
-                        <th scope="col">Address</th>
-                        <th scope="col">Phone</th>
-                        <th scope="col">Email</th>
-                        {/* <th scope="col">Action</th> */}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filterRentalOwnersBySearch()?.map((rentalOwner) => (
-                        <tr
-                          key={rentalOwner.rentalowner_id}
-                          onClick={() =>
-                            navigateToRentRollDetails(
-                              rentalOwner.rentalowner_id
-                            )
-                          }
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td>{rentalOwner.rentalOwner_firstName}</td>
-                          <td>{rentalOwner.rentalOwner_lastName}</td>
-                          <td>{rentalOwner?.rentalOwner_adress}</td>
-                          <td>{rentalOwner.rentalOwner_phoneNumber}</td>
-                          <td>{rentalOwner.rentalOwner_primaryEmail}</td>
-                          {/* <td style={{}}>
-                            <div style={{ display: "flex", gap: "5px" }}>
-                              <div
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteTenant(rentalOwner.rentalowner_id);
-                                }}
-                              >
-                                <DeleteIcon />
-                              </div>
-                              &nbsp; &nbsp; &nbsp;
-                              <div
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  editRentalOwner(rentalOwner.rentalowner_id);
-                                }}
-                              >
-                                <EditIcon />
-                              </div>
+                <Table className="align-items-center table-flush" responsive>
+                  <thead className="thead-light">
+                    <tr>
+                      <th scope="col">First Name</th>
+                      <th scope="col">Last Name</th>
+                      {/* <th scope="col">Address</th> */}
+                      <th scope="col">Phone</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filterRentalOwnersBySearch()?.map((rentalOwner) => (
+                      <tr
+                        key={rentalOwner.rentalowner_id}
+                        onClick={() =>
+                          navigateToRentRollDetails(rentalOwner.rentalowner_id)
+                        }
+                        style={{ cursor: "pointer" }}
+                      >
+                        <td>{rentalOwner.rentalOwner_firstName}</td>
+                        <td>{rentalOwner.rentalOwner_lastName}</td>
+                        {/* <td>{rentalOwner?.rentalOwner_adress}</td> */}
+                        <td>{rentalOwner.rentalOwner_phoneNumber}</td>
+                        <td>{rentalOwner.rentalOwner_primaryEmail}</td>
+                        <td style={{}}>
+                          <div style={{ display: "flex", gap: "5px" }}>
+                            <div
+                              style={{ cursor: "pointer" }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteTenant(rentalOwner.rentalowner_id);
+                              }}
+                            >
+                              <DeleteIcon />
                             </div>
-                          </td> */}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                ) : (
-                  <div className="text-center p-3">No data found</div>
-                )}
+                            &nbsp; &nbsp; &nbsp;
+                            <div
+                              style={{ cursor: "pointer" }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                editRentalOwner(rentalOwner.rentalowner_id);
+                              }}
+                            >
+                              <EditIcon />
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
               </Card>
             )}
           </div>
