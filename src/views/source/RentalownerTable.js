@@ -225,7 +225,7 @@ const RentalownerTable = () => {
                         <th scope="col">Address</th>
                         <th scope="col">Phone</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Action</th>
+                        {/* <th scope="col">Action</th> */}
                       </tr>
                     </thead>
                     <tbody>
@@ -244,7 +244,7 @@ const RentalownerTable = () => {
                           <td>{rentalOwner?.rentalOwner_adress}</td>
                           <td>{rentalOwner.rentalOwner_phoneNumber}</td>
                           <td>{rentalOwner.rentalOwner_primaryEmail}</td>
-                          <td style={{}}>
+                          {/* <td style={{}}>
                             <div style={{ display: "flex", gap: "5px" }}>
                               <div
                                 style={{ cursor: "pointer" }}
@@ -266,7 +266,7 @@ const RentalownerTable = () => {
                                 <EditIcon />
                               </div>
                             </div>
-                          </td>
+                          </td> */}
                         </tr>
                       ))}
                     </tbody>
