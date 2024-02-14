@@ -48,7 +48,7 @@ import { useFormik } from "formik";
 const WorkOrderDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { workorder_id } = useParams();
-  //console.log("ID:", workorder_id);
+  console.log("ID:", workorder_id);
   const [outstandDetails, setoutstandDetails] = useState({});
   const [workOrderStatus, setWorkOrderStatus] = useState("");
   const [showTenantTable, setShowTenantTable] = useState(false);
@@ -86,7 +86,7 @@ const WorkOrderDetails = () => {
   const getOutstandData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/workorder/workorder_summary/${workorder_id}`
+        `${baseUrl}/work-order/workorder_details/${workorder_id}`
       );
       setoutstandDetails(response.data.data);
       setWorkOrderStatus(response.data.data.workorder_status.reverse());
@@ -113,8 +113,6 @@ const WorkOrderDetails = () => {
   const SmallSummaryCard = ({ label, value, textTruncate }) => {
     return (
       <div className="small-summary-card p-3">
-        {" "}
-        {/* Added padding with the p-3 class */}
         <h6 className="text-uppercase text-muted mb-0">{label}</h6>
         <span
           className={`font-weight-bold ${textTruncate ? "text-truncate" : ""}`}
