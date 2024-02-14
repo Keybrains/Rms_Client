@@ -134,6 +134,7 @@ const PropertyType = () => {
              
               toast.success('Property Type deleted successfully!', {
                 position:'top-center',
+                autoClose: 800,
               })
               getPropertyData();
             } else if (response.data.statusCode === 201) {
@@ -141,10 +142,12 @@ const PropertyType = () => {
              
               toast.warning('Property Type already assigned. Deletion not allowed.', {
                 position: 'top-center',
+                autoClose: 800,
               })
             } else {
               toast.error(response.data.message, {
                 position: 'top-center',
+                autoClose: 800,
               })
             }
           })

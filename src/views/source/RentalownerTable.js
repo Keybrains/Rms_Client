@@ -217,7 +217,7 @@ const RentalownerTable = () => {
                     <tr>
                       <th scope="col">First Name</th>
                       <th scope="col">Last Name</th>
-                      <th scope="col">Address</th>
+                      {/* <th scope="col">Address</th> */}
                       <th scope="col">Phone</th>
                       <th scope="col">Email</th>
                       <th scope="col">Action</th>
@@ -234,7 +234,7 @@ const RentalownerTable = () => {
                       >
                         <td>{rentalOwner.rentalOwner_firstName}</td>
                         <td>{rentalOwner.rentalOwner_lastName}</td>
-                        <td>{rentalOwner?.rentalOwner_adress}</td>
+                        {/* <td>{rentalOwner?.rentalOwner_adress}</td> */}
                         <td>{rentalOwner.rentalOwner_phoneNumber}</td>
                         <td>{rentalOwner.rentalOwner_primaryEmail}</td>
                         <td style={{}}>

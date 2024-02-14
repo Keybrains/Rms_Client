@@ -681,7 +681,7 @@ const Leaseing = () => {
                         tenantFormik.handleSubmit();
                       }}
                     >
-                      Update Lease
+                      Update Tenant
                     </button>
                   ) : (
                     <button
@@ -693,7 +693,7 @@ const Leaseing = () => {
                         tenantFormik.handleSubmit();
                       }}
                     >
-                      Create Lease
+                      Add Tenant
                     </button>
                   )}
                   <Button
