@@ -22,8 +22,8 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import swal from "sweetalert";
 import { useNavigate, useParams } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -88,7 +88,7 @@ const PropertyType = () => {
     setEditDialogOpen(false);
     setEditingProperty([]);
   };
-  
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -131,30 +131,36 @@ const PropertyType = () => {
           .then((response) => {
             //console.log(response.data);
             if (response.data.statusCode === 200) {
-             
-              toast.success('Property Type deleted successfully!', {
-                position:'top-center',
-              })
+              toast.success("Property Type deleted successfully!", {
+                position: "top-center",
+                autoClose: 500,
+              });
               getPropertyData();
             } else if (response.data.statusCode === 201) {
               // Handle the case where property is already assigned
-             
-              toast.warning('Property Type already assigned. Deletion not allowed.', {
-                position: 'top-center',
-              })
+
+              toast.warning(
+                "Property Type already assigned. Deletion not allowed.",
+                {
+                  position: "top-center",
+                  autoClose: 500,
+                }
+              );
             } else {
               toast.error(response.data.message, {
-                position: 'top-center',
-              })
+                position: "top-center",
+                autoClose: 500,
+              });
             }
           })
           .catch((error) => {
             console.error("Error deleting property:", error);
           });
       } else {
-        toast.success('property is safe :)', {
-          position: 'top-center',
-        })
+        toast.success("property is safe :)", {
+          position: "top-center",
+          autoClose: 500,
+        });
       }
     });
   };
@@ -194,6 +200,9 @@ const PropertyType = () => {
       });
     }
     if (searchQuery2) {
+      if (searchQuery2 === "All") {
+        return filteredData;
+      }
       const lowerCaseSearchQuery = searchQuery2.toLowerCase();
       filteredData = filteredData.filter((property) => {
         const isPropertyTypeMatch = property.property_type
@@ -286,7 +295,7 @@ const PropertyType = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/"+admin+"/AddPropertyType")}
+              onClick={() => navigate("/" + admin + "/AddPropertyType")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -363,6 +372,14 @@ const PropertyType = () => {
                             }}
                           >
                             Commercial
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("All");
+                              setSearchQuery("");
+                            }}
+                          >
+                            All
                           </DropdownItem>
                         </DropdownMenu>
                       </Dropdown>

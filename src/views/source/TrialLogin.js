@@ -23,6 +23,8 @@ import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
 
 const useStyles = makeStyles(() => ({
@@ -75,15 +77,30 @@ const TrialLogin = () => {
       first_name: loginformik.values.firstName,
       last_name: loginformik.values.lastName,
       email: loginformik.values.businessEmail,
-      compony_name: loginformik.values.componyName,
+      company_name: loginformik.values.componyName,
       phone_number: loginformik.values.phoneNumber,
       password: loginformik.values.password,
     };
 
     try {
       const response = await axios.post(`${baseUrl}/admin/register`, object);
+      if (response.data.statusCode === 200) {
+        toast.success("Lease Added Successfully", {
+          position: "top-center",
+          autoClose: 1000,
+        });
+        const adminRes = await axios.post(`${baseUrl}/admin/login`, object);
+        setTimeout(() => {
+          localStorage.setItem("token", adminRes.data.token);
+          const jwt = jwtDecode(localStorage.getItem("token"));
+          navigate(`/${jwt.company_name}/index`);
+        }, 1000);
+        navigate();
+      }
     } catch (error) {
       console.error("Error:", error.message);
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -585,6 +602,7 @@ const TrialLogin = () => {
           </CardBody>
         </Card>
       </Col>
+      <ToastContainer />
     </>
   );
 };
