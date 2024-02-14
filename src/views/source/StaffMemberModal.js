@@ -95,9 +95,9 @@ function CreditCardForm(props) {
   };
 
   const [propertyType, setpropertyType] = useState(null);
-  const handleCloseButtonClick = () => {
-    navigate("../rentals");
-  };
+  // const handleCloseButtonClick = () => {
+  //   navigate("../rentals");
+  // };
   const navigate = useNavigate();
 
   async function handleSubmit(values) {
@@ -204,11 +204,16 @@ function CreditCardForm(props) {
       staffmember_password: "",
     },
     validationSchema: yup.object({
-      staffmember_name: yup.string().required("Required"),
-      staffmember_designation: yup.string().required("Required"),
+      staffmember_name: yup.string().required("Name is Required"),
+      staffmember_designation: yup.string().required("Designation Required"),
+      staffmember_email: yup
+        .string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      staffmember_phoneNumber: yup.number().required("Number is Required"),
       staffmember_password: yup
         .string()
-        // .required("No Password Provided")
+        .required("No Password Provided")
         .min(8, "Password is too short")
         .matches(
           /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
@@ -284,13 +289,11 @@ function CreditCardForm(props) {
         <Form onSubmit={StaffMemberFormik.handleSubmit}>
           <div className="pl-lg-4">
             <Row>
-              <Col lg="6">
+              <Col lg="12">
                 <FormGroup>
                   <label className="form-control-label" htmlFor="input-member">
                     Staff Member Name *
                   </label>
-                  <br />
-                  <br />
                   <Input
                     className="form-control-alternative"
                     id="input-staffmember-name"
@@ -304,14 +307,19 @@ function CreditCardForm(props) {
                       StaffMemberFormik.handleChange(e);
                     }}
                     value={StaffMemberFormik.values.staffmember_name.trim()}
-                    required
+                    //required
                   />
+                  {StaffMemberFormik.touched.staffmember_name &&
+                  StaffMemberFormik.errors.staffmember_name ? (
+                    <div style={{ color: "red" }}>
+                      {StaffMemberFormik.errors.staffmember_name}
+                    </div>
+                  ) : null}
                 </FormGroup>
               </Col>
             </Row>
-            <br />
           </div>
-          <hr className="my-4" />
+          <hr className="my-2" />
           <div className="pl-lg-4">
             <Row>
               <Col lg="6">
@@ -319,8 +327,6 @@ function CreditCardForm(props) {
                   <label className="form-control-label" htmlFor="input-desg">
                     Designation
                   </label>
-                  <br />
-                  <br />
                   <Input
                     className="form-control-alternative"
                     id="input-staffmember-desg"
@@ -331,21 +337,19 @@ function CreditCardForm(props) {
                     onChange={StaffMemberFormik.handleChange}
                     value={StaffMemberFormik.values.staffmember_designation.trim()}
                   />
+                  {StaffMemberFormik.touched.staffmember_designation &&
+                  StaffMemberFormik.errors.staffmember_designation ? (
+                    <div style={{ color: "red" }}>
+                      {StaffMemberFormik.errors.staffmember_designation}
+                    </div>
+                  ) : null}
                 </FormGroup>
               </Col>
-            </Row>
-            <br />
-          </div>
-          <hr className="my-4" />
-          <div className="pl-lg-4">
-            <Row>
               <Col lg="6">
                 <FormGroup>
                   <label className="form-control-label" htmlFor="input-desg">
                     Phone Number *
                   </label>
-                  <br />
-                  <br />
                   <Input
                     className="form-control-alternative"
                     id="staffmember_phoneNumber"
@@ -355,19 +359,24 @@ function CreditCardForm(props) {
                     onBlur={StaffMemberFormik.handleBlur}
                     onChange={StaffMemberFormik.handleChange}
                     value={StaffMemberFormik.values.staffmember_phoneNumber}
-                    required
+                    //required
                     onInput={(e) => {
                       const inputValue = e.target.value;
                       const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
                       e.target.value = numericValue;
                     }}
                   />
+                  {StaffMemberFormik.touched.staffmember_phoneNumber &&
+                  StaffMemberFormik.errors.staffmember_phoneNumber ? (
+                    <div style={{ color: "red" }}>
+                      {StaffMemberFormik.errors.staffmember_phoneNumber}
+                    </div>
+                  ) : null}
                 </FormGroup>
               </Col>
             </Row>
-            <br />
           </div>
-          <hr className="my-4" />
+          <hr className="my-2" />
           <div className="pl-lg-4">
             <Row>
               <Col lg="6">
@@ -375,8 +384,6 @@ function CreditCardForm(props) {
                   <label className="form-control-label" htmlFor="input-desg">
                     Email *
                   </label>
-                  <br />
-                  <br />
                   <Input
                     className="form-control-alternative"
                     id="staffmember_email"
@@ -386,23 +393,21 @@ function CreditCardForm(props) {
                     onBlur={StaffMemberFormik.handleBlur}
                     onChange={StaffMemberFormik.handleChange}
                     value={StaffMemberFormik.values.staffmember_email.toLowerCase()}
-                    required
+                    //required
                   />
+                  {StaffMemberFormik.touched.staffmember_email &&
+                  StaffMemberFormik.errors.staffmember_email ? (
+                    <div style={{ color: "red" }}>
+                      {StaffMemberFormik.errors.staffmember_email}
+                    </div>
+                  ) : null}
                 </FormGroup>
               </Col>
-            </Row>
-            <br />
-          </div>
-          <hr className="my-4" />
-          <div className="pl-lg-4">
-            <Row>
               <Col lg="6">
                 <FormGroup>
                   <label className="form-control-label" htmlFor="input-desg">
                     Password *
                   </label>
-                  <br />
-                  <br />
                   <div style={{ display: "flex" }}>
                     <Input
                       className="form-control-alternative"
@@ -413,7 +418,7 @@ function CreditCardForm(props) {
                       onBlur={StaffMemberFormik.handleBlur}
                       onChange={StaffMemberFormik.handleChange}
                       value={StaffMemberFormik.values.staffmember_password}
-                      required
+                      //required
                     />
                     <Button
                       type="button"
@@ -432,8 +437,8 @@ function CreditCardForm(props) {
                 </FormGroup>
               </Col>
             </Row>
-            <br />
           </div>
+          <hr className="my-2" />
           <Row>
             <button
               type="submit"
@@ -446,7 +451,7 @@ function CreditCardForm(props) {
               color="primary"
               //  href="#rms"
               className="btn btn-primary"
-              onClick={handleCloseButtonClick}
+              onClick={closeModal}
               size="sm"
               style={{ background: "white", color: "black" }}
             >

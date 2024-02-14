@@ -227,8 +227,6 @@ const AddStaffMember = () => {
                           >
                             Staff Member Name *
                           </label>
-                          <br />
-                          <br />
                           <Input
                             className="form-control-alternative"
                             id="input-staffmember-name"
@@ -249,7 +247,7 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-                  <hr className="my-4" />
+                  <hr className="my-2" />
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
@@ -260,8 +258,6 @@ const AddStaffMember = () => {
                           >
                             Designation
                           </label>
-                          <br />
-                          <br />
                           <Input
                             className="form-control-alternative"
                             id="input-staffmember-desg"
@@ -277,7 +273,7 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-                  <hr className="my-4" />
+                  <hr className="my-2" />
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
@@ -288,8 +284,6 @@ const AddStaffMember = () => {
                           >
                             Phone Number *
                           </label>
-                          <br />
-                          <br />
                           <Input
                             className="form-control-alternative"
                             id="staffmember_phoneNumber"
@@ -316,7 +310,7 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-                  <hr className="my-4" />
+                  <hr className="my-2" />
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
@@ -327,8 +321,6 @@ const AddStaffMember = () => {
                           >
                             Email *
                           </label>
-                          <br />
-                          <br />
                           <Input
                             className="form-control-alternative"
                             id="staffmember_email"
@@ -356,8 +348,6 @@ const AddStaffMember = () => {
                           >
                             Password *
                           </label>
-                          <br />
-                          <br />
                           <div style={{ display: "flex" }}>
                             <Input
                               className="form-control-alternative"
