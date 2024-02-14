@@ -72,6 +72,7 @@ const Rentals = () => {
   const [selectedState, setSelectedState] = useState("");
   const [loading, setIsLoading] = useState(true);
   const [countries, setCountries] = useState([]);
+  const[rent,setrent]=useState([]);
 
   const toggle1 = () => setstateDropdownOpen((prevState) => !prevState);
 
@@ -128,7 +129,7 @@ const Rentals = () => {
       }
     }
   }
-
+console.log(id,"id")
   useEffect(() => {
     const fetchCountries = async () => {
       try {
@@ -167,6 +168,27 @@ const Rentals = () => {
 
     fetchPropertyData();
   }, []);
+
+  const fetchRentalsData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/rental_owner/rentalowner_details/${id}`
+      );
+      if (response.status === 200) {
+        setrent(response.data);
+        rentalsFormik.setValues(response.data.data[0]);
+      } else {
+        console.error("Invalid API response structure: ", response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching rentals data: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRentalsData();
+  }, [accessType]);
+  console.log("rent",rent)
 
   function handleResponse(response) {
     if (response.data.statusCode === 200) {
