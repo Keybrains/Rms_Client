@@ -21,8 +21,8 @@ import {
   ModalBody,
   Modal,
 } from "reactstrap";
-import AddpropertyModal from "./AddpropertyModal"
-import StaffMemberModal from "./StaffMemberModal"
+import AddpropertyModal from "./AddpropertyModal";
+import StaffMemberModal from "./StaffMemberModal";
 import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -44,8 +44,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useFormik } from "formik";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 //rentals
 import {
@@ -58,7 +58,7 @@ import {
 import { roomsArray, bathArray } from "./Functions/Units";
 
 const Rentals = () => {
-  const { rental_id , admin} = useParams();
+  const { rental_id, admin } = useParams();
   const navigate = useNavigate();
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -164,7 +164,7 @@ const Rentals = () => {
           );
           if (res === false) {
             setLoader(false);
-            navigate("/"+admin+"/propertiesTable");
+            navigate("/" + admin + "/propertiesTable");
           } else {
             setLoader(false);
           }
@@ -466,10 +466,10 @@ const Rentals = () => {
     };
     setSelectedRentalOwnerData(newrentalOwnerDetails);
     if (!rental_id) {
-      toast.success('Rental Owner Added Successfully!', {
-        position: 'top-center',
+      toast.success("Rental Owner Added Successfully!", {
+        position: "top-center",
         autoClose: 500,
-      })
+      });
     }
     setDisplay(false);
   };
@@ -488,20 +488,20 @@ const Rentals = () => {
     setPropType(propertyType.property_type);
   };
   const openCardForm = () => {
-    console.log("Opening card form"); 
+    console.log("Opening card form");
     setIsModalOpen(true);
   };
-  const openCardForm1= () => {
-    console.log("Opening card form"); 
+  const openCardForm1 = () => {
+    console.log("Opening card form");
     setisMOdalopen1(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setisMOdalopen1(false)
+    setisMOdalopen1(false);
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMOdalopen1,setisMOdalopen1] = useState(false)
+  const [isMOdalopen1, setisMOdalopen1] = useState(false);
   console.log(isModalOpen, "isModalOpen");
   const { tenantId, entryIndex } = useParams();
 
@@ -585,15 +585,16 @@ const Rentals = () => {
                                     >
                                       {subtype.propertysub_type}
                                     </DropdownItem>
-                                    
                                   ))}
-                                
                                 </React.Fragment>
                               ))}
-                                  <DropdownItem style={{borderTop:"1px solid grey"}}   onClick={() => openCardForm()}>
-                                      {/* {subtype.propertysub_type} */}
-                                      Add new Properties
-                                    </DropdownItem>
+                              <DropdownItem
+                                style={{ borderTop: "1px solid grey" }}
+                                onClick={() => openCardForm()}
+                              >
+                                {/* {subtype.propertysub_type} */}
+                                Add new Properties
+                              </DropdownItem>
                             </DropdownMenu>
                           </Dropdown>
                           {
@@ -1747,10 +1748,12 @@ const Rentals = () => {
                                     {user.staffmember_name}
                                   </DropdownItem>
                                 ))}
-                                        <DropdownItem onClick={() => openCardForm1()}>
-                                    {/* {user.staffmember_name} */}
-                                    hello ji
-                                  </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => openCardForm1()}
+                                  style={{ borderTop: "1px solid grey" }}
+                                >
+                                  Add New Staff member
+                                </DropdownItem>
                               </DropdownMenu>
                             </Dropdown>
                           </FormGroup>
@@ -2600,33 +2603,31 @@ const Rentals = () => {
         </Row>
 
         <Modal isOpen={isModalOpen} toggle={closeModal}>
-        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-          <strong style={{ fontSize: 18 }}>Add new Properties</strong>
-        </ModalHeader>
-        <ModalBody>
-          <AddpropertyModal
-            tenantId={tenantId}
-            closeModal={closeModal}
-            // getCreditCard={getCreditCard}
-          />
-        </ModalBody>
-      </Modal>
+          <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+            <strong style={{ fontSize: 18 }}>Add new Properties</strong>
+          </ModalHeader>
+          <ModalBody>
+            <AddpropertyModal
+              tenantId={tenantId}
+              closeModal={closeModal}
+              // getCreditCard={getCreditCard}
+            />
+          </ModalBody>
+        </Modal>
 
-
-      <Modal isOpen={isMOdalopen1} toggle={closeModal}>
-        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-          <strong style={{ fontSize: 18 }}>Add new Staff Member</strong>
-        </ModalHeader>
-        <ModalBody>
-          <StaffMemberModal
-            tenantId={tenantId}
-            closeModal={closeModal}
-            // getCreditCard={getCreditCard}
-          />
-        </ModalBody>
-      </Modal>
+        <Modal isOpen={isMOdalopen1} toggle={closeModal}>
+          <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+            <strong style={{ fontSize: 18 }}>Add new Staff Member</strong>
+          </ModalHeader>
+          <ModalBody>
+            <StaffMemberModal
+              tenantId={tenantId}
+              closeModal={closeModal}
+              // getCreditCard={getCreditCard}
+            />
+          </ModalBody>
+        </Modal>
         <ToastContainer />
-
       </Container>
     </>
   );
