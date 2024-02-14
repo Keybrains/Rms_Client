@@ -68,8 +68,6 @@ function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
   const navigate = useNavigate();
 
- 
-
   // const handleLoginButtonClick = async () => {
   //   try {
   //     // Make an HTTP request to your API endpoint
@@ -80,17 +78,15 @@ function Rows(props) {
   //   }
   // };
 
-
-    const handleLoginButtonClick = async () => {
-      try {
-        // Make an HTTP request to your API endpoint with the adminId
-        await axios.get(`http://localhost:4000/api/test/${row.admin_id}`);
-        console.log('API called successfully');
-      } catch (error) {
-        console.error('Error occurred while calling API:', error);
-      }
-    };
-  
+  const handleLoginButtonClick = async () => {
+    try {
+      // Make an HTTP request to your API endpoint with the adminId
+      await axios.get(`http://localhost:4000/api/test/${row.admin_id}`);
+      console.log("API called successfully");
+    } catch (error) {
+      console.error("Error occurred while calling API:", error);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -100,6 +96,7 @@ function Rows(props) {
           handleClick(event, row.admin_id);
           navigate(`/superadmin/staffmember/${row?.admin_id}`);
         }}
+        style={{ cursor: "pointer" }}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
@@ -129,10 +126,9 @@ function Rows(props) {
           })}
         </TableCell>
 
-        <TableCell align="left">
+        {/* <TableCell align="left">
       <Button onClick={handleLoginButtonClick}>Login</Button>
-    </TableCell>
-
+    </TableCell> */}
 
         {/* <TableCell align="left">
           <button onClick={handleLoginClick}>Login</button>
