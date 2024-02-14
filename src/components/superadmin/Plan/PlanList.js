@@ -17,7 +17,7 @@ import Checkbox from "@mui/material/Checkbox";
 import EditIcon from "@mui/icons-material/Edit";
 import Tooltip from "@mui/material/Tooltip";
 import { Button } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
@@ -47,7 +47,7 @@ import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 // import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
 // import ArrowUpLineIcon from "@rsuite/icons/ArrowUpLine";
-
+import { jwtDecode } from "jwt-decode";
 import { Col, Container, Row } from "reactstrap";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
@@ -216,27 +216,27 @@ function Rows(props) {
   );
 }
 
-export default function PlanList() {
+const PlanList = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  let cookies = new Cookies();
-  // const history = useHistory();
-  // React.useEffect(() => {
-  //   const userData = cookies.get("token");
-  //   if (!userData) {
-  //     history.push("/superadmin/sign-in");
-  //   }
-  // }, [cookies]);
+  const [accessType, setAccessType] = useState();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
-  //   let [getCategoryData, setGetCategoryData] = useState([]);
   let [priorityData, setPriorityData] = useState([]);
-  let [loader, setLoader] = React.useState(true);
+  let [loader, setLoader] = useState(true);
   let [countData, setCountData] = useState(0);
 
   // pagination
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
-    const token = cookies.get("token");
     try {
       const res = await axios.get(`${baseUrl}/plans/plans`, {
         params: {
@@ -446,7 +446,6 @@ export default function PlanList() {
     list[index][name] = value;
     setInputFields(list);
   };
-  const navigate = useNavigate();
   return (
     <>
       <SuperAdminHeader />
@@ -866,19 +865,19 @@ export default function PlanList() {
                                       placeholder="Features"
                                     />
                                   </div>
-                                <div className="">
-                                  {inputFields.length !== 1 ? (
-                                    <div
-                                      className="mt-2"
-                                      style={{ cursor: "pointer" }}
-                                      onClick={removeInputFields}
-                                    >
-                                      ✖️
-                                    </div>
-                                  ) : (
-                                    ""
-                                  )}
-                                </div>
+                                  <div className="">
+                                    {inputFields.length !== 1 ? (
+                                      <div
+                                        className="mt-2"
+                                        style={{ cursor: "pointer" }}
+                                        onClick={removeInputFields}
+                                      >
+                                        ✖️
+                                      </div>
+                                    ) : (
+                                      ""
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             );
@@ -1067,4 +1066,6 @@ export default function PlanList() {
       </Container>
     </>
   );
-}
+};
+
+export default PlanList;

@@ -71,7 +71,7 @@ function AccountDialog(props) {
       if (res.status === 200) {
         toast.success('', res.data.message,'success', {
           position: 'top-center',
-          autoClose: 500,
+          autoClose: 800,
         })
         accountFormik.resetForm();
         props.setAddBankAccountDialogOpen(false);
@@ -79,12 +79,14 @@ function AccountDialog(props) {
    
         toast.error(res.data.message, {
           position: 'top-center',
+          autoClose: 800,
         })
       }
     } catch (error) {
       if (error.response.status === 400) {
         toast.warning('Account already exists', {
           position: 'top-center',
+          autoClose: 800,
         })
       }
       accountFormik.resetForm();

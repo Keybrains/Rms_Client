@@ -1,5 +1,5 @@
 // reactstrap components
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -21,7 +21,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "universal-cookie";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { Typography, colors } from "@mui/material";
 import { IconButton } from "@mui/material";
@@ -31,125 +31,123 @@ import swal from "sweetalert";
 
 const Login = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const { admin, roll } = useParams();
   let navigate = useNavigate();
-  let cookies = new Cookies();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [showPassword, setShowPassword] = React.useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(
     localStorage.getItem("rememberedEmail") !== null
   );
 
-  console.warn(rememberMe, "rememberMe");
+  const [admin_id, setAdmin_id] = useState();
+
+  useEffect(() => {
+    const checkComapny = async () => {
+      try {
+        const res = await axios.get(`${baseUrl}/admin/check_company/${admin}`);
+        if (res.data.statusCode === 200) {
+          setAdmin_id(res.data.data.admin_id);
+        }
+      } catch (error) {
+        console.error("Error: ", error.message);
+      }
+    };
+    if (admin) {
+      checkComapny();
+    }
+  }, [admin, roll]);
 
   const handleSubmit = async (values) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const adminRes = await axios.post(`${baseUrl}/admin/login`, values);
+      if (!admin_id) {
+        console.log("object1");
+        const adminRes = await axios.post(`${baseUrl}/admin/login`, values);
 
-      if (adminRes.status === 200) {
-        if (rememberMe) {
-          // Save only the email in localStorage
-          localStorage.setItem("rememberedEmail", values.email);
-        } else {
-          // Clear any existing saved email
-          localStorage.removeItem("rememberedEmail");
-        }
-
-        const adminData = adminRes.data;
-        if (adminData.statusCode === 200) {
-          toast.success("Admin Login successfully!", {
-            position: "top-center",
-            autoClose: 500,
-          });
-          setTimeout(() => {
-            localStorage.setItem("token", adminData.token);
-            const jwt = jwtDecode(localStorage.getItem("token"));
-            navigate(`/${jwt.company_name}/index`);
-          }, 1000);
-        } else if (adminData.statusCode === 202) {
-          toast.error(" Invalid Admin Password. Please try again.", {
-            position: "top-center",
-          });
-        }
-      } else {
-        const tenantRes = await axios.post(`${baseUrl}/tenants/login`, {
-          email: values.email,
-          password: values.password,
-        });
-
-        if (tenantRes.status === 200) {
-          const tenantData = tenantRes.data;
-          if (tenantData.statusCode === 200) {
-            toast.success("Tenant Login Successful!", {
+        if (adminRes.status === 200) {
+          const adminData = adminRes.data;
+          if (adminData.statusCode === 200) {
+            toast.success("Admin Login successfully!", {
               position: "top-center",
               autoClose: 500,
             });
             setTimeout(() => {
-              localStorage.setItem("token", tenantRes.data.tenantToken);
-              navigate("/tenant/tenantdashboard");
+              localStorage.setItem("token", adminData.token);
+              const jwt = jwtDecode(localStorage.getItem("token"));
+              navigate(`/${jwt.company_name}/index`);
             }, 1000);
-          } else if (tenantData.statusCode === 202) {
-            toast.warning("Error ocuures!", {
+          } else if (adminData.statusCode === 202) {
+            toast.error(" Invalid Admin Password. Please try again.", {
               position: "top-center",
             });
-          }
-        } else {
-          const staffRes = await axios.post(`${baseUrl}/staffmember/login`, {
-            email: values.email,
-            password: values.password,
-          });
-          if (staffRes.status === 200) {
-            const vendorData = staffRes.data;
-            if (vendorData.statusCode === 200) {
-              toast.success("Staff Member Login Successful!!", {
-                position: "top-center",
-                autoClose: 500,
-              });
-              setTimeout(() => {
-                localStorage.setItem("token", vendorData.staff_memberToken);
-                navigate("/staff/staffdashboard");
-              }, 1000);
-            } else if (vendorData.statusCode === 202) {
-              toast.success("warnign ....", {
-                position: "top-center",
-              });
-            }
           } else {
-            const vendorRes = await axios.post(`${baseUrl}/vendor/login`, {
-              email: values.email,
-              password: values.password,
-            });
-            if (vendorRes.status === 200) {
-              const staffmemberData = vendorRes.data;
-              if (staffmemberData.statusCode === 200) {
-                toast.success("Vendor Login Successful!", {
+            console.log("object2");
+            const superAdminRes = await axios.post(
+              `${baseUrl}/admin/superadmin_login`,
+              values
+            );
+
+            if (superAdminRes.status === 200) {
+              console.log("object3");
+              const superAdminData = superAdminRes.data;
+              if (superAdminData.statusCode === 200) {
+                toast.success("Super Admin Login successfully!", {
                   position: "top-center",
                   autoClose: 500,
                 });
                 setTimeout(() => {
-                  localStorage.setItem("token", staffmemberData.vendorToken);
-                  navigate("/vendor/vendordashboard");
+                  localStorage.setItem("token", superAdminData.token);
+                  navigate(`/superadmin/dashboard`);
                 }, 1000);
-              } else if (staffmemberData.statusCode === 202) {
-                toast.warning("Warning ....", {
+              } else if (superAdminData.statusCode === 202) {
+                toast.error(
+                  " Invalid Super Admin Password. Please try again.",
+                  {
+                    autoClose: 500,
+                    position: "top-center",
+                  }
+                );
+              } else {
+                toast.error("Invalid User Data", {
+                  autoClose: 500,
                   position: "top-center",
                 });
               }
-            } else {
-              toast.error("Invalid User", {
-                position: "top-center",
-              });
             }
           }
         }
-        // }
+      } else if (roll) {
+        const response = await axios.post(`${baseUrl}/${roll}/login`, {
+          email: values.email,
+          password: values.password,
+          admin_id: admin_id,
+        });
+        console.log(response);
+
+        if (response.status === 200) {
+          const responceData = response.data;
+          if (responceData.statusCode === 200) {
+            toast.success(responceData.message, {
+              position: "top-center",
+              autoClose: 500,
+            });
+            setTimeout(() => {
+              localStorage.setItem("token", response.data.token);
+              if (roll === "tenants") {
+                navigate("/tenant/tenantdashboard");
+              } else if (roll === "vendor") {
+                navigate("/vendor/vendordashboard");
+              } else if (roll === "staffmember") {
+                navigate("/staff/staffdashboard");
+              }
+            }, 1000);
+          } else if (responceData.statusCode === 202) {
+            toast.warning("Error ocuures!", {
+              position: "top-center",
+            });
+          }
+        }
       }
     } catch (error) {
       console.error(error);
@@ -161,19 +159,11 @@ const Login = () => {
   let loginFormik = useFormik({
     initialValues: {
       email: localStorage.getItem("rememberedEmail") || "",
-      password: "", // Do not retrieve password from localStorage
+      password: "",
     },
     validationSchema: yup.object({
       email: yup.string().required("Required"),
       password: yup.string().required("Required"),
-      // password: yup
-      //   .string()
-      //   .required("No Password Provided")
-      //   .min(8, "Password is too short")
-      //   .matches(
-      //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-      //     "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
-      //   ),
     }),
     onSubmit: (values) => {
       handleSubmit(values);

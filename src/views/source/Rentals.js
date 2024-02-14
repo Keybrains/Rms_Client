@@ -21,8 +21,8 @@ import {
   ModalBody,
   Modal,
 } from "reactstrap";
-import AddpropertyModal from "./AddpropertyModal"
-import StaffMemberModal from "./StaffMemberModal"
+import AddpropertyModal from "./AddpropertyModal";
+import StaffMemberModal from "./StaffMemberModal";
 import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -44,8 +44,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useFormik } from "formik";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 //rentals
 import {
@@ -58,7 +58,7 @@ import {
 import { roomsArray, bathArray } from "./Functions/Units";
 
 const Rentals = () => {
-  const { rental_id , admin} = useParams();
+  const { rental_id, admin } = useParams();
   const navigate = useNavigate();
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -150,8 +150,8 @@ const Rentals = () => {
           ? { residential: yup.array().of(residentialSchema2) }
           : { commercial: yup.array().of(commercialSchema2) }
         : propType === "Residential"
-        ? { residential: yup.array().of(residentialSchema) }
-        : { commercial: yup.array().of(commercialSchema) }),
+          ? { residential: yup.array().of(residentialSchema) }
+          : { commercial: yup.array().of(commercialSchema) }),
     }),
     onSubmit: async (values) => {
       if (selectedRentalOwnerData.length !== 0) {
@@ -164,7 +164,7 @@ const Rentals = () => {
           );
           if (res === false) {
             setLoader(false);
-            navigate("/"+admin+"/propertiesTable");
+            navigate("/" + admin + "/propertiesTable");
           } else {
             setLoader(false);
           }
@@ -188,6 +188,7 @@ const Rentals = () => {
       rentalOwner_phoneNumber: "",
       rentalOwner_homeNumber: "",
       rentalOwner_businessNumber: "",
+      street_address:"",
       city: "",
       state: "",
       country: "",
@@ -241,49 +242,49 @@ const Rentals = () => {
         staffmember_name: response.data.data[0].staffmember_name,
         residential:
           response.data.data[0].property_type_data.property_type ===
-          "Residential"
+            "Residential"
             ? response2.data.data.map((item) => {
-                const {
-                  rental_unit,
-                  rental_unit_adress,
-                  rental_sqft,
-                  rental_bath,
-                  rental_bed,
-                  rental_images,
-                  unit_id,
-                } = item;
+              const {
+                rental_unit,
+                rental_unit_adress,
+                rental_sqft,
+                rental_bath,
+                rental_bed,
+                rental_images,
+                unit_id,
+              } = item;
 
-                return {
-                  rental_unit: rental_unit,
-                  rental_unit_adress: rental_unit_adress,
-                  rental_sqft: rental_sqft,
-                  rental_bath: rental_bath,
-                  rental_bed: rental_bed,
-                  rental_images: rental_images,
-                  unit_id: unit_id,
-                };
-              })
+              return {
+                rental_unit: rental_unit,
+                rental_unit_adress: rental_unit_adress,
+                rental_sqft: rental_sqft,
+                rental_bath: rental_bath,
+                rental_bed: rental_bed,
+                rental_images: rental_images,
+                unit_id: unit_id,
+              };
+            })
             : [],
         commercial:
           response.data.data[0].property_type_data.property_type ===
-          "Commercial"
+            "Commercial"
             ? response2.data.data.map((item) => {
-                const {
-                  rental_unit,
-                  rental_unit_adress,
-                  rental_sqft,
-                  rental_images,
-                  unit_id,
-                } = item;
+              const {
+                rental_unit,
+                rental_unit_adress,
+                rental_sqft,
+                rental_images,
+                unit_id,
+              } = item;
 
-                return {
-                  rental_unit: rental_unit,
-                  rental_unit_adress: rental_unit_adress,
-                  rental_sqft: rental_sqft,
-                  rental_images: rental_images,
-                  unit_id: unit_id,
-                };
-              })
+              return {
+                rental_unit: rental_unit,
+                rental_unit_adress: rental_unit_adress,
+                rental_sqft: rental_sqft,
+                rental_images: rental_images,
+                unit_id: unit_id,
+              };
+            })
             : [],
       });
 
@@ -305,6 +306,16 @@ const Rentals = () => {
           response.data.data[0].rental_owner_data.rentalOwner_homeNumber,
         rentalOwner_businessNumber:
           response.data.data[0].rental_owner_data.rentalOwner_businessNumber,
+          street_address:
+          response.data.data[0].rental_owner_data.street_address,
+          city:
+          response.data.data[0].rental_owner_data.city,
+          state:
+          response.data.data[0].rental_owner_data.state,
+          country:
+          response.data.data[0].rental_owner_data.country,
+          postal_code:
+          response.data.data[0].rental_owner_data.postal_code,
         chooseExistingOwner: false,
       });
 
@@ -420,8 +431,8 @@ const Rentals = () => {
     });
   };
 
-  const fileData = () => {};
-  const togglePhotoDialog = () => {};
+  const fileData = () => { };
+  const togglePhotoDialog = () => { };
 
   const handleUserSelection = (value) => {
     setSelectedUser(value.staffmember_name);
@@ -466,10 +477,10 @@ const Rentals = () => {
     };
     setSelectedRentalOwnerData(newrentalOwnerDetails);
     if (!rental_id) {
-      toast.success('Rental Owner Added Successfully!', {
-        position: 'top-center',
+      toast.success("Rental Owner Added Successfully!", {
+        position: "top-center",
         autoClose: 500,
-      })
+      });
     }
     setDisplay(false);
   };
@@ -488,20 +499,21 @@ const Rentals = () => {
     setPropType(propertyType.property_type);
   };
   const openCardForm = () => {
-    console.log("Opening card form"); 
+    console.log("Opening card form");
     setIsModalOpen(true);
   };
-  const openCardForm1= () => {
-    console.log("Opening card form"); 
+  const openCardForm1 = () => {
+    console.log("Opening card form");
     setisMOdalopen1(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setisMOdalopen1(false)
+    fetchPropertyTypeData()
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMOdalopen1,setisMOdalopen1] = useState(false)
+  const [isMOdalopen1, setisMOdalopen1] = useState(false)
   console.log(isModalOpen, "isModalOpen");
   const { tenantId, entryIndex } = useParams();
 
@@ -549,12 +561,12 @@ const Rentals = () => {
                           >
                             <DropdownToggle caret>
                               {selectedPropType &&
-                              selectedPropType.propertysub_type
+                                selectedPropType.propertysub_type
                                 ? selectedPropType.propertysub_type
                                 : selectedPropType &&
                                   !selectedPropType.propertysub_type
-                                ? selectedPropType
-                                : "Select Property Type"}
+                                  ? selectedPropType
+                                  : "Select Property Type"}
                             </DropdownToggle>
                             <DropdownMenu>
                               {Object.values(
@@ -585,23 +597,24 @@ const Rentals = () => {
                                     >
                                       {subtype.propertysub_type}
                                     </DropdownItem>
-                                    
                                   ))}
-                                
                                 </React.Fragment>
                               ))}
-                                  <DropdownItem style={{borderTop:"1px solid grey"}}   onClick={() => openCardForm()}>
-                                      {/* {subtype.propertysub_type} */}
-                                      Add new Properties
-                                    </DropdownItem>
+                              <DropdownItem
+                                style={{ borderTop: "1px solid grey" }}
+                                onClick={() => openCardForm()}
+                              >
+                                {/* {subtype.propertysub_type} */}
+                                Add new Properties
+                              </DropdownItem>
                             </DropdownMenu>
                           </Dropdown>
                           {
                             <div>
                               {rentalsFormik.errors &&
-                              rentalsFormik.errors?.property_type &&
-                              rentalsFormik.touched &&
-                              rentalsFormik.touched?.property_type ? (
+                                rentalsFormik.errors?.property_type &&
+                                rentalsFormik.touched &&
+                                rentalsFormik.touched?.property_type ? (
                                 <div style={{ color: "red" }}>
                                   {rentalsFormik.errors?.property_type}
                                 </div>
@@ -649,9 +662,9 @@ const Rentals = () => {
                             {
                               <div>
                                 {rentalsFormik.errors &&
-                                rentalsFormik.errors?.rental_adress &&
-                                rentalsFormik.touched &&
-                                rentalsFormik.touched?.rental_adress ? (
+                                  rentalsFormik.errors?.rental_adress &&
+                                  rentalsFormik.touched &&
+                                  rentalsFormik.touched?.rental_adress ? (
                                   <div style={{ color: "red" }}>
                                     {rentalsFormik.errors?.rental_adress}
                                   </div>
@@ -690,9 +703,9 @@ const Rentals = () => {
                           {
                             <div>
                               {rentalsFormik.errors &&
-                              rentalsFormik.errors?.rental_city &&
-                              rentalsFormik.touched &&
-                              rentalsFormik.touched?.rental_city ? (
+                                rentalsFormik.errors?.rental_city &&
+                                rentalsFormik.touched &&
+                                rentalsFormik.touched?.rental_city ? (
                                 <div style={{ color: "red" }}>
                                   {rentalsFormik.errors?.rental_city}
                                 </div>
@@ -728,9 +741,9 @@ const Rentals = () => {
                           {
                             <div>
                               {rentalsFormik.errors &&
-                              rentalsFormik.errors?.rental_state &&
-                              rentalsFormik.touched &&
-                              rentalsFormik.touched?.rental_state ? (
+                                rentalsFormik.errors?.rental_state &&
+                                rentalsFormik.touched &&
+                                rentalsFormik.touched?.rental_state ? (
                                 <div style={{ color: "red" }}>
                                   {rentalsFormik.errors?.rental_state}
                                 </div>
@@ -738,682 +751,689 @@ const Rentals = () => {
                             </div>
                           }
                         </FormGroup>
-                      </Col>
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-country"
-                          >
-                            Country *
-                          </label>
-                          <Input
-                            required
-                            className="form-control-alternative"
-                            id="input-country"
-                            placeholder="United States"
-                            type="text"
-                            name="rental_country"
-                            onBlur={rentalsFormik.handleBlur}
-                            onChange={(e) =>
-                              rentalsFormik.setFieldValue(
-                                "rental_country",
-                                e.target.value
-                              )
-                            }
-                            value={rentalsFormik.values?.rental_country}
-                          />
-                          {
-                            <div>
-                              {rentalsFormik.errors &&
+                      </Col>   
+                      </Row> 
+                      <Row>
+                    <Col lg="3">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-country"
+                        >
+                          Country *
+                        </label>
+                        <Input
+                          required
+                          className="form-control-alternative"
+                          id="input-country"
+                          placeholder="United States"
+                          type="text"
+                          name="rental_country"
+                          onBlur={rentalsFormik.handleBlur}
+                          onChange={(e) =>
+                            rentalsFormik.setFieldValue(
+                              "rental_country",
+                              e.target.value
+                            )
+                          }
+                          value={rentalsFormik.values?.rental_country}
+                        />
+                        {
+                          <div>
+                            {rentalsFormik.errors &&
                               rentalsFormik.errors?.rental_country &&
                               rentalsFormik.touched &&
                               rentalsFormik.touched?.rental_country ? (
-                                <div style={{ color: "red" }}>
-                                  {rentalsFormik.errors?.rental_country}
-                                </div>
-                              ) : null}
-                            </div>
+                              <div style={{ color: "red" }}>
+                                {rentalsFormik.errors?.rental_country}
+                              </div>
+                            ) : null}
+                          </div>
+                        }
+                      </FormGroup>
+                    </Col>
+                    <Col lg="3">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-country"
+                        >
+                          Postal code *
+                        </label>
+                        <Input
+                          required
+                          className="form-control-alternative"
+                          id="input-postal-code"
+                          placeholder="Postal code"
+                          type="text"
+                          name="rental_postcode"
+                          onBlur={rentalsFormik.handleBlur}
+                          onChange={(e) =>
+                            rentalsFormik.setFieldValue(
+                              "rental_postcode",
+                              e.target.value.toUpperCase()
+                            )
                           }
-                        </FormGroup>
-                      </Col>
-                      <Col lg="3">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-country"
-                          >
-                            Postal code *
-                          </label>
-                          <Input
-                            required
-                            className="form-control-alternative"
-                            id="input-postal-code"
-                            placeholder="Postal code"
-                            type="text"
-                            name="rental_postcode"
-                            onBlur={rentalsFormik.handleBlur}
-                            onChange={(e) =>
-                              rentalsFormik.setFieldValue(
-                                "rental_postcode",
-                                e.target.value.toUpperCase()
-                              )
-                            }
-                            value={rentalsFormik.values?.rental_postcode}
-                            onInput={(e) => {
-                              const inputValue = e.target.value;
-                              const sanitizedValue = inputValue.replace(
-                                /[^A-Za-z0-9-]/g,
-                                ""
-                              );
-                              e.target.value = sanitizedValue.toUpperCase();
-                            }}
-                          />
-                          {
-                            <div>
-                              {rentalsFormik.errors &&
+                          value={rentalsFormik.values?.rental_postcode}
+                          onInput={(e) => {
+                            const inputValue = e.target.value;
+                            const sanitizedValue = inputValue.replace(
+                              /[^A-Za-z0-9-]/g,
+                              ""
+                            );
+                            e.target.value = sanitizedValue.toUpperCase();
+                          }}
+                        />
+                        {
+                          <div>
+                            {rentalsFormik.errors &&
                               rentalsFormik.errors?.rental_postcode &&
                               rentalsFormik.touched &&
                               rentalsFormik.touched?.rental_postcode ? (
-                                <div style={{ color: "red" }}>
-                                  {rentalsFormik.errors?.rental_postcode}
-                                </div>
-                              ) : null}
-                            </div>
-                          }
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </div>
-                  <hr className="my-4" />
-                  <h6 className="heading-small text-muted mb-4">
-                    Owner information
-                  </h6>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col md="12">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-address"
-                          >
-                            Who is the property owner? (Required)
-                          </label>
-                          <br />
-                          <br />
-                          <label
-                            className="label2"
-                            style={{ fontSize: "0.7rem" }}
-                          >
-                            This information wiil be used to help prepare owner
-                            drawns and 1099s.
-                          </label>
-                          <br />
-                          <span
-                            onClick={setRentalDialogOpen}
-                            style={{
-                              cursor: "pointer",
-                              fontSize: "14px",
-                              fontFamily: "monospace",
-                              color: "blue",
-                            }}
-                          >
-                            <b style={{ fontSize: "20px" }}>+</b> Add rental
-                            owner
-                            {display === false ? (
-                              <></>
-                            ) : (
-                              <div style={{ color: "red" }}>Required</div>
-                            )}
-                          </span>
-                          <Dialog
-                            open={isRentalDialogOpen}
-                            onClose={handleClose}
-                            PaperProps={{ style: dialogPaperStyles }}
-                          >
-                            <Form onSubmit={rentalOwnerFormik.handleSubmit}>
-                              <DialogTitle style={{ background: "#F0F8FF" }}>
-                                Add rental owner
-                              </DialogTitle>
+                              <div style={{ color: "red" }}>
+                                {rentalsFormik.errors?.rental_postcode}
+                              </div>
+                            ) : null}
+                          </div>
+                        }
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </div>
+                <hr className="my-4" />
+                <h6 className="heading-small text-muted mb-4">
+                  Owner information
+                </h6>
+                <div className="pl-lg-4">
+                  <Row>
+                    <Col md="12">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-address"
+                        >
+                          Who is the property owner? (Required)
+                        </label>
+                        <br />
+                        <br />
+                        <label
+                          className="label2"
+                          style={{ fontSize: "0.7rem" }}
+                        >
+                          This information wiil be used to help prepare owner
+                          drawns and 1099s.
+                        </label>
+                        <br />
+                        <span
+                          onClick={setRentalDialogOpen}
+                          style={{
+                            cursor: "pointer",
+                            fontSize: "14px",
+                            fontFamily: "monospace",
+                            color: "blue",
+                          }}
+                        >
+                          <b style={{ fontSize: "20px" }}>+</b> Add rental
+                          owner
+                          {display === false ? (
+                            <></>
+                          ) : (
+                            <div style={{ color: "red" }}>Required</div>
+                          )}
+                        </span>
+                        <Dialog
+                          open={isRentalDialogOpen}
+                          onClose={handleClose}
+                          PaperProps={{ style: dialogPaperStyles }}
+                        >
+                          <Form onSubmit={rentalOwnerFormik.handleSubmit}>
+                            <DialogTitle style={{ background: "#F0F8FF" }}>
+                              Add rental owner
+                            </DialogTitle>
 
-                              <DialogContent style={{ width: "100%" }}>
-                                <div>
+                            <DialogContent style={{ width: "100%" }}>
+                              <div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    paddingTop: "25px",
+                                  }}
+                                >
+                                  <Checkbox
+                                    onChange={handleChange}
+                                    style={{ marginRight: "10px" }}
+                                    checked={showRentalOwnerTable === true}
+                                  />
+                                  <label className="form-control-label">
+                                    Choose an existing rental owner
+                                  </label>
+                                </div>
+                                <br />
+                              </div>
+                              {showRentalOwnerTable && rentalownerData && (
+                                <div
+                                  style={{
+                                    maxHeight: "400px",
+                                    overflow: "hidden",
+                                  }}
+                                >
+                                  <Input
+                                    type="text"
+                                    placeholder="Search by first and last name"
+                                    value={searchQuery}
+                                    onChange={handleSearch}
+                                    style={{
+                                      marginBottom: "10px",
+                                      width: "100%",
+                                      padding: "8px",
+                                      border: "1px solid #ccc",
+                                      borderRadius: "4px",
+                                    }}
+                                  />
                                   <div
                                     style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      paddingTop: "25px",
+                                      maxHeight: "calc(400px - 40px)",
+                                      overflowY: "auto",
+                                      border: "1px solid #ddd",
                                     }}
                                   >
-                                    <Checkbox
-                                      onChange={handleChange}
-                                      style={{ marginRight: "10px" }}
-                                      checked={showRentalOwnerTable === true}
-                                    />
-                                    <label className="form-control-label">
-                                      Choose an existing rental owner
-                                    </label>
+                                    <table
+                                      style={{
+                                        width: "100%",
+                                        borderCollapse: "collapse",
+                                      }}
+                                    >
+                                      <thead>
+                                        <tr>
+                                          <th
+                                            style={{
+                                              padding: "15px",
+                                            }}
+                                          >
+                                            RentalOwner Name
+                                          </th>
+                                          <th
+                                            style={{
+                                              padding: "15px",
+                                            }}
+                                          >
+                                            Select
+                                          </th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {Array.isArray(rentalownerData) &&
+                                          rentalownerData
+                                            .filter((rentalOwner) => {
+                                              const fullName = `${rentalOwner.rentalOwner_firstName} ${rentalOwner.rentalOwner_lastName}`;
+                                              return fullName
+                                                .toLowerCase()
+                                                .includes(
+                                                  searchQuery.toLowerCase()
+                                                );
+                                            })
+                                            .map((rentalOwner, index) => (
+                                              <tr
+                                                key={index}
+                                                style={{
+                                                  border: "1px solid #ddd",
+                                                }}
+                                              >
+                                                <td
+                                                  style={{
+                                                    paddingLeft: "15px",
+                                                    paddingTop: "15px",
+                                                  }}
+                                                >
+                                                  {
+                                                    rentalOwner.rentalOwner_firstName
+                                                  }
+                                                  &nbsp;
+                                                  {
+                                                    rentalOwner.rentalOwner_lastName
+                                                  }
+                                                  {` (${rentalOwner.rentalOwner_phoneNumber})`}
+                                                </td>
+                                                <td
+                                                  style={{
+                                                    paddingLeft: "15px",
+                                                    paddingTop: "15px",
+                                                  }}
+                                                >
+                                                  <Checkbox
+                                                    type="checkbox"
+                                                    name="rentalOwner"
+                                                    id={
+                                                      rentalOwner.rentalOwner_phoneNumber
+                                                    }
+                                                    checked={
+                                                      rentalOwner.rentalOwner_phoneNumber ===
+                                                      checkedCheckbox
+                                                    }
+                                                    onChange={(event) => {
+                                                      setCheckedCheckbox(
+                                                        rentalOwner.rentalOwner_phoneNumber
+                                                      );
+
+                                                      handleCheckboxChange(
+                                                        rentalOwner
+                                                      );
+                                                    }}
+                                                  />
+                                                </td>
+                                              </tr>
+                                            ))}
+                                      </tbody>
+                                    </table>
                                   </div>
                                   <br />
                                 </div>
-                                {showRentalOwnerTable && rentalownerData && (
+                              )}
+                              {!showRentalOwnerTable && (
+                                <div>
                                   <div
-                                    style={{
-                                      maxHeight: "400px",
-                                      overflow: "hidden",
-                                    }}
+                                    className="formInput"
+                                    style={{ margin: "10px 10px" }}
                                   >
-                                    <Input
-                                      type="text"
-                                      placeholder="Search by first and last name"
-                                      value={searchQuery}
-                                      onChange={handleSearch}
-                                      style={{
-                                        marginBottom: "10px",
-                                        width: "100%",
-                                        padding: "8px",
-                                        border: "1px solid #ccc",
-                                        borderRadius: "4px",
-                                      }}
-                                    />
-                                    <div
-                                      style={{
-                                        maxHeight: "calc(400px - 40px)",
-                                        overflowY: "auto",
-                                        border: "1px solid #ddd",
-                                      }}
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-country"
                                     >
-                                      <table
-                                        style={{
-                                          width: "100%",
-                                          borderCollapse: "collapse",
-                                        }}
-                                      >
-                                        <thead>
-                                          <tr>
-                                            <th
-                                              style={{
-                                                padding: "15px",
-                                              }}
-                                            >
-                                              RentalOwner Name
-                                            </th>
-                                            <th
-                                              style={{
-                                                padding: "15px",
-                                              }}
-                                            >
-                                              Select
-                                            </th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          {Array.isArray(rentalownerData) &&
-                                            rentalownerData
-                                              .filter((rentalOwner) => {
-                                                const fullName = `${rentalOwner.rentalOwner_firstName} ${rentalOwner.rentalOwner_lastName}`;
-                                                return fullName
-                                                  .toLowerCase()
-                                                  .includes(
-                                                    searchQuery.toLowerCase()
-                                                  );
-                                              })
-                                              .map((rentalOwner, index) => (
-                                                <tr
-                                                  key={index}
-                                                  style={{
-                                                    border: "1px solid #ddd",
-                                                  }}
-                                                >
-                                                  <td
-                                                    style={{
-                                                      paddingLeft: "15px",
-                                                      paddingTop: "15px",
-                                                    }}
-                                                  >
-                                                    {
-                                                      rentalOwner.rentalOwner_firstName
-                                                    }
-                                                    &nbsp;
-                                                    {
-                                                      rentalOwner.rentalOwner_lastName
-                                                    }
-                                                    {` (${rentalOwner.rentalOwner_phoneNumber})`}
-                                                  </td>
-                                                  <td
-                                                    style={{
-                                                      paddingLeft: "15px",
-                                                      paddingTop: "15px",
-                                                    }}
-                                                  >
-                                                    <Checkbox
-                                                      type="checkbox"
-                                                      name="rentalOwner"
-                                                      id={
-                                                        rentalOwner.rentalOwner_phoneNumber
-                                                      }
-                                                      checked={
-                                                        rentalOwner.rentalOwner_phoneNumber ===
-                                                        checkedCheckbox
-                                                      }
-                                                      onChange={(event) => {
-                                                        setCheckedCheckbox(
-                                                          rentalOwner.rentalOwner_phoneNumber
-                                                        );
-
-                                                        handleCheckboxChange(
-                                                          rentalOwner
-                                                        );
-                                                      }}
-                                                    />
-                                                  </td>
-                                                </tr>
-                                              ))}
-                                        </tbody>
-                                      </table>
-                                    </div>
+                                      Name *
+                                    </label>
                                     <br />
-                                  </div>
-                                )}
-                                {!showRentalOwnerTable && (
-                                  <div>
-                                    <div
-                                      className="formInput"
-                                      style={{ margin: "10px 10px" }}
-                                    >
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-country"
-                                      >
-                                        Name *
-                                      </label>
-                                      <br />
-                                      <Input
-                                        required
-                                        id="standard-multiline-static"
-                                        className="popinput"
-                                        type="text"
-                                        placeholder="First Name"
-                                        style={{ marginRight: "10px", flex: 1 }}
-                                        name="rentalOwner_firstName"
-                                        onBlur={rentalOwnerFormik.handleBlur}
-                                        onChange={(e) => {
-                                          rentalOwnerFormik.setFieldValue(
-                                            "rentalOwner_firstName",
-                                            e.target.value
-                                          );
-                                        }}
-                                        value={
-                                          rentalOwnerFormik.values
-                                            .rentalOwner_firstName
-                                        }
-                                      />
+                                    <Input
+                                      required
+                                      id="standard-multiline-static"
+                                      className="popinput"
+                                      type="text"
+                                      placeholder="First Name"
+                                      style={{ marginRight: "10px", flex: 1 }}
+                                      name="rentalOwner_firstName"
+                                      onBlur={rentalOwnerFormik.handleBlur}
+                                      onChange={(e) => {
+                                        rentalOwnerFormik.setFieldValue(
+                                          "rentalOwner_firstName",
+                                          e.target.value
+                                        );
+                                      }}
+                                      value={
+                                        rentalOwnerFormik.values
+                                          .rentalOwner_firstName
+                                      }
+                                    />
 
-                                      {rentalOwnerFormik.touched
-                                        .rentalOwner_firstName &&
+                                    {rentalOwnerFormik.touched
+                                      .rentalOwner_firstName &&
                                       rentalOwnerFormik.errors
                                         .rentalOwner_firstName &&
                                       rentalsFormik.submitCount > 0 ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalOwnerFormik.errors
-                                              .rentalOwner_firstName
-                                          }
-                                        </div>
-                                      ) : null}
-                                      <br />
-                                      <Input
-                                        required
-                                        id="standard-multiline-static"
-                                        className="popinput"
-                                        type="text"
-                                        placeholder="Last Name"
-                                        style={{ flex: 1 }}
-                                        name="rentalOwner_lastName"
-                                        onBlur={rentalOwnerFormik.handleBlur}
-                                        onChange={(e) => {
-                                          rentalOwnerFormik.setFieldValue(
-                                            "rentalOwner_lastName",
-                                            e.target.value
-                                          );
-                                        }}
-                                        value={
-                                          rentalOwnerFormik.values
-                                            .rentalOwner_lastName
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalOwnerFormik.errors
+                                            .rentalOwner_firstName
                                         }
-                                      />
+                                      </div>
+                                    ) : null}
+                                    <br />
+                                    <Input
+                                      required
+                                      id="standard-multiline-static"
+                                      className="popinput"
+                                      type="text"
+                                      placeholder="Last Name"
+                                      style={{ flex: 1 }}
+                                      name="rentalOwner_lastName"
+                                      onBlur={rentalOwnerFormik.handleBlur}
+                                      onChange={(e) => {
+                                        rentalOwnerFormik.setFieldValue(
+                                          "rentalOwner_lastName",
+                                          e.target.value
+                                        );
+                                      }}
+                                      value={
+                                        rentalOwnerFormik.values
+                                          .rentalOwner_lastName
+                                      }
+                                    />
 
-                                      {rentalOwnerFormik.touched
-                                        .rentalOwner_lastName &&
+                                    {rentalOwnerFormik.touched
+                                      .rentalOwner_lastName &&
                                       rentalOwnerFormik.errors
                                         .rentalOwner_lastName ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalOwnerFormik.errors
-                                              .rentalOwner_lastName
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </div>
-                                    <div
-                                      className="formInput"
-                                      style={{ margin: "30px 10px" }}
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalOwnerFormik.errors
+                                            .rentalOwner_lastName
+                                        }
+                                      </div>
+                                    ) : null}
+                                  </div>
+                                  <div
+                                    className="formInput"
+                                    style={{ margin: "30px 10px" }}
+                                  >
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-address"
                                     >
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-address"
-                                      >
-                                        Company Name *
-                                      </label>
-                                      <br />
+                                      Company Name *
+                                    </label>
+                                    <br />
+                                    <Input
+                                      required
+                                      id="standard-multiline-static"
+                                      className="popinput"
+                                      type="text"
+                                      placeholder="L & T Company"
+                                      style={{ marginRight: "10px", flex: 1 }}
+                                      name="rentalOwner_companyName"
+                                      onBlur={rentalOwnerFormik.handleBlur}
+                                      onChange={(e) => {
+                                        rentalOwnerFormik.setFieldValue(
+                                          "rentalOwner_companyName",
+                                          e.target.value
+                                        );
+                                      }}
+                                      value={
+                                        rentalOwnerFormik.values
+                                          .rentalOwner_companyName
+                                      }
+                                    />
+                                    {rentalOwnerFormik.touched
+                                      .rentalOwner_companyName &&
+                                      rentalOwnerFormik.errors
+                                        .rentalOwner_companyName ? (
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalOwnerFormik.errors
+                                            .rentalOwner_companyName
+                                        }
+                                      </div>
+                                    ) : null}
+                                  </div>
+                                  <div
+                                    className="formInput"
+                                    style={{ margin: "30px 10px" }}
+                                  >
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-address"
+                                    >
+                                      Primary Email *
+                                    </label>
+                                    <br />
+                                    <InputGroup
+                                      style={{
+                                        marginRight: "10px",
+                                        marginTop: "5px",
+                                        flex: 1,
+                                      }}
+                                    >
                                       <Input
                                         required
                                         id="standard-multiline-static"
                                         className="popinput"
                                         type="text"
-                                        placeholder="L & T Company"
-                                        style={{ marginRight: "10px", flex: 1 }}
-                                        name="rentalOwner_companyName"
+                                        name="rentalOwner_primaryEmail"
                                         onBlur={rentalOwnerFormik.handleBlur}
+                                        placeholder="Email"
                                         onChange={(e) => {
                                           rentalOwnerFormik.setFieldValue(
-                                            "rentalOwner_companyName",
+                                            "rentalOwner_primaryEmail",
                                             e.target.value
                                           );
                                         }}
                                         value={
                                           rentalOwnerFormik.values
-                                            .rentalOwner_companyName
+                                            .rentalOwner_primaryEmail
                                         }
                                       />
-                                      {rentalOwnerFormik.touched
-                                        .rentalOwner_companyName &&
-                                      rentalOwnerFormik.errors
-                                        .rentalOwner_companyName ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalOwnerFormik.errors
-                                              .rentalOwner_companyName
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </div>
-                                    <div
-                                      className="formInput"
-                                      style={{ margin: "30px 10px" }}
-                                    >
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-address"
-                                      >
-                                        Primary Email *
-                                      </label>
-                                      <br />
-                                      <InputGroup
-                                        style={{
-                                          marginRight: "10px",
-                                          marginTop: "5px",
-                                          flex: 1,
-                                        }}
-                                      >
-                                        <Input
-                                          required
-                                          id="standard-multiline-static"
-                                          className="popinput"
-                                          type="text"
-                                          name="rentalOwner_primaryEmail"
-                                          onBlur={rentalOwnerFormik.handleBlur}
-                                          onChange={(e) => {
-                                            rentalOwnerFormik.setFieldValue(
-                                              "rentalOwner_primaryEmail",
-                                              e.target.value
-                                            );
+                                      <InputGroupAddon addonType="prepend">
+                                        <span
+                                          className="input-group-text"
+                                          style={{
+                                            paddingBottom: "8px",
+                                            paddingTop: "8px",
                                           }}
-                                          value={
-                                            rentalOwnerFormik.values
-                                              .rentalOwner_primaryEmail
-                                          }
-                                        />
-                                        <InputGroupAddon addonType="prepend">
-                                          <span
-                                            className="input-group-text"
-                                            style={{
-                                              paddingBottom: "8px",
-                                              paddingTop: "8px",
-                                            }}
-                                          >
-                                            <EmailIcon />
-                                          </span>
-                                        </InputGroupAddon>
-                                      </InputGroup>
+                                        >
+                                          <EmailIcon />
+                                        </span>
+                                      </InputGroupAddon>
+                                    </InputGroup>
 
-                                      {rentalOwnerFormik.touched
-                                        .rentalOwner_primaryEmail &&
+                                    {rentalOwnerFormik.touched
+                                      .rentalOwner_primaryEmail &&
                                       rentalOwnerFormik.errors
                                         .rentalOwner_primaryEmail ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalOwnerFormik.errors
-                                              .rentalOwner_primaryEmail
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </div>
-                                    <div
-                                      className="formInput"
-                                      style={{ margin: "30px 10px" }}
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalOwnerFormik.errors
+                                            .rentalOwner_primaryEmail
+                                        }
+                                      </div>
+                                    ) : null}
+                                  </div>
+                                  <div
+                                    className="formInput"
+                                    style={{ margin: "30px 10px" }}
+                                  >
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-address"
                                     >
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-address"
-                                      >
-                                        Alternative Email
-                                      </label>
-                                      <br />
-                                      <InputGroup
-                                        style={{
-                                          marginRight: "10px",
-                                          marginTop: "5px",
-                                          flex: 1,
-                                        }}
-                                      >
-                                        <Input
-                                          id="standard-multiline-static"
-                                          className="popinput"
-                                          type="text"
-                                          name="rentalOwner_alternativeEmail"
-                                          onBlur={rentalOwnerFormik.handleBlur}
-                                          onChange={(e) => {
-                                            rentalOwnerFormik.setFieldValue(
-                                              "rentalOwner_alternativeEmail",
-                                              e.target.value
-                                            );
-                                          }}
-                                          value={
-                                            rentalOwnerFormik.values
-                                              .rentalOwner_alternativeEmail
-                                          }
-                                        />
-                                        <InputGroupAddon addonType="prepend">
-                                          <span
-                                            className="input-group-text"
-                                            style={{
-                                              paddingBottom: "8px",
-                                              paddingTop: "8px",
-                                            }}
-                                          >
-                                            <EmailIcon />
-                                          </span>
-                                        </InputGroupAddon>
-                                      </InputGroup>
-                                    </div>
-                                    <div
-                                      className="formInput"
-                                      style={{ margin: "30px 10px" }}
+                                      Alternative Email
+                                    </label>
+                                    <br />
+                                    <InputGroup
+                                      style={{
+                                        marginRight: "10px",
+                                        marginTop: "5px",
+                                        flex: 1,
+                                      }}
                                     >
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-address"
-                                      >
-                                        Phone Numbers
-                                      </label>
-                                      <br />
-                                      <InputGroup
-                                        style={{
-                                          marginBottom: "30px",
-                                          marginRight: "10px",
-                                          marginTop: "5px",
-                                          flex: 1,
+                                      <Input
+                                        id="standard-multiline-static"
+                                        className="popinput"
+                                        type="text"
+                                        name="rentalOwner_alternativeEmail"
+                                        onBlur={rentalOwnerFormik.handleBlur}
+                                        placeholder="Alternative Email"
+                                        onChange={(e) => {
+                                          rentalOwnerFormik.setFieldValue(
+                                            "rentalOwner_alternativeEmail",
+                                            e.target.value
+                                          );
                                         }}
-                                      >
-                                        <Input
-                                          required
-                                          id="standard-multiline-static"
-                                          className="popinput"
-                                          type="text"
-                                          name="rentalOwner_phoneNumber"
-                                          onBlur={rentalOwnerFormik.handleBlur}
-                                          onChange={(e) => {
-                                            rentalOwnerFormik.setFieldValue(
-                                              "rentalOwner_phoneNumber",
-                                              e.target.value
-                                            );
+                                        value={
+                                          rentalOwnerFormik.values
+                                            .rentalOwner_alternativeEmail
+                                        }
+                                      />
+                                      <InputGroupAddon addonType="prepend">
+                                        <span
+                                          className="input-group-text"
+                                          style={{
+                                            paddingBottom: "8px",
+                                            paddingTop: "8px",
                                           }}
-                                          value={
-                                            rentalOwnerFormik.values
-                                              .rentalOwner_phoneNumber
-                                          }
-                                          onInput={(e) => {
-                                            const inputValue = e.target.value;
-                                            const numericValue =
-                                              inputValue.replace(/\D/g, "");
-                                            e.target.value = numericValue;
+                                        >
+                                          <EmailIcon />
+                                        </span>
+                                      </InputGroupAddon>
+                                    </InputGroup>
+                                  </div>
+                                  <div
+                                    className="formInput"
+                                    style={{ margin: "30px 10px" }}
+                                  >
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-address"
+                                    >
+                                      Phone Numbers
+                                    </label>
+                                    <br />
+                                    <InputGroup
+                                      style={{
+                                        marginBottom: "30px",
+                                        marginRight: "10px",
+                                        marginTop: "5px",
+                                        flex: 1,
+                                      }}
+                                    >
+                                      <Input
+                                        required
+                                        id="standard-multiline-static"
+                                        className="popinput"
+                                        type="text"
+                                        name="rentalOwner_phoneNumber"
+                                        onBlur={rentalOwnerFormik.handleBlur}
+                                        placeholder="Phone Number"
+                                        onChange={(e) => {
+                                          rentalOwnerFormik.setFieldValue(
+                                            "rentalOwner_phoneNumber",
+                                            e.target.value
+                                          );
+                                        }}
+                                        value={
+                                          rentalOwnerFormik.values
+                                            .rentalOwner_phoneNumber
+                                        }
+                                        onInput={(e) => {
+                                          const inputValue = e.target.value;
+                                          const numericValue =
+                                            inputValue.replace(/\D/g, "");
+                                          e.target.value = numericValue;
+                                        }}
+                                      />
+                                      <InputGroupAddon addonType="prepend">
+                                        <span
+                                          className="input-group-text"
+                                          style={{
+                                            paddingBottom: "8px",
+                                            paddingTop: "8px",
                                           }}
-                                        />
-                                        <InputGroupAddon addonType="prepend">
-                                          <span
-                                            className="input-group-text"
-                                            style={{
-                                              paddingBottom: "8px",
-                                              paddingTop: "8px",
-                                            }}
-                                          >
-                                            <PhoneIcon />
-                                          </span>
-                                        </InputGroupAddon>
-                                      </InputGroup>
+                                        >
+                                          <PhoneIcon />
+                                        </span>
+                                      </InputGroupAddon>
+                                    </InputGroup>
 
-                                      {rentalOwnerFormik.touched
-                                        .rentalOwner_phoneNumber &&
+                                    {rentalOwnerFormik.touched
+                                      .rentalOwner_phoneNumber &&
                                       rentalOwnerFormik.errors
                                         .rentalOwner_phoneNumber ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalOwnerFormik.errors
-                                              .rentalOwner_phoneNumber
-                                          }
-                                        </div>
-                                      ) : null}
-                                      <InputGroup
-                                        style={{
-                                          marginBottom: "30px",
-                                          marginRight: "10px",
-                                          flex: 1,
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalOwnerFormik.errors
+                                            .rentalOwner_phoneNumber
+                                        }
+                                      </div>
+                                    ) : null}
+                                    <InputGroup
+                                      style={{
+                                        marginBottom: "30px",
+                                        marginRight: "10px",
+                                        flex: 1,
+                                      }}
+                                    >
+                                      <Input
+                                        id="standard-multiline-static"
+                                        className="popinput"
+                                        type="text"
+                                        name="rentalOwner_homeNumber"
+                                        onBlur={rentalOwnerFormik.handleBlur}
+                                        placeholder="Home Number"
+                                        onChange={(e) => {
+                                          rentalOwnerFormik.setFieldValue(
+                                            "rentalOwner_homeNumber",
+                                            e.target.value
+                                          );
                                         }}
-                                      >
-                                        <Input
-                                          id="standard-multiline-static"
-                                          className="popinput"
-                                          type="text"
-                                          name="rentalOwner_homeNumber"
-                                          onBlur={rentalOwnerFormik.handleBlur}
-                                          onChange={(e) => {
-                                            rentalOwnerFormik.setFieldValue(
-                                              "rentalOwner_homeNumber",
-                                              e.target.value
-                                            );
+                                        value={
+                                          rentalOwnerFormik.values
+                                            .rentalOwner_homeNumber
+                                        }
+                                        onInput={(e) => {
+                                          const inputValue = e.target.value;
+                                          const numericValue =
+                                            inputValue.replace(/\D/g, "");
+                                          e.target.value = numericValue;
+                                        }}
+                                      />
+                                      <InputGroupAddon addonType="prepend">
+                                        <span
+                                          className="input-group-text"
+                                          style={{
+                                            paddingBottom: "8px",
+                                            paddingTop: "8px",
                                           }}
-                                          value={
-                                            rentalOwnerFormik.values
-                                              .rentalOwner_homeNumber
-                                          }
-                                          onInput={(e) => {
-                                            const inputValue = e.target.value;
-                                            const numericValue =
-                                              inputValue.replace(/\D/g, "");
-                                            e.target.value = numericValue;
-                                          }}
-                                        />
-                                        <InputGroupAddon addonType="prepend">
-                                          <span
-                                            className="input-group-text"
-                                            style={{
-                                              paddingBottom: "8px",
-                                              paddingTop: "8px",
-                                            }}
-                                          >
-                                            <HomeIcon />
-                                          </span>
-                                        </InputGroupAddon>
-                                      </InputGroup>
+                                        >
+                                          <HomeIcon />
+                                        </span>
+                                      </InputGroupAddon>
+                                    </InputGroup>
 
-                                      {rentalOwnerFormik.touched
-                                        .rentalOwner_homeNumber &&
+                                    {rentalOwnerFormik.touched
+                                      .rentalOwner_homeNumber &&
                                       rentalOwnerFormik.errors
                                         .rentalOwner_homeNumber ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalOwnerFormik.errors
-                                              .rentalOwner_homeNumber
-                                          }
-                                        </div>
-                                      ) : null}
-                                      <InputGroup
-                                        style={{
-                                          marginBottom: "10px",
-                                          marginRight: "10px",
-                                          flex: 1,
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalOwnerFormik.errors
+                                            .rentalOwner_homeNumber
+                                        }
+                                      </div>
+                                    ) : null}
+                                    <InputGroup
+                                      style={{
+                                        marginBottom: "10px",
+                                        marginRight: "10px",
+                                        flex: 1,
+                                      }}
+                                    >
+                                      <Input
+                                        id="standard-multiline-static"
+                                        className="popinput"
+                                        type="text"
+                                        name="rentalOwner_businessNumber"
+                                        onBlur={rentalOwnerFormik.handleBlur}
+                                        placeholder="Business Number"
+                                        onChange={(e) => {
+                                          rentalOwnerFormik.setFieldValue(
+                                            "rentalOwner_businessNumber",
+                                            e.target.value
+                                          );
                                         }}
-                                      >
-                                        <Input
-                                          id="standard-multiline-static"
-                                          className="popinput"
-                                          type="text"
-                                          name="rentalOwner_businessNumber"
-                                          onBlur={rentalOwnerFormik.handleBlur}
-                                          onChange={(e) => {
-                                            rentalOwnerFormik.setFieldValue(
-                                              "rentalOwner_businessNumber",
-                                              e.target.value
-                                            );
-                                          }}
-                                          value={
-                                            rentalOwnerFormik.values
-                                              .rentalOwner_businessNumber
-                                          }
-                                          onInput={(e) => {
-                                            const inputValue = e.target.value;
-                                            const numericValue =
-                                              inputValue.replace(/\D/g, "");
-                                            e.target.value = numericValue;
-                                          }}
-                                        />
+                                        value={
+                                          rentalOwnerFormik.values
+                                            .rentalOwner_businessNumber
+                                        }
+                                        onInput={(e) => {
+                                          const inputValue = e.target.value;
+                                          const numericValue =
+                                            inputValue.replace(/\D/g, "");
+                                          e.target.value = numericValue;
+                                        }}
+                                      />
 
-                                        <InputGroupAddon addonType="prepend">
-                                          <span
-                                            className="input-group-text"
-                                            style={{
-                                              paddingBottom: "8px",
-                                              paddingTop: "8px",
-                                            }}
-                                          >
-                                            <BusinessIcon />
-                                          </span>
-                                        </InputGroupAddon>
-                                      </InputGroup>
+                                      <InputGroupAddon addonType="prepend">
+                                        <span
+                                          className="input-group-text"
+                                          style={{
+                                            paddingBottom: "8px",
+                                            paddingTop: "8px",
+                                          }}
+                                        >
+                                          <BusinessIcon />
+                                        </span>
+                                      </InputGroupAddon>
+                                    </InputGroup>
 
-                                      {rentalOwnerFormik.touched
-                                        .rentalOwner_businessNumber &&
+                                    {rentalOwnerFormik.touched
+                                      .rentalOwner_businessNumber &&
                                       rentalOwnerFormik.errors
                                         .rentalOwner_businessNumber ? (
                                         <div style={{ color: "red" }}>
@@ -1747,10 +1767,12 @@ const Rentals = () => {
                                     {user.staffmember_name}
                                   </DropdownItem>
                                 ))}
-                                        <DropdownItem onClick={() => openCardForm1()}>
-                                    {/* {user.staffmember_name} */}
-                                    hello ji
-                                  </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => openCardForm1()}
+                                  style={{ borderTop: "1px solid grey" }}
+                                >
+                                  Add New Staff member
+                                </DropdownItem>
                               </DropdownMenu>
                             </Dropdown>
                           </FormGroup>
@@ -1759,86 +1781,86 @@ const Rentals = () => {
                     </Row>
                   </div>
 
-                  <hr className="my-4" />
-                  {!rental_id && propType === "Residential" && (
-                    <div className="pl-lg-4">
-                      <h6 className="heading-small text-muted mb-4">
-                        Residential Unit
-                      </h6>
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-address"
-                        >
-                          Enter Residential Units
-                        </label>
-                        <br />
-                        <br />
-                        {rentalsFormik.values &&
-                          rentalsFormik.values?.residential.map(
-                            (residential, residentialIndex) => (
-                              <div key={residentialIndex}>
-                                <Row style={{ position: "relative" }}>
-                                  <ClearIcon
-                                    style={{
-                                      cursor: "pointer",
-                                      position: "absolute",
-                                      right: "10px",
-                                      display: selectedPropType.is_multiunit
-                                        ? "block"
-                                        : "none",
-                                      marginBottom: "20px",
-                                    }}
-                                    onClick={() => {
-                                      deleteResidentialUnit(residentialIndex);
-                                    }}
-                                  />
-                                  <Col
-                                    lg="3"
-                                    style={
-                                      selectedPropType.is_multiunit
-                                        ? {
-                                            display: "block",
-                                            marginTop: "20px",
-                                          }
-                                        : { display: "none" }
-                                    }
-                                  >
-                                    <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor={`input-unit-${residentialIndex}`}
-                                        style={{ paddingTop: "10px" }}
-                                      >
-                                        Unit *
-                                      </label>
-                                      <Input
-                                        required
-                                        className="form-control-alternative"
-                                        id={`input-unit-${residentialIndex}`}
-                                        placeholder="102"
-                                        type="text"
-                                        name={`residential[${residentialIndex}].rental_unit`}
-                                        onBlur={rentalsFormik.handleBlur}
-                                        onChange={(e) => {
-                                          const value = e.target.value;
-                                          const newValue = value.replace(
-                                            /[^A-Za-z0-9]/g,
-                                            ""
-                                          );
+                <hr className="my-4" />
+                {!rental_id && propType === "Residential" && (
+                  <div className="pl-lg-4">
+                    <h6 className="heading-small text-muted mb-4">
+                      Residential Unit
+                    </h6>
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-address"
+                      >
+                        Enter Residential Units
+                      </label>
+                      <br />
+                      <br />
+                      {rentalsFormik.values &&
+                        rentalsFormik.values?.residential.map(
+                          (residential, residentialIndex) => (
+                            <div key={residentialIndex}>
+                              <Row style={{ position: "relative" }}>
+                                <ClearIcon
+                                  style={{
+                                    cursor: "pointer",
+                                    position: "absolute",
+                                    right: "10px",
+                                    display: selectedPropType.is_multiunit
+                                      ? "block"
+                                      : "none",
+                                    marginBottom: "20px",
+                                  }}
+                                  onClick={() => {
+                                    deleteResidentialUnit(residentialIndex);
+                                  }}
+                                />
+                                <Col
+                                  lg="3"
+                                  style={
+                                    selectedPropType.is_multiunit
+                                      ? {
+                                        display: "block",
+                                        marginTop: "20px",
+                                      }
+                                      : { display: "none" }
+                                  }
+                                >
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor={`input-unit-${residentialIndex}`}
+                                      style={{ paddingTop: "10px" }}
+                                    >
+                                      Unit *
+                                    </label>
+                                    <Input
+                                      required
+                                      className="form-control-alternative"
+                                      id={`input-unit-${residentialIndex}`}
+                                      placeholder="102"
+                                      type="text"
+                                      name={`residential[${residentialIndex}].rental_unit`}
+                                      onBlur={rentalsFormik.handleBlur}
+                                      onChange={(e) => {
+                                        const value = e.target.value;
+                                        const newValue = value.replace(
+                                          /[^A-Za-z0-9]/g,
+                                          ""
+                                        );
 
-                                          rentalsFormik.setFieldValue(
-                                            `residential[${residentialIndex}].rental_unit`,
-                                            newValue
-                                          );
-                                        }}
-                                        value={
-                                          rentalsFormik.values.residential[
-                                            residentialIndex
-                                          ].rental_unit
-                                        }
-                                      />
-                                      {rentalsFormik.errors &&
+                                        rentalsFormik.setFieldValue(
+                                          `residential[${residentialIndex}].rental_unit`,
+                                          newValue
+                                        );
+                                      }}
+                                      value={
+                                        rentalsFormik.values.residential[
+                                          residentialIndex
+                                        ].rental_unit
+                                      }
+                                    />
+                                    {rentalsFormik.errors &&
                                       rentalsFormik.errors?.residential &&
                                       rentalsFormik.errors.residential[
                                         residentialIndex
@@ -1848,90 +1870,90 @@ const Rentals = () => {
                                       rentalsFormik.touched.residential[
                                         residentialIndex
                                       ]?.rental_unit ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalsFormik.errors.residential[
-                                              residentialIndex
-                                            ]?.rental_unit
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </FormGroup>
-                                  </Col>
-                                  <Col
-                                    lg="4"
-                                    style={
-                                      selectedPropType.is_multiunit
-                                        ? { display: "block" }
-                                        : { display: "none" }
-                                    }
-                                  >
-                                    <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-unitadd"
-                                        style={{ paddingTop: "30px" }}
-                                      >
-                                        Unit Address
-                                      </label>
-                                      <Input
-                                        required
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
-                                        type="text"
-                                        name={`residential[${residentialIndex}].rental_unit_adress`}
-                                        onBlur={rentalsFormik.handleBlur}
-                                        onChange={(e) =>
-                                          rentalsFormik.setFieldValue(
-                                            `residential[${residentialIndex}].rental_unit_adress`,
-                                            e.target.value
-                                          )
-                                        }
-                                        value={
-                                          rentalsFormik.values.residential[
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalsFormik.errors.residential[
                                             residentialIndex
-                                          ].rental_unit_adress
+                                          ]?.rental_unit
                                         }
-                                      />
-                                    </FormGroup>
-                                  </Col>
-                                  <Col lg="3">
-                                    <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-unitadd"
-                                        style={{ paddingTop: "30px" }}
-                                      >
-                                        SQFT *
-                                      </label>
-                                      <Input
-                                        required
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="3000"
-                                        type="text"
-                                        name={`residential[${residentialIndex}].rental_sqft`}
-                                        onBlur={rentalsFormik.handleBlur}
-                                        onChange={(e) => {
-                                          rentalsFormik.setFieldValue(
-                                            `residential[${residentialIndex}].rental_sqft`,
-                                            e.target.value
-                                          );
-                                        }}
-                                        value={
-                                          rentalsFormik.values.residential[
-                                            residentialIndex
-                                          ].rental_sqft
-                                        }
-                                        onInput={(e) => {
-                                          const inputValue = e.target.value;
-                                          const numericValue =
-                                            inputValue.replace(/\D/g, "");
-                                          e.target.value = numericValue;
-                                        }}
-                                      />
-                                      {rentalsFormik.errors &&
+                                      </div>
+                                    ) : null}
+                                  </FormGroup>
+                                </Col>
+                                <Col
+                                  lg="4"
+                                  style={
+                                    selectedPropType.is_multiunit
+                                      ? { display: "block" }
+                                      : { display: "none" }
+                                  }
+                                >
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-unitadd"
+                                      style={{ paddingTop: "30px" }}
+                                    >
+                                      Unit Address
+                                    </label>
+                                    <Input
+                                      required
+                                      className="form-control-alternative"
+                                      id="input-unitadd"
+                                      placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
+                                      type="text"
+                                      name={`residential[${residentialIndex}].rental_unit_adress`}
+                                      onBlur={rentalsFormik.handleBlur}
+                                      onChange={(e) =>
+                                        rentalsFormik.setFieldValue(
+                                          `residential[${residentialIndex}].rental_unit_adress`,
+                                          e.target.value
+                                        )
+                                      }
+                                      value={
+                                        rentalsFormik.values.residential[
+                                          residentialIndex
+                                        ].rental_unit_adress
+                                      }
+                                    />
+                                  </FormGroup>
+                                </Col>
+                                <Col lg="3">
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-unitadd"
+                                      style={{ paddingTop: "30px" }}
+                                    >
+                                      SQFT *
+                                    </label>
+                                    <Input
+                                      required
+                                      className="form-control-alternative"
+                                      id="input-unitadd"
+                                      placeholder="3000"
+                                      type="text"
+                                      name={`residential[${residentialIndex}].rental_sqft`}
+                                      onBlur={rentalsFormik.handleBlur}
+                                      onChange={(e) => {
+                                        rentalsFormik.setFieldValue(
+                                          `residential[${residentialIndex}].rental_sqft`,
+                                          e.target.value
+                                        );
+                                      }}
+                                      value={
+                                        rentalsFormik.values.residential[
+                                          residentialIndex
+                                        ].rental_sqft
+                                      }
+                                      onInput={(e) => {
+                                        const inputValue = e.target.value;
+                                        const numericValue =
+                                          inputValue.replace(/\D/g, "");
+                                        e.target.value = numericValue;
+                                      }}
+                                    />
+                                    {rentalsFormik.errors &&
                                       rentalsFormik.errors?.residential &&
                                       rentalsFormik.errors.residential[
                                         residentialIndex
@@ -1941,189 +1963,189 @@ const Rentals = () => {
                                       rentalsFormik.touched.residential[
                                         residentialIndex
                                       ]?.rental_sqft ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalsFormik.errors.residential[
-                                              residentialIndex
-                                            ]?.rental_sqft
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </FormGroup>
-                                  </Col>
-                                  <Col lg="8">
-                                    <FormGroup>
-                                      <br />
-                                      <Row
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "row",
-                                        }}
-                                      >
-                                        <Col md="4">
-                                          <FormGroup>
-                                            <label
-                                              className="form-control-label"
-                                              htmlFor="input-unitadd"
-                                            >
-                                              Bath
-                                            </label>
-                                            <Autocomplete
-                                              className="form-control-alternative"
-                                              id="input-unitadd"
-                                              freeSolo
-                                              size="small"
-                                              options={bathArray.map(
-                                                (option) => option
-                                              )}
-                                              onChange={(event, newValue) => {
-                                                rentalsFormik.setFieldValue(
-                                                  `residential[${residentialIndex}].rental_bath`,
-                                                  newValue
-                                                );
-                                              }}
-                                              renderInput={(params) => (
-                                                <TextField
-                                                  {...params}
-                                                  name={`residential[${residentialIndex}].rental_bath`}
-                                                  id={`residential[${residentialIndex}].rental_bath`}
-                                                  value={
-                                                    rentalsFormik.values
-                                                      .residential[
-                                                      residentialIndex
-                                                    ].rental_bath
-                                                  }
-                                                  onChange={(e) => {
-                                                    rentalsFormik.setFieldValue(
-                                                      `residential[${residentialIndex}].rental_bath`,
-                                                      e.target.value
-                                                    );
-                                                  }}
-                                                />
-                                              )}
-                                            />
-                                          </FormGroup>
-                                        </Col>
-                                        <Col md="4">
-                                          <FormGroup>
-                                            <label
-                                              className="form-control-label"
-                                              htmlFor="input-unitadd"
-                                            >
-                                              Bed
-                                            </label>
-
-                                            <Autocomplete
-                                              className="form-control-alternative"
-                                              id="input-unitadd"
-                                              freeSolo
-                                              size="small"
-                                              options={roomsArray.map(
-                                                (option) => option
-                                              )}
-                                              onChange={(event, newValue) => {
-                                                rentalsFormik.setFieldValue(
-                                                  `residential[${residentialIndex}].rental_bed`,
-                                                  newValue
-                                                );
-                                              }}
-                                              renderInput={(params) => (
-                                                <TextField
-                                                  {...params}
-                                                  name={`residential[${residentialIndex}].rental_bed`}
-                                                  id={`residential[${residentialIndex}].rental_bed`}
-                                                  value={
-                                                    rentalsFormik.values
-                                                      .residential[
-                                                      residentialIndex
-                                                    ].rental_bed
-                                                  }
-                                                  onChange={(e) => {
-                                                    rentalsFormik.setFieldValue(
-                                                      `residential[${residentialIndex}].rental_bed`,
-                                                      e.target.value
-                                                    );
-                                                  }}
-                                                />
-                                              )}
-                                            />
-                                          </FormGroup>
-                                        </Col>
-                                      </Row>
-                                      &nbsp;&nbsp;
-                                    </FormGroup>
-                                  </Col>
-                                  <Col lg="5">
-                                    <div
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalsFormik.errors.residential[
+                                            residentialIndex
+                                          ]?.rental_sqft
+                                        }
+                                      </div>
+                                    ) : null}
+                                  </FormGroup>
+                                </Col>
+                                <Col lg="8">
+                                  <FormGroup>
+                                    <br />
+                                    <Row
                                       style={{
                                         display: "flex",
                                         flexDirection: "row",
                                       }}
                                     >
-                                      <FormGroup
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}
-                                      >
-                                        <label
-                                          className="form-control-label"
-                                          htmlFor="input-unitadd"
-                                        >
-                                          Photo
-                                        </label>
-                                        <span
-                                          onClick={togglePhotoDialog}
-                                          style={{
-                                            cursor: "pointer",
-                                            fontSize: "14px",
-                                            fontFamily: "monospace",
-                                            color: "blue",
-                                          }}
-                                        >
-                                          {" "}
-                                          <br />
-                                          <input
-                                            type="file"
-                                            className="form-control-file d-none"
-                                            accept="image/*"
-                                            multiple
-                                            id={`propertyres_image_${residentialIndex}`}
-                                            name={`propertyres_image_${residentialIndex}`}
-                                            onChange={(e) =>
-                                              fileData(
-                                                e,
-                                                "propertyres_image",
-                                                residentialIndex
-                                              )
-                                            }
-                                          />
+                                      <Col md="4">
+                                        <FormGroup>
                                           <label
-                                            htmlFor={`propertyres_image_${residentialIndex}`}
+                                            className="form-control-label"
+                                            htmlFor="input-unitadd"
                                           >
-                                            <b style={{ fontSize: "20px" }}>
-                                              +
-                                            </b>
-                                            Add
+                                            Bath
                                           </label>
-                                        </span>
-                                      </FormGroup>
+                                          <Autocomplete
+                                            className="form-control-alternative"
+                                            id="input-unitadd"
+                                            freeSolo
+                                            size="small"
+                                            options={bathArray.map(
+                                              (option) => option
+                                            )}
+                                            onChange={(event, newValue) => {
+                                              rentalsFormik.setFieldValue(
+                                                `residential[${residentialIndex}].rental_bath`,
+                                                newValue
+                                              );
+                                            }}
+                                            renderInput={(params) => (
+                                              <TextField
+                                                {...params}
+                                                name={`residential[${residentialIndex}].rental_bath`}
+                                                id={`residential[${residentialIndex}].rental_bath`}
+                                                value={
+                                                  rentalsFormik.values
+                                                    .residential[
+                                                    residentialIndex
+                                                  ].rental_bath
+                                                }
+                                                onChange={(e) => {
+                                                  rentalsFormik.setFieldValue(
+                                                    `residential[${residentialIndex}].rental_bath`,
+                                                    e.target.value
+                                                  );
+                                                }}
+                                              />
+                                            )}
+                                          />
+                                        </FormGroup>
+                                      </Col>
+                                      <Col md="4">
+                                        <FormGroup>
+                                          <label
+                                            className="form-control-label"
+                                            htmlFor="input-unitadd"
+                                          >
+                                            Bed
+                                          </label>
 
-                                      <FormGroup
+                                          <Autocomplete
+                                            className="form-control-alternative"
+                                            id="input-unitadd"
+                                            freeSolo
+                                            size="small"
+                                            options={roomsArray.map(
+                                              (option) => option
+                                            )}
+                                            onChange={(event, newValue) => {
+                                              rentalsFormik.setFieldValue(
+                                                `residential[${residentialIndex}].rental_bed`,
+                                                newValue
+                                              );
+                                            }}
+                                            renderInput={(params) => (
+                                              <TextField
+                                                {...params}
+                                                name={`residential[${residentialIndex}].rental_bed`}
+                                                id={`residential[${residentialIndex}].rental_bed`}
+                                                value={
+                                                  rentalsFormik.values
+                                                    .residential[
+                                                    residentialIndex
+                                                  ].rental_bed
+                                                }
+                                                onChange={(e) => {
+                                                  rentalsFormik.setFieldValue(
+                                                    `residential[${residentialIndex}].rental_bed`,
+                                                    e.target.value
+                                                  );
+                                                }}
+                                              />
+                                            )}
+                                          />
+                                        </FormGroup>
+                                      </Col>
+                                    </Row>
+                                    &nbsp;&nbsp;
+                                  </FormGroup>
+                                </Col>
+                                <Col lg="5">
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                    }}
+                                  >
+                                    <FormGroup
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                      }}
+                                    >
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-unitadd"
+                                      >
+                                        Photo
+                                      </label>
+                                      <span
+                                        onClick={togglePhotoDialog}
                                         style={{
-                                          display: "flex",
-                                          flexWrap: "wrap",
-                                          paddingLeft: "10px",
+                                          cursor: "pointer",
+                                          fontSize: "14px",
+                                          fontFamily: "monospace",
+                                          color: "blue",
                                         }}
                                       >
-                                        <div
-                                          className="mt-3 d-flex"
-                                          style={{
-                                            justifyContent: "center",
-                                            flexWrap: "wrap",
-                                          }}
+                                        {" "}
+                                        <br />
+                                        <input
+                                          type="file"
+                                          className="form-control-file d-none"
+                                          accept="image/*"
+                                          multiple
+                                          id={`propertyres_image_${residentialIndex}`}
+                                          name={`propertyres_image_${residentialIndex}`}
+                                          onChange={(e) =>
+                                            fileData(
+                                              e,
+                                              "propertyres_image",
+                                              residentialIndex
+                                            )
+                                          }
+                                        />
+                                        <label
+                                          htmlFor={`propertyres_image_${residentialIndex}`}
                                         >
-                                          {/* {residentialImage &&
+                                          <b style={{ fontSize: "20px" }}>
+                                            +
+                                          </b>
+                                          Add
+                                        </label>
+                                      </span>
+                                    </FormGroup>
+
+                                    <FormGroup
+                                      style={{
+                                        display: "flex",
+                                        flexWrap: "wrap",
+                                        paddingLeft: "10px",
+                                      }}
+                                    >
+                                      <div
+                                        className="mt-3 d-flex"
+                                        style={{
+                                          justifyContent: "center",
+                                          flexWrap: "wrap",
+                                        }}
+                                      >
+                                        {/* {residentialImage &&
                                             residentialImage.length > 0 &&
                                             residentialImage[
                                               residentialIndex
@@ -2175,105 +2197,105 @@ const Rentals = () => {
                                                 />
                                               </div>
                                             ))} */}
-                                          {/* <OpenImageDialog
+                                        {/* <OpenImageDialog
                                             open={open}
                                             setOpen={setOpen}
                                             selectedImage={selectedImage}
                                           /> */}
-                                        </div>
-                                      </FormGroup>
-                                    </div>
-                                  </Col>
-                                </Row>
-                              </div>
-                            )
-                          )}
-                        <Row>
-                          <Col>
-                            <Button
-                              onClick={addResidentialUnits}
-                              style={
-                                selectedPropType.is_multiunit
-                                  ? { display: "block" }
-                                  : { display: "none" }
-                              }
-                            >
-                              Add another unit
-                            </Button>
-                          </Col>
-                        </Row>
-                      </FormGroup>
-                    </div>
-                  )}
-                  {!rental_id && propType === "Commercial" && (
-                    <div className="pl-lg-4">
-                      <h6 className="heading-small text-muted mb-4">
-                        Commercial Unit
-                      </h6>
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-address"
-                        >
-                          Enter Commercial Units
-                        </label>
-                        <br />
-                        <br />
-                        {rentalsFormik.values &&
-                          rentalsFormik.values.commercial.map(
-                            (commercialUnit, commercialIndex) => (
-                              <div key={commercialIndex}>
-                                <Row style={{ position: "relative" }}>
-                                  <ClearIcon
-                                    style={{
-                                      cursor: "pointer",
-                                      position: "absolute",
-                                      right: "10px",
-                                      display: selectedPropType.is_multiunit
-                                        ? "block"
-                                        : "none",
-                                    }}
-                                    onClick={() => {
-                                      deleteCommercialUnit(commercialIndex);
-                                    }}
-                                  />
+                                      </div>
+                                    </FormGroup>
+                                  </div>
+                                </Col>
+                              </Row>
+                            </div>
+                          )
+                        )}
+                      <Row>
+                        <Col>
+                          <Button
+                            onClick={addResidentialUnits}
+                            style={
+                              selectedPropType.is_multiunit
+                                ? { display: "block" }
+                                : { display: "none" }
+                            }
+                          >
+                            Add another unit
+                          </Button>
+                        </Col>
+                      </Row>
+                    </FormGroup>
+                  </div>
+                )}
+                {!rental_id && propType === "Commercial" && (
+                  <div className="pl-lg-4">
+                    <h6 className="heading-small text-muted mb-4">
+                      Commercial Unit
+                    </h6>
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-address"
+                      >
+                        Enter Commercial Units
+                      </label>
+                      <br />
+                      <br />
+                      {rentalsFormik.values &&
+                        rentalsFormik.values.commercial.map(
+                          (commercialUnit, commercialIndex) => (
+                            <div key={commercialIndex}>
+                              <Row style={{ position: "relative" }}>
+                                <ClearIcon
+                                  style={{
+                                    cursor: "pointer",
+                                    position: "absolute",
+                                    right: "10px",
+                                    display: selectedPropType.is_multiunit
+                                      ? "block"
+                                      : "none",
+                                  }}
+                                  onClick={() => {
+                                    deleteCommercialUnit(commercialIndex);
+                                  }}
+                                />
 
-                                  <Col
-                                    lg="3"
-                                    style={
-                                      selectedPropType.is_multiunit
-                                        ? { display: "block" }
-                                        : { display: "none" }
-                                    }
-                                  >
-                                    <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor={`input-unit-${commercialIndex}`}
-                                      >
-                                        Unit *
-                                      </label>
-                                      <Input
-                                        required
-                                        className="form-control-alternative"
-                                        id={`input-unit-${commercialIndex}`}
-                                        placeholder="102"
-                                        type="text"
-                                        name={`commercial[${commercialIndex}].rental_unit`}
-                                        onBlur={rentalsFormik.handleBlur}
-                                        onChange={(e) => {
-                                          rentalsFormik.setFieldValue(
-                                            `commercial[${commercialIndex}].rental_unit`,
-                                            e.target.value
-                                          );
-                                        }}
-                                        value={
-                                          rentalsFormik.values.commercial[
-                                            commercialIndex
-                                          ].rental_unit
-                                        }
-                                      />
-                                      {rentalsFormik.errors &&
+                                <Col
+                                  lg="3"
+                                  style={
+                                    selectedPropType.is_multiunit
+                                      ? { display: "block" }
+                                      : { display: "none" }
+                                  }
+                                >
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor={`input-unit-${commercialIndex}`}
+                                    >
+                                      Unit *
+                                    </label>
+                                    <Input
+                                      required
+                                      className="form-control-alternative"
+                                      id={`input-unit-${commercialIndex}`}
+                                      placeholder="102"
+                                      type="text"
+                                      name={`commercial[${commercialIndex}].rental_unit`}
+                                      onBlur={rentalsFormik.handleBlur}
+                                      onChange={(e) => {
+                                        rentalsFormik.setFieldValue(
+                                          `commercial[${commercialIndex}].rental_unit`,
+                                          e.target.value
+                                        );
+                                      }}
+                                      value={
+                                        rentalsFormik.values.commercial[
+                                          commercialIndex
+                                        ].rental_unit
+                                      }
+                                    />
+                                    {rentalsFormik.errors &&
                                       rentalsFormik.errors?.commercial &&
                                       rentalsFormik.errors.commercial[
                                         commercialIndex
@@ -2283,88 +2305,88 @@ const Rentals = () => {
                                       rentalsFormik.touched.commercial[
                                         commercialIndex
                                       ]?.rental_unit ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalsFormik.errors.commercial[
-                                              commercialIndex
-                                            ]?.rental_unit
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </FormGroup>
-                                  </Col>
-                                  <Col
-                                    lg="4"
-                                    style={
-                                      selectedPropType.is_multiunit
-                                        ? { display: "block" }
-                                        : { display: "none" }
-                                    }
-                                  >
-                                    <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-unitadd"
-                                      >
-                                        Unit Address
-                                      </label>
-                                      <Input
-                                        required
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
-                                        type="text"
-                                        name={`commercial[${commercialIndex}].rental_unit_adress`}
-                                        onBlur={rentalsFormik.handleBlur}
-                                        onChange={(e) => {
-                                          rentalsFormik.setFieldValue(
-                                            `commercial[${commercialIndex}].rental_unit_adress`,
-                                            e.target.value
-                                          );
-                                        }}
-                                        value={
-                                          rentalsFormik.values.commercial[
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalsFormik.errors.commercial[
                                             commercialIndex
-                                          ].rental_unit_adress
+                                          ]?.rental_unit
                                         }
-                                      />
-                                    </FormGroup>
-                                  </Col>
-                                  <Col lg="2">
-                                    <FormGroup>
-                                      <label
-                                        className="form-control-label"
-                                        htmlFor="input-unitadd"
-                                      >
-                                        SQFT *
-                                      </label>
-                                      <Input
-                                        required
-                                        className="form-control-alternative"
-                                        id="input-unitadd"
-                                        placeholder="3000"
-                                        type="text"
-                                        name={`commercial[${commercialIndex}].rental_sqft`}
-                                        onBlur={rentalsFormik.handleBlur}
-                                        onChange={(e) => {
-                                          rentalsFormik.setFieldValue(
-                                            `commercial[${commercialIndex}].rental_sqft`,
-                                            e.target.value
-                                          );
-                                        }}
-                                        onInput={(e) => {
-                                          const inputValue = e.target.value;
-                                          const numericValue =
-                                            inputValue.replace(/\D/g, "");
-                                          e.target.value = numericValue;
-                                        }}
-                                        value={
-                                          rentalsFormik.values.commercial[
-                                            commercialIndex
-                                          ].rental_sqft
-                                        }
-                                      />
-                                      {rentalsFormik.errors &&
+                                      </div>
+                                    ) : null}
+                                  </FormGroup>
+                                </Col>
+                                <Col
+                                  lg="4"
+                                  style={
+                                    selectedPropType.is_multiunit
+                                      ? { display: "block" }
+                                      : { display: "none" }
+                                  }
+                                >
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-unitadd"
+                                    >
+                                      Unit Address
+                                    </label>
+                                    <Input
+                                      required
+                                      className="form-control-alternative"
+                                      id="input-unitadd"
+                                      placeholder="A12 Bhaskar Enclave, Phase 2 - 102"
+                                      type="text"
+                                      name={`commercial[${commercialIndex}].rental_unit_adress`}
+                                      onBlur={rentalsFormik.handleBlur}
+                                      onChange={(e) => {
+                                        rentalsFormik.setFieldValue(
+                                          `commercial[${commercialIndex}].rental_unit_adress`,
+                                          e.target.value
+                                        );
+                                      }}
+                                      value={
+                                        rentalsFormik.values.commercial[
+                                          commercialIndex
+                                        ].rental_unit_adress
+                                      }
+                                    />
+                                  </FormGroup>
+                                </Col>
+                                <Col lg="2">
+                                  <FormGroup>
+                                    <label
+                                      className="form-control-label"
+                                      htmlFor="input-unitadd"
+                                    >
+                                      SQFT *
+                                    </label>
+                                    <Input
+                                      required
+                                      className="form-control-alternative"
+                                      id="input-unitadd"
+                                      placeholder="3000"
+                                      type="text"
+                                      name={`commercial[${commercialIndex}].rental_sqft`}
+                                      onBlur={rentalsFormik.handleBlur}
+                                      onChange={(e) => {
+                                        rentalsFormik.setFieldValue(
+                                          `commercial[${commercialIndex}].rental_sqft`,
+                                          e.target.value
+                                        );
+                                      }}
+                                      onInput={(e) => {
+                                        const inputValue = e.target.value;
+                                        const numericValue =
+                                          inputValue.replace(/\D/g, "");
+                                        e.target.value = numericValue;
+                                      }}
+                                      value={
+                                        rentalsFormik.values.commercial[
+                                          commercialIndex
+                                        ].rental_sqft
+                                      }
+                                    />
+                                    {rentalsFormik.errors &&
                                       rentalsFormik.errors?.commercial &&
                                       rentalsFormik.errors.commercial[
                                         commercialIndex
@@ -2374,81 +2396,81 @@ const Rentals = () => {
                                       rentalsFormik.touched.commercial[
                                         commercialIndex
                                       ]?.rental_sqft ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalsFormik.errors.commercial[
-                                              commercialIndex
-                                            ]?.rental_sqft
-                                          }
-                                        </div>
-                                      ) : null}
-                                    </FormGroup>
-                                  </Col>
+                                      <div style={{ color: "red" }}>
+                                        {
+                                          rentalsFormik.errors.commercial[
+                                            commercialIndex
+                                          ]?.rental_sqft
+                                        }
+                                      </div>
+                                    ) : null}
+                                  </FormGroup>
+                                </Col>
 
-                                  <Col lg="5">
-                                    <div
+                                <Col lg="5">
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                    }}
+                                  >
+                                    <FormGroup
                                       style={{
                                         display: "flex",
-                                        flexDirection: "row",
+                                        flexDirection: "column",
                                       }}
                                     >
-                                      <FormGroup
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-unitadd"
+                                      >
+                                        Photo
+                                      </label>
+                                      <span
+                                        onClick={togglePhotoDialog}
                                         style={{
-                                          display: "flex",
-                                          flexDirection: "column",
+                                          cursor: "pointer",
+                                          fontSize: "14px",
+                                          fontFamily: "monospace",
+                                          color: "blue",
                                         }}
                                       >
+                                        {" "}
+                                        <br />
+                                        <input
+                                          type="file"
+                                          className="form-control-file d-none"
+                                          accept="image/*"
+                                          multiple
+                                          id={`property_image${commercialIndex}`}
+                                          name={`property_image${commercialIndex}`}
+                                          onChange={(e) =>
+                                            fileData(
+                                              e,
+                                              "property_image",
+                                              commercialIndex
+                                            )
+                                          }
+                                        />
                                         <label
-                                          className="form-control-label"
-                                          htmlFor="input-unitadd"
+                                          htmlFor={`property_image${commercialIndex}`}
                                         >
-                                          Photo
+                                          <b style={{ fontSize: "20px" }}>
+                                            +
+                                          </b>{" "}
+                                          Add
                                         </label>
-                                        <span
-                                          onClick={togglePhotoDialog}
-                                          style={{
-                                            cursor: "pointer",
-                                            fontSize: "14px",
-                                            fontFamily: "monospace",
-                                            color: "blue",
-                                          }}
-                                        >
-                                          {" "}
-                                          <br />
-                                          <input
-                                            type="file"
-                                            className="form-control-file d-none"
-                                            accept="image/*"
-                                            multiple
-                                            id={`property_image${commercialIndex}`}
-                                            name={`property_image${commercialIndex}`}
-                                            onChange={(e) =>
-                                              fileData(
-                                                e,
-                                                "property_image",
-                                                commercialIndex
-                                              )
-                                            }
-                                          />
-                                          <label
-                                            htmlFor={`property_image${commercialIndex}`}
-                                          >
-                                            <b style={{ fontSize: "20px" }}>
-                                              +
-                                            </b>{" "}
-                                            Add
-                                          </label>
-                                        </span>
-                                      </FormGroup>
-                                      <FormGroup>
-                                        <div
-                                          className="mt-3 d-flex"
-                                          style={{
-                                            justifyContent: "center",
-                                            flexWrap: "wrap",
-                                          }}
-                                        >
-                                          {/* {commercialImage &&
+                                      </span>
+                                    </FormGroup>
+                                    <FormGroup>
+                                      <div
+                                        className="mt-3 d-flex"
+                                        style={{
+                                          justifyContent: "center",
+                                          flexWrap: "wrap",
+                                        }}
+                                      >
+                                        {/* {commercialImage &&
                                             commercialImage.length > 0 &&
                                             commercialImage.map(
                                               (unitImg, index) => (
@@ -2496,137 +2518,135 @@ const Rentals = () => {
                                                 </div>
                                               )
                                             )} */}
-                                          {/* <OpenImageDialog
+                                        {/* <OpenImageDialog
                                             open={open}
                                             setOpen={setOpen}
                                             selectedImage={selectedImage}
                                           /> */}
-                                        </div>
-                                      </FormGroup>
-                                    </div>
-                                  </Col>
-                                </Row>
-                              </div>
-                            )
-                          )}
-                        <Row>
-                          <Col>
-                            <Button
-                              onClick={addCommercialUnit}
-                              style={
-                                selectedPropType.is_multiunit
-                                  ? { display: "block" }
-                                  : { display: "none" }
-                              }
-                            >
-                              Add another unit
-                            </Button>
-                          </Col>
-                        </Row>
-                      </FormGroup>
-                    </div>
-                  )}
-                  <br />
-                  <br />
+                                      </div>
+                                    </FormGroup>
+                                  </div>
+                                </Col>
+                              </Row>
+                            </div>
+                          )
+                        )}
+                      <Row>
+                        <Col>
+                          <Button
+                            onClick={addCommercialUnit}
+                            style={
+                              selectedPropType.is_multiunit
+                                ? { display: "block" }
+                                : { display: "none" }
+                            }
+                          >
+                            Add another unit
+                          </Button>
+                        </Col>
+                      </Row>
+                    </FormGroup>
+                  </div>
+                )}
+                <br />
+                <br />
 
-                  {loader ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "not-allowed" }}
-                      disabled
-                    >
-                      Loading...
-                    </button>
-                  ) : rental_id ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={async (e) => {
-                        e.preventDefault();
-                        setLoader(true);
-                        const res = await editProperty(
-                          rentalsFormik.values,
-                          rentalOwnerFormik.values,
-                          accessType.admin_id,
-                          selectedPropType.property_id
-                        );
-                        setLoader(false);
-                        if (res === false) {
-                          setLoader(false);
-                          navigate("/admin/propertiesTable");
-                        } else {
-                          setLoader(false);
-                        }
-                      }}
-                    >
-                      Update Property
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (selectedRentalOwnerData.length !== 0) {
-                          rentalsFormik.handleSubmit();
-                        } else {
-                          rentalsFormik.handleSubmit();
-                          setDisplay(true);
-                        }
-                      }}
-                    >
-                      Create Property
-                    </button>
-                  )}
+                {loader ? (
                   <button
-                    href="#pablo"
-                    onClick={handleCloseButtonClick}
+                    type="submit"
                     className="btn btn-primary"
-                    style={{
-                      background: "white",
-                      color: "black",
-                      cursor: "pointer",
+                    style={{ background: "green", cursor: "not-allowed" }}
+                    disabled
+                  >
+                    Loading...
+                  </button>
+                ) : rental_id ? (
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    style={{ background: "green", cursor: "pointer" }}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      setLoader(true);
+                      const res = await editProperty(
+                        rentalsFormik.values,
+                        rentalOwnerFormik.values,
+                        accessType.admin_id,
+                        selectedPropType.property_id
+                      );
+                      setLoader(false);
+                      if (res === false) {
+                        setLoader(false);
+                        navigate("/"+admin+"/propertiesTable");
+                      } else {
+                        setLoader(false);
+                      }
                     }}
                   >
-                    Cancel
+                    Update Property
                   </button>
-                </Form>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
+                ) : (
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    style={{ background: "green", cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (selectedRentalOwnerData.length !== 0) {
+                        rentalsFormik.handleSubmit();
+                      } else {
+                        rentalsFormik.handleSubmit();
+                        setDisplay(true);
+                      }
+                    }}
+                  >
+                    Create Property
+                  </button>
+                )}
+                <button
+                  href="#pablo"
+                  onClick={handleCloseButtonClick}
+                  className="btn btn-primary"
+                  style={{
+                    background: "white",
+                    color: "black",
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+              </Form>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
 
         <Modal isOpen={isModalOpen} toggle={closeModal}>
-        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-          <strong style={{ fontSize: 18 }}>Add new Properties</strong>
-        </ModalHeader>
-        <ModalBody>
-          <AddpropertyModal
-            tenantId={tenantId}
-            closeModal={closeModal}
-            // getCreditCard={getCreditCard}
-          />
-        </ModalBody>
-      </Modal>
+          <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+            <strong style={{ fontSize: 18 }}>Add new Properties</strong>
+          </ModalHeader>
+          <ModalBody>
+            <AddpropertyModal
+              tenantId={tenantId}
+              closeModal={closeModal}
+              // getCreditCard={getCreditCard}
+            />
+          </ModalBody>
+        </Modal>
 
-
-      <Modal isOpen={isMOdalopen1} toggle={closeModal}>
-        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-          <strong style={{ fontSize: 18 }}>Add new Staff Member</strong>
-        </ModalHeader>
-        <ModalBody>
-          <StaffMemberModal
-            tenantId={tenantId}
-            closeModal={closeModal}
-            // getCreditCard={getCreditCard}
-          />
-        </ModalBody>
-      </Modal>
+        <Modal isOpen={isMOdalopen1} toggle={closeModal}>
+          <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+            <strong style={{ fontSize: 18 }}>Add new Staff Member</strong>
+          </ModalHeader>
+          <ModalBody>
+            <StaffMemberModal
+              tenantId={tenantId}
+              closeModal={closeModal}
+              // getCreditCard={getCreditCard}
+            />
+          </ModalBody>
+        </Modal>
         <ToastContainer />
-
       </Container>
     </>
   );

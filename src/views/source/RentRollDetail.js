@@ -75,7 +75,7 @@ const RentRollDetail = () => {
   const queryParams = new URLSearchParams(location.search);
   const source = queryParams.get("source");
   const [tenantDetails, setTenantDetails] = useState([]);
-  const[Lease ,setLease ] = useState([]);
+  const [Lease, setLease] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -445,7 +445,6 @@ const RentRollDetail = () => {
     doSomething();
   }, []);
 
-
   const Leasedetail = async () => {
     setLoader(true);
     try {
@@ -458,7 +457,7 @@ const RentRollDetail = () => {
     }
     setLoading(false);
   };
-  console.log(Lease,"abc")
+  console.log(Lease, "abc");
 
   const [myData1, setMyData1] = useState([]);
   console.log("myData1:", myData1);
@@ -563,23 +562,27 @@ const RentRollDetail = () => {
           if (response.data.statusCode === 200) {
             toast.success("Entry deleted successfully!", {
               position: "top-center",
+              autoClose: 500,
             });
             getGeneralLedgerData();
             getTenantData();
           } else {
             toast.error(response.data.message, {
               position: "top-center",
+              autoClose: 500,
             });
           }
         } catch (error) {
           console.error("Error deleting entry:", error);
           toast.error("Failed to delete entry", {
             position: "top-center",
+            autoClose: 500,
           });
         }
       } else {
         toast.success("Entry is safe", {
           position: "top-center",
+          autoClose: 500,
         });
       }
     });
@@ -640,6 +643,7 @@ const RentRollDetail = () => {
           if (res.data.statusCode === 200) {
             toast.success("Move-out Successfully", {
               position: "top-center",
+              autoClose: 500,
             });
             // Close the modal if the status code is 200
             handleModalClose();
@@ -650,12 +654,14 @@ const RentRollDetail = () => {
         .catch((err) => {
           toast.error("An error occurred while Move-out", {
             position: "top-center",
+            autoClose: 500,
           });
           console.error(err);
         });
     } else {
       toast.error("NOTICE GIVEN DATE && MOVE-OUT DATE must be required", {
         position: "top-center",
+        autoClose: 500,
       });
     }
   };
@@ -917,17 +923,16 @@ const RentRollDetail = () => {
         </Row>
 
         <Row>
-          <div className="col table-responsive" style={{overflow:"auto"}}>
-            <Card className="shadow" style={{overflow:"auto"}}>
+          <div className="col table-responsive" style={{ overflow: "auto" }}>
+            <Card className="shadow" style={{ overflow: "auto" }}>
               <CardHeader className="border-0"></CardHeader>
               <Col>
-                <TabContext value={value} style={{overflow:"auto"}}>
-                  <Box sx={{ borderBottom: 1, borderColor: "divider" }} >
+                <TabContext value={value} style={{ overflow: "auto" }}>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                     <TabList
                       onChange={(e, newValue) => handleChange(newValue)}
                       aria-label="lab API tabs example"
                       value={value}
-                      
                     >
                       <Tab
                         label="Summary"

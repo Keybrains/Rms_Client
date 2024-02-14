@@ -18,9 +18,9 @@ import TenantHeader from "components/Headers/TenantHeader";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 import swal from "sweetalert";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 const Leaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -68,14 +68,16 @@ const Leaseing = () => {
       tenant_lastName: yup.string().required("Required"),
       tenant_phoneNumber: yup.number().required("Required"),
       tenant_email: yup.string().required("Required"),
-      tenant_password: yup
-        .string()
-        .min(8, "Password is too short")
-        .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-          "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
-        )
-        .required("Required"),
+      tenant_password: tenant_id
+        ? yup
+            .string()
+            .min(8, "Password is too short")
+            .matches(
+              /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+              "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
+            )
+            .required("Required")
+        : "",
     }),
     onSubmit: (values) => {
       if (tenant_id) {
@@ -93,21 +95,20 @@ const Leaseing = () => {
     try {
       const res = await axios.post(`${baseUrl}/tenants/tenants`, object);
       if (res.data.statusCode === 200) {
-        toast.success('Tenant Added successfully!', {
-          position: 'top-center',
+        toast.success("Tenant Added successfully!", {
+          position: "top-center",
           autoClose: 500,
-        })
+        });
         handleCloseButtonClick();
       } else {
         toast.warning(res.data.message, {
-          position: 'top-center',
-        })
+          position: "top-center",
+        });
       }
     } catch (error) {
-    
       toast.error(error.message, {
-        position: 'top-center',
-      })
+        position: "top-center",
+      });
       console.error("Error:", error.message);
     }
     setLoader(false);
@@ -681,7 +682,7 @@ const Leaseing = () => {
                         tenantFormik.handleSubmit();
                       }}
                     >
-                      Update Lease
+                      Update Tenant
                     </button>
                   ) : (
                     <button
@@ -693,7 +694,7 @@ const Leaseing = () => {
                         tenantFormik.handleSubmit();
                       }}
                     >
-                      Create Lease
+                      Add Tenant
                     </button>
                   )}
                   <Button

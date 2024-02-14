@@ -1073,7 +1073,7 @@ const Rentals = () => {
                       </Col>
                     </Row>
                   </FormGroup> */}
-                  <hr />
+                  {/* <hr />
                   <Col>
                     <FormGroup>
                       <div className="pl-lg-2">
@@ -1199,7 +1199,7 @@ const Rentals = () => {
                         </ul>
                       </div>
                     </Col>
-                  </Row>
+                  </Row> */}
 
                   <Col>
                     <Row>

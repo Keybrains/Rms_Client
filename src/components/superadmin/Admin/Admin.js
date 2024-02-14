@@ -43,6 +43,8 @@ import SuperAdminHeader from "../Headers/SuperAdminHeader";
 import { Col, Container, Row } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
+import { jwtDecode } from "jwt-decode";
+import { useEffect } from "react";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
@@ -68,25 +70,15 @@ function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
   const navigate = useNavigate();
 
-  // const handleLoginButtonClick = async () => {
-  //   try {
-  //     // Make an HTTP request to your API endpoint
-  //     await axios.get('http://localhost:4000/api/test');
-  //     console.log('API called successfully');
-  //   } catch (error) {
-  //     console.error('Error occurred while calling API:', error);
-  //   }
-  // };
-
-  const handleLoginButtonClick = async () => {
-    try {
-      // Make an HTTP request to your API endpoint with the adminId
-      await axios.get(`http://localhost:4000/api/test/${row.admin_id}`);
-      console.log("API called successfully");
-    } catch (error) {
-      console.error("Error occurred while calling API:", error);
-    }
-  };
+    const handleLoginButtonClick = async () => {
+      try {
+        // Make an HTTP request to your API endpoint with the adminId
+        await axios.get(`https://rms-saas-server.vercel.app/api/test/${row.admin_id}`);
+        console.log('API called successfully');
+      } catch (error) {
+        console.error('Error occurred while calling API:', error);
+      }
+    };
 
   return (
     <React.Fragment>
@@ -139,16 +131,16 @@ function Rows(props) {
 }
 
 export default function Admin() {
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-  let cookies = new Cookies();
-  // const history = useHistory();
-  // React.useEffect(() => {
-  //   const userData = cookies.get("token");
-  //   if (!userData) {
-  //     history.push("/superadmin/sign-in");
-  //   }
-  // }, [cookies]);
-
+  const baseUrl = process.env.REACT_APP_BASE_URL;  const [accessType, setAccessType] = useState();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
   let [adminData, setAdminData] = useState([]);
   let [loader, setLoader] = React.useState(true);
   let [countData, setCountData] = useState(0);

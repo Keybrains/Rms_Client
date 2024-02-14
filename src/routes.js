@@ -188,6 +188,13 @@ var routes = [
     layout: "/auth",
   },
   {
+    path: "/:admin/:roll/login",
+    name: "Login",
+    icon: "ni ni-key-25 text-info",
+    component: <Login />,
+    layout: "/auth",
+  },
+  {
     path: "/changepassword",
     name: "Change Password",
     component: <Changepassword />,
@@ -679,7 +686,7 @@ var routes = [
   {
     path: "/plans",
     name: "Plans",
-    icon: "ni ni-pin-3 text-orange",
+    icon: "ni ni-app text-orange",
     component: <SuperAdminPlanList />,
     layout: "/superadmin",
   },
@@ -698,7 +705,7 @@ var routes = [
   {
     path: "/admin",
     name: "Admin",
-    icon: "ni ni-pin-3 text-orange",
+    icon: "ni ni-collection text-green",
     component: <SuperAdminAdmin />,
     layout: "/superadmin",
   },

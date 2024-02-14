@@ -233,6 +233,7 @@ const VendorAddWork = () => {
   let cookie_id = localStorage.getItem("Vendor ID");
 
   const [accessType, setAccessType] = useState(null);
+  console.log(accessType, "accessType")
   // const [vendorDetails, setVendorDetails] = useState({});
   const [vendorname, setVendorname] = useState("");
 
@@ -257,6 +258,7 @@ const VendorAddWork = () => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
+      console.log(jwt.accessType, "jwt.accessType")
     } else {
       navigate("/auth/login");
     }
