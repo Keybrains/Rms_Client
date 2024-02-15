@@ -18,8 +18,8 @@ import { jwtDecode } from "jwt-decode";
 import Header from "components/Headers/Header";
 import axios from "axios";
 import swal from "sweetalert";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { RotatingLines } from "react-loader-spinner";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -28,11 +28,10 @@ import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
-
 const Vendor = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
-  const { admin } = useParams()
+  const { admin } = useParams();
   const [vendorData, setVendorData] = useState([]);
   const [loader, setLoader] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -86,7 +85,6 @@ const Vendor = () => {
     getVendorData();
   }, [accessType]);
 
-
   const deleteVendor = async (id) => {
     // Show a confirmation dialog to the user
     swal({
@@ -99,33 +97,36 @@ const Vendor = () => {
       if (willDelete) {
         try {
           const response = await axios.delete(
-            `${baseUrl}/vendor/delete_vendor`, id
+            `${baseUrl}/vendor/delete_vendor/${id}`
           );
 
           if (response.data.statusCode === 200) {
-            toast.success('Vendor Deleted Successful!', {
-              position: 'top-center',
-            })
+            toast.success("Vendor Deleted Successful!", {
+              position: "top-center",
+              autoClose: 1000,
+            });
+
             getVendorData();
           } else if (response.data.statusCode === 201) {
-           
-            toast.warning('Vendor already assigned to workorder!', {
-              position: 'top-center',
-            })
+            toast.warning("Vendor already assigned to workorder!", {
+              position: "top-center",
+              autoClose: 1000,
+            });
+
             getVendorData();
           } else {
             toast.error(response.data.message, {
-              position: 'top-center',
-            })
+              position: "top-center",
+              autoClose: 1000,
+            });
           }
         } catch (error) {
           console.error("Error deleting vendor:", error);
         }
       } else {
-        toast.success('Vendor is safe', {
-          position: 'top-center',
-        })
-
+        toast.success("Vendor is safe", {
+          position: "top-center",
+        });
       }
     });
   };
@@ -157,13 +158,19 @@ const Vendor = () => {
       upArrow.forEach((value) => {
         switch (value) {
           case "vendor_name":
-            filteredData.sort((a, b) => a.vendor_name.localeCompare(b.vendor_name));
+            filteredData.sort((a, b) =>
+              a.vendor_name.localeCompare(b.vendor_name)
+            );
             break;
           case "vendor_email":
-            filteredData.sort((a, b) => a.vendor_email.localeCompare(b.vendor_email));
+            filteredData.sort((a, b) =>
+              a.vendor_email.localeCompare(b.vendor_email)
+            );
             break;
           case "vendor_phoneNumber":
-            filteredData.sort((a, b) => a.vendor_phoneNumber - b.vendor_phoneNumber);
+            filteredData.sort(
+              (a, b) => a.vendor_phoneNumber - b.vendor_phoneNumber
+            );
             break;
           default:
             // If an unknown sort option is provided, do nothing
@@ -176,13 +183,19 @@ const Vendor = () => {
       upArrow.forEach((value) => {
         switch (value) {
           case "vendor_name":
-            filteredData.sort((a, b) => b.vendor_name.localeCompare(a.vendor_name));
+            filteredData.sort((a, b) =>
+              b.vendor_name.localeCompare(a.vendor_name)
+            );
             break;
           case "vendor_email":
-            filteredData.sort((a, b) => b.vendor_email.localeCompare(a.vendor_email));
+            filteredData.sort((a, b) =>
+              b.vendor_email.localeCompare(a.vendor_email)
+            );
             break;
           case "vendor_phoneNumber":
-            filteredData.sort((a, b) => b.vendor_phoneNumber - a.vendor_phoneNumber);
+            filteredData.sort(
+              (a, b) => b.vendor_phoneNumber - a.vendor_phoneNumber
+            );
             break;
           default:
             // If an unknown sort option is provided, do nothing
@@ -281,8 +294,8 @@ const Vendor = () => {
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">Name
-
+                      <th scope="col">
+                        Name
                         {sortBy.includes("vendor_name") ? (
                           upArrow.includes("vendor_name") ? (
                             <ArrowDownwardIcon
@@ -297,8 +310,10 @@ const Vendor = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("vendor_name")}
                           />
-                        )}</th>
-                      <th scope="col">Phone Number
+                        )}
+                      </th>
+                      <th scope="col">
+                        Phone Number
                         {sortBy.includes("vendor_phoneNumber") ? (
                           upArrow.includes("vendor_phoneNumber") ? (
                             <ArrowDownwardIcon
@@ -313,8 +328,10 @@ const Vendor = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("vendor_phoneNumber")}
                           />
-                        )}</th>
-                      <th scope="col">Mail ID
+                        )}
+                      </th>
+                      <th scope="col">
+                        Mail ID
                         {sortBy.includes("vendor_email") ? (
                           upArrow.includes("vendor_email") ? (
                             <ArrowDownwardIcon
@@ -329,7 +346,8 @@ const Vendor = () => {
                           <ArrowUpwardIcon
                             onClick={() => sortData("vendor_email")}
                           />
-                        )}</th>
+                        )}
+                      </th>
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
