@@ -24,7 +24,7 @@ import CreditCardForm from "./CreditCardForm";
 const TenantDetailPage = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [loader, setLoader] = React.useState(true);
-  const { id } = useParams();
+  const { id, admin } = useParams();
   const [tenantDetails, setTenantDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -69,7 +69,7 @@ const TenantDetailPage = () => {
   //   }
   // };
 
-  console.log(id, "janak")
+  console.log(id, "janak");
   const getTenantData = async () => {
     try {
       const apiUrl = `${baseUrl}/tenants/tenant_details/${id}`;
@@ -92,11 +92,9 @@ const TenantDetailPage = () => {
         //   .get(url)
         //   .then((response) => {
         //     setLoader(false);
-
         //     if (response.data && response.data.data) {
         //       const mergedData = response.data.data;
         //       console.log(mergedData, "mergedData1");
-
         //       setGeneralLedgerData(mergedData[0]?.unit[0]);
         //     } else {
         //       console.error("Unexpected response format:", response.data);
@@ -107,20 +105,15 @@ const TenantDetailPage = () => {
         //   });
       } else {
         // console.log("2");
-
         // const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${id}`;
-
         // console.log(url, "huewfjnmk");
-
         // axios
         //   .get(url)
         //   .then((response) => {
         //     setLoader(false);
-
         //     if (response.data && response.data.data) {
         //       const mergedData = response.data.data;
         //       console.log(mergedData, "mergedData2");
-
         //       setGeneralLedgerData(mergedData[0]?.unit[0]);
         //     } else {
         //       console.error("Unexpected response format:", response.data);
@@ -282,7 +275,7 @@ const TenantDetailPage = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  console.log("first", tenantDetails)
+  console.log("first", tenantDetails);
 
   const [cardDetalis, setCardDetails] = useState([]);
 
@@ -322,7 +315,7 @@ const TenantDetailPage = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/admin/TenantsTable")}
+              onClick={() => navigate("/" + admin + "/TenantsTable")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -523,15 +516,19 @@ const TenantDetailPage = () => {
                                 color: "#000",
                               }}
                             >
-                              <Col>{tenantDetails.emergency_contact.name || "N/A"}</Col>
                               <Col>
-                                {tenantDetails.emergency_contact.relation || "N/A"}
+                                {tenantDetails.emergency_contact.name || "N/A"}
+                              </Col>
+                              <Col>
+                                {tenantDetails.emergency_contact.relation ||
+                                  "N/A"}
                               </Col>
                               <Col style={{ textTransform: "lowercase" }}>
                                 {tenantDetails.emergency_contact.email || "N/A"}
                               </Col>
                               <Col>
-                                {tenantDetails.emergency_contact.phoneNumber || "N/A"}
+                                {tenantDetails.emergency_contact.phoneNumber ||
+                                  "N/A"}
                               </Col>
                             </Row>
                           </div>
@@ -580,19 +577,14 @@ const TenantDetailPage = () => {
                             </tr>
                             {tenantDetails?.leaseData?.map((item) => (
                               <tr className="body" key={item.lease_id}>
-                                    <td>{getStatus1(item.start_date, item.end_date)}</td>
                                 <td>
-                                  <Link
-                                    to={`/admin/rentrolldetail/`}
-                                    onClick={(e) => {
-                                      // console.log(item._id, "Tenant Id");
-                                    }}
-                                  >
-                                    {formatDateWithoutTime(item.start_date) +
-                                      " To " +
-                                      formatDateWithoutTime(item.end_date) ||
-                                      "N/A"}
-                                  </Link>
+                                  {getStatus1(item.start_date, item.end_date)}
+                                </td>
+                                <td>
+                                  {formatDateWithoutTime(item.start_date) +
+                                    " To " +
+                                    formatDateWithoutTime(item.end_date) ||
+                                    "N/A"}
                                 </td>
                                 <td>{item.rental_adress || "N/A"}</td>
                                 <td>{item.lease_type || "N/A"}</td>
@@ -611,7 +603,7 @@ const TenantDetailPage = () => {
                       </tbody>
                     ) : (
                       <>
-                        <Card
+                        {/* <Card
                           className="w-100"
                           style={{ background: "#F4F6FF" }}
                         >
@@ -639,18 +631,6 @@ const TenantDetailPage = () => {
                                     color="text.secondary"
                                     gutterBottom
                                   >
-                                    {/* {getStatus(
-                                      item.entries.start_date,
-                                      item.entries.end_date
-                                    )
-                                      .charAt(0)
-                                      .toUpperCase() +
-                                      getStatus(
-                                        item.entries.start_date,
-                                        item.entries.end_date
-                                      )
-                                        .substring(1)
-                                        .toLowerCase()} */}
                                   </Typography>
 
                                   <Typography
@@ -790,8 +770,6 @@ const TenantDetailPage = () => {
                                     ))}
                                   </div>
                                 </div>
-                                {/* )
-                                )} */}
                               </div>
                               <div
                                 style={{
@@ -827,7 +805,6 @@ const TenantDetailPage = () => {
                                 ))}
                               </div>
                             </>
-                            {/* )} */}
                             <div
                               style={{
                                 display: "flex",
@@ -882,9 +859,9 @@ const TenantDetailPage = () => {
                               ))}
                             </div>
                           </CardContent>
-                        </Card>
+                        </Card> */}
 
-                        <Card
+                        {/* <Card
                           className="w-100 mt-3"
                           style={{ background: "#F4F6FF" }}
                         >
@@ -976,7 +953,7 @@ const TenantDetailPage = () => {
                               </Button>
                             </div>
                           </CardContent>
-                        </Card>
+                        </Card> */}
                       </>
                     )}
                   </div>
@@ -995,7 +972,7 @@ const TenantDetailPage = () => {
             <CreditCardForm
               id={id}
               closeModal={closeModal}
-            // getCreditCard={getCreditCard}
+              // getCreditCard={getCreditCard}
             />
           </ModalBody>
         </Modal>
