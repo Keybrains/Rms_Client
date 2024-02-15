@@ -62,7 +62,7 @@ const Profile = () => {
     try {
       // Make an HTTP request to your API endpoint with the adminId
       const res = await axios.get(
-        `https://rms-saas-server.vercel.app/api/admin/admin_profile/${accessType}`
+        `http://192.168.1.19:4000/api/admin/admin_profile/${accessType}`
       );
       setUserProfile(res.data.data);
     } catch (error) {

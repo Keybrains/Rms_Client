@@ -527,7 +527,7 @@ const Sidebar = (props) => {
             </UncontrolledDropdown>
           </Nav>
 
-          <Nav navbar>
+          {/* <Nav navbar>
             <UncontrolledDropdown nav>
               <DropdownToggle nav caret>
                 <i className="ni ni-money-coins text-purple" /> Accounting
@@ -543,12 +543,9 @@ const Sidebar = (props) => {
                 <DropdownItem to={"/" + admin + "/Payment"} tag={Link} onClick={toggleCollapse}>
                   Payment
                 </DropdownItem>
-                {/* <DropdownItem to={"/"+admin+"/OutstandingBalance"} tag={Link}>
-                Outstanding Balances
-              </DropdownItem> */}
               </DropdownMenu>
             </UncontrolledDropdown>
-          </Nav>
+          </Nav> */}
         </Collapse>
       </Container>
     </Navbar>

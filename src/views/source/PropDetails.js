@@ -619,22 +619,22 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="summary"
                       />
-                      <Tab
+                      {/* <Tab
                         label="Financial"
                         style={{ textTransform: "none" }}
                         value="financial"
-                      />
+                      /> */}
                       <Tab
                         label={`Units (${propertyUnitData?.length || 0})`}
                         style={{ textTransform: "none" }}
                         value="units"
                       />
 
-                      <Tab
+                      {/* <Tab
                         label="Task"
                         style={{ textTransform: "none" }}
                         value="Task"
-                      />
+                      /> */}
                       <Tab
                         label={`Tenant (${tenantsCount})`}
                         style={{ textTransform: "none" }}
@@ -2244,7 +2244,7 @@ const PropDetails = () => {
                                         marginTop: "5px",
                                       }}
                                       onClick={() => {
-                                        navigate(`/admin/Leaseing`);
+                                        navigate(`/${admin}/Leaseing`);
                                       }}
                                     >
                                       Add Lease
@@ -2265,7 +2265,7 @@ const PropDetails = () => {
                                         marginTop: "5px",
                                       }}
                                       onClick={() => {
-                                        navigate(`/admin/Applicants`);
+                                        navigate(`/${admin}/Applicants`);
                                       }}
                                     >
                                       Create Applicant
