@@ -98,7 +98,7 @@ function Plans() {
                     type="button"
                     className="btn btn-secondary first-button"
                     style={{ background: "linear-gradient(87deg, #11cdef 0, #1171ef 100%)", color: "white" }}
-                    onClick={() => navigate("/"+admin+"/Planpurches")}
+                    onClick={() => navigate("/"+admin+"/Planpurchases")}
                   >
                     Get Started
                   </Button>

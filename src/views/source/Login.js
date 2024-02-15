@@ -62,7 +62,6 @@ const Login = () => {
     setIsLoading(true);
     try {
       if (!admin_id) {
-        console.log("object1");
         const adminRes = await axios.post(`${baseUrl}/admin/login`, values);
 
         if (adminRes.status === 200) {
@@ -82,7 +81,6 @@ const Login = () => {
               position: "top-center",
             });
           } else {
-            console.log("object2");
             const superAdminRes = await axios.post(
               `${baseUrl}/admin/superadmin_login`,
               values
@@ -116,6 +114,11 @@ const Login = () => {
               }
             }
           }
+        } else {
+          toast.error("User does not exits", {
+            autoClose: 500,
+            position: "top-center",
+          });
         }
       } else if (roll) {
         const response = await axios.post(`${baseUrl}/${roll}/login`, {
@@ -123,7 +126,6 @@ const Login = () => {
           password: values.password,
           admin_id: admin_id,
         });
-        console.log(response);
 
         if (response.status === 200) {
           const responceData = response.data;
@@ -148,6 +150,11 @@ const Login = () => {
             });
           }
         }
+      } else {
+        toast.error("Invalid User Data", {
+          autoClose: 500,
+          position: "top-center",
+        });
       }
     } catch (error) {
       console.error(error);
