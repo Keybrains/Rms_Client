@@ -78,11 +78,11 @@ function Plans() {
                 <div className="card-body">
                   <b className="mb-5">{plan.plan_name}</b>
                   <h5 className="card-title" style={{ color: "#11cdef" }}>
-                    ${plan.plan_price}/month
+                    ${plan.plan_price}/{plan?.billing_interval}
                   </h5>
-                  <p className="">{plan.features[0]?.features}</p>
+                  {/* <p className="">{plan?.features[0]?.features}</p> */}
                   <hr />
-                  <FeaturesList features={plan.features} />
+                  <FeaturesList features={plan?.features} />
                   <br />
                   <Button
                     type="button"
