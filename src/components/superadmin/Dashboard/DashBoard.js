@@ -27,7 +27,7 @@ function DashBoard() {
     try {
       console.log(baseUrl);
       const res = await axios.get(
-        `http://192.168.1.19:4000/api/admin/superadmin_count`
+        `http://https://rms-saas-server.vercel.app/api/admin/superadmin_count`
       );
       if (res.data.statusCode === 200) {
         setData({
