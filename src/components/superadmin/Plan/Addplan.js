@@ -31,9 +31,10 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-const AddPlanForm = ({ handleSubmit }) => {
-  const [accessType, setAccessType] = useState();
+const AddPlanForm = () => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
+  const [accessType, setAccessType] = useState();
   useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
@@ -69,82 +70,36 @@ const AddPlanForm = ({ handleSubmit }) => {
     setInputFields(list);
   };
   const [showBillingPeriods, setShowBillingPeriods] = useState(false);
+  const [loader, setLoader] = useState(false);
 
-  // let [id, setId] = React.useState();
-
-  // var handleSubmit;
-
-  // if (!id) {
-  //     handleSubmit = async (values) => {
-  //         try {
-  //             values["features"] = inputFields;
-  //             const res = await axios.post(`${baseUrl}/plans/plans`, values);
-  //             if (res.data.statusCode === 200) {
-  //                 setModalShowForPopupForm(false);
-  //                 getData();
-  //                 toast.success(res.data?.message, {
-  //                     position: "top-center",
-  //                 });
-  //             } else {
-  //                 toast.error(res.data.message, {
-  //                     position: "top-center",
-  //                 });
-  //             }
-  //         } catch (error) {
-  //             console.error("Error:", error);
-  //             toast.error(error, {
-  //                 position: "top-center",
-  //             });
-  //         }
-  //     };
-  // } else {
-  //     handleSubmit = async (values) => {
-  //         try {
-  //             const response = await axios.put(
-  //                 `${baseUrl}/plans/plans/${id}`, // Use template literals to include the id
-  //                 values
-  //             );
-
-  //             if (response.data.statusCode === 200) {
-  //                 setModalShowForPopupForm(false);
-  //                 getData();
-  //                 toast.success(response.data?.message, {
-  //                     position: "top-center",
-  //                 });
-  //             }
-  //         } catch (error) {
-  //             console.error("Error:", error);
-  //             toast.warning(error, {
-  //                 position: "top-center",
-  //             });
-  //         }
-  //     };
-  // }
-  const baseUrl = process.env.REACT_APP_BASE_URL;
-
-  var handleSubmit;
-  handleSubmit = async (values) => {
+  const handleSubmit = async (values) => {
+    setLoader(true);
     try {
       values["features"] = inputFields;
       const res = await axios.post(`${baseUrl}/plans/plans`, values);
       if (res.data.statusCode === 200) {
-        // setModalShowForPopupForm(false);
-        // getData();
         toast.success(res.data?.message, {
           position: "top-center",
+          autoClose: 1000,
         });
+        navigate("/superadmin/plans");
       } else {
         toast.error(res.data.message, {
           position: "top-center",
+          autoClose: 1000,
         });
       }
     } catch (error) {
       console.error("Error:", error);
       toast.error(error, {
         position: "top-center",
+        autoClose: 1000,
       });
+    } finally {
+      setLoader(false);
     }
   };
+
   return (
     <div>
       <SuperAdminHeader />
@@ -160,8 +115,6 @@ const AddPlanForm = ({ handleSubmit }) => {
             <Button
               className="mb-2"
               color="primary"
-              //  href="#rms"
-              // onClick={() => navigate(`/${admin}/RentalownerTable`)}
               size="sm"
               onClick={() => navigate("/superadmin/plans")}
               style={{ background: "white", color: "blue" }}
@@ -196,19 +149,6 @@ const AddPlanForm = ({ handleSubmit }) => {
                     validationSchema={Yup.object().shape({
                       plan_name: Yup.string().required("Required"),
                       plan_price: Yup.number().required("Required"),
-                      // billing_interval: Yup.string().required('Required'),
-                      // plan_days: Yup.number().when('billing_interval', {
-                      //     is: 'Days',
-                      //     then: Yup.number().required('Required')
-                      // }),
-                      // day_of_month: Yup.number().when('billing_interval', {
-                      //     is: 'Monthly',
-                      //     then: Yup.number().required('Required')
-                      // }),
-                      // plan_periods: Yup.number().when('billingOption', {
-                      //     is: value => value !== 'autoRenew',
-                      //     then: Yup.number().required('Required')
-                      // })
                     })}
                     onSubmit={(values, { resetForm }) => {
                       handleSubmit(values);
@@ -273,7 +213,7 @@ const AddPlanForm = ({ handleSubmit }) => {
                             >
                               <MenuItem value={"Monthly"}>Monthly</MenuItem>
                               <MenuItem value={"Annual"}>Annual</MenuItem>
-                              <MenuItem value={"Days"}>Days</MenuItem>
+                              {/* <MenuItem value={"Days"}>Days</MenuItem> */}
                             </Select>
                             {touched.billing_interval &&
                             errors.billing_interval ? (
@@ -376,17 +316,17 @@ const AddPlanForm = ({ handleSubmit }) => {
                           })}
                           <div className="row">
                             <div className="col-sm-12">
-                              <button
+                              <div
                                 className="btn btn-outline-primary"
                                 sm
-                                onClick={addInputField}
+                                onClick={() => addInputField()}
                               >
                                 Add New
-                              </button>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div className="mb-3 mx-3">
+                        {/* <div className="mb-3 mx-3">
                           <FormControl component="fieldset">
                             <FormLabel component="legend">
                               Set how many times you wish to charge the
@@ -432,8 +372,8 @@ const AddPlanForm = ({ handleSubmit }) => {
                               />
                             </RadioGroup>
                           </FormControl>
-                        </div>
-                        {showBillingPeriods && (
+                        </div> */}
+                        {/* {showBillingPeriods && (
                           <div className="mb-3 col-lg-8">
                             <TextField
                               type="number"
@@ -452,8 +392,8 @@ const AddPlanForm = ({ handleSubmit }) => {
                               </div>
                             )}
                           </div>
-                        )}
-                        <div className="mb-3 mx-3">
+                        )} */}
+                        {/* <div className="mb-3 mx-3">
                           <FormLabel component="legend">
                             Additional Options:
                           </FormLabel>
@@ -521,40 +461,15 @@ const AddPlanForm = ({ handleSubmit }) => {
                               }
                             />
                           </div>
-                        </div>
-
-                        {/* {!id ? (
-                                                    <Button
-                                                        className="mt-3"
-                                                        type="submit"
-                                                        variant="success"
-                                                    >
-                                                        Add Plan
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        className="mt-3"
-                                                        type="submit"
-                                                        variant="warning"
-                                                    >
-                                                        Update Plan
-                                                    </Button>
-                                                )}
-                                                <Button
-                                                    className="mt-3"
-                                                    type=""
-                                                    variant=""
-                                                    onClick={() => navigate("/superadmin/plans")}
-                                                >
-                                                    Cancel
-                                                </Button> */}
+                        </div> */}
                         <div className="mb-3 mx-2">
                           <Button
                             className="mt-3"
                             type="submit"
                             variant="success"
+                            disabled={loader}
                           >
-                            Add Plan
+                            {loader ? "Loading..." : "Add Plan"}
                           </Button>
                           <Button
                             className="mt-3"
@@ -565,9 +480,6 @@ const AddPlanForm = ({ handleSubmit }) => {
                             Cancel
                           </Button>
                         </div>
-                        {/* <div className="mb-3">
-                                                    <Button type="submit" variant="contained" color="primary">Submit</Button>
-                                                </div> */}
                       </Form>
                     )}
                   </Formik>

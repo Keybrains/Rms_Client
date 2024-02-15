@@ -65,12 +65,12 @@ const headCells = [
   {
     label: "Duration",
   },
-  {
-    label: "Max Add.",
-  },
-  {
-    label: "Annual Discount",
-  },
+  // {
+  //   label: "Max Add.",
+  // },
+  // {
+  //   label: "Annual Discount",
+  // },
   {
     label: "Date",
   },
@@ -122,9 +122,8 @@ function Rows(props) {
         <TableCell align="center">
           {row.is_free_trial === true ? row?.plan_days : "Monthly"}
         </TableCell>
-        <TableCell align="center">{row?.maximum_add}</TableCell>
+        {/* <TableCell align="center">{row?.maximum_add}</TableCell>
         <TableCell align="center">
-          {/* {row?.annual_discount === null ? "-" : row?.annual_discount + "%"} */}
           {row?.annual_discount === null ? (
             "-"
           ) : (
@@ -133,8 +132,7 @@ function Rows(props) {
               {row?.annual_discount + "%"}
             </span>
           )}
-        </TableCell>
-        {/* <TableCell align="center">{row.plan_duration_monts}</TableCell> */}
+        </TableCell> */}
         <TableCell align="center">
           {new Date(row.createdAt).toLocaleDateString("en-GB", {
             day: "2-digit",
@@ -186,7 +184,7 @@ function Rows(props) {
                 </th>
               </tr>
 
-              {row?.features.map((index, id) => (
+              {row?.features?.map((index, id) => (
                 <tr key={id}>
                   <th
                     style={{
@@ -243,9 +241,6 @@ const PlanList = () => {
           pageSize: rowsPerPage,
           pageNumber: page,
         },
-        //   headers: {
-        //     Authorization: `Bearer ${token}`,
-        //   },
       });
       setLoader(false);
       setPriorityData(res.data.data);
@@ -410,16 +405,6 @@ const PlanList = () => {
     setId(datas._id);
     setEditData(datas);
   };
-
-  // Formik
-  //   let [ProductDetailsFormik, setProductDetailsFormik] = useState({});
-  //   const FormikValues = () => {
-  //     const formik = useFormikContext();
-  //     React.useEffect(() => {
-  //       setProductDetailsFormik(formik.values);
-  //     }, [formik.values]);
-  //     return null;
-  //   };
 
   const [inputFields, setInputFields] = useState([
     {
