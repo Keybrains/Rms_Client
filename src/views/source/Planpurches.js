@@ -127,15 +127,15 @@ function Planpurches() {
                         <FormGroup className="">
                           <label
                             className="form-control-label"
-                            htmlFor="input-member"
+                            htmlFor="input-text"
                           >
-                            ZIP
+                            Postal Code
                           </label>
 
                           <Input
                             className="mb-1"
                              style={{ width: "80%" }}
-                            type="number"
+                            type="text"
                             required
                           />
                         </FormGroup>
@@ -169,6 +169,7 @@ function Planpurches() {
                           color: "white",
                           width: "100px",
                           height: "50px",
+                          background: "linear-gradient(87deg, #11cdef 0, #1171ef 100%)"
                         }}
                         className="mb-5"
                       >
@@ -234,7 +235,11 @@ function Planpurches() {
                               Payment information
                               <hr />
                             </b>
-
+                            <Form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                      }}
+                    >
                             <div className="d-flex carddd">
                               <label
                                 className="form-control-label  mb-3"
@@ -259,7 +264,7 @@ function Planpurches() {
                               <Input
                                 className="mb-3"
                                 style={{ width: "50%", marginLeft: "49px" }}
-                                type="text"
+                                type="number"
                                 required
                               />
                             </div>
@@ -277,7 +282,7 @@ function Planpurches() {
                                 type="select"
                                 required
                               >
-                                <option value="">--Select one--</option>
+                                <option value="">-Month-</option>
                                 <option value="state1">01</option>
                                 <option value="state2">02</option>
                                 <option value="state2">03</option>
@@ -306,7 +311,7 @@ function Planpurches() {
                                 type="select"
                                 required
                               >
-                                <option value="">--Select one--</option>
+                                <option value="">-Year-</option>
                                 <option value="state1">2024</option>
                                 <option value="state2">2025</option>
                                 <option value="state2">2026</option>
@@ -345,14 +350,14 @@ function Planpurches() {
                               </label>
                               <Input
                                 className="mb-3"
-                                style={{ width: "50%", marginLeft: "20px" }}
+                                style={{ width: "50%", marginLeft: "20px",}}
                                 type="text"
                                 required
                               />
                             </div>
                             <Button
                               size="sm"
-                            
+                            type="submit"
                               style={{
                                 background: "black",
                                 color: "white",
@@ -360,11 +365,13 @@ function Planpurches() {
                                 height: "50px",
                                justifyContent:'center',
                                 marginTop: "40px",
+                                background: "linear-gradient(87deg, #11cdef 0, #1171ef 100%)"
                               }}
                               className="mb-5 justify-content-center"
                             >
                               Submit
                             </Button>
+                            </Form>
                           </div>
                         </div>
                       </>
