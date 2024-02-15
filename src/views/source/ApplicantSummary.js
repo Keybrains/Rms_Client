@@ -1214,7 +1214,7 @@ const ApplicantSummary = () => {
             </tbody>
           ) : (
             <>
-              <div
+              {/* <div
                 className="formInput d-flex flex-direction-row"
                 style={{ margin: "30px 30px" }}
               >
@@ -1266,7 +1266,7 @@ const ApplicantSummary = () => {
                 >
                   Move in
                 </LoadingButton>
-              </div>
+              </div> */}
               <Row>
                 <Col>
                   <TabContext value={value}>
@@ -1280,7 +1280,7 @@ const ApplicantSummary = () => {
                           value="Summary"
                           style={{ textTransform: "none" }}
                         />
-                        <Tab
+                        {/* <Tab
                           label="Application"
                           value="Application"
                           style={{ textTransform: "none" }}
@@ -1300,7 +1300,7 @@ const ApplicantSummary = () => {
                           label="Rejected"
                           value="Rejected"
                           style={{ textTransform: "none" }}
-                        />
+                        /> */}
                       </TabList>
                     </Box>
                     <TabPanel value="Summary">
@@ -1682,7 +1682,7 @@ const ApplicantSummary = () => {
                                 </Button>
                               </div>
 
-                              {matchedApplicant?.applicant_NotesAndFile
+                              {/* {matchedApplicant?.applicant_NotesAndFile
                                 ?.length > 0 && (
                                 <>
                                   <Row
@@ -1770,9 +1770,9 @@ const ApplicantSummary = () => {
                                     )
                                   )}
                                 </>
-                              )}
+                              )} */}
 
-                              <>
+                              {/* <>
                                 <Row
                                   className="w-100 my-3 "
                                   style={{
@@ -1813,10 +1813,10 @@ const ApplicantSummary = () => {
                                     </Row>
                                   )
                                 )}
-                              </>
+                              </> */}
                             </Grid>
 
-                            <Grid item xs="12" md="6" lg="4" xl="3">
+                            {/* <Grid item xs="12" md="6" lg="4" xl="3">
                               {isEdit ? (
                                 <Card
                                   style={{
@@ -1825,7 +1825,7 @@ const ApplicantSummary = () => {
                                   }}
                                 >
                                   <CardBody>
-                                    {/* <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText> */}
+                                     <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText>
                                     <form>
                                       <div
                                         style={{
@@ -1974,7 +1974,7 @@ const ApplicantSummary = () => {
                                         >
                                           Property
                                         </label>
-                                        {/* {//console.log(propertyData, "propertyData")} */}
+                                        {/* {//console.log(propertyData, "propertyData")} 
                                         <FormGroup>
                                           <Dropdown
                                             isOpen={userdropdownOpen}
@@ -2123,7 +2123,7 @@ const ApplicantSummary = () => {
                               }}
                               >
                               Save
-                            </Button> */}
+                            </Button> 
                                 </Card>
                               ) : (
                                 <Card
@@ -2263,13 +2263,13 @@ const ApplicantSummary = () => {
                                   </CardContent>
                                 </Card>
                               )}
-                            </Grid>
+                            </Grid> */}
                           </Grid>
                         </Col>
                       </Row>
                     </TabPanel>
 
-                    <TabPanel value="Application">
+                    {/* <TabPanel value="Application">
                       <Row style={{ backgroundColor: "" }}>
                         <Col>
                           <Grid container spacing={3}>
@@ -2279,7 +2279,6 @@ const ApplicantSummary = () => {
                                   <section className="">
                                     <div className="row d-flex ">
                                       <div>
-                                        {/* Emergency Contact Relationship */}
                                         <div className="form-row pl-2">
                                           <p>
                                             A rental application is not
@@ -2691,14 +2690,11 @@ const ApplicantSummary = () => {
                           </Grid>
                         </Col>
                       </Row>
-                    </TabPanel>
+                    </TabPanel> */}
 
-                    <TabPanel value="Approved">
+                    {/* <TabPanel value="Approved">
                       <CardHeader className="border-0">
-                        {/* <span>
-                        <span>Property :</span>
-                        <h2 style={{ color: "blue" }}> {rental}</h2>
-                      </span> */}
+                        
                       </CardHeader>
                       <Row>
                         {loader2 ? (
@@ -2713,7 +2709,6 @@ const ApplicantSummary = () => {
                           </div>
                         ) : (
                           <Col>
-                            {/* {Array.isArray(rentaldata) ? ( */}
                             <Grid container spacing={2}>
                               {rentaldata.map((tenant, index) => (
                                 <Grid
@@ -2722,7 +2717,6 @@ const ApplicantSummary = () => {
                                   sm={6}
                                   // key={index}
                                 >
-                                  {/* {tenant.entries.map((entry) => ( */}
                                   <Box
                                     // key={index}
                                     border="1px solid #ccc"
@@ -2811,29 +2805,20 @@ const ApplicantSummary = () => {
                                             color: "green",
                                           }}
                                         >
-                                          {/* {tenant.tenant_mobileNumber || "N/A"} */}
                                           Approved
                                         </div>
                                       </Col>
                                     </Row>
                                   </Box>
-                                  {/* ))} */}
                                 </Grid>
                               ))}
                             </Grid>
-                            {/* ) : (
-                          <h3>No data available....</h3>
-                        )} */}
                           </Col>
                         )}
                       </Row>
-                    </TabPanel>
-                    <TabPanel value="Rejected">
+                    </TabPanel> */}
+                    {/* <TabPanel value="Rejected">
                       <CardHeader className="border-0">
-                        {/* <span>
-                        <span>Property :</span>
-                        <h2 style={{ color: "blue" }}> {rental}</h2>
-                      </span> */}
                       </CardHeader>
                       <Row>
                         {loader3 ? (
@@ -2848,7 +2833,6 @@ const ApplicantSummary = () => {
                           </div>
                         ) : (
                           <Col>
-                            {/* {Array.isArray(rentaldata) ? ( */}
                             <Grid container spacing={2}>
                               {rentaldata.map((tenant, index) => (
                                 <Grid
@@ -2857,7 +2841,6 @@ const ApplicantSummary = () => {
                                   sm={6}
                                   // key={index}
                                 >
-                                  {/* {tenant.entries.map((entry) => ( */}
                                   <Box
                                     // key={index}
                                     border="1px solid #ccc"
@@ -2946,23 +2929,18 @@ const ApplicantSummary = () => {
                                             color: "red",
                                           }}
                                         >
-                                          {/* {tenant.tenant_mobileNumber || "N/A"} */}
                                           Rejected
                                         </div>
                                       </Col>
                                     </Row>
                                   </Box>
-                                  {/* ))} */}
                                 </Grid>
                               ))}
                             </Grid>
-                            {/* ) : (
-                          <h3>No data available....</h3>
-                        )} */}
                           </Col>
                         )}
                       </Row>
-                    </TabPanel>
+                    </TabPanel> */}
                   </TabContext>
                 </Col>
               </Row>

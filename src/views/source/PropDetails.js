@@ -232,7 +232,7 @@ const PropDetails = () => {
   const fetchApplianceData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/appliance/appliance/${clickedUnitObject.id}`
+        `${baseUrl}/appliance/appliance/${clickedUnitObject.unit_id}`
       );
       setApplianceData(response.data.data);
     } catch (error) {
@@ -1578,7 +1578,7 @@ const PropDetails = () => {
                           }}
                           size="sm"
                           onClick={() => {
-                            handleDeleteUnit(clickedUnitObject?._id);
+                            handleDeleteUnit(clickedUnitObject?.unit_id);
                           }}
                         >
                           Delete unit
@@ -2160,12 +2160,19 @@ const PropDetails = () => {
                                                         cursor: "pointer",
                                                       }}
                                                       onClick={async () => {
-                                                        const res =
-                                                          await deleteAppliance(
-                                                            appliance.appliance_id
+                                                        try {
+                                                          const res =
+                                                            await deleteAppliance(
+                                                              appliance.appliance_id
+                                                            );
+                                                          if (res === 200) {
+                                                            fetchApplianceData();
+                                                          }
+                                                        } catch (error) {
+                                                          console.error(
+                                                            "Error occurred while deleting appliance:",
+                                                            error
                                                           );
-                                                        if (res === 200) {
-                                                          fetchApplianceData();
                                                         }
                                                       }}
                                                     >

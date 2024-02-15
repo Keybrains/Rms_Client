@@ -99,39 +99,6 @@ const ApplicantForm = () => {
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
-  //   const [countries, setCountries] = useState([]);
-
-  //   useEffect(() => {
-  //     // Fetch countries from the API
-  //     const fetchCountries = async () => {
-  //       try {
-  //         const response = await axios.get("https://restcountries.com/v3.1/all");
-  //         // Sort countries alphabetically by name
-  //         const sortedCountries = response.data.sort((a, b) =>
-  //           a.name.common.localeCompare(b.name.common)
-  //         );
-  //         setCountries(sortedCountries);
-  //       } catch (error) {
-  //         console.error("Error fetching countries:", error);
-  //       }
-  //     };
-
-  //     fetchCountries();
-  //   }, []);
-
-  //   React.useEffect(() => {
-  //     if (localStorage.getItem("token")) {
-  //       const jwt = jwtDecode(localStorage.getItem("token"));
-  //       setAccessType(jwt.accessType);
-  //     } else {
-  //       navigate("/auth/login");
-  //     }
-  //   }, [navigate]);
-  //   const handleSearch = () => {
-  //     // Handle search functionality here
-  //     console.log("Searching for:", searchText);
-  //   };
-
   const [prodropdownOpen, setProDropdownOpen] = useState(false);
   const [applicantselectedCountry, setApplicantSelectedCountry] =
     useState(null);

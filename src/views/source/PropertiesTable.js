@@ -88,7 +88,7 @@ const PropertiesTables = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(`${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`)
+          .delete(`${baseUrl}/rentals/rental/${id}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
               toast.success("Rental property deleted successfully!", {

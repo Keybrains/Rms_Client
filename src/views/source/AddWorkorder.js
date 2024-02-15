@@ -385,7 +385,7 @@ const AddWorkorder = () => {
         work_subject: WorkFormik.values.work_subject || "",
         work_category: WorkFormik.values.work_category || "",
         entry_allowed:
-          WorkFormik.values.entry_allowed === "Yes" ? true : false || "",
+          WorkFormik.values.entry_allowed === "Yes" ? true : false,
         work_performed: WorkFormik.values.work_performed || "",
         workOrder_images: image || "",
         vendor_notes: WorkFormik.values.vendor_note || "",
