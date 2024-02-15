@@ -786,10 +786,13 @@ const RentRollLeaseing = () => {
           toast.warning(res.data.message, {
             position: "top-center",
           });
+          return;
         }
-        return res.data.statusCode;
+        if (res.data.statusCode === 200) {
+          return res.data.statusCode;
+        }
       } else {
-        return 400;
+        return 200;
       }
     } catch (error) {
       console.error("Error :", error.message);
@@ -2634,7 +2637,8 @@ const RentRollLeaseing = () => {
                                             </Col>
                                             <Col lg="4">
                                               <FormGroup>
-                                               . <label
+                                                .{" "}
+                                                <label
                                                   className="form-control-label"
                                                   htmlFor="input-country"
                                                 >
