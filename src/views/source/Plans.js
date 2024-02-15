@@ -76,14 +76,24 @@ function Plans() {
                   </b>
                 </div>
                 <div className="card-body">
-                  <b className="mb-5">{plan.plan_name}</b>
-                  <h5 className="card-title" style={{ color: "#11cdef" }}>
+                  {/* <b className="mb-5">{plan.plan_name}</b> */}
+                  {/* <h5 className="card-title" style={{ color: "#11cdef" }}>
                     ${plan.plan_price}/month
-                  </h5>
-                  <p className="">{plan.features[0]?.features}</p>
-                  <hr />
+                  </h5> */}
+                       <div className="card-body">
+                  <b className="mb-5" style={{ color: "#11cdef", fontSize:'20px' }}>
+                  $ {plan.plan_price}
+                  <span className="card-title" style={{ color: "#11cdef", fontSize:'13px' }}>
+                     /month
+                  </span></b>
+                 
+                </div>
+                  {/* <p className="">{plan.features[0]?.features}</p> */}
+                  {/* <hr /> */}
                   <FeaturesList features={plan.features} />
                   <br />
+                  </div>
+                  <div className="text-center" style={{alignItems:"center",marginBottom:"10px"}}>
                   <Button
                     type="button"
                     className="btn btn-secondary first-button"
@@ -92,7 +102,8 @@ function Plans() {
                   >
                     Get Started
                   </Button>
-                </div>
+                  </div>
+               
                 <div className="card-footer text-muted text-center">
                   <a href="#" style={{ fontSize: "12px" }}>
                     Terms apply.
