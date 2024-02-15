@@ -109,7 +109,7 @@ const AddStaffMember = () => {
       axios
         .get(`${baseUrl}/staffmember/staff/member/${id}`)
         .then((response) => {
-          const staffMamberdata = response.data.data[0];
+          const staffMamberdata = response.data.data;
           setstaffMamberData(staffMamberData);
           //console.log(staffMamberdata);
 

@@ -84,7 +84,7 @@ const Rentals = () => {
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
@@ -99,15 +99,6 @@ const Rentals = () => {
 
   async function handleSubmit(values) {
     try {
-      const selectedPropertyData = propertyData.filter((property) =>
-        selectedProperties.includes(property.rental_id)
-      );
-
-      const selectedPropertyIds = selectedPropertyData.map(
-        (property) => property.rental_id
-      );
-
-      values["rentalOwner_properties"] = selectedPropertyIds;
       values["admin_id"] = accessType.admin_id;
 
       if (id === undefined) {
@@ -286,9 +277,9 @@ const Rentals = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`${baseUrl}/rentalowner/rentalowner/${id}`)
+        .get(`${baseUrl}/rental_owner/rentalowner_details/${id}`)
         .then((response) => {
-          const rentalOwnerdata = response.data.data;
+          const rentalOwnerdata = response.data.data[0];
           setRentalOwnerData(rentalOwnerData);
           setIsLoading(false);
           setSelectedState(rentalOwnerdata.country || "Select");

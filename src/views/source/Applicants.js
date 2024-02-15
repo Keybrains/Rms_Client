@@ -157,15 +157,17 @@ const Applicants = () => {
 
   const getTableData = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/applicant/applicant/${admin}`);
+      const response = await axios.get(
+        `${baseUrl}/applicant/applicant/${admin}`
+      );
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setRentalsData(response.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  
-  console.log("manu",rentalsData)
+
+  console.log("manu", rentalsData);
   useEffect(() => {
     getTableData();
   }, [pageItem]);
@@ -300,11 +302,8 @@ const Applicants = () => {
     }),
     onSubmit: (values, action) => {
       handleFormSubmit(values, action);
-      //console.log(values, "values");
     },
   });
-
-  console.warn(applicantFormik.values, "applicantFormik");
 
   const handleFormSubmit = (values, action) => {
     setBtnLoader(true);
@@ -329,13 +328,15 @@ const Applicants = () => {
       };
 
       axios
-        .post(`http://192.168.1.11:4000/api/applicant/applicant`, requestBody)
+        .post(`${baseUrl}/applicant/applicant`, requestBody)
         .then((response) => {
           if (response.data.statusCode === 200) {
             closeModal();
-            action.resetForm();
-            swal("Success!", "Applicant Added Successfully", "success");
-
+            applicantFormik.resetForm();
+            toast.success("Applicant Added Successfully", {
+              position: "top-center",
+              autoClose: 500,
+            });
             navigate(
               `/${admin}/Applicants/${response.data.data.data.applicant_id}`
             );
@@ -778,23 +779,25 @@ const Applicants = () => {
                       <tr
                         key={index}
                         onClick={() =>
-                          navigate(`/${admin}/Applicants/${applicant.applicant_id}`)
+                          navigate(
+                            `/${admin}/Applicants/${applicant.applicant_id}`
+                          )
                         }
-                      >      
+                      >
                         <td>{applicant.applicant_firstName}</td>
                         <td>{applicant.applicant_lastName}</td>
                         <td>{applicant.applicant_email}</td>
                         <td>{applicant.applicant_phoneNumber}</td>
                         <td>
                           {applicant.rental_data.rental_adress}{" "}
-                          {applicant.unit_data && applicant.unit_data.rental_unit
+                          {applicant.unit_data &&
+                          applicant.unit_data.rental_unit
                             ? " - " + applicant.unit_data.rental_unit
                             : null}
                         </td>
 
                         <td>
-                          {applicant?.applicant_status?.status ||
-                            "Undecided"}
+                          {applicant?.applicant_status?.status || "Undecided"}
                         </td>
                         <td>{applicant.createdAt}</td>
                         <td>{applicant.updatedAt || " - "}</td>
@@ -1017,8 +1020,6 @@ const Applicants = () => {
                                     paddingTop: "15px",
                                   }}
                                 >
-                                  {/* <FormControlLabel
-																		control={ */}
                                   <Checkbox
                                     type="checkbox"
                                     name="tenant"
@@ -1031,15 +1032,6 @@ const Applicants = () => {
                                       setCheckedCheckbox(
                                         tenant.applicant_phoneNumber
                                       );
-                                      // const tenantInfo = `${tenant.applicant_firstName ||
-                                      // ""
-                                      // } ${tenant.applicant_lastName ||
-                                      // ""
-                                      // } ${tenant.applicant_phoneNumber ||
-                                      // ""
-                                      // } ${tenant.applicant_email ||
-                                      // ""
-                                      // }`;
                                       const tenantInfo = {
                                         applicant_phoneNumber:
                                           tenant.applicant_phoneNumber,
@@ -1200,7 +1192,7 @@ const Applicants = () => {
                         </span>
                       </InputGroupAddon>
                       <Input
-                        id="tenant_workNumber"
+                        id="tenant_businessNumber"
                         type="text"
                         placeholder="Enter Business Number"
                         value={applicantFormik.values.tenant_businessNumber}
@@ -1244,7 +1236,6 @@ const Applicants = () => {
                     >
                       Property *
                     </label>
-                    {/* {//console.log(propertyData, "propertyData")} */}
                     <FormGroup style={{ marginRight: "15px" }}>
                       <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
                         <DropdownToggle

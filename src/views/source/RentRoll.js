@@ -22,8 +22,8 @@ import Header from "components/Headers/Header";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { RotatingLines } from "react-loader-spinner";
 import Cookies from "universal-cookie";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -47,7 +47,7 @@ const RentRoll = () => {
   const navigateToRentRollDetails = (tenantId) => {
     navigate(`/${admin}/rentrolldetail/${tenantId}`);
   };
-  
+
   const [accessType, setAccessType] = useState(null);
 
   useEffect(() => {
@@ -78,13 +78,13 @@ const RentRoll = () => {
             lease_id: item?.lease?.lease_id,
             lease_type: item?.lease?.lease_type,
             start_date: item?.lease?.start_date,
+            amount: item?.charge?.amount,
             end_date: item?.lease?.end_date,
             createdAt: item?.lease?.createdAt,
             updatedAt: item?.lease?.updatedAt,
           };
         });
         const reversedData = transformedData.slice().reverse();
-        setLoader(false);
         setTenantsData(reversedData);
         setTotalPages(Math.ceil(reversedData.length / pageItem));
       } else {
@@ -93,6 +93,8 @@ const RentRoll = () => {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -189,19 +191,18 @@ const RentRoll = () => {
         const res = await axios.delete(`${baseUrl}/leases/leases/${lease_id}`);
         if (res.data.statusCode === 200) {
           toast.success(res.data.message, {
-            position: 'top-center',
-          })
+            position: "top-center",
+          });
           fetchData();
         } else {
           toast.warning(res.data.message, {
-            position: 'top-center',
-          })
-
+            position: "top-center",
+          });
         }
       } else {
-        toast.success('Tenant is safe :)', {
-          position: 'top-center',
-        })
+        toast.success("Tenant is safe :)", {
+          position: "top-center",
+        });
       }
     });
   };
