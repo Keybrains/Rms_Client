@@ -205,110 +205,109 @@ const TenantsTable = () => {
     return `${month}-${day}-${year}`;
   }
 
-  const generatePDF = async (tenantId, tenantDetails, entryIndex) => {
-    try {
-      let tenantData = tenantDetails;
-      if (!tenantData || !tenantData._id) {
-        const response = await axios.get(
-          `${baseUrl}/tenant/tenant_summary/${tenantId}/entry/${entryIndex}`
-        );
-        tenantData = response.data.data;
-        console.log(tenantData, "tenantData");
-      }
-      const doc = new jsPDF();
-      doc.text(`Lease Details`, 10, 10);
+  // const generatePDF = async (tenantId, tenantDetails, entryIndex) => {
+  //   try {
+  //     let tenantData = tenantDetails;
+  //     if (!tenantData || !tenantData._id) {
+  //       const response = await axios.get(
+  //       );
+  //       tenantData = response.data.data;
+  //       console.log(tenantData, "tenantData");
+  //     }
+  //     const doc = new jsPDF();
+  //     doc.text(`Lease Details`, 10, 10);
 
-      const headers = ["Title", "Value", ""];
-      const data = [
-        [
-          "Tenant Name",
-          `${tenantData.tenant_firstName} ${tenantData.tenant_lastName}`,
-          "",
-        ],
-        ["Phone", tenantData.tenant_phoneNumber],
-        ["Email", tenantData.tenant_email],
-        ["Birthdate", formatDateWithoutTime(tenantData.birth_date)],
-        ["Textpayer Id", tenantData.textpayer_id],
-        ["Comments", tenantData.comments],
-        ["Contact Name", tenantData.contact_name],
-        ["Relationship With Tenants", tenantData.relationship_tenants],
-        ["Emergency Email", tenantData.email],
-        ["Emergench PhoneNumber", tenantData.emergency_PhoneNumber],
-        ["Property Type", tenantData.entries.rental_adress],
-        ["Lease Type", tenantData.entries.lease_type],
-        ["Start Date", formatDateWithoutTime(tenantData.entries.start_date)],
-        ["End Date", formatDateWithoutTime(tenantData.entries.end_date)],
-        ["Rent Cycle", tenantData.entries.rent_cycle],
-        ["Amount", tenantData.entries.amount],
-        ["Accout", tenantData.entries.account],
-        [
-          "Next Due Date",
-          formatDateWithoutTime(tenantData.entries.nextDue_date),
-        ],
-        ["Memo", tenantData.entries.memo],
-        ["Cosigner Firstname", tenantData.entries.cosigner_firstName],
-        ["Cosigner Lastname", tenantData.entries.cosigner_lastName],
-        ["Cosigner Mobilenumber", tenantData.entries.cosigner_mobileNumber],
-        ["Cosigner Worknumber", tenantData.entries.cosigner_workNumber],
-        ["Cosigner HomeNumber", tenantData.entries.cosigner_homeNumber],
-        [
-          "Cosigner FaxPhone Number",
-          tenantData.entries.cosigner_faxPhoneNumber,
-        ],
-        ["Cosigner Email", tenantData.entries.cosigner_email],
-        ["Cosigner AlternateEmail", tenantData.entries.cosigner_alternateemail],
-        ["Cosigner StreeAddress", tenantData.entries.cosigner_streetAdress],
-        ["Cosigner City", tenantData.entries.cosigner_city],
-        ["Cosigner State", tenantData.entries.cosigner_state],
-        ["Cosigner Country", tenantData.entries.cosigner_country],
-        ["Cosigner PostalCode", tenantData.entries.cosigner_postalcode],
+  //     const headers = ["Title", "Value", ""];
+  //     const data = [
+  //       [
+  //         "Tenant Name",
+  //         `${tenantData.tenant_firstName} ${tenantData.tenant_lastName}`,
+  //         "",
+  //       ],
+  //       ["Phone", tenantData.tenant_phoneNumber],
+  //       ["Email", tenantData.tenant_email],
+  //       ["Birthdate", formatDateWithoutTime(tenantData.birth_date)],
+  //       ["Textpayer Id", tenantData.textpayer_id],
+  //       ["Comments", tenantData.comments],
+  //       ["Contact Name", tenantData.contact_name],
+  //       ["Relationship With Tenants", tenantData.relationship_tenants],
+  //       ["Emergency Email", tenantData.email],
+  //       ["Emergench PhoneNumber", tenantData.emergency_PhoneNumber],
+  //       ["Property Type", tenantData.entries.rental_adress],
+  //       ["Lease Type", tenantData.entries.lease_type],
+  //       ["Start Date", formatDateWithoutTime(tenantData.entries.start_date)],
+  //       ["End Date", formatDateWithoutTime(tenantData.entries.end_date)],
+  //       ["Rent Cycle", tenantData.entries.rent_cycle],
+  //       ["Amount", tenantData.entries.amount],
+  //       ["Accout", tenantData.entries.account],
+  //       [
+  //         "Next Due Date",
+  //         formatDateWithoutTime(tenantData.entries.nextDue_date),
+  //       ],
+  //       ["Memo", tenantData.entries.memo],
+  //       ["Cosigner Firstname", tenantData.entries.cosigner_firstName],
+  //       ["Cosigner Lastname", tenantData.entries.cosigner_lastName],
+  //       ["Cosigner Mobilenumber", tenantData.entries.cosigner_mobileNumber],
+  //       ["Cosigner Worknumber", tenantData.entries.cosigner_workNumber],
+  //       ["Cosigner HomeNumber", tenantData.entries.cosigner_homeNumber],
+  //       [
+  //         "Cosigner FaxPhone Number",
+  //         tenantData.entries.cosigner_faxPhoneNumber,
+  //       ],
+  //       ["Cosigner Email", tenantData.entries.cosigner_email],
+  //       ["Cosigner AlternateEmail", tenantData.entries.cosigner_alternateemail],
+  //       ["Cosigner StreeAddress", tenantData.entries.cosigner_streetAdress],
+  //       ["Cosigner City", tenantData.entries.cosigner_city],
+  //       ["Cosigner State", tenantData.entries.cosigner_state],
+  //       ["Cosigner Country", tenantData.entries.cosigner_country],
+  //       ["Cosigner PostalCode", tenantData.entries.cosigner_postalcode],
 
-        ["Recurring Charges", "", ""], // Add a header for Recurring Charges
-      ];
+  //       ["Recurring Charges", "", ""], // Add a header for Recurring Charges
+  //     ];
 
-      data.push(["Recurring Charge", "Recurring Amount", "Recurring Account"]);
+  //     data.push(["Recurring Charge", "Recurring Amount", "Recurring Account"]);
 
-      tenantData.entries.recurring_charges.forEach((charge, index) => {
-        data.push([
-          ` ${index + 1}`,
-          charge.recuring_amount,
-          charge.recuring_account,
-        ]);
-      });
-      data.push(["One Time Charge", "One Time Amount", "One Time Account"]);
+  //     tenantData.entries.recurring_charges.forEach((charge, index) => {
+  //       data.push([
+  //         ` ${index + 1}`,
+  //         charge.recuring_amount,
+  //         charge.recuring_account,
+  //       ]);
+  //     });
+  //     data.push(["One Time Charge", "One Time Amount", "One Time Account"]);
 
-      tenantData.entries.one_time_charges.forEach((charge, index) => {
-        data.push([
-          ` ${index + 1}`,
-          charge.onetime_amount,
-          charge.onetime_account,
-        ]);
-      });
-      if (tenantData.upload_file && Array.isArray(tenantData.upload_file)) {
-        tenantData.upload_file.forEach((item, index) => {
-          data.push([`Uploaded File ${index + 1}`, item]);
-        });
-      }
+  //     tenantData.entries.one_time_charges.forEach((charge, index) => {
+  //       data.push([
+  //         ` ${index + 1}`,
+  //         charge.onetime_amount,
+  //         charge.onetime_account,
+  //       ]);
+  //     });
+  //     if (tenantData.upload_file && Array.isArray(tenantData.upload_file)) {
+  //       tenantData.upload_file.forEach((item, index) => {
+  //         data.push([`Uploaded File ${index + 1}`, item]);
+  //       });
+  //     }
 
-      const filteredData = data.filter(
-        (row) => row[1] !== undefined && row[1] !== null && row[1] !== ""
-      );
+  //     const filteredData = data.filter(
+  //       (row) => row[1] !== undefined && row[1] !== null && row[1] !== ""
+  //     );
 
-      if (filteredData.length > 0) {
-        doc.autoTable({
-          head: [headers, ""],
-          body: filteredData,
-          startY: 20,
-        });
+  //     if (filteredData.length > 0) {
+  //       doc.autoTable({
+  //         head: [headers, ""],
+  //         body: filteredData,
+  //         startY: 20,
+  //       });
 
-        doc.save(`${tenantId}.pdf`);
-      } else {
-        console.error("No valid data to generate PDF.");
-      }
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    }
-  };
+  //       doc.save(`${tenantId}.pdf`);
+  //     } else {
+  //       console.error("No valid data to generate PDF.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error generating PDF:", error);
+  //   }
+  // };
 
   const sortData = (value) => {
     if (!sortBy.includes(value)) {

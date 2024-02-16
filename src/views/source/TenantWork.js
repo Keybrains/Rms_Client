@@ -44,20 +44,8 @@ const TenantWork = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
-
-  const [selectedProp, setSelectedProp] = useState("All rentals");
-  const [prodropdownOpen, setproDropdownOpen] = useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [isEditDialogOpen, setEditDialogOpen] = useState(false);
-  const [editingRentals, setEditingRentals] = useState([]);
-  let [modalShowForPopupForm, setModalShowForPopupForm] = useState(false);
-  const [query, setQuery] = useState("");
-  let [editData, setEditData] = useState({});
-  const [propertyData, setPropertyData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredRentalsData, setFilteredRentalsData] = useState([]);
   let [loader, setLoader] = React.useState(true);
-  const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -65,37 +53,9 @@ const TenantWork = () => {
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
   const [tenantDetails, setTenantDetails] = useState({});
-  const [rental_adress, setRentalAddress] = useState("");
-  const [rentalAddress, setRentalAddresses] = useState([]);
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
-  //console.log(rental_adress);
-  const { id } = useParams();
-  //console.log(id, tenantDetails);
- 
-  //console.log("cookie_id:", cookie_id);
-  //console.log(rental_adress);
-  const [loading, setLoading] = useState(true);
-  // const { rental_adress } = useParams();
-  const handlePropSelection = (value) => {
-    setSelectedProp(value);
-    setproDropdownOpen(true);
-  };
 
-  const openEditDialog = (rentals) => {
-    setEditDialogOpen(true);
-    setEditingRentals(rentals);
-  };
-
-  const closeEditDialog = () => {
-    setEditDialogOpen(false);
-    setEditingRentals(null);
-  };
-
-  // let cookies = new Cookies();
-  // Check Authe(token)
- 
-  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
   let cookie_id = localStorage.getItem("Tenant ID");
   
@@ -135,7 +95,7 @@ const TenantWork = () => {
       setLoader(false);
     }
   };
-  React.useEffect(() => {
+  useEffect(() => {
     getTenantData();
     // //console.log(id)
   }, [cookie_id, pageItem]);

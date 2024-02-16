@@ -626,7 +626,12 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/AddCharge/:tenantId/:entryIndex",
+    path: "/AddCharge/:lease_id",
+    component: <AddCharge />,
+    layout: "/admin",
+  },
+  {
+    path: "/AddCharge/:lease_id/:charge_id",
     component: <AddCharge />,
     layout: "/admin",
   },

@@ -5,30 +5,15 @@ import { Table, Container, Row, Card, CardHeader } from "reactstrap";
 import TenantsHeader from "components/Headers/TenantsHeader";
 import { FormGroup, Col, Button } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
-import { OpenImageDialog } from "components/OpenImageDialog";
-import Cookies from "universal-cookie";
-import card from "../../assets/img/theme/angular.jpg";
 import PropImage from "../../assets/img/icons/common/pexels-binyamin-mellish-186077.jpg";
 
 const TenantPropertyDetail = () => {
   const { lease_id } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const [propertyDetails, setPropertyDetails] = useState([]);
-  const [propertyUnit, setPropertyUnit] = useState([]);
-  const [propId, setPropId] = useState("");
-  const [clickedObject, setClickedObject] = useState({});
-  const [propertyLoading, setPropertyLoading] = useState(true);
-  const [propertyError, setPropertyError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedImage, setSelectedImage] = useState("");
-  const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
-
-  let cookies = new Cookies();
+  
   const [accessType, setAccessType] = useState(null);
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt.accessType);
@@ -36,11 +21,12 @@ const TenantPropertyDetail = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-
+  
+  const [propertyDetails, setPropertyDetails] = useState([]);
   const getRentalData = async () => {
     try {
       const res = await axios.get(
-        `${baseUrl}/tenants/tenant_summary/${lease_id}`
+        `${baseUrl}/leases/lease_summary/${lease_id}`
       );
       setPropertyDetails(res.data.data[0]);
     } catch (error) {
@@ -50,7 +36,7 @@ const TenantPropertyDetail = () => {
 
   useEffect(() => {
     getRentalData();
-  }, []);
+  }, [lease_id]);
 
   return (
     <>
