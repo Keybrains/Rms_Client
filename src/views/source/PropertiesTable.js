@@ -6,8 +6,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import swal from "sweetalert";
 import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Card,
   CardHeader,
@@ -30,7 +30,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import moment from "moment";
 
 const PropertiesTables = () => {
-  const {admin} = useParams()
+  const { admin } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [rentalsData, setRentalsData] = useState([]);
@@ -51,7 +51,7 @@ const PropertiesTables = () => {
     const propDetailsURL = `/${admin}/PropDetails/${rental_id}`;
     navigate(propDetailsURL);
   };
-  
+
   const [accessType, setAccessType] = useState(null);
 
   React.useEffect(() => {
@@ -88,33 +88,35 @@ const PropertiesTables = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(`${baseUrl}/rentals/rental/${id}/entry/${entryIndex}`)
+          .delete(`${baseUrl}/rentals/rental/${id}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
-             
-              toast.success('Rental property deleted successfully!', {
-                position: 'top-center',
-              })
+              toast.success("Rental property deleted successfully!", {
+                position: "top-center",
+                autoClose: 500,
+              });
               getRentalsData(); // Refresh your rentals data or perform other actions
             } else if (response.data.statusCode === 201) {
-             
-              toast.warning('Property already assigned to Tenant!', {
-                position: 'top-center',
-              })
+              toast.warning("Property already assigned to Tenant!", {
+                position: "top-center",
+                autoClose: 500,
+              });
               getRentalsData();
             } else {
               toast.error(response.data.message, {
-                position: 'top-center',
-              })
+                position: "top-center",
+                autoClose: 500,
+              });
             }
           })
           .catch((error) => {
             console.error("Error deleting rental property:", error);
           });
       } else {
-        toast.success('Rental property is safe', {
-          position: 'top-center',
-        })
+        toast.success("Rental property is safe", {
+          position: "top-center",
+          autoClose: 500,
+        });
       }
     });
   };
@@ -172,16 +174,16 @@ const PropertiesTables = () => {
       });
     }
     if (searchQuery2) {
+      if (searchQuery2 === "All") {
+        return filteredData;
+      }
       const lowerCaseSearchQuery = searchQuery2.toLowerCase();
       filteredData = filteredData.filter((property) => {
-        const isPropertyTypeMatch =
-          property.property_type_data.property_type &&
-          property.property_type_data.property_type
-            .toLowerCase()
-            .includes(lowerCaseSearchQuery);
+        const isPropertyTypeMatch = property?.property_type_data?.property_type
+          .toLowerCase()
+          .includes(lowerCaseSearchQuery);
         const isPropertySubTypeMatch =
-          property.property_type_data.propertysub_type &&
-          property.property_type_data.propertysub_type
+          property?.property_type_data?.property_type
             .toLowerCase()
             .includes(lowerCaseSearchQuery);
         return isPropertyTypeMatch || isPropertySubTypeMatch;
@@ -437,7 +439,7 @@ const PropertiesTables = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/"+admin+"/rentals")}
+              onClick={() => navigate("/" + admin + "/rentals")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -513,6 +515,14 @@ const PropertiesTables = () => {
                             }}
                           >
                             Commercial
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("All");
+                              setSearchQuery("");
+                            }}
+                          >
+                            All
                           </DropdownItem>
                         </DropdownMenu>
                       </Dropdown>
@@ -727,7 +737,9 @@ const PropertiesTables = () => {
                         >
                           <td>{Rental.rental_adress}</td>
                           <td>{Rental?.property_type_data?.property_type}</td>
-                          <td>{Rental?.property_type_data?.propertysub_type}</td>
+                          <td>
+                            {Rental?.property_type_data?.propertysub_type}
+                          </td>
                           <td>
                             {Rental.rental_owner_data.rentalOwner_firstName}{" "}
                             {Rental.rental_owner_data.rentalOwner_lastName}

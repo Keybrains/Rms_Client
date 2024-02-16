@@ -24,7 +24,7 @@ import {
   ModalBody,
   Modal,
 } from "reactstrap";
-import RentRollModal from "./StaffMemberModal"
+import RentRollModal from "./StaffMemberModal";
 import * as yup from "yup";
 import LeaseHeader from "components/Headers/LeaseHeader.js";
 import { jwtDecode } from "jwt-decode";
@@ -343,14 +343,16 @@ const RentRollLeaseing = () => {
       tenant_lastName: yup.string().required("Required"),
       tenant_phoneNumber: yup.number().required("Required"),
       tenant_email: yup.string().required("Required"),
-      tenant_password: yup
-        .string()
-        .min(8, "Password is too short")
-        .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-          "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
-        )
-        .required("Required"),
+      tenant_password: lease_id
+        ? yup
+            .string()
+            .min(8, "Password is too short")
+            .matches(
+              /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+              "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
+            )
+            .required("Required")
+        : "",
     }),
     onSubmit: (values) => {
       setSelectedTenantData({
@@ -388,8 +390,6 @@ const RentRollLeaseing = () => {
     },
   });
 
-
-
   // kp-----------------------
 
   const openCardForm = () => {
@@ -402,7 +402,6 @@ const RentRollLeaseing = () => {
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  
   const { tenantId, entryIndex } = useParams();
 
   // kp-----------------------
@@ -1008,8 +1007,8 @@ const RentRollLeaseing = () => {
                                 </DropdownItem>
                               ))}
                               <DropdownItem onClick={() => openCardForm()}>
-                                  hie
-                                </DropdownItem>
+                                hie
+                              </DropdownItem>
                             </DropdownMenu>
                             {leaseFormik.errors &&
                             leaseFormik.errors?.rental_id &&
@@ -3881,17 +3880,17 @@ const RentRollLeaseing = () => {
         </Row>
 
         <Modal isOpen={isModalOpen} toggle={closeModal}>
-        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-          <strong style={{ fontSize: 18 }}>Add new Properties</strong>
-        </ModalHeader>
-        <ModalBody>
-          <RentRollModal
-            tenantId={tenantId}
-            closeModal={closeModal}
-            // getCreditCard={getCreditCard}
-          />
-        </ModalBody>
-      </Modal>
+          <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+            <strong style={{ fontSize: 18 }}>Add new Properties</strong>
+          </ModalHeader>
+          <ModalBody>
+            <RentRollModal
+              tenantId={tenantId}
+              closeModal={closeModal}
+              // getCreditCard={getCreditCard}
+            />
+          </ModalBody>
+        </Modal>
         <ToastContainer />
       </Container>
     </>

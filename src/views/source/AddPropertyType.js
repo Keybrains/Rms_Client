@@ -106,7 +106,10 @@ const AddPropertyType = () => {
     }
   }, [id]);
 
+  const [submitLoader, setSubmitLoader] = useState(false);
+
   async function handleSubmit(values) {
+    setSubmitLoader(true);
     try {
       const object = {
         admin_id: accessType.admin_id,
@@ -122,10 +125,9 @@ const AddPropertyType = () => {
         );
         if (res.data.statusCode === 200) {
           handleResponse(res);
-
         } else if (res.data.statusCode === 201) {
           toast.error(res.data.message, {
-            position: 'top-center',
+            position: "top-center",
             autoClose: 1000,
           });
         }
@@ -136,7 +138,7 @@ const AddPropertyType = () => {
           handleResponse(res);
         } else if (res.data.statusCode === 400) {
           toast.error(res.data.message, {
-            position: 'top-center',
+            position: "top-center",
             autoClose: 1000,
           });
         }
@@ -146,30 +148,32 @@ const AddPropertyType = () => {
       if (error.response) {
         console.error("Response Data:", error.response.data);
       }
+    } finally {
+      setSubmitLoader(false);
     }
   }
 
   function handleResponse(response) {
-    const successMessage = id ? "Property Type updated successfully" : "Property Type added successfully";
+    const successMessage = id
+      ? "Property Type updated successfully"
+      : "Property Type added successfully";
     const errorMessage = response.data.message;
-  
+
     if (response.data.statusCode === 200) {
       // Show success toast
       toast.success(successMessage, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
         onClose: () => navigate(`/${admin}/PropertyType`),
       });
     } else {
       // Show an error toast
       toast.error(errorMessage, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
       });
     }
   }
-  
-  
 
   const handleCloseButtonClick = () => {
     navigate("../PropertyType");
@@ -290,13 +294,24 @@ const AddPropertyType = () => {
                     <br />
                   </div>
                   <Row>
-                    <Button
-                      type="submit"
-                      className="btn btn-primary ml-4"
-                      style={{ background: "green", color:"white" }}
-                    >
-                      {id ? "Update Property Type" : "Add Property Type"}
-                    </Button>
+                    {submitLoader ? (
+                      <Button
+                        type="submit"
+                        className="btn btn-primary ml-4"
+                        style={{ background: "green", color: "white" }}
+                        disabled
+                      >
+                        Loading...
+                      </Button>
+                    ) : (
+                      <Button
+                        type="submit"
+                        className="btn btn-primary ml-4"
+                        style={{ background: "green", color: "white" }}
+                      >
+                        {id ? "Update Property Type" : "Add Property Type"}
+                      </Button>
+                    )}
                     <Button
                       color="primary"
                       className="btn btn-primary"

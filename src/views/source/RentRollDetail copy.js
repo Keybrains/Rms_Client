@@ -26,6 +26,7 @@ import {
   Table,
   ModalHeader,
   ModalBody,
+  ModalFooter,
   Modal,
 } from "reactstrap";
 import Box from "@mui/material/Box";
@@ -125,7 +126,7 @@ const RentRollDetail2 = () => {
     setLoading(true);
     try {
       const res = await axios.get(`${baseUrl}/tenants/leases/${lease_id}`);
-      console.log(res.data.data, "jayu");
+      setTenantDetails(res.data.data);
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -154,12 +155,52 @@ const RentRollDetail2 = () => {
   };
 
   const [showModal, setShowModal] = useState(false);
+  const [moveOutDate, setMoveOutDate] = useState("");
+  const [noticeGivenDate, setNoticeGivenDate] = useState("");
   const handleMoveOutClick = () => {
     setShowModal(true);
   };
 
   const handleModalClose = () => {
     setShowModal(false);
+  };
+
+  const handleMoveout = (lease_id) => {
+    if (moveOutDate && noticeGivenDate) {
+      const updatedApplicant = {
+        moveout_notice_given_date: noticeGivenDate,
+        moveout_date: moveOutDate,
+      };
+
+      axios
+        .put(
+          `http://192.168.1.103:4000/api/leases/lease_moveout/${lease_id}`,
+          updatedApplicant
+        )
+        .then((res) => {
+          console.log(res, "res");
+          if (res.data.statusCode === 200) {
+            toast.success("Move-out Successfully", {
+              position: "top-center",
+              autoClose: 500,
+            });
+            handleModalClose();
+            fetchTenantsData();
+          }
+        })
+        .catch((err) => {
+          toast.error("An error occurred while Move-out", {
+            position: "top-center",
+            autoClose: 500,
+          });
+          console.error(err);
+        });
+    } else {
+      toast.error("NOTICE GIVEN DATE && MOVE-OUT DATE must be required", {
+        position: "top-center",
+        autoClose: 500,
+      });
+    }
   };
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -203,8 +244,6 @@ const RentRollDetail2 = () => {
     }
   };
 
-  console.log(leaseData, "yashu");
-
   return (
     <div>
       <Header />
@@ -226,6 +265,7 @@ const RentRollDetail2 = () => {
                       leaseData?.tenant_lastName}
                   </h1>
                   <h5 style={{ color: "white" }}>
+                    {getStatus(leaseData?.start_date, leaseData?.end_date)} |{" "}
                     {leaseData?.rental_adress ? leaseData?.rental_adress : " "}
                     {leaseData?.rental_unit &&
                     leaseData?.rental_unit !== undefined &&
@@ -845,10 +885,6 @@ const RentRollDetail2 = () => {
                                                 >
                                                   <DeleteIcon
                                                     onClick={() => {
-                                                      console.log(
-                                                        generalledger,
-                                                        "geennennene"
-                                                      );
                                                       // deleteCharge(
                                                       //   generalledger._id
                                                       // );
@@ -944,16 +980,13 @@ const RentRollDetail2 = () => {
                                     </div>
                                   )}
 
-                                  <Modal
-                                    show={showModal}
-                                    onHide={handleModalClose}
-                                  >
-                                    <Modal.Header>
-                                      <Modal.Title>
+                                  <Modal isOpen={showModal}>
+                                    <ModalHeader>
+                                      <strong style={{ fontSize: 18 }}>
                                         Move out tenants
-                                      </Modal.Title>
-                                    </Modal.Header>
-                                    <Modal.Body>
+                                      </strong>
+                                    </ModalHeader>
+                                    <ModalBody>
                                       <div>
                                         Select tenants to move out. If everyone
                                         is moving, the lease will end on the
@@ -978,8 +1011,8 @@ const RentRollDetail2 = () => {
                                                 {tenant.rental_adress
                                                   ? tenant.rental_adress
                                                   : ""}{" "}
-                                                {tenant.rental_units
-                                                  ? tenant.rental_units
+                                                {tenant.rental_unit
+                                                  ? tenant.rental_unit
                                                   : ""}
                                               </td>
                                               <td>Fixed</td>
@@ -1003,7 +1036,6 @@ const RentRollDetail2 = () => {
                                             </tr>
                                           </thead>
                                           <tbody>
-                                            {/* Example rows */}
                                             <tr>
                                               <td>
                                                 {tenant.tenant_firstName + " "}{" "}
@@ -1015,12 +1047,12 @@ const RentRollDetail2 = () => {
                                                     type="date"
                                                     className="form-control"
                                                     placeholder="Notice Given Date"
-                                                    // value={noticeGivenDate}
-                                                    // onChange={(e) =>
-                                                    //   setNoticeGivenDate(
-                                                    //     e.target.value
-                                                    //   )
-                                                    // }
+                                                    value={noticeGivenDate}
+                                                    onChange={(e) =>
+                                                      setNoticeGivenDate(
+                                                        e.target.value
+                                                      )
+                                                    }
                                                   />
                                                 </div>
                                               </td>
@@ -1030,12 +1062,12 @@ const RentRollDetail2 = () => {
                                                     type="date"
                                                     className="form-control"
                                                     placeholder="Move-out Date"
-                                                    // value={moveOutDate}
-                                                    // onChange={(e) =>
-                                                    //   setMoveOutDate(
-                                                    //     e.target.value
-                                                    //   )
-                                                    // }
+                                                    value={moveOutDate}
+                                                    onChange={(e) =>
+                                                      setMoveOutDate(
+                                                        e.target.value
+                                                      )
+                                                    }
                                                   />
                                                 </div>
                                               </td>
@@ -1043,21 +1075,23 @@ const RentRollDetail2 = () => {
                                           </tbody>
                                         </Table>
                                       </React.Fragment>
-                                    </Modal.Body>
-                                    <Modal.Footer>
+                                    </ModalBody>
+                                    <ModalFooter>
                                       <Button
                                         style={{ backgroundColor: "#008000" }}
-                                        // onClick={handleMoveout}
+                                        onClick={() =>
+                                          handleMoveout(tenant.lease_id)
+                                        }
                                       >
                                         Move out
                                       </Button>
                                       <Button
                                         style={{ backgroundColor: "#ffffff" }}
-                                        // onClick={handleModalClose}
+                                        onClick={handleModalClose}
                                       >
                                         Close
                                       </Button>
-                                    </Modal.Footer>
+                                    </ModalFooter>
                                   </Modal>
 
                                   <Row>
@@ -1170,7 +1204,6 @@ const RentRollDetail2 = () => {
                                         style={
                                           tenant.moveout_date
                                             ? {
-                                                // display:"block",
                                                 display: "flex",
                                                 flexDirection: "row",
                                                 marginTop: "10px",
@@ -1183,7 +1216,6 @@ const RentRollDetail2 = () => {
                                         <Typography
                                           style={{
                                             paddingRight: "3px",
-                                            // fontSize: "7px",
                                             color: "black",
                                           }}
                                         >
@@ -1201,6 +1233,7 @@ const RentRollDetail2 = () => {
                           <h3>No data available....</h3>
                         )}
                       </Col>
+
                       <Col xs="12" md="6" lg="4" xl="3">
                         <Card style={{ background: "#F4F6FF" }}>
                           <CardContent>
@@ -1351,7 +1384,6 @@ const RentRollDetail2 = () => {
                         </Card>
                       </Col>
                     </Row>
-                    <Row></Row>
                   </TabPanel>
                 </TabContext>
               </Col>

@@ -109,6 +109,7 @@ const TenantsTable = () => {
         );
         console.log(res);
         if (res.data.statusCode === 200) {
+          getTenantsDate()
           toast.success(res.data.message, {
             position: 'top-center',
             autoClose: 800,

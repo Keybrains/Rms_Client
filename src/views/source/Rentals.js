@@ -21,8 +21,8 @@ import {
   ModalBody,
   Modal,
 } from "reactstrap";
-import AddpropertyModal from "./AddpropertyModal"
-import StaffMemberModal from "./StaffMemberModal"
+import AddpropertyModal from "./AddpropertyModal";
+import StaffMemberModal from "./StaffMemberModal";
 import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -44,8 +44,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import { useFormik } from "formik";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 //rentals
 import {
@@ -477,10 +477,10 @@ const Rentals = () => {
     };
     setSelectedRentalOwnerData(newrentalOwnerDetails);
     if (!rental_id) {
-      toast.success('Rental Owner Added Successfully!', {
-        position: 'top-center',
-        autoClose: 800,
-      })
+      toast.success("Rental Owner Added Successfully!", {
+        position: "top-center",
+        autoClose: 500,
+      });
     }
     setDisplay(false);
   };
@@ -597,12 +597,13 @@ const Rentals = () => {
                                     >
                                       {subtype.propertysub_type}
                                     </DropdownItem>
-
                                   ))}
-
                                 </React.Fragment>
                               ))}
-                              <DropdownItem style={{ borderTop: "1px solid grey" }} onClick={() => openCardForm()}>
+                              <DropdownItem
+                                style={{ borderTop: "1px solid grey" }}
+                                onClick={() => openCardForm()}
+                              >
                                 {/* {subtype.propertysub_type} */}
                                 Add new Properties
                               </DropdownItem>
@@ -1435,348 +1436,350 @@ const Rentals = () => {
                                       .rentalOwner_businessNumber &&
                                       rentalOwnerFormik.errors
                                         .rentalOwner_businessNumber ? (
-                                      <div style={{ color: "red" }}>
-                                        {
-                                          rentalOwnerFormik.errors
-                                            .rentalOwner_businessNumber
-                                        }
-                                      </div>
-                                    ) : null}
+                                        <div style={{ color: "red" }}>
+                                          {
+                                            rentalOwnerFormik.errors
+                                              .rentalOwner_businessNumber
+                                          }
+                                        </div>
+                                      ) : null}
+                                    </div>
+                                    <div
+                                      className="formInput"
+                                      style={{ margin: "30px 10px" }}
+                                    >
+                                      <div>Street Address</div>
+                                      <br />
+                                      <Row>
+                                        <FormGroup className="col-12">
+                                          <Input
+                                            required
+                                            className="form-control-alternative"
+                                            id="input-address"
+                                            placeholder="Address"
+                                            type="text"
+                                            name="address"
+                                            onBlur={
+                                              rentalOwnerFormik.handleBlur
+                                            }
+                                            onChange={(e) =>
+                                              rentalOwnerFormik.setFieldValue(
+                                                "address",
+                                                e.target.value
+                                              )
+                                            }
+                                            value={
+                                              rentalOwnerFormik.values?.address
+                                            }
+                                            style={{
+                                              border: "1px solid #cad1d7",
+                                            }}
+                                          />
+                                        </FormGroup>
+                                        <FormGroup className="col-6">
+                                          <Input
+                                            required
+                                            className="form-control-alternative"
+                                            id="input-address"
+                                            placeholder="City"
+                                            type="text"
+                                            name="city"
+                                            onBlur={
+                                              rentalOwnerFormik.handleBlur
+                                            }
+                                            onChange={(e) =>
+                                              rentalOwnerFormik.setFieldValue(
+                                                "city",
+                                                e.target.value
+                                              )
+                                            }
+                                            value={
+                                              rentalOwnerFormik.values?.city
+                                            }
+                                            style={{
+                                              border: "1px solid #cad1d7",
+                                            }}
+                                          />
+                                        </FormGroup>
+                                        <FormGroup className="col-6">
+                                          <Input
+                                            required
+                                            className="form-control-alternative"
+                                            id="input-address"
+                                            placeholder="State"
+                                            type="text"
+                                            name="state"
+                                            onBlur={
+                                              rentalOwnerFormik.handleBlur
+                                            }
+                                            onChange={(e) =>
+                                              rentalOwnerFormik.setFieldValue(
+                                                "state",
+                                                e.target.value
+                                              )
+                                            }
+                                            value={
+                                              rentalOwnerFormik.values?.state
+                                            }
+                                            style={{
+                                              border: "1px solid #cad1d7",
+                                            }}
+                                          />
+                                        </FormGroup>
+                                      </Row>
+                                      <Row>
+                                        <FormGroup className="col-6">
+                                          <Input
+                                            required
+                                            className="form-control-alternative"
+                                            id="input-address"
+                                            placeholder="Country"
+                                            type="text"
+                                            name="country"
+                                            onBlur={
+                                              rentalOwnerFormik.handleBlur
+                                            }
+                                            onChange={(e) =>
+                                              rentalOwnerFormik.setFieldValue(
+                                                "country",
+                                                e.target.value
+                                              )
+                                            }
+                                            value={
+                                              rentalOwnerFormik.values?.country
+                                            }
+                                            style={{
+                                              border: "1px solid #cad1d7",
+                                            }}
+                                          />
+                                        </FormGroup>
+                                        <FormGroup className="col-6">
+                                          <Input
+                                            required
+                                            className="form-control-alternative"
+                                            id="input-address"
+                                            placeholder="Postal code"
+                                            type="text"
+                                            name="postal_code"
+                                            onBlur={
+                                              rentalOwnerFormik.handleBlur
+                                            }
+                                            onChange={(e) =>
+                                              rentalOwnerFormik.setFieldValue(
+                                                "postal_code",
+                                                e.target.value
+                                              )
+                                            }
+                                            value={
+                                              rentalOwnerFormik.values
+                                                ?.postal_code
+                                            }
+                                            style={{
+                                              border: "1px solid #cad1d7",
+                                            }}
+                                          />
+                                        </FormGroup>
+                                      </Row>
+                                    </div>
                                   </div>
-                                  <div
-                                    className="formInput"
-                                    style={{ margin: "30px 10px" }}
-                                  >
-                                    <div>Street Address</div>
-                                    <br />
-                                    <Row>
-                                      <FormGroup className="col-12">
-                                        <Input
-                                          required
-                                          className="form-control-alternative"
-                                          id="input-address"
-                                          placeholder="Address"
-                                          type="text"
-                                          name="street_address"
-                                          onBlur={
-                                            rentalOwnerFormik.handleBlur
-                                          }
-                                          onChange={(e) =>
-                                            rentalOwnerFormik.setFieldValue(
-                                              "street_address",
-                                              e.target.value
-                                            )
-                                          }
-                                          value={
-                                            rentalOwnerFormik.values?.street_address
-                                          }
-                                          style={{
-                                            border: "1px solid #cad1d7",
-                                          }}
-                                        />
-                                      </FormGroup>
-                                      <FormGroup className="col-6">
-                                        <Input
-                                          required
-                                          className="form-control-alternative"
-                                          id="input-address"
-                                          placeholder="City"
-                                          type="text"
-                                          name="city"
-                                          onBlur={
-                                            rentalOwnerFormik.handleBlur
-                                          }
-                                          onChange={(e) =>
-                                            rentalOwnerFormik.setFieldValue(
-                                              "city",
-                                              e.target.value
-                                            )
-                                          }
-                                          value={
-                                            rentalOwnerFormik.values?.city
-                                          }
-                                          style={{
-                                            border: "1px solid #cad1d7",
-                                          }}
-                                        />
-                                      </FormGroup>
-                                      <FormGroup className="col-6">
-                                        <Input
-                                          required
-                                          className="form-control-alternative"
-                                          id="input-address"
-                                          placeholder="State"
-                                          type="text"
-                                          name="state"
-                                          onBlur={
-                                            rentalOwnerFormik.handleBlur
-                                          }
-                                          onChange={(e) =>
-                                            rentalOwnerFormik.setFieldValue(
-                                              "state",
-                                              e.target.value
-                                            )
-                                          }
-                                          value={
-                                            rentalOwnerFormik.values?.state
-                                          }
-                                          style={{
-                                            border: "1px solid #cad1d7",
-                                          }}
-                                        />
-                                      </FormGroup>
-                                    </Row>
-                                    <Row>
-                                      <FormGroup className="col-6">
-                                        <Input
-                                          required
-                                          className="form-control-alternative"
-                                          id="input-address"
-                                          placeholder="Country"
-                                          type="text"
-                                          name="country"
-                                          onBlur={
-                                            rentalOwnerFormik.handleBlur
-                                          }
-                                          onChange={(e) =>
-                                            rentalOwnerFormik.setFieldValue(
-                                              "country",
-                                              e.target.value
-                                            )
-                                          }
-                                          value={
-                                            rentalOwnerFormik.values?.country
-                                          }
-                                          style={{
-                                            border: "1px solid #cad1d7",
-                                          }}
-                                        />
-                                      </FormGroup>
-                                      <FormGroup className="col-6">
-                                        <Input
-                                          required
-                                          className="form-control-alternative"
-                                          id="input-address"
-                                          placeholder="Postal code"
-                                          type="text"
-                                          name="postal_code"
-                                          onBlur={
-                                            rentalOwnerFormik.handleBlur
-                                          }
-                                          onChange={(e) =>
-                                            rentalOwnerFormik.setFieldValue(
-                                              "postal_code",
-                                              e.target.value
-                                            )
-                                          }
-                                          value={
-                                            rentalOwnerFormik.values
-                                              ?.postal_code
-                                          }
-                                          style={{
-                                            border: "1px solid #cad1d7",
-                                          }}
-                                        />
-                                      </FormGroup>
-                                    </Row>
-                                  </div>
-                                </div>
-                              )}
-                            </DialogContent>
-                            <DialogActions>
-                              <Button type="submit" color="primary">
-                                Add
-                              </Button>
-                              <Button onClick={handleClose}>Cancel</Button>
-                            </DialogActions>
-                          </Form>
-                        </Dialog>
-                        {Object.keys(selectedRentalOwnerData).length > 0 ? (
-                          <div>
-                            <h3
-                              style={{
-                                marginTop: "2%",
-                              }}
-                            >
-                              Rental owner Information
-                            </h3>
-                            <table
-                              style={{
-                                borderCollapse: "collapse",
-                                width: "100%",
-                                marginTop: "2%",
-                              }}
-                            >
-                              <thead>
-                                <tr style={{ background: "#f2f2f2" }}>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    First Name
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Last Name
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Phone Number
-                                  </th>
-                                  <th
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    Action
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {
-                                      selectedRentalOwnerData.rentalOwner_firstName
-                                    }
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {
-                                      selectedRentalOwnerData.rentalOwner_lastName
-                                    }
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    {
-                                      selectedRentalOwnerData.rentalOwner_phoneNumber
-                                    }
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "8px",
-                                      textAlign: "left",
-                                    }}
-                                  >
-                                    <EditIcon
-                                      style={{ cursor: "pointer" }}
-                                      onClick={() => {
-                                        setshowRentalOwnerTable(false);
-                                        setRentalDialogOpen(true);
+                                )}
+                              </DialogContent>
+                              <DialogActions>
+                                <Button type="submit" color="primary">
+                                  Add
+                                </Button>
+                                <Button onClick={handleClose}>Cancel</Button>
+                              </DialogActions>
+                            </Form>
+                          </Dialog>
+                          {Object.keys(selectedRentalOwnerData).length > 0 ? (
+                            <div>
+                              <h3
+                                style={{
+                                  marginTop: "2%",
+                                }}
+                              >
+                                Rental owner Information
+                              </h3>
+                              <table
+                                style={{
+                                  borderCollapse: "collapse",
+                                  width: "100%",
+                                  marginTop: "2%",
+                                }}
+                              >
+                                <thead>
+                                  <tr style={{ background: "#f2f2f2" }}>
+                                    <th
+                                      style={{
+                                        padding: "8px",
+                                        textAlign: "left",
                                       }}
-                                    />
-                                    <DeleteIcon
-                                      style={{ cursor: "pointer" }}
-                                      onClick={() => {
-                                        setshowRentalOwnerTable(false);
-                                        handleRentalownerDelete();
+                                    >
+                                      First Name
+                                    </th>
+                                    <th
+                                      style={{
+                                        padding: "8px",
+                                        textAlign: "left",
                                       }}
-                                    />
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        ) : null}
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </div>
-                <hr className="my-4" />
-                <div className="pl-lg-4">
-                  <Row>
-                    <br />
-                  </Row>{" "}
-                  <br />
-                  <Row>
-                    <Col md="12">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-address"
-                        >
-                          Who will be the primary manager of this property?
-                        </label>
-                        <br />
-                        <br />
-                        <label
-                          className="label2"
-                          style={{ fontSize: "0.7rem" }}
-                        >
-                          If the staff member has not yet been added as a user
-                          in your account,they can be added to the
-                          account,then as the manager later through the
-                          property's summary details.
-                        </label>
-                        <br />
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-address"
-                        >
-                          Manager (Optional)
-                        </label>
-                        <br />
-                        <FormGroup>
-                          <Dropdown
-                            isOpen={userdropdownOpen}
-                            toggle={toggle3}
-                          >
-                            <DropdownToggle caret>
-                              {selectedUser ? selectedUser : "Select"}
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              {StaffMemberData.map((user) => (
-                                <DropdownItem
-                                  key={user.staffmember_id}
-                                  onClick={() => {
-                                    handleUserSelection(user);
-                                    rentalsFormik.setFieldValue(
-                                      "staffmember_name",
-                                      user.staffmember_name
-                                    );
-                                    rentalsFormik.setFieldValue(
-                                      "staffmember_id",
-                                      user.staffmember_id
-                                    );
-                                  }}
-                                >
-                                  {user.staffmember_name}
-                                </DropdownItem>
-                              ))}
-                              <DropdownItem onClick={() => openCardForm1()}>
-                                {/* {user.staffmember_name} */}
-                                hello ji
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
+                                    >
+                                      Last Name
+                                    </th>
+                                    <th
+                                      style={{
+                                        padding: "8px",
+                                        textAlign: "left",
+                                      }}
+                                    >
+                                      Phone Number
+                                    </th>
+                                    <th
+                                      style={{
+                                        padding: "8px",
+                                        textAlign: "left",
+                                      }}
+                                    >
+                                      Action
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td
+                                      style={{
+                                        padding: "8px",
+                                        textAlign: "left",
+                                      }}
+                                    >
+                                      {
+                                        selectedRentalOwnerData.rentalOwner_firstName
+                                      }
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "8px",
+                                        textAlign: "left",
+                                      }}
+                                    >
+                                      {
+                                        selectedRentalOwnerData.rentalOwner_lastName
+                                      }
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "8px",
+                                        textAlign: "left",
+                                      }}
+                                    >
+                                      {
+                                        selectedRentalOwnerData.rentalOwner_phoneNumber
+                                      }
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "8px",
+                                        textAlign: "left",
+                                      }}
+                                    >
+                                      <EditIcon
+                                        style={{ cursor: "pointer" }}
+                                        onClick={() => {
+                                          setshowRentalOwnerTable(false);
+                                          setRentalDialogOpen(true);
+                                        }}
+                                      />
+                                      <DeleteIcon
+                                        style={{ cursor: "pointer" }}
+                                        onClick={() => {
+                                          setshowRentalOwnerTable(false);
+                                          handleRentalownerDelete();
+                                        }}
+                                      />
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          ) : null}
                         </FormGroup>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </div>
+                      </Col>
+                    </Row>
+                  </div>
+                  <hr className="my-4" />
+                  <div className="pl-lg-4">
+                    <Row>
+                      <br />
+                    </Row>{" "}
+                    <br />
+                    <Row>
+                      <Col md="12">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-address"
+                          >
+                            Who will be the primary manager of this property?
+                          </label>
+                          <br />
+                          <br />
+                          <label
+                            className="label2"
+                            style={{ fontSize: "0.7rem" }}
+                          >
+                            If the staff member has not yet been added as a user
+                            in your account,they can be added to the
+                            account,then as the manager later through the
+                            property's summary details.
+                          </label>
+                          <br />
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-address"
+                          >
+                            Manager (Optional)
+                          </label>
+                          <br />
+                          <FormGroup>
+                            <Dropdown
+                              isOpen={userdropdownOpen}
+                              toggle={toggle3}
+                            >
+                              <DropdownToggle caret>
+                                {selectedUser ? selectedUser : "Select"}
+                              </DropdownToggle>
+                              <DropdownMenu>
+                                {StaffMemberData.map((user) => (
+                                  <DropdownItem
+                                    key={user.staffmember_id}
+                                    onClick={() => {
+                                      handleUserSelection(user);
+                                      rentalsFormik.setFieldValue(
+                                        "staffmember_name",
+                                        user.staffmember_name
+                                      );
+                                      rentalsFormik.setFieldValue(
+                                        "staffmember_id",
+                                        user.staffmember_id
+                                      );
+                                    }}
+                                  >
+                                    {user.staffmember_name}
+                                  </DropdownItem>
+                                ))}
+                                <DropdownItem
+                                  onClick={() => openCardForm1()}
+                                  style={{ borderTop: "1px solid grey" }}
+                                >
+                                  Add New Staff member
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </Dropdown>
+                          </FormGroup>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  </div>
 
                 <hr className="my-4" />
                 {!rental_id && propType === "Residential" && (
@@ -2618,35 +2621,33 @@ const Rentals = () => {
         </Col>
       </Row>
 
-      <Modal isOpen={isModalOpen} toggle={closeModal}>
-        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-          <strong style={{ fontSize: 18 }}>Add new Properties</strong>
-        </ModalHeader>
-        <ModalBody>
-          <AddpropertyModal
-            tenantId={tenantId}
-            closeModal={closeModal}
-          // getCreditCard={getCreditCard}
-          />
-        </ModalBody>
-      </Modal>
+        <Modal isOpen={isModalOpen} toggle={closeModal}>
+          <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+            <strong style={{ fontSize: 18 }}>Add new Properties</strong>
+          </ModalHeader>
+          <ModalBody>
+            <AddpropertyModal
+              tenantId={tenantId}
+              closeModal={closeModal}
+              // getCreditCard={getCreditCard}
+            />
+          </ModalBody>
+        </Modal>
 
-
-      <Modal isOpen={isMOdalopen1} toggle={closeModal}>
-        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-          <strong style={{ fontSize: 18 }}>Add new Staff Member</strong>
-        </ModalHeader>
-        <ModalBody>
-          <StaffMemberModal
-            tenantId={tenantId}
-            closeModal={closeModal}
-          // getCreditCard={getCreditCard}
-          />
-        </ModalBody>
-      </Modal>
-      <ToastContainer />
-
-    </Container >
+        <Modal isOpen={isMOdalopen1} toggle={closeModal}>
+          <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+            <strong style={{ fontSize: 18 }}>Add new Staff Member</strong>
+          </ModalHeader>
+          <ModalBody>
+            <StaffMemberModal
+              tenantId={tenantId}
+              closeModal={closeModal}
+              // getCreditCard={getCreditCard}
+            />
+          </ModalBody>
+        </Modal>
+        <ToastContainer />
+      </Container>
     </>
   );
 };

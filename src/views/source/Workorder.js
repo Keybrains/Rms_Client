@@ -45,29 +45,66 @@ const Workorder = () => {
   const [sortBy, setSortBy] = useState([]);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
+  // const getWorkData = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${baseUrl}/work-order/work-orders/1707904648270`
+  //     );
+  //     const filteredData = response?.data?.data?.map((item) => ({
+  //       workOrder_id: item?.workOrderData?.workOrder_id,
+  //       work_subject: item?.workOrderData?.work_subject,
+  //       work_category: item?.workOrderData?.work_category,
+  //       status: item?.workOrderData?.status,
+  //       createdAt: item?.workOrderData?.createdAt,
+  //       updateAt: item?.workOrderData?.updatedAt,
+  //       rental_id: item?.rentalAdress?.rental_id,
+  //       rental_adress: item?.rentalAdress?.rental_adress,
+  //       unit_id: item?.rentalUnit?.unit_id,
+  //       rental_unit: item?.rentalUnit?.rental_unit,
+  //       staffmember_id: item?.staffMember?.staffmember_id,
+  //       staffmember_name: item?.staffMember?.staffmember_name,
+  //     }));
+  //     setWorkData(filteredData);
+  //     setLoader(false);
+  //     setTotalPages(Math.ceil(filteredData?.length / pageItem));
+  //   } catch (error) {
+  //     setLoader(false);
+  //     console.error("Error fetching data:", error);
+  //   } finally{
+  //     setLoader(false);
+
+  //   }
+  // };
+
   const getWorkData = async () => {
     try {
       const response = await axios.get(
         `${baseUrl}/work-order/work-orders/${accessType?.admin_id}`
       );
-      const filteredData = response.data.data.map((item) => ({
-        workOrder_id: item.workOrderData.workOrder_id,
-        work_subject: item.workOrderData.work_subject,
-        work_category: item.workOrderData.work_category,
-        status: item.workOrderData.status,
-        createdAt: item.workOrderData.createdAt,
-        updateAt: item.workOrderData.updatedAt,
-        rental_id: item.rentalAdress.rental_id,
-        rental_adress: item.rentalAdress.rental_adress,
-        unit_id: item.rentalUnit.unit_id,
-        rental_unit: item.rentalUnit.rental_unit,
-        staffmember_id: item.staffMember.staffmember_id,
-        staffmember_name: item.staffMember.staffmember_name,
-      }));    
-      setWorkData(filteredData);
+      if (response?.data?.data) {
+        const filteredData = response.data.data.map((item) => ({
+          workOrder_id: item?.workOrderData?.workOrder_id,
+          work_subject: item?.workOrderData?.work_subject,
+          work_category: item?.workOrderData?.work_category,
+          status: item?.workOrderData?.status,
+          createdAt: item?.workOrderData?.createdAt,
+          updateAt: item?.workOrderData?.updatedAt,
+          rental_id: item?.rentalAdress?.rental_id,
+          rental_adress: item?.rentalAdress?.rental_adress,
+          unit_id: item?.rentalUnit?.unit_id,
+          rental_unit: item?.rentalUnit?.rental_unit,
+          staffmember_id: item?.staffMember?.staffmember_id,
+          staffmember_name: item?.staffMember?.staffmember_name,
+        }));
+        setWorkData(filteredData);
+        setTotalPages(Math.ceil(filteredData.length / pageItem));
+      } else {
+        setWorkData([]);
+        setTotalPages(0);
+      }
       setLoader(false);
-      setTotalPages(Math.ceil(filteredData.length / pageItem));
     } catch (error) {
+      setLoader(false);
       console.error("Error fetching data:", error);
     }
   };
@@ -181,7 +218,6 @@ const Workorder = () => {
             );
             break;
           default:
-            // If an unknown sort option is provided, do nothing
             break;
         }
       });
@@ -197,12 +233,10 @@ const Workorder = () => {
   };
 
   const navigateToDetails = (workorder_id) => {
-    navigate(`/${admin} /workorderdetail/${workorder_id}`);
+    // navigate(`/${admin} /workorderdetail/${workorder_id}`);
+    navigate(`/${admin}/workorderdetail/${workorder_id}`);
     //console.log(workorder_id);
   };
-  console.log(workData, "workData");
-  console.log(sortBy, "sortBy");
-  console.log(upArrow, "upArrow");
 
   const sortData = (value) => {
     if (!sortBy.includes(value)) {
@@ -367,10 +401,10 @@ const Workorder = () => {
                   <tbody>
                     {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
-                        key={rental._id}
-                        onClick={() => navigateToDetails(rental.workorder_id)}
+                        key={rental.workOrder_id}
+                        // onClick={() => navigateToDetails(rental.workOrder_id)}
                         style={{ cursor: "pointer" }}
-                      >
+                      >{console.log(rental, "yash")}
                         <td>{rental.work_subject}</td>
                         <td>
                           {rental.rental_adress}{" "}
@@ -390,7 +424,7 @@ const Workorder = () => {
                               style={{ cursor: "pointer" }}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                deleteRentals(rental._id);
+                                deleteRentals(rental.workOrder_id);
                               }}
                             >
                               <DeleteIcon />

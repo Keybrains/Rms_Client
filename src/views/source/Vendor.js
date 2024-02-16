@@ -196,7 +196,7 @@ const Vendor = () => {
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterTenantsBySearch();
-    const paginatedData = filteredData.slice(startIndex, endIndex);
+    const paginatedData = filteredData?.slice(startIndex, endIndex);
     return paginatedData;
   };
   const sortData = (value) => {
@@ -334,7 +334,7 @@ const Vendor = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filterTenantsBySearchAndPage().map((vendor) => (
+                    {filterTenantsBySearchAndPage()?.map((vendor) => (
                       <tr key={vendor.vendor_id}>
                         <td>{vendor.vendor_name}</td>
                         <td>{vendor.vendor_phoneNumber}</td>
@@ -360,7 +360,7 @@ const Vendor = () => {
                     ))}
                   </tbody>
                 </Table>
-                {paginatedData.length > 0 ? (
+                {paginatedData?.length > 0 ? (
                   <Row>
                     <Col className="text-right m-3">
                       <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>

@@ -60,6 +60,7 @@ const handleListingEdit = async (id, addUnitFormik) => {
     });
 };
 
+//delete unit
 const handleDeleteUnit = (id) => {
   swal({
     title: "Are you sure?",
@@ -70,11 +71,21 @@ const handleDeleteUnit = (id) => {
   }).then((willDelete) => {
     if (willDelete) {
       axios
-        .delete(`${baseUrl}/propertyunit/propertyunit/` + id)
+        .delete(`${baseUrl}/unit/unit/` + id)
         .then((response) => {
-          toast.success("your data is deleted", {
-            position: "top-center",
-          });
+          if (response.data.statusCode === 200) {
+            toast.success(response.data.message, {
+              position: "top-center",
+              autoClose: 500,
+            });
+            
+          }
+          if (response.data.statusCode === 201) {
+            toast.warning(response.data.message, {
+              position: "top-center",
+              autoClose: 500,
+            });
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -184,27 +195,34 @@ const editeAppliancesSubmit = async (object) => {
 
 //delete appliance
 const deleteAppliance = async (appliance_id) => {
-  swal("Are You Sure You Want TO Delete ?", {
-    buttons: ["No", "Yes"],
-  }).then(async (buttons) => {
-    if (buttons === true) {
-      try {
-        const res = await axios.delete(
-          `${baseUrl}/appliance/appliance/${appliance_id}`
-        );
-        if (res.data.statusCode === 200) {
-          toast.success(res.data.message, {
+  return new Promise((resolve, reject) => {
+    swal("Are You Sure You Want TO Delete ?", {
+      buttons: ["No", "Yes"],
+    }).then(async (buttons) => {
+      if (buttons === true) {
+        try {
+          const res = await axios.delete(
+            `${baseUrl}/appliance/appliance/${appliance_id}`
+          );
+          if (res.data.statusCode === 200) {
+            toast.success(res.data.message, {
+              position: "top-center",
+            });
+            resolve(res.data.statusCode);
+          } else {
+            reject(new Error(res.data.message));
+          }
+        } catch (error) {
+          console.error("Error:", error.message);
+          toast.error(error.message, {
             position: "top-center",
           });
-          return res.data.statusCode;
+          reject(error);
         }
-      } catch (error) {
-        console.error("Error:", error.message);
-        toast.error(error.message, {
-          position: "top-center",
-        });
+      } else {
+        reject(new Error("Deletion cancelled"));
       }
-    }
+    });
   });
 };
 

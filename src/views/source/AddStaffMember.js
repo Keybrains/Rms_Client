@@ -26,12 +26,12 @@ import AddStaffMemberHeader from "components/Headers/AddStaffMemberHeader";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddStaffMember = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { id , admin} = useParams();
+  const { id, admin } = useParams();
   const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
 
   const [selectedProp, setSelectedProp] = useState("Select");
@@ -78,18 +78,19 @@ const AddStaffMember = () => {
     validationSchema: yup.object({
       staffmember_name: yup.string().required("Required"),
       staffmember_designation: yup.string().required("Required"),
-      staffmember_password: yup
-        .string()
-        // .required("No Password Provided")
-        .min(8, "Password is too short")
-        .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-          "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
-        ),
+      staffmember_password: id
+        ? yup
+            .string()
+            // .required("No Password Provided")
+            .min(8, "Password is too short")
+            .matches(
+              /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+              "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
+            )
+        : "",
     }),
     onSubmit: (values) => {
       handleSubmit(values);
-      //console.log(values, "values");
     },
   });
 
@@ -108,7 +109,7 @@ const AddStaffMember = () => {
       axios
         .get(`${baseUrl}/staffmember/staff/member/${id}`)
         .then((response) => {
-          const staffMamberdata = response.data.data[0];
+          const staffMamberdata = response.data.data;
           setstaffMamberData(staffMamberData);
           //console.log(staffMamberdata);
 
@@ -147,7 +148,7 @@ const AddStaffMember = () => {
           handleResponse(res);
         } else if (res.data.statusCode === 201) {
           toast.error(res.data.message, {
-            position: 'top-center',
+            position: "top-center",
             autoClose: 1000,
           });
         }
@@ -158,7 +159,7 @@ const AddStaffMember = () => {
           handleResponse(res);
         } else if (res.data.statusCode === 400) {
           toast.error(res.data.message, {
-            position: 'top-center',
+            position: "top-center",
             autoClose: 1000,
           });
         }
@@ -172,26 +173,28 @@ const AddStaffMember = () => {
     }
   }
 
- function handleResponse(response) {
-    const successMessage = id ? "Staff  updated successfully" : "Staff  added successfully";
+  function handleResponse(response) {
+    const successMessage = id
+      ? "Staff  updated successfully"
+      : "Staff  added successfully";
     const errorMessage = response.data.message;
-  
+
     if (response.data.statusCode === 200) {
       // Show success toast
       toast.success(successMessage, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
         onClose: () => navigate(`/${admin}/StaffMember`),
       });
     } else {
       // Show an error toast
       toast.error(errorMessage, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
       });
     }
   }
-  
+
   return (
     <>
       <AddStaffMemberHeader />
@@ -224,8 +227,6 @@ const AddStaffMember = () => {
                           >
                             Staff Member Name *
                           </label>
-                          <br />
-                          <br />
                           <Input
                             className="form-control-alternative"
                             id="input-staffmember-name"
@@ -246,7 +247,7 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-                  <hr className="my-4" />
+                  <hr className="my-2" />
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
@@ -257,8 +258,6 @@ const AddStaffMember = () => {
                           >
                             Designation
                           </label>
-                          <br />
-                          <br />
                           <Input
                             className="form-control-alternative"
                             id="input-staffmember-desg"
@@ -274,7 +273,7 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-                  <hr className="my-4" />
+                  <hr className="my-2" />
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
@@ -285,8 +284,6 @@ const AddStaffMember = () => {
                           >
                             Phone Number *
                           </label>
-                          <br />
-                          <br />
                           <Input
                             className="form-control-alternative"
                             id="staffmember_phoneNumber"
@@ -313,7 +310,7 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-                  <hr className="my-4" />
+                  <hr className="my-2" />
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
@@ -324,8 +321,6 @@ const AddStaffMember = () => {
                           >
                             Email *
                           </label>
-                          <br />
-                          <br />
                           <Input
                             className="form-control-alternative"
                             id="staffmember_email"
@@ -353,8 +348,6 @@ const AddStaffMember = () => {
                           >
                             Password *
                           </label>
-                          <br />
-                          <br />
                           <div style={{ display: "flex" }}>
                             <Input
                               className="form-control-alternative"
@@ -414,7 +407,6 @@ const AddStaffMember = () => {
           </Col>
         </Row>
         <ToastContainer />
-
       </Container>
     </>
   );

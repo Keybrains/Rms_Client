@@ -214,9 +214,9 @@ const PropDetails = () => {
     if (today >= start && today <= end) {
       return "Active";
     } else if (today < start) {
-      return "Future";
+      return "Inactive";
     } else if (today > end) {
-      return "Expired";
+      return "Inactive";
     } else {
       return "-";
     }
@@ -232,7 +232,7 @@ const PropDetails = () => {
   const fetchApplianceData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/appliance/appliance/${clickedUnitObject.id}`
+        `${baseUrl}/appliance/appliance/${clickedUnitObject.unit_id}`
       );
       setApplianceData(response.data.data);
     } catch (error) {
@@ -441,7 +441,6 @@ const PropDetails = () => {
     setNoticeGivenDate(currentDate);
   }, []);
   const handleMoveout = (lease_id) => {
-    console.log(moveOutDate, noticeGivenDate, lease_id, "yashuj");
     if (moveOutDate && noticeGivenDate) {
       const updatedApplicant = {
         moveout_date: moveOutDate,
@@ -458,6 +457,7 @@ const PropDetails = () => {
           if (res.data.statusCode === 200) {
             toast.success("Move-out Successfully", {
               position: "top-center",
+              autoClose: 500,
             });
             // Close the modal if the status code is 200
             handleModalClose();
@@ -467,15 +467,18 @@ const PropDetails = () => {
         .catch((err) => {
           toast.error("An error occurred while Move-out", {
             position: "top-center",
+            autoClose: 500,
           });
           console.error(err);
         });
     } else {
       toast.error("NOTICE GIVEN DATE && MOVE-OUT DATE must be required", {
         position: "top-center",
+        autoClose: 500,
       });
     }
   };
+
   return (
     <>
       <Header />
@@ -616,22 +619,22 @@ const PropDetails = () => {
                         style={{ textTransform: "none" }}
                         value="summary"
                       />
-                      <Tab
+                      {/* <Tab
                         label="Financial"
                         style={{ textTransform: "none" }}
                         value="financial"
-                      />
+                      /> */}
                       <Tab
                         label={`Units (${propertyUnitData?.length || 0})`}
                         style={{ textTransform: "none" }}
                         value="units"
                       />
 
-                      <Tab
+                      {/* <Tab
                         label="Task"
                         style={{ textTransform: "none" }}
                         value="Task"
-                      />
+                      /> */}
                       <Tab
                         label={`Tenant (${tenantsCount})`}
                         style={{ textTransform: "none" }}
@@ -1575,7 +1578,7 @@ const PropDetails = () => {
                           }}
                           size="sm"
                           onClick={() => {
-                            handleDeleteUnit(clickedUnitObject?._id);
+                            handleDeleteUnit(clickedUnitObject?.unit_id);
                           }}
                         >
                           Delete unit
@@ -1909,57 +1912,54 @@ const PropDetails = () => {
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
-                                    {console.log(unitLeases, "yashu")}
-                                    {clickedUnitObject &&
-                                    clickedUnitObject?.tenant_firstName &&
-                                    clickedUnitObject?.tenant_lastName ? (
-                                      <>
-                                        <tr className="body">
-                                          <td>
-                                            {clickedUnitObject?.start_date
-                                              ? "Active"
-                                              : "Inactive"}
-                                          </td>
-                                          <td>
-                                            {clickedUnitObject?.start_date &&
-                                            clickedUnitObject?.end_date ? (
-                                              <>
-                                                <Link
-                                                  to={`/admin/tenantdetail/${clickedUnitObject?._id}`}
-                                                  onClick={(e) => {}}
-                                                >
-                                                  {formatDateWithoutTime(
-                                                    clickedUnitObject?.start_date
-                                                  ) +
-                                                    "-" +
-                                                    formatDateWithoutTime(
-                                                      clickedUnitObject?.end_date
-                                                    )}
-                                                </Link>
-                                              </>
-                                            ) : (
-                                              "N/A"
-                                            )}
-                                          </td>
-                                          <td>
-                                            {clickedUnitObject?.tenant_firstName &&
-                                            clickedUnitObject?.tenant_lastName
-                                              ? clickedUnitObject?.tenant_firstName +
-                                                " " +
-                                                clickedUnitObject?.tenant_lastName
-                                              : "N/A"}
-                                          </td>
-                                          <td>
-                                            {clickedUnitObject?.lease_type ||
-                                              "N/A"}
-                                          </td>
-                                          <td>
-                                            {clickedUnitObject?.amount || "N/A"}
-                                          </td>
-                                        </tr>
-                                      </>
+                                    {unitLeases ? (
+                                      unitLeases.map((lease) => (
+                                        <>
+                                          <tr className="body">
+                                            <td>
+                                              {getStatus(
+                                                lease?.start_date,
+                                                lease?.end_date
+                                              )}
+                                            </td>
+                                            <td>
+                                              {lease?.start_date &&
+                                              lease?.end_date ? (
+                                                <>
+                                                  <Link
+                                                    to={`/admin/tenantdetail/${lease?.tenant_id}`}
+                                                    onClick={(e) => {}}
+                                                  >
+                                                    {formatDateWithoutTime(
+                                                      lease?.start_date
+                                                    ) +
+                                                      "-" +
+                                                      formatDateWithoutTime(
+                                                        lease?.end_date
+                                                      )}
+                                                  </Link>
+                                                </>
+                                              ) : (
+                                                "N/A"
+                                              )}
+                                            </td>
+                                            <td>
+                                              {lease?.tenant_firstName &&
+                                              lease?.tenant_lastName
+                                                ? lease?.tenant_firstName +
+                                                  " " +
+                                                  lease?.tenant_lastName
+                                                : "N/A"}
+                                            </td>
+                                            <td>
+                                              {lease?.lease_type || "N/A"}
+                                            </td>
+                                            <td>{lease?.amount || "N/A"}</td>
+                                          </tr>
+                                        </>
+                                      ))
                                     ) : (
-                                      ""
+                                      <></>
                                     )}
                                   </tbody>
                                 </Table>
@@ -2160,12 +2160,19 @@ const PropDetails = () => {
                                                         cursor: "pointer",
                                                       }}
                                                       onClick={async () => {
-                                                        const res =
-                                                          await deleteAppliance(
-                                                            appliance.appliance_id
+                                                        try {
+                                                          const res =
+                                                            await deleteAppliance(
+                                                              appliance.appliance_id
+                                                            );
+                                                          if (res === 200) {
+                                                            fetchApplianceData();
+                                                          }
+                                                        } catch (error) {
+                                                          console.error(
+                                                            "Error occurred while deleting appliance:",
+                                                            error
                                                           );
-                                                        if (res === 200) {
-                                                          fetchApplianceData();
                                                         }
                                                       }}
                                                     >
@@ -2244,7 +2251,7 @@ const PropDetails = () => {
                                         marginTop: "5px",
                                       }}
                                       onClick={() => {
-                                        navigate(`/admin/Leaseing`);
+                                        navigate(`/${admin}/Leaseing`);
                                       }}
                                     >
                                       Add Lease
@@ -2265,7 +2272,7 @@ const PropDetails = () => {
                                         marginTop: "5px",
                                       }}
                                       onClick={() => {
-                                        navigate(`/admin/Applicants`);
+                                        navigate(`/${admin}/Applicants`);
                                       }}
                                     >
                                       Create Applicant
@@ -2445,6 +2452,7 @@ const PropDetails = () => {
           addUnitDialogOpen={propertyTypeData.property_type}
         />
       </Dialog>
+      <ToastContainer />
     </>
   );
 };

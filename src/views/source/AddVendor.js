@@ -60,7 +60,8 @@ const AddVendor = () => {
       vendor_name: yup.string().required("Requied"),
       vendor_phoneNumber: yup.number().required("Requied"),
       vendor_email: yup.string().required("Requied"),
-      vendor_password: yup.string()
+      vendor_password: yup
+        .string()
         .min(8, "Password is too short")
         .matches(
           /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
@@ -91,9 +92,7 @@ const AddVendor = () => {
   useEffect(() => {
     if (vendor_id) {
       axios
-        .get(
-          `${baseUrl}/vendor/get_vendor/${vendor_id}`
-        )
+        .get(`${baseUrl}/vendor/get_vendor/${vendor_id}`)
         .then((response) => {
           const vendorData = response.data.data;
           setVendorData(vendorData);
@@ -118,17 +117,12 @@ const AddVendor = () => {
 
   // Handle form submission
   async function handleSubmit(values) {
-    VendorFormik.setFieldValue("admin_id", accessType.admin_id)
-    console.log(values)
+    values.admin_id = accessType.admin_id;
     try {
       if (vendor_id === undefined) {
-        const res = await axios.post(
-          `${baseUrl}/vendor/vendor`,
-          values
-        );
+        const res = await axios.post(`${baseUrl}/vendor/vendor`, values);
         handleResponse(res);
       } else {
-        VendorFormik.setFieldValue("admin_id", accessType.admin_id)
         const editUrl = `${baseUrl}/vendor/update_vendor/${vendor_id}`;
         const res = await axios.put(editUrl, values);
         handleResponse(res);
@@ -146,33 +140,34 @@ const AddVendor = () => {
   // function handleResponse(response) {
   //   if (response.status === 200) {
   //     navigate("/"+admin+"/vendor");
-  //     
+  //
   //   } else {
   //     alert(response.data.message);
   //   }
   // }
 
-
   function handleResponse(response) {
-    const successMessage = vendor_id ? "Vendor updated successfully" : "Vendor added successfully";
+    const successMessage = vendor_id
+      ? "Vendor updated successfully"
+      : "Vendor added successfully";
     const errorMessage = response.data.message;
-  
+
     if (response.data.statusCode === 200) {
       // Show success toast
       toast.success(successMessage, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
         onClose: () => navigate(`/${admin}/vendor`),
       });
     } else {
       // Show an error toast
       toast.error(errorMessage, {
-        position: 'top-center',
+        position: "top-center",
         autoClose: 1000,
       });
     }
   }
-  
+
   // Handle cancel button click
   const handleCloseButtonClick = () => {
     navigate("../Vendor");
@@ -218,7 +213,7 @@ const AddVendor = () => {
                             value={VendorFormik.values.vendor_name}
                           />
                           {VendorFormik.touched.vendor_name &&
-                            VendorFormik.errors.vendor_name ? (
+                          VendorFormik.errors.vendor_name ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_name}
                             </div>
@@ -257,7 +252,7 @@ const AddVendor = () => {
                             }}
                           />
                           {VendorFormik.touched.vendor_phoneNumber &&
-                            VendorFormik.errors.vendor_phoneNumber ? (
+                          VendorFormik.errors.vendor_phoneNumber ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_phoneNumber}
                             </div>
@@ -288,7 +283,7 @@ const AddVendor = () => {
                             value={VendorFormik.values.vendor_email}
                           />
                           {VendorFormik.touched.vendor_email &&
-                            VendorFormik.errors.vendor_email ? (
+                          VendorFormik.errors.vendor_email ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_email}
                             </div>
@@ -332,7 +327,7 @@ const AddVendor = () => {
                             </Button>
                           </div>
                           {VendorFormik.touched.vendor_password &&
-                            VendorFormik.errors.vendor_password ? (
+                          VendorFormik.errors.vendor_password ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_password}
                             </div>
@@ -365,7 +360,6 @@ const AddVendor = () => {
           </Col>
         </Row>
         <ToastContainer />
-
       </Container>
     </>
   );

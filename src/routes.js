@@ -81,7 +81,6 @@ import SuperAdminTenat from "components/superadmin/Admin/Tenant";
 import SuperAdminUnit from "components/superadmin/Admin/Unit";
 import SuperAdminLease from "components/superadmin/Admin/Leasing";
 import ResetPassword from "views/source/Resetpassword";
-import RentRollDetail2 from "views/source/RentRollDetail copy";
 
 var routes = [
   {
@@ -188,6 +187,13 @@ var routes = [
     layout: "/auth",
   },
   {
+    path: "/:admin/:roll/login",
+    name: "Login",
+    icon: "ni ni-key-25 text-info",
+    component: <Login />,
+    layout: "/auth",
+  },
+  {
     path: "/changepassword",
     name: "Change Password",
     component: <Changepassword />,
@@ -257,15 +263,9 @@ var routes = [
   },
 
   {
-    path: "/rentrolldetail/:tenantId",
+    path: "/rentrolldetail/:lease_id",
     name: "Rent Roll Detail",
     component: <RentRollDetail />,
-    layout: "/admin",
-  },
-  {
-    path: "/rentrolldetail2/:lease_id",
-    name: "Rent Roll Detail",
-    component: <RentRollDetail2 />,
     layout: "/admin",
   },
   {
@@ -679,7 +679,7 @@ var routes = [
   {
     path: "/plans",
     name: "Plans",
-    icon: "ni ni-pin-3 text-orange",
+    icon: "ni ni-app text-orange",
     component: <SuperAdminPlanList />,
     layout: "/superadmin",
   },
@@ -698,7 +698,7 @@ var routes = [
   {
     path: "/admin",
     name: "Admin",
-    icon: "ni ni-pin-3 text-orange",
+    icon: "ni ni-collection text-green",
     component: <SuperAdminAdmin />,
     layout: "/superadmin",
   },

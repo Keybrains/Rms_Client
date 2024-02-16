@@ -385,7 +385,7 @@ const AddWorkorder = () => {
         work_subject: WorkFormik.values.work_subject || "",
         work_category: WorkFormik.values.work_category || "",
         entry_allowed:
-          WorkFormik.values.entry_allowed === "Yes" ? true : false || "",
+          WorkFormik.values.entry_allowed === "Yes" ? true : false,
         work_performed: WorkFormik.values.work_performed || "",
         workOrder_images: image || "",
         vendor_notes: WorkFormik.values.vendor_note || "",
@@ -415,7 +415,9 @@ const AddWorkorder = () => {
             autoClose: 1000,
             // onClose: () => navigate(`/${admin}/Workorder`),
           });
+          navigate("/" + admin + "/Workorder")
         } else {
+          console.log(res.data, "res.data")
           toast.error(res.data.message, {
             position: "top-center",
             autoClose: 1000,
@@ -511,6 +513,7 @@ const AddWorkorder = () => {
       .then((data) => {
         if (data.statusCode === 200) {
           setstaffData(data.data);
+          console.log(data.data, "---------------------------------")
         } else {
           console.error("Error:", data.message);
         }
