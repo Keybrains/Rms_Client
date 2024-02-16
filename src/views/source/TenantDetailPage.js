@@ -311,7 +311,7 @@ const TenantDetailPage = () => {
               </h5>
             </FormGroup>
           </Col>
-          <Col className="text-right" xs="12" sm="6">
+          <Col className="text-right" >
             <Button
               color="primary"
               //  href="#rms"
@@ -331,7 +331,7 @@ const TenantDetailPage = () => {
               </CardHeader>
               <div className="table-responsive">
                 <div className="row m-3" style={{ overflow: "hidden" }}>
-                  <div className="col-md-8">
+                  <div className="col-md-12">
                     <div
                       className="align-items-center table-flush"
                       responsive
@@ -372,66 +372,79 @@ const TenantDetailPage = () => {
                             >
                               <Col>Contact Information</Col>
                             </Row>
-                            <Row
-                              className="w-100 mb-1"
-                              style={{
-                                fontSize: "10px",
-                                textTransform: "uppercase",
-                                color: "#aaa",
-                              }}
-                            >
-                              <Col>Name</Col>
-                              <Col>Phone</Col>
-                              <Col>Email</Col>
-                            </Row>
-                            <Row
-                              className="w-100 mt-1 mb-5"
-                              style={{
-                                fontSize: "12px",
-                                textTransform: "capitalize",
-                                color: "#000",
-                              }}
-                            >
-                              <Col>
-                                {tenantDetails.tenant_firstName +
-                                  " " +
-                                  tenantDetails.tenant_lastName || "N/A"}
-                              </Col>
-                              <Col>
-                                <a
-                                  href={`tel:${tenantDetails.tenant_phoneNumber}`}
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="15"
-                                    height="15"
-                                    fill="currentColor"
-                                    className="bi bi-telephone-outbound"
-                                    viewBox="0 0 16 16"
+                            <Container fluid>
+                              <Row
+                                className="w-100 mb-1"
+                                style={{
+                                  fontSize: "10px",
+                                  textTransform: "uppercase",
+                                  color: "#aaa",
+                                }}
+                              >
+                                <Col xs={4} md={4}>
+                                  Name
+                                </Col>
+                                <Col xs={4} md={4}>
+                                  Phone
+                                </Col>
+                                <Col xs={4} md={4}>
+                                  Email
+                                </Col>
+                              </Row>
+                              <Row
+                                className="w-100 mt-1 mb-5"
+                                style={{
+                                  fontSize: "12px",
+                                  textTransform: "capitalize",
+                                  color: "#000",
+                                }}
+                              >
+                                <Col xs={4} md={4}>
+                                  {tenantDetails.tenant_firstName +
+                                    " " +
+                                    tenantDetails.tenant_lastName || "N/A"}
+                                </Col>
+                                <Col xs={4} md={4}>
+                                  <a
+                                    href={`tel:${tenantDetails.tenant_phoneNumber}`}
                                   >
-                                    <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511zM11 .5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V1.707l-4.146 4.147a.5.5 0 0 1-.708-.708L14.293 1H11.5a.5.5 0 0 1-.5-.5" />
-                                  </svg>{" "}
-                                  {tenantDetails.tenant_phoneNumber || "N/A"}
-                                </a>
-                              </Col>
-                              <Col style={{ textTransform: "lowercase" }}>
-                                <a
-                                  href={`mailto:${tenantDetails.tenant_email}`}
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="15"
+                                      height="15"
+                                      fill="currentColor"
+                                      className="bi bi-telephone-outbound"
+                                      viewBox="0 0 16 16"
+                                    >
+                                      <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511zM11 .5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V1.707l-4.146 4.147a.5.5 0 0 1-.708-.708L14.293 1H11.5a.5.5 0 0 1-.5-.5" />
+                                    </svg>{" "}
+                                    {tenantDetails.tenant_phoneNumber || "N/A"}
+                                  </a>
+                                </Col>
+                                <Col
+                                  xs={4}
+                                  md={4}
+                                  style={{ textTransform: "lowercase" }}
                                 >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="15"
-                                    height="15"
-                                    fill="currentColor"
-                                    className="bi bi-envelope-paper"
-                                    viewBox="0 0 16 16"
+                                  <a
+                                    href={`mailto:${tenantDetails.tenant_email}`}
                                   >
-                                    <path d="M4 0a2 2 0 0 0-2 2v1.133l-.941.502A2 2 0 0 0 0 5.4V14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5.4a2 2 0 0 0-1.059-1.765L14 3.133V2a2 2 0 0 0-2-2zm10 4.267.470.25A1 1 0 0 1 15 5.4v.817l-1 .6zm-1 3.15-3.75 2.25L8 8.917l-1.25.75L3 7.417V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1zm-11-.6-1-.6V5.4a1 1 0 0 1 .53-.882L2 4.267zm13 .566v5.734l-4.778-2.867zm-.035 6.88A1 1 0 0 1 14 15H2a1 1 0 0 1-.965-.738L8 10.083zM1 13.116V7.383l4.778 2.867L1 13.117Z" />
-                                  </svg>{" "}
-                                  {tenantDetails.tenant_email || "N/A"}
-                                </a>
-                              </Col>
-                            </Row>
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="15"
+                                      height="15"
+                                      fill="currentColor"
+                                      className="bi bi-envelope-paper"
+                                      viewBox="0 0 16 16"
+                                    >
+                                      <path d="M4 0a2 2 0 0 0-2 2v1.133l-.941.502A2 2 0 0 0 0 5.4V14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V5.4a2 2 0 0 0-1.059-1.765L14 3.133V2a2 2 0 0 0-2-2zm10 4.267.470.25A1 1 0 0 1 15 5.4v.817l-1 .6zm-1 3.15-3.75 2.25L8 8.917l-1.25.75L3 7.417V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1zm-11-.6-1-.6V5.4a1 1 0 0 1 .53-.882L2 4.267zm13 .566v5.734l-4.778-2.867zm-.035 6.88A1 1 0 0 1 14 15H2a1 1 0 0 1-.965-.738L8 10.083zM1 13.116V7.383l4.778 2.867L1 13.117Z" />
+                                    </svg>{" "}
+                                    {tenantDetails.tenant_email || "N/A"}
+                                  </a>
+                                </Col>
+                              </Row>
+                            </Container>
+
                             <Row
                               className="w-100 my-3"
                               style={{
@@ -444,45 +457,58 @@ const TenantDetailPage = () => {
                             >
                               <Col>Personal Information</Col>
                             </Row>
-                            <Row
-                              className="w-100 mb-1"
-                              style={{
-                                fontSize: "10px",
-                                textTransform: "uppercase",
-                                color: "#aaa",
-                              }}
-                            >
-                              <Col>Birth Date</Col>
-                              <Col>TaxPayer Id</Col>
-                              <Col>Comments</Col>
-                            </Row>
-                            <Row
-                              className="w-100 mt-1 mb-5"
-                              style={{
-                                fontSize: "12px",
-                                textTransform: "capitalize",
-                                color: "#000",
-                              }}
-                            >
-                              <Col>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-calendar-event"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z" />
-                                  <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
-                                </svg>{" "}
-                                {formatDateWithoutTime(
-                                  tenantDetails.tenant_birthDate
-                                ) || "N/A"}
-                              </Col>
-                              <Col>{tenantDetails.taxPayer_id || "N/A"}</Col>
-                              <Col>{tenantDetails.comments || "N/A"}</Col>
-                            </Row>
+                            <Container fluid>
+                              <Row
+                                className="w-100 mb-1"
+                                style={{
+                                  fontSize: "10px",
+                                  textTransform: "uppercase",
+                                  color: "#aaa",
+                                }}
+                              >
+                                <Col xs={4} md={4}>
+                                  Birth Date
+                                </Col>
+                                <Col xs={4} md={4}>
+                                  TaxPayer Id
+                                </Col>
+                                <Col xs={4} md={4}>
+                                  Comments
+                                </Col>
+                              </Row>
+                              <Row
+                                className="w-100 mt-1 mb-5"
+                                style={{
+                                  fontSize: "12px",
+                                  textTransform: "capitalize",
+                                  color: "#000",
+                                }}
+                              >
+                                <Col xs={4} md={4}>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    fill="currentColor"
+                                    className="bi bi-calendar-event"
+                                    viewBox="0 0 16 16"
+                                  >
+                                    <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z" />
+                                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+                                  </svg>{" "}
+                                  {formatDateWithoutTime(
+                                    tenantDetails.tenant_birthDate
+                                  ) || "N/A"}
+                                </Col>
+                                <Col xs={4} md={4}>
+                                  {tenantDetails.taxPayer_id || "N/A"}
+                                </Col>
+                                <Col xs={4} md={4}>
+                                  {tenantDetails.comments || "N/A"}
+                                </Col>
+                              </Row>
+                            </Container>
+
                             <Row
                               className="w-100 my-3"
                               style={{

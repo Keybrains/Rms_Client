@@ -277,7 +277,7 @@ const RentRollDetail2 = () => {
               )}
             </FormGroup>
           </Col>
-          <Col className="text-right" xs="12" sm="6">
+          <Col className="text-right" >
             <Button
               color="primary"
               onClick={() => navigate("/admin/RentRoll")}

@@ -526,6 +526,24 @@ const Sidebar = (props) => {
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>
+          <Nav navbar>
+            <UncontrolledDropdown nav>
+            <Button
+              color="primary"
+              className="buy-now-button"
+              onClick={() => navigate("/"+admin+"/Plans")}
+              size="sm"
+              style={{
+                background: "rgb(48 52 58 / 70%)",
+                color: "#fff",
+                marginRight: "20px",
+                width:"100% "
+              }}
+            >
+              Buy
+          </Button>
+            </UncontrolledDropdown>
+          </Nav>
 
           {/* <Nav navbar>
             <UncontrolledDropdown nav>
