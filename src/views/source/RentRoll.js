@@ -411,61 +411,68 @@ const RentRoll = () => {
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {filterTenantsBySearchAndPage()?.map((tenant) => (
-                      <>
-                        <tr
-                          key={tenant.lease_id}
-                          onClick={() =>
-                            navigateToRentRollDetails(tenant.lease_id)
-                          }
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td>
-                            {tenant.tenant_firstName} {tenant.tenant_lastName}
-                          </td>
-                          <td>
-                            {tenant.rental_adress}{" "}
-                            {tenant.rental_unit
-                              ? " - " + tenant.rental_unit
-                              : null}{" "}
-                          </td>
-                          <td>{tenant.lease_type}</td>
-                          <td>
-                            {getStatus(tenant.start_date, tenant.end_date)}
-                          </td>
-                          <td>
-                            {tenant.start_date} to {tenant.end_date}
-                          </td>
-                          <td>{tenant.amount}</td>
-                          <td>{tenant.createdAt} </td>
-                          <td>{tenant.updatedAt ? tenant.updatedAt : "-"} </td>
-                          <td style={{}}>
-                            <div style={{ display: "flex", gap: "5px" }}>
-                              <div
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteTenant(tenant.lease_id);
-                                }}
-                              >
-                                <DeleteIcon />
+                  {tenantsData.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="8" style={{ fontSize: "15px" }}>No Lease Added</td>
+                      </tr>
+                    </tbody>
+                  ) : (
+                    <tbody>
+                      {filterTenantsBySearchAndPage()?.map((tenant) => (
+                        <>
+                          <tr
+                            key={tenant.lease_id}
+                            onClick={() =>
+                              navigateToRentRollDetails(tenant.lease_id)
+                            }
+                            style={{ cursor: "pointer" }}
+                          >
+                            <td>
+                              {tenant.tenant_firstName} {tenant.tenant_lastName}
+                            </td>
+                            <td>
+                              {tenant.rental_adress}{" "}
+                              {tenant.rental_unit
+                                ? " - " + tenant.rental_unit
+                                : null}{" "}
+                            </td>
+                            <td>{tenant.lease_type}</td>
+                            <td>
+                              {getStatus(tenant.start_date, tenant.end_date)}
+                            </td>
+                            <td>
+                              {tenant.start_date} to {tenant.end_date}
+                            </td>
+                            <td>{tenant.amount}</td>
+                            <td>{tenant.createdAt} </td>
+                            <td>{tenant.updatedAt ? tenant.updatedAt : "-"} </td>
+                            <td style={{}}>
+                              <div style={{ display: "flex", gap: "5px" }}>
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteTenant(tenant.lease_id);
+                                  }}
+                                >
+                                  <DeleteIcon />
+                                </div>
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    editLeasing(tenant.lease_id);
+                                  }}
+                                >
+                                  <EditIcon />
+                                </div>
                               </div>
-                              <div
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  editLeasing(tenant.lease_id);
-                                }}
-                              >
-                                <EditIcon />
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      </>
-                    ))}
-                  </tbody>
+                            </td>
+                          </tr>
+                        </>
+                      ))}
+                    </tbody>)}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>

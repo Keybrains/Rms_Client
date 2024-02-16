@@ -74,9 +74,10 @@ const Vendor = () => {
         `${baseUrl}/vendor/vendors/${accessType.admin_id}`
       );
       setLoader(false);
-      setVendorData(response.data.data);
-      setTotalPages(Math.ceil(response.data.data.length / pageItem));
-      // //console.log(response.data.data);
+      if (response.data.statusCode === 200) {
+        setVendorData(response.data.data);
+        setTotalPages(Math.ceil(response.data.data.length / pageItem));
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -351,32 +352,41 @@ const Vendor = () => {
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {filterTenantsBySearchAndPage()?.map((vendor) => (
-                      <tr key={vendor.vendor_id}>
-                        <td>{vendor.vendor_name}</td>
-                        <td>{vendor.vendor_phoneNumber}</td>
-                        <td>{vendor.vendor_email}</td>
-                        <td>
-                          <div style={{ display: "flex", gap: "5px" }}>
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={() => deleteVendor(vendor.vendor_id)}
-                            >
-                              <DeleteIcon />
-                            </div>
-                            &nbsp; &nbsp;
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={() => editVendor(vendor.vendor_id)}
-                            >
-                              <EditIcon />
-                            </div>
-                          </div>
-                        </td>
+                  {vendorData?.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="4">No Vendors Added</td>
                       </tr>
-                    ))}
-                  </tbody>
+                    </tbody>
+                  ) : (
+                    <tbody>
+                      {filterTenantsBySearchAndPage()?.map((vendor) => (
+                        <tr key={vendor.vendor_id}>
+                          <td>{vendor.vendor_name}</td>
+                          <td>{vendor.vendor_phoneNumber}</td>
+                          <td>{vendor.vendor_email}</td>
+                          <td>
+                            <div style={{ display: "flex", gap: "5px" }}>
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={() => deleteVendor(vendor.vendor_id)}
+                              >
+                                <DeleteIcon />
+                              </div>
+                              &nbsp; &nbsp;
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={() => editVendor(vendor.vendor_id)}
+                              >
+                                <EditIcon />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  )}
+
                 </Table>
                 {paginatedData?.length > 0 ? (
                   <Row>

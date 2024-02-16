@@ -725,6 +725,13 @@ const PropertiesTables = () => {
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
+                  {rentalsData.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="5"style={{fontSize:"15px"}}>No Properties Added</td>
+                      </tr>
+                    </tbody>
+                    ) : (
                   <tbody>
                     {filterRentalsBySearchAndPage()?.map((Rental) => (
                       <>
@@ -831,7 +838,7 @@ const PropertiesTables = () => {
                         </tr> */}
                       </>
                     ))}
-                  </tbody>
+                  </tbody>)}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>

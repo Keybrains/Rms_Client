@@ -397,8 +397,17 @@ const Workorder = () => {
                       <th scope="col">Updated At</th>
                       <th scope="col">ACTION</th>
                     </tr>
-                  </thead>
+                  </thead> 
+                  {workData.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="7"style={{fontSize:"15px"}}>No Workorder Added</td>
+                      </tr>
+                    </tbody>
+                    ) : (
+
                   <tbody>
+
                     {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
                         key={rental.workOrder_id}
@@ -444,7 +453,7 @@ const Workorder = () => {
                         </td>
                       </tr>
                     ))}
-                  </tbody>
+                  </tbody>)}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>
