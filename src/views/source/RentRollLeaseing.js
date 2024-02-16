@@ -298,25 +298,25 @@ const RentRollLeaseing = () => {
     },
   });
 
-  let paymentFormik = useFormik({
-    initialValues: { card_number: "", exp_date: "", paymentMethod: "" },
-    validationSchema: yup.object({
-      paymentMethod: yup.string().required("Payment Method Required"),
-      card_number: yup
-        .number()
-        .required("Required")
-        .typeError("Must be a number")
-        .test(
-          "is-size-16",
-          "Card Number must be 16 digits",
-          (val) => val?.toString().length === 16
-        ),
-      exp_date: yup
-        .string()
-        .matches(/^(0[1-9]|1[0-2])\/[0-9]{4}$/, "Invalid date format (MM/YYYY)")
-        .required("Required"),
-    }),
-  });
+  // let paymentFormik = useFormik({
+  //   initialValues: { card_number: "", exp_date: "", paymentMethod: "" },
+  //   validationSchema: yup.object({
+  //     paymentMethod: yup.string().required("Payment Method Required"),
+  //     card_number: yup
+  //       .number()
+  //       .required("Required")
+  //       .typeError("Must be a number")
+  //       .test(
+  //         "is-size-16",
+  //         "Card Number must be 16 digits",
+  //         (val) => val?.toString().length === 16
+  //       ),
+  //     exp_date: yup
+  //       .string()
+  //       .matches(/^(0[1-9]|1[0-2])\/[0-9]{4}$/, "Invalid date format (MM/YYYY)")
+  //       .required("Required"),
+  //   }),
+  // });
 
   const tenantFormik = useFormik({
     initialValues: {
@@ -392,15 +392,15 @@ const RentRollLeaseing = () => {
 
   // kp-----------------------
 
-  const openCardForm = () => {
-    console.log("Opening card form"); // Add this line
-    setIsModalOpen(true);
-  };
+  // const openCardForm = () => {
+  //   console.log("Opening card form"); // Add this line
+  //   setIsModalOpen(true);
+  // };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const closeModal = () => {
+  //   setIsModalOpen(false);
+  // };
+  // const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { tenantId, entryIndex } = useParams();
 
@@ -786,10 +786,13 @@ const RentRollLeaseing = () => {
           toast.warning(res.data.message, {
             position: "top-center",
           });
+          return;
         }
-        return res.data.statusCode;
+        if (res.data.statusCode === 200) {
+          return res.data.statusCode;
+        }
       } else {
-        return 400;
+        return 200;
       }
     } catch (error) {
       console.error("Error :", error.message);
@@ -1006,9 +1009,9 @@ const RentRollLeaseing = () => {
                                   {property.rental_adress}
                                 </DropdownItem>
                               ))}
-                              <DropdownItem onClick={() => openCardForm()}>
+                              {/* <DropdownItem onClick={() => openCardForm()}>
                                 hie
-                              </DropdownItem>
+                              </DropdownItem> */}
                             </DropdownMenu>
                             {leaseFormik.errors &&
                             leaseFormik.errors?.rental_id &&
@@ -2634,6 +2637,7 @@ const RentRollLeaseing = () => {
                                             </Col>
                                             <Col lg="4">
                                               <FormGroup>
+                                                .{" "}
                                                 <label
                                                   className="form-control-label"
                                                   htmlFor="input-country"
@@ -3672,9 +3676,9 @@ const RentRollLeaseing = () => {
                     </FormGroup>
                   </Row>
 
-                  <hr />
+                  {/* <hr /> */}
 
-                  <Row>
+                  {/* <Row>
                     <Col md="12">
                       <FormGroup>
                         <label
@@ -3801,7 +3805,7 @@ const RentRollLeaseing = () => {
                         </Row>
                       </>
                     ) : null}
-                  </Col>
+                  </Col> */}
                   {loader ? (
                     <button
                       type="submit"
@@ -3879,7 +3883,7 @@ const RentRollLeaseing = () => {
           </Col>
         </Row>
 
-        <Modal isOpen={isModalOpen} toggle={closeModal}>
+        {/* <Modal isOpen={isModalOpen} toggle={closeModal}>
           <ModalHeader toggle={closeModal} className="bg-secondary text-white">
             <strong style={{ fontSize: 18 }}>Add new Properties</strong>
           </ModalHeader>
@@ -3890,7 +3894,7 @@ const RentRollLeaseing = () => {
               // getCreditCard={getCreditCard}
             />
           </ModalBody>
-        </Modal>
+        </Modal> */}
         <ToastContainer />
       </Container>
     </>

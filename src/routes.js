@@ -690,7 +690,7 @@ var routes = [
     layout: "/superadmin",
   },
   {
-    path: "/Planpurches",
+    path: "/Planpurchases",
     name: "Purchase Plan",
     component: <Planpurches />,
     layout: "/admin",

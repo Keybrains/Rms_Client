@@ -32,7 +32,7 @@ const SuperAdmin = (props) => {
     });
   };
 
-  const getBrandText = (path) => {
+  const getBrandText = () => {
     for (let i = 0; i < routes.length; i++) {
       if (
         props?.location?.pathname.indexOf(routes[i].layout + routes[i].path) !==
@@ -62,7 +62,7 @@ const SuperAdmin = (props) => {
         />
         <Routes>
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/superadmin" replace />} />
+          <Route path="*" element={<Navigate to="/superadmin/dashboard" replace />} />
         </Routes>
         <Container fluid>{/* <AdminFooter /> */}</Container>
       </div>

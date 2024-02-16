@@ -238,7 +238,7 @@ const Index = (props) => {
           <Col
             xl="3"
             onClick={() => {
-              navigate("/" + admin + "/propertiesTable");
+              navigate("/" + admin + "/RentalownerTable");
             }}
           >
             <Card

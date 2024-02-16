@@ -2251,7 +2251,7 @@ const PropDetails = () => {
                                         marginTop: "5px",
                                       }}
                                       onClick={() => {
-                                        navigate(`/${admin}/Leaseing`);
+                                        navigate(`/${admin}/RentRollLeaseing`);
                                       }}
                                     >
                                       Add Lease

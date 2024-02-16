@@ -70,22 +70,24 @@ function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
   const navigate = useNavigate();
 
-    const handleLoginButtonClick = async () => {
-      try {
-        // Make an HTTP request to your API endpoint with the adminId
-        await axios.get(`https://rms-saas-server.vercel.app/api/test/${row.admin_id}`);
-        console.log('API called successfully');
-      } catch (error) {
-        console.error('Error occurred while calling API:', error);
-      }
-    };
+  const handleLoginButtonClick = async () => {
+    try {
+      // Make an HTTP request to your API endpoint with the adminId
+      await axios.get(
+        `https://rms-saas-server.vercel.app/api/test/${row.admin_id}`
+      );
+      console.log("API called successfully");
+    } catch (error) {
+      console.error("Error occurred while calling API:", error);
+    }
+  };
 
   return (
     <React.Fragment>
       <TableRow
         hover
         onClick={(event) => {
-          handleClick(event, row.admin_id);
+          // handleClick(event, row.admin_id);
           navigate(`/superadmin/staffmember/${row?.admin_id}`);
         }}
         style={{ cursor: "pointer" }}
@@ -98,6 +100,10 @@ function Rows(props) {
           <Checkbox
             color="primary"
             checked={isItemSelected}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleClick(event, row.admin_id);
+            }}
             inputProps={{
               "aria-labelledby": labelId,
             }}
@@ -131,7 +137,8 @@ function Rows(props) {
 }
 
 export default function Admin() {
-  const baseUrl = process.env.REACT_APP_BASE_URL;  const [accessType, setAccessType] = useState();
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const [accessType, setAccessType] = useState();
   const navigate = useNavigate();
   useEffect(() => {
     if (localStorage.getItem("token")) {
