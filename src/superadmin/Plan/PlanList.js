@@ -46,7 +46,6 @@ import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 // import ArrowDownLineIcon from "@rsuite/icons/ArrowDownLine";
 // import ArrowUpLineIcon from "@rsuite/icons/ArrowUpLine";
-
 import { Col, Container, Row } from "reactstrap";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
@@ -263,10 +262,9 @@ export default function PlanList() {
         selected.slice(selectedIndex + 1)
       );
     }
-
     setSelected(newSelected);
   };
-
+  
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Delete selected
@@ -297,7 +295,6 @@ export default function PlanList() {
     });
   };
 
-  //
   // Searchbar
   const [searchLoader, setSearchLoader] = useState(false);
   let handleSearchData = async (values) => {

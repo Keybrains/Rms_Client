@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import * as yup from "yup";
+import { useFormik } from "formik";
 import axios from "axios";
 import Header from "components/Headers/Header";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +20,7 @@ import {
   Container,
   Row,
   Col,
+  UncontrolledDropdown,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
@@ -26,6 +29,7 @@ import {
   Table,
   ModalHeader,
   ModalBody,
+  ModalFooter,
   Modal,
 } from "reactstrap";
 import Box from "@mui/material/Box";
@@ -64,7 +68,7 @@ import Img from "assets/img/theme/team-4-800x800.jpg";
 import { useLocation } from "react-router-dom";
 import moment from "moment";
 import "./Leaseing.css";
-//import CreditCardForm from "./CreditCardForm";
+import CreditCardForm from "./CreditCardForm";
 
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -87,6 +91,158 @@ const RentRollDetail = () => {
   const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
   const [loader, setLoader] = React.useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const [isModalsOpen, setIsModalsOpen] = useState(false);
+  const [isRefundOpen, setIsRefundOpen] = useState(false);
+  const [customervault, setCustomervault] = useState([]);
+  const [paymentLoader, setPaymentLoader] = useState(false);
+  const [cardDetalis, setCardDetails] = useState([]);
+  const [isBilling, setIsBilling] = useState(false);
+  const [vaultId, setVaultId] = useState(false);
+
+  const openCardForm = () => {
+    setIsModalsOpen(true);
+  };
+
+  const closeModals = () => {
+    setIsModalsOpen(false);
+    getCreditCard();
+    getMultipleCustomerVault();
+  };
+
+  const closeRefund = () => {
+    setIsRefundOpen(false);
+    // getCreditCard();
+    // getMultipleCustomerVault();
+  };
+
+  const getCreditCard = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/creditcard/getCreditCards/${tenantId}`
+      );
+      setCustomervault(response.data);
+      setVaultId(response.data.customer_vault_id);
+      getMultipleCustomerVault(response.data.customer_vault_id);
+
+      const hasCustomerVaultId = response.data.some(
+        (card) => card.customer_vault_id
+      );
+
+      if (hasCustomerVaultId) {
+        setIsBilling(true);
+      } else {
+        setIsBilling(false);
+      }
+    } catch (error) {
+      console.error("Error fetching credit card details:", error);
+      setIsBilling(false);
+    }
+  };
+
+  const getMultipleCustomerVault = async (customerVaultIds) => {
+    try {
+      setPaymentLoader(true);
+      if (customerVaultIds.length === 0) {
+        setCardDetails([]);
+        return;
+      }
+
+      const response = await axios.post(
+        `${baseUrl}/nmipayment/get-billing-customer-vault`,
+        {
+          customer_vault_id: customerVaultIds,
+        }
+      );
+
+      // Check if customer.billing is an array
+      const billingData = response.data.data.customer.billing;
+
+      if (Array.isArray(billingData)) {
+        const extractedData = billingData.map((item) => ({
+          billing_id: item["@attributes"].id,
+          cc_number: item.cc_number,
+          cc_exp: item.cc_exp,
+          cc_type: item.cc_type,
+          customer_vault_id: item.customer_vault_id,
+        }));
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+      } else if (billingData) {
+        // If there's only one record, create an array with a single item
+        const extractedData = [
+          {
+            billing_id: billingData["@attributes"].id,
+            cc_number: billingData.cc_number,
+            cc_exp: billingData.cc_exp,
+            cc_type: billingData.cc_type,
+            customer_vault_id: billingData.customer_vault_id,
+          },
+        ];
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+        console.log("objectss", extractedData);
+      } else {
+        console.error(
+          "Invalid response structure - customer.billing is not an array"
+        );
+        setPaymentLoader(false);
+        setCardDetails([]);
+      }
+    } catch (error) {
+      console.error("Error fetching multiple customer vault records:", error);
+      setPaymentLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    getCreditCard();
+  }, [tenantId]);
+
+  useEffect(() => {
+    // Extract customer_vault_id values from cardDetails
+    const customerVaultIds =
+      customervault?.card_detail?.map((card) => card.billing_id) || [];
+
+    if (customerVaultIds.length > 0) {
+      // Call the API to get multiple customer vault records
+      getMultipleCustomerVault(customerVaultIds);
+    }
+  }, [customervault]);
+
+  const handleDeleteCard = async (customerVaultId, billingId) => {
+    try {
+      // Make parallel requests to delete from your record and NMI
+      const [deleteRecordResponse, deleteNMIResponse] = await Promise.all([
+        axios.delete(`${baseUrl}/creditcard/deleteCreditCard/${billingId}`),
+        axios.post(`${baseUrl}/nmipayment/delete-customer-billing`, {
+          customer_vault_id: customerVaultId,
+          billing_id: billingId,
+        }),
+      ]);
+
+      // Check the responses
+      if (
+        deleteRecordResponse.status === 200 &&
+        deleteNMIResponse.status === 200
+      ) {
+        swal("Success", "Card deleted successfully", "success");
+        getCreditCard(); // all vault id get from this function
+      } else {
+        // Handle errors, show a message, or log the error
+        console.error(
+          "Delete card failed:",
+          deleteRecordResponse.statusText,
+          deleteNMIResponse.statusText
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting card:", error.message);
+    }
+  };
+
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -675,16 +831,20 @@ const RentRollDetail = () => {
     const rentalfirstname =
       tenantDetails.tenant_firstName + " " + tenantDetails.tenant_lastName;
     doc.setFontSize(10);
-    doc.text(rentalfirstname, 15, 40);
-    const rentaladress = tenantDetails.entries.rental_adress;
+    doc.text("Name :", 15, 38);
+    doc.text(rentalfirstname, 15, 44);
+    const rentaladress = tenantDetails.entries.rental_adress +
+    " - " +
+    tenantDetails.entries.rental_units;
     doc.setFontSize(10);
-    doc.text(rentaladress, 15, 45);
-    const rentalunit =
-      tenantDetails.entries.rental_adress +
-      " - " +
-      tenantDetails.entries.rental_units;
-    doc.setFontSize(8);
-    doc.text(rentalunit, 15, 65);
+    doc.text("Property :", 15, 52);
+    doc.text(rentaladress, 15, 58);
+    // const rentalunit =
+    //   tenantDetails.entries.rental_adress +
+    //   " - " +
+    //   tenantDetails.entries.rental_units;
+    // doc.setFontSize(8);
+    // doc.text(rentalunit, 15, 65);
     doc.setFontSize(15);
     doc.text("Statement", 15, 72);
     const tableStartY = 75;
@@ -728,7 +888,6 @@ const RentRollDetail = () => {
           return ledgerDate >= start && ledgerDate <= end;
         }
       );
-
       console.log(filteredData, "filteredData");
     }
 
@@ -742,13 +901,15 @@ const RentRollDetail = () => {
             : entry.charge_type
             ? entry.charge_type
             : "N/A",
-          entry.memo || "N/A",
-          entry.type === "Charge" ? "$" + entry.amount : "-",
+          entry.status || "-",
+          entry.transactionid || "-",
+          entry.type === "Charge" || entry.type === "Refund" ? "$" + entry.amount : "-",
           entry.type === "Payment" ? "$" + entry.amount : "-",
           entry.Total ? "$" + entry.Total : "-",
         ];
       }),
       [
+        "",
         "",
         "",
         "",
@@ -765,7 +926,7 @@ const RentRollDetail = () => {
     doc.autoTable({
       startY: tableStartY,
       head: [
-        ["Date", "Type", "Account", "Memo", "Increase", "Decrease", "Balance"],
+        ["Date", "Type", "Account", "Status","Transaction ID", "Increase", "Decrease", "Balance"],
       ],
       body: tableData,
       didDrawCell: (data) => {
@@ -843,6 +1004,189 @@ const RentRollDetail = () => {
   //   getCreditCard();
   // }, [tenantId]);
 
+  const [refund, setRefund] = useState(false);
+  const [isEditable, setIsEditable] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [showOptionsId, setShowOptionsId] = useState("");
+  const [actionType, setActionType] = useState("");
+  const [ResponseData, setResponseData] = useState("");
+
+  const toggleOptions = (id) => {
+    setShowOptions(!showOptions);
+    setShowOptionsId(id);
+  };
+
+  const generalledgerFormik = useFormik({
+    initialValues: {
+      date: "",
+      rental_adress: "",
+      tenant_id: "",
+      entryIndex: "",
+      amount: "",
+      payment_type: "",
+      customer_vault_id: "",
+      billing_id: "",
+      creditcard_number: "",
+      expiration_date: "",
+      cvv: "",
+      tenant_firstName: "",
+      tenant_lastName: "",
+      email_name: "",
+      memo: "",
+      entries: [
+        {
+          paymentIndex: "",
+          account: "",
+          amount: "",
+          balance: "",
+        },
+      ],
+      attachment: "",
+      total_amount: "",
+      response: "",
+      responsetext: "",
+      authcode: "",
+      transactionid: "",
+      avsresponse: "",
+      cvvresponse: "",
+      type2: "",
+      response_code: "",
+      cc_type: "",
+    },
+    validationSchema: yup.object({
+      date: yup.string().required("Required"),
+      amount: yup.string().required("Required"),
+      payment_type: yup.string().required("Required"),
+      entries: yup.array().of(
+        yup.object().shape({
+          account: yup.string().required("Required"),
+          // balance: yup.number().required("Required"),
+          amount: yup.number().required("Required"),
+        })
+      ),
+    }),
+    onSubmit: (values) => {
+      //handleRefundClick();
+      // if (Number(generalledgerFormik.values.amount) === Number(total_amount)) {
+      // handleSubmit(values);
+      // }
+    },
+  });
+  console.log("object", generalledgerFormik.values);
+  const fetchData = async (id) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/payment_charge/get_entry/${id}`
+      );
+      if (response.data.statusCode === 200) {
+        // setFile(response.data.data.charges_attachment);
+        setResponseData(response.data.data);
+        generalledgerFormik.setValues({
+          date: response.data.data.date,
+          amount: response.data.data.amount,
+          payment_type: response.data.data.payment_type,
+          customer_vault_id: response.data.data.customer_vault_id,
+          billing_id: response.data.data.billing_id,
+          charges_attachment: response.data.data.charges_attachment,
+          memo: response.data.data.memo,
+          entries: [
+            {
+              account: response.data.data.account || "",
+              amount: response.data.data.amount || "",
+              balance: response.data.data.amount || "",
+            },
+          ],
+        });
+        // setSelectedRec(response.data.data.tenant_firstName && response.data.data.tenant_lastName )
+        // setSelectedCreditCard(response.data.data.billing_id)
+        // setSelectedProp(response.data.data.payment_type)
+        console.log("meet", id);
+        console.log("meet", response.data);
+      } else {
+        console.error("Error:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [id]);
+  console.log("response data=======", ResponseData);
+
+  const handleRefundClick = async () => {
+    try {
+      setPaymentLoader(true);
+      // Assuming 'item' is a prop or state variable
+      const { _id, payment_type, transactionid } = ResponseData;
+      const commonData = {
+        transactionId: ResponseData.transactionid,
+        customer_vault_id: ResponseData.customer_vault_id,
+        billing_id: ResponseData.billing_id,
+        amount: generalledgerFormik.values.amount,
+        payment_type: ResponseData.payment_type,
+        date: generalledgerFormik.values.date,
+        total_amount: generalledgerFormik.values.amount,
+        tenant_firstName: ResponseData.tenant_firstName,
+        tenant_lastName: ResponseData.tenant_lastName,
+        tenant_id: ResponseData.tenant_id,
+        email_name: ResponseData.email_name,
+        account: ResponseData.account,
+        type: ResponseData.type,
+        // memo: generalledgerFormik.values.memo,
+        // cvv: ResponseData.cvv,
+        _id: ResponseData._id,
+        rental_adress: ResponseData.rental_adress,
+        //unit: ResponseData.unit,
+      };
+      console.log("comman data=======", commonData);
+
+      if (payment_type === "Credit Card") {
+        const response = await axios.post(`${baseUrl}/nmipayment/new-refund`, {
+          refundDetails: commonData,
+        });
+        if (response.data.status === 200) {
+          swal("Success!", response.data.data, "success");
+          await getGeneralLedgerData();
+          closeRefund();
+        } else if (response.data.status === 201) {
+          swal("Warning!", response.data.data.error, "warning");
+        } else {
+          console.error("Failed to process refund:", response.statusText);
+        }
+      } else if (payment_type === "Cash" || payment_type === "Check") {
+        const response = await axios.post(
+          `${baseUrl}/nmipayment/new-manual-refund/${_id}`,
+          {
+            refundDetails: commonData,
+          }
+        );
+
+        if (response.data.statusCode === 200) {
+          //await setRefund(false);
+          swal("Success!", response.data.message, "success");
+          await getGeneralLedgerData();
+          closeRefund();
+        } else {
+          swal("Warning!", response.statusText, "warning");
+          console.error("Failed to process refund:", response.statusText);
+        }
+      } else {
+        console.log(
+          "Refund is only available for Credit Card, Cash, or Check payments."
+        );
+      }
+    } catch (error) {
+      if (error?.response?.data?.statusCode === 400) {
+        swal("Warning!", error.response.data.message, "warning");
+      }
+      console.error("Error:", error);
+    } finally {
+      setPaymentLoader(false);
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -851,7 +1195,7 @@ const RentRollDetail = () => {
           <Col xs="12" sm="6">
             <FormGroup className="">
               {loading ? (
-                <tbody> 
+                <tbody>
                   <tr>
                     <td></td>
                   </tr>
@@ -1257,37 +1601,53 @@ const RentRollDetail = () => {
                                     </div>
                                   </CardContent>
                                 </Card>
-                                {/* <Card
-                                  className="w-100 mt-3"
-                                  style={{ background: "#F4F6FF" }}
+
+                                <Card
+                                  className="mt-1"
+                                  style={{
+                                    background: "#F4F6FF",
+                                    maxWidth: "500px",
+                                    height: "530px",
+                                    overflowY: "auto",
+                                    overflowX: "hidden",
+                                  }}
                                 >
                                   <CardContent>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "column",
+                                    <Typography
+                                      sx={{
+                                        fontSize: 17,
+                                        fontWeight: "bold",
+                                        fontFamily: "Arial",
+                                        textTransform: "capitalize",
+                                        marginRight: "10px",
                                       }}
+                                      color="text.secondary"
+                                      gutterBottom
                                     >
-                                      <Typography
-                                        sx={{
-                                          fontSize: 15,
-                                          fontWeight: "bold",
-                                          fontFamily: "Arial",
-                                          textTransform: "capitalize",
-                                          marginRight: "10px",
-                                        }}
-                                        color="text.secondary"
-                                        gutterBottom
+                                      Credit Cards
+                                    </Typography>
+                                    {/* Card Details */}
+                                    {paymentLoader ? (
+                                      <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                                        <RotatingLines
+                                          strokeColor="grey"
+                                          strokeWidth="5"
+                                          animationDuration="0.75"
+                                          width="50"
+                                          visible={paymentLoader}
+                                        />
+                                      </div>
+                                    ) : cardDetalis &&
+                                      cardDetalis.length > 0 ? (
+                                      <Table
+                                        responsive
+                                        style={{ overflowX: "hidden" }}
                                       >
-                                        Credit Cards
-                                      </Typography>
-                                    </div>
-                                    {cardDetalis && cardDetalis.length > 0 && (
-                                      <Table responsive>
                                         <tbody>
                                           <tr>
                                             <th>Card Number</th>
-                                             <th>Expiration Date</th> 
+                                            <th>Card Type</th>
+                                            <th></th>
                                           </tr>
                                           {cardDetalis.map((item, index) => (
                                             <tr
@@ -1307,16 +1667,11 @@ const RentRollDetail = () => {
                                                   color="text.secondary"
                                                   gutterBottom
                                                 >
-                                                  {item.card_number.slice(
-                                                    0,
-                                                    4
-                                                  ) +
-                                                    "*".repeat(8) +
-                                                    item.card_number.slice(-4)}
+                                                  {item.cc_number}
                                                 </Typography>
                                               </td>
                                               <td>
-                                                {/* <Typography
+                                                <Typography
                                                   sx={{
                                                     fontSize: 14,
                                                     marginRight: "10px",
@@ -1324,13 +1679,57 @@ const RentRollDetail = () => {
                                                   color="text.secondary"
                                                   gutterBottom
                                                 >
-                                                  {item.exp_date}
-                                                </Typography> 
+                                                  {item.cc_type}
+                                                  {item.cc_type && (
+                                                    <img
+                                                      src={`https://logo.clearbit.com/${item.cc_type.toLowerCase()}.com`}
+                                                      alt={`${item.cc_type} Logo`}
+                                                      style={{
+                                                        width: "40%",
+                                                        marginLeft: "10%",
+                                                      }}
+                                                    />
+                                                  )}
+                                                </Typography>
+                                              </td>
+                                              <td>
+                                                <div
+                                                  style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                  }}
+                                                >
+                                                  <DeleteIcon
+                                                    onClick={() =>
+                                                      handleDeleteCard(
+                                                        item.customer_vault_id,
+                                                        item.billing_id
+                                                      )
+                                                    }
+                                                    style={{
+                                                      cursor: "pointer",
+                                                      marginRight: "5px",
+                                                    }}
+                                                  />
+                                                  {/* <EditIcon
+                              onClick={() =>
+                                getEditData(item.customer_vault_id)
+                              }
+                              style={{ cursor: "pointer" }}
+                            /> */}
+                                                </div>
                                               </td>
                                             </tr>
                                           ))}
                                         </tbody>
                                       </Table>
+                                    ) : (
+                                      <Typography
+                                        variant="body1"
+                                        color="text.secondary"
+                                      >
+                                        No cards added.
+                                      </Typography>
                                     )}
 
                                     <div
@@ -1353,7 +1752,7 @@ const RentRollDetail = () => {
                                       </Button>
                                     </div>
                                   </CardContent>
-                                </Card> */}
+                                </Card>
                               </div>
                             </div>
                           </div>
@@ -1479,8 +1878,8 @@ const RentRollDetail = () => {
                                   <tr>
                                     <th scope="col">Date</th>
                                     <th scope="col">Type</th>
+                                    <th scope="col">Transaction</th>
                                     <th scope="col">Account</th>
-                                    <th scope="col">Memo</th>
                                     <th scope="col">Increase</th>
                                     <th scope="col">Decrease</th>
                                     <th scope="col">Balance</th>
@@ -1492,19 +1891,41 @@ const RentRollDetail = () => {
                                     GeneralLedgerData?.paymentAndCharges?.map(
                                       (generalledger) => (
                                         <>
-                                          {console.log(
-                                            GeneralLedgerData,
-                                            "GeneralLedgerData"
-                                          )}
                                           <tr key={`${generalledger._id}`}>
                                             <td>{generalledger.date || "-"}</td>
                                             <td>{generalledger.type || "-"}</td>
+
+                                            <td
+                                              style={{
+                                                color:
+                                                 ( generalledger.type ===
+                                                  "Payment" && generalledger.status === "Success")
+                                                    ? "#50975E"
+                                                    :  ( generalledger.type ===
+                                                      "Refund" && generalledger.status === "Success")
+                                                    ? "#ffc40c"
+                                                    :  (generalledger.status === "Failure")
+                                                    ? "#AA3322"
+                                                    : "inherit",
+                                                fontWeight: "bold",
+                                              }}
+                                            >
+                                              {generalledger.status &&
+                                              generalledger.payment_type
+                                                ? `Manual ${generalledger.type} ${generalledger.status} for ${generalledger.payment_type}`
+                                                : "- - - - - - - - - - - - - - - - -"}
+                                              {generalledger.transactionid
+                                                ? ` (#${generalledger.transactionid})`
+                                                : ""}
+                                            </td>
+
                                             <td>
                                               {generalledger.account || "-"}
                                             </td>
-                                            <td>{generalledger.memo || "-"}</td>
                                             <td>
-                                              {generalledger.type === "Charge"
+                                              {generalledger.type ===
+                                                "Charge" ||
+                                              generalledger.type === "Refund"
                                                 ? "$" + generalledger.amount
                                                 : "-"}
                                             </td>
@@ -1528,13 +1949,7 @@ const RentRollDetail = () => {
                                                 )} */}
                                             </td>
                                             <td>
-                                              <div
-                                                style={{
-                                                  display: "flex",
-                                                  gap: "5px",
-                                                }}
-                                              >
-                                                {generalledger.type ===
+                                              {/* {generalledger.type ===
                                                   "Charge" && (
                                                   <div
                                                     style={{
@@ -1585,6 +2000,105 @@ const RentRollDetail = () => {
                                                     }}
                                                   >
                                                     <EditIcon />
+                                                  </div>
+                                                )} */}
+                                              <div
+                                                style={{
+                                                  display: "flex",
+                                                  gap: "5px",
+                                                }}
+                                              >
+                                                {generalledger?.status !==
+                                                  "Failure" &&
+                                                generalledger?.type !==
+                                                  "Refund" ? (
+                                                  <UncontrolledDropdown nav>
+                                                    <DropdownToggle
+                                                      className="pr-0"
+                                                      nav
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={() =>
+                                                        toggleOptions(
+                                                          generalledger?._id
+                                                        )
+                                                      }
+                                                    >
+                                                      <span
+                                                        className="avatar avatar-sm rounded-circle"
+                                                        style={{
+                                                          margin: "-20px",
+                                                          background:
+                                                            "transparent",
+                                                          color: "lightblue",
+                                                          fontWeight: "bold",
+                                                          border:
+                                                            "2px solid lightblue",
+                                                          padding: "10px",
+                                                          display: "flex",
+                                                          alignItems: "center",
+                                                          justifyContent:
+                                                            "center",
+                                                        }}
+                                                      >
+                                                        ...
+                                                      </span>
+                                                    </DropdownToggle>
+                                                    <DropdownMenu className="dropdown-menu-arrow">
+                                                      {generalledger?._id ===
+                                                        showOptionsId && (
+                                                        <div>
+                                                          {generalledger?.status ===
+                                                            "Success" && (
+                                                            <DropdownItem
+                                                              // style={{color:'black'}}
+                                                              onClick={() => {
+                                                                fetchData(
+                                                                  generalledger._id
+                                                                );
+                                                                setIsRefundOpen(
+                                                                  true
+                                                                );
+                                                                setRefund(true);
+                                                              }}
+                                                            >
+                                                              Refund
+                                                            </DropdownItem>
+                                                          )}
+                                                          {(generalledger?.status ===
+                                                            "Pending" ||
+                                                            generalledger?.payment_type ===
+                                                              "Cash" ||
+                                                            generalledger?.payment_type ===
+                                                              "Check" ||
+                                                            generalledger?.type ===
+                                                              "Charge") && (
+                                                            <DropdownItem
+                                                              tag="div"
+                                                              onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                editpayment(
+                                                                  generalledger._id
+                                                                );
+                                                              }}
+                                                            >
+                                                              Edit
+                                                            </DropdownItem>
+                                                          )}
+                                                        </div>
+                                                      )}
+                                                    </DropdownMenu>
+                                                  </UncontrolledDropdown>
+                                                ) : (
+                                                  <div
+                                                    style={{
+                                                      fontSize: "15px",
+                                                      fontWeight: "bolder",
+                                                      paddingLeft: "5px",
+                                                    }}
+                                                  >
+                                                    --
                                                   </div>
                                                 )}
                                               </div>
@@ -2162,18 +2676,147 @@ const RentRollDetail = () => {
         <br />
       </Container>
 
-      {/* <Modal isOpen={isModalOpen} toggle={closeModal} style={{ maxWidth: '950px'}}>
-        <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+      <Modal
+        isOpen={isRefundOpen}
+        toggle={closeRefund}
+        style={{ maxWidth: "1000px" }}
+      >
+        <ModalHeader toggle={closeRefund} className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Make Refund</strong>
+        </ModalHeader>
+
+        <Form>
+          <ModalBody>
+            <Row>
+              <Col lg="2">
+                <FormGroup>
+                  <label className="form-control-label" htmlFor="input-unitadd">
+                    Date
+                  </label>
+                  <Input
+                    className="form-control-alternative"
+                    id="input-unitadd"
+                    placeholder="3000"
+                    type="date"
+                    name="date"
+                    onBlur={generalledgerFormik.handleBlur}
+                    onChange={generalledgerFormik.handleChange}
+                    value={generalledgerFormik.values.date}
+                  />
+                  {generalledgerFormik.touched.date &&
+                  generalledgerFormik.errors.date ? (
+                    <div style={{ color: "red" }}>
+                      {generalledgerFormik.errors.date}
+                    </div>
+                  ) : null}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm="4">
+                <FormGroup>
+                  <label
+                    className="form-control-label"
+                    htmlFor="input-property"
+                  >
+                    Refund Amount *
+                  </label>
+                  <Input
+                    type="text"
+                    id="amount"
+                    placeholder="Enter amount"
+                    name="amount"
+                    onBlur={generalledgerFormik.handleBlur}
+                    onWheel={(e) => e.preventDefault()}
+                    onKeyDown={(event) => {
+                      if (!/[0-9]/.test(event.key)) {
+                        //event.preventDefault();
+                      }
+                    }}
+                    onChange={(e) => {
+                      const inputValue = e.target.value;
+                      const numericValue = inputValue.replace(/\D/g, "");
+                      generalledgerFormik.values.amount = numericValue;
+                      generalledgerFormik.handleChange({
+                        target: {
+                          name: "amount",
+                          value: numericValue,
+                        },
+                      });
+                    }}
+                    //-onChange={generalledgerFormik.handleChange}
+                    value={generalledgerFormik.values.amount}
+                    required
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col lg="3">
+                <FormGroup>
+                  <label className="form-control-label" htmlFor="input-unitadd">
+                    Memo
+                  </label>
+                  <Input
+                    className="form-control-alternative"
+                    id="input-unitadd"
+                    placeholder="if left blank, will show 'Payment'"
+                    type="text"
+                    name="memo"
+                    onBlur={generalledgerFormik.handleBlur}
+                    onChange={generalledgerFormik.handleChange}
+                    value={generalledgerFormik.values.memo}
+                  />
+
+                  {generalledgerFormik.touched.memo &&
+                  generalledgerFormik.errors.memo ? (
+                    <div style={{ color: "red" }}>
+                      {generalledgerFormik.errors.memo}
+                    </div>
+                  ) : null}
+                </FormGroup>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            {paymentLoader ? (
+              <Button disabled color="success" type="submit">
+                Loading
+              </Button>
+            ) : (
+              <Button
+                color="success"
+                type="submit"
+                onClick={(e) => {
+                  handleRefundClick();
+                  e.preventDefault();
+                }}
+              >
+                Make Refund
+              </Button>
+            )}
+            <Button onClick={closeRefund}>Cancel</Button>
+          </ModalFooter>
+        </Form>
+      </Modal>
+
+      <Modal
+        isOpen={isModalsOpen}
+        toggle={closeModals}
+        style={{ maxWidth: "1000px" }}
+      >
+        <ModalHeader toggle={closeModals} className="bg-secondary text-white">
           <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
         </ModalHeader>
         <ModalBody>
           <CreditCardForm
             tenantId={tenantId}
-            closeModal={closeModal}
+            closeModal={closeModals}
             //getCreditCard={getCreditCard}
           />
         </ModalBody>
-      </Modal> */}
+      </Modal>
     </div>
   );
 };

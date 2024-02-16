@@ -119,7 +119,6 @@ const AdminNavbar = (props) => {
         console.error("Error:", error);
       });
 
-
     // Continue with navigating to the details page
     navigate(`/admin/addworkorder/${workorder_id}`);
   };

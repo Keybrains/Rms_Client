@@ -64,6 +64,7 @@ import SuperAdminDashBoard from "../src/superadmin/Dashboard/DashBoard";
 import SuperAdminPlanList from "../src/superadmin/Plan/PlanList";
 import SuperAdminAdmin from "../src/superadmin/Admin/Admin";
 import Plans from "views/source/Plans";
+import Planpurches from "views/source/Planpurches"; 
 // import SuperAdminPropertyType from "../src/superadmin/Admin/PropertyType";
 // import SuperAdminStaffMember from "../src/superadmin/Admin/StaffMember";
 // import SuperAdminProperties from "../src/superadmin/Admin/Properties";
@@ -97,6 +98,11 @@ var routes = [
   {
     path: "/Plans",
     component: <Plans />,
+    layout: "/admin",
+  },
+  {
+    path: "/Purchase",
+    component: <Planpurches />,
     layout: "/admin",
   },
   {
@@ -190,8 +196,6 @@ var routes = [
     component: <Forgetmail />,
     layout: "/auth",
   },
-
-
   {
     path: "/RentRoll",
     name: "RentRoll",
