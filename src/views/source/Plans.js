@@ -82,12 +82,12 @@ function Plans() {
                   <hr />
                   <FeaturesList features={plan.features} />
                   <br />
-                 
                 </div>
                 <div className="text-center" style={{alignItems:'center'}}>
                 <Button
                     type="button"
                     className="btn btn-secondary first-button"
+                    onClick={("")}
                     style={{ background: "linear-gradient(87deg, #11cdef 0, #1171ef 100%)", color: "white",marginBottom:'10px'}}
                   >
                     Get Started

@@ -774,7 +774,6 @@ const TenantFinancial = () => {
   
   const [surchargePercentage, setSurchargePercentage] = useState();
 
-  // Calculate total amount after surcharge
 // Calculate total amount after surcharge
 const calculateTotalAmount = () => {
   const amount = parseFloat(financialFormik.values.amount) || 0;
@@ -788,9 +787,6 @@ const calculateTotalAmount = () => {
 
   return totalAmount;
 };
-
-
-  // const totalAmount = calculateTotalAmount();
 
   useEffect(() => {
     const totalAmount = calculateTotalAmount();
@@ -1583,123 +1579,6 @@ const calculateTotalAmount = () => {
               </FormGroup>
 
               {selectedPaymentType === "Credit Card" ? (
-                // <>
-                //   {isEditable === false ? (
-                //     <FormGroup>
-                //       <label
-                //         className="form-control-label"
-                //         htmlFor="input-property"
-                //       >
-                //         Card Number *
-                //       </label>
-                //       <InputGroup>
-                //         <Input
-                //           type="string"
-                //           id="card_number"
-                //           placeholder="0000 0000 0000 0000"
-                //           name="card_number"
-                //           value={financialFormik.values.card_number}
-                //           onBlur={financialFormik.handleBlur}
-                //           onChange={(e) => {
-                //             // const inputValue = e.target.value;
-                //             // const numericValue = inputValue.replace(/\D/g, ''); // Remove non-numeric characters
-                //             // const limitedValue = numericValue.slice(0, 12); // Limit to 12 digits
-                //             // // const formattedValue = formatCardNumber(limitedValue);
-                //             // e.target.value = limitedValue;
-                //             financialFormik.handleChange(e);
-                //           }}
-                //           required
-                //           disabled={refund === true}
-                //         />
-                //       </InputGroup>
-                //     </FormGroup>
-                //   ) : (
-                //     ""
-                //   )}
-                //   {isEditable === false ? (
-                // <Row>
-                //   <Col>
-                //     <FormGroup>
-                //       <label
-                //         className="form-control-label"
-                //         htmlFor="input-property"
-                //       >
-                //         Expiration Date *
-                //       </label>
-                //       <Input
-                //         type="text"
-                //         id="expiration_date"
-                //         name="expiration_date"
-                //         onBlur={financialFormik.handleBlur}
-                //         onChange={financialFormik.handleChange}
-                //         value={financialFormik.values.expiration_date}
-                //         placeholder="MM/YY"
-                //         required
-                //         disabled={refund === true}
-                //         onInput={(e) => {
-                //           let inputValue = e.target.value;
-                //           const numericValue = inputValue.replace(
-                //             /\D/g,
-                //             ""
-                //           );
-
-                //           if (numericValue.length > 2) {
-                //             const month = numericValue.substring(0, 2);
-                //             const year = numericValue.substring(2, 6);
-                //             e.target.value = `${month}/${year}`;
-                //           } else {
-                //             e.target.value = numericValue;
-                //           }
-
-                //           // Format the year to have a 4-digit length if more than 2 digits are entered
-                //           if (numericValue.length >= 3) {
-                //             const enteredYear = numericValue.substring(
-                //               2,
-                //               6
-                //             );
-                //             e.target.value = `${numericValue.substring(
-                //               0,
-                //               2
-                //             )}/${enteredYear}`;
-                //           }
-                //         }}
-                //       />
-                //     </FormGroup>
-                //   </Col>
-                // <Col>
-                //   <FormGroup>
-                //     <label
-                //       className="form-control-label"
-                //       htmlFor="input-property"
-                //     >
-                //       CVV *
-                //     </label>
-                //     <Input
-                //       type="number"
-                //       id="cvv"
-                //       placeholder="123"
-                //       name="cvv"
-                //       onBlur={financialFormik.handleBlur}
-                //       onChange={(e) => {
-                //         const inputValue = e.target.value;
-                //         if (/^\d{0,3}$/.test(inputValue)) {
-                //           // Only allow up to 3 digits
-                //           financialFormik.handleChange(e);
-                //         }
-                //       }}
-                //       value={financialFormik.values.cvv}
-                //       maxLength={3}
-                //       required
-                //       disabled={refund === true}
-                //     />
-                //   </FormGroup>
-                // </Col>
-                //     </Row>
-                //   ) : (
-                //     ""
-                //   )}
-                // </>
-
                 <>
                   {refund === false ? (
                  

@@ -5,6 +5,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
 import swal from "sweetalert";
+import { CardContent, Typography } from "@mui/material";
 import {
   Button,
   Card,
@@ -58,7 +59,6 @@ const AddPayment = () => {
   const [tenantid, setTenantid] = useState(""); // Add this line
   const [tenantentryIndex, setTenantentryindex] = useState(""); // Add this line
   const [printReceipt, setPrintReceipt] = useState(false);
-  // const [limitedValue,setLimitedValue]=useState(null);
 
   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
   const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
@@ -79,18 +79,27 @@ const AddPayment = () => {
     }
   }, [navigate]);
 
+  // const [selectedPaymentType, setSelectedPaymentType] = useState("");
+  // const handlePaymentTypeChange = (type) => {
+  //   setSelectedPaymentType(type);
+  //   generalledgerFormik.setFieldValue("paymentType", type);
+  // };
+
   const [selectedProp, setSelectedProp] = useState("Select Payment Method");
   const handlePropSelection = (propertyType) => {
     setSelectedProp(propertyType);
+    generalledgerFormik.setFieldValue("payment_type", propertyType);
   };
-
+  console.log("sss", selectedProp);
   const [selectedRec, setSelectedRec] = useState("Select Resident");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [mail, setMail] = useState("");
   const [property, setProperty] = useState(null);
 
   // console.log(generalledgerFormik.values,'sdfyggvbhjnkml')
   const handleRecieverSelection = (property) => {
     // setProperty(property);
-    console.log(property, "property");
     setSelectedRec(`${property.tenant_firstName} ${property.tenant_lastName}`);
     setTenantid(property._id); // Set the selected tenant's ID
     setTenantentryindex(property.entryIndex); // Set the selected tenant's entry index
@@ -105,11 +114,15 @@ const AddPayment = () => {
       tenant_id: "",
       entryIndex: "",
       amount: "",
-      payment_method: "",
+      payment_type: "",
+      customer_vault_id: "",
+      billing_id: "",
       creditcard_number: "",
       expiration_date: "",
       cvv: "",
       tenant_firstName: "",
+      tenant_lastName:"",
+      email_name:"",
       memo: "",
       entries: [
         {
@@ -121,10 +134,20 @@ const AddPayment = () => {
       ],
       attachment: "",
       total_amount: "",
+      response: "",
+      responsetext: "",
+      authcode: "",
+      transactionid: "",
+      avsresponse: "",
+      cvvresponse: "",
+      type2: "",
+      response_code: "",
+      cc_type: "",
     },
     validationSchema: yup.object({
       date: yup.string().required("Required"),
       amount: yup.string().required("Required"),
+      payment_type: yup.string().required("Required"),
       entries: yup.array().of(
         yup.object().shape({
           account: yup.string().required("Required"),
@@ -139,6 +162,7 @@ const AddPayment = () => {
       }
     },
   });
+  console.log("object", generalledgerFormik.values);
 
   const handleCloseButtonClick = () => {
     navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
@@ -252,6 +276,15 @@ const AddPayment = () => {
           setSelectedRec(
             `${tenantDatas.tenant_firstName} ${tenantDatas.tenant_lastName}`
           );
+          setFirstName(
+            `${tenantDatas.tenant_firstName}`
+          );
+          setLastName(
+            `${tenantDatas.tenant_lastName}`
+          );
+          setMail(
+            `${tenantDatas.tenant_email}`
+          );
           setTenantid(tenantDatas._id);
           getAllCharges(tenantDatas._id);
           setPropertyId(tenantDatas.entries.property_id);
@@ -292,6 +325,24 @@ const AddPayment = () => {
 
   const handleSubmit = async (values) => {
     setLoader(true);
+    let nmiResponse;
+    let status;
+    const financialDate = new Date(values.date);
+const currentDate = new Date();
+
+// Extract year, month, and day components separately
+const financialYear = financialDate.getFullYear();
+const financialMonth = financialDate.getMonth() + 1; // Months are zero-based, so add 1
+const financialDay = financialDate.getDate();
+
+const currentYear = currentDate.getFullYear();
+const currentMonth = currentDate.getMonth() + 1; // Months are zero-based, so add 1
+const currentDay = currentDate.getDate();
+
+// Combine year, month, and day components into a string representation of the date
+const financialDateString = financialYear + '-' + financialMonth + '-' + financialDay;
+const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
+
 
     if (Array.isArray(generalledgerFormik.values.attachment)) {
       for (const [
@@ -332,10 +383,8 @@ const AddPayment = () => {
     const updatedValues = {
       date: values.date,
       amount: values.amount,
-      payment_method: selectedProp,
+      payment_type: selectedProp,
       cvv: values.cvv,
-      expiration_date: values.expiration_date,
-      creditcard_number: values.creditcard_number,
       tenant_firstName: selectedRec,
       attachment: generalledgerFormik.values.attachment,
       rental_adress: rentalAddress,
@@ -361,29 +410,42 @@ const AddPayment = () => {
         `${baseUrl}/payment/add_payment`,
         updatedValues
       );
-
+      
       if (response.data.statusCode === 200) {
         if (selectedProp === "Credit Card") {
           try {
-            const url = `${baseUrl}/nmipayment/purchase`;
+            const creditCardDetails = cardDetalis.find(
+              (card) => card.billing_id === selectedCreditCard
+            );
+
+            if (creditCardDetails) {
+              values.customer_vault_id = vaultId;
+              values.billing_id = selectedCreditCard;
+            } else {
+              console.error(
+                "Credit card details not found for selected card:",
+                selectedCreditCard
+              );
+            }
+            const url = `${baseUrl}/nmipayment/new-sale`;
             const postObject = {
-              first_name: tenantData.tenant_firstName,
-              last_name: tenantData.tenant_lastName,
-              email_name: tenantData.tenant_email,
-              card_number: generalledgerFormik.values.creditcard_number,
+              first_name: firstName,
+              last_name: lastName,
+              email_name: mail,
+              customer_vault_id: values.customer_vault_id,
+              billing_id: values.billing_id,
+              surcharge: values.surcharge,
               amount: values.amount,
-              expiration_date: formatExpirationDate(values.expiration_date),
               cvv: values.cvv,
               tenantId: tenantData._id,
-              propertyId: tenantData?.entries?.property_id,
-              unitId: tenantData?.entries?.unit_id,
+              address1: rentalAddress,
             };
 
             const response = await axios.post(url, {
               paymentDetails: postObject,
             });
             if (response.data && response.data.statusCode === 100) {
-              console.log(response, "response.data");
+              nmiResponse = response.data.data;
             } else {
               console.error("Unexpected response format:", response.data);
               swal("", response.data.message, "error");
@@ -392,7 +454,7 @@ const AddPayment = () => {
             console.log(error);
           }
         }
-
+        
         const id = response.data.data._id;
         if (id) {
           const pdfResponse = await axios.get(
@@ -511,69 +573,169 @@ const AddPayment = () => {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
       }
+
+      // calling api of payment and charge 
       try {
-        const paymentObject = {
+       (
+          selectedProp === "Credit Card" &&
+          financialDate > currentDate
+        ) ? status = "Pending" : status= "Success"
+        // Construct payment charge object
+        const paymentObject =   (
+          selectedProp === "Credit Card" &&
+          financialDateString <= currentDateString
+        ) ?  {
+            properties: {
+                rental_adress: rentalAddress,
+                property_id: propertyId,
+            },
+            unit: [{
+                unit: (state && state.unit_name) || "",
+                unit_id: (state && state.unit_id) || "",
+                paymentAndCharges: [
+                    ...generalledgerFormik.values.entries.map((entry) => ({
+                        type: "Payment",
+                        account: entry.account,
+                        amount: parseFloat(entry.amount),
+                        rental_adress: rentAddress,
+                        rent_cycle: "",
+                        month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                        date: values.date,
+                        memo: values.charges_memo,
+                        payment_type: selectedProp,
+                        tenant_id: tenantid,
+                        charges_attachment: generalledgerFormik.values.attachment,
+                        tenant_firstName: firstName,
+                        tenant_lastName: lastName,
+                        email_name: mail,
+                        customer_vault_id: values.customer_vault_id,
+                        billing_id: values.billing_id,
+                        surcharge: values.surcharge,
+                        total_amount: totalAmount1,
+                        // Add NMI response data here
+                        response: nmiResponse.response,
+                        responsetext: nmiResponse.responsetext,
+                        authcode: nmiResponse.authcode,
+                        transactionid: nmiResponse.transactionid,
+                        avsresponse: nmiResponse.avsresponse,
+                        cvvresponse: nmiResponse.cvvresponse,
+                        type2: nmiResponse.type,
+                        response_code: nmiResponse.response_code,
+                        cc_type: nmiResponse.cc_type,
+                        cc_exp: nmiResponse.cc_exp,
+                        cc_number: nmiResponse.cc_number,
+                        status: status
+                    })),
+                    ...formikForAnotherData.values.entries
+                        .filter((entry) => parseFloat(entry.amount) !== 0)
+                        .map((entry) => ({
+                            type: "Payment",
+                            account: entry.account,
+                            amount: parseFloat(entry.amount),
+                            payment_type: selectedProp,
+                            rental_adress: rentAddress,
+                            rent_cycle: "",
+                            month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                            date: values.date,
+                            memo: values.charges_memo,
+                            charges_attachment: generalledgerFormik.values.attachment,
+                            tenant_id: tenantid,
+                            tenant_firstName: firstName,
+                        tenant_lastName: lastName,
+                        email_name: mail,
+                            customer_vault_id: values.customer_vault_id,
+                            billing_id: values.billing_id,
+                            surcharge: values.surcharge,
+                            total_amount: totalAmount1,
+                            // Add NMI response data here
+                            response: nmiResponse.response,
+                            responsetext: nmiResponse.responsetext,
+                            authcode: nmiResponse.authcode,
+                            transactionid: nmiResponse.transactionid,
+                            avsresponse: nmiResponse.avsresponse,
+                            cvvresponse: nmiResponse.cvvresponse,
+                            type2: nmiResponse.type,
+                            response_code: nmiResponse.response_code,
+                            cc_type: nmiResponse.cc_type,
+                            cc_exp: nmiResponse.cc_exp,
+                            cc_number: nmiResponse.cc_number,
+                            status: status
+                        })),
+                ],
+            }],
+        } : {
           properties: {
-            rental_adress: rentalAddress,
-            property_id: propertyId,
+              rental_adress: rentalAddress,
+              property_id: propertyId,
           },
-          unit: [
-            {
+          unit: [{
               unit: (state && state.unit_name) || "",
               unit_id: (state && state.unit_id) || "",
-
               paymentAndCharges: [
-                ...generalledgerFormik.values.entries.map((entry) => ({
-                  type: "Payment",
-                  account: entry.account,
-                  amount: parseFloat(entry.amount),
-                  rental_adress: rentAddress,
-                  rent_cycle: "",
-                  month_year:
-                    values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
-                  date: values.date,
-                  memo: values.charges_memo,
-                  tenant_id: tenantid,
-                  charges_attachment: generalledgerFormik.values.attachment,
-                  tenant_firstName: selectedRec,
-                })),
-                ...formikForAnotherData.values.entries
-                  .filter((entry) => parseFloat(entry.amount) !== 0) // Filter out entries with amount 0
-                  .map((entry) => ({
-                    type: "Payment",
-                    account: entry.account,
-                    amount: parseFloat(entry.amount),
-                    rental_adress: rentAddress,
-                    rent_cycle: "",
-                    month_year:
-                      values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
-                    date: values.date,
-                    memo: values.charges_memo,
-                    charges_attachment: generalledgerFormik.values.attachment,
-                    tenant_id: tenantid,
-                    tenant_firstName: selectedRec,
+                  ...generalledgerFormik.values.entries.map((entry) => ({
+                      type: "Payment",
+                      account: entry.account,
+                      amount: parseFloat(entry.amount),
+                      rental_adress: rentAddress,
+                      rent_cycle: "",
+                      month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                      date: values.date,
+                      memo: values.charges_memo,
+                      payment_type: selectedProp,
+                      tenant_id: tenantid,
+                      charges_attachment: generalledgerFormik.values.attachment,
+                      tenant_firstName: firstName,
+                        tenant_lastName: lastName,
+                        email_name: mail,
+                      customer_vault_id: values.customer_vault_id,
+                      billing_id: values.billing_id,
+                      surcharge: values.surcharge,
+                      total_amount: totalAmount1,
+                      status: status
                   })),
+                  ...formikForAnotherData.values.entries
+                      .filter((entry) => parseFloat(entry.amount) !== 0)
+                      .map((entry) => ({
+                          type: "Payment",
+                          account: entry.account,
+                          amount: parseFloat(entry.amount),
+                          payment_type: selectedProp,
+                          rental_adress: rentAddress,
+                          rent_cycle: "",
+                          month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                          date: values.date,
+                          memo: values.charges_memo,
+                          charges_attachment: generalledgerFormik.values.attachment,
+                          tenant_id: tenantid,
+                          tenant_firstName: firstName,
+                          tenant_lastName: lastName,
+                          email_name: mail,
+                          status: status,
+                          customer_vault_id: values.customer_vault_id,
+                          billing_id: values.billing_id,
+                          surcharge: values.surcharge,
+                          total_amount: totalAmount1,
+                      })),
               ],
-            },
-          ],
-        };
-        const url = `${baseUrl}/payment_charge/payment_charge`;
-        await axios
-          .post(url, paymentObject)
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } catch (error) {
-        console.error("Error:", error);
-        if (error.response) {
-          console.error("Response Data:", error.response.data);
-        }
+          }],
       }
+    
+        // Make API call to save payment charge
+        const url = `${baseUrl}/payment_charge/payment_charge`;
+        const res = await axios.post(url, paymentObject);
+        console.log(res);
     } catch (error) {
-      console.error("Error:", error);
+        console.error("Error:", error);
+        alert("Payment charge calling error...");
+        if (error.response) {
+            console.error("Response Data:", error.response.data);
+        }
+    }
+    
+   
+    } catch (error) {
+      alert("error in payment charge")
+      //console.error("Error:", error);
       if (error.response) {
         console.error("Response Data:", error.response.data);
       }
@@ -640,12 +802,11 @@ const AddPayment = () => {
     if (typeof item !== "string") {
       const url = URL.createObjectURL(item);
       window.open(url, "_blank");
-    }
-    else {
+    } else {
       window.open(item, "_blank");
     }
   };
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -657,6 +818,9 @@ const AddPayment = () => {
           generalledgerFormik.setValues({
             date: response.data.data.date,
             amount: response.data.data.amount,
+            payment_type: response.data.data.payment_type,
+            customer_vault_id: response.data.data.customer_vault_id,
+            billing_id: response.data.data.billing_id,
             charges_attachment: response.data.data.charges_attachment,
             memo: response.data.data.memo,
             entries: [
@@ -667,6 +831,9 @@ const AddPayment = () => {
               },
             ],
           });
+          setSelectedRec(response.data.data.tenant_firstName && response.data.data.tenant_lastName )
+          setSelectedCreditCard(response.data.data.billing_id)
+          setSelectedProp(response.data.data.payment_type)
         } else {
           console.error("Error:", response.data.message);
         }
@@ -713,7 +880,7 @@ const AddPayment = () => {
       const updatedValues = {
         date: values.date,
         amount: values.amount,
-        payment_method: selectedProp,
+        payment_type: selectedProp,
         debitcard_number: values.debitcard_number,
         tenant_firstName: selectedRec,
         attachment: generalledgerFormik.values.attachment,
@@ -864,7 +1031,7 @@ const AddPayment = () => {
   const difference =
     amount !== undefined && total_amount !== undefined
       ? Math.abs(amount - total_amount).toFixed(2)
-      : 0; // Default value if amount or total_amount is undefined
+      : 0;
 
   const popoverContent = (
     <Popover id="popover-content">
@@ -910,6 +1077,183 @@ const AddPayment = () => {
     fetchingOneTimeCharges();
   }, []);
 
+  // const [loader, setLoader] = React.useState(true);
+  const [cardLogo, setCardLogo] = useState("");
+
+  const fetchCardLogo = async (cardType) => {
+    try {
+      if (!cardType) {
+        throw new Error("Card type is undefined");
+      }
+
+      const response = await axios.get(
+        `https://logo.clearbit.com/${cardType.toLowerCase()}.com`
+      );
+      setCardLogo(response.config.url);
+    } catch (error) {
+      // Handle error (e.g., card type not found)
+      console.error("Error fetching card logo:", error);
+      setCardLogo("");
+    }
+  };
+
+  useEffect(() => {
+    fetchCardLogo();
+  }, []);
+
+  const [totalAmount1, setTotalAmount1] = useState();
+  const [surchargePercentage, setSurchargePercentage] = useState();
+  // Calculate total amount after surcharge
+  const calculateTotalAmount = () => {
+    const amount = parseFloat(generalledgerFormik.values.amount) || 0;
+    let totalAmount = amount;
+
+    if (selectedProp === "Credit Card") {
+      const surchargeAmount = (amount * surchargePercentage) / 100;
+      generalledgerFormik.setFieldValue("surcharge", surchargeAmount);
+      totalAmount += surchargeAmount;
+    }
+    return totalAmount;
+  };
+
+  useEffect(() => {
+    const totalAmount = calculateTotalAmount();
+    setTotalAmount1(totalAmount);
+  }, [generalledgerFormik.values.amount, surchargePercentage, selectedProp]);
+
+  const [customervault, setCustomervault] = useState([]);
+  const [cardDetalis, setCardDetails] = useState([]);
+  const [isBilling, setIsBilling] = useState(false);
+  const [vaultId, setVaultId] = useState(false);
+  const [paymentLoader, setPaymentLoader] = useState(false);
+  const [selectedCreditCard, setSelectedCreditCard] = useState(null);
+
+  const handleCreditCardSelection = (selectedCard) => {
+    generalledgerFormik.setValues({
+      ...generalledgerFormik.values,
+      //customer_vault_id: selectedCard.customer_vault_id,
+      billing_id: selectedCard.billing_id,
+    });
+
+    setSelectedCreditCard(selectedCard.billing_id);
+  };
+
+  const getCreditCard = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/creditcard/getCreditCards/${tenantId}`
+      );
+      setCustomervault(response.data);
+      setVaultId(response.data.customer_vault_id);
+      getMultipleCustomerVault(response.data.customer_vault_id);
+
+      const hasCustomerVaultId = response.data.some(
+        (card) => card.customer_vault_id
+      );
+
+      if (hasCustomerVaultId) {
+        setIsBilling(true);
+      } else {
+        setIsBilling(false);
+      }
+    } catch (error) {
+      console.error("Error fetching credit card details:", error);
+      setIsBilling(false);
+    }
+  };
+
+  const getMultipleCustomerVault = async (customerVaultIds) => {
+    try {
+      setPaymentLoader(true);
+      if (customerVaultIds.length === 0) {
+        setCardDetails([]);
+        return;
+      }
+
+      const response = await axios.post(
+        `${baseUrl}/nmipayment/get-billing-customer-vault`,
+        {
+          customer_vault_id: customerVaultIds,
+        }
+      );
+
+      // Check if customer.billing is an array
+      const billingData = response.data.data.customer.billing;
+
+      if (Array.isArray(billingData)) {
+        const extractedData = billingData.map((item) => ({
+          billing_id: item["@attributes"].id,
+          cc_number: item.cc_number,
+          cc_exp: item.cc_exp,
+          cc_type: item.cc_type,
+          customer_vault_id: item.customer_vault_id,
+        }));
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+      } else if (billingData) {
+        // If there's only one record, create an array with a single item
+        const extractedData = [
+          {
+            billing_id: billingData["@attributes"].id,
+            cc_number: billingData.cc_number,
+            cc_exp: billingData.cc_exp,
+            cc_type: billingData.cc_type,
+            customer_vault_id: billingData.customer_vault_id,
+          },
+        ];
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+        console.log("objectss", extractedData);
+      } else {
+        console.error(
+          "Invalid response structure - customer.billing is not an array"
+        );
+        setPaymentLoader(false);
+        setCardDetails([]);
+      }
+    } catch (error) {
+      console.error("Error fetching multiple customer vault records:", error);
+      setPaymentLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    getCreditCard();
+  }, [tenantId]);
+
+  useEffect(() => {
+    // Extract customer_vault_id values from cardDetails
+    const customerVaultIds =
+      customervault?.card_detail?.map((card) => card.billing_id) || [];
+
+    if (customerVaultIds.length > 0) {
+      // Call the API to get multiple customer vault records
+      getMultipleCustomerVault(customerVaultIds);
+    }
+  }, [customervault]);
+
+  // Fetch data from the API
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `${baseUrl}/surcharge/surcharge/65c2286de41c9056bb233a85`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+      const data = await response.json();
+      if (data.data) {
+        setSurchargePercentage(data.data.surcharge_percent);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <>
       <PaymentHeader />
@@ -937,7 +1281,7 @@ const AddPayment = () => {
                 </Row>
               </CardHeader>
               <CardBody>
-                <Form>
+              <Form>
                   <Row>
                     <Col lg="2">
                       <FormGroup>
@@ -963,6 +1307,45 @@ const AddPayment = () => {
                             {generalledgerFormik.errors.date}
                           </div>
                         ) : null}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col sm="4">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Amount *
+                        </label>
+                        <Input
+                          type="text"
+                          id="amount"
+                          placeholder="Enter amount"
+                          name="amount"
+                          onBlur={generalledgerFormik.handleBlur}
+                          onWheel={(e) => e.preventDefault()}
+                          onKeyDown={(event) => {
+                            if (!/[0-9]/.test(event.key)) {
+                              //event.preventDefault();
+                            }
+                          }}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            const numericValue = inputValue.replace(/\D/g, "");
+                            generalledgerFormik.values.amount = numericValue;
+                            generalledgerFormik.handleChange({
+                              target: {
+                                name: "amount",
+                                value: numericValue,
+                              },
+                            });
+                          }}
+                          //-onChange={generalledgerFormik.handleChange}
+                          value={generalledgerFormik.values.amount}
+                          required
+                        />
                       </FormGroup>
                     </Col>
                   </Row>
@@ -996,6 +1379,11 @@ const AddPayment = () => {
                               Credit Card
                             </DropdownItem>
                             <DropdownItem
+                              onClick={() => handlePropSelection("Check")}
+                            >
+                              Check
+                            </DropdownItem>
+                            <DropdownItem
                               onClick={() => handlePropSelection("Cash")}
                             >
                               Cash
@@ -1004,7 +1392,7 @@ const AddPayment = () => {
                         </Dropdown>
                       </FormGroup>
                     </Col>
-                    <Col sm="12">
+                    {/* <Col sm="12">
                       {selectedProp === "Credit Card" ? (
                         <>
                           <Row>
@@ -1240,7 +1628,210 @@ const AddPayment = () => {
                           </Row>
                         </>
                       )}
-                    </Col>
+                    </Col> */}
+                  </Row>
+                  <Row>
+                    {selectedProp === "Credit Card" ? (
+                      <>
+                        {/* {refund === false ? ( */}
+
+                        <Card
+                          className="w-100 mt-3"
+                          style={{ background: "#F4F6FF" }}
+                        >
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            Credit card transactions will charge{" "}
+                            <strong style={{ color: "blue" }}>
+                              {surchargePercentage}%
+                            </strong>
+                          </label>
+                          <CardContent>
+                            {/* Card Details */}
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: 15,
+                                  fontWeight: "bold",
+                                  fontFamily: "Arial",
+                                  textTransform: "capitalize",
+                                  marginRight: "10px",
+                                }}
+                                color="text.secondary"
+                                gutterBottom
+                              >
+                                Credit Cards
+                              </Typography>
+                            </div>
+                            {cardDetalis && cardDetalis.length > 0 && (
+                              <Table responsive>
+                                <tbody>
+                                  <tr>
+                                    <th>Select</th>
+                                    <th>Card Number</th>
+                                    <th>Card Type</th>
+                                    <th></th>
+                                  </tr>
+                                  {cardDetalis.map((item, index) => (
+                                    <tr
+                                      key={index}
+                                      style={{ marginBottom: "10px" }}
+                                    >
+                                      <td>
+                                        <input
+                                          type="checkbox"
+                                          checked={
+                                            selectedCreditCard ==
+                                            item.billing_id
+                                          }
+                                          onChange={() =>
+                                            handleCreditCardSelection(item)
+                                          }
+                                        />
+                                      </td>
+                                      <td>
+                                        <Typography
+                                          sx={{
+                                            fontSize: 14,
+                                            fontWeight: "bold",
+                                            fontStyle: "italic",
+                                            fontFamily: "Arial",
+                                            textTransform: "capitalize",
+                                            marginRight: "10px",
+                                          }}
+                                          color="text.secondary"
+                                          gutterBottom
+                                        >
+                                          {item.cc_number}
+                                        </Typography>
+                                      </td>
+                                      <td>
+                                        <Typography
+                                          sx={{
+                                            fontSize: 14,
+                                            marginRight: "10px",
+                                          }}
+                                          color="text.secondary"
+                                          gutterBottom
+                                        >
+                                          {item.cc_type}
+                                          {item.cc_type && (
+                                            <img
+                                              src={`https://logo.clearbit.com/${item.cc_type.toLowerCase()}.com`}
+                                              alt={`${item.cc_type} Logo`}
+                                              style={{
+                                                width: "20%",
+                                                marginLeft: "10%",
+                                              }}
+                                            />
+                                          )}
+                                        </Typography>
+                                      </td>
+
+                                      {selectedCreditCard ===
+                                        item.billing_id && (
+                                        <td>
+                                          <Row>
+                                            <FormGroup>
+                                              <label
+                                                className="form-control-label"
+                                                htmlFor="input-property"
+                                              >
+                                                CVV *
+                                              </label>
+                                              <Input
+                                                type="number"
+                                                id="cvv"
+                                                placeholder="123"
+                                                name="cvv"
+                                                onBlur={
+                                                  generalledgerFormik.handleBlur
+                                                }
+                                                onChange={(e) => {
+                                                  const inputValue =
+                                                    e.target.value;
+                                                  if (
+                                                    /^\d{0,3}$/.test(inputValue)
+                                                  ) {
+                                                    // Only allow up to 3 digits
+                                                    generalledgerFormik.handleChange(
+                                                      e
+                                                    );
+                                                  }
+                                                }}
+                                                value={
+                                                  generalledgerFormik.values.cvv
+                                                }
+                                                required
+                                                //disabled={refund === true}
+                                              />
+                                            </FormGroup>
+                                          </Row>
+                                        </td>
+                                      )}
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </Table>
+                            )}
+
+                            {/* Add Credit Card Button */}
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                marginTop: "10px",
+                              }}
+                            >
+                              <Button
+                                color="primary"
+                                // onClick={() => {
+                                //   openCardForm();
+                                // }}
+                                style={{
+                                  background: "white",
+                                  color: "#3B2F2F",
+                                  marginRight: "10px",
+                                }}
+                              >
+                                Add Credit Card
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        {/* ) : (
+                    ""
+                  )} */}
+                      </>
+                    ) : selectedProp === "Check" ? (
+                      <>
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            Check Number *
+                          </label>
+                          <Input
+                            type="text"
+                            id="check_number"
+                            placeholder="Enter check number"
+                            name="check_number"
+                            onBlur={generalledgerFormik.handleBlur}
+                            onChange={generalledgerFormik.handleChange}
+                            value={generalledgerFormik.values.check_number}
+                            required
+                          />
+                        </FormGroup>
+                      </>
+                    ) : null}
                   </Row>
                   <Row>
                     <Col lg="2">
@@ -1771,6 +2362,7 @@ const AddPayment = () => {
                       </FormGroup>
                     </Col>
                   </Row>
+
                   <Row>
                     <Col lg="3">
                       <FormGroup>
@@ -1786,6 +2378,16 @@ const AddPayment = () => {
                         </label>
                       </FormGroup>
                     </Col>
+                  </Row>
+
+                  <Row>
+                    <div>
+                      Total Amount to be Paid:{" "}
+                      <strong style={{ color: "green" }}>
+                        ${" "}
+                        {totalAmount1 || generalledgerFormik.values.amount || 0}{" "}
+                      </strong>
+                    </div>
                   </Row>
                   <Row>
                     <Col lg="5">
