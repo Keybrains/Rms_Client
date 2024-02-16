@@ -453,7 +453,8 @@ const DemoPayment = () => {
         values.type2 = "Payment";
         values.surcharge_percent = surchargePercentage;
         values.total_amount = calculateTotalAmount();
-      } else if (selectedPaymentType === "Credit Card") {
+      } else if (selectedPaymentType === "Credit Card" &&
+      financialDate === currentDate) {
         url = `${baseUrl}/nmipayment/sale`;
         values.status = "Success";
         values.type2 = "Payment";
