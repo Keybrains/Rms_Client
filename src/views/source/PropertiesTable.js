@@ -435,7 +435,7 @@ const PropertiesTables = () => {
               <h1 style={{ color: "white" }}>Properties</h1>
             </FormGroup>
           </Col>
-          <Col className="text-right" xs="12" sm="6">
+          <Col className="text-right" >
             <Button
               color="primary"
               //  href="#rms"
@@ -725,6 +725,13 @@ const PropertiesTables = () => {
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
+                  {rentalsData.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="5"style={{fontSize:"15px"}}>No Properties Added</td>
+                      </tr>
+                    </tbody>
+                    ) : (
                   <tbody>
                     {filterRentalsBySearchAndPage()?.map((Rental) => (
                       <>
@@ -831,7 +838,7 @@ const PropertiesTables = () => {
                         </tr> */}
                       </>
                     ))}
-                  </tbody>
+                  </tbody>)}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>

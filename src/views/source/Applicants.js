@@ -167,7 +167,6 @@ const Applicants = () => {
     }
   };
 
-  console.log("manu", rentalsData);
   useEffect(() => {
     getTableData();
   }, [pageItem]);
@@ -604,7 +603,7 @@ const Applicants = () => {
               <h1 style={{ color: "white" }}>Applicants</h1>
             </FormGroup>
           </Col>
-          <Col className="text-right" xs="12" sm="6">
+          <Col className="text-right">
             <Button
               color="primary"
               // href="#rms"
@@ -774,6 +773,13 @@ const Applicants = () => {
                       {/* <th scope="col">% complete</th> */}
                     </tr>
                   </thead>
+                  {rentalsData.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="8"style={{fontSize:"15px"}}>No Applicants Added</td>
+                      </tr>
+                    </tbody>
+                    ) : (
                   <tbody>
                     {rentalsData.map((applicant, index) => (
                       <tr
@@ -816,7 +822,7 @@ const Applicants = () => {
                         </td>
                       </tr>
                     ))}
-                  </tbody>
+                  </tbody>)}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>

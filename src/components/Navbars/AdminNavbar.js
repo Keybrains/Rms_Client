@@ -162,7 +162,8 @@ const AdminNavbar = (props) => {
           >
             {props.brandText}
           </Link>
-          <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
+          <Form className="navbar-search navbar-search-dark  mr-3 d-none d-md-flex ml-lg-auto">
+            <Row>
             <Button
               color="primary"
               onClick={() => navigate("/"+admin+"/Plans")}
@@ -174,12 +175,11 @@ const AdminNavbar = (props) => {
               }}
             >
               buy
-            </Button>
-            <br />
+          </Button>
             <FormGroup
               className="mb-0"
               onClick={toggleSidebar}
-              style={{ cursor: "pointer", position: "relative" }}
+              style={{ cursor: "pointer", }}
             >
               <NotificationsIcon style={{ color: "white", fontSize: "30px" }} />
               {notificationCount > 0 && (
@@ -203,6 +203,7 @@ const AdminNavbar = (props) => {
                 </div>
               )}
             </FormGroup>
+            </Row>
           </Form>
 
           <Nav className="align-items-center d-none d-md-flex" navbar>

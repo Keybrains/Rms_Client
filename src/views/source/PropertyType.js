@@ -291,7 +291,7 @@ const PropertyType = () => {
             </FormGroup>
           </Col>
 
-          <Col className="text-right" xs="12" sm="6">
+          <Col className="text-right">
             <Button
               color="primary"
               //  href="#rms"
@@ -388,6 +388,7 @@ const PropertyType = () => {
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
+
                     <tr>
                       {/* <th scope="col">Property_ID</th> */}
                       <th scope="col">
@@ -448,7 +449,15 @@ const PropertyType = () => {
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
+                  {propertyData.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="5"style={{fontSize:"15px"}}>No Property Types Added</td>
+                      </tr>
+                    </tbody>
+                    ) : (
                   <tbody>
+                    
                     {filterTenantsBySearchAndPage().map((property) => (
                       <tr key={property._id}>
                         <td>{property.property_type}</td>
@@ -482,7 +491,7 @@ const PropertyType = () => {
                         </td>
                       </tr>
                     ))}
-                  </tbody>
+                  </tbody>)}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>
