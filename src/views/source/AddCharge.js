@@ -100,7 +100,9 @@ const AddCharge = () => {
   let navigate = useNavigate();
 
   const handleCloseButtonClick = () => {
-    navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
+    navigate(
+      `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
+    );
   };
 
   // const handleSaveButtonClick = () => {
@@ -246,8 +248,7 @@ const AddCharge = () => {
   const location = useLocation();
   const state = location.state && location.state;
   const tenantDetails = state ? state.tenantDetails : "";
-  console.log(state, "state");
-  console.log(tenantDetails, "tenantDetails");
+
 
   const { chargeId } = useParams();
 
@@ -276,8 +277,6 @@ const AddCharge = () => {
                 "Content-Type": "multipart/form-data",
               },
             });
-
-            console.log(result, "imgs");
 
             // Update the original array with the uploaded file URL
             generalledgerFormik.values.charges_attachment[index].upload_file =
@@ -379,7 +378,7 @@ const AddCharge = () => {
     }
     setLoader(false);
   };
-  console.log(tenantDetails, "tenantDetails");
+
   const editCharge = async () => {
     console.log(generalledgerFormik.values.charges_attachment, "filesb");
     console.log(file, "filesb");

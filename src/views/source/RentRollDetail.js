@@ -112,6 +112,7 @@ const RentRollDetail = () => {
 
   const closeRefund = () => {
     setIsRefundOpen(false);
+    getTenantData();
     // getCreditCard();
     // getMultipleCustomerVault();
   };
@@ -684,8 +685,6 @@ const RentRollDetail = () => {
   }, [tenantId]);
 
   const deleteCharge = async (Id) => {
-    console.log(Id, "chargeId");
-
     swal({
       title: "Are you sure?",
       text: "Once deleted, you will not be able to recover this entry!",
@@ -1072,7 +1071,7 @@ const RentRollDetail = () => {
       // }
     },
   });
-  console.log("object", generalledgerFormik.values);
+ 
   const fetchData = async (id) => {
     try {
       const response = await axios.get(
@@ -1113,7 +1112,6 @@ const RentRollDetail = () => {
   useEffect(() => {
     fetchData();
   }, [id]);
-  console.log("response data=======", ResponseData);
 
   const handleRefundClick = async () => {
     try {
