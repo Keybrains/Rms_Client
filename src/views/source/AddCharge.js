@@ -55,7 +55,6 @@ const AddCharge = () => {
   const generalledgerFormik = useFormik({
     initialValues: {
       date: "",
-      tenant_id: "",
       total_amount: "",
       charges_memo: "",
       charges: [
@@ -63,6 +62,7 @@ const AddCharge = () => {
           account: "",
           amount: "",
           total_amount: "",
+          charge_type: "",
         },
       ],
       charges_attachment: [],
@@ -78,12 +78,8 @@ const AddCharge = () => {
         })
       ),
     }),
-    onSubmit: () => {
-      if (
-        Number(generalledgerFormik.values.total_amount)
-        // ===
-        // Number(total_amount)
-      ) {
+    onSubmit: (values) => {
+      if (Number(generalledgerFormik.values.total_amount) === Number(total)) {
         handleSubmit(values);
       }
     },
@@ -99,9 +95,32 @@ const AddCharge = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (values) => {
     setLoader(true);
+    const object = {
+      admin_id: accessType.admin_id,
+      tenant_id: tenantId,
+      lease_id: lease_id,
+
+      entry: values.charges.map((item) => {
+        const data = {
+          account: item.account,
+          amount: item.amount,
+          memo: values.charges_memo,
+          date: values.date,
+          account: item.account,
+          charge_type: item.charge_type,
+          is_repeatable: false,
+        };
+        return data;
+      }),
+
+      total_amount: total,
+      is_leaseAdded: false,
+      uploaded_file: "",
+    };
     try {
+      const res = await axios.post(`${baseUrl}/charge/charge`, object);
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -123,7 +142,6 @@ const AddCharge = () => {
     }
   };
 
-  const [chargeType, setChargeType] = useState([]);
   const [recAccounts, setRecAccounts] = useState([]);
   const [oneTimeAccounts, setoneTimeAccounts] = useState([]);
   const fetchAccounts = async () => {
@@ -173,11 +191,12 @@ const AddCharge = () => {
     });
   };
 
-  const handleAccountSelection = (value, index) => {
+  const handleAccountSelection = (value, index, chargeType) => {
     const updatedCharges = [...generalledgerFormik.values.charges];
 
     if (updatedCharges[index]) {
       updatedCharges[index].account = value;
+      updatedCharges[index].charge_type = chargeType;
       generalledgerFormik.setValues({
         ...generalledgerFormik.values,
         charges: updatedCharges,
@@ -490,9 +509,7 @@ const AddCharge = () => {
                                               onClick={() => {
                                                 handleAccountSelection(
                                                   "Last Month's Rent",
-                                                  index
-                                                );
-                                                setChargeType(
+                                                  index,
                                                   "Liability Account"
                                                 );
                                               }}
@@ -503,9 +520,7 @@ const AddCharge = () => {
                                               onClick={() => {
                                                 handleAccountSelection(
                                                   "Prepayments",
-                                                  index
-                                                );
-                                                setChargeType(
+                                                  index,
                                                   "Liability Account"
                                                 );
                                               }}
@@ -516,9 +531,7 @@ const AddCharge = () => {
                                               onClick={() => {
                                                 handleAccountSelection(
                                                   "Security Deposit Liability",
-                                                  index
-                                                );
-                                                setChargeType(
+                                                  index,
                                                   "Liability Account"
                                                 );
                                               }}
@@ -539,9 +552,7 @@ const AddCharge = () => {
                                                     onClick={() => {
                                                       handleAccountSelection(
                                                         item.account,
-                                                        index
-                                                      );
-                                                      setChargeType(
+                                                        index,
                                                         "Recurring Charge"
                                                       );
                                                     }}
@@ -568,9 +579,7 @@ const AddCharge = () => {
                                                       onClick={() => {
                                                         handleAccountSelection(
                                                           item.account,
-                                                          index
-                                                        );
-                                                        setChargeType(
+                                                          index,
                                                           "One Time Charge"
                                                         );
                                                       }}
