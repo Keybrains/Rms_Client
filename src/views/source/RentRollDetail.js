@@ -39,6 +39,7 @@ import { CardContent, Grid, Typography } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DoneIcon from "@mui/icons-material/Done";
 import "./Leaseing.css";
+import CreditCardForm from "./CreditCardForm";
 
 const RentRollDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -176,17 +177,17 @@ const RentRollDetail = () => {
     // handleClose();
   };
 
-  // const [cardDetalis, setCardDetails] = useState([]);
-  // const getCreditCard = async () => {
-  //   const response = await axios.get(
-  //     `${baseUrl}/creditcard/getCreditCard/${lease_id}`
-  //   );
-  //   setCardDetails(response.data);
-  // };
+  const [cardDetalis, setCardDetails] = useState([]);
+  const getCreditCard = async () => {
+    const response = await axios.get(
+      `${baseUrl}/creditcard/getCreditCard/${lease_id}`
+    );
+    setCardDetails(response.data);
+  };
 
-  // const openCardForm = () => {
-  //   setIsModalOpen(true);
-  // };
+  const openCardForm = () => {
+    setIsModalOpen(true);
+  };
 
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
@@ -274,11 +275,11 @@ const RentRollDetail = () => {
                         value="Summary"
                         style={{ textTransform: "none" }}
                       />
-                      {/* <Tab
+                      <Tab
                         label="Financial"
                         value="Financial"
                         style={{ textTransform: "none" }}
-                      /> */}
+                      />
                       <Tab
                         label="Tenant"
                         value="Tenant"
@@ -551,7 +552,7 @@ const RentRollDetail = () => {
                                       </div>
                                     </>
 
-                                    {/* <div
+                                    <div
                                       style={{
                                         display: "flex",
                                         flexDirection: "row",
@@ -583,14 +584,13 @@ const RentRollDetail = () => {
                                           color: "blue",
                                         }}
                                       >
-                                        <Link
-                                          to={`/${admin}/rentrolldetail/${lease_id}`}
+                                        <div
                                           onClick={() => setValue(`Financial`)}
                                         >
                                           Lease Ledger
-                                        </Link>
+                                        </div>
                                       </Typography>
-                                    </div> */}
+                                    </div>
                                   </CardContent>
                                 </Card>
                                 {/* <Card
@@ -698,13 +698,10 @@ const RentRollDetail = () => {
                     </Row>
                   </TabPanel>
 
-                  {/* <TabPanel value="Financial">
+                  <TabPanel value="Financial">
                     <Container className="mt--10" fluid>
                       <Row>
                         <Col xs="12" sm="6">
-                          <FormGroup>
-                            <h3 style={{ color: "blue" }}>Lease Ledger</h3>
-                          </FormGroup>
                         </Col>
                         <Col
                           className="d-flex justify-content-end"
@@ -907,7 +904,7 @@ const RentRollDetail = () => {
                       <br />
                       <br />
                     </Container>
-                  </TabPanel> */}
+                  </TabPanel>
 
                   <TabPanel value="Tenant">
                     <CardHeader className="border-0">
@@ -1307,7 +1304,7 @@ const RentRollDetail = () => {
                                 </>
                               </div>
                             </>
-                            {/* <div
+                            <div
                               style={{
                                 display: "flex",
                                 flexDirection: "row",
@@ -1347,7 +1344,7 @@ const RentRollDetail = () => {
                                   </Link>
                                 </Typography>
                               </>
-                            </div> */}
+                            </div>
                           </CardContent>
                         </Card>
                       </Col>
@@ -1367,11 +1364,11 @@ const RentRollDetail = () => {
           <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
         </ModalHeader>
         <ModalBody>
-          {/* <CreditCardForm
+          <CreditCardForm
             lease_id={lease_id}
             closeModal={closeModal}
             getCreditCard={getCreditCard}
-          /> */}
+          />
         </ModalBody>
       </Modal>
       <ToastContainer />

@@ -458,15 +458,6 @@ const RentRollLeaseing = () => {
     }
     setLoader(false);
   };
-  console.log(
-    leaseFormik.values,
-    tenantFormik.values,
-    rentChargeFormik.values,
-    recurringFormink.values,
-    cosignerFormik.values,
-    securityChargeFormik.values,
-    oneTimeFormik.values
-  );
 
   const addLease = async () => {
     setLoader(true);

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "components/Headers/Header";
-import Cookies from "universal-cookie";
 import {
   Card,
   CardHeader,
@@ -17,27 +16,17 @@ import {
   ModalBody,
 } from "reactstrap";
 import { jwtDecode } from "jwt-decode";
-import { CardContent, Typography } from "@mui/material";
 import { RotatingLines } from "react-loader-spinner";
 import CreditCardForm from "./CreditCardForm";
 
 const TenantDetailPage = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const [loader, setLoader] = React.useState(true);
   const { id, admin } = useParams();
-  const [tenantDetails, setTenantDetails] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const [GeneralLedgerData, setGeneralLedgerData] = useState([]);
-  const [rental, setRental] = useState("");
-  const [unit, setUnit] = useState("");
-  const [unitId, setUnitId] = useState(null);
-  const [propertyId, setPropertyId] = useState(null);
-
-  let cookies = new Cookies();
+  
+  const [loading, setLoading] = useState(true);
+  
   const [accessType, setAccessType] = useState(null);
-
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
@@ -46,89 +35,17 @@ const TenantDetailPage = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-
-  // const apiUrl = `${baseUrl}/tenant/tenant_summary/${id}/entry/${entryIndex}`;
-  // const getTenantData = async () => {
-  //   try {
-  //     const response = await axios.get(apiUrl);
-  //     console.log(response.data.data, "huihui");
-  //     const rental = response.data.data.entries.rental_adress;
-  //     const unit = response.data.data.entries.rental_units;
-  //     const unitId = response.data.data.entries.unit_id;
-  //     const propertysId = response.data.data.entries.property_id;
-  //     setTenantDetails(response.data.data);
-  //     setRental(rental);
-  //     setPropertyId(propertysId);
-  //     setUnit(unit);
-  //     setUnitId(unitId);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.error("Error fetching tenant details:", error);
-  //     setError(error);
-  //     setLoading(false);
-  //   }
-  // };
-
-  console.log(id, "janak");
+  
+  const [tenantDetails, setTenantDetails] = useState({});
   const getTenantData = async () => {
     try {
       const apiUrl = `${baseUrl}/tenants/tenant_details/${id}`;
       const response = await axios.get(apiUrl);
       console.log(response.data.data[0], "jack");
       setTenantDetails(response.data.data[0]);
-      // const rental = response.data.data[0].lease_data[0].rental_adress;
-      // const unit = response.data.data[0].lease_data[0].rental_unit;
-      // const unitId = response.data.data[0].lease_data[0].unit_id;
-      // const propertysId = response.data.data[0].lease_data[0].rental_id;
-      // console.log(propertysId, "propertysId");
-
-      // setRental(rental);
-      // setPropertyId(propertysId);
-      if (unitId && unit) {
-        // console.log("1");
-        // const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${propertysId}&unit=${unit}&tenant_id=${id}`;
-        // console.log(url, "huewfjnmk");
-        // axios
-        //   .get(url)
-        //   .then((response) => {
-        //     setLoader(false);
-        //     if (response.data && response.data.data) {
-        //       const mergedData = response.data.data;
-        //       console.log(mergedData, "mergedData1");
-        //       setGeneralLedgerData(mergedData[0]?.unit[0]);
-        //     } else {
-        //       console.error("Unexpected response format:", response.data);
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.error("Error fetching data:", error);
-        //   });
-      } else {
-        // console.log("2");
-        // const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${propertysId}&tenant_id=${id}`;
-        // console.log(url, "huewfjnmk");
-        // axios
-        //   .get(url)
-        //   .then((response) => {
-        //     setLoader(false);
-        //     if (response.data && response.data.data) {
-        //       const mergedData = response.data.data;
-        //       console.log(mergedData, "mergedData2");
-        //       setGeneralLedgerData(mergedData[0]?.unit[0]);
-        //     } else {
-        //       console.error("Unexpected response format:", response.data);
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.error("Error fetching data:", error);
-        //   });
-      }
-      setUnitId(unitId);
-      setUnit(unit);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
-      setError(error);
       setLoading(false);
     }
   };
@@ -146,98 +63,6 @@ const TenantDetailPage = () => {
     return `${month}-${day}-${year}`;
   }
 
-  const calculateBalance = (data) => {
-    // console.log(data);
-    let balance = 0;
-    for (let i = data.length - 1; i >= 0; i--) {
-      const currentEntry = data[i];
-      for (let j = currentEntry.entries.length - 1; j >= 0; j--) {
-        if (currentEntry.type === "Charge") {
-          balance += currentEntry.entries[j].charges_amount;
-        } else if (currentEntry.type === "Payment") {
-          balance -= currentEntry.entries[j].amount;
-        }
-        data[i].entries[j].balance = balance;
-      }
-    }
-    //console.log("data",data)
-    return data;
-  };
-  const [balance, setBalance] = useState("");
-  // const getGeneralLedgerData = async () => {
-  //   const apiUrl = `${baseUrl}/payment/merge_payment_charge/${id}`;
-  //   try {
-  //     const response = await axios.get(apiUrl);
-  //     if (response.data && response.data.data) {
-  //       const mergedData = response.data.data;
-  //       // console.log(mergedData)
-  //       mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
-  //       const dataWithBalance = calculateBalance(mergedData);
-  //       setBalance(dataWithBalance[0].entries[0].balance);
-  //     } else {
-  //       console.error("Unexpected response format:", response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   getGeneralLedgerData();
-  // }, [id]);
-
-  const [myData, setMyData] = useState([]);
-
-  // const doSomething = async () => {
-  //   let responce = await axios.get(`${baseUrl}/tenant/tenants`);
-  //   const data = responce.data.data;
-  //   const filteredData = data.filter((item) => item._id === id);
-  //   setMyData(filteredData);
-  // };
-
-  // useEffect(() => {
-  //   doSomething();
-  // }, []);
-
-  const [myData1, setMyData1] = useState([]);
-  console.log("myData1:", myData1);
-  // const doSomething1 = async () => {
-  //   try {
-  //     let response = await axios.get(`${baseUrl}/tenant/tenants`);
-  //     const data = response.data.data;
-
-  //     const filteredData = data.filter((item, index) => {
-  //       // Replace 'id' with the specific ID you're looking for
-  //       return item._id === id && item.entries.entryIndex === entryIndex;
-  //     });
-
-  //     setMyData1(filteredData);
-  //   } catch (error) {
-  //     // Handle errors here
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   doSomething1();
-  // }, []);
-
-  // const getStatus = (startDate, endDate) => {
-  //   const today = new Date();
-  //   const start = new Date(startDate);
-  //   const end = new Date(endDate);
-
-  //   if (today >= start && today <= end) {
-  //     return "Active";
-  //   } else if (today < start) {
-  //     return "FUTURE";
-  //   } else if (today > end) {
-  //     return "EXPIRED";
-  //   } else {
-  //     return "-";
-  //   }
-  // };
-
-  // //sahil20231206
   const getStatus1 = (startDate, endDate) => {
     const today = new Date();
     const start = new Date(startDate);
@@ -253,31 +78,12 @@ const TenantDetailPage = () => {
       return "-";
     }
   };
-  // //sahil20231206
-  // // Filter the specific entry based on entryIndex from URL parameters
-  // const selectedEntry = myData.find(
-  //   (item) => item.entries === entryIndex
-  //   );
-  //   // Check if the entry exists and then display the status
-  //   const status = selectedEntry
-  //   ? getStatus1(
-  //       selectedEntry.entries.start_date,
-  //       selectedEntry.entries.end_date
-  //       )
-  //   : "-";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openCardForm = () => {
-    setIsModalOpen(true);
-  };
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  console.log("first", tenantDetails);
-
-  const [cardDetalis, setCardDetails] = useState([]);
 
   return (
     <div>
@@ -314,7 +120,6 @@ const TenantDetailPage = () => {
           <Col className="text-right" xs="12" sm="6">
             <Button
               color="primary"
-              //  href="#rms"
               onClick={() => navigate("/" + admin + "/TenantsTable")}
               size="sm"
               style={{ background: "white", color: "blue" }}
@@ -346,15 +151,9 @@ const TenantDetailPage = () => {
                                 strokeWidth="5"
                                 animationDuration="0.75"
                                 width="50"
-                                visible={loader}
+                                visible={loading}
                               />
                             </div>
-                          </tr>
-                        </tbody>
-                      ) : error ? (
-                        <tbody>
-                          <tr>
-                            <td>Error: {error.message}</td>
                           </tr>
                         </tbody>
                       ) : tenantDetails.tenant_id ? (
