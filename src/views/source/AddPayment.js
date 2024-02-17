@@ -17,6 +17,10 @@ import {
   InputGroup,
   Container,
   Table,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
   Row,
   Col,
   Dropdown,
@@ -41,6 +45,7 @@ import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import { OverlayTrigger } from "react-bootstrap";
+import CreditCardForm from "./CreditCardForm";
 
 const AddPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -59,6 +64,7 @@ const AddPayment = () => {
   const [tenantid, setTenantid] = useState(""); // Add this line
   const [tenantentryIndex, setTenantentryindex] = useState(""); // Add this line
   const [printReceipt, setPrintReceipt] = useState(false);
+  const [isModalsOpen, setIsModalsOpen] = useState(false);
 
   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
   const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
@@ -69,6 +75,16 @@ const AddPayment = () => {
   const location = useLocation();
   const state = location.state && location.state;
   const paymentState = state;
+
+  const openCardForm = () => {
+    setIsModalsOpen(true);
+  };
+
+  const closeModals = () => {
+    setIsModalsOpen(false);
+    getCreditCard();
+    getMultipleCustomerVault();
+  };
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -447,7 +463,8 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
             if (response.data && response.data.statusCode === 100) {
               nmiResponse = response.data.data;
             } else {
-              console.error("Unexpected response format:", response.data);
+              nmiResponse = response.data.data; 
+              console.error("Unexpected response format:", response.data.data);
               swal("", response.data.message, "error");
             }
           } catch (error) {
@@ -624,7 +641,7 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
                         cc_type: nmiResponse.cc_type,
                         cc_exp: nmiResponse.cc_exp,
                         cc_number: nmiResponse.cc_number,
-                        status: status
+                        status: nmiResponse.response_code == 100 ? "Success" : "Failure" 
                     })),
                     ...formikForAnotherData.values.entries
                         .filter((entry) => parseFloat(entry.amount) !== 0)
@@ -641,8 +658,8 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
                             charges_attachment: generalledgerFormik.values.attachment,
                             tenant_id: tenantid,
                             tenant_firstName: firstName,
-                        tenant_lastName: lastName,
-                        email_name: mail,
+                            tenant_lastName: lastName,
+                            email_name: mail,
                             customer_vault_id: values.customer_vault_id,
                             billing_id: values.billing_id,
                             surcharge: values.surcharge,
@@ -659,7 +676,7 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
                             cc_type: nmiResponse.cc_type,
                             cc_exp: nmiResponse.cc_exp,
                             cc_number: nmiResponse.cc_number,
-                            status: status
+                            status: nmiResponse.response_code == 100 ? "Success" : "Failure" 
                         })),
                 ],
             }],
@@ -724,8 +741,10 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
         const url = `${baseUrl}/payment_charge/payment_charge`;
         const res = await axios.post(url, paymentObject);
         console.log(res);
+        console.warn("nmi response", nmiResponse)
     } catch (error) {
         console.error("Error:", error);
+        console.warn("error in payment status:", nmiResponse, error)
         alert("Payment charge calling error...");
         if (error.response) {
             console.error("Response Data:", error.response.data);
@@ -1792,9 +1811,9 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
                             >
                               <Button
                                 color="primary"
-                                // onClick={() => {
-                                //   openCardForm();
-                                // }}
+                                onClick={() => {
+                                  openCardForm();
+                                }}
                                 style={{
                                   background: "white",
                                   color: "#3B2F2F",
@@ -2462,6 +2481,22 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
           </Col>
         </Row>
       </Container>
+      <Modal
+        isOpen={isModalsOpen}
+        toggle={closeModals}
+        style={{ maxWidth: "1000px" }}
+      >
+        <ModalHeader toggle={closeModals} className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
+        </ModalHeader>
+        <ModalBody>
+          <CreditCardForm
+            tenantId={tenantId}
+            closeModal={closeModals}
+            //getCreditCard={getCreditCard}
+          />
+        </ModalBody>
+      </Modal>
     </>
   );
 };
