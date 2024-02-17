@@ -54,11 +54,13 @@ const AddCharge = () => {
 
   const generalledgerFormik = useFormik({
     initialValues: {
+      charge_id: "",
       date: "",
       total_amount: "",
       charges_memo: "",
       charges: [
         {
+          entry_id: "",
           account: "",
           amount: "",
           total_amount: "",
@@ -69,11 +71,10 @@ const AddCharge = () => {
     },
     validationSchema: yup.object({
       date: yup.string().required("Required"),
-      amount: yup.string().required("Required"),
+      total_amount: yup.string().required("Required"),
       charges: yup.array().of(
         yup.object().shape({
           account: yup.string().required("Required"),
-          balance: yup.number().required("Required"),
           amount: yup.number().required("Required"),
         })
       ),
@@ -97,6 +98,42 @@ const AddCharge = () => {
 
   const handleSubmit = async (values) => {
     setLoader(true);
+
+    if (file) {
+      try {
+        const uploadPromises = file.map(async (fileItem, i) => {
+          if (fileItem.upload_file instanceof File) {
+            try {
+              const form = new FormData();
+              form.append("files", fileItem.upload_file);
+
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
+
+              if (
+                res &&
+                res.data &&
+                res.data.files &&
+                res.data.files.length > 0
+              ) {
+                fileItem.upload_file = res.data.files[0].url;
+                values.uploaded_file = res.data.files[0].url;
+              } else {
+                console.error("Unexpected response format:", res);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
+          } else {
+            values.uploaded_file = fileItem;
+          }
+        });
+
+        await Promise.all(uploadPromises);
+      } catch (error) {
+        console.error("Error processing file uploads:", error);
+      }
+    }
+
     const object = {
       admin_id: accessType.admin_id,
       tenant_id: tenantId,
@@ -105,7 +142,7 @@ const AddCharge = () => {
       entry: values.charges.map((item) => {
         const data = {
           account: item.account,
-          amount: item.amount,
+          amount: Number(item.amount),
           memo: values.charges_memo,
           date: values.date,
           account: item.account,
@@ -119,6 +156,7 @@ const AddCharge = () => {
       is_leaseAdded: false,
       uploaded_file: "",
     };
+
     try {
       const res = await axios.post(`${baseUrl}/charge/charge`, object);
     } catch (error) {
@@ -276,6 +314,7 @@ const AddCharge = () => {
       setFile([...file, ...finalArray]);
     }
   };
+  console.log(file);
 
   const deleteFile = (index) => {
     const newFile = [...file];
@@ -297,7 +336,7 @@ const AddCharge = () => {
     navigate(`/${admin}/rentrolldetail/${lease_id}`);
   };
 
-  console.log(generalledgerFormik.values);
+  console.log(generalledgerFormik.errors);
 
   return (
     <>
