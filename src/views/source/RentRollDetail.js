@@ -247,7 +247,7 @@ const RentRollDetail = () => {
               )}
             </FormGroup>
           </Col>
-          <Col className="text-right" xs="12" sm="6">
+          <Col className="text-right" >
             <Button
               color="primary"
               onClick={() => navigate("/" + admin + "/RentRoll")}
@@ -264,7 +264,7 @@ const RentRollDetail = () => {
               <CardHeader className="border-0"></CardHeader>
               <Col>
                 <TabContext value={value}>
-                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider",overflow:"scroll" }}>
                     <TabList
                       onChange={(e, newValue) => handleChange(newValue)}
                       aria-label="lab API tabs example"
@@ -295,7 +295,7 @@ const RentRollDetail = () => {
                           <div className="table-responsive">
                             <div
                               className="row m-3"
-                              style={{ overflow: "hidden" }}
+                              style={{ overflow: "auto" }}
                             >
                               <div className="col-md-8">
                                 <div

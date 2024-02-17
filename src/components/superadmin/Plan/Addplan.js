@@ -111,7 +111,7 @@ const AddPlanForm = () => {
               <h4 style={{ color: "white" }}></h4>
             </FormGroup>
           </Col>
-          <Col className="text-right" xs="12" sm="6">
+          <Col className="text-right" >
             <Button
               className="mb-2"
               color="primary"
