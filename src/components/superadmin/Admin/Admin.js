@@ -223,6 +223,7 @@ export default function Admin() {
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
+  
   // Delete selected
   var handleDelete = () => {
     swal("Are You Sure You Want TO Delete ?", {

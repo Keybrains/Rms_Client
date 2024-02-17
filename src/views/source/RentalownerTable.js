@@ -227,6 +227,13 @@ const RentalownerTable = () => {
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
+                  {rentalsData.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="5"style={{fontSize:"15px"}}>No RentalOwners Added</td>
+                      </tr>
+                    </tbody>
+                    ) : (
                   <tbody>
                     {filterRentalOwnersBySearch()?.map((rentalOwner) => (
                       <tr
@@ -266,7 +273,7 @@ const RentalownerTable = () => {
                         </td>
                       </tr>
                     ))}
-                  </tbody>
+                  </tbody>)}
                 </Table>
               </Card>
             )}

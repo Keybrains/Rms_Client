@@ -39,7 +39,7 @@ const TenantsTable = () => {
   let [tentalsData, setTenantsDate] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   let [loader, setLoader] = React.useState(true);
-  const {admin} = useParams()
+  const { admin } = useParams()
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -105,7 +105,7 @@ const TenantsTable = () => {
       if (willDelete) {
         const res = await axios.delete(
           `${baseUrl}/tenants/tenant/${tenant_id}`
-          
+
         );
         console.log(res);
         if (res.data.statusCode === 200) {
@@ -336,7 +336,7 @@ const TenantsTable = () => {
 
             <Button
               color="primary"
-              onClick={() => navigate("/"+admin+"/Leaseing")}
+              onClick={() => navigate("/" + admin + "/Leaseing")}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -357,12 +357,7 @@ const TenantsTable = () => {
                   visible={loader}
                 />
               </div>
-            ) : tentalsData.length === 0 ? (
-              <Card className="shadow">
-                <CardHeader className="border-0">
-                  <Row>Record Not Found</Row>
-                </CardHeader>
-              </Card>
+
             ) : (
               <Card className="shadow">
                 <CardHeader className="border-0">
@@ -467,44 +462,53 @@ const TenantsTable = () => {
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {filterTenantsBySearchAndPage().map((tenant) => (
-                      <>
-                        <tr
-                          key={tenant.tenant_id}
-                          onClick={() =>
-                            navigateToTenantsDetails(tenant.tenant_id)
-                          }
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td>
-                            {tenant.tenant_firstName} {tenant.tenant_lastName}
-                          </td>
-                          <td>{tenant.tenant_phoneNumber}</td>
-                          <td>{tenant.tenant_email}</td>
-                          <td>{tenant.createdAt} </td>
-                          <td>{tenant.updatedAt ? tenant.updatedAt : "-"} </td>
-                          <td>
-                            <div style={{ display: "flex", gap: "5px" }}>
-                              <div
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteTenants(tenant.tenant_id);
-                                }}
-                              >
-                                <DeleteIcon />
-                              </div>
-                              <div
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  editLeasing(tenant.tenant_id);
-                                }}
-                              >
-                                <EditIcon />
-                              </div>
-                              {/* <div
+                  {tentalsData.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="5" style={{fontSize:"15px"}}>No Tenants Added</td>
+                      </tr>
+                    </tbody>
+
+                  ) : (
+                    <tbody>
+
+                      {filterTenantsBySearchAndPage().map((tenant) => (
+                        <>
+                          <tr
+                            key={tenant.tenant_id}
+                            onClick={() =>
+                              navigateToTenantsDetails(tenant.tenant_id)
+                            }
+                            style={{ cursor: "pointer" }}
+                          >
+                            <td>
+                              {tenant.tenant_firstName} {tenant.tenant_lastName}
+                            </td>
+                            <td>{tenant.tenant_phoneNumber}</td>
+                            <td>{tenant.tenant_email}</td>
+                            <td>{tenant.createdAt} </td>
+                            <td>{tenant.updatedAt ? tenant.updatedAt : "-"} </td>
+                            <td>
+                              <div style={{ display: "flex", gap: "5px" }}>
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteTenants(tenant.tenant_id);
+                                  }}
+                                >
+                                  <DeleteIcon />
+                                </div>
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    editLeasing(tenant.tenant_id);
+                                  }}
+                                >
+                                  <EditIcon />
+                                </div>
+                                {/* <div
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -513,12 +517,12 @@ const TenantsTable = () => {
                               >
                                 <PictureAsPdfIcon />
                               </div> */}
-                            </div>
-                          </td>
-                        </tr>
-                      </>
-                    ))}
-                  </tbody>
+                              </div>
+                            </td>
+                          </tr>
+                        </>
+                      ))}
+                    </tbody>)}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>

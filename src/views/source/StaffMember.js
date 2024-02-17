@@ -462,6 +462,13 @@ const StaffMember = () => {
                       <th scope="col">ACTION</th>
                     </tr>
                   </thead>
+                  {StaffMemberData.length === 0 ? (
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="5"style={{fontSize:"15px"}}>No StaffMembers Added</td>
+                      </tr>
+                    </tbody>
+                    ) : (
                   <tbody>
                     {filterTenantsBySearchAndPage().map((staff) => (
                       <tr key={staff._id}>
@@ -494,7 +501,7 @@ const StaffMember = () => {
                         </td>
                       </tr>
                     ))}
-                  </tbody>
+                  </tbody>)}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>
