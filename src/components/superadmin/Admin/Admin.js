@@ -73,9 +73,7 @@ function Rows(props) {
   const handleLoginButtonClick = async () => {
     try {
       // Make an HTTP request to your API endpoint with the adminId
-      await axios.get(
-        `https://rms-saas-server.vercel.app/api/test/${row.admin_id}`
-      );
+      await axios.get(`http://192.168.1.19:4000/api/test/${row.admin_id}`);
       console.log("API called successfully");
     } catch (error) {
       console.error("Error occurred while calling API:", error);
@@ -124,9 +122,16 @@ function Rows(props) {
           })}
         </TableCell>
 
-        {/* <TableCell align="left">
-      <Button onClick={handleLoginButtonClick}>Login</Button>
-    </TableCell> */}
+        <TableCell align="left">
+          <Button
+            onClick={(event) => {
+              event.stopPropagation();
+              handleLoginButtonClick();
+            }}
+          >
+            Login
+          </Button>
+        </TableCell>
 
         {/* <TableCell align="left">
           <button onClick={handleLoginClick}>Login</button>

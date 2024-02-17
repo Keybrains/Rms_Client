@@ -27,7 +27,7 @@ function DashBoard() {
     try {
       console.log(baseUrl);
       const res = await axios.get(
-        `http://https://rms-saas-server.vercel.app/api/admin/superadmin_count`
+        `${baseUrl}/admin/superadmin_count`
       );
       if (res.data.statusCode === 200) {
         setData({
@@ -66,7 +66,7 @@ function DashBoard() {
                   >
                     <div className="card-body d-flex justify-content-between align-items-center">
                       <h1 className="card-title">Plans</h1>
-                      <p className="my-2">{data?.plans}</p>
+                      <p className="my-2 h1">{data?.plans}</p>
                     </div>
                   </div>
                 </div>
@@ -85,7 +85,7 @@ function DashBoard() {
                   >
                     <div className="card-body d-flex justify-content-between align-items-center">
                       <h1 className="card-title">Admin</h1>
-                      <p className="my-2">{data?.admins}</p>
+                      <p className="my-2 h1">{data?.admins}</p>
                     </div>
                   </div>
                 </div>
