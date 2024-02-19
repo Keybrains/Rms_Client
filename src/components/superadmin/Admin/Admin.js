@@ -69,11 +69,12 @@ const headCells = [
 function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
   const navigate = useNavigate();
+  const baseUrl = process.env.REACT_APP_BASE_URL;
 
   const handleLoginButtonClick = async () => {
     try {
       // Make an HTTP request to your API endpoint with the adminId
-      await axios.get(`http://192.168.1.19:4000/api/test/${row.admin_id}`);
+      await axios.get(`${baseUrl}/test/${row.admin_id}`);
       console.log("API called successfully");
     } catch (error) {
       console.error("Error occurred while calling API:", error);
@@ -223,7 +224,6 @@ export default function Admin() {
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  
   // Delete selected
   var handleDelete = () => {
     swal("Are You Sure You Want TO Delete ?", {
