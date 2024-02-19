@@ -247,7 +247,7 @@ const RentRollDetail = () => {
               )}
             </FormGroup>
           </Col>
-          <Col className="text-right" >
+          <Col className="text-right">
             <Button
               color="primary"
               onClick={() => navigate("/" + admin + "/RentRoll")}
@@ -264,7 +264,13 @@ const RentRollDetail = () => {
               <CardHeader className="border-0"></CardHeader>
               <Col>
                 <TabContext value={value}>
-                  <Box sx={{ borderBottom: 1, borderColor: "divider",overflow:"scroll" }}>
+                  <Box
+                    sx={{
+                      borderBottom: 1,
+                      borderColor: "divider",
+                      overflow: "scroll",
+                    }}
+                  >
                     <TabList
                       onChange={(e, newValue) => handleChange(newValue)}
                       aria-label="lab API tabs example"
@@ -701,8 +707,7 @@ const RentRollDetail = () => {
                   <TabPanel value="Financial">
                     <Container className="mt--10" fluid>
                       <Row>
-                        <Col xs="12" sm="6">
-                        </Col>
+                        <Col xs="12" sm="6"></Col>
                         <Col
                           className="d-flex justify-content-end"
                           xs="12"
@@ -781,7 +786,9 @@ const RentRollDetail = () => {
                             </div>
                           ) : (
                             <Card className="shadow">
-                              <CardHeader className="border-0">Lease Ledger</CardHeader>
+                              <CardHeader className="border-0">
+                                Lease Ledger
+                              </CardHeader>
 
                               <Table
                                 className="align-items-center table-flush"
@@ -809,20 +816,42 @@ const RentRollDetail = () => {
                                             generalledger?.charge_id
                                           }`}
                                         >
-                                          <td>{generalledger.date || "-"}</td>
-                                          <td>{generalledger.type || "-"}</td>
                                           <td>
-                                            {generalledger.account || "-"}
+                                            {generalledger?.entry[0]?.date ||
+                                              "-"}
                                           </td>
-                                          <td>{generalledger.memo || "-"}</td>
+                                          <td>{generalledger?.type || "-"}</td>
+                                          <td>
+                                            {generalledger.entry?.map(
+                                              (item) => (
+                                                <>
+                                                  {item.account}
+                                                  <br />
+                                                </>
+                                              )
+                                            ) || "-"}
+                                          </td>
+                                          <td>
+                                            {generalledger.is_leaseAdded ===
+                                            true
+                                              ? generalledger.entry.map(
+                                                  (item) => (
+                                                    <>
+                                                      {item.memo}
+                                                      <br />
+                                                    </>
+                                                  )
+                                                )
+                                              : generalledger.entry[0].memo}
+                                          </td>
                                           <td>
                                             {generalledger.type === "charge"
-                                              ? "$" + generalledger.amount
+                                              ? "$" + generalledger.total_amount
                                               : "-"}
                                           </td>
                                           <td>
                                             {generalledger.type === "payment"
-                                              ? "$" + generalledger.amount
+                                              ? "$" + generalledger.total_amount
                                               : "-"}
                                           </td>
                                           <td>
@@ -857,7 +886,6 @@ const RentRollDetail = () => {
                                                   />
                                                 </div>
                                               )}
-
                                               {generalledger.type ===
                                                 "charge" && (
                                                 <div
@@ -866,9 +894,9 @@ const RentRollDetail = () => {
                                                   }}
                                                   onClick={(e) => {
                                                     e.stopPropagation();
-                                                    // editcharge(
-                                                    //   generalledger._id
-                                                    // );
+                                                    navigate(
+                                                      `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
+                                                    );
                                                   }}
                                                 >
                                                   <EditIcon />
@@ -882,9 +910,9 @@ const RentRollDetail = () => {
                                                   }}
                                                   onClick={(e) => {
                                                     e.stopPropagation();
-                                                    // editpayment(
-                                                    //   generalledger._id
-                                                    // );
+                                                    navigate(
+                                                      `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
+                                                    );
                                                   }}
                                                 >
                                                   <EditIcon />

@@ -616,12 +616,12 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/AddPayment",
+    path: "/AddPayment/:lease_id",
     component: <AddPayment />,
     layout: "/admin",
   },
   {
-    path: "/AddPayment/:tenantId/:entryIndex",
+    path: "/AddPayment/:lease_id/:payment_id",
     component: <AddPayment />,
     layout: "/admin",
   },
@@ -632,16 +632,6 @@ var routes = [
   },
   {
     path: "/AddCharge/:lease_id/:charge_id",
-    component: <AddCharge />,
-    layout: "/admin",
-  },
-  {
-    path: "/AddPayment/:paymentId",
-    component: <AddPayment />,
-    layout: "/admin",
-  },
-  {
-    path: "/AddCharge/:chargeId",
     component: <AddCharge />,
     layout: "/admin",
   },

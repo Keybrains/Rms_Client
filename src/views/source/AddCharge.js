@@ -63,7 +63,6 @@ const AddCharge = () => {
           entry_id: "",
           account: "",
           amount: "",
-          total_amount: "",
           charge_type: "",
         },
       ],
@@ -88,7 +87,79 @@ const AddCharge = () => {
 
   const editCharge = async () => {
     setLoader(true);
+
+    if (file) {
+      try {
+        const uploadPromises = file?.map(async (fileItem, i) => {
+          if (fileItem.upload_file instanceof File) {
+            try {
+              const form = new FormData();
+              form.append("files", fileItem.upload_file);
+
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
+              console.log(res.data);
+              if (
+                res &&
+                res.data &&
+                res.data.files &&
+                res.data.files.length > 0
+              ) {
+                fileItem.upload_file = res.data.files[0].filename;
+              } else {
+                console.error("Unexpected response format:", res);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
+          }
+        });
+
+        await Promise.all(uploadPromises);
+      } catch (error) {
+        console.error("Error processing file uploads:", error);
+      }
+    }
+
+    const object = {
+      charge_id: charge_id,
+      admin_id: accessType.admin_id,
+      tenant_id: tenantId,
+      lease_id: lease_id,
+
+      entry: values.charges?.map((item) => {
+        const data = {
+          entry_id: item.entry_id,
+          account: item.account,
+          amount: Number(item.amount),
+          memo: values.charges_memo,
+          date: values.date,
+          account: item.account,
+          charge_type: item.charge_type,
+        };
+        return data;
+      }),
+
+      total_amount: total,
+      uploaded_file: file,
+    };
+
     try {
+      const res = await axios.put(
+        `${baseUrl}/charge/charge/${charge_id}`,
+        object
+      );
+      if (res.data.statusCode === 200) {
+        toast.success(res.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
+        navigate(`/${admin}/RentRollLeaseing/${lease_id}`);
+      } else {
+        toast.warning(res.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
+      }
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -101,30 +172,27 @@ const AddCharge = () => {
 
     if (file) {
       try {
-        const uploadPromises = file.map(async (fileItem, i) => {
+        const uploadPromises = file?.map(async (fileItem, i) => {
           if (fileItem.upload_file instanceof File) {
             try {
               const form = new FormData();
               form.append("files", fileItem.upload_file);
 
               const res = await axios.post(`${imageUrl}/images/upload`, form);
-
+              console.log(res.data);
               if (
                 res &&
                 res.data &&
                 res.data.files &&
                 res.data.files.length > 0
               ) {
-                fileItem.upload_file = res.data.files[0].url;
-                values.uploaded_file = res.data.files[0].url;
+                fileItem.upload_file = res.data.files[0].filename;
               } else {
                 console.error("Unexpected response format:", res);
               }
             } catch (error) {
               console.error("Error uploading file:", error);
             }
-          } else {
-            values.uploaded_file = fileItem;
           }
         });
 
@@ -139,7 +207,7 @@ const AddCharge = () => {
       tenant_id: tenantId,
       lease_id: lease_id,
 
-      entry: values.charges.map((item) => {
+      entry: values.charges?.map((item) => {
         const data = {
           account: item.account,
           amount: Number(item.amount),
@@ -154,11 +222,23 @@ const AddCharge = () => {
 
       total_amount: total,
       is_leaseAdded: false,
-      uploaded_file: "",
+      uploaded_file: file,
     };
 
     try {
       const res = await axios.post(`${baseUrl}/charge/charge`, object);
+      if (res.data.statusCode === 200) {
+        toast.success(res.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
+        navigate(`/${admin}/RentRollLeaseing/${lease_id}`);
+      } else {
+        toast.warning(res.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
+      }
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -179,6 +259,7 @@ const AddCharge = () => {
       console.error("Error:", error.message);
     }
   };
+  console.log("first1", tenantDetails);
 
   const [recAccounts, setRecAccounts] = useState([]);
   const [oneTimeAccounts, setoneTimeAccounts] = useState([]);
@@ -208,15 +289,58 @@ const AddCharge = () => {
   useEffect(() => {
     fetchAccounts();
     fetchTenantsData();
-  }, [accessType]);
+  }, [accessType?.admin_id]);
 
-  const [selectedRec, setSelectedRec] = useState("Select Resident");
+  const fetchChargeData = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/charge/charge/${charge_id}`);
+      if (res.data.statusCode === 200) {
+        const data = res.data.data[0];
+        console.log("first", data);
+        setTenantId(data.tenant_id);
+        setSelectedTenant(
+          tenantDetails?.map((item) => {
+            if (item.tenant_id === data.tenant_id) {
+              return item.tenant_firstName + " " + item.tenant_lastName;
+            }
+          })
+        );
+        setFile(data?.uploaded_file );
+        generalledgerFormik.setValues({
+          charge_id: charge_id,
+          date: data.entry[0].date,
+          total_amount: data.total_amount,
+          charges_memo: data.entry[0].memo,
+          charges: data.entry.map((item) => {
+            const items = {
+              entry_id: item.entry_id,
+              account: item.account,
+              amount: item.amount,
+              charge_type: item.charge_type,
+            };
+            return items;
+          }),
+          charges_attachment: data?.uploaded_file,
+        });
+      }
+    } catch (error) {
+      console.error("Error: ", error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchChargeData();
+  }, [charge_id, tenantDetails]);
+
+  const [selectedTenant, setSelectedTenant] = useState("Select Resident");
   const [tenantId, setTenantId] = useState("Select Resident");
   const [recdropdownOpen, setrecDropdownOpen] = useState(false);
   const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
 
   const handleRecieverSelection = (property) => {
-    setSelectedRec(`${property.tenant_firstName} ${property.tenant_lastName}`);
+    setSelectedTenant(
+      `${property.tenant_firstName} ${property.tenant_lastName}`
+    );
     setTenantId(property.tenant_id);
   };
 
@@ -245,7 +369,7 @@ const AddCharge = () => {
   const [total, setTotal] = useState(0);
   const handleTotal = () => {
     let sum = 0;
-    generalledgerFormik.values.charges.forEach((element) => {
+    generalledgerFormik.values.charges?.forEach((element) => {
       sum += parseInt(Number(element.amount));
     });
     setTotal(sum);
@@ -314,7 +438,6 @@ const AddCharge = () => {
       setFile([...file, ...finalArray]);
     }
   };
-  console.log(file);
 
   const deleteFile = (index) => {
     const newFile = [...file];
@@ -324,11 +447,12 @@ const AddCharge = () => {
   };
 
   const handleOpenFile = (item) => {
+    console.log(item, "yashu")
     if (typeof item !== "string") {
       const url = URL.createObjectURL(item);
       window.open(url, "_blank");
     } else {
-      window.open(item, "_blank");
+      window.open(`https://propertymanager.cloudpress.host/api/images/get-file/${item}`, "_blank");
     }
   };
 
@@ -336,7 +460,7 @@ const AddCharge = () => {
     navigate(`/${admin}/rentrolldetail/${lease_id}`);
   };
 
-  console.log(generalledgerFormik.errors);
+  console.log(generalledgerFormik.values, "res1");
 
   return (
     <>
@@ -438,7 +562,9 @@ const AddCharge = () => {
                           disabled={charge_id}
                         >
                           <DropdownToggle caret style={{ width: "100%" }}>
-                            {selectedRec ? selectedRec : "Select Resident"}
+                            {selectedTenant
+                              ? selectedTenant
+                              : "Select Resident"}
                           </DropdownToggle>
                           <DropdownMenu
                             style={{
@@ -448,7 +574,7 @@ const AddCharge = () => {
                               overflowX: "hidden",
                             }}
                           >
-                            {tenantDetails.map((property, index) => (
+                            {tenantDetails?.map((property, index) => (
                               <DropdownItem
                                 key={index}
                                 onClick={() =>
@@ -518,7 +644,7 @@ const AddCharge = () => {
                             </thead>
                             <tbody>
                               <>
-                                {generalledgerFormik.values.charges.map(
+                                {generalledgerFormik.values.charges?.map(
                                   (charges, index) => (
                                     <tr key={index}>
                                       <td>
@@ -577,7 +703,7 @@ const AddCharge = () => {
                                             >
                                               Security Deposit Liability
                                             </DropdownItem>
-                                            {recAccounts ? (
+                                            {recAccounts.length > 0 ? (
                                               <>
                                                 <DropdownItem
                                                   header
@@ -603,7 +729,7 @@ const AddCharge = () => {
                                             ) : (
                                               <></>
                                             )}
-                                            {oneTimeAccounts ? (
+                                            {oneTimeAccounts.length > 0 ? (
                                               <>
                                                 <DropdownItem
                                                   header
@@ -738,25 +864,20 @@ const AddCharge = () => {
                                 ) !== Number(total) ? (
                                   <tr>
                                     <th colSpan={2}>
-                                      <OverlayTrigger
-                                        trigger="click"
-                                        placement="top"
+                                      <span
+                                        style={{
+                                          cursor: "pointer",
+                                          color: "red",
+                                        }}
                                       >
-                                        <span
-                                          style={{
-                                            cursor: "pointer",
-                                            color: "red",
-                                          }}
-                                        >
-                                          The payment's amount must match the
-                                          total applied to balance. The
-                                          difference is $
-                                          {Math.abs(
-                                            generalledgerFormik.values
-                                              .total_amount
-                                          ).toFixed(2)}
-                                        </span>
-                                      </OverlayTrigger>
+                                        The payment's amount must match the
+                                        total applied to balance. The difference
+                                        is $
+                                        {Math.abs(
+                                          generalledgerFormik.values
+                                            .total_amount - total
+                                        ).toFixed(2)}
+                                      </span>
                                     </th>
                                   </tr>
                                 ) : null}
@@ -809,7 +930,7 @@ const AddCharge = () => {
                           </div>
 
                           <div className="d-flex ">
-                            {file.length > 0 &&
+                            {file?.length > 0 &&
                               file?.map((file, index) => (
                                 <div
                                   key={index}
