@@ -34,7 +34,6 @@ import PaymentHeader from "components/Headers/PaymentHeader";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CloseIcon from "@mui/icons-material/Close";
-import { Check, CheckBox } from "@mui/icons-material";
 import Checkbox from "@mui/material/Checkbox";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -181,7 +180,9 @@ const AddPayment = () => {
   console.log("object", generalledgerFormik.values);
 
   const handleCloseButtonClick = () => {
-    navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
+    navigate(
+      `/admin/rentrolldetail/${tenantId}/${entryIndex}`
+    );
   };
 
   // const handleSavePaymentButtonClick = () => {
@@ -850,7 +851,7 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
               },
             ],
           });
-          setSelectedRec(response.data.data.tenant_firstName && response.data.data.tenant_lastName )
+          setSelectedRec(`${response.data.data.tenant_firstName}  ${response.data.data.tenant_lastName}` )
           setSelectedCreditCard(response.data.data.billing_id)
           setSelectedProp(response.data.data.payment_type)
         } else {
@@ -906,7 +907,7 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
         rental_adress: rentalAddress,
         tenant_id: tenantid,
         entryIndex: tenantentryIndex,
-
+        total_amount: totalAmount1,
         entries: generalledgerFormik.values.entries.map((entry) => ({
           account: entry.account,
           balance: parseFloat(entry.balance),
@@ -915,14 +916,14 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
         })),
       };
 
-      //console.log(updatedValues, "updatedValues");
-
       const putUrl = `${baseUrl}/payment_charge/edit_entry/${id}`;
       const response = await axios.put(putUrl, updatedValues);
 
       if (response.data.statusCode === 200) {
         swal("Success", "Payments Update Successfully", "success");
-        navigate(`/admin/rentrolldetail/${tenantid}/${"01"}`);
+        navigate(
+          `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
+        );
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -1153,7 +1154,6 @@ const currentDateString = currentYear + '-' + currentMonth + '-' + currentDay;
       //customer_vault_id: selectedCard.customer_vault_id,
       billing_id: selectedCard.billing_id,
     });
-
     setSelectedCreditCard(selectedCard.billing_id);
   };
 

@@ -324,7 +324,6 @@ const AddCharge = () => {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
       }
-      console.log(state, "state");
 
       try {
         const chargeObject = {
@@ -352,14 +351,12 @@ const AddCharge = () => {
                   charges_attachment:
                     generalledgerFormik.values.charges_attachment,
                   isPaid: false,
-                  // charges_total_amount:charges_total_amount
                 })
               ),
             },
           ],
         };
-        console.log(chargeObject, "chargeObject");
-        // debugger
+ 
         const url = `${baseUrl}/payment_charge/payment_charge`;
         await axios
           .post(url, chargeObject)
