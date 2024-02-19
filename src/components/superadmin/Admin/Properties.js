@@ -418,6 +418,15 @@ export default function Properties() {
                       Lease({adminDataCount?.lease})
                     </NavLink>
                   </li>
+                  <li className="nav-item">
+                    <NavLink
+                      to={`/superadmin/vendor/${admin_id}`}
+                      className="nav-link"
+                      activeClassName="active"
+                    >
+                      Vendor({adminDataCount?.vendor})
+                    </NavLink>
+                  </li>
                   {/* Add more links as needed */}
                 </ul>
               </div>
@@ -429,19 +438,21 @@ export default function Properties() {
                 onChange={(e) => {
                   const selectedValue = e.target.value;
                   if (selectedValue === "1") {
-                    window.location.href = `/superadmin/staffmember/${admin_id}`;
+                    navigate(`/superadmin/staffmember/${admin_id}`);
                   } else if (selectedValue === "2") {
-                    window.location.href = `/superadmin/propertytype/${admin_id}`;
+                    navigate(`/superadmin/propertytype/${admin_id}`);
                   } else if (selectedValue === "3") {
-                    window.location.href = `/superadmin/properties/${admin_id}`;
+                    navigate(`/superadmin/properties/${admin_id}`);
                   } else if (selectedValue === "4") {
-                    window.location.href = `/superadmin/rental-owner/${admin_id}`;
+                    navigate(`/superadmin/rental-owner/${admin_id}`);
                   } else if (selectedValue === "5") {
-                    window.location.href = `/superadmin/tenant/${admin_id}`;
+                    navigate(`/superadmin/tenant/${admin_id}`);
                   } else if (selectedValue === "6") {
-                    window.location.href = `/superadmin/unit/${admin_id}`;
+                    navigate(`/superadmin/unit/${admin_id}`);
                   } else if (selectedValue === "7") {
-                    window.location.href = `/superadmin/lease/${admin_id}`;
+                    navigate(`/superadmin/lease/${admin_id}`);
+                  } else if (selectedValue === "8") {
+                    navigate(`/superadmin/vendor/${admin_id}`);
                   }
                 }}
                 style={{

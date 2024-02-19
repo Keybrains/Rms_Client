@@ -80,6 +80,7 @@ import SuperAdminRentalOwner from "components/superadmin/Admin/RentalOwner";
 import SuperAdminTenat from "components/superadmin/Admin/Tenant";
 import SuperAdminUnit from "components/superadmin/Admin/Unit";
 import SuperAdminLease from "components/superadmin/Admin/Leasing";
+import SuperAdminVendor from "components/superadmin/Admin/Vendor";
 import ResetPassword from "views/source/Resetpassword";
 
 var routes = [
@@ -744,6 +745,13 @@ var routes = [
     name: "Unit",
     icon: "ni ni-pin-3 text-orange",
     component: <SuperAdminLease />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/vendor/:admin_id",
+    name: "Vendor",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminVendor />,
     layout: "/superadmin",
   },
 ];

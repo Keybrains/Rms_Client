@@ -11,6 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
+import "./nav.css";
 import Toolbar from "@mui/material/Toolbar";
 import axios from "axios";
 import Checkbox from "@mui/material/Checkbox";
@@ -41,51 +42,61 @@ import deleterecord from "../assets/img/delete.png";
 import SuperAdminHeader from "../Headers/SuperAdminHeader";
 
 import { Col, Container, Row } from "reactstrap";
-import { Link, useNavigate, useParams, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
 
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const headCells = [
   {
-    label: "Tenant Name",
+    label: "Name",
   },
   {
-    label: "Phone",
+    label: "Mobile",
   },
   {
     label: "Email",
+  },
+  {
+    label: "Updated At",
+  },
+  {
+    label: "Created At",
   },
 ];
 
 function Rows(props) {
   const { row, handleClick, isItemSelected, labelId, seletedEditData } = props;
   const navigate = useNavigate();
-  const { admin_id } = useParams();
 
   return (
     <React.Fragment>
       <TableRow
         hover
-        onClick={(event) => handleClick(event, row._id)}
+        // onClick={(event) => handleClick(event, row._id)}
         role="checkbox"
         aria-checked={isItemSelected}
         tabIndex={-1}
         selected={isItemSelected}
       >
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
+        <TableCell align="left">{row?.vendor_name}</TableCell>
+        <TableCell align="left">{row?.vendor_phoneNumber}</TableCell>
+        <TableCell align="left">{row?.vendor_email}</TableCell>
+        <TableCell align="left">{row?.updatedAt}</TableCell>
         <TableCell align="left">
-          <img src={ProfileIcon} /> {row?.tenant_firstName}{" "}
-          {row?.tenant_lastName}
+          {new Date(row.createdAt).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "2-digit",
+          })}
         </TableCell>
-        <TableCell align="left">{row?.tenant_phoneNumber}</TableCell>
-        <TableCell align="left">{row?.tenant_email}</TableCell>
       </TableRow>
     </React.Fragment>
   );
 }
 
-export default function Tenant() {
+export default function Vendor() {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let cookies = new Cookies();
   // const history = useHistory();
@@ -96,25 +107,26 @@ export default function Tenant() {
   //   }
   // }, [cookies]);
 
-  const [tenantData, setTenantData] = useState([]);
+  const [vendorData, setVendorData] = useState([]);
   let [loader, setLoader] = React.useState(true);
   let [countData, setCountData] = useState(0);
   const [adminName, setAdminName] = useState();
+  const { admin_id } = useParams();
 
   // pagination
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const getData = async () => {
     try {
-      const res = await axios.get(`${baseUrl}/tenants/tenant/get/${admin_id}`, {
+      const res = await axios.get(`${baseUrl}/vendor/vendor/${admin_id}`, {
         params: {
           pageSize: rowsPerPage,
           pageNumber: page,
         },
       });
       setLoader(false);
-      setTenantData(res.data.data);
-      setAdminName(res.data.data[0]?.admin_data);
+      setVendorData(res.data.data);
+      setAdminName(res.data.data[0].admin);
       setCountData(res.data.count); // Make sure to adjust the key here
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -139,7 +151,7 @@ export default function Tenant() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = tenantData?.map((n) => n._id);
+      const newSelected = vendorData?.map((n) => n._id);
       setSelected(newSelected);
       return;
     }
@@ -198,14 +210,14 @@ export default function Tenant() {
   let handleSearchData = async (values) => {
     setSearchLoader(true);
     // const token = cookies.get("token");
-    let res = await axios.post(`${baseUrl}/tenants/search`, {
+    let res = await axios.post(`${baseUrl}/vendor/search`, {
       search: values,
       admin_id: admin_id,
     });
     if (res.data.statusCode === 200) {
       if (values !== "") {
         setSearchLoader(false);
-        setTenantData(res.data.data);
+        setVendorData(res.data.data);
         setCountData(res.data.count);
       } else {
         setSearchLoader(false);
@@ -277,8 +289,17 @@ export default function Tenant() {
     setEditData(datas);
   };
 
+  // Formik
+  //   let [ProductDetailsFormik, setProductDetailsFormik] = useState({});
+  //   const FormikValues = () => {
+  //     const formik = useFormikContext();
+  //     React.useEffect(() => {
+  //       setProductDetailsFormik(formik.values);
+  //     }, [formik.values]);
+  //     return null;
+  //   };
+
   const [adminDataCount, setAdminDataCount] = useState();
-  console.log(adminDataCount, "adminDataCount");
   const adminCount = async () => {
     try {
       // Make an HTTP request to your API endpoint with the adminId
@@ -293,25 +314,15 @@ export default function Tenant() {
     adminCount();
   }, [admin_id]);
 
-  // Formik
-  //   let [ProductDetailsFormik, setProductDetailsFormik] = useState({});
-  //   const FormikValues = () => {
-  //     const formik = useFormikContext();
-  //     React.useEffect(() => {
-  //       setProductDetailsFormik(formik.values);
-  //     }, [formik.values]);
-  //     return null;
-  //   };
-
   const navigate = useNavigate();
-  const { admin_id } = useParams();
+
   return (
     <>
       <SuperAdminHeader />
       <Container className="mt--8 ml--10" fluid>
         <Row>
           <Col>
-          <nav
+            <nav
               className="navbar navbar-expand-lg navbar-light bg-light mb-1 main-nav"
               style={{ cursor: "pointer", borderRadius: "15px" }}
             >
@@ -406,7 +417,7 @@ export default function Tenant() {
                       className="nav-link"
                       activeClassName="active"
                     >
-                       Vendor({adminDataCount?.vendor})
+                      Vendor({adminDataCount?.vendor})
                     </NavLink>
                   </li>
                   {/* Add more links as needed */}
@@ -453,8 +464,10 @@ export default function Tenant() {
                 <option value="5">Tenant</option>
                 <option value="6">Unit</option>
                 <option value="7">Lease</option>
+                <option value="8">Vendor</option>
               </select>
             </div>
+
             <div>
               <Paper
                 sx={{
@@ -469,8 +482,8 @@ export default function Tenant() {
                   sx={{
                     pl: { sm: 2 },
                     pr: { xs: 1, sm: 1 },
-                    bgcolor: "#fff", // Set the background color here
-                    color: "white", // Set the font color to white
+                    bgcolor: "#fff",
+                    color: "white",
                   }}
                 >
                   <Typography
@@ -479,7 +492,7 @@ export default function Tenant() {
                     id="tableTitle"
                     component="div"
                   >
-                    Tenant: {adminName?.first_name} {adminName?.last_name}
+                    Vendor: {adminName?.first_name} {adminName?.last_name}
                   </Typography>
 
                   <form className="form-inline">
@@ -493,7 +506,7 @@ export default function Tenant() {
                     />
                   </form>
 
-                  <>
+                  {/* <>
                     {selected.length > 0 ? (
                       <Tooltip title="Delete">
                         <IconButton onClick={() => handleDelete()}>
@@ -509,7 +522,7 @@ export default function Tenant() {
                         </IconButton>
                       </Tooltip>
                     ) : null}
-                  </>
+                  </> */}
                 </Toolbar>
 
                 {loader || searchLoader ? (
@@ -546,7 +559,7 @@ export default function Tenant() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {tenantData?.map((row, index) => {
+                        {vendorData?.map((row, index) => {
                           const isItemSelected = isSelected(row._id);
                           const labelId = `enhanced-table-checkbox-${index}`;
                           return (

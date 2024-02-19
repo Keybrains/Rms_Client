@@ -460,8 +460,6 @@ const AddCharge = () => {
     navigate(`/${admin}/rentrolldetail/${lease_id}`);
   };
 
-  console.log(generalledgerFormik.values, "res1");
-
   return (
     <>
       <ChargeHeader />
