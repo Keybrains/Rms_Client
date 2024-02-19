@@ -85,6 +85,7 @@ const RentRollDetail = () => {
         `${baseUrl}/payment/charges_payments/${lease_id}`
       );
       setFinancialData(res.data.data);
+      console.log(res.data.data, "janak ")
       setTotalAmount(res.data.totalAmount);
     } catch (error) {
       console.error("Error: ", error.message);
@@ -238,8 +239,8 @@ const RentRollDetail = () => {
                     {getStatus(leaseData?.start_date, leaseData?.end_date)} |{" "}
                     {leaseData?.rental_adress ? leaseData?.rental_adress : " "}
                     {leaseData?.rental_unit &&
-                    leaseData?.rental_unit !== undefined &&
-                    leaseData?.rental_unit !== ""
+                      leaseData?.rental_unit !== undefined &&
+                      leaseData?.rental_unit !== ""
                       ? ` - ${leaseData?.rental_unit}`
                       : ""}
                   </h5>
@@ -356,8 +357,8 @@ const RentRollDetail = () => {
                                         <Col>
                                           {leaseData?.rentalOwner_firstName
                                             ? leaseData?.rentalOwner_firstName +
-                                              " " +
-                                              leaseData?.rentalOwner_lastName
+                                            " " +
+                                            leaseData?.rentalOwner_lastName
                                             : "N/A"}
                                         </Col>
                                         <Col>
@@ -807,14 +808,14 @@ const RentRollDetail = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
+                                 
                                   {financialData &&
                                     financialData?.map((generalledger) => (
                                       <>
                                         <tr
-                                          key={`${
-                                            generalledger?.payment_id ||
+                                          key={`${generalledger?.payment_id ||
                                             generalledger?.charge_id
-                                          }`}
+                                            }`}
                                         >
                                           <td>
                                             {generalledger?.entry[0]?.date ||
@@ -859,8 +860,8 @@ const RentRollDetail = () => {
                                               ? generalledger.balance >= 0
                                                 ? `$${generalledger.balance}`
                                                 : `$(${Math.abs(
-                                                    generalledger.balance
-                                                  )})`
+                                                  generalledger.balance
+                                                )})`
                                               : "0"}
                                           </td>
                                           <td>
@@ -1116,7 +1117,7 @@ const RentRollDetail = () => {
                                         <br></br>
                                         {tenant.rental_adress}
                                         {tenant.rental_unit !== "" &&
-                                        tenant.rental_unit !== undefined
+                                          tenant.rental_unit !== undefined
                                           ? ` - ${tenant.rental_unit}`
                                           : null}
                                       </div>
@@ -1173,13 +1174,13 @@ const RentRollDetail = () => {
                                         style={
                                           tenant.moveout_notice_given_date
                                             ? {
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                marginTop: "10px",
-                                              }
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              marginTop: "10px",
+                                            }
                                             : {
-                                                display: "none",
-                                              }
+                                              display: "none",
+                                            }
                                         }
                                       >
                                         <Typography
@@ -1197,13 +1198,13 @@ const RentRollDetail = () => {
                                         style={
                                           tenant.moveout_date
                                             ? {
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                marginTop: "10px",
-                                              }
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              marginTop: "10px",
+                                            }
                                             : {
-                                                display: "none",
-                                              }
+                                              display: "none",
+                                            }
                                         }
                                       >
                                         <Typography
