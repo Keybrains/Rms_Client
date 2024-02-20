@@ -29,7 +29,7 @@ const StaffPropertyDashboard = () => {
 
   let [loader, setLoader] = React.useState(true);
   const [propertyDetails, setPropertyDetails] = useState([]);
-  console.log(propertyDetails, "propertyDetails")
+  console.log(propertyDetails, "propertyDetails");
   const [propertyLoading, setPropertyLoading] = useState(true);
   const [propertyError, setPropertyError] = useState(null);
   const [tenantDetails, setTenantDetails] = useState({});
@@ -248,10 +248,7 @@ const StaffPropertyDashboard = () => {
                               />
                             )}
                           </th>
-                          <th>
-                            CreatedAt
-                       
-                          </th>
+                          <th>CreatedAt</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -262,19 +259,21 @@ const StaffPropertyDashboard = () => {
                                 key={index}
                                 onClick={() =>
                                   navigate(
-                                    `/staff/staffpropertydetail/${address?.lease_id}`
+                                    // `/staff/staffpropertydetail/1708425958731`
+                                    `/staff/staffpropertydetail/${address?.rental_id}`
                                   )
                                 }
                                 style={{ cursor: "pointer" }}
                               >
-                                <td
-                                >
-                                  {address?.rental_adress}{" "}
-                                </td>
+                                <td>{address?.rental_adress} </td>
 
                                 <td>{address?.propertysub_type}</td>
                                 <td>{address?.rental_city}</td>
-                                <td>{moment(address?.createdAt).format("DD-MM-YYYY")}</td>
+                                <td>
+                                  {moment(address?.createdAt).format(
+                                    "DD-MM-YYYY"
+                                  )}
+                                </td>
                               </tr>
                             </>
                           )

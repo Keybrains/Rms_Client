@@ -11,7 +11,8 @@ import Cookies from "universal-cookie";
 
 const StaffPropertyDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { lease_id } = useParams();
+  const { rental_id } = useParams();
+  console.log(rental_id, "rental_id")
   const [propertyDetails, setPropertyDetails] = useState([]);
   const [propertyUnit, setPropertyUnit] = useState([]);
   const [propId, setPropId] = useState("");
@@ -39,8 +40,8 @@ const StaffPropertyDetail = () => {
   const getRentalData = async () => {
     try {
       const res = await axios.get(
-        // `${baseUrl}/staffmember/staffmember_summary/${lease_id}`
-        `${baseUrl}/staffmember/staffmember_summary/1708425958731`
+        `${baseUrl}/staffmember/staffmember_summary/${rental_id}`
+        // `${baseUrl}/staffmember/staffmember_summary/1708425958731`
       );
       setPropertyDetails(res.data.data[0]);
       console.log(res.data.data < "res.data.data");

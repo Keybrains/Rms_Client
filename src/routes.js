@@ -437,7 +437,7 @@ var routes = [
     layout: "/vendor",
   },
   {
-    path: "/staffpropertydetail/:lease_id",
+    path: "/staffpropertydetail/:tenant_id",
     name: "Property",
     component: <StaffPropertyDetail />,
     layout: "/staff",
