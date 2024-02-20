@@ -1929,15 +1929,15 @@ const RentRollDetail = () => {
                                             </td>
                                             <td>
                                               {generalledger.type === "Payment"
-                                                ? "$" + generalledger.amount
+                                                ? "$" + generalledger.total_amount
                                                 : "-"}
                                             </td>
                                             <td>
                                               {generalledger.Total !== undefined
                                                 ? generalledger.Total >= 0
-                                                  ? `$${generalledger.Total}`
+                                                  ? `$${generalledger.Total.toFixed(2)}`
                                                   : `$(${Math.abs(
-                                                      generalledger.Total
+                                                      generalledger.Total.toFixed(2)
                                                     )})`
                                                 : "0"}
                                               {/* {calculateBalance(
@@ -1947,59 +1947,6 @@ const RentRollDetail = () => {
                                                 )} */}
                                             </td>
                                             <td>
-                                              {/* {generalledger.type ===
-                                                  "Charge" && (
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                  >
-                                                    <DeleteIcon
-                                                      onClick={() => {
-                                                        console.log(
-                                                          generalledger,
-                                                          "geennennene"
-                                                        );
-                                                        deleteCharge(
-                                                          generalledger._id
-                                                        );
-                                                      }}
-                                                    />
-                                                  </div>
-                                                )}
-
-                                                {generalledger.type ===
-                                                  "Charge" && (
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      editcharge(
-                                                        generalledger._id
-                                                      );
-                                                    }}
-                                                  >
-                                                    <EditIcon />
-                                                  </div>
-                                                )}
-                                                {generalledger.type ===
-                                                  "Payment" && (
-                                                  <div
-                                                    style={{
-                                                      cursor: "pointer",
-                                                    }}
-                                                    onClick={(e) => {
-                                                      e.stopPropagation();
-                                                      editpayment(
-                                                        generalledger._id
-                                                      );
-                                                    }}
-                                                  >
-                                                    <EditIcon />
-                                                  </div>
-                                                )} */}
                                               <div
                                                 style={{
                                                   display: "flex",
@@ -2064,26 +2011,24 @@ const RentRollDetail = () => {
                                                               Refund
                                                             </DropdownItem>
                                                           )}
-                                                          {(generalledger?.status ===
-                                                            "Pending" ||
-                                                            generalledger?.payment_type ===
-                                                              "Cash" ||
-                                                            generalledger?.payment_type ===
-                                                              "Check" ||
-                                                            generalledger?.type ===
-                                                              "Charge") && (
-                                                            <DropdownItem
-                                                              tag="div"
-                                                              onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                editpayment(
-                                                                  generalledger._id
-                                                                );
-                                                              }}
-                                                            >
-                                                              Edit
-                                                            </DropdownItem>
-                                                          )}
+                                                            {(generalledger?.status === "Pending" ||
+                                                              generalledger?.payment_type === "Cash" ||
+                                                              generalledger?.payment_type === "Check" ||
+                                                              generalledger?.type === "Charge") && (
+                                                              <DropdownItem
+                                                                tag="div"
+                                                                onClick={(e) => {
+                                                                  e.stopPropagation();
+                                                                  if (generalledger?.type === "Charge") {
+                                                                    editcharge(generalledger._id);
+                                                                  } else {
+                                                                    editpayment(generalledger._id);
+                                                                  }
+                                                                }}
+                                                              >
+                                                                Edit
+                                                              </DropdownItem>
+                                                            )}
                                                         </div>
                                                       )}
                                                     </DropdownMenu>
