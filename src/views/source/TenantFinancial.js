@@ -774,6 +774,7 @@ const TenantFinancial = () => {
   
   const [surchargePercentage, setSurchargePercentage] = useState();
 
+  // Calculate total amount after surcharge
 // Calculate total amount after surcharge
 const calculateTotalAmount = () => {
   const amount = parseFloat(financialFormik.values.amount) || 0;

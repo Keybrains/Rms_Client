@@ -402,7 +402,6 @@ const DemoPayment = () => {
   }, [pageItem]);
 
   const navigate = useNavigate();
-
   const [paymentLoader, setPaymentLoader] = useState(false);
   const [selectedCreditCard, setSelectedCreditCard] = useState(null);
 

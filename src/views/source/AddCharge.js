@@ -105,9 +105,9 @@ const AddCharge = () => {
     );
   };
 
-  // const handleSaveButtonClick = () => {
-  //   navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
-  // };
+  const handleEditCloseButtonClick = () => {
+    navigate(`/admin/rentrolldetail/${tenantid}/${tenantentryIndex}?source=payment`);
+  };
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -324,7 +324,6 @@ const AddCharge = () => {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
       }
-      console.log(state, "state");
 
       try {
         const chargeObject = {
@@ -348,18 +347,17 @@ const AddCharge = () => {
                   date: values.date,
                   memo: values.charges_memo,
                   tenant_id: tenantid,
+                  entryIndex: entryIndex,
                   tenant_firstName: selectedRec,
                   charges_attachment:
                     generalledgerFormik.values.charges_attachment,
                   isPaid: false,
-                  // charges_total_amount:charges_total_amount
                 })
               ),
             },
           ],
         };
-        console.log(chargeObject, "chargeObject");
-        // debugger
+ 
         const url = `${baseUrl}/payment_charge/payment_charge`;
         await axios
           .post(url, chargeObject)
@@ -450,7 +448,7 @@ const AddCharge = () => {
       if (response.data.statusCode === 200) {
         swal("Success", "Charges Update Successfully", "success");
         navigate(
-          `/admin/rentrolldetail/${tenantDetails._id}/${tenantDetails.entries.entryIndex}`
+          `/admin/rentrolldetail/${tenantid}/${tenantentryIndex}`
         );
         console.log(response, "response of object");
         // navigate(`/admin/rentrolldetail/${tenantId}/${entryIndex}`);
@@ -615,6 +613,8 @@ const AddCharge = () => {
           setFile(response.data.data.charges_attachment);
           generalledgerFormik.setValues({
             date: response.data.data.date,
+            tenant_id: response.data.data.tenant_id,
+            entryIndex: response.data.data.entryIndex,
             charges_amount: response.data.data.amount,
             charges_attachment: response.data.data.charges_attachment,
             charges_memo: response.data.data.memo,
@@ -626,6 +626,8 @@ const AddCharge = () => {
               },
             ],
           });
+          setTenantentryindex(response.data.data.entryIndex);
+          setTenantid(response.data.data.tenant_id);
           console.log(response.data.data, "response.data.data");
         } else {
           console.error("Error:", response.data.message);
@@ -1331,7 +1333,7 @@ const AddCharge = () => {
                           color="primary"
                           //  href="#rms"
                           className="btn btn-primary"
-                          onClick={handleCloseButtonClick}
+                          onClick={chargeId ? handleEditCloseButtonClick : handleCloseButtonClick}
                           style={{ background: "white", color: "black" }}
                         >
                           Cancel
