@@ -128,8 +128,8 @@ const[propertycount,setpropertycount] = useState()
                 <div style={{ textAlign: "center" }}>
                   Welcome to 302 Properties
                 </div>
-                <Row style={{ padding: "60px" }}>
-                  <Col lg="4" style={{ paddingLeft: "30px" }}>
+                <Row style={{ padding:"15px"}}>
+                  <Col lg="4" sm="12" className="mb-3">
                     <Card style={subcardStyle}>
                     
                       <CardBody className="d-flex flex-column justify-content-center  text-center">
@@ -165,7 +165,7 @@ const[propertycount,setpropertycount] = useState()
                       </CardBody>
                     </Card>
                   </Col>
-                  <Col lg="4" style={{ paddingLeft: "30px" }}>
+                  <Col lg="4" className="mb-3">
                     <Card style={subbcardStyle}>
                       <CardBody className="d-flex flex-column justify-content-center  text-center">
                         <div className="d-flex align-items-center flex-column p-3">
@@ -199,7 +199,7 @@ const[propertycount,setpropertycount] = useState()
                       </CardBody>
                     </Card>
                   </Col>
-                  <Col lg="4" style={{ paddingLeft: "30px" }}>
+                  <Col lg="4" style={{ }}>
                     <Card style={subcardStyle}>
                       <CardBody className="d-flex flex-column justify-content-center  text-center">
                         <div className="d-flex align-items-center flex-column p-3">
@@ -235,7 +235,7 @@ const[propertycount,setpropertycount] = useState()
                   </Col>
                 </Row>
                 <Row lg="12" className="d-flex justify-content-around">
-                  <Col lg="5" md="6" sm="12">
+                  <Col lg="6" md="12" sm="12" className="mb-3">
                     <Card
                       style={{
                         justifyContent: "center",
@@ -246,6 +246,7 @@ const[propertycount,setpropertycount] = useState()
                         // border:"0.5px solid black"
                       }}
                     >
+                      <Col>
                       <CardBody>
                         <div className="mb-2 d-flex justify-content-start">
                           <span
@@ -255,13 +256,12 @@ const[propertycount,setpropertycount] = useState()
                             New Work Orders
                           </span>
                         </div>
-                        <div className="col-lg-2">
+                        <div className="col-lg-6">
                           <div className="d-flex justify-content-between mb-2">
-                            <span className="">Total </span>
-                            <span> 7 </span>
+                            <span className="">Total - 7</span>
                           </div>
                         </div>
-                        <div style={bgStyle}>
+                        <div style={bgStyle} className="leackage">
                           <div className="d-flex justify-content-start">
                             <span className="">Leakage in bathroom</span>{" "}
                           </div>
@@ -269,7 +269,7 @@ const[propertycount,setpropertycount] = useState()
                             className="col-lg-10"
                             style={{ fontSize: "14px" }}
                           >
-                            <label className="d-flex justify-content-between mb-1">
+                            <label className="d-flex justify-content-between mb-1 leackage-status">
                               <span>13/01/2024</span>
                               <span>New</span>
                             </label>
@@ -283,7 +283,7 @@ const[propertycount,setpropertycount] = useState()
                             className="col-lg-10"
                             style={{ fontSize: "14px" }}
                           >
-                            <label className="d-flex justify-content-between mb-1">
+                            <label className="d-flex justify-content-between mb-1 leackage-status">
                               <span>13/01/2024</span>
                               <span>New</span>
                             </label>
@@ -297,7 +297,7 @@ const[propertycount,setpropertycount] = useState()
                             className="col-lg-10"
                             style={{ fontSize: "14px" }}
                           >
-                            <label className="d-flex justify-content-between mb-1">
+                            <label className="d-flex justify-content-between mb-1 leackage-status">
                               <span>13/01/2024</span>
                               <span>New</span>
                             </label>
@@ -313,7 +313,7 @@ const[propertycount,setpropertycount] = useState()
                                 className="col-lg-10"
                                 style={{ fontSize: "14px" }}
                               >
-                                <label className="d-flex justify-content-between mb-1">
+                                <label className="d-flex justify-content-between mb-1 leackage-status">
                                   <span>13/01/2024</span>
                                   <span>New</span>
                                 </label>
@@ -327,7 +327,7 @@ const[propertycount,setpropertycount] = useState()
                                 className="col-lg-10"
                                 style={{ fontSize: "14px" }}
                               >
-                                <label className="d-flex justify-content-between mb-1">
+                                <label className="d-flex justify-content-between mb-1 leackage-status">
                                   <span>13/01/2024</span>
                                   <span>New</span>
                                 </label>
@@ -343,9 +343,11 @@ const[propertycount,setpropertycount] = useState()
                           {showMoreNewOrders ? "View Less" : "View All"}
                         </label>
                       </CardBody>
+
+                      </Col>
                     </Card>
                   </Col>{" "}
-                  <Col lg="5" md="6" sm="12">
+                  <Col lg="6" md="12" sm="12" className="mb-3">
                     <Card
                       style={{
                         justifyContent: "center",
@@ -364,13 +366,12 @@ const[propertycount,setpropertycount] = useState()
                             Overdue Work Orders
                           </span>
                         </div>
-                        <div className="col-lg-2">
-                          <div className="d-flex justify-content-between mb-2">
-                            <span className="">Total </span>
-                            <span> 5 </span>
+                        <div className="col-lg-6">
+                          <div className="d-flex justify-content-between mb-2 ">
+                            <span className="">Total - 5</span>
                           </div>
                         </div>
-                        <div style={bgStyle}>
+                        <div style={bgStyle} className="leackage">
                           <div className="d-flex justify-content-start">
                             <span className="">Leakage in bathroom</span>{" "}
                           </div>
@@ -380,7 +381,7 @@ const[propertycount,setpropertycount] = useState()
                           >
                             <label
                               style={spStyle}
-                              className="d-flex justify-content-between mb-1"
+                              className="d-flex justify-content-between mb-1 leackage-status"
                             >
                               <span>30/01/2024</span>
                               <span>In progress</span>
@@ -397,7 +398,7 @@ const[propertycount,setpropertycount] = useState()
                           >
                             <label
                               style={spStyle}
-                              className="d-flex justify-content-between mb-1"
+                              className="d-flex justify-content-between mb-1 leackage-status"
                             >
                               <span>30/01/2024</span>
                               <span>In progress</span>{" "}
@@ -414,7 +415,7 @@ const[propertycount,setpropertycount] = useState()
                           >
                             <label
                               style={spStyle}
-                              className="d-flex justify-content-between mb-1"
+                              className="d-flex justify-content-between mb-1 leackage-status"
                             >
                               <span>30/01/2024</span>
                               <span>In progress</span>{" "}
@@ -433,7 +434,7 @@ const[propertycount,setpropertycount] = useState()
                               >
                                 <label
                                   style={spStyle}
-                                  className="d-flex justify-content-between mb-1"
+                                  className="d-flex justify-content-between mb-1 leackage-status"
                                 >
                                   <span>30/01/2024</span>
                                   <span>In progress</span>{" "}
