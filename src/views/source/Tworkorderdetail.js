@@ -84,7 +84,6 @@ const TWorkOrderDetails = () => {
         `${baseUrl}/work-order/workorder_details/${id}`
       );
       setoutstandDetails(response.data.data);
-      console.log(response.data.data, "janak")
       setLoading(false);
       //setWorkOrderStatus(response.data.data.workorder_status.reverse());
       setImageDetails(response.data.data.workOrderImage);

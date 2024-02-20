@@ -245,6 +245,7 @@ const AddWorkorder = () => {
             tenant_data,
           } = response.data.data;
           setWorkOrderData(response.data.data);
+        
 
           const formattedDueDate = response.data.data.date
             ? new Date(response.data.data.date).toISOString().split("T")[0]
@@ -272,15 +273,11 @@ const AddWorkorder = () => {
           setSelectedPriority(response.data.data.priority || "Select");
           setWorkOrderImage(response.data.data.workOrder_images || []);
           setSelectedFiles(response.data.data.workOrder_images || []);
-
-          setSelectedTenant(
-            tenant_data.tenant_firstName + " " + tenant_data.tenant_lastName ||
-              "Select"
-          );
-
+          setSelectedTenant((tenant_data.tenant_firstName + " " + tenant_data.tenant_lastName) || "Select");
+   
           WorkFormik.setValues({
             invoice_number: response.data.data?.invoice_number || "",
-            work_charge: response.data.data?.work_charge || "",
+            work_charge_to: response.data.data?.work_charge_to || "",
             detail: response.data.data?.detail || "",
             entry_contact: response.data.data?.entry_contact || "",
             final_total_amount: response.data.data?.final_total_amount || "",
@@ -323,7 +320,10 @@ const AddWorkorder = () => {
               part_price: part?.parts_price || "",
               total_amount: part?.amount || "",
               dropdownOpen: false,
-            })),
+            })
+              
+            ),
+            
           });
         } catch (error) {
           console.error("Error fetching vendor data:", error);
@@ -683,7 +683,6 @@ const AddWorkorder = () => {
   };
 
   const getTenantData = async () => {
-    setSelectedTenant("Select");
     if (
       selectedCharge === "Tenant" &&
       WorkFormik.values.rental_id &&
@@ -737,7 +736,7 @@ const AddWorkorder = () => {
                           <br />
                           <Input
                             className="form-control-alternative"
-                            id="input-work-subject"
+                            id="work_subject"
                             placeholder="Add Subject"
                             type="text"
                             name="work_subject"
@@ -1731,6 +1730,7 @@ const AddWorkorder = () => {
                               >
                                 <DropdownToggle caret style={{ width: "100%" }}>
                                   {selectedTenant} &nbsp;&nbsp;&nbsp;&nbsp;
+                                  
                                 </DropdownToggle>
                                 <DropdownMenu style={{ width: "100%" }}>
                                   {tenantsDetails?.map((item) => (

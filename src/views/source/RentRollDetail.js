@@ -85,7 +85,6 @@ const RentRollDetail = () => {
         `${baseUrl}/payment/charges_payments/${lease_id}`
       );
       setFinancialData(res.data.data);
-      console.log(res.data.data, "janak ")
       setTotalAmount(res.data.totalAmount);
     } catch (error) {
       console.error("Error: ", error.message);

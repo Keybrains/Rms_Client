@@ -80,18 +80,31 @@ const TenantFinancial = () => {
     setUnitDropdownOpen((prevState) => !prevState);
   };
 
+  let cookies = new Cookies();
+  const [accessType, setAccessType] = useState(null);
+  let cookie_id = localStorage.getItem("Tenant ID");
+
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
+
   const fetchLedger = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/payment/tenant_financial/${"1706075745904"}`
+        `${baseUrl}/payment/tenant_financial/${accessType?.tenant_id}`
       );
-      console.log(response, "yash");
       setLedger(response.data.data);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
   };
-  console.log("dhruvi", Ledger);
   useEffect(() => {
     fetchLedger();
   }, [accessType]);
@@ -135,7 +148,6 @@ const TenantFinancial = () => {
   }
 
   const calculateBalance = (data) => {
-    // console.log(data);
     let balance = 0;
     for (let i = data.length - 1; i >= 0; i--) {
       const currentEntry = data[i];
@@ -149,7 +161,6 @@ const TenantFinancial = () => {
       }
     }
 
-    //console.log("data",data)
     return data;
   };
 
@@ -178,28 +189,22 @@ const TenantFinancial = () => {
       cvv: yup.number().required("CVV is required"),
     }),
     onSubmit: (values, action) => {
-      // handleFormSubmit(values, action);
-      //console.log(values, "values");
       if (isEditable && paymentId) {
         editpayment(paymentId);
-      } else {
-        handleFinancialSubmit(values, action);
       }
     },
   });
   const handlePropertyTypeSelect = async (property) => {
-    console.log(property, "peropjihbjmn.................");
     setSelectedPropertyType(property.rental_adress);
     financialFormik.setFieldValue("propertyId", property.property_id || "");
     financialFormik.setFieldValue("unitId", property.unit_id || "");
-    setSelectedUnit(""); // Reset selected unit when a new property is selected
+    setSelectedUnit("");
     setUnit(property.rental_unit);
     setPropertyId(property.property_id);
-    setSelectedUnit(""); // Reset selected unit when a new property is selected
+    setSelectedUnit("");
     try {
       const units = await fetchUnitsByProperty(property.rental_adress);
-      //console.log(units, "units"); // Check the received units in the console
-      setUnitData(units); // Set the received units in the unitData state
+      setUnitData(units); 
     } catch (error) {
       console.error("Error handling selected property:", error);
     }
@@ -208,290 +213,10 @@ const TenantFinancial = () => {
     setSelectedUnit(property.rental_units);
     financialFormik.setFieldValue("unitId", property._id || "");
     financialFormik.setFieldValue("unit", property.rental_units || "");
-    // financialFormik.setFieldValue("rental_units", selectedUnit); // Update the formik state here
   };
-
-  // const getGeneralLedgerData = async () => {
-  //   const apiUrl = `${baseUrl}/payment/merge_payment_charge/${cookie_id}`;
-
-  //   try {
-  //     const response = await axios.get(apiUrl);
-  //     setLoader(false);
-
-  //     if (response.data && response.data.data) {
-  //       const mergedData = response.data.data;
-  //       mergedData.sort((a, b) => new Date(b.date) - new Date(a.date));
-  //       const dataWithBalance = calculateBalance(mergedData);
-  //       console.log('first', response.data.data)
-  //       setGeneralLedgerData(dataWithBalance);
-  //     } else {
-  //       console.error("Unexpected response format:", response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getGeneralLedgerData();
-  // }, [cookie_id]);
-
-  let cookies = new Cookies();
-  const [accessType, setAccessType] = useState(null);
-  let cookie_id = localStorage.getItem("Tenant ID");
-
-  React.useEffect(() => {
-    if (localStorage.getItem("token")) {
-      const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt);
-    } else {
-      navigate("/auth/login");
-    }
-  }, [navigate]);
-  console.log(accessType, "123");
-
-  const getTenantData = async () => {
-    try {
-      console.log(cookie_id, "cookie_id");
-      const response = await axios.get(
-        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
-      );
-
-      if (response.data) {
-        console.log("Data fetched successfully:", response.data);
-        setTenantDetails(response.data.data);
-        setRentalAddress(response.data.rental_adress);
-
-        const allTenants = await axios.get(
-          `${baseUrl}/tenant/tenant_summary/${cookie_id}`
-        );
-        setPropertyDetails(allTenants.data.data.entries);
-        setTenantDetails(allTenants.data.data);
-        // console.log(allTenants.data.data, "allTenants");
-      } else {
-        console.error("Data structure is not as expected:", response.data);
-        setRentalAddress([]); // Set rental_adress to an empty array
-      }
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setRentalAddress([]); // Set rental_adress to an empty array
-      setPropertyError(error);
-    } finally {
-      setPropertyLoading(false);
-    }
-  };
-  // console.log(tenantDetails, "tenantDetails");
-  React.useEffect(() => {
-    getTenantData();
-  }, [cookie_id]);
-  const getGeneralLedgerData = async () => {
-    if (tenantDetails) {
-      try {
-        const promises = tenantDetails?.entries?.map(async (data, index) => {
-          const rental = data?.rental_adress;
-          const property_id = data?.property_id;
-          const unit = data?.rental_units;
-          if (rental && property_id && unit) {
-            const url = `${baseUrl}/payment_charge/financial_unit?rental_adress=${rental}&property_id=${property_id}&unit=${unit}&tenant_id=${cookie_id}`;
-
-            try {
-              const response = await axios.get(url);
-              if (response.data && response.data.data) {
-                const mergedData = response.data.data;
-                return mergedData[0]?.unit[0];
-              } else {
-                console.error("Unexpected response format:", response.data);
-              }
-            } catch (error) {
-              console.error("Error fetching data:", error);
-            }
-          }
-          if (rental && property_id) {
-            const url = `${baseUrl}/payment_charge/financial?rental_adress=${rental}&property_id=${property_id}&tenant_id=${cookie_id}`;
-
-            try {
-              const response = await axios.get(url);
-              if (response.data && response.data.data) {
-                const mergedData = response.data.data;
-                return mergedData[0]?.unit[0];
-              } else {
-                console.error("Unexpected response format:", response.data);
-              }
-            } catch (error) {
-              console.error("Error fetching data:", error);
-            }
-          }
-          return null;
-        });
-
-        const results = await Promise.all(promises);
-        const validResults = results.filter((result) => result !== null);
-        setLoader(false);
-        setGeneralLedgerData((prevData) => [...validResults]);
-        const data = [...validResults];
-        const allPaymentAndCharges = data.flatMap((item) => {
-          if (item !== undefined) {
-            return item?.paymentAndCharges?.map((payment) => ({
-              paymentAndCharges: payment,
-              unit: item.unit,
-              unit_id: item.unit_id,
-              _id: item._id,
-            }));
-          }
-        });
-        setTotalPages(Math.ceil(allPaymentAndCharges.length / pageItem));
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-  };
-
-  useEffect(() => {
-    getGeneralLedgerData();
-  }, [tenantDetails, pageItem]);
-
-  const navigate = useNavigate();
-  useEffect(() => {
-    getTenantData();
-  }, []);
-  // const getRentalData = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       `${baseUrl}/rentals/rentals_property/${rental_adress}`
-  //     );
-  //     setpropertyDetails(response.data.data);
-  //     setpropertyLoading(false);
-  //   } catch (error) {
-  //     setpropertyError(error);
-  //     setpropertyLoading(false);
-  //   }
-  // };
-  // useEffect(() => {
-  //   if (rental_adress) {
-  //       console.log(`${baseUrl}/rentals/rentals_property/${rental_adress}`)
-  //       getRentalData();
-  //   }
-  //   //console.log(rental_adress)
-  // }, [rental_adress]);
-
-  // function navigateToTenantsDetails(rental_adress) {
-  //   navigate(`/tenant/tenantpropertydetail/${rental_adress}`);
-  //   // const tenantsDetailsURL = `/tenant/tenantpropertydetail/${rental_adress}`;
-  //   // window.location.href = tenantsDetailsURL;
-  //   // console.log("Rental Address", rental_adress);
-  // }
-  // const formatCardNumber = (inputValue) => {
-  //   if (typeof inputValue !== "string") {
-  //     return ""; // Return an empty string if inputValue is not a string
-  //   }
-
-  //   const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-  //   const formattedValue = numericValue
-  //     .replace(/(\d{4})/g, "$1 ") // Add a space after every four digits
-  //     .trim(); // Remove any trailing space
-
-  //   return formattedValue;
-  // };
-
-  // console.log(financialFormik.values,'financialFormik.values')
 
   const [paymentLoader, setPaymentLoader] = useState(false);
 
-  const handleFinancialSubmit = async (values, action) => {
-    const url = `${baseUrl}/nmipayment/purchase`;
-    const dateParts = values.expiration_date.split("/");
-    if (dateParts.length !== 2) {
-      console.log("Invalid date format");
-    }
-    const month = dateParts[0].padStart(2, "0");
-    const year = dateParts[1].slice(-2);
-
-    values.expiration_date = `${month}${year}`;
-
-    try {
-      // setPaymentLoader(true);
-      const response = await axios.post(url, {
-        paymentDetails: values,
-      });
-
-      console.log(response.data, "response.data");
-
-      if (response.data && response.data.statusCode === 100) {
-        toast.success("Payment Added Successfull!", {
-          position: "top-center",
-        });
-        // window.location.reload()
-        await getGeneralLedgerData();
-        console.log("Payment successful");
-        closeModal();
-
-        if (financialFormik.values.unitId) {
-          await postCharge(financialFormik.values.unitId);
-        } else {
-          await postCharge("", "");
-        }
-      } else {
-        console.error("Unexpected response format:", response.data);
-        toast.error(response.data.message, {
-          position: "top-center",
-        });
-
-        // Handle other status codes or show an error message
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      toast.error(error.message, {
-        position: "top-center",
-      });
-
-      // Handle the error (e.g., show an error message)
-    } finally {
-      // setPaymentLoader(false); // Reset loader when the request completes (whether success or failure)
-    }
-  };
-
-  const postCharge = async (unit_id) => {
-    const chargeObject = {
-      properties: {
-        rental_adress: selectedPropertyType,
-        property_id: financialFormik.values.propertyId,
-      },
-      unit: [
-        {
-          unit: selectedUnit,
-          unit_id: unit_id,
-          paymentAndCharges: [
-            {
-              type: "Payment",
-              charge_type: "",
-              account: selectedAccount,
-              amount: financialFormik.values.amount,
-              rental_adress: selectedPropertyType,
-              rent_cycle: "",
-              month_year: moment().format("MM-YYYY"),
-              date: moment().format("YYYY-MM-DD"),
-              memo: "",
-              tenant_id: cookie_id,
-              tenant_firstName:
-                tenantDetails.tenant_firstName +
-                " " +
-                tenantDetails.tenant_lastName,
-            },
-          ],
-        },
-      ],
-    };
-
-    const url = `${baseUrl}/payment_charge/payment_charge`;
-    await axios
-      .post(url, chargeObject)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
   var paginatedData;
@@ -582,53 +307,6 @@ const TenantFinancial = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState("");
 
-  useEffect(() => {
-    fetch(`${baseUrl}/addaccount/find_accountname`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setAccountData(data.data);
-        } else {
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Network error:", error);
-      });
-  }, []);
-
-  const fetchingRecAccountNames = async () => {
-    fetch(`${baseUrl}/recurringAcc/find_accountname`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setRecAccountNames(data.data);
-        } else {
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Network error:", error);
-      });
-  };
-
-  const fetchingOneTimeCharges = async () => {
-    fetch(`${baseUrl}/onetimecharge/find_accountname`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setOneTimeCharges(data.data);
-        } else {
-          console.error("Error:", data.message);
-        }
-      });
-  };
-
-  useEffect(() => {
-    fetchingRecAccountNames();
-    fetchingOneTimeCharges();
-  }, []);
-
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
@@ -640,6 +318,7 @@ const TenantFinancial = () => {
 
   const [isEditable, setIsEditable] = useState(false);
   const [paymentId, setPaymentId] = useState("");
+
   const getEditeData = async (id) => {
     try {
       const response = await axios.get(
@@ -739,15 +418,6 @@ const TenantFinancial = () => {
           </Col>
 
           <Col className="text-right">
-            {/* <Button
-                      color="primary"
-                     //  href="#rms"
-                      onClick={() => navigate("/tenant/taddwork")}
-                      size="sm"
-                      style={{ background: "white", color: "black" }}
-                    >
-                      Payment
-                    </Button> */}
             <Button
               color="primary"
               //  href="#rms"
@@ -825,34 +495,68 @@ const TenantFinancial = () => {
                                 <th scope="col">Increase</th>
                                 <th scope="col">Decrease</th>
                                 <th scope="col">Balance</th>
-                                <th scope="col">Action</th>
                               </tr>
                             </thead>
                             <tbody>
                               {Ledger &&
                                 Ledger.length > 0 &&
-                                Ledger.map((unit, index) => (
+                                Ledger.map((item, index) => (
                                   <tr
                                     key={index}
                                     style={{ cursor: "pointer" }}
                                     className="w-100"
                                   >
-                                    <td>{unit.date || "N/A"}</td>
-                                    <td>{unit.type || "N/A"}</td>
-                                    <td>{unit.account || "N/A"}</td>
-                                    <td>{unit.memo || "N/A"}</td>
-                                    {unit.type === "charge" ? (
-                                      <td> {unit.amount}</td>
+                                    <td>
+                                      {moment(item?.createdAt).format(
+                                        "DD-MM-YYYY"
+                                      ) || "N/A"}
+                                    </td>
+
+                                    <td>{item?.type || "N/A"}</td>
+
+                                    <td>
+                                      {item?.entry?.map((data, i) => (
+                                        <>
+                                          <div className="d-flex">
+                                            <div className="">
+                                              {i + 1}
+                                              {". "}
+                                            </div>
+                                            <div>{data?.account}</div>
+                                          </div>
+                                        </>
+                                      ))}
+                                    </td>
+
+                                    <td>
+                                      {" "}
+                                      {item.is_leaseAdded === true
+                                        ? item.entry.map((data, i) => (
+                                            <>
+                                              <div className="d-flex ">
+                                                <div>
+                                                  {i + 1}
+                                                  {". "}
+                                                </div>
+                                                <div>{data.memo}</div>
+                                              </div>
+                                            </>
+                                          ))
+                                        : item.entry[0].memo}
+                                    </td>
+
+                                    {item.type === "charge" ? (
+                                      <td> {item?.total_amount}</td>
                                     ) : (
                                       <td>-</td>
                                     )}
-                                    {unit.type === "payment" ? (
-                                      <td> {unit.amount}</td>
+                                    {item.type === "payment" ? (
+                                      <td> {item?.total_amount}</td>
                                     ) : (
                                       <td>-</td>
                                     )}
-                                    <td>{unit.balance}</td>
-                                    <td></td>
+                                    <td>{item?.balance}</td>
+                                    {/* <td></td> */}
                                   </tr>
                                 ))}
                             </tbody>

@@ -422,7 +422,6 @@ const ApplicantSummary = () => {
     }
   };
   
-  console.log(getApplicantData,"janaky")
 
   const handleRemoveItem = (itemToRemove) => {
     // Remove the item from checklistItems state
@@ -643,7 +642,6 @@ const ApplicantSummary = () => {
         setApplicantLoader(false);
       };
       console.log(matchedApplicant, "matchedApplicant");
-      console.log(checkedItems, "janak");
 
 
       
@@ -1015,7 +1013,6 @@ const ApplicantSummary = () => {
         if (response.data && response.data.data) {
           setApplicantDatas(response.data.data[0]);
           // setCheckedItems(matchedApplicant.applicant_checkedChecklist[0]);
-          console.log(response.data.data,"janak")
         } else {
           console.error("Invalid data format received from the API");
         }
