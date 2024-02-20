@@ -449,7 +449,7 @@ const PropDetails = () => {
 
       axios
         .put(
-          `http://localhost:4000/api/leases/lease_moveout/${lease_id}`,
+          `http://192.168.1.19:4000/api/leases/lease_moveout/${lease_id}`,
           updatedApplicant
         )
         .then((res) => {

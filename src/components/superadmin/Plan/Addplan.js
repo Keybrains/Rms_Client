@@ -111,7 +111,7 @@ const AddPlanForm = () => {
               <h4 style={{ color: "white" }}></h4>
             </FormGroup>
           </Col>
-          <Col className="text-right" >
+          <Col className="text-right">
             <Button
               className="mb-2"
               color="primary"
@@ -145,6 +145,7 @@ const AddPlanForm = () => {
                       changePlan: false,
                       cancelMembership: false,
                       pauseMembership: false,
+                      annual_discount: ""
                     }}
                     validationSchema={Yup.object().shape({
                       plan_name: Yup.string().required("Required"),
@@ -152,6 +153,7 @@ const AddPlanForm = () => {
                     })}
                     onSubmit={(values, { resetForm }) => {
                       handleSubmit(values);
+                      console.log(values, "===========================")
                       resetForm();
                     }}
                   >
@@ -236,7 +238,8 @@ const AddPlanForm = () => {
                               onBlur={handleBlur}
                               onChange={handleChange}
                             />
-                            {touched.annual_discount && errors.annual_discount ? (
+                            {touched.annual_discount &&
+                            errors.annual_discount ? (
                               <div className="text-danger">
                                 {errors.annual_discount}
                               </div>

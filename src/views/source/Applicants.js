@@ -814,11 +814,11 @@ const Applicants = () => {
                               deleteRentals(applicant._id);
                             }}
                           />
-                          {/* <EditIcon
+                          <EditIcon
 														onClick={() =>
 															navigate(`/admin/Applicants/${applicant._id}`)
 														}
-													/> */}
+													/>
                         </td>
                       </tr>
                     ))}
