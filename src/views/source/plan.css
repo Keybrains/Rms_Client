@@ -53,42 +53,7 @@
     }
 }
 
-
-/* 2560 */
-@media (max-width: 2560px) {
-  .buy-now-button{
-    display: none;
-  }
-}
-
-
-/* 2400 */
-@media (max-width: 2400px) {
-  .buy-now-button{
-    display: none;
-  }
-}
-
-/* 2300 */
-@media (max-width: 2300px) {
-  .buy-now-button{
-    display: none;
-  }
-}
-/* 2200 */
-@media (max-width: 2200px) {
-  .buy-now-button{
-    display: none;
-  }
-}
-/* 2100 */
-@media (max-width: 2100px) {
-  .buy-now-button{
-    display: none;
-  }
-}
-/* 2000 */
-@media (max-width: 2000px) {
+@media screen and (min-width: 2000px) and (max-width: 5000px) {
   .buy-now-button{
     display: none;
   }
