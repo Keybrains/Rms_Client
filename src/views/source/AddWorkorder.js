@@ -215,7 +215,7 @@ const AddWorkorder = () => {
 
   const setVendorsName = () => {
     axios
-      .get(`${baseUrl}/vendor//vendors/${accessType?.admin_id}`)
+      .get(`${baseUrl}/vendor/vendors/${accessType?.admin_id}`)
       .then((res) => {
         setAllVendors(res.data.data);
       })

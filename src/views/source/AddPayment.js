@@ -45,6 +45,7 @@ import { OverlayTrigger } from "react-bootstrap";
 function AddPayment() {
   const [accessType, setAccessType] = useState(null);
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_URL;
   const navigate = useNavigate();
   const { lease_id, admin, payment_id } = useParams();
   const [chargeData, setchargeData] = useState([]);
@@ -81,6 +82,7 @@ function AddPayment() {
           entry_id: "",
           account: "",
           amount: "",
+          balance: "",
           charge_type: "",
         },
       ],
@@ -92,42 +94,127 @@ function AddPayment() {
       payments: yup.array().of(
         yup.object().shape({
           account: yup.string().required("Required"),
-          amount: yup.number().required("Required"),
+          amount: yup
+            .number()
+            .required("Required")
+            .min(1, "Amount must be greater than zero.")
+            .test('is-less-than-balance', 'Amount must be less than or equal to balance', function (value) {
+              const balance = this.parent.balance;
+              return value <= balance;
+            }),
         })
       ),
     }),
     onSubmit: (values) => {
       if (Number(generalledgerFormik.values.total_amount) === Number(total)) {
-        // handleSubmit(values);
+        handleSubmit(values);
       }
     },
   });
+
+  const handleSubmit = async (values) => {
+    setLoader(true);
+
+    if (file) {
+      try {
+        const uploadPromises = file?.map(async (fileItem, i) => {
+          if (fileItem.upload_file instanceof File) {
+            try {
+              const form = new FormData();
+              form.append("files", fileItem.upload_file);
+
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
+              if (
+                res &&
+                res.data &&
+                res.data.files &&
+                res.data.files.length > 0
+              ) {
+                fileItem.upload_file = res.data.files[0].filename;
+              } else {
+                console.error("Unexpected response format:", res);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
+          }
+        });
+
+        await Promise.all(uploadPromises);
+      } catch (error) {
+        console.error("Error processing file uploads:", error);
+      }
+    }
+
+    const object = {
+      admin_id: accessType.admin_id,
+      tenant_id: tenantId,
+      lease_id: lease_id,
+
+      entry: values.payments?.map((item) => {
+        const data = {
+          account: item.account,
+          amount: Number(item.amount),
+          memo: values.payments_memo,
+          date: values.date,
+          account: item.account,
+          charge_type: item.charge_type,
+          is_repeatable: false,
+        };
+        return data;
+      }),
+
+      total_amount: total,
+      is_leaseAdded: false,
+      uploaded_file: file,
+    };
+
+    try {
+      const res = await axios.post(`${baseUrl}/payment/payment`, object);
+      if (res.data.statusCode === 200) {
+        toast.success(res.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
+        navigate(`/${admin}/RentRollLeaseing/${lease_id}`);
+      } else {
+        toast.warning(res.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
+      }
+    } catch (error) {
+      console.error("Error: ", error.message);
+    } finally {
+      setLoader(false);
+    }
+  };
 
   const fetchchargeData = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${baseUrl}/charge/charges/${lease_id}`);
       setchargeData(response.data.totalCharges);
-      const data = response.data.totalCharges.map((item) => {
-        const myData = item.entry
-          .filter((element) => element.charge_amount > 0)
-          .map((element) => {
-            const items = {
-              account: element.account,
-              balance: element.charge_amount,
-              amount: 0,
-              charge_type: element.charge_type,
-              dropdownOpen: false,
-            };
-            return items;
-          });
-        console.log(myData, "paa");
-        return myData;
-      });
+      const data = response.data.totalCharges
+        .map((item) => {
+          const myData = item.entry
+            .filter((element) => element.charge_amount > 0)
+            .map((element) => {
+              const items = {
+                account: element.account,
+                balance: element.charge_amount,
+                amount: 0,
+                charge_type: element.charge_type,
+                dropdownOpen: false,
+              };
+              return items;
+            });
+          return myData;
+        })
+        .flat();
 
-      console.log(data, "paas");
       generalledgerFormik.setValues({
-        payments: [...data],
+        payments: data,
         payment_id: "",
         date: "",
         total_amount: 0,
