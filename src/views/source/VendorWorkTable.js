@@ -57,7 +57,7 @@ const VendorWorkTable = () => {
   }, [navigate]);
   const getWorkData = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.38:4000/api/work-order/vendor_work/${accessType.vendor_id}`);
+      const response = await axios.get(`${baseUrl}/work-order/vendor_work/${accessType.vendor_id}`);
       console.log(response.data.data,"khu")
       console.log("object",accessType.vendor_id)
       setLoader(false);

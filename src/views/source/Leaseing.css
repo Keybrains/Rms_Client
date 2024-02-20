@@ -77,3 +77,7 @@ input[type="number"] {
     min-width: auto !important;
   }
 }
+
+*::-webkit-scrollbar {
+  display: none;
+}

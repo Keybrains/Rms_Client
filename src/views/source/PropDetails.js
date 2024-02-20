@@ -449,7 +449,7 @@ const PropDetails = () => {
 
       axios
         .put(
-          `http://localhost:4000/api/leases/lease_moveout/${lease_id}`,
+          `${baseUrl}/leases/lease_moveout/${lease_id}`,
           updatedApplicant
         )
         .then((res) => {

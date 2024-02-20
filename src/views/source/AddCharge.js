@@ -85,7 +85,7 @@ const AddCharge = () => {
     },
   });
 
-  const editCharge = async () => {
+  const editCharge = async (values) => {
     setLoader(true);
 
     if (file) {
@@ -97,7 +97,6 @@ const AddCharge = () => {
               form.append("files", fileItem.upload_file);
 
               const res = await axios.post(`${imageUrl}/images/upload`, form);
-              console.log(res.data);
               if (
                 res &&
                 res.data &&
@@ -153,7 +152,7 @@ const AddCharge = () => {
           position: "top-center",
           autoClose: 1000,
         });
-        navigate(`/${admin}/RentRollLeaseing/${lease_id}`);
+        navigate(`/${admin}/rentrolldetail/${lease_id}`);
       } else {
         toast.warning(res.data.message, {
           position: "top-center",
@@ -162,6 +161,10 @@ const AddCharge = () => {
       }
     } catch (error) {
       console.error("Error: ", error.message);
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 1000,
+      });
     } finally {
       setLoader(false);
     }
@@ -179,7 +182,6 @@ const AddCharge = () => {
               form.append("files", fileItem.upload_file);
 
               const res = await axios.post(`${imageUrl}/images/upload`, form);
-              console.log(res.data);
               if (
                 res &&
                 res.data &&
@@ -259,7 +261,6 @@ const AddCharge = () => {
       console.error("Error:", error.message);
     }
   };
-  console.log("first1", tenantDetails);
 
   const [recAccounts, setRecAccounts] = useState([]);
   const [oneTimeAccounts, setoneTimeAccounts] = useState([]);
@@ -296,7 +297,6 @@ const AddCharge = () => {
       const res = await axios.get(`${baseUrl}/charge/charge/${charge_id}`);
       if (res.data.statusCode === 200) {
         const data = res.data.data[0];
-        console.log("first", data);
         setTenantId(data.tenant_id);
         setSelectedTenant(
           tenantDetails?.map((item) => {
@@ -305,7 +305,7 @@ const AddCharge = () => {
             }
           })
         );
-        setFile(data?.uploaded_file );
+        setFile(data?.uploaded_file);
         generalledgerFormik.setValues({
           charge_id: charge_id,
           date: data.entry[0].date,
@@ -447,12 +447,14 @@ const AddCharge = () => {
   };
 
   const handleOpenFile = (item) => {
-    console.log(item, "yashu")
     if (typeof item !== "string") {
       const url = URL.createObjectURL(item);
       window.open(url, "_blank");
     } else {
-      window.open(`https://propertymanager.cloudpress.host/api/images/get-file/${item}`, "_blank");
+      window.open(
+        `https://propertymanager.cloudpress.host/api/images/get-file/${item}`,
+        "_blank"
+      );
     }
   };
 
@@ -572,14 +574,14 @@ const AddCharge = () => {
                               overflowX: "hidden",
                             }}
                           >
-                            {tenantDetails?.map((property, index) => (
+                            {tenantDetails?.map((tenant, index) => (
                               <DropdownItem
                                 key={index}
                                 onClick={() =>
-                                  handleRecieverSelection(property)
+                                  handleRecieverSelection(tenant)
                                 }
                               >
-                                {`${property.tenant_firstName} ${property.tenant_lastName}`}
+                                {`${tenant.tenant_firstName} ${tenant.tenant_lastName}`}
                               </DropdownItem>
                             ))}
                           </DropdownMenu>
@@ -996,7 +998,7 @@ const AddCharge = () => {
                             style={{ background: "green", cursor: "pointer" }}
                             onClick={(e) => {
                               e.preventDefault();
-                              editCharge();
+                              editCharge(generalledgerFormik.values);
                             }}
                           >
                             Edit Charge
