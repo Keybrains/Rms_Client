@@ -118,7 +118,6 @@ const TenantWork = () => {
           );
 
       if (Array.isArray(response.data.data)) {
-        console.log(response.data.data,"janak")
         // Response is an array of work orders
         setTotalPages(Math.ceil(response.data.data.length / pageItem));
         setWorkData((prevData) => [...prevData, ...response.data.data]);

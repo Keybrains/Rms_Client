@@ -66,25 +66,8 @@ const RentRoll = () => {
       );
       if (response.data.statusCode === 200) {
         const data = response.data.data;
-        const transformedData = data.map((item) => {
-          return {
-            tenant_id: item?.tenant?.tenant_id,
-            tenant_firstName: item?.tenant?.tenant_firstName,
-            tenant_lastName: item?.tenant?.tenant_lastName,
-            rental_id: item?.rental?.rental_id,
-            rental_adress: item?.rental?.rental_adress,
-            unit_id: item?.unit?.unit_id,
-            rental_unit: item?.unit?.rental_unit,
-            lease_id: item?.lease?.lease_id,
-            lease_type: item?.lease?.lease_type,
-            start_date: item?.lease?.start_date,
-            amount: item?.charge?.amount,
-            end_date: item?.lease?.end_date,
-            createdAt: item?.lease?.createdAt,
-            updatedAt: item?.lease?.updatedAt,
-          };
-        });
-        const reversedData = transformedData.slice().reverse();
+
+        const reversedData = data.slice().reverse();
         setTenantsData(reversedData);
         setTotalPages(Math.ceil(reversedData.length / pageItem));
       } else {

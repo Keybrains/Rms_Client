@@ -41,7 +41,6 @@ const TenantDetailPage = () => {
     try {
       const apiUrl = `${baseUrl}/tenants/tenant_details/${id}`;
       const response = await axios.get(apiUrl);
-      console.log(response.data.data[0], "jack");
       setTenantDetails(response.data.data[0]);
       setLoading(false);
     } catch (error) {

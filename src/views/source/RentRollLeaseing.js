@@ -183,11 +183,9 @@ const RentRollLeaseing = () => {
           addLease();
         }
       } else {
-        const errorMessage = `Please select another date range. Overlapping ( ${
-          selectedUnit ? selectedUnit + " - " : ""
-        }${selectedProperty} to ${selectedTenantData.tenant_firstName} ${
-          selectedTenantData.tenant_lastName
-        }) with existing lease.`;
+        const errorMessage = `Please select another date range. Overlapping ( ${selectedUnit ? selectedUnit + " - " : ""
+          }${selectedProperty} to ${selectedTenantData.tenant_firstName} ${selectedTenantData.tenant_lastName
+          }) with existing lease.`;
 
         leaseFormik.setFieldError("start_date", errorMessage);
       }
@@ -198,7 +196,7 @@ const RentRollLeaseing = () => {
     initialValues: {
       amount: "",
       memo: "Last Month's Rent",
-      charge_type: "Last Month's Rent",
+      charge_type: "Rent",
       account: "Last Month's Rent",
       date: "",
       rent_cycle: "",
@@ -345,13 +343,13 @@ const RentRollLeaseing = () => {
       tenant_email: yup.string().required("Required"),
       tenant_password: lease_id
         ? yup
-            .string()
-            .min(8, "Password is too short")
-            .matches(
-              /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-              "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
-            )
-            .required("Required")
+          .string()
+          .min(8, "Password is too short")
+          .matches(
+            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+            "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
+          )
+          .required("Required")
         : "",
     }),
     onSubmit: (values) => {
@@ -426,18 +424,13 @@ const RentRollLeaseing = () => {
                 res.data.files.length > 0
               ) {
                 fileItem.upload_file = res.data.files[0].url;
-                leaseFormik.setFieldValue(
-                  `uploaded_file[${i}]`,
-                  res.data.files[0].url
-                );
+                fileItem.upload_link = res.data.files[0].url;
               } else {
                 console.error("Unexpected response format:", res);
               }
             } catch (error) {
               console.error("Error uploading file:", error);
             }
-          } else {
-            leaseFormik.setFieldValue(`uploaded_file[${i}]`, fileItem);
           }
         });
 
@@ -478,15 +471,13 @@ const RentRollLeaseing = () => {
                 res.data.files.length > 0
               ) {
                 fileItem.upload_file = res.data.files[0].url;
-                leaseFormik.values.uploaded_file[i] = res.data.files[0].url;
+                fileItem.upload_link = res.data.files[0].url;
               } else {
                 console.error("Unexpected response format:", res);
               }
             } catch (error) {
               console.error("Error uploading file:", error);
             }
-          } else {
-            leaseFormik.values.uploaded_file[i] = fileItem;
           }
         });
 
@@ -508,7 +499,7 @@ const RentRollLeaseing = () => {
     }));
 
     const object = {
-      leaseData: { ...leaseFormik.values, admin_id: accessType.admin_id },
+      leaseData: { ...leaseFormik.values, admin_id: accessType.admin_id, uploaded_file: file },
       tenantData: { ...tenantFormik.values, admin_id: accessType.admin_id },
       cosignerData: { ...cosignerFormik.values, admin_id: accessType.admin_id },
       chargeData: [
@@ -860,13 +851,20 @@ const RentRollLeaseing = () => {
       const res = await axios.get(`${baseUrl}/leases/get_lease/${lease_id}`);
       if (res.data.statusCode === 200) {
         const data = res.data.data;
-        leaseFormik.setValues(data.leases);
-        tenantFormik.setValues(data.tenant);
+        leaseFormik.setValues(data?.leases);
+        tenantFormik.setValues(data?.tenant);
+        setSelectedLeaseType(data?.leases?.lease_type);
+        setSelectedRentCycle(data?.rent_charge_data[0]?.rent_cycle);
+        rentChargeFormik.setValues(data?.rent_charge_data[0]);
+        securityChargeFormik.setValues(data?.Security_charge_data[0]);
+        setRecurringData(data?.rec_charge_data[0]);
+        setOneTimeData(data?.one_charge_data[0])
 
         const property = await propertyData.find(
           (property) => property.rental_id === data.leases.rental_id
         );
 
+        setFile(data.leases.uploaded_file)
         await handlePropertyTypeSelect(property);
 
         const unit = await unitData.find(
@@ -879,6 +877,8 @@ const RentRollLeaseing = () => {
       console.error("Error:", error.message);
     }
   };
+
+  console.log(rentChargeFormik.values, "yash")
 
   //get data apis useeffect
   useEffect(() => {
@@ -1005,9 +1005,9 @@ const RentRollLeaseing = () => {
                               </DropdownItem> */}
                             </DropdownMenu>
                             {leaseFormik.errors &&
-                            leaseFormik.errors?.rental_id &&
-                            leaseFormik.touched &&
-                            leaseFormik.touched?.rental_id ? (
+                              leaseFormik.errors?.rental_id &&
+                              leaseFormik.touched &&
+                              leaseFormik.touched?.rental_id ? (
                               <div div style={{ color: "red" }}>
                                 {leaseFormik.errors.rental_id}
                               </div>
@@ -1019,44 +1019,44 @@ const RentRollLeaseing = () => {
                     <Row>
                       {((selectedProperty && unitData.length > 0) ||
                         selectedUnit !== "") && (
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-unit"
-                            style={{ marginLeft: "15px" }}
-                          >
-                            Unit *
-                          </label>
-                          <FormGroup style={{ marginLeft: "15px" }}>
-                            <Dropdown
-                              isOpen={unitDropdownOpen}
-                              toggle={toggle2}
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-unit"
+                              style={{ marginLeft: "15px" }}
                             >
-                              <DropdownToggle caret>
-                                {selectedUnit ? selectedUnit : "Select Unit"}
-                              </DropdownToggle>
-                              <DropdownMenu>
-                                {unitData.map((unit) => (
-                                  <DropdownItem
-                                    key={unit.unit_id}
-                                    onClick={() => handleUnitSelect(unit)}
-                                  >
-                                    {unit.rental_unit}
-                                  </DropdownItem>
-                                ))}
-                              </DropdownMenu>
-                              {leaseFormik.errors &&
-                              leaseFormik.errors?.unit_id &&
-                              leaseFormik.touched &&
-                              leaseFormik.touched?.unit_id ? (
-                                <div style={{ color: "red" }}>
-                                  {leaseFormik.errors.unit_id}
-                                </div>
-                              ) : null}
-                            </Dropdown>
+                              Unit *
+                            </label>
+                            <FormGroup style={{ marginLeft: "15px" }}>
+                              <Dropdown
+                                isOpen={unitDropdownOpen}
+                                toggle={toggle2}
+                              >
+                                <DropdownToggle caret>
+                                  {selectedUnit ? selectedUnit : "Select Unit"}
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  {unitData.map((unit) => (
+                                    <DropdownItem
+                                      key={unit.unit_id}
+                                      onClick={() => handleUnitSelect(unit)}
+                                    >
+                                      {unit.rental_unit}
+                                    </DropdownItem>
+                                  ))}
+                                </DropdownMenu>
+                                {leaseFormik.errors &&
+                                  leaseFormik.errors?.unit_id &&
+                                  leaseFormik.touched &&
+                                  leaseFormik.touched?.unit_id ? (
+                                  <div style={{ color: "red" }}>
+                                    {leaseFormik.errors.unit_id}
+                                  </div>
+                                ) : null}
+                              </Dropdown>
+                            </FormGroup>
                           </FormGroup>
-                        </FormGroup>
-                      )}
+                        )}
                     </Row>
                     <Row>
                       <Col lg="3">
@@ -1099,9 +1099,9 @@ const RentRollLeaseing = () => {
                               </DropdownItem>
                             </DropdownMenu>
                             {leaseFormik.errors &&
-                            leaseFormik.errors?.lease_type &&
-                            leaseFormik.touched &&
-                            leaseFormik.touched?.lease_type ? (
+                              leaseFormik.errors?.lease_type &&
+                              leaseFormik.touched &&
+                              leaseFormik.touched?.lease_type ? (
                               <div style={{ color: "red" }}>
                                 {leaseFormik.errors.lease_type}
                               </div>
@@ -1135,9 +1135,9 @@ const RentRollLeaseing = () => {
                             )}
                           />
                           {leaseFormik.errors &&
-                          leaseFormik.errors?.start_date &&
-                          leaseFormik.touched &&
-                          leaseFormik.touched?.start_date ? (
+                            leaseFormik.errors?.start_date &&
+                            leaseFormik.touched &&
+                            leaseFormik.touched?.start_date ? (
                             <div style={{ color: "red" }}>
                               {leaseFormik.errors.start_date}
                             </div>
@@ -1504,8 +1504,8 @@ const RentRollLeaseing = () => {
                                               />
                                               {tenantFormik.touched
                                                 .tenant_firstName &&
-                                              tenantFormik.errors
-                                                .tenant_firstName ? (
+                                                tenantFormik.errors
+                                                  .tenant_firstName ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantFormik.errors
@@ -1549,8 +1549,8 @@ const RentRollLeaseing = () => {
                                               />
                                               {tenantFormik.touched
                                                 .tenant_lastName &&
-                                              tenantFormik.errors
-                                                .tenant_lastName ? (
+                                                tenantFormik.errors
+                                                  .tenant_lastName ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantFormik.errors
@@ -1612,8 +1612,8 @@ const RentRollLeaseing = () => {
                                               />
                                               {tenantFormik.touched
                                                 .tenant_phoneNumber &&
-                                              tenantFormik.errors
-                                                .tenant_phoneNumber ? (
+                                                tenantFormik.errors
+                                                  .tenant_phoneNumber ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantFormik.errors
@@ -1739,8 +1739,8 @@ const RentRollLeaseing = () => {
                                               />
                                               {tenantFormik.touched
                                                 .tenant_email &&
-                                              tenantFormik.errors
-                                                .tenant_email ? (
+                                                tenantFormik.errors
+                                                  .tenant_email ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantFormik.errors
@@ -1865,11 +1865,11 @@ const RentRollLeaseing = () => {
                                                 </Button>
                                               </div>
                                               {tenantFormik.errors &&
-                                              tenantFormik.errors
-                                                ?.tenant_password &&
-                                              tenantFormik.touched &&
-                                              tenantFormik.touched
-                                                ?.tenant_password ? (
+                                                tenantFormik.errors
+                                                  ?.tenant_password &&
+                                                tenantFormik.touched &&
+                                                tenantFormik.touched
+                                                  ?.tenant_password ? (
                                                 <div style={{ color: "red" }}>
                                                   {
                                                     tenantFormik.errors
@@ -2201,13 +2201,13 @@ const RentRollLeaseing = () => {
                                               }
                                             />
                                             {cosignerFormik.errors &&
-                                            cosignerFormik.errors
-                                              ?.cosigner_firstName &&
-                                            cosignerFormik.touched &&
-                                            cosignerFormik.touched
-                                              ?.cosigner_firstName &&
-                                            cosignerFormik.values
-                                              .cosigner_firstName === "" ? (
+                                              cosignerFormik.errors
+                                                ?.cosigner_firstName &&
+                                              cosignerFormik.touched &&
+                                              cosignerFormik.touched
+                                                ?.cosigner_firstName &&
+                                              cosignerFormik.values
+                                                .cosigner_firstName === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerFormik.errors
@@ -2239,13 +2239,13 @@ const RentRollLeaseing = () => {
                                               }
                                             />
                                             {cosignerFormik.errors &&
-                                            cosignerFormik.errors
-                                              ?.cosigner_lastName &&
-                                            cosignerFormik.touched &&
-                                            cosignerFormik.touched
-                                              ?.cosigner_lastName &&
-                                            cosignerFormik.values
-                                              .cosigner_lastName === "" ? (
+                                              cosignerFormik.errors
+                                                ?.cosigner_lastName &&
+                                              cosignerFormik.touched &&
+                                              cosignerFormik.touched
+                                                ?.cosigner_lastName &&
+                                              cosignerFormik.values
+                                                .cosigner_lastName === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerFormik.errors
@@ -2306,13 +2306,13 @@ const RentRollLeaseing = () => {
                                               }}
                                             />
                                             {cosignerFormik.errors &&
-                                            cosignerFormik.errors
-                                              .cosigner_phoneNumber &&
-                                            cosignerFormik.touched &&
-                                            cosignerFormik.touched
-                                              .cosigner_phoneNumber &&
-                                            cosignerFormik.values
-                                              .cosigner_phoneNumber === "" ? (
+                                              cosignerFormik.errors
+                                                .cosigner_phoneNumber &&
+                                              cosignerFormik.touched &&
+                                              cosignerFormik.touched
+                                                .cosigner_phoneNumber &&
+                                              cosignerFormik.values
+                                                .cosigner_phoneNumber === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerFormik.errors
@@ -2442,13 +2442,13 @@ const RentRollLeaseing = () => {
                                               }}
                                             />
                                             {cosignerFormik.errors &&
-                                            cosignerFormik.errors
-                                              .cosigner_email &&
-                                            cosignerFormik.touched &&
-                                            cosignerFormik.touched
-                                              .cosigner_email &&
-                                            cosignerFormik.values
-                                              .cosigner_email === "" ? (
+                                              cosignerFormik.errors
+                                                .cosigner_email &&
+                                              cosignerFormik.touched &&
+                                              cosignerFormik.touched
+                                                .cosigner_email &&
+                                              cosignerFormik.values
+                                                .cosigner_email === "" ? (
                                               <div style={{ color: "red" }}>
                                                 {
                                                   cosignerFormik.errors
@@ -2692,7 +2692,7 @@ const RentRollLeaseing = () => {
                         </Dialog>
                         <div>
                           {selectedTenantData &&
-                          Object.keys(selectedTenantData).length > 0 ? (
+                            Object.keys(selectedTenantData).length > 0 ? (
                             <>
                               <Row
                                 className="w-100 my-3"
@@ -2760,8 +2760,8 @@ const RentRollLeaseing = () => {
                           ) : null}
                         </div>
                         {tenantFormik.errors &&
-                        tenantFormik.errors?.tenant_password &&
-                        leaseFormik.submitCount > 0 ? (
+                          tenantFormik.errors?.tenant_password &&
+                          leaseFormik.submitCount > 0 ? (
                           <div style={{ color: "red" }}>
                             {tenantFormik.errors.tenant_password}
                           </div>
@@ -2875,10 +2875,10 @@ const RentRollLeaseing = () => {
                             </Dropdown>
                           </FormGroup>
                           {rentChargeFormik.errors &&
-                          rentChargeFormik.errors?.rent_cycle &&
-                          rentChargeFormik.touched &&
-                          rentChargeFormik.touched?.rent_cycle &&
-                          rentChargeFormik.values.rent_cycle === "" ? (
+                            rentChargeFormik.errors?.rent_cycle &&
+                            rentChargeFormik.touched &&
+                            rentChargeFormik.touched?.rent_cycle &&
+                            rentChargeFormik.values.rent_cycle === "" ? (
                             <div style={{ color: "red" }}>
                               {rentChargeFormik.errors.rent_cycle}
                             </div>
@@ -2927,10 +2927,10 @@ const RentRollLeaseing = () => {
                                     }}
                                   />
                                   {rentChargeFormik.errors &&
-                                  rentChargeFormik.errors.amount &&
-                                  rentChargeFormik.touched &&
-                                  rentChargeFormik.touched.amount &&
-                                  rentChargeFormik.values.amount === "" ? (
+                                    rentChargeFormik.errors.amount &&
+                                    rentChargeFormik.touched &&
+                                    rentChargeFormik.touched.amount &&
+                                    rentChargeFormik.values.amount === "" ? (
                                     <div style={{ color: "red" }}>
                                       {rentChargeFormik.errors.amount}
                                     </div>
@@ -3125,7 +3125,7 @@ const RentRollLeaseing = () => {
                                         {accountsData.map((account) => (
                                           <>
                                             {account.charge_type ===
-                                            "Recurring Charge" ? (
+                                              "Recurring Charge" ? (
                                               <DropdownItem
                                                 onClick={() => {
                                                   recurringFormink.setFieldValue(
@@ -3153,10 +3153,10 @@ const RentRollLeaseing = () => {
                                         </DropdownItem>
                                       </DropdownMenu>
                                       {recurringFormink.errors &&
-                                      recurringFormink.errors.account &&
-                                      recurringFormink.touched &&
-                                      recurringFormink.touched.account &&
-                                      recurringFormink.values.account === "" ? (
+                                        recurringFormink.errors.account &&
+                                        recurringFormink.touched &&
+                                        recurringFormink.touched.account &&
+                                        recurringFormink.values.account === "" ? (
                                         <div style={{ color: "red" }}>
                                           {recurringFormink.errors.account}
                                         </div>
@@ -3196,10 +3196,10 @@ const RentRollLeaseing = () => {
                                       }}
                                     />
                                     {recurringFormink.errors &&
-                                    recurringFormink.errors.amount &&
-                                    recurringFormink.touched &&
-                                    recurringFormink.touched.amount &&
-                                    recurringFormink.values.amount === "" ? (
+                                      recurringFormink.errors.amount &&
+                                      recurringFormink.touched &&
+                                      recurringFormink.touched.amount &&
+                                      recurringFormink.values.amount === "" ? (
                                       <div style={{ color: "red" }}>
                                         {recurringFormink.errors.amount}
                                       </div>
@@ -3304,7 +3304,7 @@ const RentRollLeaseing = () => {
                                         {accountsData.map((account) => (
                                           <>
                                             {account.charge_type ===
-                                            "One Time Charge" ? (
+                                              "One Time Charge" ? (
                                               <DropdownItem
                                                 onClick={() => {
                                                   oneTimeFormik.setFieldValue(
@@ -3330,10 +3330,10 @@ const RentRollLeaseing = () => {
                                         </DropdownItem>
                                       </DropdownMenu>
                                       {oneTimeFormik.errors &&
-                                      oneTimeFormik.errors.account &&
-                                      oneTimeFormik.touched &&
-                                      oneTimeFormik.touched.account &&
-                                      oneTimeFormik.values.account === "" ? (
+                                        oneTimeFormik.errors.account &&
+                                        oneTimeFormik.touched &&
+                                        oneTimeFormik.touched.account &&
+                                        oneTimeFormik.values.account === "" ? (
                                         <div style={{ color: "red" }}>
                                           {oneTimeFormik.errors.account}
                                         </div>
@@ -3371,10 +3371,10 @@ const RentRollLeaseing = () => {
                                       }}
                                     />
                                     {oneTimeFormik.errors &&
-                                    oneTimeFormik.errors.amount &&
-                                    oneTimeFormik.touched &&
-                                    oneTimeFormik.touched.amount &&
-                                    oneTimeFormik.values.amount === "" ? (
+                                      oneTimeFormik.errors.amount &&
+                                      oneTimeFormik.touched &&
+                                      oneTimeFormik.touched.amount &&
+                                      oneTimeFormik.values.amount === "" ? (
                                       <div style={{ color: "red" }}>
                                         {oneTimeFormik.errors.amount}
                                       </div>
@@ -3592,7 +3592,7 @@ const RentRollLeaseing = () => {
                             {!lease_id ? (
                               <p
                                 onClick={() => {
-                                  window.open(singleFile.upload_link, "_blank");
+                                  window.open(singleFile.upload_file, "_blank");
                                 }}
                                 style={{ cursor: "pointer" }}
                               >
@@ -3604,7 +3604,7 @@ const RentRollLeaseing = () => {
                             ) : (
                               <p
                                 onClick={() => {
-                                  window.open(singleFile.upload_link, "_blank");
+                                  window.open(singleFile.upload_file, "_blank");
                                 }}
                                 style={{ cursor: "pointer" }}
                               >
@@ -3862,8 +3862,8 @@ const RentRollLeaseing = () => {
                     Cancel
                   </Button>
                   {tenantFormik.errors &&
-                  tenantFormik.errors?.tenant_password &&
-                  leaseFormik.submitCount > 0 ? (
+                    tenantFormik.errors?.tenant_password &&
+                    leaseFormik.submitCount > 0 ? (
                     <div style={{ color: "red" }}>
                       Tenant Password is missing
                     </div>

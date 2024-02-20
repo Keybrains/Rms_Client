@@ -185,7 +185,6 @@ const PropDetails = () => {
     }
     setLoading(false);
   };
-  console.log(workOrderData, "kk");
 
   const fatchunit = async () => {
     setLoader(true);
@@ -419,7 +418,6 @@ const PropDetails = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [clickedObject, setClickedObject] = useState({});
-  console.log(clickedObject, "kk");
   const handleMoveOutClick = (tenant) => {
     console.log("Move out button clicked");
     setClickedObject(tenant);
