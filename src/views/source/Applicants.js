@@ -58,6 +58,8 @@ const Applicants = () => {
 
   // Step 1: Create state to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+
   const [selectedTenantData, setSelectedTenantData] = useState([]);
   const [selectedTenants, setSelectedTenants] = useState([]);
 
@@ -71,6 +73,7 @@ const Applicants = () => {
   const [searchQueryy, setSearchQueryy] = useState("");
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
+  const [selectedApplicant, setSelectedApplicant] = useState(null);
 
   const handleSearch = (e) => {
     setSearchQueryy(e.target.value);
@@ -137,6 +140,7 @@ const Applicants = () => {
     }
   };
 
+
   const [unitId, setUnitId] = useState(null);
   const handleUnitSelect = (selectedUnit) => {
     setSelectedUnit(selectedUnit.rental_unit_adress);
@@ -153,6 +157,52 @@ const Applicants = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleEdit = (applicant) => {
+    setSelectedApplicant(applicant);
+    openModal(); // Open the modal when an applicant is selected for editing
+  };
+
+  const handleSelectedApplicantChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedApplicant(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const updateApplicantData = async () => {
+    try {
+      // Your selected applicant data
+      const selectedApplicantData = {
+        applicant_firstName: selectedApplicant.applicant_firstName,
+        applicant_lastName: selectedApplicant.applicant_lastName,
+        applicant_email: selectedApplicant.applicant_email,
+        applicant_phoneNumber: selectedApplicant.applicant_phoneNumber,
+        applicant_homeNumber: selectedApplicant.applicant_homeNumber,
+        applicant_businessNumber: selectedApplicant.applicant_businessNumber,
+        applicant_telephoneNumber: selectedApplicant.applicant_telephoneNumber,
+      };
+
+      // API endpoint for updating applicant data
+      const apiUrl = `${baseUrl}/applicant/applicant/1708005396068`;
+
+      // Send PUT request to update the data
+      const response = await axios.put(apiUrl, selectedApplicantData);
+
+      // Handle response
+      console.log('Applicant data updated:', response.data);
+
+      // You can handle any success actions here, such as showing a success message or updating state.
+    } catch (error) {
+      // Handle error
+      console.error('Error updating applicant data:', error);
+
+      // You can handle any error actions here, such as showing an error message or logging the error.
+    } finally {
+      setBtnLoader(false); // Reset the button loader state after API call
+    }
   };
 
   const getTableData = async () => {
@@ -776,53 +826,56 @@ const Applicants = () => {
                   {rentalsData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="8"style={{fontSize:"15px"}}>No Applicants Added</td>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>No Applicants Added</td>
                       </tr>
                     </tbody>
-                    ) : (
-                  <tbody>
-                    {rentalsData.map((applicant, index) => (
-                      <tr
-                        key={index}
-                        onClick={() =>
-                          navigate(
-                            `/${admin}/Applicants/${applicant.applicant_id}`
-                          )
-                        }
-                      >
-                        <td>{applicant.applicant_firstName}</td>
-                        <td>{applicant.applicant_lastName}</td>
-                        <td>{applicant.applicant_email}</td>
-                        <td>{applicant.applicant_phoneNumber}</td>
-                        <td>
-                          {applicant.rental_data.rental_adress}{" "}
-                          {applicant.unit_data &&
-                          applicant.unit_data.rental_unit
-                            ? " - " + applicant.unit_data.rental_unit
-                            : null}
-                        </td>
+                  ) : (
+                    <tbody>
+                      {rentalsData.map((applicant, index) => (
+                        <tr
+                          key={index}
+                          onClick={() =>
+                            navigate(
+                              `/${admin}/Applicants/${applicant.applicant_id}`
+                            )
+                          }
+                        >
+                          <td>{applicant.applicant_firstName}</td>
+                          <td>{applicant.applicant_lastName}</td>
+                          <td>{applicant.applicant_email}</td>
+                          <td>{applicant.applicant_phoneNumber}</td>
+                          <td>
+                            {applicant.rental_data.rental_adress}{" "}
+                            {applicant.unit_data &&
+                              applicant.unit_data.rental_unit
+                              ? " - " + applicant.unit_data.rental_unit
+                              : null}
+                          </td>
 
-                        <td>
-                          {applicant?.applicant_status?.status || "Undecided"}
-                        </td>
-                        <td>{applicant.createdAt}</td>
-                        <td>{applicant.updatedAt || " - "}</td>
-                        <td>
-                          <DeleteIcon
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteRentals(applicant._id);
-                            }}
-                          />
-                          {/* <EditIcon
-														onClick={() =>
-															navigate(`/admin/Applicants/${applicant._id}`)
-														}
-													/> */}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>)}
+                          <td>
+                            {applicant?.applicant_status?.status || "Undecided"}
+                          </td>
+                          <td>{applicant.createdAt}</td>
+                          <td>{applicant.updatedAt || " - "}</td>
+                          <td>
+                            <DeleteIcon
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteRentals(applicant._id);
+                              }}
+
+                            />
+                            <EditIcon
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent row click event from firing
+                                handleEdit(applicant); // Pass the selected applicant data
+                              }}
+                              style={{ cursor: "pointer" }}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>)}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>
@@ -918,159 +971,194 @@ const Applicants = () => {
               toggle={closeModal}
               className="bg-secondary text-white"
             >
-              <strong style={{ fontSize: 18 }}>Add Applicant</strong>
+              {selectedApplicant ? 'Edit Applicant' : 'Add Applicant'}
             </ModalHeader>
 
             <ModalBody>
-              <div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    paddingTop: "25px",
-                  }}
-                >
-                  <Checkbox
-                    onChange={handleChange}
-                    style={{ marginRight: "10px" }}
-                    checked={showRentalOwnerTable === true}
-                  />
-                  <label className="form-control-label">
-                    Choose an existing Applicant
-                  </label>
+              {selectedApplicant ? (
+                // Render fields for editing an existing applicant
+                <div>
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          First Name *
+                        </label>
+                        <Input
+                          type="text"
+                          id="applicant_firstName"
+                          placeholder="Enter Firstname"
+                          name="applicant_firstName"
+                          value={selectedApplicant.applicant_firstName}
+                          onChange={handleSelectedApplicantChange}
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col>
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Last Name *
+                        </label>
+                        <Input
+                          type="text"
+                          id="applicant_lastName"
+                          placeholder="Enter Lastname"
+                          name="applicant_lastName"
+                          value={selectedApplicant.applicant_lastName}
+                          onChange={handleSelectedApplicantChange}
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-property"
+                    >
+                      Email *
+                    </label>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-envelope"></i>
+                        </span>
+                      </InputGroupAddon>
+                      <Input
+                        type="text"
+                        id="applicant_email"
+                        placeholder="Enter Email"
+                        name="applicant_email"
+                        value={selectedApplicant.applicant_email}
+                        onChange={handleSelectedApplicantChange}
+                        required
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <label
+                      className="form-control-label"
+                      htmlFor="input-property"
+                    >
+                      Mobile Number *
+                    </label>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-mobile-alt"></i>
+                        </span>
+                      </InputGroupAddon>
+                      <Input
+                        type="tel" // Use type "tel" for mobile numbers
+                        id="tenant_mobileNumber"
+                        name="applicant_phoneNumber"
+                        placeholder="Enter Phone Number"
+                        value={selectedApplicant.applicant_phoneNumber}
+                        onChange={handleSelectedApplicantChange}
+                        onInput={(e) => {
+                          const inputValue = e.target.value;
+                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                          e.target.value = numericValue;
+                        }}
+                        required
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-home"></i>
+                        </span>
+                      </InputGroupAddon>
+                      <Input
+                        type="text"
+                        id="tenant_homeNumber"
+                        placeholder="Enter Home Number"
+                        name="applicant_homeNumber"
+                        value={selectedApplicant.applicant_homeNumber}
+                        onChange={handleSelectedApplicantChange}
+                        onInput={(e) => {
+                          const inputValue = e.target.value;
+                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                          e.target.value = numericValue;
+                        }}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-fax"></i>
+                        </span>
+                      </InputGroupAddon>
+                      <Input
+                        id="tenant_businessNumber"
+                        type="text"
+                        placeholder="Enter Business Number"
+                        name="applicant_businessNumber"
+                        value={selectedApplicant.applicant_businessNumber}
+                        onChange={handleSelectedApplicantChange}
+                        onInput={(e) => {
+                          const inputValue = e.target.value;
+                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                          e.target.value = numericValue;
+                        }}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <span className="input-group-text">
+                          <i className="fas fa-fax"></i>
+                        </span>
+                      </InputGroupAddon>
+                      <Input
+                        type="text"
+                        id="tenant_workNumber"
+                        placeholder="Enter Telephone Number"
+                        name="applicant_telephoneNumber"
+                        value={selectedApplicant.applicant_telephoneNumber}
+                        onChange={handleSelectedApplicantChange}
+                        onInput={(e) => {
+                          const inputValue = e.target.value;
+                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                          e.target.value = numericValue;
+                        }}
+                      />
+                    </InputGroup>
+                  </FormGroup>
                 </div>
-                <br />
-              </div>
-              {showRentalOwnerTable && (
-                <div
-                  style={{
-                    maxHeight: "400px",
-                    overflow: "hidden",
-                  }}
-                >
-                  <Input
-                    type="text"
-                    placeholder="Search by first and last name"
-                    value={searchQueryy}
-                    onChange={handleSearch}
-                    style={{
-                      marginBottom: "10px",
-                      width: "100%",
-                      padding: "8px",
-                      border: "1px solid #ccc",
-                      borderRadius: "4px",
-                    }}
-                  />
-                  <div
-                    style={{
-                      maxHeight: "calc(400px - 40px)",
-                      overflowY: "auto",
-                      border: "1px solid #ddd",
-                    }}
-                  >
-                    <table
+              ) : !showRentalOwnerTable && (
+                <div>
+                  <div>
+                    <div
                       style={{
-                        width: "100%",
-                        borderCollapse: "collapse",
+                        display: "flex",
+                        alignItems: "center",
+                        paddingTop: "25px",
                       }}
                     >
-                      <thead>
-                        <tr>
-                          <th
-                            style={{
-                              padding: "15px",
-                            }}
-                          >
-                            Applicant Name
-                          </th>
-                          <th
-                            style={{
-                              padding: "15px",
-                            }}
-                          >
-                            Select
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Array.isArray(rentalownerData) &&
-                          rentalownerData
-                            .filter((tenant) => {
-                              const fullName = `${tenant.applicant_firstName} ${tenant.applicant_lastName}`;
-                              return fullName
-                                .toLowerCase()
-                                .includes(searchQueryy.toLowerCase());
-                            })
-                            .map((tenant, index) => (
-                              <tr
-                                key={index}
-                                style={{
-                                  border: "1px solid #ddd",
-                                }}
-                              >
-                                <td
-                                  style={{
-                                    paddingLeft: "15px",
-                                    paddingTop: "15px",
-                                  }}
-                                >
-                                  <pre>
-                                    {tenant.applicant_firstName}&nbsp;
-                                    {tenant.applicant_lastName}
-                                    {`(${tenant.applicant_phoneNumber})`}
-                                  </pre>
-                                </td>
-                                <td
-                                  style={{
-                                    paddingLeft: "15px",
-                                    paddingTop: "15px",
-                                  }}
-                                >
-                                  <Checkbox
-                                    type="checkbox"
-                                    name="tenant"
-                                    id={tenant.applicant_phoneNumber}
-                                    checked={
-                                      tenant.applicant_phoneNumber ===
-                                      checkedCheckbox
-                                    }
-                                    onChange={(event) => {
-                                      setCheckedCheckbox(
-                                        tenant.applicant_phoneNumber
-                                      );
-                                      const tenantInfo = {
-                                        applicant_phoneNumber:
-                                          tenant.applicant_phoneNumber,
-                                        applicant_firstName:
-                                          tenant.applicant_firstName,
-                                        applicant_lastName:
-                                          tenant.applicant_lastName,
-                                        applicant_homeNumber:
-                                          tenant.applicant_homeNumber,
-                                        applicant_email: tenant.applicant_email,
-                                        applicant_businessNumber:
-                                          tenant.applicant_businessNumber,
-                                        applicant_telephoneNumber:
-                                          tenant.applicant_telephoneNumber,
-                                      };
-                                      handleCheckboxChange(
-                                        event,
-                                        tenantInfo,
-                                        tenant.applicant_phoneNumber
-                                      );
-                                    }}
-                                  />
-                                </td>
-                              </tr>
-                            ))}
-                      </tbody>
-                    </table>
+                      <Checkbox
+                        onChange={handleChange}
+                        style={{ marginRight: "10px" }}
+                        checked={showRentalOwnerTable === true}
+                      />
+                      <label className="form-control-label">
+                        Choose an existing Applicant
+                      </label>
+                    </div>
+                    <br />
                   </div>
-                  <br />
-                </div>
-              )}
-              {!showRentalOwnerTable && (
-                <div>
                   <Row>
                     <Col>
                       <FormGroup>
@@ -1272,10 +1360,10 @@ const Applicants = () => {
                           ))}
                         </DropdownMenu>
                         {applicantFormik.errors &&
-                        applicantFormik.errors?.rental_adress &&
-                        applicantFormik.touched &&
-                        applicantFormik.touched?.rental_adress &&
-                        applicantFormik.values.rental_adress === "" ? (
+                          applicantFormik.errors?.rental_adress &&
+                          applicantFormik.touched &&
+                          applicantFormik.touched?.rental_adress &&
+                          applicantFormik.values.rental_adress === "" ? (
                           <div style={{ color: "red" }}>
                             {applicantFormik.errors.rental_adress}
                           </div>
@@ -1313,10 +1401,10 @@ const Applicants = () => {
                             )}
                           </DropdownMenu>
                           {applicantFormik.errors &&
-                          applicantFormik.errors?.rental_units &&
-                          applicantFormik.touched &&
-                          applicantFormik.touched?.rental_units &&
-                          applicantFormik.values.rental_units === "" ? (
+                            applicantFormik.errors?.rental_units &&
+                            applicantFormik.touched &&
+                            applicantFormik.touched?.rental_units &&
+                            applicantFormik.values.rental_units === "" ? (
                             <div style={{ color: "red" }}>
                               {applicantFormik.errors.rental_units}
                             </div>
@@ -1327,7 +1415,137 @@ const Applicants = () => {
                   )}
                 </div>
               )}
+              {showRentalOwnerTable && (
+                <div
+                  style={{
+                    maxHeight: "400px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <Input
+                    type="text"
+                    placeholder="Search by first and last name"
+                    value={searchQueryy}
+                    onChange={handleSearch}
+                    style={{
+                      marginBottom: "10px",
+                      width: "100%",
+                      padding: "8px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                    }}
+                  />
+                  <div
+                    style={{
+                      maxHeight: "calc(400px - 40px)",
+                      overflowY: "auto",
+                      border: "1px solid #ddd",
+                    }}
+                  >
+                    <table
+                      style={{
+                        width: "100%",
+                        borderCollapse: "collapse",
+                      }}
+                    >
+                      <thead>
+                        <tr>
+                          <th
+                            style={{
+                              padding: "15px",
+                            }}
+                          >
+                            Applicant Name
+                          </th>
+                          <th
+                            style={{
+                              padding: "15px",
+                            }}
+                          >
+                            Select
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Array.isArray(rentalownerData) &&
+                          rentalownerData
+                            .filter((tenant) => {
+                              const fullName = `${tenant.applicant_firstName} ${tenant.applicant_lastName}`;
+                              return fullName
+                                .toLowerCase()
+                                .includes(searchQueryy.toLowerCase());
+                            })
+                            .map((tenant, index) => (
+                              <tr
+                                key={index}
+                                style={{
+                                  border: "1px solid #ddd",
+                                }}
+                              >
+                                <td
+                                  style={{
+                                    paddingLeft: "15px",
+                                    paddingTop: "15px",
+                                  }}
+                                >
+                                  <pre>
+                                    {tenant.applicant_firstName}&nbsp;
+                                    {tenant.applicant_lastName}
+                                    {`(${tenant.applicant_phoneNumber})`}
+                                  </pre>
+                                </td>
+                                <td
+                                  style={{
+                                    paddingLeft: "15px",
+                                    paddingTop: "15px",
+                                  }}
+                                >
+                                  <Checkbox
+                                    type="checkbox"
+                                    name="tenant"
+                                    id={tenant.applicant_phoneNumber}
+                                    checked={
+                                      tenant.applicant_phoneNumber ===
+                                      checkedCheckbox
+                                    }
+                                    onChange={(event) => {
+                                      setCheckedCheckbox(
+                                        tenant.applicant_phoneNumber
+                                      );
+                                      const tenantInfo = {
+                                        applicant_phoneNumber:
+                                          tenant.applicant_phoneNumber,
+                                        applicant_firstName:
+                                          tenant.applicant_firstName,
+                                        applicant_lastName:
+                                          tenant.applicant_lastName,
+                                        applicant_homeNumber:
+                                          tenant.applicant_homeNumber,
+                                        applicant_email: tenant.applicant_email,
+                                        applicant_businessNumber:
+                                          tenant.applicant_businessNumber,
+                                        applicant_telephoneNumber:
+                                          tenant.applicant_telephoneNumber,
+                                      };
+                                      handleCheckboxChange(
+                                        event,
+                                        tenantInfo,
+                                        tenant.applicant_phoneNumber
+                                      );
+                                    }}
+                                  />
+                                </td>
+                              </tr>
+                            ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <br />
+                </div>
+              )}
+
             </ModalBody>
+          
             <ModalFooter>
               {btnLoader ? (
                 <button
@@ -1339,16 +1557,26 @@ const Applicants = () => {
                   Loading...
                 </button>
               ) : (
-                <Button color="success" type="submit">
-                  Create Applicant
-                </Button>
+                <>
+                  {selectedApplicant ? (
+                    <Button color="success" onClick={() => { setBtnLoader(true); updateApplicantData(); }}>
+                      Update Applicant
+                    </Button>
+                  ) : (
+                    <Button color="success" type="submit">
+                      Create Applicant
+                    </Button>
+                  )}
+                </>
               )}
               <Button onClick={closeModal}>Cancel</Button>
             </ModalFooter>
           </Form>
         </Modal>
+
+
         <ToastContainer />
-      </Container>
+      </Container >
     </>
   );
 };

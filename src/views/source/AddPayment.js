@@ -183,9 +183,12 @@ function AddPayment() {
   };
 
   useEffect(() => {
+    fetchAccounts();
+  }, [accessType?.admin_id]);
+
+  useEffect(() => {
     fetchtenantsData();
     fetchchargeData();
-    fetchAccounts();
   }, [lease_id]);
 
   const [total, setTotal] = useState(0);
