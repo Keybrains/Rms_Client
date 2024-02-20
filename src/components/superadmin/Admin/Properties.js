@@ -44,7 +44,6 @@ import { Col, Container, Row } from "reactstrap";
 import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import ProfileIcon from "../Images/profile.png";
 
-
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
 const headCells = [
@@ -114,7 +113,7 @@ export default function Properties() {
   //   }
   // }, [cookies]);
 
-  const [propertiesData, setPropertiesData] = useState([])
+  const [propertiesData, setPropertiesData] = useState([]);
   let [loader, setLoader] = React.useState(true);
   let [countData, setCountData] = useState(0);
   const [adminName, setAdminName] = useState();
@@ -295,21 +294,21 @@ export default function Properties() {
     setEditData(datas);
   };
 
-  const [adminDataCount, setAdminDataCount] = useState()
-  console.log(adminDataCount, "adminDataCount")
+  const [adminDataCount, setAdminDataCount] = useState();
+  console.log(adminDataCount, "adminDataCount");
   const adminCount = async () => {
     try {
       // Make an HTTP request to your API endpoint with the adminId
-     const res  =  await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
-      setAdminDataCount(res.data)
+      const res = await axios.get(`${baseUrl}/admin/admin_count/${admin_id}`);
+      setAdminDataCount(res.data);
     } catch (error) {
-      console.error('Error occurred while calling API:', error);
+      console.error("Error occurred while calling API:", error);
     }
   };
 
-  React.useEffect(() =>{
-    adminCount()
-  },[admin_id])
+  React.useEffect(() => {
+    adminCount();
+  }, [admin_id]);
 
   // Formik
   //   let [ProductDetailsFormik, setProductDetailsFormik] = useState({});
@@ -329,7 +328,7 @@ export default function Properties() {
       <Container className="mt--8 ml--10" fluid>
         <Row>
           <Col>
-          <nav
+            <nav
               className="navbar navbar-expand-lg navbar-light bg-light mb-1 main-nav"
               style={{ cursor: "pointer", borderRadius: "15px" }}
             >

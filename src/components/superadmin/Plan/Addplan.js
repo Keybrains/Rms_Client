@@ -111,7 +111,7 @@ const AddPlanForm = () => {
               <h4 style={{ color: "white" }}></h4>
             </FormGroup>
           </Col>
-          <Col className="text-right" >
+          <Col className="text-right">
             <Button
               className="mb-2"
               color="primary"
@@ -145,6 +145,7 @@ const AddPlanForm = () => {
                       changePlan: false,
                       cancelMembership: false,
                       pauseMembership: false,
+                      annual_discount: ""
                     }}
                     validationSchema={Yup.object().shape({
                       plan_name: Yup.string().required("Required"),
@@ -152,6 +153,7 @@ const AddPlanForm = () => {
                     })}
                     onSubmit={(values, { resetForm }) => {
                       handleSubmit(values);
+                      console.log(values, "===========================")
                       resetForm();
                     }}
                   >
@@ -213,7 +215,6 @@ const AddPlanForm = () => {
                             >
                               <MenuItem value={"Monthly"}>Monthly</MenuItem>
                               <MenuItem value={"Annual"}>Annual</MenuItem>
-                              {/* <MenuItem value={"Days"}>Days</MenuItem> */}
                             </Select>
                             {touched.billing_interval &&
                             errors.billing_interval ? (
@@ -224,22 +225,23 @@ const AddPlanForm = () => {
                           </FormControl>
                         </div>
 
-                        {values.billing_interval === "Days" ? (
+                        {values.billing_interval === "Annual" ? (
                           <div className="mt-3 mb-3 mx-0 col-lg-8">
                             <TextField
                               type="number"
                               size="small"
                               fullWidth
-                              placeholder="Add Days *"
-                              label="Add Days *"
-                              name="plan_days"
-                              value={values.plan_days}
+                              placeholder="Annual Discount *"
+                              label="Annual Discount *"
+                              name="annual_discount"
+                              value={values.annual_discount}
                               onBlur={handleBlur}
                               onChange={handleChange}
                             />
-                            {touched.plan_days && errors.plan_days ? (
+                            {touched.annual_discount &&
+                            errors.annual_discount ? (
                               <div className="text-danger">
-                                {errors.plan_days}
+                                {errors.annual_discount}
                               </div>
                             ) : null}
                           </div>

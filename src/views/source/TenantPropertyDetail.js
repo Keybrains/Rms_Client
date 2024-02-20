@@ -11,7 +11,7 @@ const TenantPropertyDetail = () => {
   const { lease_id } = useParams();
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
-  
+
   const [accessType, setAccessType] = useState(null);
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -21,14 +21,15 @@ const TenantPropertyDetail = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-  
+
   const [propertyDetails, setPropertyDetails] = useState([]);
   const getRentalData = async () => {
     try {
       const res = await axios.get(
         `${baseUrl}/leases/lease_summary/${lease_id}`
       );
-      setPropertyDetails(res.data.data[0]);
+      console.log(res.data.data);
+      setPropertyDetails(res.data.data);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
@@ -87,8 +88,7 @@ const TenantPropertyDetail = () => {
                                   <img
                                     className="mt-2 mb-2"
                                     src={
-                                      propertyDetails?.rental_data
-                                        ?.prop_image || PropImage
+                                      propertyDetails?.prop_image || PropImage
                                     }
                                     // src={PropImage}
                                     alt="Property Details"
@@ -158,36 +158,11 @@ const TenantPropertyDetail = () => {
                                   </tr>
 
                                   <tr className="body">
-                                    <td>
-                                      {
-                                        propertyDetails?.rental_data
-                                          ?.property_type
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        propertyDetails?.rental_data
-                                          ?.rental_adress
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        propertyDetails?.rental_data
-                                          ?.rental_city
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        propertyDetails?.rental_data
-                                          ?.rental_country
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        propertyDetails?.rental_data
-                                          ?.rental_postcode
-                                      }
-                                    </td>
+                                    <td>{propertyDetails?.propertysub_type}</td>
+                                    <td>{propertyDetails?.rental_adress}</td>
+                                    <td>{propertyDetails?.rental_city}</td>
+                                    <td>{propertyDetails?.rental_country}</td>
+                                    <td>{propertyDetails?.rental_postcode}</td>
                                   </tr>
                                 </tbody>
                               </Table>
@@ -230,34 +205,21 @@ const TenantPropertyDetail = () => {
 
                                   <tr className="body">
                                     <td>
-                                      {
-                                        propertyDetails?.rentalowner_data
-                                          ?.rentalOwner_firstName
-                                      }
+                                      {propertyDetails?.rentalOwner_firstName}
+                                    </td>
+                                    <td>
+                                      {propertyDetails?.rentalOwner_lastName}
+                                    </td>
+                                    <td>
+                                      {propertyDetails?.rentalOwner_companyName}
                                     </td>
                                     <td>
                                       {
-                                        propertyDetails?.rentalowner_data
-                                          ?.rentalOwner_lastName
+                                        propertyDetails?.rentalOwner_primaryEmail
                                       }
                                     </td>
                                     <td>
-                                      {
-                                        propertyDetails?.rentalowner_data
-                                          ?.rentalOwner_companyName
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        propertyDetails?.rentalowner_data
-                                          ?.rentalOwner_primaryEmail
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        propertyDetails?.rentalowner_data
-                                          ?.rentalOwner_phoneNumber
-                                      }
+                                      {propertyDetails?.rentalOwner_phoneNumber}
                                     </td>
                                   </tr>
                                 </tbody>
@@ -333,8 +295,7 @@ const TenantPropertyDetail = () => {
 
                                   <tr className="body">
                                     <td>
-                                      {propertyDetails?.staffmember_data
-                                        ?.staffmember_name ||
+                                      {propertyDetails?.staffmember_name ||
                                         "No staff member assigned"}
                                     </td>
                                   </tr>
@@ -385,25 +346,21 @@ const TenantPropertyDetail = () => {
                                     style={{ cursor: "pointer" }}
                                   >
                                     <td>
-                                      {propertyDetails?.unit_data
-                                        ?.rental_unit || "N/A"}
+                                      {propertyDetails?.rental_unit || "N/A"}
                                     </td>
                                     <td>
-                                      {propertyDetails?.unit_data
-                                        ?.rental_unit_adress || "N/A"}
-                                    </td>
-                                    <td>
-                                      {propertyDetails?.unit_data?.rental_bed ||
+                                      {propertyDetails?.rental_unit_adress ||
                                         "N/A"}
+                                    </td>
+                                    <td>
+                                      {propertyDetails?.rental_bed || "N/A"}
                                     </td>
 
                                     <td>
-                                      {propertyDetails?.unit_data
-                                        ?.rental_bath || "N/A"}
+                                      {propertyDetails?.rental_bath || "N/A"}
                                     </td>
                                     <td>
-                                      {propertyDetails?.unit_data
-                                        ?.rental_sqft || "N/A"}
+                                      {propertyDetails?.rental_sqft || "N/A"}
                                     </td>
                                   </tr>
                                 </tbody>

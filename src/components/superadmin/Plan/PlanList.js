@@ -63,6 +63,9 @@ const headCells = [
     label: "Price",
   },
   {
+    label: "Annual Discount",
+  },
+  {
     label: "Duration",
   },
   // {
@@ -119,6 +122,9 @@ function Rows(props) {
           )}
         </TableCell>
         <TableCell align="center">{row?.plan_price}</TableCell>
+        <TableCell align="center">
+          {row?.is_annual_discount ? row.annual_discount + "%" : "-"}
+        </TableCell>
         <TableCell align="center">
           {row.is_free_trial === true ? row?.plan_days : "Monthly"}
         </TableCell>

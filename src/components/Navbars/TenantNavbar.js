@@ -225,6 +225,30 @@ const TenantNavbar = (props) => {
   //   //console.log(workorder_id);
   // };
 
+  const [tenantNotification, setTenantNotification] = useState([]);
+  console.log(tenantNotification, "tenantNotification");
+  const tenantNotificationData = async (addresses, units) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/notification/${accessType?.tenant_id}`
+      );
+      if (response.status === 200) {
+        const data = response.data.data;
+        setTenantNotification(data);
+        // Process the data as needed
+      } else {
+        console.error("Response status is not 200");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle the error, display a message to the user, or take other appropriate action.
+    }
+  };
+
+  useEffect(() => {
+    tenantNotificationData();
+  }, [accessType?.tenant_id]);
+
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -277,20 +301,23 @@ const TenantNavbar = (props) => {
                     Notifications
                   </h2>
                   <Divider />
-                  {notificationData.map((data) => {
+                  {tenantNotification.map((data) => {
                     if (data.isTenantread) {
                       return null;
                     } else {
                       const notificationTitle =
                         data.notification_title || "No Title Available";
                       const notificationDetails =
-                        data.notification_details || "No Details Available";
+                        data.notification_detail || "No Details Available";
                       const notificationTime = new Date(
-                        data.notification_time
+                        data.createdAt
                       ).toLocaleString();
 
                       return (
-                        <div key={data._id}>
+                        <div
+                          key={data._id}
+                          style={{ backgroundColor: "#abccba" }}
+                        >
                           <ListItem onClick={() => handlePropertySelect(data)}>
                             <div>
                               <h4>{notificationTitle}</h4>
@@ -309,9 +336,16 @@ const TenantNavbar = (props) => {
                                       textTransform: "none",
                                       fontSize: "12px",
                                     }}
-                                    onClick={() =>
-                                      navigateToDetails(data.workorder_id)
-                                    }
+                                    // onClick={() =>
+                                    //   navigateToDetails(data.notification_type)
+                                    // }
+                                    onClick={() => {
+                                      if (data.is_lease) {
+                                        navigate(
+                                          `/tenant/tenantpropertydetail/${data.notification_type.lease_id}`
+                                        );
+                                      }
+                                    }}
                                   >
                                     View
                                   </Button>
