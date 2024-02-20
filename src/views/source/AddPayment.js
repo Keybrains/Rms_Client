@@ -47,7 +47,7 @@ function AddPayment() {
   const [accessType, setAccessType] = useState(null);
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
-  const { paymentId, admin } = useParams();
+  const { lease_id, admin } = useParams();
   const [chargeData, setchargeData] = useState([]);
   const [tenantsData, setTenantsData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -71,7 +71,7 @@ function AddPayment() {
     setLoader(true);
     try {
       const response = await axios.get(
-        `${baseUrl}/payment/charges/${paymentId}`
+        `${baseUrl}/payment/charges/${lease_id}`
       );
       setchargeData(response.data.totalCharges);
 
@@ -85,7 +85,7 @@ function AddPayment() {
     setLoader(true);
     try {
       const response = await axios.get(
-        `${baseUrl}/leases/tenants/${paymentId}`
+        `${baseUrl}/leases/tenants/${lease_id}`
       );
       setTenantsData(response.data.data);
     } catch (error) {
@@ -97,7 +97,7 @@ function AddPayment() {
   useEffect(() => {
     fetchtenantsData();
     fetchchargeData();
-  }, [paymentId]);
+  }, [lease_id]);
 
   function objectToKeyValue(obj) {
     const keyValuePairs = [];

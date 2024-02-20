@@ -80,6 +80,7 @@ import SuperAdminRentalOwner from "components/superadmin/Admin/RentalOwner";
 import SuperAdminTenat from "components/superadmin/Admin/Tenant";
 import SuperAdminUnit from "components/superadmin/Admin/Unit";
 import SuperAdminLease from "components/superadmin/Admin/Leasing";
+import SuperAdminVendor from "components/superadmin/Admin/Vendor";
 import ResetPassword from "views/source/Resetpassword";
 
 var routes = [
@@ -616,12 +617,12 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/AddPayment",
+    path: "/AddPayment/:lease_id",
     component: <AddPayment />,
     layout: "/admin",
   },
   {
-    path: "/AddPayment/:tenantId/:entryIndex",
+    path: "/AddPayment/:lease_id/:payment_id",
     component: <AddPayment />,
     layout: "/admin",
   },
@@ -632,16 +633,6 @@ var routes = [
   },
   {
     path: "/AddCharge/:lease_id/:charge_id",
-    component: <AddCharge />,
-    layout: "/admin",
-  },
-  {
-    path: "/AddPayment/:paymentId",
-    component: <AddPayment />,
-    layout: "/admin",
-  },
-  {
-    path: "/AddCharge/:chargeId",
     component: <AddCharge />,
     layout: "/admin",
   },
@@ -754,6 +745,13 @@ var routes = [
     name: "Unit",
     icon: "ni ni-pin-3 text-orange",
     component: <SuperAdminLease />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/vendor/:admin_id",
+    name: "Vendor",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminVendor />,
     layout: "/superadmin",
   },
 ];
