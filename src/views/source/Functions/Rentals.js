@@ -134,7 +134,6 @@ export const handleSubmit = async (
               };
             }),
     };
-    console.log(object, "khushi");
     const res = await axios.post(`${baseUrl}/rentals/rentals`, object);
     if (res.data.statusCode === 200) {
       toast.success("Property Added Successfully!", {

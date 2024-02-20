@@ -204,7 +204,7 @@ const TenantFinancial = () => {
     setSelectedUnit("");
     try {
       const units = await fetchUnitsByProperty(property.rental_adress);
-      setUnitData(units); 
+      setUnitData(units);
     } catch (error) {
       console.error("Error handling selected property:", error);
     }
@@ -417,7 +417,7 @@ const TenantFinancial = () => {
             </FormGroup>
           </Col>
 
-          <Col className="text-right">
+          {/* <Col className="text-right">
             <Button
               color="primary"
               //  href="#rms"
@@ -427,7 +427,7 @@ const TenantFinancial = () => {
             >
               Make Payment
             </Button>
-          </Col>
+          </Col> */}
         </Row>
         <br />
         <Row>
@@ -518,9 +518,8 @@ const TenantFinancial = () => {
                                       {item?.entry?.map((data, i) => (
                                         <>
                                           <div className="d-flex">
-                                            <div className="">
-                                              {i + 1}
-                                              {". "}
+                                            <div>
+                                              {data.account ? i + 1 + "." : "-"}
                                             </div>
                                             <div>{data?.account}</div>
                                           </div>
@@ -530,19 +529,20 @@ const TenantFinancial = () => {
 
                                     <td>
                                       {" "}
-                                      {item.is_leaseAdded === true
-                                        ? item.entry.map((data, i) => (
+                                      {item?.is_leaseAdded === true
+                                        ? item?.entry?.map((data, i) => (
                                             <>
                                               <div className="d-flex ">
                                                 <div>
-                                                  {i + 1}
-                                                  {". "}
+                                                  {data.memo
+                                                    ? i + 1 + "."
+                                                    : "-"}
                                                 </div>
-                                                <div>{data.memo}</div>
+                                                <div>{data?.memo}</div>
                                               </div>
                                             </>
                                           ))
-                                        : item.entry[0].memo}
+                                        : item?.entry[0]?.memo}
                                     </td>
 
                                     {item.type === "charge" ? (

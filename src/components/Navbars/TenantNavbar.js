@@ -226,7 +226,6 @@ const TenantNavbar = (props) => {
   // };
 
   const [tenantNotification, setTenantNotification] = useState([]);
-  console.log(tenantNotification, "tenantNotification");
   const tenantNotificationData = async (addresses, units) => {
     try {
       const response = await axios.get(
