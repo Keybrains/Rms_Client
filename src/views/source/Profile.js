@@ -108,11 +108,16 @@ const Profile = () => {
                         fontSize: "30px",
                       }}
                     >
-                      {userProfile?.first_name?.slice(0, 1).toUpperCase()}
+                      {`${userProfile?.first_name
+                        ?.slice(0, 1)
+                        .toUpperCase()}${userProfile?.last_name
+                        ?.slice(0, 1)
+                        .toUpperCase()}`}
                     </div>
+
                     <div className="mt-3">
                       <h4>
-                        {userProfile?.first_name}&nbsp;{userProfile?.first_name}
+                        {userProfile?.first_name}&nbsp;{userProfile?.last_name}
                       </h4>
                       <p>{userProfile?.email}</p>
                       <p>{userProfile?.phone_number}</p>
