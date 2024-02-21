@@ -60,22 +60,6 @@ const VendorNavbar = (props) => {
   let cookie_id = localStorage.getItem("Vendor ID");
   // console.log(cookie_id);
 
-  const getVendorDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/vendor/vendor_summary/${cookie_id}`
-      );
-      // console.log(response.data.data);
-      setVendorDetails(response.data.data);
-      setVendorname(response.data.data.vendor_name);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching vendor details:", error);
-      setError(error);
-      setLoading(false);
-    }
-  };
-
   const [notification, setNotification] = useState("");
   const [notificationCount, setNotificationCount] = useState(0);
   const [notificationData, setNotificationData] = useState([]);
@@ -88,40 +72,7 @@ const VendorNavbar = (props) => {
     setSelectedProp(property);
   };
 
-  useEffect(() => {
-    fetchNotification();
-  }, [vendor_name]);
-
-  const fetchNotification = async () => {
-    fetch(`${baseUrl}/notification/vendornotification/${vendor_name}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          // Filter the notifications with isVendorread set to false
-          const unreadNotifications = data.data.filter(
-            (notification) => !notification.isVendorread
-          );
-          setNotificationData(unreadNotifications);
-          setNotificationCount(unreadNotifications.length);
-          // console.log("Unread Notifications", unreadNotifications);
-          // console.log("vendor", vendor_name);
-        } else {
-          // Handle error
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        // Handle network error
-        console.error("Network error:", error);
-      });
-  };
-  useEffect(() => {
-    getVendorDetails();
-    // console.log(id);
-  }, [id]);
-
   const [accessType, setAccessType] = useState(null);
-  console.log(accessType, "accessType");
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
@@ -291,7 +242,7 @@ const VendorNavbar = (props) => {
                 <Media className="align-items-center">
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
-                      {vendorDetails.vendor_name}
+                      {accessType?.vendor_name}
                     </span>
                   </Media>
                 </Media>
