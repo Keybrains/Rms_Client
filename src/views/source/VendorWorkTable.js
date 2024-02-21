@@ -34,15 +34,13 @@ const VendorWorkTable = () => {
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
- 
-
-
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
-  const paginatedData = workData.slice(startIndex, endIndex);
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -50,16 +48,14 @@ const VendorWorkTable = () => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
-      // console.log(jwt,"jwt")
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
+
   const getWorkData = async () => {
     try {
       const response = await axios.get(`${baseUrl}/work-order/vendor_work/${accessType.vendor_id}`);
-      console.log(response.data.data,"khu")
-      console.log("object",accessType.vendor_id)
       setLoader(false);
       setWorkData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -67,45 +63,26 @@ const VendorWorkTable = () => {
       console.error("Error fetching data:", error);
     }
   };
-  useEffect(() => {
-    getWorkData();
-  }, [accessType]);
-
 
   useEffect(() => {
     getWorkData();
-  }, [pageItem]);
-
+  }, [accessType, pageItem]);
 
   const navigateToDetails = (workorder_id) => {
-    // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
     navigate(`/vendor/vendorworkdetail/${workorder_id}`);
-    //console.log(workorder_id);
   };
 
-  // const filterRentalsBySearch = () => {
-  //   if (!searchQuery) {
-  //     return workData;
-  //   }
-
-  //   return workData.filter((rental) => {
-  //     const lowerCaseQuery = searchQuery.toLowerCase();
-  //     return (
-  //       rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.status.toLowerCase().includes(lowerCaseQuery) ||
-  //       rental.rental_adress.toLowerCase().includes(lowerCaseQuery)||
-  //       rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)||
-  //       rental.priority.toLowerCase().includes(lowerCaseQuery)
-  //     );
-  //   });
-  // };
+  const filterRentalsBySearchAndPage = () => {
+    const filteredData = filterRentalsBySearch();
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+    return paginatedData;
+  };
 
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
       return workData;
     }
-
+  
     return workData.filter((rental) => {
       const lowerCaseQuery = searchQuery.toLowerCase();
       const isUnitAddress = (rental.unit_no + " " + rental.rental_adress)
@@ -115,17 +92,11 @@ const VendorWorkTable = () => {
         rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
         rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
         rental.status.toLowerCase().includes(lowerCaseQuery) ||
+        (rental.staffmember_name && rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)) || // Check if staffmember_name exists
         isUnitAddress ||
-        rental.staffmember_name.toLowerCase().includes(lowerCaseQuery) ||
         rental.priority.toLowerCase().includes(lowerCaseQuery)
       );
     });
-  };
-
-  const filterTenantsBySearchAndPage = () => {
-    const filteredData = filterRentalsBySearch();
-    const paginatedData = filteredData.slice(startIndex, endIndex);
-    return paginatedData;
   };
 
   return (
@@ -187,8 +158,7 @@ const VendorWorkTable = () => {
                     </tr>
                   </thead>
                   <tbody>
-                
-                    {filterTenantsBySearchAndPage().map((vendor) => (
+                    {filterRentalsBySearchAndPage().map((vendor) => (
                       <tr
                         key={vendor.vendor_id}
                         onClick={() => navigateToDetails(vendor.workOrder_id)}
@@ -205,7 +175,7 @@ const VendorWorkTable = () => {
                     ))}
                   </tbody>
                 </Table>
-                {paginatedData.length > 0 ? (
+                {workData.length > 0 ? (
                   <Row>
                     <Col className="text-right m-3">
                       <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
@@ -284,11 +254,9 @@ const VendorWorkTable = () => {
                       </Button>{" "}
                     </Col>
                   </Row>
-                ) : (
-                  <></>
-                )}
+                ) : null}
               </Card>
-             )} 
+            )}
           </div>
         </Row>
         <br />

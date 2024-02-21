@@ -773,7 +773,6 @@ const AddWorkorder = () => {
                             }}
                           >
                             {" "}
-                            <br />
                             <input
                               type="file"
                               className="form-control-file d-none"
@@ -798,7 +797,7 @@ const AddWorkorder = () => {
                       }}
                     >
                       <div
-                        className="mt-3 d-flex"
+                        className=" d-flex"
                         style={{
                           justifyContent: "center",
                           flexWrap: "wrap",
@@ -814,7 +813,6 @@ const AddWorkorder = () => {
                                   position: "relative",
                                   width: "100px",
                                   height: "100px",
-                                  margin: "10px",
                                   display: "flex",
                                   flexDirection: "column",
                                 }}
@@ -864,7 +862,6 @@ const AddWorkorder = () => {
                         />
                       </div>
                     </FormGroup>
-                    <br />
                   </div>
 
                   <div className="pl-lg-4">
@@ -877,8 +874,6 @@ const AddWorkorder = () => {
                           >
                             Property *
                           </label>
-                          <br />
-                          <br />
                           <FormGroup>
                             <Dropdown
                               isOpen={propdropdownOpen}
@@ -982,7 +977,6 @@ const AddWorkorder = () => {
                           )}
                       </Col>
                     </Row>
-                    <br />
                   </div>
 
                   <div className="pl-lg-4">
@@ -995,7 +989,6 @@ const AddWorkorder = () => {
                           >
                             Category *
                           </label>
-                          <br />
                           <br />
                           <Dropdown
                             isOpen={categorydropdownOpen}
@@ -1070,7 +1063,6 @@ const AddWorkorder = () => {
                             Vendor *
                           </label>
                           <br />
-                          <br />
                           <Dropdown
                             isOpen={vendordropdownOpen}
                             toggle={toggle3}
@@ -1136,7 +1128,6 @@ const AddWorkorder = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                    <br />
                   </div>
 
                   <div className="pl-lg-4">
@@ -1149,7 +1140,6 @@ const AddWorkorder = () => {
                           >
                             Entry Allowed
                           </label>
-                          <br />
                           <br />
                           <Dropdown isOpen={entrydropdownOpen} toggle={toggle4}>
                             <DropdownToggle caret style={{ width: "100%" }}>
@@ -1178,7 +1168,6 @@ const AddWorkorder = () => {
                           >
                             Assigned To *
                           </label>
-                          <br />
                           <br />
                           <FormGroup>
                             <Dropdown
@@ -1221,7 +1210,6 @@ const AddWorkorder = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                    <br />
                   </div>
 
                   <div className="pl-lg-4">
@@ -1234,7 +1222,6 @@ const AddWorkorder = () => {
                           >
                             Work To Be Performed
                           </label>
-                          <br />
                           <br />
                           <Input
                             className="form-control-alternative"
@@ -1257,12 +1244,10 @@ const AddWorkorder = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-
-                    <br />
                   </div>
 
                   <div className="pl-lg-4">
-                    <label className="form-control-label" htmlFor="input-desg">
+                    <label className="form-control-label pl-lg-3" htmlFor="input-desg">
                       Parts and Labor
                     </label>
                     <Col lg="12">
@@ -1631,9 +1616,6 @@ const AddWorkorder = () => {
                       </FormGroup>
                     </Col>
                   </div>
-                  <br />
-                  <br />
-
                   <div className="pl-lg-4">
                     <Row>
                       <Col lg="6">
@@ -1644,7 +1626,6 @@ const AddWorkorder = () => {
                           >
                             Vendor Notes
                           </label>
-                          <br />
                           <br />
                           <Input
                             className="form-control-alternative"
@@ -1667,7 +1648,6 @@ const AddWorkorder = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                    <br />
                   </div>
 
                   <div className="pl-lg-4">
@@ -1681,7 +1661,6 @@ const AddWorkorder = () => {
                             >
                               Charge Work To
                             </label>
-                            <br />
                             <br />
                             <Dropdown
                               isOpen={chargedropdownOpen}
@@ -1722,7 +1701,6 @@ const AddWorkorder = () => {
                               >
                                 Tenant
                               </label>
-                              <br />
                               <br />
                               <Dropdown
                                 isOpen={tenantdownOpen}
@@ -1781,7 +1759,6 @@ const AddWorkorder = () => {
                             Priority
                           </label>
                           <br />
-                          <br />
                           <div className="pl-lg-4">
                             <Row>
                               <Col xs="3">
@@ -1828,7 +1805,6 @@ const AddWorkorder = () => {
                       </Col>
                     </Row>
                   </div>
-                  <br />
 
                   <div className="pl-lg-4">
                     <Row>
@@ -1840,7 +1816,6 @@ const AddWorkorder = () => {
                           >
                             Status *
                           </label>
-                          <br />
                           <br />
                           <FormGroup>
                             <Dropdown
@@ -1903,7 +1878,6 @@ const AddWorkorder = () => {
                             Due Date
                           </label>
                           <br />
-                          <br />
                           <Input
                             className="form-control-alternative"
                             id="input-unitadd"
@@ -1922,8 +1896,6 @@ const AddWorkorder = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-
-                    <br />
                   </div>
                   {loader ? (
                     <button

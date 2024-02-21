@@ -137,22 +137,24 @@ const StaffWorkTable = () => {
     if (!searchQuery) {
       return workData;
     }
-
+  
     return workData.filter((rental) => {
       const lowerCaseQuery = searchQuery.toLowerCase();
       const isUnitAddress = (rental.unit_no + " " + rental.rental_adress)
         .toLowerCase()
         .includes(lowerCaseQuery);
+      const hasStaffMemberName = rental.staffmember_name && rental.staffmember_name.toLowerCase().includes(lowerCaseQuery);
       return (
         rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
         rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
         rental.status.toLowerCase().includes(lowerCaseQuery) ||
         isUnitAddress ||
-        rental.staffmember_name.toLowerCase().includes(lowerCaseQuery) ||
+        hasStaffMemberName ||
         rental.priority.toLowerCase().includes(lowerCaseQuery)
       );
     });
   };
+  
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
