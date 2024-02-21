@@ -134,7 +134,7 @@ const AddPayment = () => {
       billing_id: "",
       creditcard_number: "",
       expiration_date: "",
-      cvv: "",
+      // cvv: "",
       tenant_firstName: "",
       tenant_lastName: "",
       email_name: "",
@@ -184,7 +184,9 @@ const AddPayment = () => {
   };
 
   const handleEditCloseButtonClick = () => {
-    navigate(`/admin/rentrolldetail/${tenantid}/${tenantentryIndex}?source=payment`);
+    navigate(
+      `/admin/rentrolldetail/${tenantid}/${tenantentryIndex}?source=payment`
+    );
   };
 
   useEffect(() => {
@@ -390,30 +392,35 @@ const AddPayment = () => {
     const rentalAddress = generalledgerFormik.values.rental_adress;
     values["total_amount"] = total_amount;
 
+    const chargesData =
+      formikForAnotherData?.length > 0 &&
+      formikForAnotherData?.values?.entries?.map((entry) => ({
+        account: entry.account,
+        amount: parseFloat(entry.amount),
+        total_amount: total_amount,
+      }));
+
+    const paymentData = generalledgerFormik.values.entries.map((entry) => ({
+      account: entry.account,
+      amount: parseFloat(entry.amount),
+      total_amount: total_amount,
+    }));
+
+    const paymentEntry =
+      chargesData?.length > 0 ? [...paymentData, ...chargesData] : paymentData;
+    console.log("object", paymentEntry);
     const updatedValues = {
       date: values.date,
       amount: values.amount,
       payment_type: selectedProp,
-      cvv: values.cvv,
+      // cvv: values.cvv,
       tenant_firstName: selectedRec,
       attachment: generalledgerFormik.values.attachment,
       rental_adress: rentalAddress,
       tenant_id: tenantid,
       entryIndex: tenantentryIndex,
       memo: values.memo || "Payment",
-
-      entries: [
-        ...generalledgerFormik.values.entries.map((entry) => ({
-          account: entry.account,
-          amount: parseFloat(entry.amount),
-          total_amount: total_amount,
-        })),
-        ...formikForAnotherData.values.entries.map((entry) => ({
-          account: entry.account,
-          amount: parseFloat(entry.amount),
-          total_amount: total_amount,
-        })),
-      ],
+      entries: paymentEntry,
     };
     try {
       const response = await axios.post(
@@ -446,8 +453,9 @@ const AddPayment = () => {
               billing_id: values.billing_id,
               surcharge: values.surcharge,
               amount: values.amount,
-              cvv: values.cvv,
+              // cvv: values.cvv,
               tenantId: tenantData._id,
+              date: values.date,
               address1: rentalAddress,
             };
 
@@ -559,8 +567,6 @@ const AddPayment = () => {
               margin: { top: 10, left: 10 },
             });
 
-            // Add the table to the PDF
-
             // Add the PDF content
             doc.addImage(pdfData, "JPEG", 15, 110, 180, 100);
 
@@ -568,18 +574,16 @@ const AddPayment = () => {
             doc.save(`PaymentReceipt_${id}.pdf`);
           } else {
             if (!printReceipt) {
-              swal("Success!", "Payment added successfully", "success");
+              // swal("Success!", "Payment added successfully", "success");
             } else {
-              swal("Error", "Failed to retrieve PDF summary", "error");
+              // swal("Error", "Failed to retrieve PDF summary", "error");
             }
           }
         } else {
-          swal("Error", "Failed to get 'id' from the response", "error");
+          // swal("Error", "Failed to get 'id' from the response", "error");
         }
 
-        navigate(
-          `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
-        ); // Navigate to the desired page
+ 
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -587,9 +591,148 @@ const AddPayment = () => {
 
       // calling api of payment and charge
       try {
+        // console.log(formikForAnotherData.values, "formikForAnotherData in formik")
         selectedProp === "Credit Card" && financialDate > currentDate
           ? (status = "Pending")
           : (status = "Success");
+
+        const chargesData1 =
+          selectedProp === "Credit Card"
+            ? formikForAnotherData?.values?.length !== 0
+              ? formikForAnotherData?.values?.entries
+                  ?.filter((entry) => parseFloat(entry.amount) !== 0)
+                  ?.map((entry) => ({
+                    type: "Payment",
+                    account: entry.account,
+                    amount: parseFloat(entry.amount),
+                    payment_type: selectedProp,
+                    rental_adress: rentAddress,
+                    rent_cycle: "",
+                    month_year:
+                      values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                    date: values.date,
+                    memo: values.charges_memo,
+                    charges_attachment: generalledgerFormik.values.attachment,
+                    tenant_id: tenantid,
+                    entryIndex: entryIndex,
+                    tenant_firstName: firstName,
+                    tenant_lastName: lastName,
+                    email_name: mail,
+                    customer_vault_id: values.customer_vault_id,
+                    billing_id: values.billing_id,
+                    surcharge: values.surcharge,
+                    total_amount: totalAmount1,
+                    // Add NMI response data here
+                    response: nmiResponse.response,
+                    responsetext: nmiResponse.responsetext,
+                    authcode: nmiResponse.authcode,
+                    transactionid: nmiResponse.transactionid,
+                    avsresponse: nmiResponse.avsresponse,
+                    cvvresponse: nmiResponse.cvvresponse,
+                    type2: nmiResponse.type,
+                    response_code: nmiResponse.response_code,
+                    cc_type: nmiResponse.cc_type,
+                    cc_exp: nmiResponse.cc_exp,
+                    cc_number: nmiResponse.cc_number,
+                    status:
+                      nmiResponse.response_code == 100 ? "Success" : "Failure",
+                  }))
+              : []
+            :  formikForAnotherData?.values?.length !== 0 ?
+              formikForAnotherData?.values?.entries
+                ?.filter((entry) => parseFloat(entry.amount) !== 0)
+                ?.map((entry) => ({
+                  type: "Payment",
+                  account: entry.account,
+                  amount: parseFloat(entry.amount),
+                  payment_type: selectedProp,
+                  rental_adress: rentAddress,
+                  rent_cycle: "",
+                  month_year:
+                    values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                  date: values.date,
+                  memo: values.charges_memo,
+                  charges_attachment: generalledgerFormik.values.attachment,
+                  tenant_id: tenantid,
+                  entryIndex: entryIndex,
+                  tenant_firstName: firstName,
+                  tenant_lastName: lastName,
+                  email_name: mail,
+                  status: status,
+                  customer_vault_id: values.customer_vault_id,
+                  billing_id: values.billing_id,
+                  surcharge: values.surcharge,
+                  total_amount: totalAmount1,
+                }))
+                : [];
+
+        const paymentData = selectedProp === "Credit Card" ? 
+         generalledgerFormik?.values?.entries?.map(
+          (entry) => ({
+            type: "Payment",
+            account: entry.account,
+            amount: parseFloat(entry.amount),
+            rental_adress: rentAddress,
+            rent_cycle: "",
+            month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+            date: values.date,
+            memo: values.charges_memo,
+            payment_type: selectedProp,
+            tenant_id: tenantid,
+            entryIndex: entryIndex,
+            charges_attachment: generalledgerFormik.values.attachment,
+            tenant_firstName: firstName,
+            tenant_lastName: lastName,
+            email_name: mail,
+            customer_vault_id: values.customer_vault_id,
+            billing_id: values.billing_id,
+            surcharge: values.surcharge,
+            total_amount: totalAmount1,
+            // Add NMI response data here
+            response: nmiResponse.response,
+            responsetext: nmiResponse.responsetext,
+            authcode: nmiResponse.authcode,
+            transactionid: nmiResponse.transactionid,
+            avsresponse: nmiResponse.avsresponse,
+            cvvresponse: nmiResponse.cvvresponse,
+            type2: nmiResponse.type,
+            response_code: nmiResponse.response_code,
+            cc_type: nmiResponse.cc_type,
+            cc_exp: nmiResponse.cc_exp,
+            cc_number: nmiResponse.cc_number,
+            status: nmiResponse.response_code == 100 ? "Success" : "Failure",
+          })
+        ) : generalledgerFormik?.values?.entries?.map(
+          (entry) => ({
+            type: "Payment",
+            account: entry.account,
+            amount: parseFloat(entry.amount),
+            rental_adress: rentAddress,
+            rent_cycle: "",
+            month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+            date: values.date,
+            memo: values.charges_memo,
+            payment_type: selectedProp,
+            tenant_id: tenantid,
+            entryIndex: entryIndex,
+            charges_attachment: generalledgerFormik.values.attachment,
+            tenant_firstName: firstName,
+            tenant_lastName: lastName,
+            email_name: mail,
+            customer_vault_id: values.customer_vault_id,
+            billing_id: values.billing_id,
+            surcharge: values.surcharge,
+            total_amount: totalAmount1,
+            status: status,
+          })
+        );
+
+        const paymentEntry =
+          chargesData1?.length > 0
+            ? [...paymentData, ...chargesData1]
+            : paymentData;
+
+      
         // Construct payment charge object
         const paymentObject =
           selectedProp === "Credit Card" &&
@@ -603,92 +746,7 @@ const AddPayment = () => {
                   {
                     unit: (state && state.unit_name) || "",
                     unit_id: (state && state.unit_id) || "",
-                    paymentAndCharges: [
-                      ...generalledgerFormik.values.entries.map((entry) => ({
-                        type: "Payment",
-                        account: entry.account,
-                        amount: parseFloat(entry.amount),
-                        rental_adress: rentAddress,
-                        rent_cycle: "",
-                        month_year:
-                          values.date.slice(5, 7) +
-                          "-" +
-                          values.date.slice(0, 4),
-                        date: values.date,
-                        memo: values.charges_memo,
-                        payment_type: selectedProp,
-                        tenant_id: tenantid,
-                        entryIndex: entryIndex,
-                        charges_attachment:
-                          generalledgerFormik.values.attachment,
-                        tenant_firstName: firstName,
-                        tenant_lastName: lastName,
-                        email_name: mail,
-                        customer_vault_id: values.customer_vault_id,
-                        billing_id: values.billing_id,
-                        surcharge: values.surcharge,
-                        total_amount: totalAmount1,
-                        // Add NMI response data here
-                        response: nmiResponse.response,
-                        responsetext: nmiResponse.responsetext,
-                        authcode: nmiResponse.authcode,
-                        transactionid: nmiResponse.transactionid,
-                        avsresponse: nmiResponse.avsresponse,
-                        cvvresponse: nmiResponse.cvvresponse,
-                        type2: nmiResponse.type,
-                        response_code: nmiResponse.response_code,
-                        cc_type: nmiResponse.cc_type,
-                        cc_exp: nmiResponse.cc_exp,
-                        cc_number: nmiResponse.cc_number,
-                        status:
-                          nmiResponse.response_code == 100
-                            ? "Success"
-                            : "Failure",
-                      })),
-                      ...formikForAnotherData.values.entries
-                        .filter((entry) => parseFloat(entry.amount) !== 0)
-                        .map((entry) => ({
-                          type: "Payment",
-                          account: entry.account,
-                          amount: parseFloat(entry.amount),
-                          payment_type: selectedProp,
-                          rental_adress: rentAddress,
-                          rent_cycle: "",
-                          month_year:
-                            values.date.slice(5, 7) +
-                            "-" +
-                            values.date.slice(0, 4),
-                          date: values.date,
-                          memo: values.charges_memo,
-                          charges_attachment:
-                            generalledgerFormik.values.attachment,
-                          tenant_id: tenantid,
-                          entryIndex: entryIndex,
-                          tenant_firstName: firstName,
-                          tenant_lastName: lastName,
-                          email_name: mail,
-                          customer_vault_id: values.customer_vault_id,
-                          billing_id: values.billing_id,
-                          surcharge: values.surcharge,
-                          total_amount: totalAmount1,
-                          // Add NMI response data here
-                          response: nmiResponse.response,
-                          responsetext: nmiResponse.responsetext,
-                          authcode: nmiResponse.authcode,
-                          transactionid: nmiResponse.transactionid,
-                          avsresponse: nmiResponse.avsresponse,
-                          cvvresponse: nmiResponse.cvvresponse,
-                          type2: nmiResponse.type,
-                          response_code: nmiResponse.response_code,
-                          cc_type: nmiResponse.cc_type,
-                          cc_exp: nmiResponse.cc_exp,
-                          cc_number: nmiResponse.cc_number,
-                          status:
-                            nmiResponse.response_code == 100
-                              ? "Success"
-                              : "Failure",
-                        })),
-                    ],
+                    paymentAndCharges: paymentEntry,
                   },
                 ],
               }
@@ -701,81 +759,40 @@ const AddPayment = () => {
                   {
                     unit: (state && state.unit_name) || "",
                     unit_id: (state && state.unit_id) || "",
-                    paymentAndCharges: [
-                      ...generalledgerFormik.values.entries.map((entry) => ({
-                        type: "Payment",
-                        account: entry.account,
-                        amount: parseFloat(entry.amount),
-                        rental_adress: rentAddress,
-                        rent_cycle: "",
-                        month_year:
-                          values.date.slice(5, 7) +
-                          "-" +
-                          values.date.slice(0, 4),
-                        date: values.date,
-                        memo: values.charges_memo,
-                        payment_type: selectedProp,
-                        tenant_id: tenantid,
-                        entryIndex: entryIndex,
-                        charges_attachment:
-                          generalledgerFormik.values.attachment,
-                        tenant_firstName: firstName,
-                        tenant_lastName: lastName,
-                        email_name: mail,
-                        customer_vault_id: values.customer_vault_id,
-                        billing_id: values.billing_id,
-                        surcharge: values.surcharge,
-                        total_amount: totalAmount1,
-                        status: status,
-                      })),
-                      ...formikForAnotherData.values.entries
-                        .filter((entry) => parseFloat(entry.amount) !== 0)
-                        .map((entry) => ({
-                          type: "Payment",
-                          account: entry.account,
-                          amount: parseFloat(entry.amount),
-                          payment_type: selectedProp,
-                          rental_adress: rentAddress,
-                          rent_cycle: "",
-                          month_year:
-                            values.date.slice(5, 7) +
-                            "-" +
-                            values.date.slice(0, 4),
-                          date: values.date,
-                          memo: values.charges_memo,
-                          charges_attachment:
-                            generalledgerFormik.values.attachment,
-                          tenant_id: tenantid,
-                          entryIndex: entryIndex,
-                          tenant_firstName: firstName,
-                          tenant_lastName: lastName,
-                          email_name: mail,
-                          status: status,
-                          customer_vault_id: values.customer_vault_id,
-                          billing_id: values.billing_id,
-                          surcharge: values.surcharge,
-                          total_amount: totalAmount1,
-                        })),
-                    ],
+                    paymentAndCharges: paymentEntry,
                   },
                 ],
               };
-
+        console.log("yash payment object", paymentObject);
         // Make API call to save payment charge
         const url = `${baseUrl}/payment_charge/payment_charge`;
-        const res = await axios.post(url, paymentObject);
-        console.log(res);
-        console.warn("nmi response", nmiResponse);
+        axios
+          .post(url, paymentObject)
+          .then((response) => {
+            // Handle success response
+            console.log(response);
+            // Show success sweet alert
+            swal("Success", "Payment Done successfully!", "success");
+            navigate(
+              `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
+            ); 
+          })
+          .catch((error) => {
+            // Handle error response
+            console.error("Error occurred:", error);
+            // Show error sweet alert
+            swal("Error", "Failed to Payment!", "error");
+          });
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error in payment:", error);
         console.warn("error in payment status:", nmiResponse, error);
-        alert("Payment charge calling error...");
+        // alert("Payment charge calling error...");
         if (error.response) {
           console.error("Response Data:", error.response.data);
         }
       }
     } catch (error) {
-      alert("error in payment charge");
+      // alert("error in payment charge");
       //console.error("Error:", error);
       if (error.response) {
         console.error("Response Data:", error.response.data);
@@ -1304,6 +1321,7 @@ const AddPayment = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
   return (
     <>
       <PaymentHeader />
@@ -1359,6 +1377,7 @@ const AddPayment = () => {
                         ) : null}
                       </FormGroup>
                     </Col>
+                    {/* {console.log(formikForAnotherData.values.entries, "yash")} */}
                   </Row>
                   <Row>
                     <Col sm="4">
@@ -1409,8 +1428,12 @@ const AddPayment = () => {
                           Payment Method
                         </label>
                         <br />
-                        <Dropdown isOpen={prodropdownOpen} toggle={toggle1} disabled={paymentId}>
-                          <DropdownToggle caret style={{ width: "100%" }} >
+                        <Dropdown
+                          isOpen={prodropdownOpen}
+                          toggle={toggle1}
+                          disabled={paymentId}
+                        >
+                          <DropdownToggle caret style={{ width: "100%" }}>
                             {selectedProp
                               ? selectedProp
                               : "Select Payment Method"}
@@ -1784,7 +1807,7 @@ const AddPayment = () => {
                                           )}
                                         </Typography>
                                       </td>
-
+{/* 
                                       {selectedCreditCard ===
                                         item.billing_id && (
                                         <td>
@@ -1825,7 +1848,7 @@ const AddPayment = () => {
                                             </FormGroup>
                                           </Row>
                                         </td>
-                                      )}
+                                      )} */}
                                     </tr>
                                   ))}
                                 </tbody>
@@ -1893,7 +1916,11 @@ const AddPayment = () => {
                           Recieved From
                         </label>
                         <br />
-                        <Dropdown isOpen={recdropdownOpen} toggle={toggle2} disabled={paymentId}>
+                        <Dropdown
+                          isOpen={recdropdownOpen}
+                          toggle={toggle2}
+                          disabled={paymentId}
+                        >
                           <DropdownToggle caret style={{ width: "100%" }}>
                             {selectedRec ? selectedRec : "Select Resident"}
                           </DropdownToggle>
@@ -1977,7 +2004,7 @@ const AddPayment = () => {
                             </thead>
                             <tbody>
                               {formikForAnotherData.values.entries.length > 0
-                                ? formikForAnotherData.values.entries.map(
+                                ? formikForAnotherData.values?.entries?.map(
                                     (entries, index) => (
                                       <>
                                         <tr key={index}>
@@ -2020,23 +2047,32 @@ const AddPayment = () => {
                                               className="form-control-alternative"
                                               id="input-unitadd"
                                               placeholder="$0.00"
-                                              type="text"
+                                              type="number"
                                               name={`entries[${index}].amount`}
                                               onBlur={
                                                 formikForAnotherData.handleBlur
                                               }
                                               // only input number
-                                              onKeyDown={(event) => {
-                                                if (!/[0-9]/.test(event.key)) {
-                                                  event.preventDefault();
-                                                }
-                                              }}
+                                              // onKeyDown={(event) => {
+                                              //   event.preventDefault();
+                                              // }}
                                               onChange={
                                                 formikForAnotherData.handleChange
                                               }
+                                              onInput={(e) => {
+                                                const inputValue =
+                                                  e.target.value;
+                                                const numericValue =
+                                                  inputValue.replace(/\D/g, "");
+                                                e.target.value = numericValue;
+                                              }}
                                               value={entries.amount}
                                             />
                                           </td>
+                                          {console.log(
+                                            formikForAnotherData.values,
+                                            "yash"
+                                          )}
                                           <td style={{ border: "none" }}>
                                             <ClearIcon
                                               type="button"
@@ -2497,7 +2533,11 @@ const AddPayment = () => {
                           color="primary"
                           //  href="#rms"
                           className="btn btn-primary"
-                          onClick={paymentId ? handleEditCloseButtonClick : handleCloseButtonClick}
+                          onClick={
+                            paymentId
+                              ? handleEditCloseButtonClick
+                              : handleCloseButtonClick
+                          }
                           style={{ background: "white", color: "black" }}
                         >
                           Cancel

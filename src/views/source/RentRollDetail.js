@@ -1469,7 +1469,7 @@ const RentRollDetail = () => {
                                           "$" +
                                             Math.abs(
                                               GeneralLedgerData
-                                                .paymentAndCharges[0].Total
+                                                .paymentAndCharges[0].Total.toFixed(2)
                                             )}
                                       </Typography>
                                     </div>
@@ -2413,7 +2413,7 @@ const RentRollDetail = () => {
                                   "$" +
                                     Math.abs(
                                       GeneralLedgerData.paymentAndCharges[0]
-                                        .Total
+                                        .Total.toFixed(2)
                                     )}
                               </Typography>
                             </div>
