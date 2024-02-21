@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
 import { ToastContainer, toast } from "react-toastify";
@@ -23,24 +23,14 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Label,
-  Popover,
 } from "reactstrap";
 import PaymentHeader from "components/Headers/PaymentHeader";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import CloseIcon from "@mui/icons-material/Close";
-import { Check, CheckBox } from "@mui/icons-material";
 import Checkbox from "@mui/material/Checkbox";
-import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { values } from "pdf-lib";
-import Img from "assets/img/theme/team-4-800x800.jpg";
 import "jspdf-autotable";
-import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 import moment from "moment";
-import { OverlayTrigger } from "react-bootstrap";
 
 function AddPayment() {
   const [accessType, setAccessType] = useState(null);
@@ -48,19 +38,13 @@ function AddPayment() {
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
   const navigate = useNavigate();
   const { lease_id, admin, payment_id } = useParams();
-  const [chargeData, setchargeData] = useState([]);
-  const [tenantsData, setTenantsData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [tenantData, setTenantData] = useState([]);
   const [loader, setLoader] = useState(false);
 
   const [recdropdownOpen, setrecDropdownOpen] = useState(false);
   const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
 
-  const [tenantDropdownOpen, setDenantDropdownOpen] = useState(false);
-  const toggle3 = () => setDenantDropdownOpen((prevState) => !prevState);
-
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
-  const [selectedTenant, setSelectedTenant] = useState("");
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -98,10 +82,14 @@ function AddPayment() {
             .number()
             .required("Required")
             .min(1, "Amount must be greater than zero.")
-            .test('is-less-than-balance', 'Amount must be less than or equal to balance', function (value) {
-              const balance = this.parent.balance;
-              return value <= balance;
-            }),
+            .test(
+              "is-less-than-balance",
+              "Amount must be less than or equal to balance",
+              function (value) {
+                const balance = this.parent.balance;
+                return value <= balance;
+              }
+            ),
         })
       ),
     }),
@@ -111,6 +99,91 @@ function AddPayment() {
       }
     },
   });
+
+  const editPayment = async (values) => {
+    setLoader(true);
+
+    if (file) {
+      try {
+        const uploadPromises = file?.map(async (fileItem, i) => {
+          if (fileItem.upload_file instanceof File) {
+            try {
+              const form = new FormData();
+              form.append("files", fileItem.upload_file);
+
+              const res = await axios.post(`${imageUrl}/images/upload`, form);
+              if (
+                res &&
+                res.data &&
+                res.data.files &&
+                res.data.files.length > 0
+              ) {
+                fileItem.upload_file = res.data.files[0].filename;
+              } else {
+                console.error("Unexpected response format:", res);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
+          }
+        });
+
+        await Promise.all(uploadPromises);
+      } catch (error) {
+        console.error("Error processing file uploads:", error);
+      }
+    }
+
+    const object = {
+      payment_id: payment_id,
+      admin_id: accessType.admin_id,
+      tenant_id: tenantData?.tenant_id,
+      lease_id: lease_id,
+
+      entry: values.charges?.map((item) => {
+        const data = {
+          entry_id: item.entry_id,
+          account: item.account,
+          amount: Number(item.amount),
+          memo: values.charges_memo,
+          date: values.date,
+          account: item.account,
+          charge_type: item.charge_type,
+        };
+        return data;
+      }),
+
+      total_amount: total,
+      uploaded_file: file,
+    };
+
+    try {
+      const res = await axios.put(
+        `${baseUrl}/payment/payment/${payment_id}`,
+        object
+      );
+      if (res.data.statusCode === 200) {
+        toast.success(res.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
+        navigate(`/${admin}/rentrolldetail/${lease_id}`);
+      } else {
+        toast.warning(res.data.message, {
+          position: "top-center",
+          autoClose: 1000,
+        });
+      }
+    } catch (error) {
+      console.error("Error: ", error.message);
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 1000,
+      });
+    } finally {
+      setLoader(false);
+    }
+  };
 
   const handleSubmit = async (values) => {
     setLoader(true);
@@ -148,7 +221,7 @@ function AddPayment() {
 
     const object = {
       admin_id: accessType.admin_id,
-      tenant_id: tenantId,
+      tenant_id: tenantData?.tenant_id,
       lease_id: lease_id,
 
       entry: values.payments?.map((item) => {
@@ -191,10 +264,8 @@ function AddPayment() {
   };
 
   const fetchchargeData = async () => {
-    setLoading(true);
     try {
       const response = await axios.get(`${baseUrl}/charge/charges/${lease_id}`);
-      setchargeData(response.data.totalCharges);
       const data = response.data.totalCharges
         .map((item) => {
           const myData = item.entry
@@ -224,24 +295,6 @@ function AddPayment() {
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
-    setLoading(false);
-  };
-
-  const fetchtenantsData = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${baseUrl}/leases/tenants/${lease_id}`);
-      const uniqueTenantData = {};
-      response.data.data.forEach((item) => {
-        uniqueTenantData[item.tenant_id] = item;
-      });
-
-      const filteredData = Object.values(uniqueTenantData);
-      setTenantsData(filteredData);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-    }
-    setLoading(false);
   };
 
   const [recAccounts, setRecAccounts] = useState([]);
@@ -269,13 +322,24 @@ function AddPayment() {
     }
   };
 
+  const fetchTenant = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/leases/lease_tenant/${lease_id}`);
+      if (res.data.statusCode === 200) {
+        setTenantData(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error: ", error.message);
+    }
+  };
+
   useEffect(() => {
     fetchAccounts();
   }, [accessType?.admin_id]);
 
   useEffect(() => {
-    fetchtenantsData();
     fetchchargeData();
+    fetchTenant();
   }, [lease_id]);
 
   const [total, setTotal] = useState(0);
@@ -298,14 +362,6 @@ function AddPayment() {
       ...generalledgerFormik.values,
       payments: updatedCharges,
     });
-  };
-
-  const [tenantId, setTenantId] = useState("Select Resident");
-  const handleRecieverSelection = (property) => {
-    setSelectedTenant(
-      `${property.tenant_firstName} ${property.tenant_lastName}`
-    );
-    setTenantId(property.tenant_id);
   };
 
   const handleAccountSelection = (value, index, chargeType) => {
@@ -420,7 +476,7 @@ function AddPayment() {
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">payment</h3>
+                    <h3 className="mb-0">New Payment</h3>
                   </Col>
                 </Row>
               </CardHeader>
@@ -433,8 +489,11 @@ function AddPayment() {
                         className="form-control-label"
                         htmlFor="input-unitadd"
                       >
-                        Payment for: {tenantsData.tenant_firstName}{" "}
-                        {tenantsData.tenant_lastName}
+                        Payment for:{" "}
+                        <span>
+                          {tenantData.tenant_firstName}{" "}
+                          {tenantData.tenant_lastName}
+                        </span>
                       </label>
                     </Col>
                   </Row>
@@ -591,47 +650,7 @@ function AddPayment() {
                       )}
                     </Col>
                   </Row>
-                  <Row>
-                    <Col lg="2">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Recieved From
-                        </label>
-                        <br />
-                        <Dropdown
-                          isOpen={tenantDropdownOpen}
-                          toggle={toggle3}
-                          disabled={payment_id}
-                        >
-                          <DropdownToggle caret style={{ width: "100%" }}>
-                            {selectedTenant
-                              ? selectedTenant
-                              : "Select Resident"}
-                          </DropdownToggle>
-                          <DropdownMenu
-                            style={{
-                              width: "100%",
-                              maxHeight: "200px",
-                              overflowY: "auto",
-                              overflowX: "hidden",
-                            }}
-                          >
-                            {tenantsData?.map((tenant, index) => (
-                              <DropdownItem
-                                key={index}
-                                onClick={() => handleRecieverSelection(tenant)}
-                              >
-                                {`${tenant.tenant_firstName} ${tenant.tenant_lastName}`}
-                              </DropdownItem>
-                            ))}
-                          </DropdownMenu>
-                        </Dropdown>
-                      </FormGroup>
-                    </Col>
-                  </Row>
+
                   <Row>
                     <Col lg="3">
                       <FormGroup>
@@ -1028,7 +1047,7 @@ function AddPayment() {
                             style={{ background: "green", cursor: "pointer" }}
                             onClick={(e) => {
                               e.preventDefault();
-                              // editCharge(generalledgerFormik.values);
+                              editPayment(generalledgerFormik.values);
                             }}
                           >
                             Edit Charge
