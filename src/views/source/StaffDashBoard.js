@@ -58,6 +58,7 @@ const StaffDashBoard = (props) => {
   };
   const [showMoreNewOrders, setShowMoreNewOrders] = useState(false);
   const [showMoreOverdueOrders, setShowMoreOverdueOrders] = useState(false);
+  let [loader, setLoader] = useState(false);
 
   const handleViewMoreNewOrders = () => {
     setShowMoreNewOrders(!showMoreNewOrders);
@@ -72,12 +73,27 @@ const StaffDashBoard = (props) => {
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      setAccessType(jwt.accessType);
+      setAccessType(jwt);
     }
     else {
       navigate("/auth/login");
     }
   }, [navigate]);
+
+  const [propertycount, setpropertycount] = useState()
+  const fetchPropertyCount = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/staffmember/count/staffmember_id/admin_id`);
+      setpropertycount(res.data)
+      console.log("janak ", res.data.property_staffMember);
+    } catch (error) {
+      console.error("Error: ", error.message);
+    }
+  }
+
+  useEffect(() => {
+    fetchPropertyCount();
+  }, []);
 
   const cardStyle = {
     // background: `url(${require("../assets/img/us3.jpeg").default})`,
@@ -143,79 +159,80 @@ const StaffDashBoard = (props) => {
                   <Card >
                     <CardBody style={cardStyle} >
                       <div style={{ textAlign: 'center' }}>Welcome to 302 Properties</div>
-                     
-                      <Row style={{  }} className="d-flex justify-content-around">
-                      <Col lg="4" sm="12" className="mb-3">
-                    <Card style={subcardStyle}>
-                    
-                      <CardBody className="d-flex flex-column justify-content-center  text-center mb-3">
-                        <div className="d-flex align-items-center flex-column p-3 ">
-                          <div
-                            className="d-flex justify-content-center align-items-center"
-                            style={{
-                              color: "#cfd8dc",
-                              width: "70px",
-                              height: "70px",
-                              fontSize: "30px",
-                              borderRadius: "50%",
-                              background:
-                              "linear-gradient(125deg, #fff 10%,#033E3E,#263238)",
-                            }}
-                          >
-                            <i className="ni ni-pin-3"></i>
-                          </div>
-                          <div style={{ color: "cfd8dc", fontSize: "20px" }}>
-                            Properties
-                          </div>
-                        </div>
-                        <div
-                          style={{
-                            color: "cfd8dc",
-                            fontSize: "22px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                         8
-                         {/* {propertycount} */}
-                        </div>
-                      </CardBody>
-                    </Card>
-                  </Col>
-                  <Col lg="4" className="mb-3">
-                    <Card style={subbcardStyle}>
-                      <CardBody className="d-flex flex-column justify-content-center  text-center">
-                        <div className="d-flex align-items-center flex-column p-3">
-                          <div
-                            className="d-flex justify-content-center align-items-center"
-                            style={{
-                              color: "white",
-                              width: "70px",
-                              height: "70px",
-                              fontSize: "30px",
-                              borderRadius: "50%",
-                              background:
-                              "linear-gradient(125deg, #fff 10%,#033E3E,#263238)",
-                            }}
-                          >
-                            <i className="ni ni-badge"></i>
-                          </div>
-                          <div style={{ color: "white", fontSize: "20px" }}>
-                            Work Orders
-                          </div>
-                        </div>
-                        <div
-                          style={{
-                            color: "white",
-                            fontSize: "22px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          8
-                        </div>
-                      </CardBody>
-                    </Card>
-                  </Col>
-                       
+
+                      <Row style={{}} className="d-flex justify-content-around">
+                        <Col lg="4" sm="12" className="mb-3">
+                          <Card style={subcardStyle}>
+
+                            <CardBody className="d-flex flex-column justify-content-center  text-center mb-3">
+                              <div className="d-flex align-items-center flex-column p-3 ">
+                                <div
+                                  className="d-flex justify-content-center align-items-center"
+                                  style={{
+                                    color: "#cfd8dc",
+                                    width: "70px",
+                                    height: "70px",
+                                    fontSize: "30px",
+                                    borderRadius: "50%",
+                                    background:
+                                      "linear-gradient(125deg, #fff 10%,#033E3E,#263238)",
+                                  }}
+                                >
+                                  <i className="ni ni-pin-3"></i>
+                                </div>
+                                <div style={{ color: "cfd8dc", fontSize: "20px" }}>
+                                  Properties
+                                </div>
+                              </div>
+                              <div
+                                style={{
+                                  color: "cfd8dc",
+                                  fontSize: "22px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {propertycount?.property_staffMember}
+                                {/* {propertycount} */}
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Col>
+                        <Col lg="4" className="mb-3">
+                          <Card style={subbcardStyle}>
+                            <CardBody className="d-flex flex-column justify-content-center  text-center">
+                              <div className="d-flex align-items-center flex-column p-3">
+                                <div
+                                  className="d-flex justify-content-center align-items-center"
+                                  style={{
+                                    color: "white",
+                                    width: "70px",
+                                    height: "70px",
+                                    fontSize: "30px",
+                                    borderRadius: "50%",
+                                    background:
+                                      "linear-gradient(125deg, #fff 10%,#033E3E,#263238)",
+                                  }}
+                                >
+                                  <i className="ni ni-badge"></i>
+                                </div>
+                                <div style={{ color: "white", fontSize: "20px" }}>
+                                  Work Orders
+                                </div>
+                              </div>
+                              <div
+                                style={{
+                                  color: "white",
+                                  fontSize: "22px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                              {propertycount?.workorder_staffMember}
+
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Col>
+
                       </Row>
                       <Row lg="12" className="d-flex justify-content-around" >
                         <Col lg="5" md="12" sm="12" className="mb-3">
@@ -338,7 +355,7 @@ const StaffDashBoard = (props) => {
 
                                 </div>
                                 <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                     <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
+                                  <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
                                     <span >30/01/2024</span>
                                     <span>In progress</span>
                                   </label>
@@ -351,7 +368,7 @@ const StaffDashBoard = (props) => {
 
                                 </div>
                                 <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                     <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
+                                  <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
                                     <span >30/01/2024</span>
                                     <span>In progress</span>
 
@@ -365,7 +382,7 @@ const StaffDashBoard = (props) => {
 
                                 </div>
                                 <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                     <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
+                                  <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
                                     <span >30/01/2024</span>
                                     <span>In progress</span>
 
@@ -381,7 +398,7 @@ const StaffDashBoard = (props) => {
 
                                     </div>
                                     <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                         <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
+                                      <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
                                         <span >30/01/2024</span>
                                         <span>In progress</span>
 
@@ -396,7 +413,7 @@ const StaffDashBoard = (props) => {
 
                                     </div>
                                     <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                         <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
+                                      <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
                                         <span >30/01/2024</span>
                                         <span>In progress</span>
                                       </label>
@@ -415,7 +432,7 @@ const StaffDashBoard = (props) => {
                           </Card>
                         </Col>
                       </Row>
-                     
+
                     </CardBody>
                   </Card>
                 </Col>
