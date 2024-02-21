@@ -130,7 +130,7 @@ const AddCharge = () => {
           entry_id: item.entry_id,
           account: item.account,
           amount: Number(item.amount),
-          memo: values.charges_memo,
+          memo: values.charges_memo || "charge",
           date: values.date,
           account: item.account,
           charge_type: item.charge_type,
@@ -213,7 +213,7 @@ const AddCharge = () => {
         const data = {
           account: item.account,
           amount: Number(item.amount),
-          memo: values.charges_memo,
+          memo: values.charges_memo || "charge",
           date: values.date,
           account: item.account,
           charge_type: item.charge_type,
@@ -234,7 +234,7 @@ const AddCharge = () => {
           position: "top-center",
           autoClose: 1000,
         });
-        navigate(`/${admin}/RentRollLeaseing/${lease_id}`);
+        navigate(`/${admin}/rentrolldetail/${lease_id}`);
       } else {
         toast.warning(res.data.message, {
           position: "top-center",
@@ -285,30 +285,32 @@ const AddCharge = () => {
   };
 
   const fetchChargeData = async () => {
-    try {
-      const res = await axios.get(`${baseUrl}/charge/charge/${charge_id}`);
-      if (res.data.statusCode === 200) {
-        const data = res.data.data[0];
-        setFile(data?.uploaded_file);
-        generalledgerFormik.setValues({
-          charge_id: charge_id,
-          date: data.entry[0].date,
-          total_amount: data.total_amount,
-          charges_memo: data.entry[0].memo,
-          charges: data.entry.map((item) => {
-            const items = {
-              entry_id: item.entry_id,
-              account: item.account,
-              amount: item.amount,
-              charge_type: item.charge_type,
-            };
-            return items;
-          }),
-          charges_attachment: data?.uploaded_file,
-        });
+    if (charge_id) {
+      try {
+        const res = await axios.get(`${baseUrl}/charge/charge/${charge_id}`);
+        if (res.data.statusCode === 200) {
+          const data = res.data.data[0];
+          setFile(data?.uploaded_file);
+          generalledgerFormik.setValues({
+            charge_id: charge_id,
+            date: data.entry[0].date,
+            total_amount: data.total_amount,
+            charges_memo: data.entry[0].memo,
+            charges: data.entry.map((item) => {
+              const items = {
+                entry_id: item.entry_id,
+                account: item.account,
+                amount: item.amount,
+                charge_type: item.charge_type,
+              };
+              return items;
+            }),
+            charges_attachment: data?.uploaded_file,
+          });
+        }
+      } catch (error) {
+        console.error("Error: ", error.message);
       }
-    } catch (error) {
-      console.error("Error: ", error.message);
     }
   };
 
@@ -385,7 +387,8 @@ const AddCharge = () => {
   const [file, setFile] = useState([]);
   const fileData = (files) => {
     const filesArray = [...files];
-    if (filesArray.length <= 10 && file.length === 0) {
+    
+    if (file.length <= 10 && file.length === 0) {
       const finalArray = [];
       for (let i = 0; i < filesArray.length; i++) {
         const object = {
@@ -554,7 +557,7 @@ const AddCharge = () => {
                         <Input
                           className="form-control-alternative"
                           id="input-unitadd"
-                          placeholder="if left blank, will show 'Payment'"
+                          placeholder="if left blank, will show 'charge'"
                           type="text"
                           name="charges_memo"
                           onBlur={generalledgerFormik.handleBlur}
