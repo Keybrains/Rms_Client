@@ -99,10 +99,9 @@ const VendorDashBoard = (props) => {
                   <div className="mb-2 d-flex justify-content-start">
                     <span style={{ fontWeight: "bold", fontSize: "28px" }}> New Work Orders</span>
                   </div>
-                  <div className="col-lg-2">
+                  <div className="col-lg-6">
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="">Total -</span>
-                      <span> 7 </span>
+                      <span className="">Total - 7</span>
                     </div>
                   </div>
                   <div style={bgStyle}>
@@ -221,10 +220,9 @@ const VendorDashBoard = (props) => {
                   <div className="mb-2 d-flex justify-content-start">
                     <span style={{ fontWeight: "bold", fontSize: "28px" }}> Overdue Work Orders</span>
                   </div>
-                  <div className="col-lg-2">
+                  <div className="col-lg-6">
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="">Total -</span>
-                      <span> 5 </span>
+                      <span className="">Total - 5</span>
                     </div>
                   </div>
                   <div style={bgStyle}>

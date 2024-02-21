@@ -11,7 +11,8 @@ import Cookies from "universal-cookie";
 
 const StaffPropertyDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { lease_id } = useParams();
+  const { rental_id } = useParams();
+  console.log(rental_id, "rental_id")
   const [propertyDetails, setPropertyDetails] = useState([]);
   const [propertyUnit, setPropertyUnit] = useState([]);
   const [propId, setPropId] = useState("");
@@ -39,9 +40,11 @@ const StaffPropertyDetail = () => {
   const getRentalData = async () => {
     try {
       const res = await axios.get(
-        `${baseUrl}/staffmember/staffmember_summary/${lease_id}`
+        `${baseUrl}/staffmember/staffmember_summary/${rental_id}`
+        // `${baseUrl}/staffmember/staffmember_summary/1708425958731`
       );
       setPropertyDetails(res.data.data[0]);
+      console.log(res.data.data < "res.data.data");
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
@@ -97,8 +100,8 @@ const StaffPropertyDetail = () => {
                                 <img
                                   className="mt-2 mb-2"
                                   src={
-                                    propertyDetails?.rental_data
-                                      ?.prop_image || PropImage
+                                    propertyDetails?.rental_data?.prop_image ||
+                                    PropImage
                                   }
                                   // src={PropImage}
                                   alt="Property Details"
@@ -145,35 +148,14 @@ const StaffPropertyDetail = () => {
                                   <td>
                                     {" "}
                                     {
-                                      propertyDetails?.rental_data
+                                      propertyDetails?.property_type_data
                                         ?.property_type
                                     }
                                   </td>
-                                  <td>
-                                    {" "}
-                                    {
-                                      propertyDetails?.rental_data
-                                        ?.rental_adress
-                                    }
-                                  </td>
-                                  <td>
-                                    {" "}
-                                    {propertyDetails?.rental_data?.rental_city}
-                                  </td>
-                                  <td>
-                                    {" "}
-                                    {
-                                      propertyDetails?.rental_data
-                                        ?.rental_country
-                                    }
-                                  </td>
-                                  <td>
-                                    {" "}
-                                    {
-                                      propertyDetails?.rental_data
-                                        ?.rental_postcode
-                                    }
-                                  </td>
+                                  <td> {propertyDetails?.rental_adress}</td>
+                                  <td> {propertyDetails?.rental_city}</td>
+                                  <td> {propertyDetails?.rental_country}</td>
+                                  <td> {propertyDetails?.rental_postcode}</td>
                                 </tr>
                               </tbody>
                             </Table>
@@ -215,37 +197,37 @@ const StaffPropertyDetail = () => {
                                 </tr>
 
                                 <tr className="body">
-                                    <td>
-                                      {
-                                        propertyDetails?.rentalowner_data
-                                          ?.rentalOwner_firstName
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        propertyDetails?.rentalowner_data
-                                          ?.rentalOwner_lastName
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        propertyDetails?.rentalowner_data
-                                          ?.rentalOwner_companyName
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        propertyDetails?.rentalowner_data
-                                          ?.rentalOwner_primaryEmail
-                                      }
-                                    </td>
-                                    <td>
-                                      {
-                                        propertyDetails?.rentalowner_data
-                                          ?.rentalOwner_phoneNumber
-                                      }
-                                    </td>
-                                  </tr>
+                                  <td>
+                                    {
+                                      propertyDetails?.rentalowner_data
+                                        ?.rentalOwner_firstName
+                                    }
+                                  </td>
+                                  <td>
+                                    {
+                                      propertyDetails?.rentalowner_data
+                                        ?.rentalOwner_lastName
+                                    }
+                                  </td>
+                                  <td>
+                                    {
+                                      propertyDetails?.rentalowner_data
+                                        ?.rentalOwner_companyName
+                                    }
+                                  </td>
+                                  <td>
+                                    {
+                                      propertyDetails?.rentalowner_data
+                                        ?.rentalOwner_primaryEmail
+                                    }
+                                  </td>
+                                  <td>
+                                    {
+                                      propertyDetails?.rentalowner_data
+                                        ?.rentalOwner_phoneNumber
+                                    }
+                                  </td>
+                                </tr>
                               </tbody>
                             </Table>
                           </Row>
@@ -281,12 +263,12 @@ const StaffPropertyDetail = () => {
                                 </tr>
 
                                 <tr className="body">
-                                    <td>
-                                      {propertyDetails?.staffmember_data
-                                        ?.staffmember_name ||
-                                        "No staff member assigned"}
-                                    </td>
-                                  </tr>
+                                  <td>
+                                    {propertyDetails?.staffmember_data
+                                      ?.staffmember_name ||
+                                      "No staff member assigned"}
+                                  </td>
+                                </tr>
                               </tbody>
                             </Table>
                           </Row>
@@ -325,36 +307,36 @@ const StaffPropertyDetail = () => {
                                 </tr>
 
                                 <tr
-                                    // key={index}
-                                    // onClick={() => {
-                                    //   // setPropSummary(true);
-                                    //   setPropId(unit._id);
-                                    //   setClickedObject(unit);
-                                    // }}
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    <td>
-                                      {propertyDetails?.unit_data
-                                        ?.rental_unit || "N/A"}
-                                    </td>
-                                    <td>
-                                      {propertyDetails?.unit_data
-                                        ?.rental_unit_adress || "N/A"}
-                                    </td>
-                                    <td>
-                                      {propertyDetails?.unit_data?.rental_bed ||
-                                        "N/A"}
-                                    </td>
+                                  // key={index}
+                                  // onClick={() => {
+                                  //   // setPropSummary(true);
+                                  //   setPropId(unit._id);
+                                  //   setClickedObject(unit);
+                                  // }}
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <td>
+                                    {propertyDetails?.unit_data?.rental_unit ||
+                                      "N/A"}
+                                  </td>
+                                  <td>
+                                    {propertyDetails?.unit_data
+                                      ?.rental_unit_adress || "N/A"}
+                                  </td>
+                                  <td>
+                                    {propertyDetails?.unit_data?.rental_bed ||
+                                      "N/A"}
+                                  </td>
 
-                                    <td>
-                                      {propertyDetails?.unit_data
-                                        ?.rental_bath || "N/A"}
-                                    </td>
-                                    <td>
-                                      {propertyDetails?.unit_data
-                                        ?.rental_sqft || "N/A"}
-                                    </td>
-                                  </tr>
+                                  <td>
+                                    {propertyDetails?.unit_data?.rental_bath ||
+                                      "N/A"}
+                                  </td>
+                                  <td>
+                                    {propertyDetails?.unit_data?.rental_sqft ||
+                                      "N/A"}
+                                  </td>
+                                </tr>
                               </tbody>
                             </Table>
                           </Row>
