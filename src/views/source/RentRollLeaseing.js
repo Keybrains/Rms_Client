@@ -857,6 +857,7 @@ const RentRollLeaseing = () => {
         setSelectedRentCycle(data?.rent_charge_data[0]?.rent_cycle);
         rentChargeFormik.setValues(data?.rent_charge_data[0]);
         securityChargeFormik.setValues(data?.Security_charge_data[0]);
+        setTenantData(data?.tenant);
         setRecurringData(data?.rec_charge_data[0]);
         setOneTimeData(data?.one_charge_data[0])
 
@@ -3435,7 +3436,7 @@ const RentRollLeaseing = () => {
 
                   {/* //Recurring Charges Data */}
                   <div>
-                    {recurringData.length > 0 ? (
+                    {recurringData?.length > 0 ? (
                       <>
                         <Row
                           className="w-100 my-3"
@@ -3465,7 +3466,7 @@ const RentRollLeaseing = () => {
                           <Col>Action</Col>
                         </Row>
 
-                        {recurringData.map((data, index) => (
+                        {recurringData?.map((data, index) => (
                           <Row
                             className="w-100 mt-1"
                             style={{
@@ -3491,7 +3492,7 @@ const RentRollLeaseing = () => {
 
                   {/* one tme charges */}
                   <div>
-                    {oneTimeData.length > 0 ? (
+                    {oneTimeData?.length > 0 ? (
                       <>
                         <Row
                           className="w-100 my-3"
@@ -3520,7 +3521,7 @@ const RentRollLeaseing = () => {
                           <Col>Action</Col>
                         </Row>
 
-                        {oneTimeData.map((data, index) => (
+                        {oneTimeData?.map((data, index) => (
                           <Row
                             className="w-100 mt-1"
                             style={{

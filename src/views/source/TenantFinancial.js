@@ -68,6 +68,7 @@ const TenantFinancial = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const [loader, setLoader] = React.useState(true);
 
   const handleSearch = (e) => {
     setSearchQueryy(e.target.value);
@@ -96,6 +97,7 @@ const TenantFinancial = () => {
   }, [navigate]);
 
   const fetchLedger = async () => {
+    
     try {
       const response = await axios.get(
         `${baseUrl}/payment/tenant_financial/${accessType?.tenant_id}`
@@ -104,6 +106,7 @@ const TenantFinancial = () => {
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
+   
   };
   useEffect(() => {
     fetchLedger();
@@ -136,7 +139,6 @@ const TenantFinancial = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  const [loader, setLoader] = React.useState(true);
 
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
