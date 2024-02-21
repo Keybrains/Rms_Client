@@ -122,7 +122,7 @@ const AddCharge = () => {
     const object = {
       charge_id: charge_id,
       admin_id: accessType.admin_id,
-      tenant_id: tenantId,
+      tenant_id: tenantData?.tenant_id,
       lease_id: lease_id,
 
       entry: values.charges?.map((item) => {
@@ -206,7 +206,7 @@ const AddCharge = () => {
 
     const object = {
       admin_id: accessType.admin_id,
-      tenant_id: tenantId,
+      tenant_id: tenantData?.tenant_id,
       lease_id: lease_id,
 
       entry: values.charges?.map((item) => {
@@ -248,20 +248,6 @@ const AddCharge = () => {
     }
   };
 
-  const [tenantDetails, setTenantDetails] = useState([]);
-  const fetchTenantsData = async () => {
-    try {
-      const res = await axios.get(`${baseUrl}/leases/tenants/${lease_id}`);
-      if (res.data.statusCode === 200) {
-        setTenantDetails(res.data.data);
-      } else if (res.data.statusCode === 201) {
-        setTenantDetails([]);
-      }
-    } catch (error) {
-      console.error("Error:", error.message);
-    }
-  };
-
   const [recAccounts, setRecAccounts] = useState([]);
   const [oneTimeAccounts, setoneTimeAccounts] = useState([]);
   const fetchAccounts = async () => {
@@ -287,24 +273,22 @@ const AddCharge = () => {
     }
   };
 
-  useEffect(() => {
-    fetchAccounts();
-    fetchTenantsData();
-  }, [accessType?.admin_id]);
+  const fetchTenant = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/leases/lease_tenant/${lease_id}`);
+      if (res.data.statusCode === 200) {
+        setTenantData(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error: ", error.message);
+    }
+  };
 
   const fetchChargeData = async () => {
     try {
       const res = await axios.get(`${baseUrl}/charge/charge/${charge_id}`);
       if (res.data.statusCode === 200) {
         const data = res.data.data[0];
-        setTenantId(data.tenant_id);
-        setSelectedTenant(
-          tenantDetails?.map((item) => {
-            if (item.tenant_id === data.tenant_id) {
-              return item.tenant_firstName + " " + item.tenant_lastName;
-            }
-          })
-        );
         setFile(data?.uploaded_file);
         generalledgerFormik.setValues({
           charge_id: charge_id,
@@ -329,20 +313,18 @@ const AddCharge = () => {
   };
 
   useEffect(() => {
+    fetchAccounts();
+  }, [accessType?.admin_id]);
+
+  useEffect(() => {
+    fetchTenant();
+  }, [lease_id]);
+
+  useEffect(() => {
     fetchChargeData();
-  }, [charge_id, tenantDetails]);
+  }, [charge_id]);
 
-  const [selectedTenant, setSelectedTenant] = useState("Select Resident");
-  const [tenantId, setTenantId] = useState("Select Resident");
-  const [recdropdownOpen, setrecDropdownOpen] = useState(false);
-  const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
-
-  const handleRecieverSelection = (property) => {
-    setSelectedTenant(
-      `${property.tenant_firstName} ${property.tenant_lastName}`
-    );
-    setTenantId(property.tenant_id);
-  };
+  const [tenantData, setTenantData] = useState({});
 
   const toggleDropdown = (index) => {
     const updatedCharges = [...generalledgerFormik.values.charges];
@@ -492,6 +474,20 @@ const AddCharge = () => {
                 <Form>
                   <Row>
                     <Col lg="2">
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-unitadd"
+                      >
+                        Charge for:{" "}
+                        <span>
+                          {tenantData.tenant_firstName}{" "}
+                          {tenantData.tenant_lastName}
+                        </span>
+                      </label>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col lg="2">
                       <FormGroup>
                         <label
                           className="form-control-label"
@@ -547,49 +543,6 @@ const AddCharge = () => {
                     </Col>
                   </Row>
                   <Row>
-                    <Col lg="2">
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Recieved From
-                        </label>
-                        <br />
-                        <Dropdown
-                          isOpen={recdropdownOpen}
-                          toggle={toggle2}
-                          disabled={charge_id}
-                        >
-                          <DropdownToggle caret style={{ width: "100%" }}>
-                            {selectedTenant
-                              ? selectedTenant
-                              : "Select Resident"}
-                          </DropdownToggle>
-                          <DropdownMenu
-                            style={{
-                              width: "100%",
-                              maxHeight: "200px",
-                              overflowY: "auto",
-                              overflowX: "hidden",
-                            }}
-                          >
-                            {tenantDetails?.map((tenant, index) => (
-                              <DropdownItem
-                                key={index}
-                                onClick={() =>
-                                  handleRecieverSelection(tenant)
-                                }
-                              >
-                                {`${tenant.tenant_firstName} ${tenant.tenant_lastName}`}
-                              </DropdownItem>
-                            ))}
-                          </DropdownMenu>
-                        </Dropdown>
-                      </FormGroup>
-                    </Col>
-                    {/* </Row> */}
-                    {/* <Row> */}
                     <Col lg="3">
                       <FormGroup>
                         <label
