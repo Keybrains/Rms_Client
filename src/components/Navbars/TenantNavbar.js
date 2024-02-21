@@ -72,38 +72,6 @@ const TenantNavbar = (props) => {
   let cookie_id = localStorage.getItem("Tenant ID");
   //console.log(cookie_id)
 
-  const getVendorDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
-      );
-      const entries = response.data.data.entries;
-
-      if (entries.length > 0) {
-        const rentalAddresses = entries
-          .map((entry) => entry.rental_adress)
-          .join("^");
-        const rentalUnits = entries
-          .map((entry) => entry.rental_units)
-          .join("^");
-        setVendorDetails(response.data.data);
-        getRentalData(rentalAddresses, rentalUnits);
-      } else {
-        console.error("No rental addresses found.");
-      }
-
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setLoader(false);
-    }
-  };
-
-  useEffect(() => {
-    getVendorDetails();
-    //console.log(id);
-  }, [id]);
-
   // const {vendor_name}= useParams();
   // const ENDPOINT = 'http://64.225.8.160:4001/notification/vendornotification/:vendor_name';
   const [notification, setNotification] = useState("");
@@ -119,75 +87,7 @@ const TenantNavbar = (props) => {
     setSelectedProp(property);
   };
 
-  const getRentalData = async (addresses, units) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/notification/tenantnotification/${addresses}/${units}`
-      );
-      if (Array.isArray(response.data.data)) {
-        // Filter the notifications with isTenantread set to false
-        const unreadNotifications = response.data.data.filter(
-          (notification) => !notification.isTenantread
-        );
-
-        // Update the state with the filtered unread notifications
-        setWorkData((prevData) => [...prevData, ...unreadNotifications]);
-        //console.log("unreadNotifications", unreadNotifications)
-        setNotificationData((prevNotificationData) => [
-          ...prevNotificationData,
-          ...response.data.data,
-        ]);
-        setNotificationCount(unreadNotifications.length);
-      } else if (typeof response.data.data === "object") {
-        setWorkData((prevData) => [...prevData, response.data.data]);
-        setNotificationData((prevNotificationData) => [
-          ...prevNotificationData,
-          response.data.data,
-        ]);
-      } else {
-        console.error(
-          "Response data is not an array or object:",
-          response.data.data
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching work order data:", error);
-    }
-  };
-
-  React.useEffect(() => {
-    if (rentalAddress && rentalAddress.length > 0) {
-      setLoader(true);
-    }
-  }, [rentalAddress]);
-
-  useEffect(() => {
-    fetchNotification();
-  }, [rental_adress, rental_units]);
-
-  const fetchNotification = async (addresses, units) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/notification/tenantnotification/${addresses}/${units}`
-      );
-      if (response.status === 200) {
-        const data = response.data.data;
-        // Process the data as needed
-      } else {
-        console.error("Response status is not 200");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle the error, display a message to the user, or take other appropriate action.
-    }
-  };
-
-  const unreadNotificationCount = notificationData.filter(
-    (notification) => !notification.isTenantread
-  ).length;
-
-
-
+  //  Working
   const [tenantNotification, setTenantNotification] = useState([]);
   const tenantNotificationData = async (addresses, units) => {
     try {
@@ -211,6 +111,22 @@ const TenantNavbar = (props) => {
     tenantNotificationData();
   }, [accessType?.tenant_id]);
 
+  const readTenantNotification = async (notification_id) => {
+    try {
+      const response = await axios.put(
+        `${baseUrl}/notification/tenant_notification/${notification_id}`
+      );
+      if (response.status === 200) {
+        tenantNotificationData();
+        // Process the data as needed
+      } else {
+        console.error("Response status is not 200");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -228,26 +144,6 @@ const TenantNavbar = (props) => {
               style={{ cursor: "pointer", position: "relative" }}
             >
               <NotificationsIcon style={{ color: "white", fontSize: "30px" }} />
-              {unreadNotificationCount > 0 && (
-                <div
-                  className="notification-circle"
-                  style={{
-                    position: "absolute",
-                    top: "-15px",
-                    right: "-20px",
-                    background: "red",
-                    borderRadius: "50%",
-                    padding: "0.1px 8px",
-                  }}
-                >
-                  <span
-                    className="notification-count"
-                    style={{ color: "white", fontSize: "13px" }}
-                  >
-                    {unreadNotificationCount}
-                  </span>
-                </div>
-              )}
             </FormGroup>
           </Form>
 
@@ -302,10 +198,20 @@ const TenantNavbar = (props) => {
                                     //   navigateToDetails(data.notification_type)
                                     // }
                                     onClick={() => {
-                                      if (data.is_lease) {
-                                        navigate(
-                                          `/tenant/tenantpropertydetail/${data.notification_type.lease_id}`
+                                      {
+                                        readTenantNotification(
+                                          data.notification_id
                                         );
+
+                                        if (data.is_workorder) {
+                                          navigate(
+                                            `/tenant/Tworkorderdetail/${data.notification_type.workOrder_id}`
+                                          );
+                                        } else if (data.is_lease) {
+                                          navigate(
+                                            `/tenant/tenantpropertydetail/${data.notification_type.lease_id}`
+                                          );
+                                        }
                                       }
                                     }}
                                   >

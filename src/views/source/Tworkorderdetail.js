@@ -284,7 +284,7 @@ const TWorkOrderDetails = () => {
 
   const [propertyDetails, setPropertyDetails] = useState({});
   const getPropertyData = async () => {
-    if (outstandDetails.rental_units === "") {
+    if (outstandDetails.rental_unit === "") {
       try {
         const response = await axios.get(
           `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}`
@@ -293,10 +293,10 @@ const TWorkOrderDetails = () => {
       } catch (error) {
         console.error("Error fetching tenant details:", error);
       }
-    } else if (outstandDetails.rental_adress && outstandDetails.rental_units) {
+    } else if (outstandDetails.rental_adress && outstandDetails.rental_unit) {
       try {
         const response = await axios.get(
-          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_units}`
+          `${baseUrl}/propertyunit/property/${outstandDetails.rental_adress}/${outstandDetails.rental_unit}`
         );
         setPropertyDetails(response.data[0]);
       } catch (error) {
@@ -306,7 +306,7 @@ const TWorkOrderDetails = () => {
   };
 
   React.useEffect(() => {
-    getPropertyData();
+    // getPropertyData();
   }, [outstandDetails]);
 
   return (

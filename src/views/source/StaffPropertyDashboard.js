@@ -29,18 +29,12 @@ const StaffPropertyDashboard = () => {
 
   let [loader, setLoader] = React.useState(true);
   const [propertyDetails, setPropertyDetails] = useState([]);
-  console.log(propertyDetails, "propertyDetails");
-  const [propertyLoading, setPropertyLoading] = useState(true);
-  const [propertyError, setPropertyError] = useState(null);
-  const [tenantDetails, setTenantDetails] = useState({});
-  const { id } = useParams();
+
   const [upArrow, setUpArrow] = React.useState([]);
   const [sortBy, setSortBy] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
-  let cookie_id = localStorage.getItem("Tenant ID");
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -70,12 +64,6 @@ const StaffPropertyDashboard = () => {
   }, [accessType]);
 
   const navigate = useNavigate();
-
-  function navigatestaffpropertydetail() {
-    navigate(`/staff/staffpropertydetail`);
-    // window.location.href = tenantsDetailsURL;
-    // console.log("Rental Address", rental_adress);
-  }
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterTenantsBySearch();
@@ -159,7 +147,6 @@ const StaffPropertyDashboard = () => {
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                {/* <h1 className="mb-0">Property</h1> */}
                 <Row>
                   <Col xs="12" sm="6">
                     <FormGroup className="">
@@ -259,7 +246,6 @@ const StaffPropertyDashboard = () => {
                                 key={index}
                                 onClick={() =>
                                   navigate(
-                                    // `/staff/staffpropertydetail/1708425958731`
                                     `/staff/staffpropertydetail/${address?.rental_id}`
                                   )
                                 }

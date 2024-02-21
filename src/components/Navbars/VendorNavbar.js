@@ -30,6 +30,8 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { makeStyles } from "@mui/styles";
+import { jwtDecode } from "jwt-decode";
+
 // import socketIOClient from 'socket.io-client';
 
 const VendorNavbar = (props) => {
@@ -91,9 +93,7 @@ const VendorNavbar = (props) => {
   }, [vendor_name]);
 
   const fetchNotification = async () => {
-    fetch(
-      `${baseUrl}/notification/vendornotification/${vendor_name}`
-    )
+    fetch(`${baseUrl}/notification/vendornotification/${vendor_name}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
@@ -120,49 +120,55 @@ const VendorNavbar = (props) => {
     // console.log(id);
   }, [id]);
 
-  const navigateToDetails = (workorder_id) => {
-    // Make a GET request to mark the notification as read
-    axios
-      .get(
-        `${baseUrl}/notification/notification/${workorder_id}?role=vendor`
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          const updatedNotificationData = notificationData.map(
-            (notification) => {
-              if (notification.workorder_id === workorder_id) {
-                return { ...notification, isVendorread: true };
-              }
-              return notification;
-            }
-          );
-          setNotificationData(updatedNotificationData);
-          // console.log("updatedNotificationData", updatedNotificationData);
-          setNotificationCount(updatedNotificationData.length);
-          fetchNotification();
+  const [accessType, setAccessType] = useState(null);
+  console.log(accessType, "accessType");
+  React.useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
-          // console.log(
-          //   `Notification with workorder_id ${workorder_id} marked as read.`
-          // );
-        } else {
-          console.error(
-            `Failed to mark notification with workorder_id ${workorder_id} as read.`
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-
-    // Continue with navigating to the details page
-    navigate(`/vendor/vendorworkdetail/${workorder_id}`);
+  const [vendorNotification, setVendorNotificationData] = useState([]);
+  const vendorNotificationData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/notification/vendor/${accessType?.vendor_id}`
+      );
+      if (response.status === 200) {
+        const data = response.data.data;
+        setVendorNotificationData(data);
+        // Process the data as needed
+      } else {
+        console.error("Response status is not 200");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle the error, display a message to the user, or take other appropriate action.
+    }
   };
 
-  // const navigateToDetails = (workorder_id) => {
-  //   // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
-  //   navigate(`/vendor/vendorworkdetail/${workorder_id}`);
-  //   console.log(workorder_id);
-  // };
+  useEffect(() => {
+    vendorNotificationData();
+  }, [accessType]);
+
+  const readStaffmemberNotification = async (notification_id) => {
+    try {
+      const response = await axios.put(
+        `${baseUrl}/notification/vendor_notification/${notification_id}`
+      );
+      if (response.status === 200) {
+        vendorNotificationData();
+        // Process the data as needed
+      } else {
+        console.error("Response status is not 200");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <>
@@ -224,13 +230,13 @@ const VendorNavbar = (props) => {
                     Notifications
                   </h2>
                   <Divider />
-                  {notificationData.map((data) => {
+                  {vendorNotification.map((data) => {
                     const notificationTitle =
                       data.notification_title || "No Title Available";
                     const notificationDetails =
-                      data.notification_details || "No Details Available";
+                      data.notification_detail || "No Details Available";
                     const notificationTime = new Date(
-                      data.notification_time
+                      data.createdAt
                     ).toLocaleString();
 
                     return (
@@ -253,9 +259,14 @@ const VendorNavbar = (props) => {
                                     textTransform: "none",
                                     fontSize: "12px",
                                   }}
-                                  onClick={() =>
-                                    navigateToDetails(data.workorder_id)
-                                  }
+                                  onClick={() => {
+                                    readStaffmemberNotification(
+                                      data?.notification_id
+                                    );
+                                    navigate(
+                                      `/vendor/vendorworkdetail/${data?.notification_type?.workorder_id}`
+                                    );
+                                  }}
                                 >
                                   View
                                 </Button>
@@ -274,40 +285,10 @@ const VendorNavbar = (props) => {
             </Drawer>
           </Nav>
 
-          {/* <Nav className="align-items-center d-none d-md-flex" navbar>
-            <UncontrolledDropdown nav>
-              <DropdownToggle className="pr-0" nav>
-                <FormGroup className="mb-0">
-                  <NotificationsIcon style={{ color: 'white', fontSize: '30px' }} />
-                </FormGroup>
-              </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow mt-2" right>
-             
-                {notificationData.map((data) => {
-                  const notificationTitle = data.notification_title || 'No Title Available'; // Default value for empty titles
-                  return (
-                    <DropdownItem
-                      key={data._id}
-                      onClick={() => handlePropertySelect(notificationTitle)}
-                    >
-                      {notificationTitle}
-                    </DropdownItem>
-                  );
-                })}
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </Nav> */}
-
           <Nav className="align-items-center d-none d-md-flex" navbar>
             <UncontrolledDropdown nav>
               <DropdownToggle className="pr-0" nav>
                 <Media className="align-items-center">
-                  {/* <span className="avatar avatar-sm rounded-circle">
-                    <img
-                      alt="..."
-                      src={require("../../assets/img/theme/profile-cover.jpg")}
-                    />
-                  </span> */}
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
                       {vendorDetails.vendor_name}
@@ -321,7 +302,7 @@ const VendorNavbar = (props) => {
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem
-                 //  href="#rms"
+                  //  href="#rms"
                   to="/auth/login"
                   onClick={() => {
                     Logout();

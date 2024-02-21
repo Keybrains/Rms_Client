@@ -117,11 +117,12 @@ const StaffNavbar = (props) => {
     //console.log(id);
   }, [id]);
 
+
   const [staffMemberNotification, setStaffMemberNotification] = useState([]);
-  const tenantNotificationData = async (addresses, units) => {
+  const staffmemberNotificationData = async (addresses, units) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/notification/staff/1707999725614`
+        `${baseUrl}/notification/staff/${accessType.staffmember_id}`
       );
       if (response.status === 200) {
         const data = response.data.data;
@@ -137,16 +138,16 @@ const StaffNavbar = (props) => {
   };
 
   useEffect(() => {
-    tenantNotificationData();
-  }, []);
+    staffmemberNotificationData();
+  }, [accessType]);
 
-  const readTenantNotification = async (notification_id) => {
+  const readStaffmemberNotification = async (notification_id) => {
     try {
       const response = await axios.put(
         `${baseUrl}/notification/staff_notification/${notification_id}`
       );
       if (response.status === 200) {
-        tenantNotificationData();
+        staffmemberNotificationData();
         // Process the data as needed
       } else {
         console.error("Response status is not 200");
@@ -240,12 +241,18 @@ const StaffNavbar = (props) => {
                                     fontSize: "12px",
                                   }}
                                   onClick={() => {
-                                    readTenantNotification(
+                                    readStaffmemberNotification(
                                       data?.notification_id
                                     );
-                                    navigate(
-                                      `/staff/staffpropertydetail/${data?.rental_id}`
-                                    );
+                                    if (data.is_workorder) {
+                                      navigate(
+                                        `/staff/staffworkdetails/${data?.notification_type?.workorder_id}`
+                                      );
+                                    } else if (data.is_lease) {
+                                      navigate(
+                                        `/staff/staffpropertydetail/${data?.rental_id}`
+                                      );
+                                    }
                                   }}
                                 >
                                   View

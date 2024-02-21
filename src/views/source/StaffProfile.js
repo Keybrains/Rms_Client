@@ -108,12 +108,6 @@ const StaffProfile = () => {
                         </>
                       </tbody>
                     </>
-                    // ) : (
-                    //   <tbody>
-                    //     <tr>
-                    //       <td>No vendor details found.</td>
-                    //     </tr>
-                    //   </tbody>
                   )}
                 </Table>
               </div>

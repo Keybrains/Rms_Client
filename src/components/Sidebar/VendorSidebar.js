@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { NavLink as NavLinkRRD, Link } from "react-router-dom";
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import { PropTypes } from "prop-types";
 import Cookies from "universal-cookie";
-import { useNavigate,  useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import Drawer from '@mui/material/Drawer';
+import Drawer from "@mui/material/Drawer";
 // import Button from '@mui/material/Button';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
+import List from "@mui/material/List";
+import Divider from "@mui/material/Divider";
+import ListItem from "@mui/material/ListItem";
 
 // reactstrap components
 import {
@@ -63,20 +63,20 @@ const VendorSidebar = (props) => {
       setIsMobile(window.innerWidth < 768);
     };
 
-    window.addEventListener('resize', handleWindowResize);
+    window.addEventListener("resize", handleWindowResize);
 
     return () => {
-      window.removeEventListener('resize', handleWindowResize);
+      window.removeEventListener("resize", handleWindowResize);
     };
-  }, []); 
+  }, []);
 
   const notificationIconStyle = {
-    display: isMobile ? 'block' : 'none', 
-    cursor: 'pointer',
-    position: 'relative',
-    marginRight: '-60px'
+    display: isMobile ? "block" : "none",
+    cursor: "pointer",
+    position: "relative",
+    marginRight: "-60px",
   };
-  
+
   let navigate = useNavigate();
 
   const toggleCollapse = () => {
@@ -104,89 +104,96 @@ const VendorSidebar = (props) => {
   //console.log(id);
 
   const [vendor_name, setVendorname] = useState("");
-  
+
   const getVendorDetails = async () => {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/vendor/vendor_summary/${cookie_id}`
-        );
-        //console.log(response.data.data)
-        setVendorDetails(response.data.data);
-        setVendorname(response.data.data.vendor_name)
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching vendor details:", error);
-        setError(error);
-        setLoading(false);
-      }
-    };
+    try {
+      const response = await axios.get(
+        `${baseUrl}/vendor/vendor_summary/${cookie_id}`
+      );
+      //console.log(response.data.data)
+      setVendorDetails(response.data.data);
+      setVendorname(response.data.data.vendor_name);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching vendor details:", error);
+      setError(error);
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-      fetchNotification();
-    }, [vendor_name]);
+  useEffect(() => {
+    fetchNotification();
+  }, [vendor_name]);
 
-    const fetchNotification = async () => {
-      fetch(`${baseUrl}/notification/vendornotification/${vendor_name}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.statusCode === 200) {
-            // Filter the notifications with isVendorread set to false
-            const unreadNotifications = data.data.filter(notification => !notification.isVendorread);
-            setNotificationData(unreadNotifications);
-            setNotificationCount(unreadNotifications.length);
-            //console.log("Unread Notifications", unreadNotifications);
-            //console.log("vendor", vendor_name);
-          } else {
-            // Handle error
-            console.error("Error:", data.message);
-          }
-        })
-        .catch((error) => {
-          // Handle network error
-          console.error("Network error:", error);
-        });
-    };
-    
-    useEffect(() => {
-      getVendorDetails();
-      //console.log(id);
-    }, [id]);
-  
-    const navigateToDetails = (workorder_id) => {
-      // Make a GET request to mark the notification as read
-      axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=vendor`)
-        .then((response) => {
-          if (response.status === 200) {
-            const updatedNotificationData = notificationData.map(notification => {
+  const fetchNotification = async () => {
+    fetch(`${baseUrl}/notification/vendornotification/${vendor_name}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.statusCode === 200) {
+          // Filter the notifications with isVendorread set to false
+          const unreadNotifications = data.data.filter(
+            (notification) => !notification.isVendorread
+          );
+          setNotificationData(unreadNotifications);
+          setNotificationCount(unreadNotifications.length);
+          //console.log("Unread Notifications", unreadNotifications);
+          //console.log("vendor", vendor_name);
+        } else {
+          // Handle error
+          console.error("Error:", data.message);
+        }
+      })
+      .catch((error) => {
+        // Handle network error
+        console.error("Network error:", error);
+      });
+  };
+
+  useEffect(() => {
+    getVendorDetails();
+    //console.log(id);
+  }, [id]);
+
+  const navigateToDetails = (workorder_id) => {
+    // Make a GET request to mark the notification as read
+    axios
+      .get(`${baseUrl}/notification/notification/${workorder_id}?role=vendor`)
+      .then((response) => {
+        if (response.status === 200) {
+          const updatedNotificationData = notificationData.map(
+            (notification) => {
               if (notification.workorder_id === workorder_id) {
                 return { ...notification, isVendorread: true };
               }
               return notification;
-            });
-            setNotificationData(updatedNotificationData);
-            //console.log("updatedNotificationData", updatedNotificationData)
-            setNotificationCount(updatedNotificationData.length);
-            //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
-            fetchNotification();
-          } else {
-            console.error(`Failed to mark notification with workorder_id ${workorder_id} as read.`);
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-    
-      // Continue with navigating to the details page
-      navigate(`/vendor/vendorworkdetail/${workorder_id}`);
-    };
+            }
+          );
+          setNotificationData(updatedNotificationData);
+          //console.log("updatedNotificationData", updatedNotificationData)
+          setNotificationCount(updatedNotificationData.length);
+          //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
+          fetchNotification();
+        } else {
+          console.error(
+            `Failed to mark notification with workorder_id ${workorder_id} as read.`
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
+    // Continue with navigating to the details page
+    navigate(`/vendor/vendorworkdetail/${workorder_id}`);
+  };
 
   // creates the links that appear in the left menu / Sidebar
   const createLinks = (routes) => {
     const filteredRoutes = routes.filter(
       (prop) =>
-        
-        prop.path === "/VendordashBoard" || prop.path === "/vendorprofile" || prop.path === "/vendorworktable"
-        
+        prop.path === "/VendordashBoard" ||
+        prop.path === "/vendorprofile" ||
+        prop.path === "/vendorworktable"
     );
     return filteredRoutes.map((prop, key) => {
       return (
@@ -244,40 +251,59 @@ const VendorSidebar = (props) => {
           </NavbarBrand>
         ) : null}
 
-          <FormGroup className="mb-0" style={notificationIconStyle} onClick={toggleSidebar}>
-             <NotificationsIcon style={{color:'black',fontSize:'30px'}}/>
-              {notificationCount > 0 && (
-              <div className="notification-circle" style={{position: 'absolute',top: '-15px',right: '-20px',background: 'red',borderRadius: '50%',padding: '0.1px 8px'}}>
-                <span className="notification-count" style={{color:'white',fontSize:"13px"}}>{notificationCount}</span>
-              </div>
-               )}
-          </FormGroup>
-
-          <Nav className="align-items-center d-none d-md-flex" navbar>
-            
-            <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
-              <div
-                role="presentation"
-                onClick={toggleSidebar}
-                onKeyDown={toggleSidebar}
+        <FormGroup
+          className="mb-0"
+          style={notificationIconStyle}
+          onClick={toggleSidebar}
+        >
+          <NotificationsIcon style={{ color: "black", fontSize: "30px" }} />
+          {notificationCount > 0 && (
+            <div
+              className="notification-circle"
+              style={{
+                position: "absolute",
+                top: "-15px",
+                right: "-20px",
+                background: "red",
+                borderRadius: "50%",
+                padding: "0.1px 8px",
+              }}
+            >
+              <span
+                className="notification-count"
+                style={{ color: "white", fontSize: "13px" }}
               >
-                <List style={{ width: '250px' }}>
-                  <h2 style={{color:'#36013F',marginLeft:'15px'}}>
-                    Notifications
-                  </h2>
-                  <Divider />
-                  {notificationData.map((data) => {
-                    const notificationTitle =
-                      data.notification_title || 'No Title Available';
-                    const notificationDetails =
-                      data.notification_details || 'No Details Available';
-                    const notificationTime = new Date(data.notification_time).toLocaleString(); 
+                {notificationCount}
+              </span>
+            </div>
+          )}
+        </FormGroup>
 
-                    return (
-                      <div key={data._id}>
+        <Nav className="align-items-center d-none d-md-flex" navbar>
+          <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
+            <div
+              role="presentation"
+              onClick={toggleSidebar}
+              onKeyDown={toggleSidebar}
+            >
+              <List style={{ width: "250px" }}>
+                <h2 style={{ color: "#36013F", marginLeft: "15px" }}>
+                  Notifications
+                </h2>
+                <Divider />
+                {notificationData.map((data) => {
+                  const notificationTitle =
+                    data.notification_title || "No Title Available";
+                  const notificationDetails =
+                    data.notification_details || "No Details Available";
+                  const notificationTime = new Date(
+                    data.notification_time
+                  ).toLocaleString();
+
+                  return (
+                    <div key={data._id}>
                       <ListItem
-
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: "pointer" }}
                         onClick={() => handlePropertySelect(data)}
                       >
                         <div>
@@ -285,20 +311,26 @@ const VendorSidebar = (props) => {
                           <p>{notificationDetails}</p>
                           <Row>
                             <Col lg="8">
-                               <p>{notificationTime}</p>
+                              <p>{notificationTime}</p>
                             </Col>
                             <Col>
                               <Button
-                              variant="contained"
-                             
-                              style={{ background:'#36013F',color:'white',textTransform: 'none', fontSize: '12px' }}
-                              onClick={() => navigateToDetails(data.workorder_id)}
-                            >
-                              View
-                            </Button>
+                                variant="contained"
+                                style={{
+                                  background: "#36013F",
+                                  color: "white",
+                                  textTransform: "none",
+                                  fontSize: "12px",
+                                }}
+                                onClick={() =>
+                                  navigateToDetails(data.workorder_id)
+                                }
+                              >
+                                View
+                              </Button>
                             </Col>
                           </Row>
-                       </div>
+                        </div>
                         {/* <ListItemText
                           primary={notificationTitle}
                           secondary={notificationTime}
@@ -308,19 +340,15 @@ const VendorSidebar = (props) => {
                           secondary="Notification Details"
                         /> */}
                       </ListItem>
-                      <Divider/>
-                     </div> 
-                    );
-                  })}
-                  
-                </List>
-                
-                <Divider />
-                
-              </div>
-            </Drawer>
-
-          </Nav>
+                      <Divider />
+                    </div>
+                  );
+                })}
+              </List>
+              <Divider />
+            </div>
+          </Drawer>
+        </Nav>
 
         {/* User */}
         <Nav className="align-items-center d-md-none">
@@ -341,7 +369,7 @@ const VendorSidebar = (props) => {
               </DropdownItem>
               <DropdownItem divider />
               <DropdownItem
-               //  href="#rms"
+                //  href="#rms"
                 to="/auth/login"
                 onClick={() => {
                   Logout();
