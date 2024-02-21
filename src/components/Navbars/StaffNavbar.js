@@ -155,6 +155,32 @@ const StaffNavbar = (props) => {
   //   //console.log(workorder_id);
   // };
 
+
+  const [staffMemberNotification, setStaffMemberNotification] = useState([])
+  console.log(staffMemberNotification, "staffMemberNotification")
+  const tenantNotificationData = async (addresses, units) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/notification/staff/1707999725614`
+      );
+      if (response.status === 200) {
+        const data = response.data.data;
+        setStaffMemberNotification(data)
+        // Process the data as needed
+      } else {
+        console.error("Response status is not 200");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle the error, display a message to the user, or take other appropriate action.
+    }
+  };
+
+  useEffect(() => {
+    tenantNotificationData();
+  }, []);
+
+
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -188,12 +214,12 @@ const StaffNavbar = (props) => {
                     Notifications
                   </h2>
                   <Divider />
-                  {notificationData.map((data) => {
+                  {staffMemberNotification?.map((data) => {
                     const notificationTitle =
-                      data.notification_title || 'No Title Available';
+                      data?.notification_title || 'No Title Available';
                     const notificationDetails =
-                      data.notification_details || 'No Details Available';
-                    const notificationTime = new Date(data.notification_time).toLocaleString(); 
+                      data?.notification_detail || 'No Details Available';
+                    const notificationTime = new Date(data?.createdAt).toLocaleString(); 
 
                     return (
                       <div key={data._id}>

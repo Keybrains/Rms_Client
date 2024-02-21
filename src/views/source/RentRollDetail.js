@@ -480,7 +480,7 @@ const RentRollDetail = () => {
                                           fontWeight: "bold",
                                         }}
                                       >
-                                        {totalAmount}
+                                        {totalAmount < 0 ? `$(${Math.abs(totalAmount)})` : `$${totalAmount}`}
                                       </Typography>
                                     </div>
                                     <hr
@@ -807,7 +807,7 @@ const RentRollDetail = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                 
+
                                   {financialData &&
                                     financialData?.map((generalledger) => (
                                       <>
@@ -833,15 +833,15 @@ const RentRollDetail = () => {
                                           </td>
                                           <td>
                                             {generalledger.is_leaseAdded ===
-                                            true
+                                              true
                                               ? generalledger.entry.map(
-                                                  (item) => (
-                                                    <>
-                                                      {item.memo}
-                                                      <br />
-                                                    </>
-                                                  )
+                                                (item) => (
+                                                  <>
+                                                    {item.memo}
+                                                    <br />
+                                                  </>
                                                 )
+                                              )
                                               : generalledger.entry[0].memo}
                                           </td>
                                           <td>
@@ -872,52 +872,52 @@ const RentRollDetail = () => {
                                             >
                                               {generalledger.type ===
                                                 "charge" && (
-                                                <div
-                                                  style={{
-                                                    cursor: "pointer",
-                                                  }}
-                                                >
-                                                  <DeleteIcon
-                                                    onClick={() => {
-                                                      // deleteCharge(
-                                                      //   generalledger._id
-                                                      // );
+                                                  <div
+                                                    style={{
+                                                      cursor: "pointer",
                                                     }}
-                                                  />
-                                                </div>
-                                              )}
+                                                  >
+                                                    <DeleteIcon
+                                                      onClick={() => {
+                                                        // deleteCharge(
+                                                        //   generalledger._id
+                                                        // );
+                                                      }}
+                                                    />
+                                                  </div>
+                                                )}
                                               {generalledger.type ===
                                                 "charge" && (
-                                                <div
-                                                  style={{
-                                                    cursor: "pointer",
-                                                  }}
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(
-                                                      `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
-                                                    );
-                                                  }}
-                                                >
-                                                  <EditIcon />
-                                                </div>
-                                              )}
+                                                  <div
+                                                    style={{
+                                                      cursor: "pointer",
+                                                    }}
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      navigate(
+                                                        `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
+                                                      );
+                                                    }}
+                                                  >
+                                                    <EditIcon />
+                                                  </div>
+                                                )}
                                               {generalledger.type ===
                                                 "payment" && (
-                                                <div
-                                                  style={{
-                                                    cursor: "pointer",
-                                                  }}
-                                                  onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(
-                                                      `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
-                                                    );
-                                                  }}
-                                                >
-                                                  <EditIcon />
-                                                </div>
-                                              )}
+                                                  <div
+                                                    style={{
+                                                      cursor: "pointer",
+                                                    }}
+                                                    onClick={(e) => {
+                                                      e.stopPropagation();
+                                                      navigate(
+                                                        `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
+                                                      );
+                                                    }}
+                                                  >
+                                                    <EditIcon />
+                                                  </div>
+                                                )}
                                             </div>
                                           </td>
                                         </tr>

@@ -7,10 +7,10 @@
 }
  
   @media (max-width: 1126px) {
-    .card {
+    /* .card {
       width: 90%;
       margin: auto; 
-    }
+    } */
   
     .premium-cards {
       width: 100%; 
@@ -53,42 +53,7 @@
     }
 }
 
-
-/* 2560 */
-@media (max-width: 2560px) {
-  .buy-now-button{
-    display: none;
-  }
-}
-
-
-/* 2400 */
-@media (max-width: 2400px) {
-  .buy-now-button{
-    display: none;
-  }
-}
-
-/* 2300 */
-@media (max-width: 2300px) {
-  .buy-now-button{
-    display: none;
-  }
-}
-/* 2200 */
-@media (max-width: 2200px) {
-  .buy-now-button{
-    display: none;
-  }
-}
-/* 2100 */
-@media (max-width: 2100px) {
-  .buy-now-button{
-    display: none;
-  }
-}
-/* 2000 */
-@media (max-width: 2000px) {
+@media screen and (min-width: 2000px) and (max-width: 5000px) {
   .buy-now-button{
     display: none;
   }
@@ -174,5 +139,17 @@
 @media (max-width: 319px) {
   .nav-link{
     padding-left: 45px;
+  }
+  .leackage{
+    flex-direction: column;
+  display: flex;
+  }
+  .leackage-status{
+    flex-direction: column;
+  font-size: 10px;
+  margin: 0;
+    margin-bottom: 0px;
+    margin-left: 0px;
+  margin-left: -15px;
   }
 }

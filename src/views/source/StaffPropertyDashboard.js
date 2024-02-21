@@ -21,6 +21,7 @@ import { jwtDecode } from "jwt-decode";
 import { RotatingLines } from "react-loader-spinner";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import moment from "moment";
 
 const StaffPropertyDashboard = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -28,6 +29,7 @@ const StaffPropertyDashboard = () => {
 
   let [loader, setLoader] = React.useState(true);
   const [propertyDetails, setPropertyDetails] = useState([]);
+  console.log(propertyDetails, "propertyDetails");
   const [propertyLoading, setPropertyLoading] = useState(true);
   const [propertyError, setPropertyError] = useState(null);
   const [tenantDetails, setTenantDetails] = useState({});
@@ -51,7 +53,7 @@ const StaffPropertyDashboard = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/staffmember/staffmember_property/${accessType.staffmember_id}`
+        `${baseUrl}/staffmember/staffmember_property/1707999725614`
       );
       setPropertyDetails(response.data.data);
       setLoader(false);
@@ -211,7 +213,7 @@ const StaffPropertyDashboard = () => {
                             )}
                           </th>
                           <th>
-                            Start date
+                            Property Subtype
                             {sortBy.includes("start_date") ? (
                               upArrow.includes("start_date") ? (
                                 <ArrowDownwardIcon
@@ -229,7 +231,7 @@ const StaffPropertyDashboard = () => {
                             )}
                           </th>
                           <th>
-                            End Date
+                            Locality
                             {sortBy.includes("end_date") ? (
                               upArrow.includes("end_date") ? (
                                 <ArrowDownwardIcon
@@ -246,6 +248,7 @@ const StaffPropertyDashboard = () => {
                               />
                             )}
                           </th>
+                          <th>CreatedAt</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -254,36 +257,23 @@ const StaffPropertyDashboard = () => {
                             <>
                               <tr
                                 key={index}
-                                // key={address}
-                                // onClick={() =>
-                                //   navigateToTenantsDetails(
-                                //     address.rental_adress
-                                //   )
-                                // }
                                 onClick={() =>
                                   navigate(
-                                    `/staff/staffpropertydetail/${address?.lease_id}`
+                                    // `/staff/staffpropertydetail/1708425958731`
+                                    `/staff/staffpropertydetail/${address?.rental_id}`
                                   )
                                 }
                                 style={{ cursor: "pointer" }}
                               >
-                                <td
-                                // style={{
-                                //   padding: "12px",
-                                //   borderBottom: "1px solid #e5e5e5",
-                                //   backgroundColor:
-                                //     index % 2 === 0 ? "#f9f9f9" : "#ffffff",
-                                //   textAlign: "center",
-                                // }}
-                                >
-                                  {address?.rental_adress}{" "}
-                                  {address?.rental_unit
-                                    ? " - " + address?.rental_unit
-                                    : null}
-                                </td>
+                                <td>{address?.rental_adress} </td>
 
-                                <td>{address?.start_date}</td>
-                                <td>{address?.end_date}</td>
+                                <td>{address?.propertysub_type}</td>
+                                <td>{address?.rental_city}</td>
+                                <td>
+                                  {moment(address?.createdAt).format(
+                                    "DD-MM-YYYY"
+                                  )}
+                                </td>
                               </tr>
                             </>
                           )

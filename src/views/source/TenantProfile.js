@@ -17,6 +17,8 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
+import { RotatingLines } from "react-loader-spinner";
+
 
 const TenantProfile = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -25,7 +27,7 @@ const TenantProfile = () => {
   const [tenantDetails, setTenantDetails] = useState({});
   console.log(tenantDetails, "tenantDetails");
   const [tenantDetails1, setTenantDetails1] = useState({});
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
@@ -50,11 +52,11 @@ const TenantProfile = () => {
         `${baseUrl}/tenants/tenant_profile/${accessType?.tenant_id}`
       );
       setTenantDetails(response.data.data);
-      // setLoading(false);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
       setError(error);
-      // setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -103,17 +105,29 @@ const TenantProfile = () => {
               <CardHeader className="border-0">
                 {/* <h3 className="mb-0">Summary </h3> */}
               </CardHeader>
-              <div className="table-responsive">
-                <div className="row m-3">
-                  <div className="col-12">
-                    <div
-                      className="align-items-center table-flush"
-                      responsive
-                      style={{ width: "100%" }}
-                    >
-                      <div className="w-100">
-                        {tenantDetails ? (
-                          // tenantDetails.map((tenantDetails, index) => (
+              {loading ? (
+                <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                  <RotatingLines
+                    strokeColor="grey"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    width="50"
+                    visible={loading}
+                  />
+                </div>
+
+              ) : (
+                <div className="table-responsive">
+                  <div className="row m-3">
+                    <div className="col-12">
+                      <div
+                        className="align-items-center table-flush"
+                        responsive
+                        style={{ width: "100%" }}
+                      >
+                        <div className="w-100">
+                          {tenantDetails ? (
+                            // tenantDetails.map((tenantDetails, index) => (
                             <div>
                               <Row
                                 className="w-100 my-3 "
@@ -169,103 +183,104 @@ const TenantProfile = () => {
                                 </Table>
                               </Row>
                             </div>
-                          // ))
-                        ) : (
-                          <tr>
-                            <td>Loading Tenant details...</td>
-                          </tr>
-                        )}
-                        <Row
-                          className="w-100 my-3 "
-                          style={{
-                            fontSize: "18px",
-                            textTransform: "capitalize",
-                            color: "#263238",
-                            fontWeight: "600",
-                            borderBottom: "1px solid #ddd",
-                          }}
-                        >
-                          <Col>Lease Details</Col>
-                        </Row>
-                        {Array.isArray(tenantDetails?.leaseData) ? (
-                          tenantDetails.leaseData.map((tenantDetails, index) => (
-                            <div key={index}>
-                              <Row
-                                className="mb-1 m-0 p-0"
-                                style={{ fontSize: "12px", color: "#000" }}
-                              >
-                                <Table style={{ marginBottom: "20px" }}>
-                                  <tbody
-                                    className="tbbody p-0 m-0"
-                                    style={{
-                                      borderTopRightRadius: "5px",
-                                      borderTopLeftRadius: "5px",
-                                      borderBottomLeftRadius: "5px",
-                                      borderBottomRightRadius: "5px",
-                                    }}
-                                  >
-                                    <tr className="header">
-                                      <th>Property</th>
-                                      <th>Lease Type</th>
-                                      <th>Start Date</th>
-                                      <th>End Date</th>
-                                      <th>Rent Cycle</th>
-                                      <th>Rent Amount</th>
-                                      <th>Next Due Date</th>
-                                    </tr>
+                            // ))
+                          ) : (
+                            <tr>
+                              <td>Loading Tenant details...</td>
+                            </tr>
+                          )}
+                          <Row
+                            className="w-100 my-3 "
+                            style={{
+                              fontSize: "18px",
+                              textTransform: "capitalize",
+                              color: "#263238",
+                              fontWeight: "600",
+                              borderBottom: "1px solid #ddd",
+                            }}
+                          >
+                            <Col>Lease Details</Col>
+                          </Row>
+                          {Array.isArray(tenantDetails?.leaseData) ? (
+                            tenantDetails.leaseData.map((tenantDetails, index) => (
+                              <div key={index}>
+                                <Row
+                                  className="mb-1 m-0 p-0"
+                                  style={{ fontSize: "12px", color: "#000" }}
+                                >
+                                  <Table style={{ marginBottom: "20px" }}>
+                                    <tbody
+                                      className="tbbody p-0 m-0"
+                                      style={{
+                                        borderTopRightRadius: "5px",
+                                        borderTopLeftRadius: "5px",
+                                        borderBottomLeftRadius: "5px",
+                                        borderBottomRightRadius: "5px",
+                                      }}
+                                    >
+                                      <tr className="header">
+                                        <th>Property</th>
+                                        <th>Lease Type</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Rent Cycle</th>
+                                        <th>Rent Amount</th>
+                                        <th>Next Due Date</th>
+                                      </tr>
 
-                                    <tr className="body">
-                                      <td>
-                                        {tenantDetails?.rental
-                                          ?.rental_adress || "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails?.lease
-                                          ?.lease_type || "N/A"}
-                                      </td>
+                                      <tr className="body">
+                                        <td>
+                                          {tenantDetails?.rental
+                                            ?.rental_adress || "N/A"}
+                                        </td>
+                                        <td>
+                                          {tenantDetails?.lease
+                                            ?.lease_type || "N/A"}
+                                        </td>
 
-                                      <td>
-                                        {formatDateWithoutTime(
-                                          tenantDetails?.lease?.start_date
-                                        ) || "N/A"}
-                                      </td>
+                                        <td>
+                                          {formatDateWithoutTime(
+                                            tenantDetails?.lease?.start_date
+                                          ) || "N/A"}
+                                        </td>
 
-                                      <td>
-                                        {formatDateWithoutTime(
-                                          tenantDetails?.lease?.end_date
-                                        ) || "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails?.rental
-                                          ?.rent_cycle || "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails?.rental?.amount ||
-                                          "N/A"}
-                                      </td>
+                                        <td>
+                                          {formatDateWithoutTime(
+                                            tenantDetails?.lease?.end_date
+                                          ) || "N/A"}
+                                        </td>
+                                        <td>
+                                          {tenantDetails?.rental
+                                            ?.rent_cycle || "N/A"}
+                                        </td>
+                                        <td>
+                                          {tenantDetails?.rental?.amount ||
+                                            "N/A"}
+                                        </td>
 
-                                      <td>
-                                        {formatDateWithoutTime(
-                                          tenantDetails?.rental
-                                            ?.nextDue_date
-                                        ) || "N/A"}
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </Table>
-                              </Row>
-                            </div>
-                          ))
-                        ) : (
-                          <tr>
-                            <td>Loading lease details...</td>
-                          </tr>
-                        )}
+                                        <td>
+                                          {formatDateWithoutTime(
+                                            tenantDetails?.rental
+                                              ?.nextDue_date
+                                          ) || "N/A"}
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </Table>
+                                </Row>
+                              </div>
+                            ))
+                          ) : (
+                            <tr>
+                              <td>Data not found</td>
+                            </tr>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </Card>
           </div>
         </Row>
