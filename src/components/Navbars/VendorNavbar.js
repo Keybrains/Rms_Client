@@ -23,33 +23,17 @@ import Button from "@mui/material/Button";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { makeStyles } from "@mui/styles";
 import { jwtDecode } from "jwt-decode";
-
-// import socketIOClient from 'socket.io-client';
 
 const VendorNavbar = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  let cookies = new Cookies();
+
   let Logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("Vendor ID");
   };
-  const { id } = useParams();
-  // console.log(id);
-  const [vendorDetails, setVendorDetails] = useState({});
-  const [vendor_name, setVendorname] = useState("");
-  // console.log(vendor_name);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -57,14 +41,7 @@ const VendorNavbar = (props) => {
 
   const navigate = useNavigate();
 
-  let cookie_id = localStorage.getItem("Vendor ID");
-  // console.log(cookie_id);
-
-  const [notification, setNotification] = useState("");
   const [notificationCount, setNotificationCount] = useState(0);
-  const [notificationData, setNotificationData] = useState([]);
-
-  // console.log("Vendor Name:", vendor_name);
 
   const [selectedProp, setSelectedProp] = useState("Select");
 

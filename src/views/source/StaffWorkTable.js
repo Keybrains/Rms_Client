@@ -27,6 +27,12 @@ const StaffWorkTable = () => {
   const navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loader, setLoader] = useState(false);
+  const [staffmember_name, setStaffMember] = useState("");
+  const [staffDetails, setStaffDetails] = useState({});
+  //console.log("staffname", staffmember_name);
+  //console.log(staffDetails);
+  //console.log("workData", workData);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -44,6 +50,32 @@ const StaffWorkTable = () => {
     }
   }, [navigate]);
 
+  let cookie_id = localStorage.getItem("Staff ID");
+
+  // const getWorkData = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${baseUrl}/addstaffmember/staffmember_summary/${cookie_id}`
+  //     );
+  //     if (response.data && response.data.data) {
+  //       console.log(response.data.data,"sonani");
+  //       setStaffDetails(response.data.data);
+
+  //       setStaffMember(response.data.data.staffmember_name);
+  //       setTotalPages(Math.ceil(response.data.data.length / pageItem)||1);
+  //     } else {
+  //       console.error("Invalid or missing data in API response.");
+  //     }
+  //     setLoader(false);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getWorkData();
+  // }, [pageItem]);
+
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
   const paginatedData = workData.slice(startIndex, endIndex);
@@ -52,15 +84,21 @@ const StaffWorkTable = () => {
   };
 
   const getRentalData = async () => {
+    setLoader(true)
     try {
       const response = await axios.get(
         `${baseUrl}/work-order/staff_work/${accessType.staffmember_id}`
       );
       setWorkData(response.data.data);
-      console.log(response.data.data, "this is fetched data");
+      console.log(response.data.data, 'this is fetched data')
+      setStaffMember(response.data.data.staffmember_name);
       setTotalPages(Math.ceil(response.data.data.length / pageItem) || 1);
     } catch (error) {
       console.error("Error fetching work order data:", error);
+
+    }
+    finally {
+      setLoader(false)
     }
   };
   useEffect(() => {
@@ -75,8 +113,26 @@ const StaffWorkTable = () => {
 
   const navigateToDetails = (workorder_id) => {
     navigate(`/staff/staffworkdetails/${workorder_id}`);
+    console.log(workorder_id, 'id is -===0');
   };
 
+  // const filterRentalsBySearch = () => {
+  //   if (!searchQuery) {
+  //     return workData;
+  //   }
+
+  //   return workData.filter((rental) => {
+  //     const lowerCaseQuery = searchQuery.toLowerCase();
+  //     return (
+  //       rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
+  //       rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
+  //       rental.status.toLowerCase().includes(lowerCaseQuery) ||
+  //       rental.rental_adress.toLowerCase().includes(lowerCaseQuery)||
+  //       rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)||
+  //       rental.priority.toLowerCase().includes(lowerCaseQuery)
+  //     );
+  //   });
+  // };
   const filterRentalsBySearch = () => {
     if (!searchQuery) {
       return workData;
@@ -120,6 +176,7 @@ const StaffWorkTable = () => {
         <br />
         <Row>
           <div className="col">
+
             <Card className="shadow">
               <CardHeader className="border-0">
                 <Row>
@@ -142,40 +199,57 @@ const StaffWorkTable = () => {
                 </Row>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
-                <thead className="thead-light">
-                  <tr>
-                    <th scope="col">Work Order</th>
-                    <th scope="col">Property</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">priority</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Created At</th>
-                    <th scope="col">Updated At</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filterTenantsBySearchAndPage().map((vendor) => (
-                    <tr
-                      key={vendor.workOrder_id}
-                      onClick={() => navigateToDetails(vendor.workOrder_id)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <td>{vendor.work_subject}</td>
-                      <td>
-                        {vendor.rental_data.rental_adress}-
-                        {vendor.unit_data.rental_unit}{" "}
-                        {vendor.unit_data.rental_unit
-                          ? " - " + vendor.unit_data.rental_unit
-                          : null}
-                      </td>
-                      <td>{vendor.work_category}</td>
-                      <td>{vendor.priority}</td>
-                      <td>{vendor.status}</td>
-                      <td>{vendor.createdAt}</td>
-                      <td>{vendor.updateAt || "-"}</td>
-                    </tr>
-                  ))}
-                </tbody>
+
+                {loader ? (
+                  <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="50"
+                      visible={loader}
+                    />
+                  </div>
+                ) : workData.length === 0 ? (
+                  <>
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="8" style={{ fontSize: "15px" }}>No Work Order Added</td>
+                      </tr>
+                    </tbody>
+                  </>
+                ) : (
+                  <>
+                    <thead className="thead-light">
+                      <tr>
+                        <th scope="col">Work Order</th>
+                        <th scope="col">Property</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">priority</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Created At</th>
+                        <th scope="col">Updated At</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filterTenantsBySearchAndPage().map((vendor) => (
+                        <tr
+                          key={vendor.workOrder_id}
+                          onClick={() => navigateToDetails(vendor.workOrder_id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <td>{vendor.work_subject}</td>
+                          <td>{vendor.rental_data.rental_adress}-{vendor.unit_data.rental_unit} {vendor.unit_data.rental_unit ? " - " + vendor.unit_data.rental_unit : null}</td>
+                          <td>{vendor.work_category}</td>
+                          <td>{vendor.priority}</td>
+                          <td>{vendor.status}</td>
+                          <td>{vendor.createdAt}</td>
+                          <td>{vendor.updateAt || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </>
+                )}
               </Table>
               {paginatedData.length > 0 ? (
                 <Row>
@@ -260,6 +334,7 @@ const StaffWorkTable = () => {
                 <></>
               )}
             </Card>
+
           </div>
         </Row>
         <br />
