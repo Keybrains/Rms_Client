@@ -145,7 +145,7 @@ function AddPayment() {
           entry_id: item.entry_id,
           account: item.account,
           amount: Number(item.amount),
-          memo: values.charges_memo,
+          memo: values.payments_memo || "payment",
           date: values.date,
           account: item.account,
           charge_type: item.charge_type,
@@ -228,11 +228,10 @@ function AddPayment() {
         const data = {
           account: item.account,
           amount: Number(item.amount),
-          memo: values.payments_memo,
+          memo: values.payments_memo || "payment",
           date: values.date,
           account: item.account,
           charge_type: item.charge_type,
-          is_repeatable: false,
         };
         return data;
       }),
@@ -249,7 +248,7 @@ function AddPayment() {
           position: "top-center",
           autoClose: 1000,
         });
-        navigate(`/${admin}/RentRollLeaseing/${lease_id}`);
+        navigate(`/${admin}/rentrolldetail/${lease_id}`);
       } else {
         toast.warning(res.data.message, {
           position: "top-center",
