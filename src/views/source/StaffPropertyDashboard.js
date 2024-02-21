@@ -53,7 +53,7 @@ const StaffPropertyDashboard = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/staffmember/staffmember_property/1707999725614`
+        `${baseUrl}/staffmember/staffmember_property/${accessType?.staffmember_id}`
       );
       setPropertyDetails(response.data.data);
       setLoader(false);

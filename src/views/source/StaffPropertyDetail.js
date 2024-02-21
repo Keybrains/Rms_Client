@@ -12,17 +12,7 @@ import Cookies from "universal-cookie";
 const StaffPropertyDetail = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { rental_id } = useParams();
-  console.log(rental_id, "rental_id")
   const [propertyDetails, setPropertyDetails] = useState([]);
-  const [propertyUnit, setPropertyUnit] = useState([]);
-  const [propId, setPropId] = useState("");
-  const [clickedObject, setClickedObject] = useState({});
-  const [propertyLoading, setPropertyLoading] = useState(true);
-  const [propertyError, setPropertyError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedImage, setSelectedImage] = useState("");
-  const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
   let cookies = new Cookies();
@@ -41,10 +31,8 @@ const StaffPropertyDetail = () => {
     try {
       const res = await axios.get(
         `${baseUrl}/staffmember/staffmember_summary/${rental_id}`
-        // `${baseUrl}/staffmember/staffmember_summary/1708425958731`
       );
       setPropertyDetails(res.data.data[0]);
-      console.log(res.data.data < "res.data.data");
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
@@ -68,7 +56,7 @@ const StaffPropertyDetail = () => {
             <Button
               color="primary"
               //  href="#rms"
-              onClick={() => navigate("/tenant/tenantproperty")}
+              onClick={() => navigate("/staff/staffproperty")}
               size="sm"
               style={{ background: "white", color: "#3B2F2F" }}
             >

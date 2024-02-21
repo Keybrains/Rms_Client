@@ -186,44 +186,7 @@ const TenantNavbar = (props) => {
     (notification) => !notification.isTenantread
   ).length;
 
-  const navigateToDetails = (workorder_id) => {
-    // Make a DELETE request to delete the notification
-    axios
-      .get(`${baseUrl}/notification/notification/${workorder_id}?role=tenant`)
-      .then((response) => {
-        if (response.status === 200) {
-          const updatedNotificationData = notificationData.map(
-            (notification) => {
-              if (notification.workorder_id === workorder_id) {
-                return { ...notification, isTenantread: true };
-              }
-              return notification;
-            }
-          );
-          setNotificationData(updatedNotificationData);
-          //console.log("updatedNotificationData", updatedNotificationData)
-          setNotificationCount(updatedNotificationData.length);
-          //console.log(`Notification with workorder_id ${workorder_id} marked as read.`);
-          fetchNotification();
-        } else {
-          console.error(
-            `Failed to delete notification with workorder_id ${workorder_id}.`
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
 
-    // Continue with navigating to the details page
-    navigate(`/tenant/tworkorderdetail/${workorder_id}`);
-  };
-
-  // const navigateToDetails = (workorder_id) => {
-  //   // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
-  //   navigate(`/tenant/tworkorderdetail/${workorder_id}`);
-  //   //console.log(workorder_id);
-  // };
 
   const [tenantNotification, setTenantNotification] = useState([]);
   const tenantNotificationData = async (addresses, units) => {
