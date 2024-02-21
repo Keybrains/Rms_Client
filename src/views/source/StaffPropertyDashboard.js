@@ -185,12 +185,12 @@ const StaffPropertyDashboard = () => {
                     <Table
                       className="align-items-center table-flush"
                       responsive
-                      // style={{
-                      //   width: "100%",
-                      //   border: "1px solid #e5e5e5",
-                      //   borderRadius: "8px",
-                      //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                      // }}
+                    // style={{
+                    //   width: "100%",
+                    //   border: "1px solid #e5e5e5",
+                    //   borderRadius: "8px",
+                    //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    // }}
                     >
                       <thead className="thead-light">
                         <tr>
@@ -251,34 +251,42 @@ const StaffPropertyDashboard = () => {
                           <th>CreatedAt</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        {filterTenantsBySearchAndPage().map(
-                          (address, index) => (
-                            <>
-                              <tr
-                                key={index}
-                                onClick={() =>
-                                  navigate(
-                                    // `/staff/staffpropertydetail/1708425958731`
-                                    `/staff/staffpropertydetail/${address?.rental_id}`
-                                  )
-                                }
-                                style={{ cursor: "pointer" }}
-                              >
-                                <td>{address?.rental_adress} </td>
+                      {propertyDetails.length === 0 ? (
+                        <tbody>
+                          <tr className="text-center">
+                            <td colSpan="8" style={{ fontSize: "15px" }}>No Property Added</td>
+                          </tr>
+                        </tbody>
+                      ) : (
+                        <tbody>
+                          {filterTenantsBySearchAndPage().map(
+                            (address, index) => (
+                              <>
+                                <tr
+                                  key={index}
+                                  onClick={() =>
+                                    navigate(
+                                      // `/staff/staffpropertydetail/1708425958731`
+                                      `/staff/staffpropertydetail/${address?.rental_id}`
+                                    )
+                                  }
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <td>{address?.rental_adress} </td>
 
-                                <td>{address?.propertysub_type}</td>
-                                <td>{address?.rental_city}</td>
-                                <td>
-                                  {moment(address?.createdAt).format(
-                                    "DD-MM-YYYY"
-                                  )}
-                                </td>
-                              </tr>
-                            </>
-                          )
-                        )}
-                      </tbody>
+                                  <td>{address?.propertysub_type}</td>
+                                  <td>{address?.rental_city}</td>
+                                  <td>
+                                    {moment(address?.createdAt).format(
+                                      "DD-MM-YYYY"
+                                    )}
+                                  </td>
+                                </tr>
+                              </>
+                            )
+                          )}
+                        </tbody>
+                      )}
                     </Table>
                   </>
                 </div>

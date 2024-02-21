@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import { RotatingLines } from "react-loader-spinner";
 import StaffHeader from "components/Headers/StaffHeader";
 import {
   Button,
@@ -75,9 +76,16 @@ const StaffProfile = () => {
                   style={{ width: "100%" }}
                 >
                   {loading ? (
-                    <tr>
-                      <td>Loading staff details...</td>
-                    </tr>
+                    <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                      <RotatingLines
+                        strokeColor="grey"
+                        strokeWidth="5"
+                        animationDuration="0.75"
+                        width="50"
+                        visible={loading}
+                      />
+                    </div>
+
                   ) : (
                     // ) : staffDetails?.staffmember_id ? (
                     <>
@@ -96,14 +104,23 @@ const StaffProfile = () => {
                           <th>Phone Number</th>
                           <th>Email</th>
                         </tr>
-                        <>
+                        <>{console.log("manu", staffDetails,staffDetails?.length)}
                           <>
-                            <tr className="body">
-                              <td>{staffDetails?.staffmember_name}</td>
-                              <td>{staffDetails?.staffmember_designation}</td>
-                              <td>{staffDetails?.staffmember_phoneNumber}</td>
-                              <td>{staffDetails?.staffmember_email}</td>
-                            </tr>
+                            {!staffDetails ? (
+                              <tbody>
+                                <tr className="text-center">
+                                  <td colSpan="8" style={{ fontSize: "15px" }}>No Data Added</td>
+                                </tr>
+                              </tbody>
+                            ) : (
+
+                              <tr className="body">
+                                <td>{staffDetails?.staffmember_name}</td>
+                                <td>{staffDetails?.staffmember_designation}</td>
+                                <td>{staffDetails?.staffmember_phoneNumber}</td>
+                                <td>{staffDetails?.staffmember_email}</td>
+                              </tr>
+                            )}
                           </>
                         </>
                       </tbody>
