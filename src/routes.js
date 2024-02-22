@@ -459,6 +459,13 @@ var routes = [
     component: <StaffWorkTable />,
     layout: "/staff",
   },
+  {
+    path: "/staffworktable?status",
+    name: "Work Order",
+    icon: "ni ni-badge text-green",
+    component: <StaffWorkTable />,
+    layout: "/staff",
+  },
 
   {
     path: "/addvendor",
