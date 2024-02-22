@@ -45,6 +45,7 @@ import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import { OverlayTrigger } from "react-bootstrap";
 import CreditCardForm from "./CreditCardForm";
+import AccountDialog from "components/AccountDialog";
 
 const AddPayment = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -100,12 +101,92 @@ const AddPayment = () => {
   //   generalledgerFormik.setFieldValue("paymentType", type);
   // };
 
+  const [selectAccountDropDown, setSelectAccountDropDown] =
+    React.useState(false);
+  const [selectAccountLevelDropDown, setSelectAccountLevelDropDown] =
+    React.useState(false);
+  const [selectFundTypeDropDown, setSelectFundtypeDropDown] =
+    React.useState(false);
+  const [AddBankAccountDialogOpen, setAddBankAccountDialogOpen] =
+    useState(false);
+  const [accountTypeName, setAccountTypeName] = useState([]);
+  const [accountNames, setAccountNames] = useState([]);
+  const [toggleApiCall, setToggleApiCall] = useState(false);
+
+  const toggle8 = () => setSelectAccountDropDown((prevState) => !prevState);
+  const toggle10 = () => setSelectFundtypeDropDown((prevState) => !prevState);
+
+  const [selectedAccount, setselectedAccount] = useState("");
+  const hadleselectedAccount = (account) => {
+    setselectedAccount(account);
+    // localStorage.setItem("leasetype", leasetype);
+  };
+
+  const toggleAddBankDialog = () => {
+    setAddBankAccountDialogOpen((prevState) => !prevState);
+  };
+  const handleCloseDialog = () => {
+    setAddBankAccountDialogOpen(false);
+  };
+
+  const AddNewAccountName = async (accountName) => {
+    toggleAddBankDialog();
+    setAccountTypeName(accountName);
+  };
+
+  // const fetchingRecAccountNames = async () => {
+  //   // console.log("fetching rec accounr names");
+  //   fetch(`${baseUrl}/recurringAcc/find_accountname`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.statusCode === 200) {
+  //         // console.log(data.data,'Data from adding the account'); // Add this line to check the data
+  //         setRecAccountNames(data.data);
+  //       } else {
+  //         // Handle error
+  //         console.error("Error:", data.message);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       // Handle network error
+  //       console.error("Network error:", error);
+  //     });
+  // };
+
+  // const fetchingOneTimeCharges = async () => {
+  //   // console.log("fetcjhiine pne rime charges");
+  //   fetch(`${baseUrl}/onetimecharge/find_accountname`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.statusCode === 200) {
+  //         // console.log(data.data,'Data from adding the account'); // Add this line to check the data
+  //         setOneTimeCharges(data.data);
+  //       } else {
+  //         // Handle error
+  //         console.error("Error:", data.message);
+  //       }
+  //     });
+  // };
+
+  useEffect(() => {
+      // Make an HTTP GET request to your Express API endpoint
+      fetchingAccountNames();
+    fetchingRecAccountNames();
+    fetchingOneTimeCharges();
+  }, [toggleDropdown]);
+
+  useEffect(() => {
+      // Make an HTTP GET request to your Express API endpoint
+      fetchingAccountNames();
+    fetchingRecAccountNames();
+    fetchingOneTimeCharges();
+  }, [toggleApiCall]);
+
   const [selectedProp, setSelectedProp] = useState("Select Payment Method");
   const handlePropSelection = (propertyType) => {
     setSelectedProp(propertyType);
     generalledgerFormik.setFieldValue("payment_type", propertyType);
   };
-  console.log("sss", selectedProp);
   const [selectedRec, setSelectedRec] = useState("Select Resident");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -308,20 +389,20 @@ const AddPayment = () => {
       });
   };
 
-  useEffect(() => {
-    fetch(`${baseUrl}/addaccount/find_accountname`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setAccountData(data.data);
-        } else {
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Network error:", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   fetch(`${baseUrl}/addaccount/find_accountname`)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.statusCode === 200) {
+  //         setAccountData(data.data);
+  //       } else {
+  //         console.error("Error:", data.message);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Network error:", error);
+  //     });
+  // }, [toggleDropdown]);
 
   if (generalledgerFormik.values.values) {
   }
@@ -582,8 +663,6 @@ const AddPayment = () => {
         } else {
           // swal("Error", "Failed to get 'id' from the response", "error");
         }
-
- 
       } else {
         swal("Error", response.data.message, "error");
         console.error("Server Error:", response.data.message);
@@ -638,8 +717,8 @@ const AddPayment = () => {
                       nmiResponse.response_code == 100 ? "Success" : "Failure",
                   }))
               : []
-            :  formikForAnotherData?.values?.length !== 0 ?
-              formikForAnotherData?.values?.entries
+            : formikForAnotherData?.values?.length !== 0
+            ? formikForAnotherData?.values?.entries
                 ?.filter((entry) => parseFloat(entry.amount) !== 0)
                 ?.map((entry) => ({
                   type: "Payment",
@@ -664,75 +743,75 @@ const AddPayment = () => {
                   surcharge: values.surcharge,
                   total_amount: totalAmount1,
                 }))
-                : [];
+            : [];
 
-        const paymentData = selectedProp === "Credit Card" ? 
-         generalledgerFormik?.values?.entries?.map(
-          (entry) => ({
-            type: "Payment",
-            account: entry.account,
-            amount: parseFloat(entry.amount),
-            rental_adress: rentAddress,
-            rent_cycle: "",
-            month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
-            date: values.date,
-            memo: values.charges_memo,
-            payment_type: selectedProp,
-            tenant_id: tenantid,
-            entryIndex: entryIndex,
-            charges_attachment: generalledgerFormik.values.attachment,
-            tenant_firstName: firstName,
-            tenant_lastName: lastName,
-            email_name: mail,
-            customer_vault_id: values.customer_vault_id,
-            billing_id: values.billing_id,
-            surcharge: values.surcharge,
-            total_amount: totalAmount1,
-            // Add NMI response data here
-            response: nmiResponse.response,
-            responsetext: nmiResponse.responsetext,
-            authcode: nmiResponse.authcode,
-            transactionid: nmiResponse.transactionid,
-            avsresponse: nmiResponse.avsresponse,
-            cvvresponse: nmiResponse.cvvresponse,
-            type2: nmiResponse.type,
-            response_code: nmiResponse.response_code,
-            cc_type: nmiResponse.cc_type,
-            cc_exp: nmiResponse.cc_exp,
-            cc_number: nmiResponse.cc_number,
-            status: nmiResponse.response_code == 100 ? "Success" : "Failure",
-          })
-        ) : generalledgerFormik?.values?.entries?.map(
-          (entry) => ({
-            type: "Payment",
-            account: entry.account,
-            amount: parseFloat(entry.amount),
-            rental_adress: rentAddress,
-            rent_cycle: "",
-            month_year: values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
-            date: values.date,
-            memo: values.charges_memo,
-            payment_type: selectedProp,
-            tenant_id: tenantid,
-            entryIndex: entryIndex,
-            charges_attachment: generalledgerFormik.values.attachment,
-            tenant_firstName: firstName,
-            tenant_lastName: lastName,
-            email_name: mail,
-            customer_vault_id: values.customer_vault_id,
-            billing_id: values.billing_id,
-            surcharge: values.surcharge,
-            total_amount: totalAmount1,
-            status: status,
-          })
-        );
+        const paymentData =
+          selectedProp === "Credit Card"
+            ? generalledgerFormik?.values?.entries?.map((entry) => ({
+                type: "Payment",
+                account: entry.account,
+                amount: parseFloat(entry.amount),
+                rental_adress: rentAddress,
+                rent_cycle: "",
+                month_year:
+                  values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                date: values.date,
+                memo: values.charges_memo,
+                payment_type: selectedProp,
+                tenant_id: tenantid,
+                entryIndex: entryIndex,
+                charges_attachment: generalledgerFormik.values.attachment,
+                tenant_firstName: firstName,
+                tenant_lastName: lastName,
+                email_name: mail,
+                customer_vault_id: values.customer_vault_id,
+                billing_id: values.billing_id,
+                surcharge: values.surcharge,
+                total_amount: totalAmount1,
+                // Add NMI response data here
+                response: nmiResponse.response,
+                responsetext: nmiResponse.responsetext,
+                authcode: nmiResponse.authcode,
+                transactionid: nmiResponse.transactionid,
+                avsresponse: nmiResponse.avsresponse,
+                cvvresponse: nmiResponse.cvvresponse,
+                type2: nmiResponse.type,
+                response_code: nmiResponse.response_code,
+                cc_type: nmiResponse.cc_type,
+                cc_exp: nmiResponse.cc_exp,
+                cc_number: nmiResponse.cc_number,
+                status:
+                  nmiResponse.response_code == 100 ? "Success" : "Failure",
+              }))
+            : generalledgerFormik?.values?.entries?.map((entry) => ({
+                type: "Payment",
+                account: entry.account,
+                amount: parseFloat(entry.amount),
+                rental_adress: rentAddress,
+                rent_cycle: "",
+                month_year:
+                  values.date.slice(5, 7) + "-" + values.date.slice(0, 4),
+                date: values.date,
+                memo: values.charges_memo,
+                payment_type: selectedProp,
+                tenant_id: tenantid,
+                entryIndex: entryIndex,
+                charges_attachment: generalledgerFormik.values.attachment,
+                tenant_firstName: firstName,
+                tenant_lastName: lastName,
+                email_name: mail,
+                customer_vault_id: values.customer_vault_id,
+                billing_id: values.billing_id,
+                surcharge: values.surcharge,
+                total_amount: totalAmount1,
+                status: status,
+              }));
 
         const paymentEntry =
           chargesData1?.length > 0
             ? [...paymentData, ...chargesData1]
             : paymentData;
 
-      
         // Construct payment charge object
         const paymentObject =
           selectedProp === "Credit Card" &&
@@ -775,7 +854,7 @@ const AddPayment = () => {
             swal("Success", "Payment Done successfully!", "success");
             navigate(
               `/admin/rentrolldetail/${tenantId}/${entryIndex}?source=payment`
-            ); 
+            );
           })
           .catch((error) => {
             // Handle error response
@@ -982,7 +1061,6 @@ const AddPayment = () => {
       }
     }
   };
-  console.log(tenantid, entryIndex, "yah");
 
   const formikForAnotherData = useFormik({
     initialValues: {
@@ -1139,8 +1217,29 @@ const AddPayment = () => {
         }
       });
   };
+  const fetchingAccountNames = async () => {
+
+    // console.log("fetching account names");
+    fetch(`${baseUrl}/addaccount/find_accountname`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.statusCode === 200) {
+          // console.log(data.data,'Data from adding the account'); // Add this line to check the data
+          setAccountData(data.data);
+          
+        } else {
+          // Handle error
+          console.error("Error:", data.message);
+        }
+      })
+      .catch((error) => {
+        // Handle network error
+        console.error("Network error:", error);
+      });
+  };
 
   useEffect(() => {
+    fetchingAccountNames();
     fetchingRecAccountNames();
     fetchingOneTimeCharges();
   }, []);
@@ -1807,7 +1906,7 @@ const AddPayment = () => {
                                           )}
                                         </Typography>
                                       </td>
-{/* 
+                                      {/* 
                                       {selectedCreditCard ===
                                         item.billing_id && (
                                         <td>
@@ -2221,6 +2320,15 @@ const AddPayment = () => {
                                             ) : (
                                               <></>
                                             )}
+                                            <DropdownItem
+                                              onClick={() =>
+                                                AddNewAccountName(
+                                                  "recAccountName"
+                                                )
+                                              }
+                                            >
+                                              Add new account..
+                                            </DropdownItem>
                                           </DropdownMenu>
                                         </Dropdown>
                                         {generalledgerFormik.touched.entries &&
@@ -2241,6 +2349,36 @@ const AddPayment = () => {
                                             }
                                           </div>
                                         ) : null}
+                                        <AccountDialog
+                                          AddBankAccountDialogOpen={
+                                            AddBankAccountDialogOpen
+                                          }
+                                          handleCloseDialog={handleCloseDialog}
+                                          selectAccountDropDown={
+                                            selectAccountDropDown
+                                          }
+                                          toggle8={toggle8}
+                                          setAddBankAccountDialogOpen={
+                                            setAddBankAccountDialogOpen
+                                          }
+                                          toggle1={toggle1}
+                                          selectAccountLevelDropDown={
+                                            selectAccountLevelDropDown
+                                          }
+                                          selectFundTypeDropDown={
+                                            selectFundTypeDropDown
+                                          }
+                                          toggle10={toggle10}
+                                          selectedAccount={selectedAccount}
+                                          accountTypeName={accountTypeName}
+                                          setToggleApiCall={setToggleApiCall}
+                                          toggleApiCall={toggleApiCall}
+                                          hadleselectedAccount={
+                                            hadleselectedAccount
+                                          }
+                                          // hadleselectedOneTimeAccount={hadleselectedOneTimeAccount}
+                                          // hadleselectedRecuringAccount={hadleselectedRecuringAccount}
+                                        />
                                       </td>
                                       <td>
                                         <Input
