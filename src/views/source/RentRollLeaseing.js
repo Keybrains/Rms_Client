@@ -521,11 +521,18 @@ const RentRollLeaseing = () => {
         },
       };
 
+      console.log(object);
       const res = await axios.put(
         `${baseUrl}/leases/leases/${lease_id}`,
         object
       );
-      console.log(res.data);
+      if (res.data.statusCode === 200) {
+        toast.success("Lease Added Successfully", {
+          position: "top-center",
+          autoClose: 1000,
+        });
+        navigate(`/${admin}/RentRoll`);
+      }
     } catch (error) {
       console.error("Error:", error.message);
     }
@@ -902,8 +909,7 @@ const RentRollLeaseing = () => {
         end_date !== ""
       ) {
         const res = await axios.post(`${baseUrl}/leases/check_lease`, object);
-        console.log(res, "yash");
-        if (res.data.statusCode === 201) {
+        if (res.data.statusCode === (201 || 400)) {
           toast.warning(res.data.message, {
             position: "top-center",
           });
