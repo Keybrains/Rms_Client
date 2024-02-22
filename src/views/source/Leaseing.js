@@ -822,11 +822,6 @@ const Leaseing = () => {
       });
   };
 
-  // const AddNewAccountName = async (accountName) => {
-  //   toggleAddBankDialog();
-  //   setAccountTypeName(accountName);
-  // };
-
   useEffect(() => {
     // Make an HTTP GET request to your Express API endpoint
     fetchingAccountNames();

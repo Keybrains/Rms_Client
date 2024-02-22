@@ -1928,9 +1928,9 @@ const RentRollDetail = () => {
                                                 : "-"}
                                             </td>
                                             <td>
-                                              {generalledger.type === "Payment"
-                                                ? "$" + generalledger.total_amount
-                                                : "-"}
+                                              {generalledger.type === "Payment" ? generalledger.payment_type === "Credit Card"
+                                                ? "$" + generalledger.total_surcharge 
+                                                :  "$" + generalledger.amount : "-" }
                                             </td>
                                             <td>
                                               {generalledger.Total !== undefined
