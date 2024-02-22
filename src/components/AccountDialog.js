@@ -52,6 +52,7 @@ function AccountDialog(props) {
 
   const handleCloseDialog = () => {
     props.setAddBankAccountDialogOpen(false);
+    accountFormik.resetForm();
   };
 
   let accountFormik = useFormik({
@@ -75,10 +76,10 @@ function AccountDialog(props) {
   // //console.log(props,'props');
 
   const handleAdd = async (values) => {
-    values["account_name "] = props.selectedAccount;
+    values["account_name "] = selectedAccountType;
     values["account_type"] = selectedAccountType;
     values["fund_type"] = selectedFundType;
-    if (props.accountTypeName === "rentAccountName") {
+    if (selectedAccountType === "Income") {
       try {
         const res = await axios.post(
           `${baseUrl}/addaccount/addaccount`,
@@ -87,8 +88,14 @@ function AccountDialog(props) {
         if (res.status === 200) {
           swal("", res.data.message, "success");
           props.setToggleApiCall(!props.toggleApiCall);
-          props.hadleselectedAccount(values.account_name)
-
+          props.hadleselectedAccount(values.account_name);
+          accountFormik.setValues({
+            account_name: "",
+            account_type: "",
+            // account_number: "",
+            fund_type: "",
+            notes: "",
+          });
           // navigate("/admin/RentRollLeaseing");
         } else {
           swal("", res.data.message, "error");
@@ -115,7 +122,7 @@ function AccountDialog(props) {
       }
     }
 
-    if (props.accountTypeName === "recAccountName") {
+    if (selectedAccountType === "Recurring Charge") {
       try {
         // values["property_type"] = localStorage.getItem("propertyType");
         const res = await axios.post(
@@ -141,7 +148,7 @@ function AccountDialog(props) {
         //console.log(error);
       }
     }
-    if (props.accountTypeName === "oneTimeName") {
+    if (selectedAccountType === "One Time Charge") {
       try {
         // values["property_type"] = localStorage.getItem("propertyType");
         const res = await axios.post(
@@ -236,7 +243,7 @@ function AccountDialog(props) {
             </DropdownToggle>
             <DropdownMenu
               style={{ width: "100%" }}
-              name="rent_cycle"
+              name="account_type"
               onBlur={accountFormik.handleBlur}
               onChange={accountFormik.handleChange}
               value={accountFormik.values.account_type}
@@ -251,9 +258,14 @@ function AccountDialog(props) {
                 Income
               </DropdownItem>
               <DropdownItem
-                onClick={() => hadleselectedAccountType("Non Operating Income")}
+                onClick={() => hadleselectedAccountType("Recurring Charge")}
               >
-                Non Operating Income
+                Recurring Charge
+              </DropdownItem>
+              <DropdownItem
+                onClick={() => hadleselectedAccountType("One Time Charge")}
+              >
+                One Time Charge
               </DropdownItem>
             </DropdownMenu>
             {/* {//console.log(accountFormik.values, selectedAccountType)} */}
