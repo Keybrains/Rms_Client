@@ -29,18 +29,12 @@ const StaffPropertyDashboard = () => {
 
   let [loader, setLoader] = React.useState(true);
   const [propertyDetails, setPropertyDetails] = useState([]);
-  console.log(propertyDetails, "propertyDetails");
-  const [propertyLoading, setPropertyLoading] = useState(true);
-  const [propertyError, setPropertyError] = useState(null);
-  const [tenantDetails, setTenantDetails] = useState({});
-  const { id } = useParams();
+
   const [upArrow, setUpArrow] = React.useState([]);
   const [sortBy, setSortBy] = useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
-  let cookie_id = localStorage.getItem("Tenant ID");
 
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -53,7 +47,7 @@ const StaffPropertyDashboard = () => {
   const getTenantData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}/staffmember/staffmember_property/1707999725614`
+        `${baseUrl}/staffmember/staffmember_property/${accessType?.staffmember_id}`
       );
       setPropertyDetails(response.data.data);
       setLoader(false);
@@ -71,12 +65,6 @@ const StaffPropertyDashboard = () => {
 
   const navigate = useNavigate();
 
-  function navigatestaffpropertydetail() {
-    navigate(`/staff/staffpropertydetail`);
-    // window.location.href = tenantsDetailsURL;
-    // console.log("Rental Address", rental_adress);
-  }
-
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterTenantsBySearch();
     const paginatedData = filteredData;
@@ -84,21 +72,19 @@ const StaffPropertyDashboard = () => {
   };
 
   const filterTenantsBySearch = () => {
-    let filteredData = [...propertyDetails]; // Create a copy of tentalsData to avoid mutating the original array
-
+    let filteredData = [...propertyDetails];
+  
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((tenant) => {
-        // const name = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
-
         return (
-          tenant.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.start_date.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.end_date.toLowerCase().includes(lowerCaseSearchQuery)
+          (tenant.rental_adress && tenant.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (tenant.start_date && tenant.start_date.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (tenant.end_date && tenant.end_date.toLowerCase().includes(lowerCaseSearchQuery))
         );
       });
     }
-
+  
     if (upArrow.length > 0) {
       const sortingArrows = upArrow;
       sortingArrows.forEach((sort) => {
@@ -124,9 +110,10 @@ const StaffPropertyDashboard = () => {
         }
       });
     }
-
+  
     return filteredData;
   };
+  
 
   const sortData = (value) => {
     if (!sortBy.includes(value)) {
@@ -159,7 +146,6 @@ const StaffPropertyDashboard = () => {
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                {/* <h1 className="mb-0">Property</h1> */}
                 <Row>
                   <Col xs="12" sm="6">
                     <FormGroup className="">
@@ -185,12 +171,12 @@ const StaffPropertyDashboard = () => {
                     <Table
                       className="align-items-center table-flush"
                       responsive
-                      // style={{
-                      //   width: "100%",
-                      //   border: "1px solid #e5e5e5",
-                      //   borderRadius: "8px",
-                      //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                      // }}
+                    // style={{
+                    //   width: "100%",
+                    //   border: "1px solid #e5e5e5",
+                    //   borderRadius: "8px",
+                    //   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    // }}
                     >
                       <thead className="thead-light">
                         <tr>
@@ -251,34 +237,42 @@ const StaffPropertyDashboard = () => {
                           <th>CreatedAt</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        {filterTenantsBySearchAndPage().map(
-                          (address, index) => (
-                            <>
-                              <tr
-                                key={index}
-                                onClick={() =>
-                                  navigate(
-                                    // `/staff/staffpropertydetail/1708425958731`
-                                    `/staff/staffpropertydetail/${address?.rental_id}`
-                                  )
-                                }
-                                style={{ cursor: "pointer" }}
-                              >
-                                <td>{address?.rental_adress} </td>
+                      {propertyDetails.length === 0 ? (
+                        <tbody>
+                          <tr className="text-center">
+                            <td colSpan="8" style={{ fontSize: "15px" }}>No Property Added</td>
+                          </tr>
+                        </tbody>
+                      ) : (
+                        <tbody>
+                          {filterTenantsBySearchAndPage().map(
+                            (address, index) => (
+                              <>
+                                <tr
+                                  key={index}
+                                  onClick={() =>
+                                    navigate(
+                                      // `/staff/staffpropertydetail/1708425958731`
+                                      `/staff/staffpropertydetail/${address?.rental_id}`
+                                    )
+                                  }
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <td>{address?.rental_adress} </td>
 
-                                <td>{address?.propertysub_type}</td>
-                                <td>{address?.rental_city}</td>
-                                <td>
-                                  {moment(address?.createdAt).format(
-                                    "DD-MM-YYYY"
-                                  )}
-                                </td>
-                              </tr>
-                            </>
-                          )
-                        )}
-                      </tbody>
+                                  <td>{address?.propertysub_type}</td>
+                                  <td>{address?.rental_city}</td>
+                                  <td>
+                                    {moment(address?.createdAt).format(
+                                      "DD-MM-YYYY"
+                                    )}
+                                  </td>
+                                </tr>
+                              </>
+                            )
+                          )}
+                        </tbody>
+                      )}
                     </Table>
                   </>
                 </div>

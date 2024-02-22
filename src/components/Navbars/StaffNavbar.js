@@ -1,4 +1,4 @@
-import React, { useEffect, useState }  from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,22 +13,20 @@ import {
   Nav,
   Container,
   Media,
-  FormGroup, 
+  FormGroup,
   Row,
   Col,
-  Button
+  Button,
 } from "reactstrap";
-import List from '@mui/material/List';
-import Drawer from '@mui/material/Drawer';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import List from "@mui/material/List";
+import Drawer from "@mui/material/Drawer";
+import Divider from "@mui/material/Divider";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import { jwtDecode } from "jwt-decode";
 
 const StaffNavbar = (props) => {
-
-
   const [accessType, setAccessType] = useState(null);
   React.useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -38,9 +36,6 @@ const StaffNavbar = (props) => {
       navigate("/auth/login");
     }
   }, [navigate]);
-
-
-
 
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let cookies = new Cookies();
@@ -83,7 +78,7 @@ const StaffNavbar = (props) => {
       );
       //console.log(response.data.data)
       setVendorDetails(response.data.data);
-      setVendorname(response.data.data.staffmember_name)
+      setVendorname(response.data.data.staffmember_name);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching vendor details:", error);
@@ -101,7 +96,9 @@ const StaffNavbar = (props) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.statusCode === 200) {
-          const unreadNotifications = data.data.filter(notification => !notification.isStaffread);
+          const unreadNotifications = data.data.filter(
+            (notification) => !notification.isStaffread
+          );
           setNotificationData(unreadNotifications);
           setNotificationCount(unreadNotifications.length);
         } else {
@@ -121,51 +118,15 @@ const StaffNavbar = (props) => {
   }, [id]);
 
 
-  
-  const navigateToDetails = (workorder_id) => {
-    axios.get(`${baseUrl}/notification/notification/${workorder_id}?role=staff`)
-      .then((response) => {
-          if (response.status === 200) {
-            const updatedNotificationData = notificationData.map(notification => {
-              if (notification.workorder_id === workorder_id) {
-                return { ...notification, isStaffread: true };
-              }
-              return notification;
-            });
-            setNotificationData(updatedNotificationData);
-            setNotificationCount(updatedNotificationData.length);
-           //console.log(`Notification with workorder_id ${workorder_id} deleted successfully.`);
-           fetchNotification();
-
-        } else {
-          console.error(`Failed to mark notification with workorder_id ${workorder_id} as read.`);
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  
-    // Continue with navigating to the details page
-    navigate(`/staff/staffworkdetails/${workorder_id}`);
-  };
-  
-  // const navigateToDetails = (workorder_id) => {
-  //   // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
-  //   navigate(`/staff/staffworkdetails/${workorder_id}`);
-  //   //console.log(workorder_id);
-  // };
-
-
-  const [staffMemberNotification, setStaffMemberNotification] = useState([])
-  console.log(staffMemberNotification, "staffMemberNotification")
-  const tenantNotificationData = async (addresses, units) => {
+  const [staffMemberNotification, setStaffMemberNotification] = useState([]);
+  const staffmemberNotificationData = async (addresses, units) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/notification/staff/1707999725614`
+        `${baseUrl}/notification/staff/${accessType.staffmember_id}`
       );
       if (response.status === 200) {
         const data = response.data.data;
-        setStaffMemberNotification(data)
+        setStaffMemberNotification(data);
         // Process the data as needed
       } else {
         console.error("Response status is not 200");
@@ -177,9 +138,24 @@ const StaffNavbar = (props) => {
   };
 
   useEffect(() => {
-    tenantNotificationData();
-  }, []);
+    staffmemberNotificationData();
+  }, [accessType]);
 
+  const readStaffmemberNotification = async (notification_id) => {
+    try {
+      const response = await axios.put(
+        `${baseUrl}/notification/staff_notification/${notification_id}`
+      );
+      if (response.status === 200) {
+        staffmemberNotificationData();
+        // Process the data as needed
+      } else {
+        console.error("Response status is not 200");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <>
@@ -192,62 +168,100 @@ const StaffNavbar = (props) => {
             {props.brandText}
           </Link>
           <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
-            <FormGroup className="mb-0" onClick={toggleSidebar} style={{ cursor: 'pointer',position: 'relative' }}>
-              <NotificationsIcon style={{color:'white',fontSize:'30px'}}/>
+            <FormGroup
+              className="mb-0"
+              onClick={toggleSidebar}
+              style={{ cursor: "pointer", position: "relative" }}
+            >
+              <NotificationsIcon style={{ color: "white", fontSize: "30px" }} />
               {notificationCount > 0 && (
-              <div className="notification-circle" style={{position: 'absolute',top: '-15px',right: '-20px',background: 'red',borderRadius: '50%',padding: '0.1px 8px'}}>
-                <span className="notification-count" style={{color:'white',fontSize:"13px"}}>{notificationCount}</span>
-              </div>
-               )}
+                <div
+                  className="notification-circle"
+                  style={{
+                    position: "absolute",
+                    top: "-15px",
+                    right: "-20px",
+                    background: "red",
+                    borderRadius: "50%",
+                    padding: "0.1px 8px",
+                  }}
+                >
+                  <span
+                    className="notification-count"
+                    style={{ color: "white", fontSize: "13px" }}
+                  >
+                    {notificationCount}
+                  </span>
+                </div>
+              )}
             </FormGroup>
           </Form>
           <Nav className="align-items-center d-none d-md-flex" navbar>
-            
             <Drawer anchor="right" open={isSidebarOpen} onClose={toggleSidebar}>
               <div
                 role="presentation"
                 onClick={toggleSidebar}
                 onKeyDown={toggleSidebar}
               >
-                <List style={{ width: '350px' }}>
-                  <h2 style={{color:'#033E3E',marginLeft:'15px'}}>
+                <List style={{ width: "350px" }}>
+                  <h2 style={{ color: "#033E3E", marginLeft: "15px" }}>
                     Notifications
                   </h2>
                   <Divider />
                   {staffMemberNotification?.map((data) => {
                     const notificationTitle =
-                      data?.notification_title || 'No Title Available';
+                      data?.notification_title || "No Title Available";
                     const notificationDetails =
-                      data?.notification_detail || 'No Details Available';
-                    const notificationTime = new Date(data?.createdAt).toLocaleString(); 
+                      data?.notification_detail || "No Details Available";
+                    const notificationTime = new Date(
+                      data?.createdAt
+                    ).toLocaleString();
 
                     return (
-                      <div key={data._id}>
-                        <ListItem
-                        
-                        onClick={() => handlePropertySelect(data)}
+                      <div
+                        key={data._id}
+                        style={{ backgroundColor: "#abccba" }}
                       >
-                        <div>
-                          <h4>{notificationTitle}</h4>
-                          <p>{notificationDetails}</p>
-                          <Row>
-                            <Col lg="8">
-                               <p>{notificationTime}</p>
-                            </Col>
-                            <Col>
-                              <Button
-                              variant="contained"
-                              //color="primary"
-                              style={{background:'#033E3E',color:'white',textTransform: 'none', fontSize: '12px' }}
-                              onClick={() => navigateToDetails(data.workorder_id)}
-                            >
-                              View
-                            </Button>
-                            </Col>
-                          </Row>
-                        </div>
-                       
-                        {/* <ListItemText
+                        <ListItem onClick={() => handlePropertySelect(data)}>
+                          <div>
+                            <h4>{notificationTitle}</h4>
+                            <p>{notificationDetails}</p>
+                            <Row>
+                              <Col lg="8">
+                                <p>{notificationTime}</p>
+                              </Col>
+                              <Col>
+                                <Button
+                                  variant="contained"
+                                  //color="primary"
+                                  style={{
+                                    background: "#033E3E",
+                                    color: "white",
+                                    textTransform: "none",
+                                    fontSize: "12px",
+                                  }}
+                                  onClick={() => {
+                                    readStaffmemberNotification(
+                                      data?.notification_id
+                                    );
+                                    if (data.is_workorder) {
+                                      navigate(
+                                        `/staff/staffworkdetails/${data?.notification_type?.workorder_id}`
+                                      );
+                                    } else if (data.is_lease) {
+                                      navigate(
+                                        `/staff/staffpropertydetail/${data?.rental_id}`
+                                      );
+                                    }
+                                  }}
+                                >
+                                  View
+                                </Button>
+                              </Col>
+                            </Row>
+                          </div>
+
+                          {/* <ListItemText
                           primary={notificationTitle}
                           secondary={notificationTime}
                         />
@@ -255,19 +269,16 @@ const StaffNavbar = (props) => {
                           primary={notificationDetails}
                           secondary="Notification Details"
                         /> */}
-                      </ListItem>
-                      <Divider/>
+                        </ListItem>
+                        <Divider />
                       </div>
-                      
                     );
                   })}
-                  
                 </List>
                 <Divider />
                 {/* Other sidebar content goes here */}
               </div>
             </Drawer>
-
           </Nav>
           <Nav className="align-items-center d-none d-md-flex" navbar>
             <UncontrolledDropdown nav>
@@ -280,7 +291,9 @@ const StaffNavbar = (props) => {
                     />
                   </span> */}
                   <Media className="ml-2 d-none d-lg-block">
-                    <span className="mb-0 text-sm font-weight-bold">{accessType?.staffmember_name}</span>
+                    <span className="mb-0 text-sm font-weight-bold">
+                      {accessType?.staffmember_name}
+                    </span>
                   </Media>
                 </Media>
               </DropdownToggle>
@@ -290,7 +303,7 @@ const StaffNavbar = (props) => {
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem
-                 //  href="#rms"
+                  //  href="#rms"
                   to="/auth/login"
                   onClick={() => {
                     Logout();

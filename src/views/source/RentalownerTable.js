@@ -139,15 +139,16 @@ const RentalownerTable = () => {
     if (!searchQuery) {
       return rentalsData;
     }
-
+  
     return rentalsData.filter((rentalOwner) => {
       return (
-        `${rentalOwner.rentalowner_firstName} ${rentalOwner.rentalOwner_lastName}`
+        `${rentalOwner.rentalOwner_firstName} ${rentalOwner.rentalOwner_lastName}`
           .toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
-        rentalOwner.rentalOwner_streetAdress
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
+        (rentalOwner.rentalOwner_streetAdress &&
+          rentalOwner.rentalOwner_streetAdress
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
         `${rentalOwner.rental_city}, ${rentalOwner.rental_country}`
           .toLowerCase()
           .includes(searchQuery.toLowerCase()) ||
@@ -157,6 +158,7 @@ const RentalownerTable = () => {
       );
     });
   };
+  
 
   return (
     <>

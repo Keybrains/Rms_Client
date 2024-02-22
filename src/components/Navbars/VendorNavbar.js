@@ -23,31 +23,17 @@ import Button from "@mui/material/Button";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { makeStyles } from "@mui/styles";
-// import socketIOClient from 'socket.io-client';
+import { jwtDecode } from "jwt-decode";
 
 const VendorNavbar = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  let cookies = new Cookies();
+
   let Logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("Vendor ID");
   };
-  const { id } = useParams();
-  // console.log(id);
-  const [vendorDetails, setVendorDetails] = useState({});
-  const [vendor_name, setVendorname] = useState("");
-  // console.log(vendor_name);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -55,30 +41,7 @@ const VendorNavbar = (props) => {
 
   const navigate = useNavigate();
 
-  let cookie_id = localStorage.getItem("Vendor ID");
-  // console.log(cookie_id);
-
-  const getVendorDetails = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/vendor/vendor_summary/${cookie_id}`
-      );
-      // console.log(response.data.data);
-      setVendorDetails(response.data.data);
-      setVendorname(response.data.data.vendor_name);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching vendor details:", error);
-      setError(error);
-      setLoading(false);
-    }
-  };
-
-  const [notification, setNotification] = useState("");
   const [notificationCount, setNotificationCount] = useState(0);
-  const [notificationData, setNotificationData] = useState([]);
-
-  // console.log("Vendor Name:", vendor_name);
 
   const [selectedProp, setSelectedProp] = useState("Select");
 
@@ -86,83 +49,54 @@ const VendorNavbar = (props) => {
     setSelectedProp(property);
   };
 
-  useEffect(() => {
-    fetchNotification();
-  }, [vendor_name]);
+  const [accessType, setAccessType] = useState(null);
+  React.useEffect(() => {
+    if (localStorage.getItem("token")) {
+      const jwt = jwtDecode(localStorage.getItem("token"));
+      setAccessType(jwt);
+    } else {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
 
-  const fetchNotification = async () => {
-    fetch(
-      `${baseUrl}/notification/vendornotification/${vendor_name}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          // Filter the notifications with isVendorread set to false
-          const unreadNotifications = data.data.filter(
-            (notification) => !notification.isVendorread
-          );
-          setNotificationData(unreadNotifications);
-          setNotificationCount(unreadNotifications.length);
-          // console.log("Unread Notifications", unreadNotifications);
-          // console.log("vendor", vendor_name);
-        } else {
-          // Handle error
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        // Handle network error
-        console.error("Network error:", error);
-      });
-  };
-  useEffect(() => {
-    getVendorDetails();
-    // console.log(id);
-  }, [id]);
-
-  const navigateToDetails = (workorder_id) => {
-    // Make a GET request to mark the notification as read
-    axios
-      .get(
-        `${baseUrl}/notification/notification/${workorder_id}?role=vendor`
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          const updatedNotificationData = notificationData.map(
-            (notification) => {
-              if (notification.workorder_id === workorder_id) {
-                return { ...notification, isVendorread: true };
-              }
-              return notification;
-            }
-          );
-          setNotificationData(updatedNotificationData);
-          // console.log("updatedNotificationData", updatedNotificationData);
-          setNotificationCount(updatedNotificationData.length);
-          fetchNotification();
-
-          // console.log(
-          //   `Notification with workorder_id ${workorder_id} marked as read.`
-          // );
-        } else {
-          console.error(
-            `Failed to mark notification with workorder_id ${workorder_id} as read.`
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-
-    // Continue with navigating to the details page
-    navigate(`/vendor/vendorworkdetail/${workorder_id}`);
+  const [vendorNotification, setVendorNotificationData] = useState([]);
+  const vendorNotificationData = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/notification/vendor/${accessType?.vendor_id}`
+      );
+      if (response.status === 200) {
+        const data = response.data.data;
+        setVendorNotificationData(data);
+        // Process the data as needed
+      } else {
+        console.error("Response status is not 200");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle the error, display a message to the user, or take other appropriate action.
+    }
   };
 
-  // const navigateToDetails = (workorder_id) => {
-  //   // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
-  //   navigate(`/vendor/vendorworkdetail/${workorder_id}`);
-  //   console.log(workorder_id);
-  // };
+  useEffect(() => {
+    vendorNotificationData();
+  }, [accessType]);
+
+  const readStaffmemberNotification = async (notification_id) => {
+    try {
+      const response = await axios.put(
+        `${baseUrl}/notification/vendor_notification/${notification_id}`
+      );
+      if (response.status === 200) {
+        vendorNotificationData();
+        // Process the data as needed
+      } else {
+        console.error("Response status is not 200");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <>
@@ -224,13 +158,13 @@ const VendorNavbar = (props) => {
                     Notifications
                   </h2>
                   <Divider />
-                  {notificationData.map((data) => {
+                  {vendorNotification.map((data) => {
                     const notificationTitle =
                       data.notification_title || "No Title Available";
                     const notificationDetails =
-                      data.notification_details || "No Details Available";
+                      data.notification_detail || "No Details Available";
                     const notificationTime = new Date(
-                      data.notification_time
+                      data.createdAt
                     ).toLocaleString();
 
                     return (
@@ -253,9 +187,14 @@ const VendorNavbar = (props) => {
                                     textTransform: "none",
                                     fontSize: "12px",
                                   }}
-                                  onClick={() =>
-                                    navigateToDetails(data.workorder_id)
-                                  }
+                                  onClick={() => {
+                                    readStaffmemberNotification(
+                                      data?.notification_id
+                                    );
+                                    navigate(
+                                      `/vendor/vendorworkdetail/${data?.notification_type?.workorder_id}`
+                                    );
+                                  }}
                                 >
                                   View
                                 </Button>
@@ -274,43 +213,13 @@ const VendorNavbar = (props) => {
             </Drawer>
           </Nav>
 
-          {/* <Nav className="align-items-center d-none d-md-flex" navbar>
-            <UncontrolledDropdown nav>
-              <DropdownToggle className="pr-0" nav>
-                <FormGroup className="mb-0">
-                  <NotificationsIcon style={{ color: 'white', fontSize: '30px' }} />
-                </FormGroup>
-              </DropdownToggle>
-              <DropdownMenu className="dropdown-menu-arrow mt-2" right>
-             
-                {notificationData.map((data) => {
-                  const notificationTitle = data.notification_title || 'No Title Available'; // Default value for empty titles
-                  return (
-                    <DropdownItem
-                      key={data._id}
-                      onClick={() => handlePropertySelect(notificationTitle)}
-                    >
-                      {notificationTitle}
-                    </DropdownItem>
-                  );
-                })}
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </Nav> */}
-
           <Nav className="align-items-center d-none d-md-flex" navbar>
             <UncontrolledDropdown nav>
               <DropdownToggle className="pr-0" nav>
                 <Media className="align-items-center">
-                  {/* <span className="avatar avatar-sm rounded-circle">
-                    <img
-                      alt="..."
-                      src={require("../../assets/img/theme/profile-cover.jpg")}
-                    />
-                  </span> */}
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
-                      {vendorDetails.vendor_name}
+                      {accessType?.vendor_name}
                     </span>
                   </Media>
                 </Media>
@@ -321,7 +230,7 @@ const VendorNavbar = (props) => {
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem
-                 //  href="#rms"
+                  //  href="#rms"
                   to="/auth/login"
                   onClick={() => {
                     Logout();

@@ -1,4 +1,3 @@
-
 import {
   Badge,
   Card,
@@ -28,8 +27,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
 import swal from "sweetalert";
 import Dialog from "@mui/material/Dialog";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -52,13 +51,11 @@ const TenantWork = () => {
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
 
-  const [tenantDetails, setTenantDetails] = useState({});
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
 
   const [accessType, setAccessType] = useState(null);
-  let cookie_id = localStorage.getItem("Tenant ID");
-  
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
@@ -67,38 +64,6 @@ const TenantWork = () => {
       navigate("/auth/login");
     }
   }, [navigate]);
-
-  const getTenantData = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenant/tenant_summary/${accessType.tenant_id}`
-      );
-      const entries = response.data.data.entries;
-
-      if (entries.length > 0) {
-        const rentalAddresses = entries
-          .map((entry) => entry.rental_adress)
-          .join("^");
-        const rentalUnits = entries
-          .map((entry) => entry.rental_units)
-          .join("^");
-        setTenantDetails(response.data.data);
-        getRentalData(rentalAddresses,rentalUnits);
-        //getVendorDetails(rentalAddresses);
-      } else {
-        console.error("No rental addresses found.");
-      }
-
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setLoader(false);
-    }
-  };
-  useEffect(() => {
-    getTenantData();
-    // //console.log(id)
-  }, [cookie_id, pageItem]);
 
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
@@ -111,178 +76,98 @@ const TenantWork = () => {
   };
 
   const getRentalData = async () => {
-   
-      try {
-        const response = await axios.get(
-          `${baseUrl}/work-order/tenant_work/${accessType.tenant_id}`
-          );
+    try {
+      const response = await axios.get(
+        `${baseUrl}/work-order/tenant_work/${accessType.tenant_id}`
+      );
 
       if (Array.isArray(response.data.data)) {
         // Response is an array of work orders
         setTotalPages(Math.ceil(response.data.data.length / pageItem));
         setWorkData((prevData) => [...prevData, ...response.data.data]);
       } else if (typeof response.data.data === "object") {
+        setLoader(false);
+
         // Response is a single work order object
         setTotalPages(Math.ceil(response.data.data.length / pageItem));
         setWorkData((prevData) => [...prevData, response.data.data]);
       } else {
+        setLoader(false);
+
         console.error(
           "Response data is not an array or object:",
           response.data.data
         );
       }
     } catch (error) {
+      setLoader(false);
+
       console.error("Error fetching work order data:", error);
-    } 
-}
+    }
+  };
 
-useEffect(() => {
-  getRentalData();
-}, [accessType]);
-
-  // React.useEffect(() => {
-  //   if (rentalAddress && rentalAddress.length > 0) {
-  //     setLoader(true);
-  //   }
-  // }, [rentalAddress]);
+  useEffect(() => {
+    getRentalData();
+  }, [accessType]);
 
   const navigateToDetails = (tenantId) => {
-    // const propDetailsURL = `/admin/WorkOrderDetails/${tenantId}`;
     navigate(`/tenant/Tworkorderdetail/${tenantId}`);
-    console.log(tenantId,"mansi");
+    console.log(tenantId, "mansi");
   };
 
   const filterRentalsBySearch = () => {
     let filteredData = [...workData]; // Create a copy of workData to avoid mutating the original array
-  
+
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
       filteredData = filteredData.filter((work) => {
         return (
-          (work.rental_adress && work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.work_subject && work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.work_category && work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.staffmember_name && work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery))
+          (work.rental_adress &&
+            work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.work_subject &&
+            work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.work_category &&
+            work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (work.staffmember_name &&
+            work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery))
         );
       });
     }
-  
+
     if (upArrow.length > 0) {
       const sortingArrows = upArrow;
       sortingArrows.forEach((value) => {
         switch (value) {
           case "rental_adress":
-            filteredData.sort((a, b) => a.rental_adress.localeCompare(b.rental_adress));
+            filteredData.sort((a, b) =>
+              a.rental_adress.localeCompare(b.rental_adress)
+            );
             break;
           case "work_subject":
-            filteredData.sort((a, b) => a.work_subject.localeCompare(b.work_subject));
+            filteredData.sort((a, b) =>
+              a.work_subject.localeCompare(b.work_subject)
+            );
             break;
           case "work_category":
-            filteredData.sort((a, b) => a.work_category.localeCompare(b.work_category));
+            filteredData.sort((a, b) =>
+              a.work_category.localeCompare(b.work_category)
+            );
             break;
           case "staffmember_name":
-            filteredData.sort((a, b) => a.staffmember_name.localeCompare(b.staffmember_name));
+            filteredData.sort((a, b) =>
+              a.staffmember_name.localeCompare(b.staffmember_name)
+            );
             break;
         }
       });
     }
     return filteredData;
   };
+
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
     return paginatedData;
-  };
-  const getRentalDataAfterDelete = async (addresses,units) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/workorder/workorder/tenant/${addresses}`
-      );
-      if (Array.isArray(response.data.data)) {
-        // Response is an array of work orders
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setWorkData(response.data.data);
-      } else if (typeof response.data.data === "object") {
-        // Response is a single work order object
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setWorkData(response.data.data);
-      } else {
-        console.error(
-          "Response data is not an array or object:",
-          response.data.data
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching work order data:", error);
-    }
-  };
-  const getTenantDataAfterDelete = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
-      );
-      const entries = response.data.data.entries;
-      if (entries.length > 0) {
-        const rentalAddresses = entries
-          .map((entry) => entry.rental_adress)
-          .join("^");
-        const rentalUnits = entries
-          .map((entry) => entry.rental_units)
-          .join("^");
-        setTenantDetails(response.data.data);
-        getRentalDataAfterDelete(rentalAddresses, rentalUnits);
-        //getVendorDetails(rentalAddresses);
-      } else {
-        console.error("No rental addresses found.");
-      }
-      setLoader(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setLoader(false);
-    }
-  };
-  const deleteworkorder = (workorder_id) => {
-    // Show a confirmation dialog to the user
-    swal({
-      title: "Are you sure",
-      text: "Once deleted, you will not be able to recover this work order!",
-      icon: "warning",
-      buttons: ["Cancel", "Delete"],
-      dangerMode: true,
-    }).then((willDelete) => {
-      if (willDelete) {
-        console.log("Deleting work order with ID:", workorder_id);
-        axios
-          .delete(`${baseUrl}/workorder/deleteworkorderbyId/${workorder_id}`)
-          .then((response) => {
-            console.log("Response from delete API:", response);
-            if (response.data.statusCode === 200) {
-              toast.success('Work Order deleted successfully!', {
-                position: 'top-center',
-              })
-              setTimeout(() => {
-                getTenantDataAfterDelete();
-              }, 200);
-            } else {
-              toast.error(response.data.message, {
-                position: 'top-center',
-              })
-            }
-          })
-          .catch((error) => {
-            console.error("Error deleting work order:", error);
-          });
-      } else {
-        toast.success('Work Order is safe!', {
-          position: 'top-center',
-        })
-      }
-    });
-  };
-  
-  const editworkorder = (id) => {
-    navigate(`/tenant/taddwork/?id=${id}`);
-    console.log(id, "workorder_id");
   };
 
   const sortData = (value) => {
@@ -295,8 +180,6 @@ useEffect(() => {
       setUpArrow(upArrow.filter((sort) => sort !== value));
       filterTenantsBySearchAndPage();
     }
-    //console.log(value);
-    // setOnClickUpArrow(!onClickUpArrow);
   };
 
   return (
@@ -312,11 +195,10 @@ useEffect(() => {
             </FormGroup>
           </Col>
 
-                    <Col className="text-right">
-
+          <Col className="text-right">
             <Button
               color="primary"
-             //  href="#rms"
+              //  href="#rms"
               onClick={() => navigate("/tenant/taddwork")}
               size="sm"
               style={{ background: "white", color: "black" }}
@@ -362,7 +244,7 @@ useEffect(() => {
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
-                <thead className="thead-light">
+                  <thead className="thead-light">
                     <tr>
                       <th scope="col">
                         Work Order
@@ -439,7 +321,6 @@ useEffect(() => {
                       <th scope="col">Status</th>
                       <th scope="col">Created At</th>
                       <th scope="col">Updated At</th>
-                      <th scope="col">ACTION</th>
                     </tr>
                   </thead>
 
@@ -451,36 +332,17 @@ useEffect(() => {
                         style={{ cursor: "pointer" }}
                       >
                         <td>{rental?.work_subject}</td>
-                        <td>{rental?.rental_adress}  {rental?.rental_unit ? " - " + rental?.rental_unit : null}</td>
+                        <td>
+                          {rental?.rental_adress}{" "}
+                          {rental?.rental_unit
+                            ? " - " + rental?.rental_unit
+                            : null}
+                        </td>
                         <td>{rental?.work_category}</td>
                         <td>{rental?.staffmember_name}</td>
                         <td>{rental?.status}</td>
                         <td>{rental?.createdAt}</td>
                         <td>{rental?.updatedAt || "-"}</td>
-                        <td>
-                        <div style={{ display: "flex", gap: "5px" }}>
-                              <div
-                                 style={{ cursor: "pointer" }}
-                                 onClick={(e) => {
-                                   e.stopPropagation();
-                                   editworkorder(
-                                    rental.workorder_id
-                                   );
-                                 }}
-                              >
-                                <EditIcon/>
-                              </div>
-                              <div
-                              style={{ cursor: "pointer" }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteworkorder(rental.workorder_id);
-                              }}
-                            >
-                              <DeleteIcon />
-                              </div>
-                            </div>
-                        </td>
                       </tr>
                     ))}
                   </tbody>
