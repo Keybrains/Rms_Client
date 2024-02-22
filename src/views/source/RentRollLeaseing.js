@@ -902,6 +902,7 @@ const RentRollLeaseing = () => {
         end_date !== ""
       ) {
         const res = await axios.post(`${baseUrl}/leases/check_lease`, object);
+        console.log(res, "yash");
         if (res.data.statusCode === 201) {
           toast.warning(res.data.message, {
             position: "top-center",
@@ -995,7 +996,7 @@ const RentRollLeaseing = () => {
         setSelectedRentCycle(data?.rent_charge_data[0]?.rent_cycle);
         rentChargeFormik.setValues(data?.rent_charge_data[0]);
         securityChargeFormik.setValues(data?.Security_charge_data[0]);
-        console.log(data?.tenant, "yash");
+        // console.log(data?.tenant, "yash");
         setSelectedTenantData(data?.tenant);
         setRecurringData(data?.rec_charge_data);
         setOneTimeData(data?.one_charge_data);
