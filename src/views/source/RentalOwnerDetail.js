@@ -147,7 +147,7 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "18px",
+                                    fontSize: "14px",
                                     textTransform: "capitalize",
                                     color: "#000",
                                   }}
@@ -191,7 +191,7 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "18px",
+                                    fontSize: "14px",
                                     textTransform: "capitalize",
                                     color: "#000",
                                   }}
@@ -223,7 +223,7 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "18px",
+                                    fontSize: "14px",
                                     textTransform: "capitalize",
                                     color: "#000",
                                   }}
@@ -269,7 +269,7 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "18px",
+                                    fontSize: "14px",
                                     textTransform: "capitalize",
                                     color: "#000",
                                   }}
@@ -319,7 +319,7 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "18px",
+                                    fontSize: "14px",
                                     textTransform: "capitalize",
                                     color: "#000",
                                   }}
@@ -392,7 +392,7 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "18px",
+                                    fontSize: "14px",
                                     textTransform: "capitalize",
                                     color: "#000",
                                   }}
@@ -434,7 +434,7 @@ const RentalOwnerDetail = () => {
                                 <Row
                                   className="w-100 mt-1 mb-5"
                                   style={{
-                                    fontSize: "18px",
+                                    fontSize: "14px",
                                     textTransform: "capitalize",
                                     color: "#000",
                                   }}

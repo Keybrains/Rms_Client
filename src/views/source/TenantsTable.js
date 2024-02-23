@@ -15,8 +15,8 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Header from "components/Headers/Header";
 import * as React from "react";
 import axios from "axios";
@@ -39,7 +39,7 @@ const TenantsTable = () => {
   let [tentalsData, setTenantsDate] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   let [loader, setLoader] = React.useState(true);
-  const { admin } = useParams()
+  const { admin } = useParams();
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -105,26 +105,25 @@ const TenantsTable = () => {
       if (willDelete) {
         const res = await axios.delete(
           `${baseUrl}/tenants/tenant/${tenant_id}`
-
         );
         console.log(res);
         if (res.data.statusCode === 200) {
-          getTenantsDate()
+          getTenantsDate();
           toast.success(res.data.message, {
-            position: 'top-center',
+            position: "top-center",
             autoClose: 800,
-          })
+          });
         } else {
           toast.warning(res.data.message, {
-            position: 'top-center',
+            position: "top-center",
             autoClose: 800,
-          })
+          });
         }
       } else {
-        toast.success('Tenant is safe!', {
-          position: 'top-center',
+        toast.success("Tenant is safe!", {
+          position: "top-center",
           autoClose: 800,
-        })
+        });
       }
     });
   };
@@ -175,6 +174,10 @@ const TenantsTable = () => {
           case "createdAt":
             filteredData.sort(
               (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+            );
+          case "updatedAt":
+            filteredData.sort(
+              (a, b) => new Date(a.updatedAt) - new Date(b.updatedAt)
             );
             break;
           default:
@@ -332,8 +335,7 @@ const TenantsTable = () => {
             </FormGroup>
           </Col>
 
-                    <Col className="text-right">
-
+          <Col className="text-right">
             <Button
               color="primary"
               onClick={() => navigate("/" + admin + "/Leaseing")}
@@ -357,7 +359,6 @@ const TenantsTable = () => {
                   visible={loader}
                 />
               </div>
-
             ) : (
               <Card className="shadow">
                 <CardHeader className="border-0">
@@ -458,20 +459,37 @@ const TenantsTable = () => {
                           />
                         )}
                       </th>
-                      <th scope="col">Last Updated</th>
+                      <th scope="col">
+                        Last Updated{" "}
+                        {sortBy.includes("updatedAt") ? (
+                          upArrow.includes("updatedAt") ? (
+                            <ArrowDownwardIcon
+                              onClick={() => sortData("updatedAt")}
+                            />
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("updatedAt")}
+                            />
+                          )
+                        ) : (
+                          <ArrowUpwardIcon
+                            onClick={() => sortData("updatedAt")}
+                          />
+                        )}
+                      </th>
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
                   {tentalsData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="5" style={{fontSize:"15px"}}>No Tenants Added</td>
+                        <td colSpan="5" style={{ fontSize: "15px" }}>
+                          No Tenants Added
+                        </td>
                       </tr>
                     </tbody>
-
                   ) : (
                     <tbody>
-
                       {filterTenantsBySearchAndPage().map((tenant) => (
                         <>
                           <tr
@@ -487,7 +505,9 @@ const TenantsTable = () => {
                             <td>{tenant.tenant_phoneNumber}</td>
                             <td>{tenant.tenant_email}</td>
                             <td>{tenant.createdAt} </td>
-                            <td>{tenant.updatedAt ? tenant.updatedAt : "-"} </td>
+                            <td>
+                              {tenant.updatedAt ? tenant.updatedAt : "-"}{" "}
+                            </td>
                             <td>
                               <div style={{ display: "flex", gap: "5px" }}>
                                 <div
@@ -522,7 +542,8 @@ const TenantsTable = () => {
                           </tr>
                         </>
                       ))}
-                    </tbody>)}
+                    </tbody>
+                  )}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>
