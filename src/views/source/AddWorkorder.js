@@ -245,7 +245,6 @@ const AddWorkorder = () => {
             tenant_data,
           } = response.data.data;
           setWorkOrderData(response.data.data);
-        
 
           const formattedDueDate = response.data.data.date
             ? new Date(response.data.data.date).toISOString().split("T")[0]
@@ -273,8 +272,11 @@ const AddWorkorder = () => {
           setSelectedPriority(response.data.data.priority || "Select");
           setWorkOrderImage(response.data.data.workOrder_images || []);
           setSelectedFiles(response.data.data.workOrder_images || []);
-          setSelectedTenant((tenant_data.tenant_firstName + " " + tenant_data.tenant_lastName) || "Select");
-   
+          setSelectedTenant(
+            tenant_data.tenant_firstName + " " + tenant_data.tenant_lastName ||
+              "Select"
+          );
+
           WorkFormik.setValues({
             invoice_number: response.data.data?.invoice_number || "",
             work_charge_to: response.data.data?.work_charge_to || "",
@@ -320,10 +322,7 @@ const AddWorkorder = () => {
               part_price: part?.parts_price || "",
               total_amount: part?.amount || "",
               dropdownOpen: false,
-            })
-              
-            ),
-            
+            })),
           });
         } catch (error) {
           console.error("Error fetching vendor data:", error);
@@ -384,8 +383,7 @@ const AddWorkorder = () => {
         staffmember_id: WorkFormik.values.staffmember_id || "",
         work_subject: WorkFormik.values.work_subject || "",
         work_category: WorkFormik.values.work_category || "",
-        entry_allowed:
-          WorkFormik.values.entry_allowed === "Yes" ? true : false,
+        entry_allowed: WorkFormik.values.entry_allowed === "Yes" ? true : false,
         work_performed: WorkFormik.values.work_performed || "",
         workOrder_images: image || "",
         vendor_notes: WorkFormik.values.vendor_note || "",
@@ -415,9 +413,9 @@ const AddWorkorder = () => {
             autoClose: 1000,
             // onClose: () => navigate(`/${admin}/Workorder`),
           });
-          navigate("/" + admin + "/Workorder")
+          navigate("/" + admin + "/Workorder");
         } else {
-          console.log(res.data, "res.data")
+          console.log(res.data, "res.data");
           toast.error(res.data.message, {
             position: "top-center",
             autoClose: 1000,
@@ -513,7 +511,7 @@ const AddWorkorder = () => {
       .then((data) => {
         if (data.statusCode === 200) {
           setstaffData(data.data);
-          console.log(data.data, "---------------------------------")
+          console.log(data.data, "---------------------------------");
         } else {
           console.error("Error:", data.message);
         }
@@ -801,6 +799,7 @@ const AddWorkorder = () => {
                         style={{
                           justifyContent: "center",
                           flexWrap: "wrap",
+                          overflow: "auto",
                         }}
                       >
                         <div className="d-flex">
@@ -1247,7 +1246,10 @@ const AddWorkorder = () => {
                   </div>
 
                   <div className="pl-lg-4">
-                    <label className="form-control-label pl-lg-3" htmlFor="input-desg">
+                    <label
+                      className="form-control-label pl-lg-3"
+                      htmlFor="input-desg"
+                    >
                       Parts and Labor
                     </label>
                     <Col lg="12">
@@ -1708,7 +1710,6 @@ const AddWorkorder = () => {
                               >
                                 <DropdownToggle caret style={{ width: "100%" }}>
                                   {selectedTenant} &nbsp;&nbsp;&nbsp;&nbsp;
-                                  
                                 </DropdownToggle>
                                 <DropdownMenu style={{ width: "100%" }}>
                                   {tenantsDetails?.map((item) => (
@@ -1786,7 +1787,7 @@ const AddWorkorder = () => {
                                   Medium
                                 </Label>
                               </Col>
-                              &nbsp;
+                              &nbsp; &nbsp;
                               <Col xs="4">
                                 <Label check>
                                   <Input

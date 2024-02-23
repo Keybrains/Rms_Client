@@ -29,11 +29,14 @@ import {
 
 import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
+// import { useNavigate } from "react-router-dom";
+
 import axios from "axios";
 import { RotatingLines } from "react-loader-spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import StaffHeader from "components/Headers/StaffHeader";
+import StaffWorkTable from "./StaffWorkTable"
 
 const StaffDashBoard = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -44,12 +47,12 @@ const StaffDashBoard = (props) => {
     parseOptions(Chart, chartOptions());
   }
   const bgStyle = {
-    backgroundColor: '#b3e6b3',
-    paddingLeft: "10px"
+    backgroundColor: "#b3e6b3",
+    paddingLeft: "10px",
     // width:"300px"
   };
   const spStyle = {
-    color: 'red',
+    color: "red",
     // width:"300px"
   };
   const toggleNavs = (e, index) => {
@@ -61,14 +64,13 @@ const StaffDashBoard = (props) => {
   const [showMoreOverdueOrders, setShowMoreOverdueOrders] = useState(false);
   let [loader, setLoader] = useState(false);
 
+  // const handleViewMoreNewOrders = () => {
+  //   setShowMoreNewOrders(!showMoreNewOrders);
+  // };
 
-  const handleViewMoreNewOrders = () => {
-    setShowMoreNewOrders(!showMoreNewOrders);
-  };
-
-  const handleViewMoreOverdueOrders = () => {
-    setShowMoreOverdueOrders(!showMoreOverdueOrders);
-  };
+  // const handleViewMoreOverdueOrders = () => {
+  //   setShowMoreOverdueOrders(!showMoreOverdueOrders);
+  // };
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
 
@@ -76,25 +78,25 @@ const StaffDashBoard = (props) => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
-    }
-    else {
+    } else {
       navigate("/auth/login");
     }
   }, [navigate]);
 
-  const [propertycount, setpropertycount] = useState()
+  const [propertycount, setpropertycount] = useState();
   const fetchPropertyCount = async () => {
-    setLoader(true)
+    setLoader(true);
     try {
-      const res = await axios.get(`${baseUrl}/staffmember/count/${accessType?.staffmember_id}/${accessType?.admin_id}`);
-      setpropertycount(res.data)
+      const res = await axios.get(
+        `${baseUrl}/staffmember/count/${accessType?.staffmember_id}/${accessType?.admin_id}`
+      );
+      setpropertycount(res.data);
     } catch (error) {
       console.error("Error: ", error.message);
+    } finally {
+      setLoader(false);
     }
-    finally {
-      setLoader(false)
-    }
-  }
+  };
 
   useEffect(() => {
     fetchPropertyCount();
@@ -130,15 +132,43 @@ const StaffDashBoard = (props) => {
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.10)",
   };
   const smallCardStyle = {
-    backgroundColor: '#ffffff', // Background color of the small cards
-    padding: '10px',
-    margin: '10px',
-    borderRadius: '8px',
-    textAlign: 'center',
-    height: '150px', // Adjusted height
-    boxShadow: '0px 2px 5px rgba(0, 0, 0, 1)', // Your desired box shadow
+    backgroundColor: "#ffffff", // Background color of the small cards
+    padding: "10px",
+    margin: "10px",
+    borderRadius: "8px",
+    textAlign: "center",
+    height: "150px", // Adjusted height
+    boxShadow: "0px 2px 5px rgba(0, 0, 0, 1)", // Your desired box shadow
   };
+  const [newWorkOrders, setNewWorkOrders] = useState([]);
+  const [overdueWorkOrders, setOverdueWorkOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchWorkOrders = async () => {
+      try {
+        const [newResponse, overdueResponse] = await Promise.all([
+          axios.get(
+            `http://192.168.1.104:4000/api/staffmember/dashboard_workorder/${accessType?.staffmember_id}/${accessType?.admin_id}`
+          ), // Replace this with your actual overdue work orders API endpoint
+        ]);
+        setNewWorkOrders(newResponse.data.data.new_workorder);
+        setOverdueWorkOrders(newResponse.data.data.overdue_workorder);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching work orders:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchWorkOrders();
+  }, [accessType]);
+  const [isPasOverdue, setIsPasOverdue] = useState(false);
+
+  const handleLabelClick = () => {
+    // Set isPasOverdue to true when the label is clicked
+    setIsPasOverdue(true);
+  };
 
   return (
     <>
@@ -146,24 +176,27 @@ const StaffDashBoard = (props) => {
       {/* Page content */}
       <Container className="mt--7" fluid>
         <div className="mb-3">
-          <Card style={{
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            // minHeight: "25vh",
+          <Card
+            style={{
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              // minHeight: "25vh",
 
-            justifyContent: "center",
-            // display: 'flex',
-            // fontFamily: "sans-serif",
-            fontSize: "20px",
-            color: "black",
-
-          }}>
+              justifyContent: "center",
+              // display: 'flex',
+              // fontFamily: "sans-serif",
+              fontSize: "20px",
+              color: "black",
+            }}
+          >
             <CardBody>
-              <Row >
+              <Row>
                 <Col lg="12">
-                  <Card >
-                    <CardBody style={cardStyle} >
-                      <div style={{ textAlign: 'center' }}>Welcome to 302 Properties</div>
+                  <Card>
+                    <CardBody style={cardStyle}>
+                      <div style={{ textAlign: "center" }}>
+                        Welcome to 302 Properties
+                      </div>
                       {loader ? (
                         <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                           <RotatingLines
@@ -174,17 +207,18 @@ const StaffDashBoard = (props) => {
                             visible={loader}
                           />
                         </div>
-
                       ) : (
                         <>
                           {propertycount === 0 ? (
                             <div>Data not found</div>
                           ) : (
                             <>
-                              <Row style={{}} className="d-flex justify-content-around">
+                              <Row
+                                style={{}}
+                                className="d-flex justify-content-around"
+                              >
                                 <Col lg="4" sm="12" className="mb-3">
                                   <Card style={subcardStyle}>
-
                                     <CardBody className="d-flex flex-column justify-content-center  text-center mb-3">
                                       <div className="d-flex align-items-center flex-column p-3 ">
                                         <div
@@ -201,7 +235,12 @@ const StaffDashBoard = (props) => {
                                         >
                                           <i className="ni ni-pin-3"></i>
                                         </div>
-                                        <div style={{ color: "cfd8dc", fontSize: "20px" }}>
+                                        <div
+                                          style={{
+                                            color: "cfd8dc",
+                                            fontSize: "20px",
+                                          }}
+                                        >
                                           Properties
                                         </div>
                                       </div>
@@ -236,7 +275,12 @@ const StaffDashBoard = (props) => {
                                         >
                                           <i className="ni ni-badge"></i>
                                         </div>
-                                        <div style={{ color: "white", fontSize: "20px" }}>
+                                        <div
+                                          style={{
+                                            color: "white",
+                                            fontSize: "20px",
+                                          }}
+                                        >
                                           Work Orders
                                         </div>
                                       </div>
@@ -248,206 +292,141 @@ const StaffDashBoard = (props) => {
                                         }}
                                       >
                                         {propertycount?.workorder_staffMember}
-
                                       </div>
                                     </CardBody>
                                   </Card>
                                 </Col>
-
                               </Row>
-                              <Row lg="12" className="d-flex justify-content-around" >
+                              <Row
+                                lg="12"
+                                className="d-flex justify-content-around"
+                              >
                                 <Col lg="5" md="12" sm="12" className="mb-3">
-                                  <Card style={{
-                                    justifyContent: "center",
-                                    fontFamily: 'sans-serif',
-                                    fontSize: '20px',
-                                    color: 'black',
-                                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 1)', // Your desired box shadow
-                                    // border:"0.5px solid black"
-                                  }} >
-                                    < CardBody>
+                                  <Card
+                                    style={{
+                                      justifyContent: "center",
+                                      fontFamily: "sans-serif",
+                                      fontSize: "20px",
+                                      color: "black",
+                                      boxShadow: "0px 2px 5px rgba(0, 0, 0, 1)", // Your desired box shadow
+                                      // border:"0.5px solid black"
+                                    }}
+                                  >
+                                    <CardBody>
                                       <div className="mb-2 d-flex justify-content-start">
-                                        <span style={{ fontWeight: "bold", fontSize: "28px" }}> New Work Orders</span>
+                                        <span
+                                          style={{
+                                            fontWeight: "bold",
+                                            fontSize: "28px",
+                                          }}
+                                        >
+                                          New Work Orders
+                                        </span>
                                       </div>
                                       <div className="col-lg-2">
                                         <div className="d-flex justify-content-between mb-2">
                                           <span className="">Total </span>
-                                          <span> 7 </span>
+                                          <span>{newWorkOrders.length}</span>
                                         </div>
                                       </div>
-                                      <div style={bgStyle}>
-                                        <div className="d-flex justify-content-start">
-                                          <span className="">Leakage in bathroom</span>
-
-                                        </div>
-                                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                          <label className="d-flex justify-content-between mb-1 leackage-status">
-                                            <span>13/01/2024</span>
-                                            <span>New</span>
-                                          </label>
-                                        </div>
-                                      </div>
-                                      <div style={bgStyle}>
-                                        <div className="d-flex justify-content-start">
-                                          <span className="">Leakage in bathroom</span>
-
-                                        </div>
-                                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                          <label className="d-flex justify-content-between mb-1 leackage-status">
-                                            <span>13/01/2024</span>
-                                            <span>New</span>
-                                          </label>
-                                        </div>
-                                      </div>
-                                      <div style={bgStyle}>
-                                        <div className="d-flex justify-content-start">
-                                          <span className="">Leakage in bathroom</span>
-
-                                        </div>
-                                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                          <label className="d-flex justify-content-between mb-1 leackage-status">
-                                            <span>13/01/2024</span>
-                                            <span>New</span>
-                                          </label>
-                                        </div>
-                                      </div>
-
-                                      {showMoreNewOrders && (
-                                        <>
-                                          <div style={bgStyle}>
+                                      {newWorkOrders
+                                        .slice(0, 3)
+                                        .map((order, index) => (
+                                          <div key={index} style={bgStyle}>
                                             <div className="d-flex justify-content-start">
-                                              <span className="">Leakage in bathroom</span>
-
+                                              <span className="">
+                                                {order.work_subject}
+                                              </span>
                                             </div>
-                                            <div className="col-lg-10" style={{ fontSize: "14px" }}>
+                                            <div
+                                              className="col-lg-10"
+                                              style={{ fontSize: "14px" }}
+                                            >
                                               <label className="d-flex justify-content-between mb-1 leackage-status">
-                                                <span>13/01/2024</span>
-                                                <span>New</span>
+                                                <span>{order.date}</span>
+                                                <span>{order.status}</span>
                                               </label>
                                             </div>
                                           </div>
-
-                                          <div style={bgStyle}>
-                                            <div className="d-flex justify-content-start">
-                                              <span className="">Leakage in bathroom</span>
-
-                                            </div>
-                                            <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                              <label className="d-flex justify-content-between mb-1 leackage-status">
-                                                <span>13/01/2024</span>
-                                                <span>New</span>
-                                              </label>
-                                            </div>
-                                          </div>
-                                        </>
-                                      )}
+                                        ))}
                                       <label
                                         className="d-flex justify-content-start"
-                                        style={{ cursor: 'pointer', color: 'blue' }}
-                                        onClick={handleViewMoreNewOrders}
+                                        style={{
+                                          cursor: "pointer",
+                                          color: "blue",
+                                        }}
+                                        // onClick={handleViewMoreNewOrders}
+                                        onClick={() => navigate("/staff/staffworktable")}
+                                       
                                       >
-                                        {showMoreNewOrders ? 'View Less' : 'View All'}
+                                        View All
+                                        {/* {showMoreNewOrders
+                                          ? "View Less"
+                                          : "View All"} */}
                                       </label>
                                     </CardBody>
                                   </Card>
                                 </Col>
 
                                 <Col lg="5" md="12" sm="12">
-                                  <Card style={{
-                                    justifyContent: "center",
-                                    fontFamily: 'sans-serif',
-                                    fontSize: '20px',
-                                    color: 'black',
-                                    boxShadow: '0px 2px 5px rgba(0, 0, 0, 1)',
-                                  }} >
-                                    < CardBody>
+                                  <Card
+                                    style={{
+                                      justifyContent: "center",
+                                      fontFamily: "sans-serif",
+                                      fontSize: "20px",
+                                      color: "black",
+                                      boxShadow: "0px 2px 5px rgba(0, 0, 0, 1)",
+                                    }}
+                                  >
+                                    <CardBody>
                                       <div className="mb-2 d-flex justify-content-start">
-                                        <span style={{ fontWeight: "bold", fontSize: "28px" }}> Overdue Work Orders</span>
+                                        <span
+                                          style={{
+                                            fontWeight: "bold",
+                                            fontSize: "28px",
+                                          }}
+                                        >
+                                          Overdue Work Orders
+                                        </span>
                                       </div>
                                       <div className="col-lg-2">
                                         <div className="d-flex justify-content-between mb-2">
                                           <span className="">Total </span>
-                                          <span> 5 </span>
+                                          <span>
+                                            {overdueWorkOrders.length}
+                                          </span>
                                         </div>
                                       </div>
-                                      <div style={bgStyle}>
-                                        <div className="d-flex justify-content-start">
-                                          <span className="">Leakage in bathroom</span>
-
-                                        </div>
-                                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                          <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
-                                            <span >30/01/2024</span>
-                                            <span>In progress</span>
-                                          </label>
-                                        </div>
-                                      </div>
-                                      <div style={bgStyle}>
-                                        <div className="d-flex justify-content-start">
-                                          <span className="">Leakage in bathroom</span>
-
-
-                                        </div>
-                                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                          <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
-                                            <span >30/01/2024</span>
-                                            <span>In progress</span>
-
-                                          </label>
-                                        </div>
-                                      </div>
-                                      <div style={bgStyle}>
-                                        <div className="d-flex justify-content-start">
-                                          <span className="">Leakage in bathroom</span>
-
-
-                                        </div>
-                                        <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                          <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
-                                            <span >30/01/2024</span>
-                                            <span>In progress</span>
-
-                                          </label>
-                                        </div>
-                                      </div>
-
-                                      {showMoreOverdueOrders && (
-                                        <>
-                                          <div style={bgStyle}>
+                                      {overdueWorkOrders
+                                        .slice(0, 3)
+                                        .map((order, index) => (
+                                          <div key={index} style={bgStyle}>
                                             <div className="d-flex justify-content-start">
-                                              <span className="">Leakage in bathroom</span>
-
+                                              <span className="">
+                                                {order.work_subject}
+                                              </span>
                                             </div>
-                                            <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                              <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
-                                                <span >30/01/2024</span>
-                                                <span>In progress</span>
-
+                                            <div
+                                              className="col-lg-10"
+                                              style={{ fontSize: "14px" }}
+                                            >
+                                              <label className="d-flex justify-content-between mb-1 leackage-status text-danger">
+                                                <span>{order.date}</span>
+                                                <span>{order.status}</span>
                                               </label>
                                             </div>
                                           </div>
-
-                                          <div style={bgStyle}>
-                                            <div className="d-flex justify-content-start">
-                                              <span className="">Leakage in bathroom</span>
-
-
-                                            </div>
-                                            <div className="col-lg-10" style={{ fontSize: "14px" }}>
-                                              <label style={spStyle} className="d-flex justify-content-between mb-1 leackage-status">
-                                                <span >30/01/2024</span>
-                                                <span>In progress</span>
-                                              </label>
-                                            </div>
-                                          </div>
-                                        </>
-                                      )}
+                                        ))}
                                       <label
                                         className="d-flex justify-content-start"
-                                        style={{ cursor: 'pointer', color: 'blue' }}
-                                        onClick={handleViewMoreOverdueOrders}
+                                        style={{
+                                          cursor: "pointer",
+                                          color: "blue",
+                                        }}
+                                        onClick={() => navigate("/staff/staffworktable?status=Over Due")}
                                       >
-                                        {showMoreOverdueOrders ? 'View Less' : 'View All'}
+                                        View All
+                                      
                                       </label>
                                     </CardBody>
                                   </Card>
@@ -457,7 +436,6 @@ const StaffDashBoard = (props) => {
                           )}
                         </>
                       )}
-
                     </CardBody>
                   </Card>
                 </Col>
@@ -465,13 +443,8 @@ const StaffDashBoard = (props) => {
             </CardBody>
           </Card>
         </div>
-        <div>
-
-
-          {/* Small Cards */}
-
-        </div>
-      </Container >
+        <div>{/* Small Cards */}</div>
+      </Container>
     </>
   );
 };

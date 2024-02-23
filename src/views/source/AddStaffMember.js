@@ -364,7 +364,7 @@ const AddStaffMember = () => {
                             />
                             <Button
                               type="button"
-                              style={{ padding: "7px" }}
+                              style={{ padding: "7px", marginLeft: "5px" }}
                               onClick={() => setShowPassword(!showPassword)}
                             >
                               {<VisibilityIcon />}
@@ -381,7 +381,7 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
-                  <Row>
+                  <Row className="pl-lg-3">
                     <button
                       type="submit"
                       className="btn btn-primary ml-4"

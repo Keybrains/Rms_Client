@@ -2543,73 +2543,72 @@ const Rentals = () => {
                       </FormGroup>
                     </div>
                   )}
-                  <br />
-                  <br />
-
-                  {loader ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "not-allowed" }}
-                      disabled
-                    >
-                      Loading...
-                    </button>
-                  ) : rental_id ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={async (e) => {
-                        e.preventDefault();
-                        setLoader(true);
-                        const res = await editProperty(
-                          rentalsFormik.values,
-                          rentalOwnerFormik.values,
-                          accessType.admin_id,
-                          selectedPropType.property_id
-                        );
-                        setLoader(false);
-                        if (res === false) {
+                  <div className="pl-lg-4">
+                    {loader ? (
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "not-allowed" }}
+                        disabled
+                      >
+                        Loading...
+                      </button>
+                    ) : rental_id ? (
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "pointer" }}
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          setLoader(true);
+                          const res = await editProperty(
+                            rentalsFormik.values,
+                            rentalOwnerFormik.values,
+                            accessType.admin_id,
+                            selectedPropType.property_id
+                          );
                           setLoader(false);
-                          navigate("/" + admin + "/propertiesTable");
-                        } else {
-                          setLoader(false);
-                        }
+                          if (res === false) {
+                            setLoader(false);
+                            navigate("/" + admin + "/propertiesTable");
+                          } else {
+                            setLoader(false);
+                          }
+                        }}
+                      >
+                        Update Property
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "pointer" }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (selectedRentalOwnerData.length !== 0) {
+                            rentalsFormik.handleSubmit();
+                          } else {
+                            rentalsFormik.handleSubmit();
+                            setDisplay(true);
+                          }
+                        }}
+                      >
+                        Create Property
+                      </button>
+                    )}
+                    <button
+                      href="#pablo"
+                      onClick={handleCloseButtonClick}
+                      className="btn btn-primary"
+                      style={{
+                        background: "white",
+                        color: "black",
+                        cursor: "pointer",
                       }}
                     >
-                      Update Property
+                      Cancel
                     </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (selectedRentalOwnerData.length !== 0) {
-                          rentalsFormik.handleSubmit();
-                        } else {
-                          rentalsFormik.handleSubmit();
-                          setDisplay(true);
-                        }
-                      }}
-                    >
-                      Create Property
-                    </button>
-                  )}
-                  <button
-                    href="#pablo"
-                    onClick={handleCloseButtonClick}
-                    className="btn btn-primary"
-                    style={{
-                      background: "white",
-                      color: "black",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Cancel
-                  </button>
+                  </div>
                 </Form>
               </CardBody>
             </Card>
