@@ -44,6 +44,7 @@ import StaffPropertyDetail from "views/source/StaffPropertyDetail";
 import AgentProfile from "views/source/AgentProfile";
 import VendorWorkTable from "views/source/VendorWorkTable";
 import StaffWorkTable from "views/source/StaffWorkTable";
+import VendoeWorkTable from "views/source/VendorWorkTable";
 import StaffWorkOrder from "views/source/StaffWorkorder";
 import Vendor from "views/source/Vendor";
 import AddVendor from "views/source/AddVendor";
@@ -465,6 +466,13 @@ var routes = [
     icon: "ni ni-badge text-green",
     component: <StaffWorkTable />,
     layout: "/staff",
+  },
+  {
+    path: "/vendorworktable?status",
+    name: "Work Order",
+    icon: "ni ni-badge text-green",
+    component: <VendoeWorkTable />,
+    layout: "/vendoe",
   },
 
   {

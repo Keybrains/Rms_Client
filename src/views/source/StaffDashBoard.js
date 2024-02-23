@@ -36,7 +36,7 @@ import { RotatingLines } from "react-loader-spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import StaffHeader from "components/Headers/StaffHeader";
-import StaffWorkTable from "./StaffWorkTable"
+import StaffWorkTable from "./StaffWorkTable";
 
 const StaffDashBoard = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -149,7 +149,7 @@ const StaffDashBoard = (props) => {
       try {
         const [newResponse, overdueResponse] = await Promise.all([
           axios.get(
-            `http://192.168.1.104:4000/api/staffmember/dashboard_workorder/${accessType?.staffmember_id}/${accessType?.admin_id}`
+            `http://192.168.1.104:4000/api/vendor/dashboard_workorder/${accessType?.staffmember_id}/${accessType?.admin_id}`
           ), // Replace this with your actual overdue work orders API endpoint
         ]);
         setNewWorkOrders(newResponse.data.data.new_workorder);
@@ -356,8 +356,9 @@ const StaffDashBoard = (props) => {
                                           color: "blue",
                                         }}
                                         // onClick={handleViewMoreNewOrders}
-                                        onClick={() => navigate("/staff/staffworktable")}
-                                       
+                                        onClick={() =>
+                                          navigate("/staff/staffworktable")
+                                        }
                                       >
                                         View All
                                         {/* {showMoreNewOrders
@@ -423,10 +424,13 @@ const StaffDashBoard = (props) => {
                                           cursor: "pointer",
                                           color: "blue",
                                         }}
-                                        onClick={() => navigate("/staff/staffworktable?status=Over Due")}
+                                        onClick={() =>
+                                          navigate(
+                                            "/staff/staffworktable?status=Over Due"
+                                          )
+                                        }
                                       >
                                         View All
-                                      
                                       </label>
                                     </CardBody>
                                   </Card>
