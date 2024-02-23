@@ -88,7 +88,6 @@ const VendorDashBoard = (props) => {
         const response = await axios.get(
           `http://192.168.1.104:4000/api/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`
         );
-        console.log(  `http://192.168.1.104:4000/api/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`,"  `http://192.168.1.104:4000/api/vendor/dashboard_workorder/${accessType?.staffmember_id}/${accessType?.admin_id}`")
         if (response.status === 200) {
           const { data } = response.data;
           setNewWorkOrders(data.new_workorder);

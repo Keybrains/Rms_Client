@@ -149,7 +149,7 @@ const StaffDashBoard = (props) => {
       try {
         const [newResponse, overdueResponse] = await Promise.all([
           axios.get(
-            `http://192.168.1.104:4000/api/vendor/dashboard_workorder/${accessType?.staffmember_id}/${accessType?.admin_id}`
+            `${baseUrl}/staffmember/dashboard_workorder/${accessType?.staffmember_id}/${accessType?.admin_id}`
           ), // Replace this with your actual overdue work orders API endpoint
         ]);
         setNewWorkOrders(newResponse.data.data.new_workorder);
