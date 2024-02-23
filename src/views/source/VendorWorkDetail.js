@@ -915,11 +915,11 @@ const VendorWorkDetail = () => {
                                   }}
                                 >
                                   <span>
-                                    {outstandDetails.property_data
+                                    {outstandDetails?.property_data
                                       ?.rental_adress || "N/A"}
-                                    {outstandDetails.unit_data?.rental_unit ? (
+                                    {outstandDetails?.unit_data?.rental_unit ? (
                                       " (" +
-                                      outstandDetails.unit_data?.rental_unit +
+                                      outstandDetails?.unit_data?.rental_unit +
                                       ")"
                                     ) : (
                                       <></>
@@ -1069,9 +1069,9 @@ const VendorWorkDetail = () => {
                               <span className="">
                                 {outstandDetails.property_data?.rental_adress ||
                                   "N/A"}
-                                {outstandDetails.unit_data?.rental_unit ? (
+                                {outstandDetails?.unit_data?.rental_unit ? (
                                   " (" +
-                                  outstandDetails.unit_data?.rental_unit +
+                                  outstandDetails?.unit_data?.rental_unit +
                                   ")"
                                 ) : (
                                   <></>

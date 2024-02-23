@@ -156,8 +156,8 @@ const Rentals = () => {
   }
   function handleResponse(response) {
     const successMessage = id
-      ? "Property  updated successfully"
-      : "Property  added successfully";
+      ? "Rental-owner  updated successfully"
+      : "Rental-owner  added successfully";
     const errorMessage = response.data.message;
 
     if (response.data.statusCode === 200) {
@@ -194,6 +194,7 @@ const Rentals = () => {
       postal_code: "",
       country: "",
       rentalOwner_comments: "",
+      text_identityType: "",
       text_identityType: "",
       texpayer_id: "",
       rentalOwner_properties: [],
@@ -283,6 +284,7 @@ const Rentals = () => {
             rentalOwner_comments: rentalOwnerdata.rentalOwner_comments || "",
             rentalOwner_companyName:
               rentalOwnerdata.rentalOwner_companyName || "",
+            text_identityType: rentalOwnerdata.text_identityType || "",
             texpayer_id: rentalOwnerdata.texpayer_id || "",
             rentalOwner_properties:
               rentalOwnerdata.rentalOwner_properties || "",

@@ -100,7 +100,7 @@ const RentalownerTable = () => {
   const deleteTenant = (rentalowner_id) => {
     swal({
       title: "Are you sure?",
-      text: "Once deleted, you will not be able to recover this tenant!",
+      text: "Once deleted, you will not be able to recover this rental-owner!",
       icon: "warning",
       buttons: ["Cancel", "Delete"],
       dangerMode: true,
@@ -110,9 +110,12 @@ const RentalownerTable = () => {
           .delete(`${baseUrl}/rentals/rental-owners/${rentalowner_id}`)
           .then((response) => {
             if (response.data.statusCode === 200) {
-              window.location.reload();
               fetchRentalsData();
-              toast.success("The tenant has been deleted!", {
+              toast.success("The Rental-Owner has been deleted!", {
+                position: "top-center",
+              });
+            } else if (response.data.statusCode === 201) {
+              toast.warn(response.data.message, {
                 position: "top-center",
               });
             } else {
@@ -139,7 +142,7 @@ const RentalownerTable = () => {
     if (!searchQuery) {
       return rentalsData;
     }
-  
+
     return rentalsData.filter((rentalOwner) => {
       return (
         `${rentalOwner.rentalOwner_firstName} ${rentalOwner.rentalOwner_lastName}`
@@ -158,7 +161,6 @@ const RentalownerTable = () => {
       );
     });
   };
-  
 
   return (
     <>
@@ -171,7 +173,7 @@ const RentalownerTable = () => {
             </FormGroup>
           </Col>
 
-          <Col className="text-right" >
+          <Col className="text-right">
             <Button
               color="primary"
               onClick={() => navigate("/" + admin + "/Rentalowner")}
@@ -232,50 +234,55 @@ const RentalownerTable = () => {
                   {rentalsData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="5"style={{fontSize:"15px"}}>No RentalOwners Added</td>
-                      </tr>
-                    </tbody>
-                    ) : (
-                  <tbody>
-                    {filterRentalOwnersBySearch()?.map((rentalOwner) => (
-                      <tr
-                        key={rentalOwner.rentalowner_id}
-                        onClick={() =>
-                          navigateToRentRollDetails(rentalOwner.rentalowner_id)
-                        }
-                        style={{ cursor: "pointer" }}
-                      >
-                        <td>{rentalOwner.rentalOwner_firstName}</td>
-                        <td>{rentalOwner.rentalOwner_lastName}</td>
-                        {/* <td>{rentalOwner?.rentalOwner_adress}</td> */}
-                        <td>{rentalOwner.rentalOwner_phoneNumber}</td>
-                        <td>{rentalOwner.rentalOwner_primaryEmail}</td>
-                        <td style={{}}>
-                          <div style={{ display: "flex", gap: "5px" }}>
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteTenant(rentalOwner.rentalowner_id);
-                              }}
-                            >
-                              <DeleteIcon />
-                            </div>
-                            &nbsp; &nbsp; &nbsp;
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                editRentalOwner(rentalOwner.rentalowner_id);
-                              }}
-                            >
-                              <EditIcon />
-                            </div>
-                          </div>
+                        <td colSpan="5" style={{ fontSize: "15px" }}>
+                          No RentalOwners Added
                         </td>
                       </tr>
-                    ))}
-                  </tbody>)}
+                    </tbody>
+                  ) : (
+                    <tbody>
+                      {filterRentalOwnersBySearch()?.map((rentalOwner) => (
+                        <tr
+                          key={rentalOwner.rentalowner_id}
+                          onClick={() =>
+                            navigateToRentRollDetails(
+                              rentalOwner.rentalowner_id
+                            )
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          <td>{rentalOwner.rentalOwner_firstName}</td>
+                          <td>{rentalOwner.rentalOwner_lastName}</td>
+                          {/* <td>{rentalOwner?.rentalOwner_adress}</td> */}
+                          <td>{rentalOwner.rentalOwner_phoneNumber}</td>
+                          <td>{rentalOwner.rentalOwner_primaryEmail}</td>
+                          <td style={{}}>
+                            <div style={{ display: "flex", gap: "5px" }}>
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteTenant(rentalOwner.rentalowner_id);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </div>
+                              &nbsp; &nbsp; &nbsp;
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  editRentalOwner(rentalOwner.rentalowner_id);
+                                }}
+                              >
+                                <EditIcon />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  )}
                 </Table>
               </Card>
             )}

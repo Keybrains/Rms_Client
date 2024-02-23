@@ -81,20 +81,19 @@ const TenantProperty = () => {
   };
 
   const filterTenantsBySearch = () => {
-    let filteredData = [...propertyDetails]; // Create a copy of tentalsData to avoid mutating the original array
-
+    let filteredData = [...propertyDetails];
+  
     if (searchQuery) {
       const lowerCaseSearchQuery = searchQuery.toLowerCase();
       filteredData = filteredData.filter((tenant) => {
-        // const name = `${tenant.tenant_firstName} ${tenant.tenant_lastName}`;
-
         return (
-          tenant.rental_adress.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.start_date.toLowerCase().includes(lowerCaseSearchQuery) ||
-          tenant.end_date.toLowerCase().includes(lowerCaseSearchQuery)
+          (tenant.rental_adress && tenant.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (tenant.start_date && tenant.start_date.toLowerCase().includes(lowerCaseSearchQuery)) ||
+          (tenant.end_date && tenant.end_date.toLowerCase().includes(lowerCaseSearchQuery))
         );
       });
     }
+  
 
     if (upArrow.length > 0) {
       const sortingArrows = upArrow;

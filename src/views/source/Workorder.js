@@ -130,8 +130,8 @@ const Workorder = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(`${baseUrl}/workorder/delete_workorder`, {
-            data: { _id: id },
+          .delete(`${baseUrl}/work-order/delete_workorder`, {
+            data: { workOrder_id: id },
           })
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -269,8 +269,7 @@ const Workorder = () => {
             </FormGroup>
           </Col>
 
-                    <Col className="text-right">
-
+          <Col className="text-right">
             <Button
               color="primary"
               //  href="#rms"
@@ -398,11 +397,13 @@ const Workorder = () => {
                       <th scope="col">Updated At</th>
                       <th scope="col">ACTION</th>
                     </tr>
-                  </thead> 
+                  </thead>
                   {workData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="7"style={{fontSize:"15px"}}>No Workorder Added</td>
+                        <td colSpan="7" style={{ fontSize: "15px" }}>
+                          No Workorder Added
+                        </td>
                       </tr>
                     </tbody>
                     ) : (
@@ -412,7 +413,7 @@ const Workorder = () => {
                     {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
                         key={rental.workOrder_id}
-                        // onClick={() => navigateToDetails(rental.workOrder_id)}
+                        onClick={() => navigateToDetails(rental.workOrder_id)}
                         style={{ cursor: "pointer" }}
                       >{console.log(rental, "yash")}
                         <td>{rental.work_subject}</td>
@@ -428,33 +429,34 @@ const Workorder = () => {
                         <td>{rental.createdAt}</td>
                         <td>{rental.updateAt || "-"}</td>
 
-                        <td>
-                          <div style={{ display: "flex", gap: "0px" }}>
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteRentals(rental.workOrder_id);
-                              }}
-                            >
-                              <DeleteIcon />
+                          <td>
+                            <div style={{ display: "flex", gap: "0px" }}>
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteRentals(rental.workOrder_id);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </div>
+                              &nbsp; &nbsp; &nbsp;
+                              {console.log(rental, "rental js")}
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  editWorkOrder(rental.workOrder_id);
+                                }}
+                              >
+                                <EditIcon />
+                              </div>
                             </div>
-                            &nbsp; &nbsp; &nbsp;
-                            {console.log(rental, "rental js")}
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                editWorkOrder(rental.workOrder_id);
-                              }}
-                            >
-                              <EditIcon />
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  )}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>

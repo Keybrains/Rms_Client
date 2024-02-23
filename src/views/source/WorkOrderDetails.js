@@ -47,14 +47,12 @@ import { useFormik } from "formik";
 
 const WorkOrderDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
-  const { workorder_id } = useParams();
-  console.log("ID:", workorder_id);
+  const { workorder_id, admin } = useParams();
   const [outstandDetails, setoutstandDetails] = useState({});
   const [workOrderStatus, setWorkOrderStatus] = useState("");
   const [showTenantTable, setShowTenantTable] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // const [hoveredButton, setHoveredButton] = useState(null);
   const [activeButton, setActiveButton] = useState("Summary");
   const [updateButton, setUpdateButton] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -89,19 +87,8 @@ const WorkOrderDetails = () => {
         `${baseUrl}/work-order/workorder_details/${workorder_id}`
       );
       setoutstandDetails(response.data.data);
-      setWorkOrderStatus(response.data.data.workorder_status.reverse());
-      setSelectedStatus(response.data.data.status);
-      setSelecteduser(response.data.data.staffmember_name);
-      updateWorkorderFormik.setValues({
-        status: response.data.data.status,
-        // staffmember_name: response.data.data.staffmember_name,
-        due_date: response.data.data.due_date,
-        assigned_to: response.data.data.staffmember_name,
-        message: response.data.data.message ? response.data.data.message : "",
-        statusUpdatedBy: response.data.data.statusUpdatedBy
-          ? response.data.data.statusUpdatedBy
-          : "Admin",
-      });
+      setWorkOrderStatus(response.data.data);
+      console.log("new manu",response.data.data)
       setLoading(false);
       setImageDetails(response.data.data.workOrderImage);
     } catch (error) {
@@ -110,6 +97,35 @@ const WorkOrderDetails = () => {
       setLoading(false);
     }
   };
+
+  // const getOutstandData = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${baseUrl}/work-order/workorder_details/${workorder_id}`
+  //     );
+  //     setoutstandDetails(response.data.data);
+  //     console.log("new manu",response.data.data)
+  //     setWorkOrderStatus(response.data.data.workorder_status.reverse());
+  //     setSelectedStatus(response.data.data.status);
+  //     setSelecteduser(response.data.data.staffmember_name);
+  //     updateWorkorderFormik.setValues({
+  //       status: response.data.data.status,
+  //       // staffmember_name: response.data.data.staffmember_name,
+  //       due_date: response.data.data.due_date,
+  //       assigned_to: response.data.data.staffmember_name,
+  //       message: response.data.data.message ? response.data.data.message : "",
+  //       statusUpdatedBy: response.data.data.statusUpdatedBy
+  //         ? response.data.data.statusUpdatedBy
+  //         : "Admin",
+  //     });
+  //     setLoading(false);
+  //     setImageDetails(response.data.data.workOrderImage);
+  //   } catch (error) {
+  //     console.error("Error fetching tenant details:", error);
+  //     setError(error);
+  //     setLoading(false);
+  //   }
+  // };
   const SmallSummaryCard = ({ label, value, textTruncate }) => {
     return (
       <div className="small-summary-card p-3">
@@ -337,8 +353,8 @@ const WorkOrderDetails = () => {
 
   const total = () => {
     let total = 0;
-    outstandDetails?.entries.map((item) => {
-      total = total + item.total_amount;
+    outstandDetails?.partsandcharge_data?.map((item) => {
+      total = total + item.amount;
     });
     return total;
   };
@@ -358,7 +374,7 @@ const WorkOrderDetails = () => {
             <Button
               color="primary"
               href="#rms"
-              onClick={() => navigate("/admin/Workorder")}
+              onClick={() => navigate(`/${admin}/Workorder`)}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -423,7 +439,7 @@ const WorkOrderDetails = () => {
                           <div>Loading Work Order details...</div>
                         ) : error ? (
                           <div>Error: {error.message}</div>
-                        ) : outstandDetails.workorder_id ? (
+                        ) : outstandDetails?.workOrder_id ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -452,11 +468,15 @@ const WorkOrderDetails = () => {
                                   <AssignmentOutlinedIcon />
                                 </Box>
                                 <Box flex="1">
-                                  <h2 className="text-primary text-lg">
-                                    {outstandDetails.work_subject || "N/A"}
+                                  <h2
+                                    className="text text-lg"
+                                    style={{ color: "blue" }}
+                                  >
+                                    {outstandDetails?.work_subject || "N/A"}
                                   </h2>
                                   <span>
-                                    {outstandDetails.rental_adress || "N/A"}
+                                    {outstandDetails?.property_data
+                                      ?.rental_adress || "N/A"}
                                   </span>
                                 </Box>
                               </Box>
@@ -489,7 +509,7 @@ const WorkOrderDetails = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails.work_performed || "N/A"}
+                                      {outstandDetails?.work_performed || "N/A"}
                                     </span>
                                   </FormGroup>
                                   <FormGroup marginBottom="20px">
@@ -510,7 +530,9 @@ const WorkOrderDetails = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails.entry_allowed || "N/A"}
+                                      {outstandDetails?.entry_allowed
+                                        ? "Yes"
+                                        : "No"}
                                     </span>
                                   </FormGroup>
                                   <FormGroup marginBottom="20px">
@@ -531,7 +553,7 @@ const WorkOrderDetails = () => {
                                         marginTop: "5px",
                                       }}
                                     >
-                                      {outstandDetails.vendor_note || "N/A"}
+                                      {outstandDetails?.vendor_notes || "N/A"}
                                     </span>
                                   </FormGroup>
                                 </Box>
@@ -550,7 +572,7 @@ const WorkOrderDetails = () => {
                                     <Col style={{ padding: "0 8px" }}>
                                       <SmallSummaryCard
                                         label="Status"
-                                        value={outstandDetails.status || "N/A"}
+                                        value={outstandDetails?.status || "N/A"}
                                         textTruncate // add this prop to enable text truncation
                                       />
                                     </Col>
@@ -566,9 +588,7 @@ const WorkOrderDetails = () => {
                                     <Col style={{ padding: "0 8px" }}>
                                       <SmallSummaryCard
                                         label="Due Date"
-                                        value={
-                                          outstandDetails.due_date || "N/A"
-                                        }
+                                        value={outstandDetails?.date || "N/A"}
                                         textTruncate // add this prop to enable text truncation
                                       />
                                     </Col>
@@ -585,8 +605,8 @@ const WorkOrderDetails = () => {
                                       <SmallSummaryCard
                                         label="Assignees"
                                         value={
-                                          outstandDetails.staffmember_name ||
-                                          "N/A"
+                                          outstandDetails?.staff_data
+                                            .staffmember_name || "N/A"
                                         }
                                         textTruncate // add this prop to enable text truncation
                                       />
@@ -595,8 +615,8 @@ const WorkOrderDetails = () => {
                                 </Box>
                               </Box>
                             </Box>
-                            {outstandDetails?.entries?.length > 0 &&
-                            outstandDetails?.entries[0].part_qty ? (
+                            {outstandDetails?.partsandcharge_data?.length > 0 &&
+                            outstandDetails?.partsandcharge_data ? (
                               <Box
                                 border="1px solid #ccc"
                                 borderRadius="8px"
@@ -608,7 +628,10 @@ const WorkOrderDetails = () => {
                                   overflowX: "auto",
                                 }} // Center the box horizontally
                               >
-                                <h2 className="text-primary text-lg">
+                                <h2
+                                  className="text text-lg"
+                                  style={{ color: "blue" }}
+                                >
                                   Parts and Labor
                                 </h2>
                                 <Box overflowX="auto">
@@ -633,14 +656,14 @@ const WorkOrderDetails = () => {
                                     </thead>
                                     <tbody>
                                       {/* Add your table rows dynamically here */}
-                                      {outstandDetails?.entries.map(
+                                      {outstandDetails?.partsandcharge_data?.map(
                                         (item, index) => (
                                           <tr key={index}>
                                             <td style={tableCellStyle}>
-                                              {item.part_qty}
+                                              {item.parts_quantity}
                                             </td>
                                             <td style={tableCellStyle}>
-                                              {item.account_type}
+                                              {item.account}
                                             </td>
                                             <td style={tableCellStyle}>
                                               {item.description}
@@ -651,7 +674,7 @@ const WorkOrderDetails = () => {
                                                 textAlign: "right",
                                               }}
                                             >
-                                              ${item.part_price}
+                                              ${item.parts_price}
                                             </td>
                                             <td
                                               style={{
@@ -659,7 +682,7 @@ const WorkOrderDetails = () => {
                                                 textAlign: "right",
                                               }}
                                             >
-                                              ${item.total_amount}
+                                              ${item.amount}
                                             </td>
                                           </tr>
                                         )
@@ -687,8 +710,7 @@ const WorkOrderDetails = () => {
                                 </Box>
                               </Box>
                             ) : null}
-
-                            <Grid
+                            {/* <Grid
                               container
                               border="1px solid #ccc"
                               borderRadius="8px"
@@ -701,20 +723,16 @@ const WorkOrderDetails = () => {
                               }} // Center the box horizontally
                             >
                               <Grid item xs={3} sm={3.5} md={3} lg={2} xl={2}>
-                                <h2 className="text-primary text-lg">
+                                <h2
+                                  className="text-lg"
+                                  style={{ color: "blue" }}
+                                >
                                   Updates
                                 </h2>
                               </Grid>
-                              <Grid item xs={3}>
-                                <Button
-                                  size="sm"
-                                  onClick={handleUpdateButtonClick}
-                                >
-                                  Update
-                                </Button>
-                              </Grid>
-                              {outstandDetails.workorder_status &&
-                                outstandDetails.workorder_status.length > 0 &&
+
+                              {outstandDetails?.workorder_status &&
+                                outstandDetails?.workorder_status.length > 0 &&
                                 workOrderStatus.map((item, index) => (
                                   <Grid item xs={12}>
                                     <Box
@@ -749,17 +767,18 @@ const WorkOrderDetails = () => {
                                         }}
                                       />
 
+                                      {console.log(item, "item")}
                                       <Grid container>
                                         {!Object.keys(item).includes(
                                           "status"
                                         ) ||
-                                        !Object.keys(item).includes(
+                                        Object.keys(item).includes(
                                           "due_date"
                                         ) ||
-                                        item.status !== ("" || " ") ||
-                                        item.due_date !== ("" || " ") ||
+                                        item.status !== (" " || "") ||
+                                        item.due_date !== (" " || "") ||
                                         item.staffmember_name !==
-                                          ("" || " ") ? (
+                                          (" " || "") ? (
                                           <>
                                             <Grid
                                               item
@@ -767,7 +786,8 @@ const WorkOrderDetails = () => {
                                               style={
                                                 !Object.keys(item).includes(
                                                   "status"
-                                                ) || item.status === ("" || " ")
+                                                ) ||
+                                                item.status === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -775,13 +795,13 @@ const WorkOrderDetails = () => {
                                               Status: {item.status}
                                             </Grid>
                                             <Grid
-                                              item
+                                              itemx
                                               xs={4}
                                               style={
                                                 !Object.keys(item).includes(
                                                   "due_date"
                                                 ) ||
-                                                item.due_date === ("" || " ")
+                                                item.due_date === (" " || null)
                                                   ? { display: "none" }
                                                   : { display: "block" }
                                               }
@@ -816,14 +836,14 @@ const WorkOrderDetails = () => {
                                     </Box>
                                   </Grid>
                                 ))}
-                            </Grid>
+                            </Grid> */}
                           </>
                         ) : (
                           <div>No details found.</div>
                         )}
                       </Col>
                       <Col lg="4" md="12">
-                        {outstandDetails?.workorder_id ? (
+                        {outstandDetails?.workOrder_id ? (
                           <Box
                             border="1px solid #ccc"
                             borderRadius="8px"
@@ -838,7 +858,9 @@ const WorkOrderDetails = () => {
                                 color: "#5e72e4",
                               }}
                             >
-                              <h2 className="text-primary">Contacts</h2>
+                              <h3 className="text" style={{ color: "blue" }}>
+                                Contacts
+                              </h3>
                             </Box>
                             <Box
                               borderBottom="1px solid #ccc"
@@ -868,12 +890,13 @@ const WorkOrderDetails = () => {
                               >
                                 <span style={detailstyle}>Vendor</span> <br />
                                 <span>
-                                  {outstandDetails?.vendor_name || "N/A"}
+                                  {outstandDetails?.vendor_data.vendor_name ||
+                                    "N/A"}
                                 </span>
                               </Box>
                             </Box>
-                            {tenantsDetails &&
-                            typeof tenantsDetails === "object" ? (
+                            {outstandDetails?.tenant_data &&
+                            typeof outstandDetails?.tenant_data === "object" ? (
                               <Box
                                 style={{
                                   display: "flex",
@@ -903,10 +926,17 @@ const WorkOrderDetails = () => {
                                 >
                                   <span style={detailstyle}>Tenant</span> <br />
                                   <span>
-                                    {tenantsDetails.tenant_firstName ? (
+                                    {outstandDetails?.tenant_data
+                                      .tenant_firstName ? (
                                       <>
-                                        {tenantsDetails.tenant_firstName}{" "}
-                                        {tenantsDetails.tenant_lastName}
+                                        {
+                                          outstandDetails?.tenant_data
+                                            .tenant_firstName
+                                        }{" "}
+                                        {
+                                          outstandDetails?.tenant_data
+                                            .tenant_lastName
+                                        }
                                       </>
                                     ) : (
                                       ""
@@ -917,7 +947,7 @@ const WorkOrderDetails = () => {
                             ) : null}
                           </Box>
                         ) : null}
-                        {propertyDetails ? (
+                        {outstandDetails ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -937,64 +967,13 @@ const WorkOrderDetails = () => {
                                   color: "#5e72e4",
                                 }}
                               >
-                                <h2 className="text-primary">Property</h2>
-                              </Box>
-                              {Array.isArray(
-                                propertyDetails?.propertyres_image
-                              ) ||
-                              Array.isArray(propertyDetails?.property_image) ? (
-                                <Box
-                                  style={{
-                                    width: "100%",
-                                    padding: "16px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
+                                <h3
+                                  className="text"
+                                  style={{ color: "blue" }}
                                 >
-                                  <Box
-                                    width="100%"
-                                    style={{
-                                      minWidth: "100%",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    {propertyDetails?.propertyres_image &&
-                                    propertyDetails
-                                      ?.propertyres_image[0]?.[0] ? (
-                                      <img
-                                        src={
-                                          propertyDetails
-                                            .propertyres_image[0][0]
-                                        }
-                                        alt="property"
-                                        style={{
-                                          maxWidth: "80%",
-                                          maxHeight: "100%",
-                                          borderRadius: "8px",
-                                          border: "1px solid #ccc",
-                                        }}
-                                      />
-                                    ) : propertyDetails?.property_image &&
-                                      propertyDetails
-                                        ?.property_image[0]?.[0] ? (
-                                      <img
-                                        src={
-                                          propertyDetails?.property_image[0][0]
-                                        }
-                                        alt="property"
-                                        style={{
-                                          maxWidth: "80%",
-                                          maxHeight: "100%",
-                                          borderRadius: "8px",
-                                          border: "1px solid #ccc",
-                                        }}
-                                      />
-                                    ) : (
-                                      <span>No Image Found</span>
-                                    )}
-                                  </Box>
-                                </Box>
-                              ) : null}
+                                  Property
+                                </h3>
+                              </Box>
 
                               <Box
                                 style={{
@@ -1009,19 +988,17 @@ const WorkOrderDetails = () => {
                                   style={{
                                     minWidth: "100%",
                                     textAlign: "center",
-                                    cursor: "pointer",
-                                    color: "blue",
                                   }}
-                                  onClick={() =>
-                                    navigate(
-                                      `/admin/PropDetails/${propertyDetails?.rentalId}/${propertyDetails?.propertyId}`
-                                    )
-                                  }
                                 >
                                   <span>
-                                    {propertyDetails?.rental_adress || "N/A"}
-                                    {propertyDetails?.rental_units ? (
-                                      " (" + propertyDetails?.rental_units + ")"
+                                    {outstandDetails?.property_data
+                                      ?.rental_adress || "N/A"}
+                                    {outstandDetails?.property_data
+                                      ?.rental_units ? (
+                                      " (" +
+                                      outstandDetails?.property_data
+                                        ?.rental_units +
+                                      ")"
                                     ) : (
                                       <></>
                                     )}
@@ -1044,23 +1021,52 @@ const WorkOrderDetails = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails?.rental_city ? (
-                                      <>{propertyDetails?.rental_city},</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_city ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_city
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails?.rental_state ? (
-                                      <>{propertyDetails?.rental_state},</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_state ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_state
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails?.rental_country ? (
-                                      <>{propertyDetails?.rental_country},</>
+                                    <br />
+                                    {outstandDetails?.property_data
+                                      ?.rental_country ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_country
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails?.rental_postcode ? (
-                                      <>{propertyDetails?.rental_postcode}.</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_postcode ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_postcode
+                                        }
+                                        .
+                                      </>
                                     ) : (
                                       ""
                                     )}
@@ -1074,207 +1080,9 @@ const WorkOrderDetails = () => {
                         )}
                       </Col>
                     </Row>
-                    {updateButton && (
-                      <Form onSubmit={updateWorkorderFormik.handleSubmit}>
-                        <Dialog open={openDialog} onClose={handleDialogClose}>
-                          <DialogTitle>Update Dialog</DialogTitle>
-                          <DialogContent>
-                            <Grid container spacing={2}>
-                              <Grid item xs={4}>
-                                <FormGroup>
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-desg"
-                                  >
-                                    Status *
-                                  </label>
-                                  <FormGroup>
-                                    <Dropdown
-                                      isOpen={statusdropdownOpen}
-                                      toggle={toggle6}
-                                    >
-                                      <DropdownToggle caret>
-                                        {selectedStatus
-                                          ? selectedStatus
-                                          : "Select"}
-                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                      </DropdownToggle>
-                                      <DropdownMenu
-                                        style={{
-                                          width: "100%",
-                                          maxHeight: "200px",
-                                          overflowY: "auto",
-                                        }}
-                                      >
-                                        <DropdownItem
-                                          onClick={() =>
-                                            handleStatusSelect("New")
-                                          }
-                                        >
-                                          New
-                                        </DropdownItem>
-                                        <DropdownItem
-                                          onClick={() =>
-                                            handleStatusSelect("In Progress")
-                                          }
-                                        >
-                                          In Progress
-                                        </DropdownItem>
-                                        <DropdownItem
-                                          onClick={() =>
-                                            handleStatusSelect("On Hold")
-                                          }
-                                        >
-                                          On Hold
-                                        </DropdownItem>
-                                        <DropdownItem
-                                          onClick={() =>
-                                            handleStatusSelect("Complete")
-                                          }
-                                        >
-                                          Complete
-                                        </DropdownItem>
-                                      </DropdownMenu>
-                                      {/* {WorkFormik.errors &&
-                                WorkFormik.errors?.status &&
-                                WorkFormik.touched &&
-                                WorkFormik.touched?.status &&
-                                WorkFormik.values.status === "" ? (
-                                <div style={{ color: "red" }}>
-                                  {WorkFormik.errors.status}
-                                </div>
-                              ) : null} */}
-                                    </Dropdown>
-                                  </FormGroup>
-                                </FormGroup>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <FormGroup>
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-unitadd"
-                                  >
-                                    Due Date
-                                  </label>
-                                  <Input
-                                    className="form-control-alternative"
-                                    id="input-unitadd"
-                                    type="date"
-                                    name="due_date"
-                                    value={
-                                      updateWorkorderFormik.values.due_date
-                                    }
-                                    onChange={
-                                      updateWorkorderFormik.handleChange
-                                    }
-                                    onBlur={updateWorkorderFormik.handleBlur}
-                                  />
-                                  {/* {WorkFormik.touched.due_date &&
-                            WorkFormik.errors.due_date ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.due_date}
-                            </div>
-                          ) : null} */}
-                                </FormGroup>
-                              </Grid>
-                              <Grid item xs={4}>
-                                <FormGroup>
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-desg"
-                                  >
-                                    Assigned To *
-                                  </label>
-                                  <FormGroup>
-                                    <Dropdown
-                                      isOpen={userdropdownOpen}
-                                      toggle={toggle5}
-                                    >
-                                      <DropdownToggle caret>
-                                        {selecteduser ? selecteduser : "Select"}
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                      </DropdownToggle>
-                                      <DropdownMenu
-                                        style={{
-                                          width: "100%",
-                                          maxHeight: "200px",
-                                          overflowY: "auto",
-                                        }}
-                                      >
-                                        <DropdownItem
-                                          header
-                                          style={{ color: "blue" }}
-                                        >
-                                          Staff
-                                        </DropdownItem>
-                                        {staffData.map((user) => (
-                                          <DropdownItem
-                                            key={user._id}
-                                            onClick={() =>
-                                              handleStaffSelect(
-                                                user.staffmember_name
-                                              )
-                                            }
-                                          >
-                                            {user.staffmember_name}
-                                          </DropdownItem>
-                                        ))}
-                                      </DropdownMenu>
-                                      {/* {WorkFormik.errors &&
-                                WorkFormik.errors?.staffmember_name &&
-                                WorkFormik.touched &&
-                                WorkFormik.touched?.staffmember_name &&
-                                WorkFormik.values.staffmember_name === "" ? (
-                                <div style={{ color: "red" }}>
-                                  {WorkFormik.errors.staffmember_name}
-                                </div>
-                              ) : null} */}
-                                    </Dropdown>
-                                  </FormGroup>
-                                </FormGroup>
-                              </Grid>
-                              <Grid item xs={12}>
-                                <FormGroup>
-                                  <label
-                                    className="form-control-label"
-                                    htmlFor="input-unitadd"
-                                  >
-                                    Message
-                                  </label>
-                                  <Input
-                                    className="form-control-alternative"
-                                    id="input-unitadd"
-                                    type="textarea"
-                                    name="message"
-                                    value={updateWorkorderFormik.values.message}
-                                    onChange={
-                                      updateWorkorderFormik.handleChange
-                                    }
-                                    onBlur={updateWorkorderFormik.handleBlur}
-                                  />
-                                  {/* {WorkFormik.touched.due_date &&
-                            WorkFormik.errors.due_date ? (
-                            <div style={{ color: "red" }}>
-                              {WorkFormik.errors.due_date}
-                            </div>
-                          ) : null} */}
-                                </FormGroup>
-                              </Grid>
-                            </Grid>
-                          </DialogContent>
-                          <DialogActions>
-                            <Button onClick={handleDialogClose} color="primary">
-                              Cancel
-                            </Button>
-                            <Button color="primary" onClick={updateValues}>
-                              Save
-                            </Button>
-                          </DialogActions>
-                        </Dialog>
-                      </Form>
-                    )}
                   </div>
                 )}
+
                 {activeButton === "Task" && (
                   <div className="container-fluid">
                     <Row className="mb-4">
@@ -1307,34 +1115,38 @@ const WorkOrderDetails = () => {
                                 style={{
                                   border: "2px solid",
                                   borderColor:
-                                    outstandDetails.priority === "High"
+                                    outstandDetails?.priority === "High"
                                       ? "red"
-                                      : outstandDetails.priority === "Medium"
+                                      : outstandDetails?.priority === "Medium"
                                       ? "green"
-                                      : outstandDetails.priority === "Low"
+                                      : outstandDetails?.priority === "Low"
                                       ? "#FFD700"
                                       : "inherit",
                                   borderRadius: "15px",
                                   padding: "2px",
                                   fontSize: "15px",
                                   color:
-                                    outstandDetails.priority === "High"
+                                    outstandDetails?.priority === "High"
                                       ? "red"
-                                      : outstandDetails.priority === "Medium"
+                                      : outstandDetails?.priority === "Medium"
                                       ? "green"
-                                      : outstandDetails.priority === "Low"
+                                      : outstandDetails?.priority === "Low"
                                       ? "#FFD700"
                                       : "inherit",
                                 }}
                               >
-                                &nbsp;{outstandDetails.priority}&nbsp;
+                                &nbsp;{outstandDetails?.priority}&nbsp;
                               </span>
-                              <h2 className="text-primary text-lg">
-                                {outstandDetails.work_subject || "N/A"}
+                              <h2
+                                className="text-lg"
+                                style={{ color: "blue" }}
+                              >
+                                {outstandDetails?.work_subject || "N/A"}
                               </h2>
 
                               <span className="">
-                                {outstandDetails.rental_adress || "N/A"}
+                                {outstandDetails?.property_data
+                                  ?.rental_adress || "N/A"}
                               </span>
                             </Col>
                           </Row>
@@ -1350,7 +1162,7 @@ const WorkOrderDetails = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails.work_performed || "N/A"}
+                                  {outstandDetails?.work_performed || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1366,7 +1178,7 @@ const WorkOrderDetails = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails.status || "N/A"}
+                                  {outstandDetails?.status || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1382,7 +1194,7 @@ const WorkOrderDetails = () => {
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
                                   {formatDateWithoutTime(
-                                    outstandDetails.due_date
+                                    outstandDetails?.date
                                   ) || "N/A"}
                                 </span>
                               </FormGroup>
@@ -1399,7 +1211,8 @@ const WorkOrderDetails = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails.staffmember_name || "N/A"}
+                                  {outstandDetails?.staff_data
+                                    .staffmember_name || "N/A"}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1413,7 +1226,9 @@ const WorkOrderDetails = () => {
                                 </label>
                                 <br />
                                 <span style={{ fontSize: "13px" }}>
-                                  {outstandDetails.entry_allowed || "N/A"}
+                                  {outstandDetails?.entry_allowed
+                                    ? "Yes"
+                                    : "No"}{" "}
                                 </span>
                               </FormGroup>
                             </Col>
@@ -1429,7 +1244,8 @@ const WorkOrderDetails = () => {
                       maxWidth="1000px"
                       margin={"20px"}
                     > */}
-                        {propertyDetails ? (
+
+                        {outstandDetails ? (
                           <>
                             <Box
                               border="1px solid #ccc"
@@ -1449,10 +1265,16 @@ const WorkOrderDetails = () => {
                                   color: "#5e72e4",
                                 }}
                               >
-                                <h2 className="text-primary">Images</h2>
+                                <h2
+                                  className="text"
+                                  style={{ color: "blue" }}
+                                >
+                                  Images
+                                </h2>
                               </Box>
 
-                              {imagedetails && imagedetails.length > 0 ? (
+                              {outstandDetails?.workOrder_images &&
+                              outstandDetails?.workOrder_images.length > 0 ? (
                                 <Box
                                   style={{
                                     width: "100%",
@@ -1463,23 +1285,28 @@ const WorkOrderDetails = () => {
                                     justifyContent: "center",
                                   }}
                                 >
-                                  {imagedetails.map((imageUrl, index) => (
-                                    <Box
-                                      key={index}
-                                      width="48%"
-                                      style={{ minWidth: "48%", margin: "1%" }}
-                                    >
-                                      <img
-                                        src={imageUrl}
-                                        alt={`propertyimage ${index}`}
+                                  {outstandDetails?.workOrder_images.map(
+                                    (imageUrl, index) => (
+                                      <Box
+                                        key={index}
+                                        width="48%"
                                         style={{
-                                          width: "100%",
-                                          borderRadius: "8px",
-                                          border: "1px solid #ccc",
+                                          minWidth: "48%",
+                                          margin: "1%",
                                         }}
-                                      />
-                                    </Box>
-                                  ))}
+                                      >
+                                        <img
+                                          src={imageUrl}
+                                          alt={`property ${index}`}
+                                          style={{
+                                            width: "100%",
+                                            borderRadius: "8px",
+                                            border: "1px solid #ccc",
+                                          }}
+                                        />
+                                      </Box>
+                                    )
+                                  )}
                                 </Box>
                               ) : (
                                 "No Images Attached"
@@ -1498,18 +1325,12 @@ const WorkOrderDetails = () => {
                                   style={{
                                     minWidth: "100%",
                                     textAlign: "center",
-                                    cursor: "pointer",
-                                    color: "blue",
                                   }}
-                                  onClick={() =>
-                                    navigate(
-                                      `/admin/PropDetails/${propertyDetails?.rentalId}/${propertyDetails?.propertyId}`
-                                    )
-                                  }
                                 >
                                   <span>
-                                    {propertyDetails?.rental_adress || "N/A"} (
-                                    {propertyDetails?.rental_units})
+                                    {outstandDetails?.property_data
+                                      ?.rental_adress || "N/A"}{" "}
+                                    ({outstandDetails?.unit_data?.rental_unit || ""})
                                   </span>
                                 </Box>
                               </Box>
@@ -1529,23 +1350,52 @@ const WorkOrderDetails = () => {
                                   }}
                                 >
                                   <span>
-                                    {propertyDetails?.rental_city ? (
-                                      <>{propertyDetails?.rental_city},</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_city ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_city
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails?.rental_state ? (
-                                      <>{propertyDetails?.rental_state},</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_state ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_state
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails?.rental_country ? (
-                                      <>{propertyDetails?.rental_country},</>
+                                    <br />
+                                    {outstandDetails?.property_data
+                                      ?.rental_country ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_country
+                                        }
+                                        ,
+                                      </>
                                     ) : (
                                       ""
                                     )}{" "}
-                                    {propertyDetails?.rental_postcode ? (
-                                      <>{propertyDetails?.rental_postcode}.</>
+                                    {outstandDetails?.property_data
+                                      ?.rental_postcode ? (
+                                      <>
+                                        {
+                                          outstandDetails?.property_data
+                                            ?.rental_postcode
+                                        }
+                                        .
+                                      </>
                                     ) : (
                                       ""
                                     )}

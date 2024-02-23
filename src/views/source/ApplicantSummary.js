@@ -68,6 +68,8 @@ import { RotatingLines } from "react-loader-spinner";
 
 const ApplicantSummary = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+  const imageUrl = process.env.REACT_APP_IMAGE_URL;
+
   const navigate = useNavigate();
   const { id, admin } = useParams();
   let cookies = new Cookies();
@@ -193,6 +195,10 @@ const ApplicantSummary = () => {
 
   const handleAttachFile = () => {
     setIsAttachFile(true);
+      // Reset the input values
+      setNewNote("");
+      setNewFile(null);
+      setFileName("");
   };
 
   useEffect(() => {
@@ -862,56 +868,85 @@ const ApplicantSummary = () => {
   };
 
   const handleAddFile = () => {
+    // if (newFile !== null) {
+    //   const dataArray = new FormData();
+    //   dataArray.append("b_video", newFile);
+
+    //   let url = "https://cdn.brandingprofitable.com/image_upload.php/";
+    //   axios
+    //     .post(url, dataArray, {
+    //       headers: {
+    //         "Content-Type": "multipart/form-data",
+    //       },
+    //     })
+    //     .then((res) => {
+    //       const imagePath = res?.data?.image_path;
+    //       applicantFormik1.values.applicant_file = imagePath;
+    //     })
+    //     .catch((err) => {
+    //       console.error("Error uploading file:", err); // Log error here
+    //     });
+    // } else {
+    //   // Handle no file selected
+    // }
     if (newFile !== null) {
-      const dataArray = new FormData();
-      dataArray.append("b_video", newFile);
+   
+            try {
+              const form = new FormData();
+              form.append("files", newFile);
 
-      let url = "https://cdn.brandingprofitable.com/image_upload.php/";
-      axios
-        .post(url, dataArray, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
-          const imagePath = res?.data?.image_path;
-          applicantFormik1.values.applicant_file = imagePath;
-        })
-        .catch((err) => {
-          console.error("Error uploading file:", err); // Log error here
-        });
-    } else {
-      // Handle no file selected
+              const res =  axios.post(`${imageUrl}/images/upload`, form);
+              
+              if (
+                res &&
+                res.data &&
+                res.data.files &&
+                res.data.files.length > 0
+              ) {
+                const image = res.data.files[0].url;
+                applicantFormik1.values.applicant_file = image;
+                console.log("Upload success",image)
+              } else {
+                console.error("Unexpected response format:", res);
+              }
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
     }
   };
 
-  const handleSave = () => {
-    if (newNote === "" || newFile === null) {
-      // Display an alert or error message for incomplete fields
-      toast.warning("Please fill in both the note and file.", {
-        position: "top-center",
-      });
+  // const handleSave = () => {
+  //   if (newNote === "" || newFile === null) {
+  //     // Display an alert or error message for incomplete fields
+  //     toast.warning("Please fill in both the note and file.", {
+  //       position: "top-center",
+  //     });
 
-      return; // Prevent further execution
-    }
+  //     return; // Prevent further execution
+  //   }
 
-    if (newNote !== "" && newFile !== null) {
-      setNotes([...notes, newNote]);
-      setFiles([...files, newFile]);
-      setNewNote("");
-      setNewFile("");
-      setIsAttachFile(false); // Close the box after adding data
-      handleSubmit(); // Handle form submission or any other necessary actions
-    } else {
-      // Display an alert or error message for incomplete fields
-      toast.warning("Please fill in both the note and file.", {
-        position: "top-center",
-      });
-    }
-  };
+  //   if (newNote !== "" && newFile !== null) {
+  //     setNotes([...notes, newNote]);
+  //     setFiles([...files, newFile]);
+  //     setNewNote("");
+  //     setNewFile("");
+  //     setIsAttachFile(false); // Close the box after adding data
+  //     handleSubmit(); // Handle form submission or any other necessary actions
+  //   } else {
+  //     // Display an alert or error message for incomplete fields
+  //     toast.warning("Please fill in both the note and file.", {
+  //       position: "top-center",
+  //     });
+  //   }
+  // };
 
   const openFileInNewTab = (selectedFile) => {
     const fileURL = URL.createObjectURL(selectedFile);
+    window.open(fileURL, "_blank");
+  };
+
+  const openFileInBrowser = (selectedFile) => {
+    const fileURL = `https://propertymanager.cloudpress.host/api/images/get-file/2024-02-23-08-52-50-ProjectReportMansi.pdf`;
     window.open(fileURL, "_blank");
   };
 
@@ -934,10 +969,7 @@ const ApplicantSummary = () => {
       });
   };
 
-  const openFileInBrowser = (selectedFile) => {
-    const fileURL = URL.createObjectURL(selectedFile);
-    window.open(fileURL, "_blank");
-  };
+
 
   const applicantFormik1 = useFormik({
     initialValues: {
@@ -967,11 +999,34 @@ const ApplicantSummary = () => {
 
   const hadlenotesandfile = async () => {
     try {
+      if (newFile !== null) {
+   
+        try {
+          const form = new FormData();
+          form.append("files", newFile);
+
+          const res = await axios.post(`${imageUrl}/images/upload`, form);
+          
+          if (
+            res &&
+            res.data &&
+            res.data.files &&
+            res.data.files.length > 0
+          ) {
+            const image = res.data.files[0].url;
+            applicantFormik1.values.applicant_file = image;
+            console.log("Upload success",image)
+          } else {
+            console.error("Unexpected response format:", res);
+          }
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
+}
       const formData = {
         applicant_notes: newNote,
-        applicant_file: newFile.name,
+        applicant_file: applicantFormik1.values.applicant_file,
       };
-
       console.log(formData, "formData");
       // formData.append('applicant_notes', newNote);
       // formData.append('applicant_file', newFile);
@@ -1307,151 +1362,6 @@ const ApplicantSummary = () => {
                             <Grid item xs={9}>
                               <div>
                                 <div>
-                                  {isAttachFile ? (
-                                    <Card
-                                      style={{
-                                        // width: "400px",
-                                        // background: "#F4F6FF",
-                                        // margin: "20px auto",
-                                        position: "relative",
-                                      }}
-                                    >
-                                      <span
-                                        style={{
-                                          position: "absolute",
-                                          top: "5px",
-                                          right: "5px",
-                                          cursor: "pointer",
-                                          fontSize: "24px",
-                                        }}
-                                        onClick={() => {
-                                          setIsAttachFile(false);
-                                        }}
-                                      >
-                                        &times;
-                                      </span>
-                                      <CardBody>
-                                        <CardTitle tag="h4">Notes</CardTitle>
-
-                                        {/* Notes */}
-                                        <div>
-                                          <div>
-                                            <TextField
-                                              type="text"
-                                              size="small"
-                                              fullWidth
-                                              value={newNote}
-                                              onChange={(e) => {
-                                                setNewNote(e.target.value);
-                                              }}
-                                            />
-                                          </div>
-
-                                          <label
-                                            htmlFor="upload_file"
-                                            className="form-control-label"
-                                            style={{
-                                              display: "block",
-                                              marginBottom: "15px",
-                                              marginTop: "20px",
-                                            }}
-                                          >
-                                            Upload Files (Maximum of 10)
-                                          </label>
-                                        </div>
-                                        <div className="d-flex align-items-center">
-                                          <input
-                                            type="file"
-                                            className="form-control-file d-none"
-                                            accept="file/*"
-                                            name="upload_file"
-                                            id="upload_file"
-                                            multiple
-                                            onChange={(e) => {
-                                              setNewFile(e.target.files[0]);
-                                              // Display the file name
-                                              setFileName(
-                                                e.target.files[0]?.name || ""
-                                              );
-                                            }}
-                                          />
-                                          <label
-                                            htmlFor="upload_file"
-                                            className="btn btn-primary mr-3"
-                                            style={{
-                                              borderRadius: "5px",
-                                              padding: "8px",
-                                            }}
-                                          >
-                                            Choose Files
-                                          </label>
-
-                                          {newFile && (
-                                            <p
-                                              style={{
-                                                cursor: "pointer",
-                                                color: "blue",
-                                              }}
-                                              onClick={() =>
-                                                openFileInBrowser(newFile)
-                                              }
-                                            >
-                                              {fileName}
-                                            </p>
-                                          )}
-
-                                          {applicantFormik1.touched
-                                            .applicant_file &&
-                                          applicantFormik1.errors
-                                            .applicant_file ? (
-                                            <div style={{ color: "red" }}>
-                                              {
-                                                applicantFormik1.errors
-                                                  .applicant_file
-                                              }
-                                            </div>
-                                          ) : null}
-                                        </div>
-
-                                        <div className="mt-3">
-                                          <Button
-                                            color="success"
-                                            onClick={hadlenotesandfile}
-                                            style={{ marginRight: "10px" }}
-                                          >
-                                            Save
-                                          </Button>
-
-                                          <Button
-                                            onClick={() =>
-                                              setIsAttachFile(false)
-                                            }
-                                          >
-                                            Cancel
-                                          </Button>
-                                        </div>
-                                      </CardBody>
-                                    </Card>
-                                  ) : (
-                                    <Button
-                                      onClick={handleAttachFile}
-                                      style={{
-                                        marginTop: "3px",
-                                        padding: "10px 20px",
-                                        fontSize: "16px",
-                                        borderRadius: "15px",
-                                        boxShadow:
-                                          "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                                      }}
-                                    >
-                                      Attach note or file
-                                    </Button>
-                                  )}
-                                </div>
-                              </div>
-                              <div>
-                                <div>
-                                  {console.log(checkedItems, "checked")}
                                   <input
                                     type="checkbox"
                                     id="CreditCheck"
@@ -1679,9 +1589,9 @@ const ApplicantSummary = () => {
                                 </Button>
                               </div>
 
-                              {/* {matchedApplicant?.applicant_NotesAndFile
-                                ?.length > 0 && (
-                                <>
+                              {/* Attach note or file section */}
+                              <div className="mt-5">
+                                <div>  
                                   <Row
                                     className="w-100 my-3"
                                     style={{
@@ -1693,11 +1603,158 @@ const ApplicantSummary = () => {
                                       paddingTop: "15px",
                                     }}
                                   >
-                                    <Col>Updates</Col>
+                                    <Col>Notes and Files</Col>
                                   </Row>
+                                  </div>
+                                <div className="mt-2">
+                                  {isAttachFile ? (
+                                    <Card
+                                      style={{
+                                        // width: "400px",
+                                        // background: "#F4F6FF",
+                                        // margin: "20px auto",
+                                        position: "relative",
+                                      }}
+                                    >
+                                      <span
+                                        style={{
+                                          position: "absolute",
+                                          top: "5px",
+                                          right: "5px",
+                                          cursor: "pointer",
+                                          fontSize: "24px",
+                                        }}
+                                        onClick={() => {
+                                          setIsAttachFile(false);
+                                        }}
+                                      >
+                                        &times;
+                                      </span>
+                                      <CardBody>
+                                        <CardTitle tag="h4">Notes</CardTitle>
 
+                                        {/* Notes */}
+                                        <div>
+                                          <div>
+                                            <TextField
+                                              type="text"
+                                              size="small"
+                                              fullWidth
+                                              value={newNote}
+                                              onChange={(e) => {
+                                                setNewNote(e.target.value);
+                                              }}
+                                            />
+                                          </div>
+
+                                          <label
+                                            htmlFor="upload_file"
+                                            className="form-control-label"
+                                            style={{
+                                              display: "block",
+                                              marginBottom: "15px",
+                                              marginTop: "20px",
+                                            }}
+                                          >
+                                            Upload Files (Maximum of 10)
+                                          </label>
+                                        </div>
+                                        <div className="d-flex align-items-center">
+                                          <input
+                                            type="file"
+                                            className="form-control-file d-none"
+                                            accept="file/*"
+                                            name="upload_file"
+                                            id="upload_file"
+                                            multiple
+                                            onChange={(e) => {
+                                              setNewFile(e.target.files[0]);
+                                              // Display the file name
+                                              setFileName(
+                                                e.target.files[0]?.name || ""
+                                              );
+                                            }}
+                                          />
+                                          <label
+                                            htmlFor="upload_file"
+                                            className="btn btn-primary mr-3"
+                                            style={{
+                                              borderRadius: "5px",
+                                              padding: "8px",
+                                            }}
+                                          >
+                                            Choose Files
+                                          </label>
+
+                                          {newFile && (
+                                            <p
+                                              style={{
+                                                cursor: "pointer",
+                                                color: "blue",
+                                              }}
+                                              onClick={() =>
+                                                openFileInBrowser(newFile)
+                                              }
+                                            >{console.log("choose file",fileName)}
+                                              {fileName}
+                                            </p>
+                                          )}
+
+                                          {applicantFormik1.touched
+                                            .applicant_file &&
+                                          applicantFormik1.errors
+                                            .applicant_file ? (
+                                            <div style={{ color: "red" }}>
+                                              {
+                                                applicantFormik1.errors
+                                                  .applicant_file
+                                              }
+                                            </div>
+                                          ) : null}
+                                        </div>
+
+                                        <div className="mt-3">
+                                          <Button
+                                            color="success"
+                                            onClick={()=>{hadlenotesandfile()}}
+                                            style={{ marginRight: "10px" }}
+                                          >
+                                            Save
+                                          </Button>
+
+                                          <Button
+                                            onClick={() =>
+                                              setIsAttachFile(false)
+                                            }
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </div>
+                                      </CardBody>
+                                    </Card>
+                                  ) : (
+                                    <Button
+                                      onClick={handleAttachFile}
+                                      style={{
+                                        marginTop: "3px",
+                                        padding: "10px 20px",
+                                        fontSize: "16px",
+                                        borderRadius: "15px",
+                                        boxShadow:
+                                          "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                                      }}
+                                    >
+                                      Attach Note/File
+                                    </Button>
+                                  )}
+                                </div>
+                              </div>
+
+                              {matchedApplicant?.applicant_NotesAndFile
+                                ?.length > 0 && (
+                                <>
                                   <Row
-                                    className="w-100 mb-1"
+                                    className="w-100 mb-3 mt-3"
                                     style={{
                                       fontSize: "15px",
                                       // textTransform: "uppercase",
@@ -1725,32 +1782,26 @@ const ApplicantSummary = () => {
                                         }}
                                         key={index} // Ensure to provide a unique key when iterating in React
                                       >
-                                        <Col>
-                                          {data.applicant_file && (
-                                            <p>{data.applicant_file}</p>
-                                          )}
-                                        </Col>
-                                        <Col>
-                                          {data.applicant_notes && (
-                                            <div
-                                              style={{
-                                                display: "flex",
-                                                // alignItems: "center",
-                                              }}
+                                        <Col>{data.applicant_notes && <p>{data.applicant_notes}</p>}</Col>
+                                      <Col>
+                                        {data.applicant_file && (
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              // alignItems: "center",
+                                            }}
+                                          >{  console.log("object",data.applicant_file)}
+                                            <p
+                                              onClick={() =>
+                                                openFileInBrowser(data.applicant_file)
+                                              }
                                             >
-                                              <p
-                                                onClick={() =>
-                                                  openFileInNewTab(
-                                                    data.applicant_notes
-                                                  )
-                                                }
-                                              >
-                                                <FileOpenIcon />
-                                                {data.applicant_notes}
-                                              </p>
-                                            </div>
-                                          )}
-                                        </Col>
+                                              <FileOpenIcon />
+                                              {data.applicant_file}
+                                            </p>
+                                          </div>
+                                        )}
+                                      </Col>
                                         <Col>
                                           <ClearIcon
                                             onClick={() => {
@@ -1767,7 +1818,7 @@ const ApplicantSummary = () => {
                                     )
                                   )}
                                 </>
-                              )} */}
+                              )}
 
                               {/* <>
                                 <Row

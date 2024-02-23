@@ -23,6 +23,9 @@ import VendorHeader from "components/Headers/VendorHeader";
 import Cookies from "universal-cookie";
 
 const VendorWorkTable = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const status = urlParams.get("status");
+
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
@@ -33,7 +36,10 @@ const VendorWorkTable = () => {
   const [pageItem, setPageItem] = React.useState(10);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const [searchQuery2, setSearchQuery2] = useState("");
 
+  const [search, setSearch] = React.useState(false);
+  const toggle3 = () => setSearch((prevState) => !prevState);
   const startIndex = (currentPage - 1) * pageItem;
   const endIndex = currentPage * pageItem;
 
@@ -55,7 +61,9 @@ const VendorWorkTable = () => {
 
   const getWorkData = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/work-order/vendor_work/${accessType.vendor_id}`);
+      const response = await axios.get(
+        `${baseUrl}/work-order/vendor_work/${accessType.vendor_id}`
+      );
       setLoader(false);
       setWorkData(response.data.data);
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
@@ -79,10 +87,28 @@ const VendorWorkTable = () => {
   };
 
   const filterRentalsBySearch = () => {
+    if (searchQuery2 && !searchQuery) {
+      if (searchQuery2 === "All") {
+        return workData;
+      }
+
+      if (searchQuery2 === "Over Due") {
+        return workData.filter((rental) => {
+          let currentDate = new Date();
+          let rentalDate = new Date(rental.date);
+          return rentalDate < currentDate && rental.status !== "Complete";
+        });
+      }
+
+      return workData.filter((rental) => {
+        const lowerCaseQuery = searchQuery2.toLowerCase();
+        return rental.status.toLowerCase().includes(lowerCaseQuery);
+      });
+    }
     if (!searchQuery) {
       return workData;
     }
-  
+
     return workData.filter((rental) => {
       const lowerCaseQuery = searchQuery.toLowerCase();
       const isUnitAddress = (rental.unit_no + " " + rental.rental_adress)
@@ -92,12 +118,19 @@ const VendorWorkTable = () => {
         rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
         rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
         rental.status.toLowerCase().includes(lowerCaseQuery) ||
-        (rental.staffmember_name && rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)) || // Check if staffmember_name exists
+        (rental.staffmember_name &&
+          rental.staffmember_name.toLowerCase().includes(lowerCaseQuery)) || // Check if staffmember_name exists
         isUnitAddress ||
         rental.priority.toLowerCase().includes(lowerCaseQuery)
       );
     });
   };
+
+  useEffect(() => {
+    if (status === "Over Due") {
+      setSearchQuery2("Over Due");
+    }
+  }, [status]);
 
   return (
     <>
@@ -127,7 +160,7 @@ const VendorWorkTable = () => {
               <Card className="shadow">
                 <CardHeader className="border-0">
                   <Row>
-                    <Col xs="12" sm="6">
+                    <Col xs="12" sm="6" className="d-flex">
                       <FormGroup>
                         <Input
                           fullWidth
@@ -142,6 +175,77 @@ const VendorWorkTable = () => {
                           }}
                         />
                       </FormGroup>
+                      <Dropdown
+                        isOpen={search}
+                        toggle={toggle3}
+                        className="mx-2"
+                      >
+                        <DropdownToggle
+                          caret
+                          style={{
+                            boxShadow: "none",
+                            border: "1px solid #ced4da",
+                            maxWidth: "200px",
+                            minWidth: "200px",
+                          }}
+                        >
+                          {searchQuery2
+                            ? searchQuery
+                              ? "Select Status"
+                              : searchQuery2
+                            : "Select Status"}
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("New");
+                              setSearchQuery("");
+                            }}
+                          >
+                            New
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("In Progress");
+                              setSearchQuery("");
+                            }}
+                          >
+                            In Progress
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("On Hold");
+                              setSearchQuery("");
+                            }}
+                          >
+                            On Hold
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("Complete");
+                              setSearchQuery("");
+                            }}
+                          >
+                            Complete
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("Over Due");
+                              setSearchQuery("");
+                            }}
+                          >
+                            Over Due
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("All");
+                              setSearchQuery("");
+                            }}
+                          >
+                            All
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
                     </Col>
                   </Row>
                 </CardHeader>
@@ -155,6 +259,7 @@ const VendorWorkTable = () => {
                       <th scope="col">Status</th>
                       <th scope="col">Created At</th>
                       <th scope="col">Updated At</th>
+                      <th scope="col">Due Date</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -165,12 +270,18 @@ const VendorWorkTable = () => {
                         style={{ cursor: "pointer" }}
                       >
                         <td>{vendor.work_subject}</td>
-                        <td>{vendor.rental_data.rental_adress} {vendor.unit_data.rental_unit ? " - " + vendor.unit_data.rental_unit : null}</td>
+                        <td>
+                          {vendor.rental_data.rental_adress}{" "}
+                          {vendor.unit_data.rental_unit
+                            ? " - " + vendor.unit_data.rental_unit
+                            : null}
+                        </td>
                         <td>{vendor.work_category}</td>
                         <td>{vendor.priority}</td>
                         <td>{vendor.status}</td>
                         <td>{vendor.createdAt}</td>
                         <td>{vendor.updateAt || "-"}</td>
+                        <td>{vendor.date || "-"}</td>
                       </tr>
                     ))}
                   </tbody>
