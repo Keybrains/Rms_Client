@@ -80,6 +80,7 @@ function CreditCardForm(props) {
     }),
     onSubmit: (values) => {
       handleSubmit(values);
+      closeModal();
     },
   });
   const handlePropertySelection = (value) => {

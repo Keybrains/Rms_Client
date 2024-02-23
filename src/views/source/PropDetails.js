@@ -284,7 +284,7 @@ const PropDetails = () => {
       rental_sqft: "",
       rental_bath: "",
       rental_bed: "",
-      rental_images: "",
+      rental_images: [],
     },
 
     onSubmit: async (values) => {
@@ -301,7 +301,8 @@ const PropDetails = () => {
           res = await handleSubmit(
             rentalData?.rental_id,
             accessType.admin_id,
-            values
+            values,
+            selectedFiles
           );
         }
 
@@ -2488,6 +2489,7 @@ const PropDetails = () => {
           fileData={fileData}
           togglePhotoresDialog={togglePhotoresDialog}
           addUnitDialogOpen={propertyTypeData.property_type}
+          is_multiunit={propertyTypeData.is_multiunit}
         />
       </Dialog>
       <ToastContainer />

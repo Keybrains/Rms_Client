@@ -67,6 +67,7 @@ const VendorNavbar = (props) => {
       );
       if (response.status === 200) {
         const data = response.data.data;
+        console.log(response.data.data,"janak")
         setVendorNotificationData(data);
         // Process the data as needed
       } else {
@@ -218,10 +219,24 @@ const VendorNavbar = (props) => {
               <DropdownToggle className="pr-0" nav>
                 <Media className="align-items-center">
                   <Media className="ml-2 d-none d-lg-block">
-                    <span className="mb-0 text-sm font-weight-bold">
+                  <span className="avatar avatar-sm rounded-circle">
+                    {/* <img
+                      alt="..."
+                      src={require("../../assets/img/theme/team-4-800x800.jpg")}
+                    /> */}
+
+                    {`${accessType?.vendor_name
+                      ?.split(' ').map(word => word.charAt(0)).join('')}`}
+
+                  </span>
+
+                  </Media>
+                  <Media className="ml-2 d-none d-lg-block">
+                  <span className="mb-0 text-sm font-weight-bold">
                       {accessType?.vendor_name}
                     </span>
                   </Media>
+                   
                 </Media>
               </DropdownToggle>
               <DropdownMenu className="dropdown-menu-arrow" right>

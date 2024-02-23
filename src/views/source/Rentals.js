@@ -628,7 +628,7 @@ const Rentals = () => {
                                 : selectedPropType &&
                                   !selectedPropType.propertysub_type
                                 ? selectedPropType
-                                : "Select Property Type"}
+                                : "Add Property Type"}
                             </DropdownToggle>
                             <DropdownMenu>
                               {Object.values(
@@ -667,7 +667,7 @@ const Rentals = () => {
                                 onClick={() => openCardForm()}
                               >
                                 {/* {subtype.propertysub_type} */}
-                                Add new Properties
+                                Add New Properties
                               </DropdownItem>
                             </DropdownMenu>
                           </Dropdown>
@@ -2693,7 +2693,7 @@ const Rentals = () => {
 
         <Modal isOpen={isModalOpen} toggle={closeModal}>
           <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-            <strong style={{ fontSize: 18 }}>Add new Properties</strong>
+            <strong style={{ fontSize: 18 }}>Add Property Type</strong>
           </ModalHeader>
           <ModalBody>
             <AddpropertyModal

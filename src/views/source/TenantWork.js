@@ -50,6 +50,10 @@ const TenantWork = () => {
   const [pageItem, setPageItem] = React.useState(10);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+  const [searchQuery2, setSearchQuery2] = useState("");
+  const [search, setSearch] = React.useState(false);
+  const toggle3 = () => setSearch((prevState) => !prevState);
+
 
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
@@ -81,24 +85,11 @@ const TenantWork = () => {
         `${baseUrl}/work-order/tenant_work/${accessType.tenant_id}`
       );
 
-      if (Array.isArray(response.data.data)) {
-        // Response is an array of work orders
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setWorkData((prevData) => [...prevData, ...response.data.data]);
-      } else if (typeof response.data.data === "object") {
-        setLoader(false);
+      console.log(response.data, "yash")
+      setTotalPages(Math.ceil(response.data.data.length / pageItem));
+      setWorkData(response.data.data);
+      setLoader(false);
 
-        // Response is a single work order object
-        setTotalPages(Math.ceil(response.data.data.length / pageItem));
-        setWorkData((prevData) => [...prevData, response.data.data]);
-      } else {
-        setLoader(false);
-
-        console.error(
-          "Response data is not an array or object:",
-          response.data.data
-        );
-      }
     } catch (error) {
       setLoader(false);
 
@@ -112,58 +103,145 @@ const TenantWork = () => {
 
   const navigateToDetails = (tenantId) => {
     navigate(`/tenant/Tworkorderdetail/${tenantId}`);
-    console.log(tenantId, "mansi");
   };
+  console.log("first", workData)
+
+  // const filterRentalsBySearch = () => {
+  //   let filteredData = [...workData]; // Create a copy of workData to avoid mutating the original array
+
+  //   if (searchQuery) {
+  //     const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
+  //     filteredData = filteredData.filter((work) => {
+  //       return (
+  //         (work.rental_adress &&
+  //           work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
+  //         (work.work_subject &&
+  //           work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
+  //         (work.work_category &&
+  //           work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
+  //         (work.staffmember_name &&
+  //           work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery)) ||
+  //           (work.status &&
+  //             work.status.toLowerCase().includes(lowerCaseSearchQuery)) 
+  //       );
+  //     });
+  //   }
+
+  //   if (searchQuery2 && !searchQuery) {
+  //     if (searchQuery2 === "All") {
+  //       return filteredData;
+  //     }
+  //     const lowerCaseSearchQuery = searchQuery2.toLowerCase();
+  //     filteredData = filteredData.filter((status) => {
+  //       const isStatusTypeMatch = status?.status
+  //         .toLowerCase()
+  //         .includes(lowerCaseSearchQuery);
+
+  //       return isStatusTypeMatch;
+  //     });
+  //   }
+
+  //   if (upArrow.length > 0) {
+  //     const sortingArrows = upArrow;
+  //     sortingArrows.forEach((value) => {
+  //       switch (value) {
+  //         case "rental_adress":
+  //           filteredData.sort((a, b) =>
+  //             a.rental_adress.localeCompare(b.rental_adress)
+  //           );
+  //           break;
+  //         case "work_subject":
+  //           filteredData.sort((a, b) =>
+  //             a.work_subject.localeCompare(b.work_subject)
+  //           );
+  //           break;
+  //         case "work_category":
+  //           filteredData.sort((a, b) =>
+  //             a.work_category.localeCompare(b.work_category)
+  //           );
+  //           break;
+  //         case "staffmember_name":
+  //           filteredData.sort((a, b) =>
+  //             a.staffmember_name.localeCompare(b.staffmember_name)
+  //           );
+  //           break;
+  //       }
+  //     });
+  //   }
+  //   return filteredData;
+  // };
 
   const filterRentalsBySearch = () => {
-    let filteredData = [...workData]; // Create a copy of workData to avoid mutating the original array
+    const filteredData = workData;
+    if (searchQuery2 && !searchQuery) {
+      if (searchQuery2 === "All") {
+        return workData;
+      } else if (searchQuery2 === "Over Due") {
+        return workData.filter((rental) => {
+          let currentDate = new Date();
+          let rentalDate = new Date(rental.date);
+          return rentalDate < currentDate && rental.status !== "Complete";
+        });
+      } else {
+        return workData.filter((rental) => {
+          const lowerCaseQuery = searchQuery2.toLowerCase();
+          return rental.status.toLowerCase().includes(lowerCaseQuery);
+        });
+      }
+    }
+    if (!searchQuery && !searchQuery2) {
+      return workData;
+    }
 
-    if (searchQuery) {
-      const lowerCaseSearchQuery = searchQuery.toString().toLowerCase();
-      filteredData = filteredData.filter((work) => {
+    if (searchQuery && !searchQuery2) {
+      return workData.filter((rental) => {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        const isUnitAddress = (rental.unit_no + " " + rental.rental_adress)
+          .toLowerCase()
+          .includes(lowerCaseQuery);
+        const hasStaffMemberName =
+          rental.staffmember_name &&
+          rental.staffmember_name.toLowerCase().includes(lowerCaseQuery);
         return (
-          (work.rental_adress &&
-            work.rental_adress.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.work_subject &&
-            work.work_subject.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.work_category &&
-            work.work_category.toLowerCase().includes(lowerCaseSearchQuery)) ||
-          (work.staffmember_name &&
-            work.staffmember_name.toLowerCase().includes(lowerCaseSearchQuery))
+          rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
+          rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
+          rental.status.toLowerCase().includes(lowerCaseQuery) ||
+          isUnitAddress ||
+          hasStaffMemberName ||
+          rental.priority.toLowerCase().includes(lowerCaseQuery)
         );
       });
     }
 
-    if (upArrow.length > 0) {
-      const sortingArrows = upArrow;
-      sortingArrows.forEach((value) => {
-        switch (value) {
-          case "rental_adress":
-            filteredData.sort((a, b) =>
-              a.rental_adress.localeCompare(b.rental_adress)
-            );
-            break;
-          case "work_subject":
-            filteredData.sort((a, b) =>
-              a.work_subject.localeCompare(b.work_subject)
-            );
-            break;
-          case "work_category":
-            filteredData.sort((a, b) =>
-              a.work_category.localeCompare(b.work_category)
-            );
-            break;
-          case "staffmember_name":
-            filteredData.sort((a, b) =>
-              a.staffmember_name.localeCompare(b.staffmember_name)
-            );
-            break;
-        }
-      });
-    }
-    return filteredData;
+    // if (upArrow.length > 0) {
+    //   const sortingArrows = upArrow;
+    //   sortingArrows.forEach((value) => {
+    //     switch (value) {
+    //       case "rental_adress":
+    //         filteredData.sort((a, b) =>
+    //           a.rental_adress.localeCompare(b.rental_adress)
+    //         );
+    //         break;
+    //       case "work_subject":
+    //         filteredData.sort((a, b) =>
+    //           a.work_subject.localeCompare(b.work_subject)
+    //         );
+    //         break;
+    //       case "work_category":
+    //         filteredData.sort((a, b) =>
+    //           a.work_category.localeCompare(b.work_category)
+    //         );
+    //         break;
+    //       case "staffmember_name":
+    //         filteredData.sort((a, b) =>
+    //           a.staffmember_name.localeCompare(b.staffmember_name)
+    //         );
+    //         break;
+    //     }
+    //   });
+    //   return filteredData;
+    // }
   };
-
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
     const paginatedData = filteredData.slice(startIndex, endIndex);
@@ -181,6 +259,8 @@ const TenantWork = () => {
       filterTenantsBySearchAndPage();
     }
   };
+
+
 
   return (
     <>
@@ -224,23 +304,93 @@ const TenantWork = () => {
             ) : (
               <Card className="shadow">
                 <CardHeader className="border-0">
-                  <Row>
-                    <Col xs="12" sm="6">
-                      <FormGroup>
-                        <Input
-                          fullWidth
-                          type="text"
-                          placeholder="Search"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
+                  <Row className="d-flex">
+                    {/* <Col xs="12" sm="6"> */}
+                    <FormGroup className="mr-sm-2">
+                      <Input
+                        fullWidth
+                        type="text"
+                        placeholder="Search"
+                        value={searchQuery}
+                        onChange={(e) => { setSearchQuery(e.target.value); setSearchQuery2("") }}
+                        style={{
+                          width: "100%",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                        }}
+                      />
+                    </FormGroup>
+                    <FormGroup className="mr-sm-2">
+                      <Dropdown isOpen={search} toggle={toggle3}>
+                        <DropdownToggle
+                          caret
                           style={{
-                            width: "100%",
+                            boxShadow: "none",
+                            border: "1px solid #ced4da",
                             maxWidth: "200px",
                             minWidth: "200px",
                           }}
-                        />
-                      </FormGroup>
-                    </Col>
+                        >
+                          {searchQuery2
+                            ? searchQuery
+                              ? "Select Type"
+                              : searchQuery2
+                            : "Select Type"}
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("New");
+                              setSearchQuery("");
+                            }}
+                          >
+                            New
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("In Progress");
+                              setSearchQuery("");
+                            }}
+                          >
+                            In Progress
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("On Hold");
+                              setSearchQuery("");
+                            }}
+                          >
+                            On Hold
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("Complete");
+                              setSearchQuery("");
+                            }}
+                          >
+                            Complete
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("Overdue");
+                              setSearchQuery("");
+                            }}
+                          >
+                            Overdue
+                          </DropdownItem>
+                          <DropdownItem
+                            onClick={() => {
+                              setSearchQuery2("All");
+                              setSearchQuery("");
+                            }}
+                          >
+                            All
+                          </DropdownItem>
+
+                        </DropdownMenu>
+                      </Dropdown>
+                    </FormGroup>
+                    {/* </Col> */}
                   </Row>
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
@@ -323,11 +473,10 @@ const TenantWork = () => {
                       <th scope="col">Updated At</th>
                     </tr>
                   </thead>
-
                   <tbody>
                     {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
-                        key={rental.workOrder_id}
+                        key={rental?.workOrder_id}
                         onClick={() => navigateToDetails(rental?.workOrder_id)}
                         style={{ cursor: "pointer" }}
                       >

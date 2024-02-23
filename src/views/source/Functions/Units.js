@@ -98,9 +98,44 @@ const handleDeleteUnit = (id) => {
 };
 
 //add unit
-const handleSubmit = async (rental_id, admin_id, object) => {
+const handleSubmit = async (rental_id, admin_id, object, file) => {
+  if (file) {
+    try {
+      const uploadPromises = file.map(async (fileItem, i) => {
+        if (fileItem instanceof File) {
+          try {
+            const form = new FormData();
+            form.append("files", fileItem);
+
+            const res = await axios.post(`${imageUrl}/images/upload`, form);
+
+            if (
+              res &&
+              res.data &&
+              res.data.files &&
+              res.data.files.length > 0
+            ) {
+              file[i] = res.data.files[0].url;
+              object.rental_images[i] = res.data.files[0].url;
+            } else {
+              console.error("Unexpected response format:", res);
+            }
+          } catch (error) {
+            console.error("Error uploading file:", error);
+          }
+        } else {
+          object.rental_images[i] = fileItem;
+        }
+      });
+
+      await Promise.all(uploadPromises);
+    } catch (error) {
+      console.error("Error processing file uploads:", error);
+    }
+  }
   object.admin_id = admin_id;
   object.rental_id = rental_id;
+  console.log(object, "yash")
   try {
     const res = await axios.post(`${baseUrl}/unit/unit`, object);
     if (res.data.statusCode === 200) {
@@ -271,6 +306,7 @@ const UnitEdite = ({
   addUnitFormik,
   closeModal,
   addUnitDialogOpen,
+  is_multiunit,
 }) => {
   return (
     <Row style={{ width: "600px" }}>
@@ -278,7 +314,7 @@ const UnitEdite = ({
         <Card style={{ position: "relative" }}>
           <CardBody>
             <form onSubmit={addUnitFormik.handleSubmit}>
-              {addUnitFormik.values.rental_unit === "" ? (
+              {!is_multiunit ? (
                 ""
               ) : (
                 <>

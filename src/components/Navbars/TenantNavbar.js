@@ -127,6 +127,8 @@ const TenantNavbar = (props) => {
     }
   };
 
+  console.log(accessType, "accessType")
+
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -246,16 +248,23 @@ const TenantNavbar = (props) => {
             <UncontrolledDropdown nav>
               <DropdownToggle className="pr-0" nav>
                 <Media className="align-items-center">
-                  {/* <span className="avatar avatar-sm rounded-circle">
-                    <img
+                
+                <span className="avatar avatar-sm rounded-circle">
+                    {/* <img
                       alt="..."
-                      src={require("../../assets/img/theme/profile-cover.jpg")}
-                    />
-                  </span> */}
+                      src={require("../../assets/img/theme/team-4-800x800.jpg")}
+                    /> */}
+                     
+                      {`${accessType?.tenant_firstName
+                        ?.slice(0, 1)
+                        .toUpperCase()}${accessType?.tenant_lastName
+                        ?.slice(0, 1)
+                        .toUpperCase()}`}
+                    
+                  </span>
                   <Media className="ml-2 d-none d-lg-block">
                     <span className="mb-0 text-sm font-weight-bold">
-                      {accessType?.tenant_firstName}{" "}
-                      {accessType?.tenant_lastName}
+                    {accessType?.tenant_firstName} {accessType?.tenant_lastName}
                     </span>
                   </Media>
                 </Media>

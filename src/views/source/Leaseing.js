@@ -13,19 +13,18 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import * as yup from "yup";
 import TenantHeader from "components/Headers/TenantHeader";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { ToastContainer, toast } from "react-toastify";
-import swal from "sweetalert";
-import "react-toastify/dist/ReactToastify.css";
 
 const Leaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
-  const { tenant_id } = useParams();
+  const { tenant_id, admin } = useParams();
   const navigate = useNavigate();
 
   const [accessType, setAccessType] = useState(null);
@@ -67,16 +66,23 @@ const Leaseing = () => {
       tenant_firstName: yup.string().required("Required"),
       tenant_lastName: yup.string().required("Required"),
       tenant_phoneNumber: yup.number().required("Required"),
-      tenant_email: yup.string().required("Required"),
+      tenant_email: yup.string().required("Requied").email("Invalid email address")
+        .required("Email is required"),
+        tenant_alternativeEmail: yup.string().required("Requied").email("Invalid email address"),
+
+      emergency_contact: yup.object().shape({
+        email: yup.string().email("Invalid email address")
+      }),
+
       tenant_password: tenant_id
         ? yup
-            .string()
-            .min(8, "Password is too short")
-            .matches(
-              /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-              "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
-            )
-            .required("Required")
+          .string()
+          .min(8, "Password is too short")
+          .matches(
+            /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+            "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
+          )
+          .required("Required")
         : "",
     }),
     onSubmit: (values) => {
@@ -91,15 +97,16 @@ const Leaseing = () => {
   const addTenant = async () => {
     const object = { ...tenantFormik.values, admin_id: accessType.admin_id };
 
-    setLoader(true);
     try {
+      setLoader(true);
       const res = await axios.post(`${baseUrl}/tenants/tenants`, object);
       if (res.data.statusCode === 200) {
         toast.success("Tenant Added successfully!", {
           position: "top-center",
-          autoClose: 500,
+          autoClose: 900,
+          onClose: () => navigate(`/${admin}/TenantsTable`)
         });
-        handleCloseButtonClick();
+
       } else {
         toast.warning(res.data.message, {
           position: "top-center",
@@ -117,20 +124,27 @@ const Leaseing = () => {
   const editTenant = async () => {
     const object = tenantFormik.values;
 
-    setLoader(true);
     try {
+      setLoader(true);
       const res = await axios.put(
         `${baseUrl}/tenants/tenants/${tenant_id}`,
         object
       );
       if (res.data.statusCode === 200) {
-        swal("Success", "Tenant Updated Successfully", "success");
-        handleCloseButtonClick();
+        toast.success("Tenant Updated successfully!", {
+          position: "top-center",
+          autoClose: 900,
+          onClose: () => navigate(`/${admin}/TenantsTable`)
+        });
       } else {
-        swal("Warning", res.data.message, "warning");
+        toast.warning(res.data.message, {
+          position: "top-center",
+        });
       }
     } catch (error) {
-      swal("", error.message, "error");
+      toast.error(error.message, {
+        position: "top-center",
+      });
       console.error("Error:", error.message);
     }
     setLoader(false);
@@ -150,7 +164,7 @@ const Leaseing = () => {
   };
 
   const handleCloseButtonClick = () => {
-    navigate("../TenantsTable");
+    navigate(`/${admin}/TenantsTable`);
   };
 
   //useeffects
@@ -208,7 +222,7 @@ const Leaseing = () => {
                                   value={tenantFormik.values.tenant_firstName}
                                 />
                                 {tenantFormik.touched.tenant_firstName &&
-                                tenantFormik.errors.tenant_firstName ? (
+                                  tenantFormik.errors.tenant_firstName ? (
                                   <div style={{ color: "red" }}>
                                     {tenantFormik.errors.tenant_firstName}
                                   </div>
@@ -241,7 +255,7 @@ const Leaseing = () => {
                                   value={tenantFormik.values.tenant_lastName}
                                 />
                                 {tenantFormik.touched.tenant_lastName &&
-                                tenantFormik.errors.tenant_lastName ? (
+                                  tenantFormik.errors.tenant_lastName ? (
                                   <div style={{ color: "red" }}>
                                     {tenantFormik.errors.tenant_lastName}
                                   </div>
@@ -352,7 +366,7 @@ const Leaseing = () => {
                                   value={tenantFormik.values.tenant_email}
                                 />
                                 {tenantFormik.touched.tenant_email &&
-                                tenantFormik.errors.tenant_email ? (
+                                  tenantFormik.errors.tenant_email ? (
                                   <div style={{ color: "red" }}>
                                     {tenantFormik.errors.tenant_email}
                                   </div>
@@ -388,6 +402,12 @@ const Leaseing = () => {
                                     tenantFormik.values.tenant_alternativeEmail
                                   }
                                 />
+                                  {tenantFormik.touched.tenant_alternativeEmail &&
+                                  tenantFormik.errors.tenant_alternativeEmail ? (
+                                  <div style={{ color: "red" }}>
+                                    {tenantFormik.errors.tenant_alternativeEmail}
+                                  </div>
+                                ) : null}
                               </FormGroup>
                             </Col>
                           </Row>
@@ -443,9 +463,9 @@ const Leaseing = () => {
                                     </Button>
                                   </div>
                                   {tenantFormik.errors &&
-                                  tenantFormik.errors?.tenant_password &&
-                                  tenantFormik.touched &&
-                                  tenantFormik.touched?.tenant_password ? (
+                                    tenantFormik.errors?.tenant_password &&
+                                    tenantFormik.touched &&
+                                    tenantFormik.touched?.tenant_password ? (
                                     <div style={{ color: "red" }}>
                                       {tenantFormik.errors.tenant_password}
                                     </div>
@@ -565,6 +585,7 @@ const Leaseing = () => {
                                   id="input-unitadd5"
                                   type="text"
                                   name="emergency_contact.name"
+                                  placeholder="Contact Name"
                                   onBlur={tenantFormik.handleBlur}
                                   onChange={tenantFormik.handleChange}
                                   value={
@@ -586,6 +607,7 @@ const Leaseing = () => {
                                   id="input-unitadd6"
                                   type="text"
                                   name="emergency_contact.relation"
+                                  placeholder="Relationship to Tenant"
                                   onBlur={tenantFormik.handleBlur}
                                   onChange={tenantFormik.handleChange}
                                   value={
@@ -618,12 +640,19 @@ const Leaseing = () => {
                                   id="input-unitadd7"
                                   type="text"
                                   name="emergency_contact.email"
+                                  placeholder="Email"
                                   onBlur={tenantFormik.handleBlur}
                                   onChange={tenantFormik.handleChange}
                                   value={
                                     tenantFormik.values.emergency_contact.email
                                   }
                                 />
+                                {tenantFormik.touched?.emergency_contact?.email &&
+                                  tenantFormik.errors?.emergency_contact?.email ? (
+                                  <div style={{ color: "red" }}>
+                                    {tenantFormik.errors?.emergency_contact?.email}
+                                  </div>
+                                ) : null}
                               </FormGroup>
                             </Col>
                             <Col lg="3">
@@ -639,6 +668,7 @@ const Leaseing = () => {
                                   id="input-unitadd8"
                                   type="text"
                                   name="emergency_contact.phoneNumber"
+                                  placeholder="Phone Number"
                                   onBlur={tenantFormik.handleBlur}
                                   onChange={tenantFormik.handleChange}
                                   value={
