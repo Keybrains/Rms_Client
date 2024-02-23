@@ -412,7 +412,7 @@ const Workorder = () => {
                     {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
                         key={rental.workOrder_id}
-                        // onClick={() => navigateToDetails(rental.workOrder_id)}
+                        onClick={() => navigateToDetails(rental.workOrder_id)}
                         style={{ cursor: "pointer" }}
                       >{console.log(rental, "yash")}
                         <td>{rental.work_subject}</td>

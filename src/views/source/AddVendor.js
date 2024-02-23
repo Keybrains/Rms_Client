@@ -59,7 +59,8 @@ const AddVendor = () => {
     validationSchema: yup.object({
       vendor_name: yup.string().required("Requied"),
       vendor_phoneNumber: yup.number().required("Requied"),
-      vendor_email: yup.string().required("Requied"),
+      vendor_email: yup.string().required("Requied").email("Invalid email address")
+        .required("Email is required"),
       vendor_password: yup
         .string()
         .min(8, "Password is too short")
@@ -75,6 +76,8 @@ const AddVendor = () => {
   // State to hold vendor data fetched from the API
   const [vendorData, setVendorData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoading1, setIsLoading1] = useState(false);
+
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -213,7 +216,7 @@ const AddVendor = () => {
                             value={VendorFormik.values.vendor_name}
                           />
                           {VendorFormik.touched.vendor_name &&
-                          VendorFormik.errors.vendor_name ? (
+                            VendorFormik.errors.vendor_name ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_name}
                             </div>
@@ -252,7 +255,7 @@ const AddVendor = () => {
                             }}
                           />
                           {VendorFormik.touched.vendor_phoneNumber &&
-                          VendorFormik.errors.vendor_phoneNumber ? (
+                            VendorFormik.errors.vendor_phoneNumber ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_phoneNumber}
                             </div>
@@ -283,7 +286,7 @@ const AddVendor = () => {
                             value={VendorFormik.values.vendor_email}
                           />
                           {VendorFormik.touched.vendor_email &&
-                          VendorFormik.errors.vendor_email ? (
+                            VendorFormik.errors.vendor_email ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_email}
                             </div>
@@ -327,7 +330,7 @@ const AddVendor = () => {
                             </Button>
                           </div>
                           {VendorFormik.touched.vendor_password &&
-                          VendorFormik.errors.vendor_password ? (
+                            VendorFormik.errors.vendor_password ? (
                             <div style={{ color: "red" }}>
                               {VendorFormik.errors.vendor_password}
                             </div>
@@ -341,8 +344,17 @@ const AddVendor = () => {
                     type="submit"
                     className="btn btn-primary ml-4"
                     style={{ background: "green" }}
+                    disabled={isLoading1} 
+                    onClick={() => {
+                      VendorFormik.handleSubmit(); 
+                      setIsLoading1(true); 
+                    }}
                   >
-                    {vendor_id ? "Update Vendor" : "Add Vendor"}
+                    {isLoading1 ? ( 
+                      <i className="fa fa-spinner fa-spin" />
+                    ) : (
+                      vendor_id ? "Update Vendor" : "Add Vendor" 
+                    )}
                   </button>
 
                   <button

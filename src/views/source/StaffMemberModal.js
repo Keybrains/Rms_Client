@@ -220,9 +220,48 @@ function CreditCardForm(props) {
           "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
         ),
     }),
-    onSubmit: (values) => {
-      handleSubmit(values);
-      console.log(values, "values");
+    onSubmit: async (values, { resetForm }) => {
+      const object = {
+        admin_id: accessType.admin_id,
+        staffmember_name: values.staffmember_name,
+        staffmember_designation: values.staffmember_designation,
+        staffmember_phoneNumber: values.staffmember_phoneNumber,
+        staffmember_email: values.staffmember_email,
+        staffmember_password: values.staffmember_password,
+      };
+      try {
+        if (id === undefined) {
+          const res = await axios.post(
+            `${baseUrl}/staffmember/staff_member`,
+            object
+          );
+          if (res.data.statusCode === 200) {
+            handleResponse(res);
+          } else if (res.data.statusCode === 201) {
+            toast.error(res.data.message, {
+              position: "top-center",
+              autoClose: 1000,
+            });
+          }
+        } else {
+          const editUrl = `${baseUrl}/staffmember/staff_member/${id}`;
+          const res = await axios.put(editUrl, object);
+          if (res.data.statusCode === 200) {
+            handleResponse(res);
+          } else if (res.data.statusCode === 400) {
+            toast.error(res.data.message, {
+              position: "top-center",
+              autoClose: 1000,
+            });
+          }
+        }
+        closeModal(); // Added closeModal() function call to close the modal after successful form submission.
+      } catch (error) {
+        console.error("Error:", error);
+        if (error.response) {
+          console.error("Response Data:", error.response.data);
+        }
+      }
     },
   });
 
