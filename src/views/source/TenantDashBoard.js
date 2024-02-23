@@ -59,9 +59,9 @@ const TenantDashBoard = (props) => {
   const fetchPropertyCount = async () => {
     setLoader(true)
     try {
-      const res = await axios.get(`${baseUrl}/tenants/property_count/${accessType.tenant_id}`);
-      console.log(res.data.data, "khushi");
+      const res = await axios.get(`${baseUrl}/tenants/property_count/${accessType?.tenant_id}`);
       setpropertycount(res.data.data)
+      console.log(res.data.data,"janak")
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -71,6 +71,23 @@ const TenantDashBoard = (props) => {
 
   useEffect(() => {
     fetchPropertyCount();
+  }, [accessType])
+
+  const [newWorkOrders, setNewWorkOrders] = useState([]);
+  const [overdueWorkOrders, setOverdueWorkOrders] = useState([]);
+  const fetchworkorder = async () => {
+    try {
+      const newResponse = await axios.get(`${baseUrl}/tenants/dashboard_workorder/${accessType?.tenant_id}/${accessType?.admin_id}`);
+      setNewWorkOrders(newResponse.data.data.new_workorder.slice(0, 3)); // Slice to get only the first three elements
+      setOverdueWorkOrders(
+        newResponse.data.data.overdue_workorder.slice(0, 3) );
+    } catch (error) {
+      console.error("Error: ", error.message);
+    }
+  }
+
+  useEffect(() => {
+    fetchworkorder();
   }, [accessType])
 
   const toggleNavs = (e, index) => {
@@ -278,89 +295,31 @@ const TenantDashBoard = (props) => {
                             <div className="col-lg-2">
                               <div className="d-flex justify-content-between mb-2">
                                 <span className="">Total </span>
-                                <span> 7 </span>
+                                <span>{newWorkOrders.length}</span>
                               </div>
                             </div>
-                            <div style={bgStyle}>
-                              <div className="d-flex justify-content-start">
-                                <span className="">Leakage in bathroom</span>{" "}
-                              </div>
-                              <div
-                                className="col-lg-10"
-                                style={{ fontSize: "14px" }}
-                              >
-                                <label className="d-flex justify-content-between mb-1">
-                                  <span>13/01/2024</span>
-                                  <span>New</span>
-                                </label>
-                              </div>
-                            </div>
-                            <div style={bgStyle}>
-                              <div className="d-flex justify-content-start">
-                                <span className="">Leakage in bathroom</span>{" "}
-                              </div>
-                              <div
-                                className="col-lg-10"
-                                style={{ fontSize: "14px" }}
-                              >
-                                <label className="d-flex justify-content-between mb-1">
-                                  <span>13/01/2024</span>
-                                  <span>New</span>
-                                </label>
-                              </div>
-                            </div>
-                            <div style={bgStyle}>
-                              <div className="d-flex justify-content-start">
-                                <span className="">Leakage in bathroom</span>{" "}
-                              </div>
-                              <div
-                                className="col-lg-10"
-                                style={{ fontSize: "14px" }}
-                              >
-                                <label className="d-flex justify-content-between mb-1">
-                                  <span>13/01/2024</span>
-                                  <span>New</span>
-                                </label>
-                              </div>
-                            </div>{" "}
-                            {showMoreNewOrders && (
-                              <>
-                                <div style={bgStyle}>
-                                  <div className="d-flex justify-content-start">
-                                    <span className="">Leakage in bathroom</span>{" "}
-                                  </div>
-                                  <div
-                                    className="col-lg-10"
-                                    style={{ fontSize: "14px" }}
-                                  >
-                                    <label className="d-flex justify-content-between mb-1">
-                                      <span>13/01/2024</span>
-                                      <span>New</span>
-                                    </label>
-                                  </div>
-                                </div>{" "}
-                                <div style={bgStyle}>
-                                  <div className="d-flex justify-content-start">
-                                    <span className="">Leakage in bathroom</span>{" "}
-                                  </div>
-                                  <div
-                                    className="col-lg-10"
-                                    style={{ fontSize: "14px" }}
-                                  >
-                                    <label className="d-flex justify-content-between mb-1">
-                                      <span>13/01/2024</span>
-                                      <span>New</span>
-                                    </label>
-                                  </div>
+                            {newWorkOrders.map((order, index) => (
+                              <div key={index}  style={bgStyle}>
+                                <div className="d-flex justify-content-start">
+                                  <span className=""> {order.work_subject}</span>{" "}
                                 </div>
-                              </>
-                            )}
+                                <div
+                                  className="col-lg-10"
+                                  style={{ fontSize: "14px" }}
+                                >
+                                  <label className="d-flex justify-content-between mb-1">
+                                    <span>{order.date}</span>
+                                    <span>{order.status}</span>
+                                  </label>
+                                </div>
+                              </div>
+                            ))}
                             <label
                               className="d-flex justify-content-start"
                               style={{ cursor: "pointer", color: "blue" }}
                               onClick={handleViewMoreNewOrders}
                             >
-                              {showMoreNewOrders ? "View Less" : "View All"}
+                              View All
                             </label>
                           </CardBody>
                         </Card>
@@ -387,104 +346,35 @@ const TenantDashBoard = (props) => {
                             <div className="col-lg-2">
                               <div className="d-flex justify-content-between mb-2">
                                 <span className="">Total </span>
-                                <span> 5 </span>
+                                <span>  {overdueWorkOrders.length}</span>
                               </div>
                             </div>
-                            <div style={bgStyle}>
-                              <div className="d-flex justify-content-start">
-                                <span className="">Leakage in bathroom</span>{" "}
-                              </div>
-                              <div
-                                className="col-lg-10"
-                                style={{ fontSize: "14px" }}
-                              >
-                                <label
-                                  style={spStyle}
-                                  className="d-flex justify-content-between mb-1"
-                                >
-                                  <span>30/01/2024</span>
-                                  <span>In progress</span>
-                                </label>
-                              </div>
-                            </div>
-                            <div style={bgStyle}>
-                              <div className="d-flex justify-content-start">
-                                <span className="">Leakage in bathroom</span>{" "}
-                              </div>
-                              <div
-                                className="col-lg-10"
-                                style={{ fontSize: "14px" }}
-                              >
-                                <label
-                                  style={spStyle}
-                                  className="d-flex justify-content-between mb-1"
-                                >
-                                  <span>30/01/2024</span>
-                                  <span>In progress</span>{" "}
-                                </label>
-                              </div>
-                            </div>
-                            <div style={bgStyle}>
-                              <div className="d-flex justify-content-start">
-                                <span className="">Leakage in bathroom</span>{" "}
-                              </div>
-                              <div
-                                className="col-lg-10"
-                                style={{ fontSize: "14px" }}
-                              >
-                                <label
-                                  style={spStyle}
-                                  className="d-flex justify-content-between mb-1"
-                                >
-                                  <span>30/01/2024</span>
-                                  <span>In progress</span>{" "}
-                                </label>
-                              </div>
-                            </div>{" "}
-                            {showMoreOverdueOrders && (
-                              <>
-                                <div style={bgStyle}>
-                                  <div className="d-flex justify-content-start">
-                                    <span className="">Leakage in bathroom</span>{" "}
-                                  </div>
-                                  <div
-                                    className="col-lg-10"
-                                    style={{ fontSize: "14px" }}
-                                  >
-                                    <label
-                                      style={spStyle}
-                                      className="d-flex justify-content-between mb-1"
-                                    >
-                                      <span>30/01/2024</span>
-                                      <span>In progress</span>{" "}
-                                    </label>
-                                  </div>
-                                </div>{" "}
-                                <div style={bgStyle}>
-                                  <div className="d-flex justify-content-start">
-                                    <span className="">Leakage in bathroom</span>{" "}
-                                  </div>
-                                  <div
-                                    className="col-lg-10"
-                                    style={{ fontSize: "14px" }}
-                                  >
-                                    <label
-                                      style={spStyle}
-                                      className="d-flex justify-content-between mb-1"
-                                    >
-                                      <span>30/01/2024</span>
-                                      <span>In progress</span>
-                                    </label>
-                                  </div>
+                            {overdueWorkOrders.map((order, index) => (
+                              <div key={index} style={bgStyle}>
+                                <div className="d-flex justify-content-start">
+                                  <span className=""> {order.work_subject}</span>{" "}
                                 </div>
-                              </>
-                            )}
+                                <div
+                                  className="col-lg-10"
+                                  style={{ fontSize: "14px" }}
+                                >
+                                  <label
+                                    style={spStyle}
+                                    className="d-flex justify-content-between mb-1"
+                                  >
+                                    <span>{order.date}</span>
+                                    <span>{order.status}</span>
+                                  </label>
+                                </div>
+                              </div>
+                            ))}
+                           
                             <label
                               className="d-flex justify-content-start"
                               style={{ cursor: "pointer", color: "blue" }}
                               onClick={handleViewMoreOverdueOrders}
                             >
-                              {showMoreOverdueOrders ? "View Less" : "View All"}
+                             View All
                             </label>
                           </CardBody>
                         </Card>

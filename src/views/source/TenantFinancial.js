@@ -65,13 +65,13 @@ const TenantFinancial = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
   const [loader, setLoader] = React.useState(true);
 
   const handleSearch = (e) => {
-    setSearchQueryy(e.target.value);
+    setSearchQuery(e.target.value);
   };
   const toggle9 = () => {
     setuserDropdownOpen((prevState) => !prevState);
@@ -407,6 +407,26 @@ const TenantFinancial = () => {
       }
     }
   };
+  const filterLedgerBySearch = () => {
+    if (!searchQuery) {
+      return Ledger; // Return original data if no search query
+    }
+
+    const filteredData = Ledger.filter((item) => {
+      // You can customize this condition based on your search requirements
+      return (
+        item.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.entry.some((data) =>
+          data.account.toLowerCase().includes(searchQuery.toLowerCase())
+        ) ||
+        item.entry.some((data) =>
+          data.memo.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    });
+
+    return filteredData;
+  };
 
   console.log(paymentId ? paymentId : "");
   return (
@@ -451,221 +471,222 @@ const TenantFinancial = () => {
               <Container className="mt--10" fluid>
                 <Row>
                   <div className="col">
-                    {loader ? (
-                      <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                        <RotatingLines
-                          strokeColor="grey"
-                          strokeWidth="5"
-                          animationDuration="0.75"
-                          width="50"
-                          visible={loader}
-                        />
-                      </div>
-                    ) : (
-                      <Card className="shadow">
-                        <CardHeader className="border-0">
-                          <Row>
-                            <Col xs="12" sm="6">
-                              <FormGroup>
-                                <Input
-                                  fullWidth
-                                  type="text"
-                                  placeholder="Search"
-                                  value={searchQuery}
-                                  onChange={(e) =>
-                                    setSearchQuery(e.target.value)
-                                  }
-                                  style={{
-                                    width: "100%",
-                                    maxWidth: "200px",
-                                    minWidth: "200px",
-                                  }}
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                        </CardHeader>
 
-                        <Table
-                          className="align-items-center table-flush"
-                          responsive
-                        >
-                          <thead className="thead-light">
-                            <tr>
-                              <th scope="col">Date</th>
-                              <th scope="col">Type</th>
-                              <th scope="col">Account</th>
-                              <th scope="col">Memo</th>
-                              <th scope="col">Increase</th>
-                              <th scope="col">Decrease</th>
-                              <th scope="col">Balance</th>
-                            </tr>
-                          </thead>
-                          {Ledger.length === 0 ? (
+                    <Card className="shadow">
+                      <CardHeader className="border-0">
+                        <Row>
+                          <Col xs="12" sm="6">
+                            <FormGroup>
+                              <Input
+                                fullWidth
+                                type="text"
+                                placeholder="Search"
+                                value={searchQuery}
+                                onChange={handleSearch}
+                                style={{
+                                  width: "100%",
+                                  maxWidth: "200px",
+                                  minWidth: "200px",
+                                }}
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                      </CardHeader>
+                      {console.log("ledger",Ledger)}
+                      <Table
+                        className="align-items-center table-flush"
+                        responsive
+                      >
+                        {loader ? (
+                          <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                            <RotatingLines
+                              strokeColor="grey"
+                              strokeWidth="5"
+                              animationDuration="0.75"
+                              width="50"
+                              visible={loader}
+                            />
+                          </div> 
+                        ) : filterLedgerBySearch().length === 0 ? (
+                          <>
                             <tbody>
                               <tr className="text-center">
-                                <td colSpan="7" style={{ fontSize: "15px" }}>No Ledger Added</td>
+                                <td colSpan="8" style={{ fontSize: "15px" }}>No Ledger Added</td>
                               </tr>
                             </tbody>
+                          </>
+                        ) : (
+                          <>
+                            <thead className="thead-light">
+                              <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Account</th>
+                                <th scope="col">Memo</th>
+                                <th scope="col">Increase</th>
+                                <th scope="col">Decrease</th>
+                                <th scope="col">Balance</th>
+                              </tr>
+                            </thead>
 
-                          ) : (
                             <tbody>
-                              {Ledger &&
-                                Ledger.length > 0 &&
-                                Ledger.map((item, index) => (
-                                  <tr
-                                    key={index}
-                                    style={{ cursor: "pointer" }}
-                                    className="w-100"
-                                  >
-                                    <td>
-                                      {moment(item?.createdAt).format(
-                                        "DD-MM-YYYY"
-                                      ) || "N/A"}
-                                    </td>
+                              {filterLedgerBySearch().map((item, index) => (
+                                <tr
+                                  key={index}
+                                  style={{ cursor: "pointer" }}
+                                  className="w-100"
+                                >
+                                  <td>
+                                    {moment(item?.createdAt).format(
+                                      "DD-MM-YYYY"
+                                    ) || "N/A"}
+                                  </td>
 
-                                    <td>{item?.type || "N/A"}</td>
+                                  <td>{item?.type || "N/A"}</td>
 
-                                    <td>
-                                      {item?.entry?.map((data, i) => (
+                                  <td>
+                                    {item?.entry?.map((data, i) => (
+                                      <>
+                                        <div className="d-flex">
+                                          <div className="">
+                                            {i + 1}
+                                            {". "}
+                                          </div>
+                                          <div>{data?.account}</div>
+                                        </div>
+                                      </>
+                                    ))}
+                                  </td>
+
+                                  <td>
+                                    {" "}
+                                    {item.is_leaseAdded === true
+                                      ? item.entry.map((data, i) => (
                                         <>
-                                          <div className="d-flex">
-                                            <div className="">
+                                          <div className="d-flex ">
+                                            <div>
                                               {i + 1}
                                               {". "}
                                             </div>
-                                            <div>{data?.account}</div>
+                                            <div>{data.memo}</div>
                                           </div>
                                         </>
-                                      ))}
-                                    </td>
+                                      ))
+                                      : item.entry[0].memo}
+                                  </td>
 
-                                    <td>
-                                      {" "}
-                                      {item.is_leaseAdded === true
-                                        ? item.entry.map((data, i) => (
-                                          <>
-                                            <div className="d-flex ">
-                                              <div>
-                                                {i + 1}
-                                                {". "}
-                                              </div>
-                                              <div>{data.memo}</div>
-                                            </div>
-                                          </>
-                                        ))
-                                        : item.entry[0].memo}
-                                    </td>
-
-                                    {item.type === "charge" ? (
-                                      <td> {item?.total_amount}</td>
-                                    ) : (
-                                      <td>-</td>
-                                    )}
-                                    {item.type === "payment" ? (
-                                      <td> {item?.total_amount}</td>
-                                    ) : (
-                                      <td>-</td>
-                                    )}
-                                    <td>{item?.balance}</td>
-                                    {/* <td></td> */}
-                                  </tr>
-                                ))}
-                            </tbody>)}
-                        </Table>
-                        {paginatedData.length > 0 ? (
-                          <Row>
-                            <Col className="text-right m-3">
-                              <Dropdown
-                                isOpen={leasedropdownOpen}
-                                toggle={toggle2}
-                              >
-                                <DropdownToggle caret>
-                                  {pageItem}
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                  <DropdownItem
-                                    onClick={() => {
-                                      setPageItem(10);
-                                      setCurrentPage(1);
-                                    }}
-                                  >
-                                    10
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() => {
-                                      setPageItem(25);
-                                      setCurrentPage(1);
-                                    }}
-                                  >
-                                    25
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() => {
-                                      setPageItem(50);
-                                      setCurrentPage(1);
-                                    }}
-                                  >
-                                    50
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    onClick={() => {
-                                      setPageItem(100);
-                                      setCurrentPage(1);
-                                    }}
-                                  >
-                                    100
-                                  </DropdownItem>
-                                </DropdownMenu>
-                              </Dropdown>
-                              <Button
-                                className="p-0"
-                                style={{ backgroundColor: "#d0d0d0" }}
-                                onClick={() =>
-                                  handlePageChange(currentPage - 1)
-                                }
-                                disabled={currentPage === 1}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="20"
-                                  height="20"
-                                  fill="currentColor"
-                                  className="bi bi-caret-left"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                                </svg>
-                              </Button>
-                              <span>
-                                Page {currentPage} of {totalPages}
-                              </span>{" "}
-                              <Button
-                                className="p-0"
-                                style={{ backgroundColor: "#d0d0d0" }}
-                                onClick={() =>
-                                  handlePageChange(currentPage + 1)
-                                }
-                                disabled={currentPage === totalPages}
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="20"
-                                  height="20"
-                                  fill="currentColor"
-                                  className="bi bi-caret-right"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                                </svg>
-                              </Button>{" "}
-                            </Col>
-                          </Row>
-                        ) : (
-                          <></>
+                                  {item.type === "charge" ? (
+                                    <td> {item?.total_amount}</td>
+                                  ) : (
+                                    <td>-</td>
+                                  )}
+                                  {item.type === "payment" ? (
+                                    <td> {item?.total_amount}</td>
+                                  ) : (
+                                    <td>-</td>
+                                  )}
+                                  <td>{item?.balance}</td>
+                                  {/* <td></td> */}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </>
                         )}
-                      </Card>
-                    )}
+                      </Table>
+                      {paginatedData.length > 0 ? (
+                        <Row>
+                          <Col className="text-right m-3">
+                            <Dropdown
+                              isOpen={leasedropdownOpen}
+                              toggle={toggle2}
+                            >
+                              <DropdownToggle caret>
+                                {pageItem}
+                              </DropdownToggle>
+                              <DropdownMenu>
+                                <DropdownItem
+                                  onClick={() => {
+                                    setPageItem(10);
+                                    setCurrentPage(1);
+                                  }}
+                                >
+                                  10
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => {
+                                    setPageItem(25);
+                                    setCurrentPage(1);
+                                  }}
+                                >
+                                  25
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => {
+                                    setPageItem(50);
+                                    setCurrentPage(1);
+                                  }}
+                                >
+                                  50
+                                </DropdownItem>
+                                <DropdownItem
+                                  onClick={() => {
+                                    setPageItem(100);
+                                    setCurrentPage(1);
+                                  }}
+                                >
+                                  100
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </Dropdown>
+                            <Button
+                              className="p-0"
+                              style={{ backgroundColor: "#d0d0d0" }}
+                              onClick={() =>
+                                handlePageChange(currentPage - 1)
+                              }
+                              disabled={currentPage === 1}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                className="bi bi-caret-left"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                              </svg>
+                            </Button>
+                            <span>
+                              Page {currentPage} of {totalPages}
+                            </span>{" "}
+                            <Button
+                              className="p-0"
+                              style={{ backgroundColor: "#d0d0d0" }}
+                              onClick={() =>
+                                handlePageChange(currentPage + 1)
+                              }
+                              disabled={currentPage === totalPages}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                className="bi bi-caret-right"
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                              </svg>
+                            </Button>{" "}
+                          </Col>
+                        </Row>
+                      ) : (
+                        <></>
+                      )}
+                    </Card>
+
                   </div>
                 </Row>
                 <br />
