@@ -109,11 +109,9 @@ const PropDetails = () => {
   const [threeMonths, setThreeMonths] = useState([]);
   const [allMonthData, setAllMonthData] = useState("");
   const [financialDropdown, setFinancialDropdown] = useState(false);
-  const [selectedImage, setSelectedImage] = useState("");
   const [propSummary, setPropSummary] = useState(false);
   const [month, setMonth] = useState([]);
   const [addAppliances, setAddAppliances] = useState(false);
-  const [unitImage, setUnitImage] = useState([]);
   const [unitLeases, setunitLeases] = useState([]);
   const [isPhotoresDialogOpen, setPhotoresDialogOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -152,6 +150,7 @@ const PropDetails = () => {
         `${baseUrl}/unit/rental_unit/${rental_id}`
       );
       setpropertyUnitData(response.data.data);
+      setSelectedFiles();
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
@@ -295,7 +294,7 @@ const PropDetails = () => {
         let res;
 
         if (clickedUnitObject.unit_id) {
-          res = await handleUnitDetailsEdit(clickedUnitObject?.unit_id, values);
+          res = await handleUnitDetailsEdit(clickedUnitObject?.unit_id, values, selectedFiles);
         } else {
           res = await handleSubmit(
             rentalData?.rental_id,
@@ -361,6 +360,7 @@ const PropDetails = () => {
     event.stopPropagation();
     setOpenEdite(true);
     setClickedUnitObject(unit);
+    setSelectedFiles(unit?.rental_images);
     addUnitFormik.setValues({
       rental_unit: unit?.rental_unit,
       rental_unit_adress: unit?.rental_unit_adress,
@@ -372,12 +372,9 @@ const PropDetails = () => {
   };
 
   const clearSelectedPhoto = (index, name) => {
-    if (name === "propertyres_image") {
-      const filteredImage = unitImage.filter((item, i) => i !== index);
-
+    if (name === "rental_images") {
       const filteredImage2 = selectedFiles.filter((item, i) => i !== index);
       setSelectedFiles(filteredImage2);
-      setUnitImage(filteredImage);
     }
   };
 
@@ -386,13 +383,6 @@ const PropDetails = () => {
       ...prevSelectedFiles,
       ...e.target.files,
     ]);
-
-    const newFiles = [
-      ...unitImage,
-      ...Array.from(e.target.files).map((file) => URL.createObjectURL(file)),
-    ];
-
-    setUnitImage(newFiles);
   };
 
   const togglePhotoresDialog = () => {
@@ -403,9 +393,7 @@ const PropDetails = () => {
     for (const tenant of tenantsData) {
       for (const unit of propertyUnitData) {
         if (tenant.unit_id === unit.unit_id) {
-          console.log("object yashu");
         }
-        console.log("object yashu2");
       }
     }
   };
@@ -446,10 +434,7 @@ const PropDetails = () => {
       };
 
       axios
-        .put(
-          `${baseUrl}/leases/lease_moveout/${lease_id}`,
-          updatedApplicant
-        )
+        .put(`${baseUrl}/leases/lease_moveout/${lease_id}`, updatedApplicant)
         .then((res) => {
           console.log(res, "res");
           if (res.data.statusCode === 200) {
@@ -1518,10 +1503,36 @@ const PropDetails = () => {
                         >
                           <thead className="thead-light">
                             <tr>
-                              <th scope="col">Unit</th>
-                              <th scope="col">Address</th>
-                              <th scope="col">Tenants</th>
-                              <th scope="col">Actions</th>
+                              {propertyTypeData.is_multiunit ? (
+                                <th scope="col">Unit</th>
+                              ) : (
+                                ""
+                              )}
+                              {propertyTypeData.is_multiunit ? (
+                                <th scope="col">Address</th>
+                              ) : (
+                                ""
+                              )}
+                              <th
+                                scope="col"
+                                className={
+                                  propertyTypeData.is_multiunit
+                                    ? ""
+                                    : "text-center"
+                                }
+                              >
+                                Tenants
+                              </th>
+                              <th
+                                scope="col"
+                                className={
+                                  propertyTypeData.is_multiunit
+                                    ? ""
+                                    : "text-center"
+                                }
+                              >
+                                Actions
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1537,16 +1548,37 @@ const PropDetails = () => {
                                   style={{ cursor: "pointer" }}
                                   className="w-100"
                                 >
-                                  <td>{unit.rental_unit || "N/A"}</td>
-                                  <td>{unit.rental_unit_adress || "N/A"}</td>
-                                  <td>
+                                  {propertyTypeData.is_multiunit ? (
+                                    <td>{unit.rental_unit || "N/A"}</td>
+                                  ) : (
+                                    ""
+                                  )}
+                                  {propertyTypeData.is_multiunit ? (
+                                    <td>{unit.rental_unit_adress || "N/A"}</td>
+                                  ) : (
+                                    ""
+                                  )}
+                                  <td
+                                    className={
+                                      propertyTypeData.is_multiunit
+                                        ? ""
+                                        : "text-center"
+                                    }
+                                  >
                                     {unit.tenant_firstName == null
                                       ? "-"
                                       : unit.tenant_firstName +
                                         " " +
                                         unit.tenant_lastName}
                                   </td>
-                                  <td onClick={(e) => openEditeTab(e, unit)}>
+                                  <td
+                                    className={
+                                      propertyTypeData.is_multiunit
+                                        ? ""
+                                        : "text-center"
+                                    }
+                                    onClick={(e) => openEditeTab(e, unit)}
+                                  >
                                     <EditIcon />
                                   </td>
                                 </tr>
@@ -2291,127 +2323,131 @@ const PropDetails = () => {
                     <CardHeader className="border-0"></CardHeader>
                     <Row>
                       <Col>
-                        <Grid container spacing={2}>
-                          {tenantsData.map((tenant, index) => (
-                            // <Grid item xs={12} sm={6} >
-                            <Box
-                              border="1px solid #ccc"
-                              borderRadius="8px"
-                              padding="16px"
-                              // maxWidth="400px"
-                              margin="10px"
-                              key={index}
-                            >
-                              <Row>
-                                <Col lg="2">
-                                  <Box
-                                    width="40px"
-                                    height="40px"
-                                    display="flex"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    backgroundColor="grey"
-                                    borderRadius="8px"
-                                    color="white"
-                                    fontSize="24px"
-                                  >
-                                    <AssignmentIndIcon />
-                                  </Box>
-                                </Col>
-                                <Col lg="7">
-                                  <div
-                                    style={{
-                                      color: "blue",
-                                      height: "40px",
-                                      fontWeight: "bold",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "start",
-                                    }}
-                                  >
-                                    {tenant.tenant_firstName}{" "}
-                                    {tenant.tenant_lastName}
-                                  </div>
-                                  <div
-                                    style={{
-                                      color: "blue",
-                                      height: "40px",
-                                      fontWeight: "bold",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "start",
-                                    }}
-                                  >
-                                    {tenant.rental_adress} {""}
-                                    {tenant.rental_unit !== "" &&
-                                    tenant.rental_unit !== undefined
-                                      ? `- ${tenant.rental_unit}`
-                                      : null}
-                                  </div>
-                                  <div
-                                    style={{
-                                      // display: "flex",
-                                      // alignItems: "center",
-                                      justifyContent: "start",
-                                    }}
-                                  >
-                                    {tenant.start_date} to {tenant.end_date}
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      paddingTop: "3px",
-                                      flexDirection: "row",
-                                      marginTop: "10px",
-                                    }}
-                                  >
-                                    <Typography
+                        {tenantsData.length > 0 ? (
+                          <Grid container spacing={2}>
+                            {tenantsData.map((tenant, index) => (
+                              // <Grid item xs={12} sm={6} >
+                              <Box
+                                border="1px solid #ccc"
+                                borderRadius="8px"
+                                padding="16px"
+                                // maxWidth="400px"
+                                margin="10px"
+                                key={index}
+                              >
+                                <Row>
+                                  <Col lg="2">
+                                    <Box
+                                      width="40px"
+                                      height="40px"
+                                      display="flex"
+                                      alignItems="center"
+                                      justifyContent="center"
+                                      backgroundColor="grey"
+                                      borderRadius="8px"
+                                      color="white"
+                                      fontSize="24px"
+                                    >
+                                      <AssignmentIndIcon />
+                                    </Box>
+                                  </Col>
+                                  <Col lg="7">
+                                    <div
                                       style={{
-                                        paddingRight: "3px",
-                                        fontSize: "2px",
-                                        color: "black",
+                                        color: "blue",
+                                        height: "40px",
+                                        fontWeight: "bold",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "start",
                                       }}
                                     >
-                                      <PhoneAndroidIcon />
-                                    </Typography>
-                                    {tenant.tenant_phoneNumber}
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      marginTop: "10px",
-                                    }}
-                                  >
-                                    <Typography
+                                      {tenant.tenant_firstName}{" "}
+                                      {tenant.tenant_lastName}
+                                    </div>
+                                    <div
                                       style={{
-                                        paddingRight: "3px",
-                                        fontSize: "7px",
-                                        color: "black",
+                                        color: "blue",
+                                        height: "40px",
+                                        fontWeight: "bold",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "start",
                                       }}
                                     >
-                                      <MailIcon />
-                                    </Typography>
-                                    {tenant.tenant_email}
-                                  </div>
-                                </Col>
-                                <Col lg="3">
-                                  <div
-                                    className="d-flex justify-content(-end h5"
-                                    onClick={() => handleMoveOutClick(tenant)}
-                                    style={{
-                                      cursor: "pointer",
-                                      fontSize: "12px",
-                                    }}
-                                  >
-                                    <LogoutIcon fontSize="small" /> Move out
-                                  </div>
-                                </Col>
-                              </Row>
-                            </Box>
-                            // </Grid>
-                          ))}
-                        </Grid>
+                                      {tenant.rental_adress} {""}
+                                      {tenant.rental_unit !== "" &&
+                                      tenant.rental_unit !== undefined
+                                        ? `- ${tenant.rental_unit}`
+                                        : null}
+                                    </div>
+                                    <div
+                                      style={{
+                                        // display: "flex",
+                                        // alignItems: "center",
+                                        justifyContent: "start",
+                                      }}
+                                    >
+                                      {tenant.start_date} to {tenant.end_date}
+                                    </div>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        paddingTop: "3px",
+                                        flexDirection: "row",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Typography
+                                        style={{
+                                          paddingRight: "3px",
+                                          fontSize: "2px",
+                                          color: "black",
+                                        }}
+                                      >
+                                        <PhoneAndroidIcon />
+                                      </Typography>
+                                      {tenant.tenant_phoneNumber}
+                                    </div>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Typography
+                                        style={{
+                                          paddingRight: "3px",
+                                          fontSize: "7px",
+                                          color: "black",
+                                        }}
+                                      >
+                                        <MailIcon />
+                                      </Typography>
+                                      {tenant.tenant_email}
+                                    </div>
+                                  </Col>
+                                  <Col lg="3">
+                                    <div
+                                      className="d-flex justify-content(-end h5"
+                                      onClick={() => handleMoveOutClick(tenant)}
+                                      style={{
+                                        cursor: "pointer",
+                                        fontSize: "12px",
+                                      }}
+                                    >
+                                      <LogoutIcon fontSize="small" /> Move out
+                                    </div>
+                                  </Col>
+                                </Row>
+                              </Box>
+                              // </Grid>
+                            ))}
+                          </Grid>
+                        ) : (
+                          <div>Tenant not assiged for this property.</div>
+                        )}
                       </Col>
                     </Row>
                   </TabPanel>
@@ -2439,12 +2475,11 @@ const PropDetails = () => {
           setOpenEdite={setOpenEdite}
           clickedObject={clickedUnitObject}
           addUnitFormik={addUnitFormik}
-          selectedImage={selectedImage}
+          selectedFiles={selectedFiles}
           setOpen={setOpen}
           open={open}
           clearSelectedPhoto={clearSelectedPhoto}
-          setSelectedImage={setSelectedImage}
-          unitImage={unitImage}
+          setSelectedFiles={setSelectedFiles}
           fileData={fileData}
           togglePhotoresDialog={togglePhotoresDialog}
           addUnitDialogOpen={propertyTypeData.property_type}
