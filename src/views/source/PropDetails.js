@@ -150,7 +150,6 @@ const PropDetails = () => {
         `${baseUrl}/unit/rental_unit/${rental_id}`
       );
       setpropertyUnitData(response.data.data);
-      setSelectedFiles();
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
@@ -165,7 +164,6 @@ const PropDetails = () => {
       );
       setTenantsData(response.data.data);
       setTenantsCount(response.data.count);
-      console.log(response.data.data, "ja");
     } catch (error) {
       console.error("Error fetching tenant details:", error);
     }
@@ -294,7 +292,11 @@ const PropDetails = () => {
         let res;
 
         if (clickedUnitObject.unit_id) {
-          res = await handleUnitDetailsEdit(clickedUnitObject?.unit_id, values, selectedFiles);
+          res = await handleUnitDetailsEdit(
+            clickedUnitObject?.unit_id,
+            values,
+            selectedFiles
+          );
         } else {
           res = await handleSubmit(
             rentalData?.rental_id,
@@ -1565,11 +1567,7 @@ const PropDetails = () => {
                                         : "text-center"
                                     }
                                   >
-                                    {unit.tenant_firstName == null
-                                      ? "-"
-                                      : unit.tenant_firstName +
-                                        " " +
-                                        unit.tenant_lastName}
+                                    {unit.tenantCount ? unit.tenantCount : "-"}
                                   </td>
                                   <td
                                     className={
@@ -1613,7 +1611,6 @@ const PropDetails = () => {
                         >
                           Delete unit
                         </Button>
-
                         <Grid container>
                           <Grid container md={9} style={{ display: "flex" }}>
                             <div className="din d-flex justify-content-between">
@@ -1632,7 +1629,11 @@ const PropDetails = () => {
                                   ) : (
                                     <>
                                       <img
-                                        src={fone}
+                                        src={
+                                          clickedUnitObject.rental_images
+                                            ? clickedUnitObject.rental_images[0]
+                                            : fone
+                                        }
                                         className="img-fluid rounded-start card-image"
                                         alt="..."
                                         width="400px"
@@ -1989,7 +1990,7 @@ const PropDetails = () => {
                                         </>
                                       ))
                                     ) : (
-                                      <></>
+                                      <>Leases not assigned</>
                                     )}
                                   </tbody>
                                 </Table>
@@ -1997,7 +1998,7 @@ const PropDetails = () => {
 
                               {/* Appliances */}
                               <Row
-                                className="w-100 my-3 "
+                                className="w-100 mt-5 mb-3"
                                 style={{
                                   fontSize: "18px",
                                   textTransform: "capitalize",
@@ -2006,14 +2007,15 @@ const PropDetails = () => {
                                   borderBottom: "1px solid #ddd",
                                 }}
                               >
-                                <Col xs={6}>Appliances</Col>
-                                <Col xs={6} className="text-right">
+                                <Col xs={6}>
+                                  <span>Appliances</span>
                                   <Button
                                     size="sm"
                                     style={{
                                       background: "white",
                                       color: "blue",
                                       marginBottom: "5px",
+                                      marginLeft: "5px",
                                     }}
                                     onClick={() => {
                                       setAddAppliances(!addAppliances);
@@ -2146,7 +2148,10 @@ const PropDetails = () => {
                                 </>
                               ) : (
                                 <>
-                                  <Row>
+                                  <Row
+                                    className="mb-1 m-0 p-0"
+                                    style={{ fontSize: "12px", color: "#000" }}
+                                  >
                                     <Table responsive>
                                       <tbody
                                         className="tbbody p-0 m-0"

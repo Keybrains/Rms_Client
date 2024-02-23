@@ -477,7 +477,10 @@ const UnitEdite = ({
                         paddingLeft: "10px",
                       }}
                     >
-                      <div className="d-flex">
+                      <div
+                        className="d-flex"
+                        style={{ width: "100%", overflow: "auto" }}
+                      >
                         {selectedFiles &&
                           selectedFiles.length > 0 &&
                           selectedFiles.map((unitImg, index) => (
@@ -504,6 +507,8 @@ const UnitEdite = ({
                                   height: "100px",
                                   maxHeight: "100%",
                                   maxWidth: "100%",
+                                  minHeight: "100%",
+                                  minWidth: "100%",
                                   borderRadius: "10px",
                                   cursor: "pointer",
                                 }}
@@ -524,7 +529,6 @@ const UnitEdite = ({
                                   clearSelectedPhoto(index, "rental_images")
                                 }
                               />
-                              {index % 3 === 0 ? <br /> : ""}
                             </div>
                           ))}
                         <OpenImageDialog
