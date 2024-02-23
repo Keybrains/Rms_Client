@@ -130,8 +130,8 @@ const Workorder = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(`${baseUrl}/workorder/delete_workorder`, {
-            data: { _id: id },
+          .delete(`${baseUrl}/work-order/delete_workorder`, {
+            data: { workOrder_id: id },
           })
           .then((response) => {
             if (response.data.statusCode === 200) {
@@ -412,7 +412,7 @@ const Workorder = () => {
                     {filterTenantsBySearchAndPage().map((rental) => (
                       <tr
                         key={rental.workOrder_id}
-                        // onClick={() => navigateToDetails(rental.workOrder_id)}
+                        onClick={() => navigateToDetails(rental.workOrder_id)}
                         style={{ cursor: "pointer" }}
                       >{console.log(rental, "yash")}
                         <td>{rental.work_subject}</td>

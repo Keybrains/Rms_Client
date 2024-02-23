@@ -112,6 +112,7 @@ const RentRollDetail = () => {
     fetchTenantsData();
   }, [lease_id]);
 
+
   const [value, setValue] = useState("Summary");
   const handleChange = (value) => {
     setValue(value);
@@ -152,6 +153,7 @@ const RentRollDetail = () => {
             });
             handleModalClose();
             fetchTenantsData();
+            fetchLeaseData();
           }
         })
         .catch((err) => {
@@ -425,9 +427,7 @@ const RentRollDetail = () => {
                                                 )}
                                               </td>
                                               <td>
-                                                <Link
-                                                  to={`/${admin}/rentrolldetail/${leaseData?.lease_id}}`}
-                                                >
+                                               
                                                   {formatDateWithoutTime(
                                                     leaseData?.start_date
                                                   ) +
@@ -435,7 +435,7 @@ const RentRollDetail = () => {
                                                     formatDateWithoutTime(
                                                       leaseData?.end_date
                                                     ) || "N/A"}
-                                                </Link>
+                                              
                                               </td>
                                               <td>
                                                 {leaseData?.rental_adress ||
@@ -480,7 +480,7 @@ const RentRollDetail = () => {
                                           fontWeight: "bold",
                                         }}
                                       >
-                                        {totalAmount < 0 ? `$(${Math.abs(totalAmount)})` : `$${totalAmount}`}
+                                        {/* {totalAmount < 0 ? `$(${Math.abs(totalAmount)})` : `$${totalAmount}`} */} $ 0.00
                                       </Typography>
                                     </div>
                                     <hr
@@ -567,11 +567,11 @@ const RentRollDetail = () => {
                                     >
                                       <Button
                                         color="primary"
-                                        onClick={() =>
-                                          navigate(
-                                            `/${admin}/AddPayment/${lease_id}`
-                                          )
-                                        }
+                                        // onClick={() =>
+                                        //   navigate(
+                                        //     `/${admin}/AddPayment/${lease_id}`
+                                        //   )
+                                        // }
                                         style={{
                                           background: "white",
                                           color: "blue",
@@ -715,9 +715,9 @@ const RentRollDetail = () => {
                         >
                           <Button
                             color="primary"
-                            onClick={() =>
-                              navigate(`/${admin}/AddPayment/${lease_id}`)
-                            }
+                            // onClick={() =>
+                            //   navigate(`/${admin}/AddPayment/${lease_id}`)
+                            // }
                             style={{
                               background: "white",
                               color: "blue",
@@ -728,9 +728,9 @@ const RentRollDetail = () => {
                           </Button>
                           <Button
                             color="primary"
-                            onClick={() =>
-                              navigate(`/${admin}/AddCharge/${lease_id}`)
-                            }
+                            // onClick={() =>
+                            //   navigate(`/${admin}/AddCharge/${lease_id}`)
+                            // }
                             style={{ background: "white", color: "blue" }}
                           >
                             Enter Charge
@@ -933,16 +933,15 @@ const RentRollDetail = () => {
                       <br />
                     </Container>
                   </TabPanel>
-
+                                                    {console.log("lease data manu",leaseData)}
                   <TabPanel value="Tenant">
                     <CardHeader className="border-0">
                       <span>
                         <span>Property :</span>
                         <h2 style={{ color: "blue" }}>
-                          {leaseData?.rental_adress +
-                            " - " +
-                            leaseData?.rental_unit}
+                          {leaseData?.rental_adress + (leaseData?.rental_unit ? " - " + leaseData?.rental_unit : "")}
                         </h2>
+
                       </span>
                     </CardHeader>
                     <Row>
@@ -976,7 +975,7 @@ const RentRollDetail = () => {
                                   <Modal isOpen={showModal}>
                                     <ModalHeader>
                                       <strong style={{ fontSize: 18 }}>
-                                        Move out tenants
+                                        Move Out Tenants
                                       </strong>
                                     </ModalHeader>
                                     <ModalBody>
@@ -1071,7 +1070,7 @@ const RentRollDetail = () => {
                                     </ModalBody>
                                     <ModalFooter>
                                       <Button
-                                        style={{ backgroundColor: "#008000" }}
+                                        style={{ backgroundColor: "#008000", color:"#ffffff" }}
                                         onClick={() =>
                                           handleMoveout(tenant.lease_id)
                                         }
@@ -1227,155 +1226,251 @@ const RentRollDetail = () => {
                         )}
                       </Col>
 
-                      <Col xs="12" md="6" lg="4" xl="3">
-                        <Card style={{ background: "#F4F6FF" }}>
-                          <CardContent>
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                              }}
-                            >
-                              <Typography
-                                sx={{
-                                  fontSize: 14,
-                                  fontWeight: "bold",
-                                }}
-                                color="text.secondary"
-                                gutterBottom
-                              >
-                                Credit balance:
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  fontSize: 14,
-                                  marginLeft: "10px",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                {totalAmount}
-                              </Typography>
-                            </div>
-                            <hr
-                              style={{
-                                marginTop: "2px",
-                                marginBottom: "6px",
-                              }}
-                            />
-                            <>
-                              <div>
-                                <div className="entry-container">
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      flexDirection: "row",
-                                      alignItems: "center",
-                                      marginBottom: "5px",
-                                    }}
-                                  >
-                                    <Typography
-                                      sx={{
-                                        fontSize: 14,
-                                        fontWeight: "bold",
-                                        marginRight: "10px",
+                      {/* <Col xs="12" md="6" lg="4" xl="3"> */}
+                      <div className="col-md-4 mt-3">
+                                <Card style={{ background: "#F4F6FF" }}>
+                                  <CardContent>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
                                       }}
-                                      color="text.secondary"
-                                      gutterBottom
                                     >
-                                      Rent:
-                                    </Typography>
-                                    <>
                                       <Typography
                                         sx={{
                                           fontSize: 14,
                                           fontWeight: "bold",
+                                        }}
+                                        color="text.secondary"
+                                        gutterBottom
+                                      >
+                                        Credit balance:
+                                      </Typography>
+                                      <Typography
+                                        sx={{
+                                          fontSize: 14,
+                                          marginLeft: "10px",
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        {/* {totalAmount < 0 ? `$(${Math.abs(totalAmount)})` : `$${totalAmount}`} */} $ 0.00
+                                      </Typography>
+                                    </div>
+                                    <hr
+                                      style={{
+                                        marginTop: "2px",
+                                        marginBottom: "6px",
+                                      }}
+                                    />
+
+                                    <>
+                                      <div>
+                                        <div className="entry-container">
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              flexDirection: "row",
+                                              alignItems: "center",
+                                              marginBottom: "5px",
+                                            }}
+                                          >
+                                            <Typography
+                                              sx={{
+                                                fontSize: 14,
+                                                fontWeight: "bold",
+                                                marginRight: "10px",
+                                              }}
+                                              color="text.secondary"
+                                              gutterBottom
+                                            >
+                                              Rent:
+                                            </Typography>
+                                            <Typography
+                                              sx={{
+                                                fontSize: 14,
+                                                fontWeight: "bold",
+                                                marginRight: "10px",
+                                              }}
+                                              color="text.secondary"
+                                              gutterBottom
+                                            >
+                                              {leaseData?.amount}
+                                            </Typography>
+                                          </div>
+                                        </div>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            marginTop: "10px",
+                                            marginRight: "10px",
+                                          }}
+                                        >
+                                          <Typography
+                                            sx={{
+                                              fontSize: 14,
+                                              fontWeight: "bold",
+                                            }}
+                                            color="text.secondary"
+                                            gutterBottom
+                                          >
+                                            Due date:
+                                          </Typography>
+                                          <Typography
+                                            sx={{
+                                              fontSize: 14,
+                                              fontWeight: "bold",
+                                              marginRight: "10px",
+                                            }}
+                                            color="text.secondary"
+                                            gutterBottom
+                                          >
+                                            {leaseData?.date}
+                                          </Typography>
+                                        </div>
+                                      </div>
+                                    </>
+
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Button
+                                        color="primary"
+                                        // onClick={() =>
+                                        //   navigate(
+                                        //     `/${admin}/AddPayment/${lease_id}`
+                                        //   )
+                                        // }
+                                        style={{
+                                          background: "white",
+                                          color: "blue",
+                                          marginRight: "10px",
+                                        }}
+                                      >
+                                        Receive Payment
+                                      </Button>
+                                      <Typography
+                                        // key={index}
+                                        sx={{
+                                          fontSize: 14,
+                                          marginLeft: "10px",
+                                          paddingTop: "10px",
+                                          cursor: "pointer",
+                                          color: "blue",
+                                        }}
+                                      >
+                                        <div
+                                          onClick={() => setValue(`Financial`)}
+                                        >
+                                          Lease Ledger
+                                        </div>
+                                      </Typography>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                                {/* <Card
+                                  className="w-100 mt-3"
+                                  style={{ background: "#F4F6FF" }}
+                                >
+                                  <CardContent>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                      }}
+                                    >
+                                      <Typography
+                                        sx={{
+                                          fontSize: 18,
+                                          fontWeight: "bold",
+                                          fontFamily: "Arial",
+                                          textTransform: "capitalize",
                                           marginRight: "10px",
                                         }}
                                         color="text.secondary"
                                         gutterBottom
                                       >
-                                        {leaseData?.amount}
+                                        Credit Cards
                                       </Typography>
-                                    </>
-                                  </div>
-                                </div>
+                                    </div>
+                                    {cardDetalis && cardDetalis.length > 0 && (
+                                      <Table responsive>
+                                        <tbody>
+                                          <tr>
+                                            <th>Card Number</th>
+                                            <th>Expiration Date</th>
+                                          </tr>
+                                          {cardDetalis.map((item, index) => (
+                                            <tr
+                                              key={index}
+                                              style={{ marginBottom: "10px" }}
+                                            >
+                                              <td>
+                                                <Typography
+                                                  sx={{
+                                                    fontSize: 14,
+                                                    fontWeight: "bold",
+                                                    fontStyle: "italic",
+                                                    fontFamily: "Arial",
+                                                    textTransform: "capitalize",
+                                                    marginRight: "10px",
+                                                  }}
+                                                  color="text.secondary"
+                                                  gutterBottom
+                                                >
+                                                  {item.card_number.slice(
+                                                    0,
+                                                    4
+                                                  ) +
+                                                    "*".repeat(8) +
+                                                    item.card_number.slice(-4)}
+                                                </Typography>
+                                              </td>
+                                              <td>
+                                                <Typography
+                                                  sx={{
+                                                    fontSize: 14,
+                                                    marginRight: "10px",
+                                                  }}
+                                                  color="text.secondary"
+                                                  gutterBottom
+                                                >
+                                                  {item.exp_date}
+                                                </Typography>
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </Table>
+                                    )}
+
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      <Button
+                                        color="primary"
+                                        onClick={() => openCardForm()}
+                                        style={{
+                                          background: "white",
+                                          color: "blue",
+                                          marginRight: "10px",
+                                        }}
+                                      >
+                                        Add Credit Card
+                                      </Button>
+                                    </div>
+                                  </CardContent>
+                                </Card> */}
                               </div>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  marginTop: "10px",
-                                }}
-                              >
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    fontWeight: "bold",
-                                  }}
-                                  color="text.secondary"
-                                  gutterBottom
-                                >
-                                  Due date :
-                                </Typography>
-                                <>
-                                  <Typography
-                                    sx={{
-                                      fontSize: 14,
-                                      fontWeight: "bold",
-                                      marginRight: "10px",
-                                    }}
-                                    color="text.secondary"
-                                    gutterBottom
-                                  >
-                                    {leaseData?.date}
-                                  </Typography>
-                                </>
-                              </div>
-                            </>
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                marginTop: "10px",
-                              }}
-                            >
-                              <Button
-                                color="primary"
-                                onClick={() =>
-                                  navigate(`/${admin}/AddPayment/${lease_id}`)
-                                }
-                                style={{
-                                  background: "white",
-                                  color: "blue",
-                                  marginRight: "10px",
-                                }}
-                              >
-                                Receive Payment
-                              </Button>
-                              <>
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    marginLeft: "10px",
-                                    paddingTop: "10px",
-                                    cursor: "pointer",
-                                    color: "blue",
-                                  }}
-                                >
-                                  <Link
-                                    to={`/admin/rentrolldetail/${lease_id}/?source=payment`}
-                                    onClick={() => {
-                                      setValue(`Financial`);
-                                    }}
-                                  >
-                                    Lease Ledger
-                                  </Link>
-                                </Typography>
-                              </>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </Col>
+                      {/* </Col> */}
                     </Row>
                   </TabPanel>
                 </TabContext>

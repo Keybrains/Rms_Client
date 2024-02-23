@@ -1107,7 +1107,7 @@ const StaffWorkDetails = () => {
                                   <span>
                                     {outstandDetails?.property_data
                                       ?.rental_adress || "N/A"}{" "}
-                                    ({outstandDetails?.unit_data.rental_unit})
+                                    ({outstandDetails?.unit_data?.rental_unit})
                                   </span>
                                 </Box>
                               </Box>

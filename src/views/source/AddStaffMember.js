@@ -78,6 +78,10 @@ const AddStaffMember = () => {
     validationSchema: yup.object({
       staffmember_name: yup.string().required("Required"),
       staffmember_designation: yup.string().required("Required"),
+      staffmember_email: yup
+        .string()
+        .email("Invalid email address")
+        .required("Email is required"),
       staffmember_password: id
         ? yup
             .string()

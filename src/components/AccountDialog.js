@@ -69,12 +69,13 @@ function AccountDialog(props) {
     try {
       const res = await axios.post(`${baseUrl}/accounts/accounts`, object);
       if (res.status === 200) {
-        toast.success('', res.data.message,'success', {
+        toast.success("New Account Added", {
           position: 'top-center',
           autoClose: 800,
         })
         accountFormik.resetForm();
         props.setAddBankAccountDialogOpen(false);
+        props.fetchAccounts();
       } else {
    
         toast.error(res.data.message, {
@@ -84,7 +85,7 @@ function AccountDialog(props) {
       }
     } catch (error) {
       if (error.response.status === 400) {
-        toast.warning('Account already exists', {
+        toast.warning("Account already exists", {
           position: 'top-center',
           autoClose: 800,
         })

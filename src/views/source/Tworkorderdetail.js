@@ -1506,7 +1506,7 @@ const TWorkOrderDetails = () => {
                                 >
                                   <span>
                                     {outstandDetails?.property_data?.rental_adress || "N/A"} (
-                                    {outstandDetails?.unit_data?.rental_unit ? outstandDetails.unit_data.rental_unit : "N/A"})
+                                    {outstandDetails?.unit_data?.rental_unit ? outstandDetails?.unit_data?.rental_unit : "N/A"})
                                   </span>
 
                                 </Box>

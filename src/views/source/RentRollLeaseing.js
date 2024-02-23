@@ -261,6 +261,10 @@ const RentRollLeaseing = () => {
       } else {
         setRecurringData((prevRecurringData) => [...prevRecurringData, values]);
       }
+      toast.success("Recurring Charge Added", {
+        position: "top-center",
+        autoClose: 1000,
+      });
       setOpenRecurringDialog(false);
       resetForm();
     },
@@ -293,6 +297,10 @@ const RentRollLeaseing = () => {
       } else {
         setOneTimeData((prevOneTimeData) => [...prevOneTimeData, values]);
       }
+      toast.success("One Time Charge Added", {
+        position: "top-center",
+        autoClose: 1000,
+      });
       setOpenOneTimeChargeDialog(false);
       resetForm();
     },
@@ -342,9 +350,12 @@ const RentRollLeaseing = () => {
       tenant_firstName: yup.string().required("Required"),
       tenant_lastName: yup.string().required("Required"),
       tenant_phoneNumber: yup.number().required("Required"),
-      tenant_email: yup.string().required("Required"),
-      tenant_password: lease_id
-        ? yup
+      tenant_email: yup
+      .string()
+      .email("Invalid email address")
+      .required("Email is required"),
+      tenant_password: 
+         yup
             .string()
             .min(8, "Password is too short")
             .matches(
@@ -352,9 +363,13 @@ const RentRollLeaseing = () => {
               "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
             )
             .required("Required")
-        : "",
+        
     }),
     onSubmit: (values) => {
+      toast.success("Tenant Added Successfully", {
+        position: "top-center",
+        autoClose: 1000,
+      });
       setSelectedTenantData({
         tenant_firstName: values.tenant_firstName,
         tenant_lastName: values.tenant_lastName,
@@ -383,29 +398,22 @@ const RentRollLeaseing = () => {
       cosigner_firstName: yup.string().required("Required"),
       cosigner_lastName: yup.string().required("Required"),
       cosigner_phoneNumber: yup.number().required("Required"),
-      cosigner_email: yup.string().required("Required"),
+      cosigner_email: yup
+      .string()
+      .email("Invalid email address")
+      .required("Email is required"),
     }),
     onSubmit: (values) => {
+      toast.success("Cosigner Added Successfully", {
+        position: "top-center",
+        autoClose: 1000,
+      });
       setOpenTenantsDialog(false);
       setCosignerData(values);
     },
   });
 
-  // kp-----------------------
-
-  // const openCardForm = () => {
-  //   console.log("Opening card form"); // Add this line
-  //   setIsModalOpen(true);
-  // };
-
-  // const closeModal = () => {
-  //   setIsModalOpen(false);
-  // };
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-
   const { tenantId, entryIndex } = useParams();
-
-  // kp-----------------------
 
   //update lease
   const updateLease = async () => {
@@ -725,7 +733,6 @@ const RentRollLeaseing = () => {
       emergency_contact: { name, relation, email, phoneNumber },
     } = tenant;
     if (event.target.checked) {
-      setOpenTenantsDialog(false);
       setShowTenantTable(false);
       tenantFormik.setValues({
         tenant_id,
@@ -745,11 +752,6 @@ const RentRollLeaseing = () => {
           email,
           phoneNumber,
         },
-      });
-      setSelectedTenantData({
-        tenant_firstName,
-        tenant_lastName,
-        tenant_phoneNumber,
       });
     } else {
       setCheckedCheckbox("");
@@ -888,7 +890,7 @@ const RentRollLeaseing = () => {
   };
 
   const handleCloseButtonClick = () => {
-    navigate("/" + admin + "/TenantsTable");
+    navigate("/" + admin + "/RentRoll");
   };
 
   const handleDateCheck = async () => {
@@ -2283,7 +2285,7 @@ const RentRollLeaseing = () => {
                                       >
                                         Add Tenant
                                       </button>
-                                      <Button onClick={handleClose}>
+                                      <Button onClick={()=>{handleClose(); tenantFormik.resetForm() }}>
                                         Cancel
                                       </Button>
                                     </div>
@@ -3572,6 +3574,7 @@ const RentRollLeaseing = () => {
                     setAddBankAccountDialogOpen={setAddBankAccountDialogOpen}
                     accountTypeName={accountTypeName}
                     adminId={accessType?.admin_id}
+                    fetchAccounts={fetchAccounts}
                   />
 
                   {/* //Recurring Charges Data */}
