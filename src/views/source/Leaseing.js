@@ -192,7 +192,6 @@ const Leaseing = () => {
                                 >
                                   First Name *
                                 </label>
-                                <br />
                                 <Input
                                   id="tenant_firstName"
                                   className="form-control-alternative"
@@ -662,53 +661,54 @@ const Leaseing = () => {
                       </Col>
                     </Row>
                   </div>
-
-                  {loader ? (
-                    <button
-                      type="submit"
+                  <div className="pl-lg-4">
+                    {loader ? (
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "not-allowed" }}
+                        disabled
+                      >
+                        Loading...
+                      </button>
+                    ) : tenant_id ? (
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "pointer" }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          tenantFormik.handleSubmit();
+                        }}
+                      >
+                        Update Tenant
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        className="btn btn-primary "
+                        style={{ background: "green", cursor: "pointer" }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          tenantFormik.handleSubmit();
+                        }}
+                      >
+                        Add Tenant
+                      </button>
+                    )}
+                    <Button
+                      color="primary"
+                      onClick={handleCloseButtonClick}
                       className="btn btn-primary"
-                      style={{ background: "green", cursor: "not-allowed" }}
-                      disabled
-                    >
-                      Loading...
-                    </button>
-                  ) : tenant_id ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        tenantFormik.handleSubmit();
+                      style={{
+                        background: "white",
+                        color: "black",
+                        cursor: "pointer",
                       }}
                     >
-                      Update Tenant
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        tenantFormik.handleSubmit();
-                      }}
-                    >
-                      Add Tenant
-                    </button>
-                  )}
-                  <Button
-                    color="primary"
-                    onClick={handleCloseButtonClick}
-                    className="btn btn-primary"
-                    style={{
-                      background: "white",
-                      color: "black",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Cancel
-                  </Button>
+                      Cancel
+                    </Button>
+                  </div>
                 </Form>
               </CardBody>
             </Card>

@@ -23,6 +23,14 @@ import Cookies from "universal-cookie";
 import { jwtDecode } from "jwt-decode";
 
 const StaffWorkTable = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const status = urlParams.get("status");
+
+  useEffect(() => {
+    if (status === "Over Due") {
+      setSearchQuery2("Over Due");
+    }
+  }, [status]);
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
@@ -38,6 +46,11 @@ const StaffWorkTable = () => {
   const [pageItem, setPageItem] = React.useState(10);
   const [leasedropdownOpen, setLeaseDropdownOpen] = React.useState(false);
   const toggle2 = () => setLeaseDropdownOpen((prevState) => !prevState);
+
+  const [searchQuery2, setSearchQuery2] = useState("");
+
+  const [search, setSearch] = React.useState(false);
+  const toggle3 = () => setSearch((prevState) => !prevState);
 
   const [accessType, setAccessType] = useState(null);
 
@@ -84,21 +97,19 @@ const StaffWorkTable = () => {
   };
 
   const getRentalData = async () => {
-    setLoader(true)
+    setLoader(true);
     try {
       const response = await axios.get(
         `${baseUrl}/work-order/staff_work/${accessType.staffmember_id}`
       );
       setWorkData(response.data.data);
-      console.log(response.data.data, 'this is fetched data')
+      console.log(response.data.data, "this is fetched data");
       setStaffMember(response.data.data.staffmember_name);
       setTotalPages(Math.ceil(response.data.data.length / pageItem) || 1);
     } catch (error) {
       console.error("Error fetching work order data:", error);
-
-    }
-    finally {
-      setLoader(false)
+    } finally {
+      setLoader(false);
     }
   };
   useEffect(() => {
@@ -113,7 +124,7 @@ const StaffWorkTable = () => {
 
   const navigateToDetails = (workorder_id) => {
     navigate(`/staff/staffworkdetails/${workorder_id}`);
-    console.log(workorder_id, 'id is -===0');
+    console.log(workorder_id, "id is -===0");
   };
 
   // const filterRentalsBySearch = () => {
@@ -133,17 +144,40 @@ const StaffWorkTable = () => {
   //     );
   //   });
   // };
+  console.log(searchQuery2, "yash");
+
   const filterRentalsBySearch = () => {
+    if (searchQuery2 && !searchQuery) {
+      if (searchQuery2 === "All") {
+        return workData;
+      }
+
+      if (searchQuery2 === "Over Due") {
+        return workData.filter((rental) => {
+          let currentDate = new Date();
+          let rentalDate = new Date(rental.date);
+          return rentalDate < currentDate && rental.status !== "Complete";
+        });
+      }
+
+      return workData.filter((rental) => {
+        const lowerCaseQuery = searchQuery2.toLowerCase();
+        return rental.status.toLowerCase().includes(lowerCaseQuery);
+      });
+    }
     if (!searchQuery) {
       return workData;
     }
-  
+
+    setSearchQuery("");
     return workData.filter((rental) => {
       const lowerCaseQuery = searchQuery.toLowerCase();
       const isUnitAddress = (rental.unit_no + " " + rental.rental_adress)
         .toLowerCase()
         .includes(lowerCaseQuery);
-      const hasStaffMemberName = rental.staffmember_name && rental.staffmember_name.toLowerCase().includes(lowerCaseQuery);
+      const hasStaffMemberName =
+        rental.staffmember_name &&
+        rental.staffmember_name.toLowerCase().includes(lowerCaseQuery);
       return (
         rental.work_subject.toLowerCase().includes(lowerCaseQuery) ||
         rental.work_category.toLowerCase().includes(lowerCaseQuery) ||
@@ -154,7 +188,6 @@ const StaffWorkTable = () => {
       );
     });
   };
-  
 
   const filterTenantsBySearchAndPage = () => {
     const filteredData = filterRentalsBySearch();
@@ -176,11 +209,15 @@ const StaffWorkTable = () => {
         <br />
         <Row>
           <div className="col">
-
             <Card className="shadow">
               <CardHeader className="border-0">
                 <Row>
-                  <Col xs="12" sm="6">
+                  <Col
+                    xs="12"
+                    sm="6"
+                    className="d-flex"
+                    style={{ gap: "10px" }}
+                  >
                     <FormGroup>
                       <Input
                         fullWidth
@@ -195,11 +232,78 @@ const StaffWorkTable = () => {
                         }}
                       />
                     </FormGroup>
+
+                    <Dropdown isOpen={search} toggle={toggle3}>
+                      <DropdownToggle
+                        caret
+                        style={{
+                          boxShadow: "none",
+                          border: "1px solid #ced4da",
+                          maxWidth: "200px",
+                          minWidth: "200px",
+                        }}
+                      >
+                        {searchQuery2
+                          ? searchQuery
+                            ? "Select Type"
+                            : searchQuery2
+                          : "Select Type"}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("New");
+                            setSearchQuery("");
+                          }}
+                        >
+                          New
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("In Progress");
+                            setSearchQuery("");
+                          }}
+                        >
+                          In Progress
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("On Hold");
+                            setSearchQuery("");
+                          }}
+                        >
+                          On Hold
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("Complete");
+                            setSearchQuery("");
+                          }}
+                        >
+                          Complete
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("Over Due");
+                            setSearchQuery("");
+                          }}
+                        >
+                          Over Due
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("All");
+                            setSearchQuery("");
+                          }}
+                        >
+                          All
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
                   </Col>
                 </Row>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
-
                 {loader ? (
                   <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                     <RotatingLines
@@ -214,7 +318,9 @@ const StaffWorkTable = () => {
                   <>
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="8" style={{ fontSize: "15px" }}>No Work Order Added</td>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
+                          No Work Order Added
+                        </td>
                       </tr>
                     </tbody>
                   </>
@@ -229,6 +335,7 @@ const StaffWorkTable = () => {
                         <th scope="col">Status</th>
                         <th scope="col">Created At</th>
                         <th scope="col">Updated At</th>
+                        <th scope="col">Due Date</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -239,12 +346,19 @@ const StaffWorkTable = () => {
                           style={{ cursor: "pointer" }}
                         >
                           <td>{vendor.work_subject}</td>
-                          <td>{vendor.rental_data.rental_adress}-{vendor.unit_data.rental_unit} {vendor.unit_data.rental_unit ? " - " + vendor.unit_data.rental_unit : null}</td>
+                          <td>
+                            {vendor.rental_data.rental_adress}-
+                            {vendor.unit_data.rental_unit}{" "}
+                            {vendor.unit_data.rental_unit
+                              ? " - " + vendor.unit_data.rental_unit
+                              : null}
+                          </td>
                           <td>{vendor.work_category}</td>
                           <td>{vendor.priority}</td>
                           <td>{vendor.status}</td>
                           <td>{vendor.createdAt}</td>
                           <td>{vendor.updateAt || "-"}</td>
+                          <td>{vendor.date || "-"}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -334,7 +448,6 @@ const StaffWorkTable = () => {
                 <></>
               )}
             </Card>
-
           </div>
         </Row>
         <br />

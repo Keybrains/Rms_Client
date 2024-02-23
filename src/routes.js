@@ -81,6 +81,8 @@ import SuperAdminTenat from "components/superadmin/Admin/Tenant";
 import SuperAdminUnit from "components/superadmin/Admin/Unit";
 import SuperAdminLease from "components/superadmin/Admin/Leasing";
 import SuperAdminVendor from "components/superadmin/Admin/Vendor";
+import SuperAdminEmailForm from "components/superadmin/Email/EmailForm";
+import SuperAdminEmailTable from "components/superadmin/Email/EmailTable";
 import ResetPassword from "views/source/Resetpassword";
 
 var routes = [
@@ -457,6 +459,13 @@ var routes = [
     component: <StaffWorkTable />,
     layout: "/staff",
   },
+  {
+    path: "/staffworktable?status",
+    name: "Work Order",
+    icon: "ni ni-badge text-green",
+    component: <StaffWorkTable />,
+    layout: "/staff",
+  },
 
   {
     path: "/addvendor",
@@ -752,6 +761,20 @@ var routes = [
     name: "Vendor",
     icon: "ni ni-pin-3 text-orange",
     component: <SuperAdminVendor />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/addemail",
+    name: "Email Form",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminEmailForm />,
+    layout: "/superadmin",
+  },
+  {
+    path: "/email",
+    name: "Email Table",
+    icon: "ni ni-pin-3 text-orange",
+    component: <SuperAdminEmailTable />,
     layout: "/superadmin",
   },
 ];
