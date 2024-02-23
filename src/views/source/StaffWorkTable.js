@@ -40,7 +40,7 @@ const StaffWorkTable = () => {
   const [staffDetails, setStaffDetails] = useState({});
   //console.log("staffname", staffmember_name);
   //console.log(staffDetails);
-  //console.log("workData", workData);
+  //ecte.log("workData", workData);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalPages, setTotalPages] = React.useState(1);
   const [pageItem, setPageItem] = React.useState(10);
@@ -144,7 +144,6 @@ const StaffWorkTable = () => {
   //     );
   //   });
   // };
-  console.log(searchQuery2, "yash");
 
   const filterRentalsBySearch = () => {
     if (searchQuery2 && !searchQuery) {
@@ -245,9 +244,9 @@ const StaffWorkTable = () => {
                       >
                         {searchQuery2
                           ? searchQuery
-                            ? "Select Type"
+                            ? "Select Status"
                             : searchQuery2
-                          : "Select Type"}
+                          : "Select Status"}
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem
