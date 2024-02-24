@@ -68,7 +68,7 @@ const Leaseing = () => {
       tenant_phoneNumber: yup.number().required("Required"),
       tenant_email: yup.string().required("Requied").email("Invalid email address")
         .required("Email is required"),
-        tenant_alternativeEmail: yup.string().required("Requied").email("Invalid email address"),
+        tenant_alternativeEmail: yup.string().email("Invalid email address"),
 
       emergency_contact: yup.object().shape({
         email: yup.string().email("Invalid email address")
@@ -691,6 +691,7 @@ const Leaseing = () => {
                       </Col>
                     </Row>
                   </div>
+                  <Row>
                   <div className="pl-lg-4">
                     {loader ? (
                       <button
@@ -718,6 +719,7 @@ const Leaseing = () => {
                         type="submit"
                         className="btn btn-primary "
                         style={{ background: "green", cursor: "pointer" }}
+                        disabled={!tenantFormik.isValid}
                         onClick={(e) => {
                           e.preventDefault();
                           tenantFormik.handleSubmit();
@@ -726,10 +728,10 @@ const Leaseing = () => {
                         Add Tenant
                       </button>
                     )}
-                    <Button
-                      color="primary"
+                    <button
+                      // color="primary"
                       onClick={handleCloseButtonClick}
-                      className="btn btn-primary"
+                      className="btn btn-success"
                       style={{
                         background: "white",
                         color: "black",
@@ -737,8 +739,17 @@ const Leaseing = () => {
                       }}
                     >
                       Cancel
-                    </Button>
+                    </button>
+                    </div>
+                    <div className="ml-3">
+                         {/* Conditional message */}
+                  {!tenantFormik.isValid && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      Please fill in all fields correctly.
+                    </div>
+                  )}
                   </div>
+                  </Row>
                 </Form>
               </CardBody>
             </Card>

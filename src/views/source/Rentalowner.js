@@ -21,27 +21,12 @@ import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
 //import RentalHeader from "components/Headers/RentalHeader.js";
 import RentalownerHeder from "components/Headers/RentalownerHeder.js";
-
-import Checkbox from "@mui/material/Checkbox";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import InputAdornment from "@mui/material/InputAdornment";
-import EmailIcon from "@mui/icons-material/Email";
-import PhoneIcon from "@mui/icons-material/Phone";
-import HomeIcon from "@mui/icons-material/Home";
-import BusinessIcon from "@mui/icons-material/Business";
-import DialogTitle from "@mui/material/DialogTitle";
-import TextField from "@mui/material/TextField";
 import axios from "axios";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { AddBox, InboxOutlined, Numbers } from "@mui/icons-material";
-import { faLeftLong, faRightLeft } from "@fortawesome/free-solid-svg-icons";
-import { Hidden } from "@material-ui/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Cookies from "universal-cookie";
 import {
@@ -51,29 +36,16 @@ import {
   faEnvelope,
   faSearch,
 } from "@fortawesome/free-solid-svg-icons";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const Rentals = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id, admin } = useParams();
   let navigate = useNavigate();
 
-  const [statedropdownOpen, setstateDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [propertyData, setPropertyData] = useState([]);
-  const [selectedProperties, setSelectedProperties] = useState([]);
-  const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [selectedState, setSelectedState] = useState("");
   const [loading, setIsLoading] = useState(true);
 
-  const toggle1 = () => setstateDropdownOpen((prevState) => !prevState);
-
-  const handleCountrySelection = (value) => {
-    setSelectedState(value);
-    setstateDropdownOpen(true);
-    rentalsFormik.setFieldValue("country", value);
-  };
 
   let cookies = new Cookies();
   const [accessType, setAccessType] = useState(null);
@@ -139,8 +111,8 @@ const Rentals = () => {
       // Show success toast
       toast.success(
         id
-          ? "Rental Owner  updated successfully"
-          : "Rental Owner  added successfully",
+          ? "Rental Owner Updated Successfully"
+          : "Rental Owner Added Successfully",
         {
           position: "top-center",
           autoClose: 1000,
@@ -154,10 +126,11 @@ const Rentals = () => {
       });
     }
   }
+
   function handleResponse(response) {
     const successMessage = id
-      ? "Rental-owner  updated successfully"
-      : "Rental-owner  added successfully";
+      ? "Rental Owner Updated Successfully"
+      : "Rental Owner Added Successfully";
     const errorMessage = response.data.message;
 
     if (response.data.statusCode === 200) {
@@ -282,14 +255,10 @@ const Rentals = () => {
             postal_code: rentalOwnerdata.postal_code || "",
             country: rentalOwnerdata.country || "",
             rentalOwner_comments: rentalOwnerdata.rentalOwner_comments || "",
-            rentalOwner_companyName:
-              rentalOwnerdata.rentalOwner_companyName || "",
             text_identityType: rentalOwnerdata.text_identityType || "",
             texpayer_id: rentalOwnerdata.texpayer_id || "",
             rentalOwner_properties:
               rentalOwnerdata.rentalOwner_properties || "",
-            text_identityType:
-              rentalOwnerdata.text_identityType || "",
           });
         })
         .catch((error) => {
@@ -298,6 +267,7 @@ const Rentals = () => {
         });
     }
   }, [id]);
+
   return (
     <>
       <style>
@@ -1125,12 +1095,12 @@ const Rentals = () => {
                             color: "white",
                             cursor: "pointer",
                           }}
-                          href="#pablo"
                           className="btn btn-primary"
                           onClick={(e) => {
                             e.preventDefault();
                             rentalsFormik.handleSubmit();
                           }}
+                          disabled={!rentalsFormik.isValid}
                         >
                           {id ? "Update Rental Owner" : "Add Rental Owner"}
                         </Button>
@@ -1150,6 +1120,12 @@ const Rentals = () => {
                           Cancel
                         </button>
                       </div>
+                      <div className="pl-lg-4">
+                      {!rentalsFormik.isValid && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      Please fill in all fields correctly.
+                    </div>
+                  )}</div>
                     </Row>
                   </Col>
                 </Form>

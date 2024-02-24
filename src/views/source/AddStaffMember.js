@@ -32,23 +32,8 @@ import "react-toastify/dist/ReactToastify.css";
 const AddStaffMember = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id, admin } = useParams();
-  const [prodropdownOpen, setproDropdownOpen] = React.useState(false);
-
-  const [selectedProp, setSelectedProp] = useState("Select");
-
-  const toggle = () => setproDropdownOpen((prevState) => !prevState);
-
-  const [open, setOpen] = React.useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
-
-  // const handlePropSelection = (value) => {
-  //   setSelectedProp(value);
-  //   setproDropdownOpen(true);
-  // };
-  const handleChange = (e) => {
-    // setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-  };
+  const [submitLoader, setSubmitLoader] = useState(false);
 
   let navigate = useNavigate();
   const handleCloseButtonClick = () => {
@@ -78,33 +63,26 @@ const AddStaffMember = () => {
     validationSchema: yup.object({
       staffmember_name: yup.string().required("Required"),
       staffmember_designation: yup.string().required("Required"),
+      staffmember_phoneNumber: yup.number().required("Required"),
       staffmember_email: yup
         .string()
         .email("Invalid email address")
         .required("Email is required"),
-      staffmember_password: id
-        ? yup
+      staffmember_password: 
+         yup
             .string()
-            // .required("No Password Provided")
+            .required("No Password Provided")
             .min(8, "Password is too short")
             .matches(
               /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
               "Must Contain One Uppercase, One Lowercase, One Number and one special case Character"
             )
-        : "",
     }),
     onSubmit: (values) => {
       handleSubmit(values);
     },
   });
 
-  // const handleClickOpen = () => {
-  //     setOpen(true);
-  //   };
-
-  // const handleClose = () => {
-  //     setOpen(false);
-  //   };
   const [staffMamberData, setstaffMamberData] = useState(null);
 
   // Fetch vendor data if editing an existing vendor
@@ -134,6 +112,7 @@ const AddStaffMember = () => {
   }, [id]);
 
   async function handleSubmit(values) {
+    setSubmitLoader(true);
     const object = {
       admin_id: accessType.admin_id,
       staffmember_name: values.staffmember_name,
@@ -173,8 +152,10 @@ const AddStaffMember = () => {
       if (error.response) {
         console.error("Response Data:", error.response.data);
       }
-      // Handle the error and display an error message to the user if necessary.
     }
+   finally {
+    setSubmitLoader(false);
+  }
   }
 
   function handleResponse(response) {
@@ -243,9 +224,14 @@ const AddStaffMember = () => {
                               // Update the state or Formik values with the new input value
                               StaffMemberFormik.handleChange(e);
                             }}
-                            value={StaffMemberFormik.values.staffmember_name.trim()}
-                            required
+                            value={StaffMemberFormik.values.staffmember_name}
                           />
+                            {StaffMemberFormik.touched.staffmember_name &&
+                          StaffMemberFormik.errors.staffmember_name ? (
+                            <div style={{ color: "red" }}>
+                              {StaffMemberFormik.errors.staffmember_name}
+                            </div>
+                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -270,8 +256,14 @@ const AddStaffMember = () => {
                             name="staffmember_designation"
                             onBlur={StaffMemberFormik.handleBlur}
                             onChange={StaffMemberFormik.handleChange}
-                            value={StaffMemberFormik.values.staffmember_designation.trim()}
+                            value={StaffMemberFormik.values.staffmember_designation}
                           />
+                             {StaffMemberFormik.touched.staffmember_designation &&
+                          StaffMemberFormik.errors.staffmember_designation ? (
+                            <div style={{ color: "red" }}>
+                              {StaffMemberFormik.errors.staffmember_designation}
+                            </div>
+                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -280,7 +272,7 @@ const AddStaffMember = () => {
                   <hr className="my-2" />
                   <div className="pl-lg-4">
                     <Row>
-                      <Col lg="6">
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -299,7 +291,6 @@ const AddStaffMember = () => {
                             value={
                               StaffMemberFormik.values.staffmember_phoneNumber
                             }
-                            required
                             onInput={(e) => {
                               const inputValue = e.target.value;
                               const numericValue = inputValue.replace(
@@ -309,15 +300,15 @@ const AddStaffMember = () => {
                               e.target.value = numericValue;
                             }}
                           />
+                           {StaffMemberFormik.touched.staffmember_phoneNumber &&
+                          StaffMemberFormik.errors.staffmember_phoneNumber ? (
+                            <div style={{ color: "red" }}>
+                              {StaffMemberFormik.errors.staffmember_phoneNumber}
+                            </div>
+                          ) : null}
                         </FormGroup>
                       </Col>
-                    </Row>
-                    <br />
-                  </div>
-                  <hr className="my-2" />
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
+                      <Col lg="4">
                         <FormGroup>
                           <label
                             className="form-control-label"
@@ -334,8 +325,13 @@ const AddStaffMember = () => {
                             onBlur={StaffMemberFormik.handleBlur}
                             onChange={StaffMemberFormik.handleChange}
                             value={StaffMemberFormik.values.staffmember_email.toLowerCase()}
-                            required
                           />
+                           {StaffMemberFormik.touched.staffmember_email &&
+                          StaffMemberFormik.errors.staffmember_email ? (
+                            <div style={{ color: "red" }}>
+                              {StaffMemberFormik.errors.staffmember_email}
+                            </div>
+                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -364,7 +360,6 @@ const AddStaffMember = () => {
                               value={
                                 StaffMemberFormik.values.staffmember_password
                               }
-                              required
                             />
                             <Button
                               type="button"
@@ -385,14 +380,28 @@ const AddStaffMember = () => {
                     </Row>
                     <br />
                   </div>
+               
+
                   <Row className="pl-lg-3">
+                  {submitLoader ? (
+                      <button
+                        type="submit"
+                        className="btn btn-primary ml-4"
+                        style={{ background: "green", color: "white" }}
+                        disabled
+                      >
+                        Loading...
+                      </button>
+                    ) : (
                     <button
                       type="submit"
                       className="btn btn-primary ml-4"
                       style={{ background: "green" }}
+                      disabled={!StaffMemberFormik.isValid}
                     >
                       {id ? "Update Staff Member" : "Add Staff Member"}
                     </button>
+                    )}
                     <button
                       color="primary"
                       //  href="#rms"
@@ -403,6 +412,12 @@ const AddStaffMember = () => {
                     >
                       Cancel
                     </button>
+                       {/* Conditional message */}
+                  {!StaffMemberFormik.isValid && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      Please fill in all fields correctly.
+                    </div>
+                  )}
                   </Row>
                 </Form>
                 <br />

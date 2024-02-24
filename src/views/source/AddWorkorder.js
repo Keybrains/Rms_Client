@@ -743,7 +743,7 @@ const AddWorkorder = () => {
                               WorkFormik.handleChange(e);
                             }}
                             value={WorkFormik.values.work_subject}
-                            required
+                            
                           />
                         </FormGroup>
                       </Col>
@@ -1924,6 +1924,7 @@ const AddWorkorder = () => {
                       type="submit"
                       className="btn btn-primary ml-4"
                       style={{ background: "green" }}
+                      disabled={!WorkFormik.isValid}
                     >
                       Add Work Order
                     </button>
@@ -1937,6 +1938,12 @@ const AddWorkorder = () => {
                   >
                     Cancel
                   </button>
+                   {/* Conditional message */}
+                   {!WorkFormik.isValid && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      Please fill in all fields correctly.
+                    </div>
+                  )}
                 </Form>
                 <br />
               </CardBody>

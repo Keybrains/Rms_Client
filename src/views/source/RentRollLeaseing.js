@@ -2278,6 +2278,7 @@ const RentRollLeaseing = () => {
                                       <button
                                         type="submit"
                                         className="btn btn-primary"
+                                        disabled={!tenantFormik.isValid}
                                         onClick={() => {
                                           tenantFormik.handleSubmit();
                                         }}
@@ -2287,6 +2288,12 @@ const RentRollLeaseing = () => {
                                       <Button onClick={()=>{handleClose(); tenantFormik.resetForm() }}>
                                         Cancel
                                       </Button>
+                                           {/* Conditional message */}
+                  {!tenantFormik.isValid && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      Please fill in all fields correctly.
+                    </div>
+                  )}
                                     </div>
                                   )}
 
@@ -2816,15 +2823,22 @@ const RentRollLeaseing = () => {
                                       <button
                                         type="submit"
                                         className="btn btn-primary"
+                                        disabled={!cosignerFormik.isValid}
                                         onClick={() => {
                                           cosignerFormik.handleSubmit();
                                         }}
                                       >
                                         Add Cosigner
                                       </button>
-                                      <Button onClick={handleClose}>
+                                      <Button onClick={()=>{handleClose(); cosignerFormik.resetForm()}}>
                                         Cancel
                                       </Button>
+                                           {/* Conditional message */}
+                  {!cosignerFormik.isValid && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      Please fill in all fields correctly.
+                    </div>
+                  )}
                                     </div>
                                   )}
                                 </div>
@@ -3215,7 +3229,7 @@ const RentRollLeaseing = () => {
                             color: "blue",
                           }}
                         >
-                          <b style={{ fontSize: "20px" }}>+</b> Add Recurring
+                          <b style={{ fontSize: "20px"}}>+</b> Add Recurring Charge
                         </span>
                         <Dialog
                           open={openRecurringDialog}
@@ -3401,8 +3415,8 @@ const RentRollLeaseing = () => {
                             color: "blue",
                           }}
                         >
-                          <b style={{ fontSize: "20px" }}>+</b> Add one Time
-                          charge
+                          <b style={{ fontSize: "20px" }}>+</b> Add One Time
+                          Charge
                         </span>
                         <Dialog
                           open={openOneTimeChargeDialog}
@@ -3721,7 +3735,7 @@ const RentRollLeaseing = () => {
                           fileData(e.target.files);
                         }}
                       />
-                      <label for="upload_file" className="btn">
+                      <label for="upload_file" className="btn btn-primary">
                         Upload
                       </label>
                     </div>
@@ -3940,6 +3954,7 @@ const RentRollLeaseing = () => {
                       </>
                     ) : null}
                   </Col> */}
+                  <Row>
                   {loader ? (
                     <button
                       type="submit"
@@ -3977,6 +3992,7 @@ const RentRollLeaseing = () => {
                       type="submit"
                       className="btn btn-primary"
                       style={{ background: "green", cursor: "pointer" }}
+                      disabled={!leaseFormik.isValid || !tenantFormik.isValid}
                       onClick={(e) => {
                         e.preventDefault();
                         if (selectedTenantData.length !== 0) {
@@ -3997,9 +4013,9 @@ const RentRollLeaseing = () => {
                     </button>
                   )}
                   <Button
-                    color="primary"
+                    // color="primary"
                     onClick={handleCloseButtonClick}
-                    className="btn btn-primary"
+                    className="btn btn-success"
                     style={{
                       background: "white",
                       color: "black",
@@ -4015,6 +4031,13 @@ const RentRollLeaseing = () => {
                       Tenant Password is missing
                     </div>
                   ) : null}
+                       {/* Conditional message */}
+                       {(!leaseFormik.isValid || !tenantFormik.isValid) && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      Please fill in all fields correctly.
+                    </div>
+                  )}
+                  </Row>
                 </Form>
               </CardBody>
             </Card>

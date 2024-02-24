@@ -223,7 +223,11 @@ const Rentals = () => {
     validationSchema: yup.object({
       rentalOwner_firstName: yup.string().required("Required"),
       rentalOwner_lastName: yup.string().required("Required"),
-      rentalOwner_phoneNumber: yup.string().required("Required"),
+      rentalOwner_primaryEmail: yup
+        .string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      rentalOwner_phoneNumber: yup.number().required("Required"),
     }),
     onSubmit: (values) => {
       if (!values.rentalowner_id) {
@@ -236,7 +240,7 @@ const Rentals = () => {
       }
     },
   });
-
+  console.log("Rental Owner Form Validity:", rentalOwnerFormik.isValid);
   useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
@@ -935,8 +939,8 @@ const Rentals = () => {
                               color: "blue",
                             }}
                           >
-                            <b style={{ fontSize: "20px" }}>+</b> Add rental
-                            owner
+                            <b style={{ fontSize: "20px" }}>+</b> Add Rental
+                            Owner
                             {display === false ? (
                               <></>
                             ) : (
@@ -1109,7 +1113,6 @@ const Rentals = () => {
                                       </label>
                                       <br />
                                       <Input
-                                        required
                                         id="standard-multiline-static"
                                         className="popinput"
                                         type="text"
@@ -1143,7 +1146,6 @@ const Rentals = () => {
                                       ) : null}
                                       <br />
                                       <Input
-                                        required
                                         id="standard-multiline-static"
                                         className="popinput"
                                         type="text"
@@ -1187,7 +1189,6 @@ const Rentals = () => {
                                       </label>
                                       <br />
                                       <Input
-                                        required
                                         id="standard-multiline-static"
                                         className="popinput"
                                         type="text"
@@ -1237,7 +1238,6 @@ const Rentals = () => {
                                         }}
                                       >
                                         <Input
-                                          required
                                           id="standard-multiline-static"
                                           className="popinput"
                                           type="text"
@@ -1349,7 +1349,6 @@ const Rentals = () => {
                                         }}
                                       >
                                         <Input
-                                          required
                                           id="standard-multiline-static"
                                           className="popinput"
                                           type="text"
@@ -1441,17 +1440,6 @@ const Rentals = () => {
                                         </InputGroupAddon>
                                       </InputGroup>
 
-                                      {rentalOwnerFormik.touched
-                                        .rentalOwner_homeNumber &&
-                                      rentalOwnerFormik.errors
-                                        .rentalOwner_homeNumber ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalOwnerFormik.errors
-                                              .rentalOwner_homeNumber
-                                          }
-                                        </div>
-                                      ) : null}
                                       <InputGroup
                                         style={{
                                           marginBottom: "10px",
@@ -1496,29 +1484,20 @@ const Rentals = () => {
                                           </span>
                                         </InputGroupAddon>
                                       </InputGroup>
-
-                                      {rentalOwnerFormik.touched
-                                        .rentalOwner_businessNumber &&
-                                      rentalOwnerFormik.errors
-                                        .rentalOwner_businessNumber ? (
-                                        <div style={{ color: "red" }}>
-                                          {
-                                            rentalOwnerFormik.errors
-                                              .rentalOwner_businessNumber
-                                          }
-                                        </div>
-                                      ) : null}
                                     </div>
                                     <div
                                       className="formInput"
                                       style={{ margin: "30px 10px" }}
                                     >
-                                      <div>Street Address</div>
-                                      <br />
+                                      <label
+                                        className="form-control-label"
+                                        htmlFor="input-address"
+                                      >
+                                        Address Information
+                                      </label>
                                       <Row>
                                         <FormGroup className="col-12">
                                           <Input
-                                            required
                                             className="form-control-alternative"
                                             id="input-address"
                                             placeholder="street_address"
@@ -1544,7 +1523,6 @@ const Rentals = () => {
                                         </FormGroup>
                                         <FormGroup className="col-6">
                                           <Input
-                                            required
                                             className="form-control-alternative"
                                             id="input-address"
                                             placeholder="City"
@@ -1569,7 +1547,6 @@ const Rentals = () => {
                                         </FormGroup>
                                         <FormGroup className="col-6">
                                           <Input
-                                            required
                                             className="form-control-alternative"
                                             id="input-address"
                                             placeholder="State"
@@ -1596,7 +1573,6 @@ const Rentals = () => {
                                       <Row>
                                         <FormGroup className="col-6">
                                           <Input
-                                            required
                                             className="form-control-alternative"
                                             id="input-address"
                                             placeholder="Country"
@@ -1621,7 +1597,6 @@ const Rentals = () => {
                                         </FormGroup>
                                         <FormGroup className="col-6">
                                           <Input
-                                            required
                                             className="form-control-alternative"
                                             id="input-address"
                                             placeholder="Postal code"
@@ -1651,7 +1626,18 @@ const Rentals = () => {
                                 )}
                               </DialogContent>
                               <DialogActions>
-                                <Button type="submit" color="primary">
+                                {!rentalOwnerFormik.isValid && (
+                                  <div
+                                    style={{ color: "red", marginTop: "10px" }}
+                                  >
+                                    Please fill in all fields correctly.
+                                  </div>
+                                )}
+                                <Button
+                                  type="submit"
+                                  color="primary"
+                                  disabled={!rentalOwnerFormik.isValid}
+                                >
                                   Add
                                 </Button>
                                 <Button onClick={handleClose}>Cancel</Button>
@@ -2668,6 +2654,9 @@ const Rentals = () => {
                             setDisplay(true);
                           }
                         }}
+                        disabled={
+                          !rentalsFormik.isValid || !rentalOwnerFormik.isValid
+                        }
                       >
                         Create Property
                       </button>
@@ -2684,6 +2673,12 @@ const Rentals = () => {
                     >
                       Cancel
                     </button>
+                    {/* Conditional message */}
+                    {(!rentalsFormik.isValid || !rentalOwnerFormik.isValid) && (
+                      <div style={{ color: "red", marginTop: "10px" }}>
+                        Please fill in all fields correctly.
+                      </div>
+                    )}
                   </div>
                 </Form>
               </CardBody>
@@ -2699,20 +2694,18 @@ const Rentals = () => {
             <AddpropertyModal
               tenantId={tenantId}
               closeModal={closeModal}
-              // getCreditCard={getCreditCard}
             />
           </ModalBody>
         </Modal>
 
         <Modal isOpen={isMOdalopen1} toggle={closeModal}>
           <ModalHeader toggle={closeModal} className="bg-secondary text-white">
-            <strong style={{ fontSize: 18 }}>Add new Staff Member</strong>
+            <strong style={{ fontSize: 18 }}>Add Staff Member</strong>
           </ModalHeader>
           <ModalBody>
             <StaffMemberModal
               tenantId={tenantId}
               closeModal={closeModal}
-              // getCreditCard={getCreditCard}
             />
           </ModalBody>
         </Modal>

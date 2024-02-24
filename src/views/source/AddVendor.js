@@ -29,6 +29,8 @@ const AddVendor = () => {
   const navigate = useNavigate();
   const { vendor_id, admin } = useParams();
   const [showPassword, setShowPassword] = useState(false);
+  const [submitLoader, setSubmitLoader] = useState(false);
+  const [vendorData, setVendorData] = useState(null);
 
   // Define validation schema for form fields
   const validationSchema = yup.object({
@@ -74,7 +76,6 @@ const AddVendor = () => {
   });
 
   // State to hold vendor data fetched from the API
-  const [vendorData, setVendorData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoading1, setIsLoading1] = useState(false);
 
@@ -120,6 +121,7 @@ const AddVendor = () => {
 
   // Handle form submission
   async function handleSubmit(values) {
+    setSubmitLoader(true);
     values.admin_id = accessType.admin_id;
     try {
       if (vendor_id === undefined) {
@@ -135,7 +137,9 @@ const AddVendor = () => {
       if (error.response) {
         console.error("Response Data:", error.response.data);
       }
-      // Handle the error and display an error message to the user if necessary.
+    }
+    finally {
+      setSubmitLoader(false);
     }
   }
 
@@ -340,32 +344,45 @@ const AddVendor = () => {
                     </Row>
                   </div>
 
+                  <Row>
+                    {submitLoader ? (
+                      <Button
+                        type="submit"
+                        className="btn btn-primary ml-4"
+                        style={{ background: "green", color: "white" }}
+                        disabled
+                      >
+                        Loading...
+                      </Button>
+                    ) : (
                   <button
                     type="submit"
                     className="btn btn-primary ml-4"
                     style={{ background: "green" }}
-                    disabled={isLoading1} 
+                    disabled={!VendorFormik.isValid} 
                     onClick={() => {
                       VendorFormik.handleSubmit(); 
-                      setIsLoading1(true); 
                     }}
                   >
-                    {isLoading1 ? ( 
-                      <i className="fa fa-spinner fa-spin" />
-                    ) : (
-                      vendor_id ? "Update Vendor" : "Add Vendor" 
-                    )}
-                  </button>
+                     {vendor_id ? "Update Vendor" : "Add Vendor" }  
+                  </button>)}
 
                   <button
                     color="primary"
-                    className="btn btn-primary"
+                    className="btn btn-success"
                     onClick={handleCloseButtonClick}
                     size="sm"
                     style={{ background: "white", color: "black" }}
                   >
                     Cancel
                   </button>
+                   {/* Conditional message */}
+                   {!VendorFormik.isValid && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      Please fill in all fields correctly.
+                    </div>
+                  )}
+                  </Row>
                 </Form>
               </CardBody>
             </Card>

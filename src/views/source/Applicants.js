@@ -1011,7 +1011,6 @@ const Applicants = () => {
                           name="applicant_firstName"
                           value={selectedApplicant.applicant_firstName}
                           onChange={handleSelectedApplicantChange}
-                          required
                         />
                       </FormGroup>
                     </Col>
@@ -1030,7 +1029,6 @@ const Applicants = () => {
                           name="applicant_lastName"
                           value={selectedApplicant.applicant_lastName}
                           onChange={handleSelectedApplicantChange}
-                          required
                         />
                       </FormGroup>
                     </Col>
@@ -1055,7 +1053,6 @@ const Applicants = () => {
                         name="applicant_email"
                         value={selectedApplicant.applicant_email}
                         onChange={handleSelectedApplicantChange}
-                        required
                       />
                     </InputGroup>
                   </FormGroup>
@@ -1084,7 +1081,6 @@ const Applicants = () => {
                           const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
                           e.target.value = numericValue;
                         }}
-                        required
                       />
                     </InputGroup>
                   </FormGroup>
@@ -1194,8 +1190,15 @@ const Applicants = () => {
                             onBlur={applicantFormik.handleBlur}
                             onChange={applicantFormik.handleChange}
                             value={applicantFormik.values.applicant_firstName}
-                            required
                           />
+                            {applicantFormik.touched.applicant_firstName &&
+                          applicantFormik.errors.applicant_firstName ? (
+                            <div
+                              style={{ color: "red", marginBottom: "10px" }}
+                            >
+                              {applicantFormik.errors.applicant_firstName}
+                            </div>
+                          ) : null}
                         </FormGroup>
                       </Col>
                       <Col>
@@ -1214,8 +1217,15 @@ const Applicants = () => {
                             onBlur={applicantFormik.handleBlur}
                             onChange={applicantFormik.handleChange}
                             value={applicantFormik.values.applicant_lastName}
-                            required
                           />
+                            {applicantFormik.touched.applicant_lastName &&
+                          applicantFormik.errors.applicant_lastName ? (
+                            <div
+                              style={{ color: "red", marginBottom: "10px" }}
+                            >
+                              {applicantFormik.errors.applicant_lastName}
+                            </div>
+                          ) : null}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -1240,9 +1250,16 @@ const Applicants = () => {
                           value={applicantFormik.values.applicant_email}
                           onBlur={applicantFormik.handleBlur}
                           onChange={applicantFormik.handleChange}
-                          required
                         />
                       </InputGroup>
+                      {applicantFormik.touched.applicant_email &&
+                          applicantFormik.errors.applicant_email ? (
+                            <div
+                              style={{ color: "red", marginBottom: "10px" }}
+                            >
+                              {applicantFormik.errors.applicant_email}
+                            </div>
+                          ) : null}
                     </FormGroup>
                     <FormGroup>
                       <label
@@ -1270,9 +1287,16 @@ const Applicants = () => {
                             const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
                             e.target.value = numericValue;
                           }}
-                          required
-                        />
+                        /> 
                       </InputGroup>
+                      {applicantFormik.touched.tenant_mobileNumber &&
+                          applicantFormik.errors.tenant_mobileNumber ? (
+                            <div
+                              style={{ color: "red", marginBottom: "10px" }}
+                            >
+                              {applicantFormik.errors.tenant_mobileNumber}
+                            </div>
+                          ) : null}
                     </FormGroup>
                     <FormGroup>
                       <InputGroup>
@@ -1578,6 +1602,7 @@ const Applicants = () => {
                 </button>
               ) : (
                 <>
+                    
                   {selectedApplicant ? (
                     <Button
                       color="success"
@@ -1589,13 +1614,19 @@ const Applicants = () => {
                       Update Applicant
                     </Button>
                   ) : (
-                    <Button color="success" type="submit">
+                    <Button color="success" type="submit" disabled={!applicantFormik.isValid}>
                       Create Applicant
                     </Button>
                   )}
                 </>
               )}
-              <Button onClick={closeModal}>Cancel</Button>
+              <Button onClick={()=>{closeModal(); applicantFormik.resetForm()}}>Cancel</Button>
+               {/* Conditional message */}
+               {!applicantFormik.isValid && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      Please fill in all fields correctly.
+                    </div>
+                  )}
             </ModalFooter>
           </Form>
         </Modal>

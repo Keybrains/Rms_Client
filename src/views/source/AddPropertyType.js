@@ -63,6 +63,7 @@ const AddPropertyType = () => {
     },
     validationSchema: yup.object({
       property_type: yup.string().required("Required"),
+      propertysub_type: yup.string().required("Required"),
     }),
     onSubmit: (values) => {
       handleSubmit(values);
@@ -276,9 +277,17 @@ const AddPropertyType = () => {
                             name="propertysub_type"
                             onBlur={propertyFormik.handleBlur}
                             onChange={propertyFormik.handleChange}
-                            value={propertyFormik.values.propertysub_type.trim()}
-                            required
+                            value={propertyFormik.values.propertysub_type}
+
                           />
+                             {propertyFormik.touched.property_type &&
+                            propertyFormik.errors.property_type ? (
+                              <div
+                                style={{ color: "red", marginBottom: "10px" }}
+                              >
+                                {propertyFormik.errors.property_type}
+                              </div>
+                            ) : null}
                           <br></br>
                           <Checkbox
                             onChange={handleChangecheck}
@@ -308,6 +317,7 @@ const AddPropertyType = () => {
                         type="submit"
                         className="btn btn-primary ml-4"
                         style={{ background: "green", color: "white" }}
+                        disabled={!propertyFormik.isValid}
                       >
                         {id ? "Update Property Type" : "Add Property Type"}
                       </Button>
@@ -321,6 +331,12 @@ const AddPropertyType = () => {
                     >
                       Cancel
                     </Button>
+                       {/* Conditional message */}
+                  {!propertyFormik.isValid && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                      Please fill in all fields correctly.
+                    </div>
+                  )}
                   </Row>
                 </Form>
               </CardBody>

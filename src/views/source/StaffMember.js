@@ -316,7 +316,7 @@ const StaffMember = () => {
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
-              Add New Staff Member
+              Add Staff Member
             </Button>
           </Col>
         </Row>
