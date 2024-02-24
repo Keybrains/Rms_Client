@@ -135,7 +135,6 @@ const handleSubmit = async (rental_id, admin_id, object, file) => {
   }
   object.admin_id = admin_id;
   object.rental_id = rental_id;
-  console.log(object, "yash")
   try {
     const res = await axios.post(`${baseUrl}/unit/unit`, object);
     if (res.data.statusCode === 200) {

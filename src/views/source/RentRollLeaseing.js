@@ -1004,7 +1004,6 @@ const RentRollLeaseing = () => {
         setSelectedRentCycle(data?.rent_charge_data[0]?.rent_cycle);
         rentChargeFormik.setValues(data?.rent_charge_data[0]);
         securityChargeFormik.setValues(data?.Security_charge_data[0]);
-        // console.log(data?.tenant, "yash");
         setSelectedTenantData(data?.tenant);
         setRecurringData(data?.rec_charge_data);
         setOneTimeData(data?.one_charge_data);

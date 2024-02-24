@@ -85,7 +85,6 @@ const TenantWork = () => {
         `${baseUrl}/work-order/tenant_work/${accessType.tenant_id}`
       );
 
-      console.log(response.data, "yash")
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setWorkData(response.data.data);
       setLoader(false);

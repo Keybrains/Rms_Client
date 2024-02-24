@@ -406,28 +406,26 @@ const Workorder = () => {
                         </td>
                       </tr>
                     </tbody>
-                    ) : (
-
-                  <tbody>
-
-                    {filterTenantsBySearchAndPage().map((rental) => (
-                      <tr
-                        key={rental.workOrder_id}
-                        onClick={() => navigateToDetails(rental.workOrder_id)}
-                        style={{ cursor: "pointer" }}
-                      >{console.log(rental, "yash")}
-                        <td>{rental.work_subject}</td>
-                        <td>
-                          {rental.rental_adress}{" "}
-                          {rental.rental_units
-                            ? " - " + rental.rental_units
-                            : null}
-                        </td>
-                        <td>{rental.work_category}</td>
-                        <td>{rental.staffmember_name || "-"}</td>
-                        <td>{rental.status || "-"}</td>
-                        <td>{rental.createdAt}</td>
-                        <td>{rental.updateAt || "-"}</td>
+                  ) : (
+                    <tbody>
+                      {filterTenantsBySearchAndPage().map((rental) => (
+                        <tr
+                          key={rental.workOrder_id}
+                          onClick={() => navigateToDetails(rental.workOrder_id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <td>{rental.work_subject}</td>
+                          <td>
+                            {rental.rental_adress}{" "}
+                            {rental.rental_units
+                              ? " - " + rental.rental_units
+                              : null}
+                          </td>
+                          <td>{rental.work_category}</td>
+                          <td>{rental.staffmember_name || "-"}</td>
+                          <td>{rental.status || "-"}</td>
+                          <td>{rental.createdAt}</td>
+                          <td>{rental.updateAt || "-"}</td>
 
                           <td>
                             <div style={{ display: "flex", gap: "0px" }}>
