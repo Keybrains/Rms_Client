@@ -26,7 +26,8 @@ const TenantPropertyDetail = () => {
   const getRentalData = async () => {
     try {
       const res = await axios.get(
-        `${baseUrl}/leases/lease_summary/${lease_id}`
+        `http://192.168.1.9:4000/api/leases/lease_summary/${lease_id}`
+
       );
       console.log(res.data.data);
       setPropertyDetails(res.data.data);
@@ -198,7 +199,7 @@ const TenantPropertyDetail = () => {
                                   <tr className="header">
                                     <th>First name</th>
                                     <th>Last name</th>
-                                    <th>Compnay name</th>
+                                    <th>Company name</th>
                                     <th>Email</th>
                                     <th>Phone no</th>
                                   </tr>

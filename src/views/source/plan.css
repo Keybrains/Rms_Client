@@ -58,6 +58,11 @@
     display: none;
   }
 }
+@media screen and (min-width: 1800px) and (max-width: 5000px) {
+  .buy-now-button{
+    display: none;
+  }
+}
 /* 1900 */
 @media (max-width: 1900px) {
   .buy-now-button{

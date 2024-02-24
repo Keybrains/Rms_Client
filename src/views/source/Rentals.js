@@ -80,6 +80,7 @@ const Rentals = () => {
   const [rentalownerData, setRentalownerData] = useState([]);
   const [propertyData, setPropertyData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [accessType, setAccessType] = useState({});
 
   const toggle1 = () => setproDropdownOpen((prevState) => !prevState);
@@ -160,7 +161,8 @@ const Rentals = () => {
             values,
             rentalOwnerFormik.values,
             accessType.admin_id,
-            selectedPropType.property_id
+            selectedPropType.property_id,
+            selectedFiles
           );
           if (res === false) {
             setLoader(false);
@@ -176,6 +178,29 @@ const Rentals = () => {
       }
     },
   });
+
+  const checkRentalOwner = async (values) => {
+    try {
+      const res = await axios.post(
+        `${baseUrl}/rental_owner/check_rental_owner`,
+        values
+      );
+      if (res.data.statusCode === 200) {
+        setSelectedRentalOwnerData(values);
+        setshowRentalOwnerTable(false);
+        handleAddrentalOwner();
+        handleClose();
+      }
+      if (res.data.statusCode === 201) {
+        toast.warn(res.data.message, {
+          position: "top-center",
+          autoClose: 500,
+        });
+      }
+    } catch (error) {
+      console.error("Error: ", error.message);
+    }
+  };
 
   let rentalOwnerFormik = useFormik({
     initialValues: {
@@ -200,10 +225,15 @@ const Rentals = () => {
       rentalOwner_lastName: yup.string().required("Required"),
       rentalOwner_phoneNumber: yup.string().required("Required"),
     }),
-    onSubmit: () => {
-      setshowRentalOwnerTable(false);
-      handleAddrentalOwner();
-      handleClose();
+    onSubmit: (values) => {
+      if (!values.rentalowner_id) {
+        checkRentalOwner(values);
+      } else {
+        setSelectedRentalOwnerData(values);
+        setshowRentalOwnerTable(false);
+        handleAddrentalOwner();
+        handleClose();
+      }
     },
   });
 
@@ -415,6 +445,12 @@ const Rentals = () => {
       ...rentalsFormik.values,
       commercial: updatedCommercialUnits,
     });
+
+    setSelectedFiles((prevSelectedFiles) => {
+      const updatedFiles = { ...prevSelectedFiles };
+      delete updatedFiles[index];
+      return updatedFiles;
+    });
   };
 
   const deleteResidentialUnit = (index) => {
@@ -424,9 +460,35 @@ const Rentals = () => {
       ...rentalsFormik.values,
       residential: updatedResidentialUnits,
     });
+
+    setSelectedFiles((prevSelectedFiles) => {
+      const updatedFiles = { ...prevSelectedFiles };
+      delete updatedFiles[index];
+      return updatedFiles;
+    });
   };
 
-  const fileData = () => {};
+  const fileData = (e, i) => {
+    setSelectedFiles((prevSelectedFiles) => ({
+      ...prevSelectedFiles,
+      [i]: [...e.target.files],
+    }));
+  };
+
+  const clearSelectedPhoto = (commercialIndex, index) => {
+    setSelectedFiles((prevSelectedFiles) => {
+      const updatedFiles = { ...prevSelectedFiles };
+
+      if (updatedFiles[index]) {
+        updatedFiles[index] = updatedFiles[index].filter(
+          (file, i) => i !== commercialIndex
+        );
+      }
+
+      return updatedFiles;
+    });
+  };
+
   const togglePhotoDialog = () => {};
 
   const handleUserSelection = (value) => {
@@ -451,9 +513,13 @@ const Rentals = () => {
       rentalOwner_phoneNumber: rentalOwnerInfo.rentalOwner_phoneNumber,
       rentalOwner_homeNumber: rentalOwnerInfo.rentalOwner_homeNumber,
       rentalOwner_businessNumber: rentalOwnerInfo.rentalOwner_businessNumber,
+      street_address: rentalOwnerInfo.street_address,
+      city: rentalOwnerInfo.city,
+      state: rentalOwnerInfo.state,
+      postal_code: rentalOwnerInfo.postal_code,
+      country: rentalOwnerInfo.country,
       chooseExistingOwner: true,
     });
-    setSelectedRentalOwnerData(rentalOwnerInfo);
   };
 
   const handleAddrentalOwner = () => {
@@ -492,6 +558,7 @@ const Rentals = () => {
     rentalsFormik.setFieldValue("property_type", propertyType.property_type);
     setSelectedPropType(propertyType);
     setPropType(propertyType.property_type);
+    setSelectedFiles([]);
   };
   const openCardForm = () => {
     console.log("Opening card form");
@@ -1014,6 +1081,9 @@ const Rentals = () => {
                                                         handleCheckboxChange(
                                                           rentalOwner
                                                         );
+                                                        setshowRentalOwnerTable(
+                                                          false
+                                                        );
                                                       }}
                                                     />
                                                   </td>
@@ -1451,20 +1521,21 @@ const Rentals = () => {
                                             required
                                             className="form-control-alternative"
                                             id="input-address"
-                                            placeholder="Address"
+                                            placeholder="street_address"
                                             type="text"
-                                            name="address"
+                                            name="street_address"
                                             onBlur={
                                               rentalOwnerFormik.handleBlur
                                             }
                                             onChange={(e) =>
                                               rentalOwnerFormik.setFieldValue(
-                                                "address",
+                                                "street_address",
                                                 e.target.value
                                               )
                                             }
                                             value={
-                                              rentalOwnerFormik.values?.address
+                                              rentalOwnerFormik.values
+                                                ?.street_address
                                             }
                                             style={{
                                               border: "1px solid #cad1d7",
@@ -2070,6 +2141,8 @@ const Rentals = () => {
                                       &nbsp;&nbsp;
                                     </FormGroup>
                                   </Col>
+
+                                  {/* myyphotos */}
                                   <Col lg="5">
                                     <div
                                       style={{
@@ -2108,11 +2181,7 @@ const Rentals = () => {
                                             id={`propertyres_image_${residentialIndex}`}
                                             name={`propertyres_image_${residentialIndex}`}
                                             onChange={(e) =>
-                                              fileData(
-                                                e,
-                                                "propertyres_image",
-                                                residentialIndex
-                                              )
+                                              fileData(e, residentialIndex)
                                             }
                                           />
                                           <label
@@ -2140,58 +2209,61 @@ const Rentals = () => {
                                             flexWrap: "wrap",
                                           }}
                                         >
-                                          {/* {residentialImage &&
-                                            residentialImage.length > 0 &&
-                                            residentialImage[
-                                              residentialIndex
-                                            ] &&
-                                            residentialImage[
-                                              residentialIndex
-                                            ].map((unitImg, index) => (
-                                              <div
-                                                key={index}
-                                                style={{
-                                                  position: "relative",
-                                                  width: "100px",
-                                                  height: "100px",
-                                                  margin: "10px",
-                                                  display: "flex",
-                                                  flexDirection: "column",
-                                                }}
-                                              >
-                                                <img
-                                                  src={unitImg}
-                                                  alt=""
+                                          {selectedFiles[residentialIndex] &&
+                                            selectedFiles[residentialIndex]
+                                              .length > 0 &&
+                                            selectedFiles[residentialIndex].map(
+                                              (unitImg, index) => (
+                                                <div
+                                                  key={index}
                                                   style={{
+                                                    position: "relative",
                                                     width: "100px",
                                                     height: "100px",
-                                                    maxHeight: "100%",
-                                                    maxWidth: "100%",
-                                                    borderRadius: "10px",
+                                                    margin: "10px",
+                                                    display: "flex",
+                                                    flexDirection: "column",
                                                   }}
-                                                  onClick={() => {
-                                                    setSelectedImage(unitImg);
-                                                    setOpen(true);
-                                                  }}
-                                                />
-                                                <ClearIcon
-                                                  style={{
-                                                    cursor: "pointer",
-                                                    alignSelf: "flex-start",
-                                                    position: "absolute",
-                                                    top: "-12px",
-                                                    right: "-12px",
-                                                  }}
-                                                  onClick={() =>
-                                                    clearSelectedPhoto(
-                                                      index,
-                                                      "propertyres_image",
-                                                      residentialIndex
-                                                    )
-                                                  }
-                                                />
-                                              </div>
-                                            ))} */}
+                                                >
+                                                  <img
+                                                    src={
+                                                      unitImg instanceof File
+                                                        ? URL.createObjectURL(
+                                                            unitImg
+                                                          )
+                                                        : unitImg
+                                                    }
+                                                    alt=""
+                                                    style={{
+                                                      width: "100px",
+                                                      height: "100px",
+                                                      maxHeight: "100%",
+                                                      maxWidth: "100%",
+                                                      borderRadius: "10px",
+                                                    }}
+                                                    onClick={() => {
+                                                      // setSelectedImage(unitImg);
+                                                      setOpen(true);
+                                                    }}
+                                                  />
+                                                  <ClearIcon
+                                                    style={{
+                                                      cursor: "pointer",
+                                                      alignSelf: "flex-start",
+                                                      position: "absolute",
+                                                      top: "-12px",
+                                                      right: "-12px",
+                                                    }}
+                                                    onClick={() =>
+                                                      clearSelectedPhoto(
+                                                        index,
+                                                        residentialIndex
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
+                                              )
+                                            )}
                                           {/* <OpenImageDialog
                                             open={open}
                                             setOpen={setOpen}
@@ -2402,6 +2474,7 @@ const Rentals = () => {
                                     </FormGroup>
                                   </Col>
 
+                                  {/* myyphotos */}
                                   <Col lg="5">
                                     <div
                                       style={{
@@ -2440,11 +2513,7 @@ const Rentals = () => {
                                             id={`property_image${commercialIndex}`}
                                             name={`property_image${commercialIndex}`}
                                             onChange={(e) =>
-                                              fileData(
-                                                e,
-                                                "property_image",
-                                                commercialIndex
-                                              )
+                                              fileData(e, commercialIndex)
                                             }
                                           />
                                           <label
@@ -2465,9 +2534,10 @@ const Rentals = () => {
                                             flexWrap: "wrap",
                                           }}
                                         >
-                                          {/* {commercialImage &&
-                                            commercialImage.length > 0 &&
-                                            commercialImage.map(
+                                          {selectedFiles[commercialIndex] &&
+                                            selectedFiles[commercialIndex]
+                                              .length > 0 &&
+                                            selectedFiles[commercialIndex].map(
                                               (unitImg, index) => (
                                                 <div
                                                   key={index}
@@ -2481,7 +2551,13 @@ const Rentals = () => {
                                                   }}
                                                 >
                                                   <img
-                                                    src={unitImg}
+                                                    src={
+                                                      unitImg instanceof File
+                                                        ? URL.createObjectURL(
+                                                            unitImg
+                                                          )
+                                                        : unitImg
+                                                    }
                                                     alt=""
                                                     style={{
                                                       width: "100px",
@@ -2491,7 +2567,7 @@ const Rentals = () => {
                                                       borderRadius: "10px",
                                                     }}
                                                     onClick={() => {
-                                                      setSelectedImage(unitImg);
+                                                      // setSelectedImage(unitImg);
                                                       setOpen(true);
                                                     }}
                                                   />
@@ -2506,13 +2582,13 @@ const Rentals = () => {
                                                     onClick={() =>
                                                       clearSelectedPhoto(
                                                         index,
-                                                        "property_image"
+                                                        commercialIndex
                                                       )
                                                     }
                                                   />
                                                 </div>
                                               )
-                                            )} */}
+                                            )}
                                           {/* <OpenImageDialog
                                             open={open}
                                             setOpen={setOpen}

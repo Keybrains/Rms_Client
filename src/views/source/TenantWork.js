@@ -85,7 +85,6 @@ const TenantWork = () => {
         `${baseUrl}/work-order/tenant_work/${accessType.tenant_id}`
       );
 
-      console.log(response.data, "yash")
       setTotalPages(Math.ceil(response.data.data.length / pageItem));
       setWorkData(response.data.data);
       setLoader(false);
@@ -248,9 +247,6 @@ const TenantWork = () => {
     return paginatedData;
   };
 
-
-    filterTenantsBySearchAndPage();
-
   const sortData = (value) => {
     if (!sortBy.includes(value)) {
       setSortBy([...sortBy, value]);
@@ -263,7 +259,7 @@ const TenantWork = () => {
     }
   };
 
-  console.log(filterTenantsBySearchAndPage())
+
 
   return (
     <>

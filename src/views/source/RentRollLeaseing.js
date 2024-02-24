@@ -261,6 +261,10 @@ const RentRollLeaseing = () => {
       } else {
         setRecurringData((prevRecurringData) => [...prevRecurringData, values]);
       }
+      toast.success("Recurring Charge Added", {
+        position: "top-center",
+        autoClose: 1000,
+      });
       setOpenRecurringDialog(false);
       resetForm();
     },
@@ -293,6 +297,10 @@ const RentRollLeaseing = () => {
       } else {
         setOneTimeData((prevOneTimeData) => [...prevOneTimeData, values]);
       }
+      toast.success("One Time Charge Added", {
+        position: "top-center",
+        autoClose: 1000,
+      });
       setOpenOneTimeChargeDialog(false);
       resetForm();
     },
@@ -342,9 +350,12 @@ const RentRollLeaseing = () => {
       tenant_firstName: yup.string().required("Required"),
       tenant_lastName: yup.string().required("Required"),
       tenant_phoneNumber: yup.number().required("Required"),
-      tenant_email: yup.string().required("Required"),
-      tenant_password: lease_id
-        ? yup
+      tenant_email: yup
+      .string()
+      .email("Invalid email address")
+      .required("Email is required"),
+      tenant_password: 
+         yup
             .string()
             .min(8, "Password is too short")
             .matches(
@@ -352,9 +363,13 @@ const RentRollLeaseing = () => {
               "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
             )
             .required("Required")
-        : "",
+        
     }),
     onSubmit: (values) => {
+      toast.success("Tenant Added Successfully", {
+        position: "top-center",
+        autoClose: 1000,
+      });
       setSelectedTenantData({
         tenant_firstName: values.tenant_firstName,
         tenant_lastName: values.tenant_lastName,
@@ -367,6 +382,7 @@ const RentRollLeaseing = () => {
 
   const cosignerFormik = useFormik({
     initialValues: {
+      cosigner_id: "",
       cosigner_firstName: "",
       cosigner_lastName: "",
       cosigner_phoneNumber: "",
@@ -382,29 +398,22 @@ const RentRollLeaseing = () => {
       cosigner_firstName: yup.string().required("Required"),
       cosigner_lastName: yup.string().required("Required"),
       cosigner_phoneNumber: yup.number().required("Required"),
-      cosigner_email: yup.string().required("Required"),
+      cosigner_email: yup
+      .string()
+      .email("Invalid email address")
+      .required("Email is required"),
     }),
     onSubmit: (values) => {
+      toast.success("Cosigner Added Successfully", {
+        position: "top-center",
+        autoClose: 1000,
+      });
       setOpenTenantsDialog(false);
       setCosignerData(values);
     },
   });
 
-  // kp-----------------------
-
-  // const openCardForm = () => {
-  //   console.log("Opening card form"); // Add this line
-  //   setIsModalOpen(true);
-  // };
-
-  // const closeModal = () => {
-  //   setIsModalOpen(false);
-  // };
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-
   const { tenantId, entryIndex } = useParams();
-
-  // kp-----------------------
 
   //update lease
   const updateLease = async () => {
@@ -442,12 +451,96 @@ const RentRollLeaseing = () => {
       }
     }
     try {
-      for (let i = 0; i < file.length; i++) {
-        if (file[i] instanceof File) {
-        }
+      const entryData = [];
+      const rentEntryData = {
+        entry_id: rentChargeFormik.values.entry_id,
+        memo: rentChargeFormik.values.memo,
+        account: rentChargeFormik.values.account,
+        amount: rentChargeFormik.values.amount,
+        date: rentChargeFormik.values.date,
+        rent_cycle: rentChargeFormik.values.rent_cycle,
+        is_repeatable: true,
+        charge_type: rentChargeFormik.values.charge_type,
+      };
+
+      if (rentEntryData) {
+        entryData.push(rentEntryData);
       }
 
-      // const res = await axios.put(`${baseUrl}/leases/leases`);
+      const depoEntryData = {
+        entry_id: securityChargeFormik.values.entry_id,
+        memo: securityChargeFormik.values.memo,
+        account: securityChargeFormik.values.account,
+        amount: securityChargeFormik.values.amount,
+        date: securityChargeFormik.values.date,
+        is_repeatable: false,
+        charge_type: securityChargeFormik.values.charge_type,
+      };
+
+      if (depoEntryData) {
+        entryData.push(depoEntryData);
+      }
+
+      recurringData?.map((item) => {
+        const data = {
+          entry_id: item.entry_id,
+          memo: item.memo,
+          account: item.account,
+          amount: item.amount,
+          date: rentChargeFormik.values.date,
+          rent_cycle: rentChargeFormik.values.rent_cycle,
+          is_repeatable: true,
+          charge_type: item.charge_type,
+        };
+        if (data) {
+          entryData.push(data);
+        }
+        return data;
+      });
+
+      oneTimeData?.map((item) => {
+        const data = {
+          entry_id: item.entry_id,
+          memo: item.memo,
+          account: item.account,
+          amount: item.amount,
+          date: rentChargeFormik.values.date,
+          is_repeatable: false,
+          charge_type: item.charge_type,
+        };
+        if (data) {
+          entryData.push(data);
+        }
+        return data;
+      });
+
+      const object = {
+        leaseData: {
+          ...leaseFormik.values,
+          entry: entryData,
+          admin_id: accessType.admin_id,
+          uploaded_file: file,
+          lease_id: lease_id,
+        },
+        tenantData: { ...tenantFormik.values, admin_id: accessType.admin_id },
+        cosignerData: {
+          ...cosignerFormik.values,
+          admin_id: accessType.admin_id,
+        },
+      };
+
+      console.log(object);
+      const res = await axios.put(
+        `${baseUrl}/leases/leases/${lease_id}`,
+        object
+      );
+      if (res.data.statusCode === 200) {
+        toast.success("Lease Added Successfully", {
+          position: "top-center",
+          autoClose: 1000,
+        });
+        navigate(`/${admin}/RentRoll`);
+      }
     } catch (error) {
       console.error("Error:", error.message);
     }
@@ -640,7 +733,6 @@ const RentRollLeaseing = () => {
       emergency_contact: { name, relation, email, phoneNumber },
     } = tenant;
     if (event.target.checked) {
-      setOpenTenantsDialog(false);
       setShowTenantTable(false);
       tenantFormik.setValues({
         tenant_id,
@@ -660,11 +752,6 @@ const RentRollLeaseing = () => {
           email,
           phoneNumber,
         },
-      });
-      setSelectedTenantData({
-        tenant_firstName,
-        tenant_lastName,
-        tenant_phoneNumber,
       });
     } else {
       setCheckedCheckbox("");
@@ -803,11 +890,12 @@ const RentRollLeaseing = () => {
   };
 
   const handleCloseButtonClick = () => {
-    navigate("/" + admin + "/TenantsTable");
+    navigate("/" + admin + "/RentRoll");
   };
 
   const handleDateCheck = async () => {
     const object = {
+      lease_id: lease_id,
       tenant_id: tenantFormik.values.tenant_id,
       rental_id: leaseFormik.values.rental_id,
       unit_id: leaseFormik.values.unit_id,
@@ -823,7 +911,7 @@ const RentRollLeaseing = () => {
         end_date !== ""
       ) {
         const res = await axios.post(`${baseUrl}/leases/check_lease`, object);
-        if (res.data.statusCode === 201) {
+        if (res.data.statusCode === (201 || 400)) {
           toast.warning(res.data.message, {
             position: "top-center",
           });
@@ -916,7 +1004,6 @@ const RentRollLeaseing = () => {
         setSelectedRentCycle(data?.rent_charge_data[0]?.rent_cycle);
         rentChargeFormik.setValues(data?.rent_charge_data[0]);
         securityChargeFormik.setValues(data?.Security_charge_data[0]);
-        console.log(data?.tenant, "yash");
         setSelectedTenantData(data?.tenant);
         setRecurringData(data?.rec_charge_data);
         setOneTimeData(data?.one_charge_data);
@@ -2197,7 +2284,7 @@ const RentRollLeaseing = () => {
                                       >
                                         Add Tenant
                                       </button>
-                                      <Button onClick={handleClose}>
+                                      <Button onClick={()=>{handleClose(); tenantFormik.resetForm() }}>
                                         Cancel
                                       </Button>
                                     </div>
@@ -3486,6 +3573,7 @@ const RentRollLeaseing = () => {
                     setAddBankAccountDialogOpen={setAddBankAccountDialogOpen}
                     accountTypeName={accountTypeName}
                     adminId={accessType?.admin_id}
+                    fetchAccounts={fetchAccounts}
                   />
 
                   {/* //Recurring Charges Data */}
@@ -3869,10 +3957,14 @@ const RentRollLeaseing = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         if (selectedTenantData.length !== 0) {
-                          if (tenantFormik.errors && rentChargeFormik.errors) {
+                          if (
+                            Object.keys(tenantFormik.errors).length !== 0 &&
+                            Object.keys(rentChargeFormik.errors).length !== 0
+                          ) {
                             return;
                           }
                           leaseFormik.handleSubmit();
+                          return;
                         } else {
                           setDisplay(true);
                         }

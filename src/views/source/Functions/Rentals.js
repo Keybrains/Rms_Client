@@ -2,6 +2,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const baseUrl = process.env.REACT_APP_BASE_URL;
+const imageUrl = process.env.REACT_APP_IMAGE_URL;
 
 export const dialogPaperStyles = {
   maxWidth: "lg",
@@ -66,8 +67,39 @@ export const handleSubmit = async (
   rentals,
   rentalOwners,
   admin_id,
-  property_id
+  property_id,
+  files
 ) => {
+  var images = {};
+  if (files) {
+    try {
+      for (const file in files) {
+        images[file] = [];
+        for (const image of files[file]) {
+          if (image instanceof File) {
+            try {
+              const imageData = new FormData();
+              imageData.append("files", image);
+              const res = await axios.post(
+                `${imageUrl}/images/upload`,
+                imageData
+              );
+              if (res) {
+                images[file].push(res.data.files[0].url);
+              }
+            } catch (error) {
+              console.error("Error: ", error.message);
+            }
+          } else {
+            images[file].push(image);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error processing file uploads:", error);
+    }
+  }
+  
   try {
     const object = {
       rentalOwner: {
@@ -97,14 +129,13 @@ export const handleSubmit = async (
       },
       units:
         rentals.property_type === "Residential"
-          ? rentals.residential.map((residentialItem) => {
+          ? rentals.residential.map((residentialItem, index) => {
               const {
                 rental_unit,
                 rental_unit_adress,
                 rental_sqft,
                 rental_bath,
                 rental_bed,
-                propertyres_image,
               } = residentialItem;
 
               return {
@@ -114,23 +145,19 @@ export const handleSubmit = async (
                 rental_sqft: rental_sqft,
                 rental_bath: rental_bath,
                 rental_bed: rental_bed,
-                rental_images: propertyres_image,
+                rental_images: images[index],
               };
             })
-          : rentals.commercial.map((commercialItem) => {
-              const {
-                rental_unit,
-                rental_unit_adress,
-                rental_sqft,
-                propertyres_image,
-              } = commercialItem;
+          : rentals.commercial.map((commercialItem, index) => {
+              const { rental_unit, rental_unit_adress, rental_sqft } =
+                commercialItem;
 
               return {
                 admin_id: admin_id,
                 rental_unit: rental_unit,
                 rental_unit_adress: rental_unit_adress,
                 rental_sqft: rental_sqft,
-                rental_images: propertyres_image,
+                rental_images: images[index],
               };
             }),
     };

@@ -481,7 +481,6 @@ function AddPayment() {
               </CardHeader>
               <CardBody>
                 <Form>
-                  {console.log("yash", generalledgerFormik.values)}
                   <Row>
                     <Col lg="2">
                       <label

@@ -53,11 +53,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// const Rental = () => {
-//   const handleFormSubmit = () => {
-//
-//   };
-// };
 
 const Rentals = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -71,7 +66,6 @@ const Rentals = () => {
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [selectedState, setSelectedState] = useState("");
   const [loading, setIsLoading] = useState(true);
-  const [countries, setCountries] = useState([]);
 
   const toggle1 = () => setstateDropdownOpen((prevState) => !prevState);
 
@@ -121,27 +115,6 @@ const Rentals = () => {
   }
 
   useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await axios.get(
-          "https://restcountries.com/v3.1/all?fields=name"
-        );
-        const sortedCountries = response.data.sort((a, b) => {
-          const nameA = a.name.common.toUpperCase();
-          const nameB = b.name.common.toUpperCase();
-          return nameA.localeCompare(nameB);
-        });
-
-        setCountries(sortedCountries);
-      } catch (error) {
-        console.error("Error fetching countries:", error);
-      }
-    };
-
-    fetchCountries();
-  }, []);
-
-  useEffect(() => {
     const fetchPropertyData = async () => {
       try {
         const response = await axios.get(
@@ -183,8 +156,8 @@ const Rentals = () => {
   }
   function handleResponse(response) {
     const successMessage = id
-      ? "Property  updated successfully"
-      : "Property  added successfully";
+      ? "Rental-owner  updated successfully"
+      : "Rental-owner  added successfully";
     const errorMessage = response.data.message;
 
     if (response.data.statusCode === 200) {
@@ -215,13 +188,14 @@ const Rentals = () => {
       rentalOwner_phoneNumber: "",
       rentalOwner_homeNumber: "",
       rentalOwner_businessNumber: "",
-      rentalOwner_telephoneNumber: "",
       street_address: "",
       city: "",
       state: "",
       postal_code: "",
       country: "",
       rentalOwner_comments: "",
+      text_identityType: "",
+      text_identityType: "",
       texpayer_id: "",
       rentalOwner_properties: [],
     },
@@ -236,36 +210,36 @@ const Rentals = () => {
     },
   });
 
-  const filterRentalsBySearch = () => {
-    if (!searchQuery) {
-      return propertyData;
-    }
+  // const filterRentalsBySearch = () => {
+  //   if (!searchQuery) {
+  //     return propertyData;
+  //   }
 
-    return propertyData.filter((property) => {
-      return property.rental_adress
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-    });
-  };
+  //   return propertyData.filter((property) => {
+  //     return property.rental_adress
+  //       .toLowerCase()
+  //       .includes(searchQuery.toLowerCase());
+  //   });
+  // };
 
-  const handlePropertyCheckboxChange = (rental_id) => {
-    setSelectedProperties((prevSelectedProperties) => {
-      if (prevSelectedProperties.includes(rental_id)) {
-        return prevSelectedProperties.filter((id) => id !== rental_id);
-      } else {
-        return [...prevSelectedProperties, rental_id];
-      }
-    });
-  };
+  // const handlePropertyCheckboxChange = (rental_id) => {
+  //   setSelectedProperties((prevSelectedProperties) => {
+  //     if (prevSelectedProperties.includes(rental_id)) {
+  //       return prevSelectedProperties.filter((id) => id !== rental_id);
+  //     } else {
+  //       return [...prevSelectedProperties, rental_id];
+  //     }
+  //   });
+  // };
 
-  const handleSelectAllChange = () => {
-    if (!selectAllChecked) {
-      setSelectedProperties(propertyData.map((property) => property.rental_id));
-    } else {
-      setSelectedProperties([]);
-    }
-    setSelectAllChecked(!selectAllChecked);
-  };
+  // const handleSelectAllChange = () => {
+  //   if (!selectAllChecked) {
+  //     setSelectedProperties(propertyData.map((property) => property.rental_id));
+  //   } else {
+  //     setSelectedProperties([]);
+  //   }
+  //   setSelectAllChecked(!selectAllChecked);
+  // };
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -292,7 +266,8 @@ const Rentals = () => {
             birth_date: formatDate(rentalOwnerdata.birth_date),
             start_date: formatDate(rentalOwnerdata.start_date),
             end_date: formatDate(rentalOwnerdata.end_date),
-            rentalOwner_primaryEmail: rentalOwnerdata.rentalOwner_primaryEmail || "",
+            rentalOwner_primaryEmail:
+              rentalOwnerdata.rentalOwner_primaryEmail || "",
             rentalOwner_alternateEmail:
               rentalOwnerdata.rentalOwner_alternateEmail || "",
             rentalOwner_phoneNumber:
@@ -301,10 +276,7 @@ const Rentals = () => {
               rentalOwnerdata.rentalOwner_homeNumber || "",
             rentalOwner_businessNumber:
               rentalOwnerdata.rentalOwner_businessNumber || "",
-            rentalOwner_telephoneNumber:
-              rentalOwnerdata.rentalOwner_telephoneNumber || "",
-            street_address:
-              rentalOwnerdata.street_address || "",
+            street_address: rentalOwnerdata.street_address || "",
             city: rentalOwnerdata.city || "",
             state: rentalOwnerdata.state || "",
             postal_code: rentalOwnerdata.postal_code || "",
@@ -312,9 +284,12 @@ const Rentals = () => {
             rentalOwner_comments: rentalOwnerdata.rentalOwner_comments || "",
             rentalOwner_companyName:
               rentalOwnerdata.rentalOwner_companyName || "",
+            text_identityType: rentalOwnerdata.text_identityType || "",
             texpayer_id: rentalOwnerdata.texpayer_id || "",
             rentalOwner_properties:
               rentalOwnerdata.rentalOwner_properties || "",
+            text_identityType:
+              rentalOwnerdata.text_identityType || "",
           });
         })
         .catch((error) => {
@@ -347,305 +322,327 @@ const Rentals = () => {
                   <Col className="text-right" xs="4"></Col>
                 </Row>
               </CardHeader>
-
               <CardBody>
                 <Form role="form">
-                  <h6 className="heading-small text-muted mb-4"></h6>
+                  <h6 className="heading-small text-muted mb-1"></h6>
                   <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
+
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-property"
+                      >
+                        Personal Information
+                      </label>
+                      <br></br>
+                      <br></br>
+
+
+                      <Row>
+                        <Col lg="4">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-property"
+                            >
+                              First Name
+                            </label>
+                            <Input
+                              type="text"
+                              id="rentalOwner_firstName"
+                              placeholder="First Name"
+                              onBlur={rentalsFormik.handleBlur}
+                              onChange={rentalsFormik.handleChange}
+                              value={
+                                rentalsFormik.values.rentalOwner_firstName
+                              }
+                            />
+                            {rentalsFormik.touched.rentalOwner_firstName &&
+                              rentalsFormik.errors.rentalOwner_firstName ? (
+                              <div style={{ color: "red" }}>
+                                {rentalsFormik.errors.rentalOwner_firstName}
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                        <Col lg="4">
+                          <FormGroup>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-property"
+                            >
+                              Last Name
+                            </label>
+                            <Input
+                              type="text"
+                              id="rentalOwner_lastName"
+                              placeholder="Last Name"
+                              onBlur={rentalsFormik.handleBlur}
+                              onChange={rentalsFormik.handleChange}
+                              value={
+                                rentalsFormik.values.rentalOwner_lastName
+                              }
+                            />
+                            {rentalsFormik.touched.rentalOwner_lastName &&
+                              rentalsFormik.errors.rentalOwner_lastName ? (
+                              <div style={{ color: "red" }}>
+                                {rentalsFormik.errors.rentalOwner_lastName}
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <br />
+                      <Row>
+                        <Col lg={4}>
+                          <FormGroup className="mb-0">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-address"
+                            >
+                              Company Name
+                            </label>
+
+                            <Input
+                              type="text"
+                              id="rentalOwner_companyName"
+                              placeholder="Company Name"
+                              onBlur={rentalsFormik.handleBlur}
+                              onChange={rentalsFormik.handleChange}
+                              value={
+                                rentalsFormik.values.rentalOwner_companyName
+                              }
+                            />
+                            {rentalsFormik.touched
+                              .rentalOwner_companyName &&
+                              rentalsFormik.errors.rentalOwner_companyName ? (
+                              <div style={{ color: "red" }}>
+                                {
+                                  rentalsFormik.errors
+                                    .rentalOwner_companyName
+                                }
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      </Row>
+                      <br />
+                      <Row>
+                        <Col lg="2">
+                          <FormGroup
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
                           >
-                            Name
-                          </label>
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-unitadd"
+                            >
+                              Date Of Birth*
+                            </label>
+                            <Input
+                              id="birth_date"
+                              placeholder="Date Of Birth"
+                              type="date"
+                              onBlur={rentalsFormik.handleBlur}
+                              onChange={rentalsFormik.handleChange}
+                              value={rentalsFormik.values.birth_date}
+                            />
+                            {rentalsFormik.touched.birth_date &&
+                              rentalsFormik.errors.birth_date ? (
+                              <div style={{ color: "red" }}>
+                                {rentalsFormik.errors.birth_date}
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                      </Row>
 
-                          <Row>
-                            <Col lg="6">
-                              <FormGroup>
-                                <Input
-                                  type="text"
-                                  id="rentalOwner_firstName"
-                                  placeholder="First Name"
-                                  onBlur={rentalsFormik.handleBlur}
-                                  onChange={rentalsFormik.handleChange}
-                                  value={
-                                    rentalsFormik.values.rentalOwner_firstName
-                                  }
-                                />
-                                {rentalsFormik.touched.rentalOwner_firstName &&
-                                  rentalsFormik.errors.rentalOwner_firstName ? (
-                                  <div style={{ color: "red" }}>
-                                    {rentalsFormik.errors.rentalOwner_firstName}
-                                  </div>
-                                ) : null}
-                              </FormGroup>
-                            </Col>
-                            <Col lg="6">
-                              <FormGroup>
-                                <Input
-                                  type="text"
-                                  id="rentalOwner_lastName"
-                                  placeholder="Last Name"
-                                  onBlur={rentalsFormik.handleBlur}
-                                  onChange={rentalsFormik.handleChange}
-                                  value={
-                                    rentalsFormik.values.rentalOwner_lastName
-                                  }
-                                />
-                                {rentalsFormik.touched.rentalOwner_lastName &&
-                                  rentalsFormik.errors.rentalOwner_lastName ? (
-                                  <div style={{ color: "red" }}>
-                                    {rentalsFormik.errors.rentalOwner_lastName}
-                                  </div>
-                                ) : null}
-                              </FormGroup>
-                            </Col>
-                          </Row>
+                      <hr />
 
-                          <Row>
-                            <Col lg={12}>
-                              <FormGroup className="mb-0">
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-address"
-                                >
-                                  Company Name
-                                </label>
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-address"
+                        >
+                          Managment agreement
+                        </label>
+                        <br></br>
+                        <br></br>
+                        <Row>
 
-                                <Input
-                                  type="text"
-                                  id="rentalOwner_companyName"
-                                  placeholder="Company Name"
-                                  onBlur={rentalsFormik.handleBlur}
-                                  onChange={rentalsFormik.handleChange}
-                                  value={
-                                    rentalsFormik.values.rentalOwner_companyName
-                                  }
-                                />
-                                {rentalsFormik.touched
-                                  .rentalOwner_companyName &&
-                                  rentalsFormik.errors.rentalOwner_companyName ? (
-                                  <div style={{ color: "red" }}>
-                                    {
-                                      rentalsFormik.errors
-                                        .rentalOwner_companyName
-                                    }
-                                  </div>
-                                ) : null}
-                              </FormGroup>
-                            </Col>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                          </Row>
-
-                          <Row>
-                            <Col lg="4">
-                              <FormGroup
-                                style={{
-                                  display: "flex",
-                                  flexDirection: "column",
-                                }}
+                          <Col lg="2">
+                            <FormGroup>
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-unitadd"
                               >
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-unitadd"
-                                >
-                                  Date Of Birth*
-                                </label>
-                                <br />
-                                <Input
-                                  id="birth_date"
-                                  placeholder="Date Of Birth"
-                                  type="date"
-                                  onBlur={rentalsFormik.handleBlur}
-                                  onChange={rentalsFormik.handleChange}
-                                  value={rentalsFormik.values.birth_date}
-                                />
-                                {rentalsFormik.touched.birth_date &&
-                                  rentalsFormik.errors.birth_date ? (
-                                  <div style={{ color: "red" }}>
-                                    {rentalsFormik.errors.birth_date}
-                                  </div>
-                                ) : null}
-                              </FormGroup>
-                            </Col>
-                          </Row>
+                                Start Date *
+                              </label>
+                              <br />
 
-                          <hr />
+                              <Input
+                                id="start_date"
+                                placeholder="Start Date"
+                                type="date"
+                                onBlur={rentalsFormik.handleBlur}
+                                onChange={rentalsFormik.handleChange}
+                                value={rentalsFormik.values.start_date}
+                              />
+                              {rentalsFormik.touched.start_date &&
+                                rentalsFormik.errors.start_date ? (
+                                <div style={{ color: "red" }}>
+                                  {rentalsFormik.errors.start_date}
+                                </div>
+                              ) : null}
+                            </FormGroup>
+                          </Col>
 
-                          <FormGroup>
+                          <Col lg="2">
                             <label
                               className="form-control-label"
-                              htmlFor="input-address"
+                              htmlFor="input-unitadd"
                             >
-                              Managment agreement
+                              End Date *
                             </label>
-                            <br></br>
-                            <br></br>
-                            <Row>
-                              <Row className="mx-1">
-                                <Col lg="12">
-                                  <FormGroup>
-                                    <label
-                                      className="form-control-label"
-                                      htmlFor="input-unitadd"
-                                    >
-                                      Start Date *
-                                    </label>
-                                    <br />
+                            <br />
+                            <Input
+                              id="end_date"
+                              placeholder="End Date"
+                              type="date"
+                              onBlur={rentalsFormik.handleBlur}
+                              onChange={rentalsFormik.handleChange}
+                              value={rentalsFormik.values.end_date}
+                            />
+                            {rentalsFormik.touched.end_date &&
+                              rentalsFormik.errors.end_date ? (
+                              <div style={{ color: "red" }}>
+                                {rentalsFormik.errors.end_date}
+                              </div>
+                            ) : null}
+                          </Col>
+                        </Row>
+                      </FormGroup>
 
-                                    <Input
-                                      id="start_date"
-                                      placeholder="Start Date"
-                                      type="date"
-                                      onBlur={rentalsFormik.handleBlur}
-                                      onChange={rentalsFormik.handleChange}
-                                      value={rentalsFormik.values.start_date}
-                                    />
-                                    {rentalsFormik.touched.start_date &&
-                                      rentalsFormik.errors.start_date ? (
-                                      <div style={{ color: "red" }}>
-                                        {rentalsFormik.errors.start_date}
-                                      </div>
-                                    ) : null}
-                                  </FormGroup>
-                                </Col>
-                              </Row>
-                              &nbsp; &nbsp; &nbsp;
-                              <FormGroup>
-                                <Row>
-                                  <Col lg="12">
-                                    <label
-                                      className="form-control-label"
-                                      htmlFor="input-unitadd"
-                                    >
-                                      End Date *
-                                    </label>
-                                    <br />
-                                    <Input
-                                      id="end_date"
-                                      placeholder="End Date"
-                                      type="date"
-                                      onBlur={rentalsFormik.handleBlur}
-                                      onChange={rentalsFormik.handleChange}
-                                      value={rentalsFormik.values.end_date}
-                                    />
-                                    {rentalsFormik.touched.end_date &&
-                                      rentalsFormik.errors.end_date ? (
-                                      <div style={{ color: "red" }}>
-                                        {rentalsFormik.errors.end_date}
-                                      </div>
-                                    ) : null}
-                                  </Col>
-                                </Row>
-                              </FormGroup>
-                            </Row>
-                          </FormGroup>
+                      <hr></hr>
 
-                          <hr></hr>
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-address"
+                        >
+                          Contact information
+                        </label>
+                        <br></br>
 
-                          <FormGroup>
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-address"
-                            >
-                              Contact information
-                            </label>
-                          </FormGroup>
+                      </FormGroup>
 
-                          <Row>
-                            <Col>
-                              <FormGroup className="mb-0">
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Primary E-mail
-                                </label>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                              </FormGroup>
-
-                              <FormGroup>
-                                <div className="input-group">
-                                  <div className="input-group-prepend">
-                                    <span className="input-group-text">
-                                      <FontAwesomeIcon icon={faEnvelope} />
-                                    </span>
-                                  </div>
-                                  <Input
-                                    type="text"
-                                    id="rentalOwner_primaryEmail"
-                                    placeholder="Enter Email"
-                                    onBlur={rentalsFormik.handleBlur}
-                                    onChange={rentalsFormik.handleChange}
-                                    value={
-                                      rentalsFormik.values.rentalOwner_primaryEmail
-                                    }
-                                  />
-                                  {rentalsFormik.touched.rentalOwner_primaryEmail &&
-                                    rentalsFormik.errors.rentalOwner_primaryEmail ? (
-                                    <div style={{ color: "red" }}>
-                                      {rentalsFormik.errors.rentalOwner_primaryEmail}
-                                    </div>
-                                  ) : null}
-                                </div>
-                              </FormGroup>
-                              <FormGroup className="mb-0">
-                                <label
-                                  className="form-control-label"
-                                  htmlFor="input-property"
-                                >
-                                  Alternative E-mail
-                                </label>
-                                &nbsp;
-                              </FormGroup>
-
-                              <FormGroup>
-                                <div className="input-group">
-                                  <div className="input-group-prepend">
-                                    <span className="input-group-text">
-                                      <FontAwesomeIcon icon={faEnvelope} />
-                                    </span>
-                                  </div>
-                                  <Input
-                                    type="text"
-                                    id="rentalOwner_alternateEmail"
-                                    placeholder="Enter_Email"
-                                    onBlur={rentalsFormik.handleBlur}
-                                    onChange={rentalsFormik.handleChange}
-                                    value={
-                                      rentalsFormik.values
-                                        .rentalOwner_alternateEmail
-                                    }
-                                  />
-                                  {rentalsFormik.touched
-                                    .rentalOwner_alternateEmail &&
-                                    rentalsFormik.errors
-                                      .rentalOwner_alternateEmail ? (
-                                    <div style={{ color: "red" }}>
-                                      {
-                                        rentalsFormik.errors
-                                          .rentalOwner_alternateEmail
-                                      }
-                                    </div>
-                                  ) : null}
-                                </div>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-
-                          <Col></Col>
+                      <Row>
+                        <Col lg="4">
                           <FormGroup className="mb-0">
                             <label
                               className="form-control-label"
                               htmlFor="input-property"
                             >
-                              Phone Numbers
+                              Primary E-mail
                             </label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                           </FormGroup>
 
+                          <FormGroup>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <FontAwesomeIcon icon={faEnvelope} />
+                                </span>
+                              </div>
+                              <Input
+                                type="text"
+                                id="rentalOwner_primaryEmail"
+                                placeholder="Enter Email"
+                                onBlur={rentalsFormik.handleBlur}
+                                onChange={rentalsFormik.handleChange}
+                                value={
+                                  rentalsFormik.values
+                                    .rentalOwner_primaryEmail
+                                }
+                              />
+                            </div>
+                            {rentalsFormik.touched
+                              .rentalOwner_primaryEmail &&
+                              rentalsFormik.errors
+                                .rentalOwner_primaryEmail ? (
+                              <div style={{ color: "red" }}>
+                                {
+                                  rentalsFormik.errors
+                                    .rentalOwner_primaryEmail
+                                }
+                              </div>
+                            ) : null}
+                          </FormGroup>
+                        </Col>
+                        <Col lg="4">
+
+                          <FormGroup className="mb-0">
+                            <label
+                              className="form-control-label"
+                              htmlFor="input-property"
+                            >
+                              Alternative E-mail
+                            </label>
+                            &nbsp;
+                          </FormGroup>
+
+                          <FormGroup>
+                            <div className="input-group">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  <FontAwesomeIcon icon={faEnvelope} />
+                                </span>
+                              </div>
+                              <Input
+                                type="text"
+                                id="rentalOwner_alternateEmail"
+                                placeholder="Enter_Email"
+                                onBlur={rentalsFormik.handleBlur}
+                                onChange={rentalsFormik.handleChange}
+                                value={
+                                  rentalsFormik.values
+                                    .rentalOwner_alternateEmail
+                                }
+                              />
+                              {rentalsFormik.touched
+                                .rentalOwner_alternateEmail &&
+                                rentalsFormik.errors
+                                  .rentalOwner_alternateEmail ? (
+                                <div style={{ color: "red" }}>
+                                  {
+                                    rentalsFormik.errors
+                                      .rentalOwner_alternateEmail
+                                  }
+                                </div>
+                              ) : null}
+                            </div>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+
+
+
+
+                      <Col></Col>
+                      <FormGroup className="mb-0">
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Phone Numbers
+                        </label>
+                      </FormGroup>
+                      <Row>
+                        <Col lg="3">
                           <div className="input-group">
                             <div className="input-group-prepend">
                               <span className="input-group-text">
@@ -670,6 +667,7 @@ const Rentals = () => {
                                 e.target.value = numericValue;
                               }}
                             />
+                          </div>
                             {rentalsFormik.touched.rentalOwner_phoneNumber &&
                               rentalsFormik.errors.rentalOwner_phoneNumber ? (
                               <div
@@ -680,9 +678,9 @@ const Rentals = () => {
                                 {rentalsFormik.errors.rentalOwner_phoneNumber}
                               </div>
                             ) : null}
-                          </div>
-                          <br />
-
+                        </Col>
+                        {/* <br /> */}
+                        <Col lg="3">
                           <div className="input-group">
                             <div className="input-group-prepend">
                               <span className="input-group-text">
@@ -718,9 +716,9 @@ const Rentals = () => {
                               </div>
                             ) : null}
                           </div>
-
-                          <br />
-
+                        </Col>
+                        {/* <br /> */}
+                        <Col lg="3">
                           <div className="input-group">
                             <div className="input-group-prepend">
                               <span className="input-group-text">
@@ -759,58 +757,23 @@ const Rentals = () => {
                               </div>
                             ) : null}
                           </div>
-                          <br />
-                          <div className="input-group">
-                            <div className="input-group-prepend">
-                              <span className="input-group-text">
-                                <FontAwesomeIcon icon={faPhone} />
-                              </span>
-                            </div>
-                            <Input
-                              type="text"
-                              id="rentalOwner_telephoneNumber"
-                              placeholder="Telephone Number"
-                              onBlur={rentalsFormik.handleBlur}
-                              onChange={rentalsFormik.handleChange}
-                              value={
-                                rentalsFormik.values.rentalOwner_telephoneNumber
-                              }
-                              onInput={(e) => {
-                                const inputValue = e.target.value;
-                                const numericValue = inputValue.replace(
-                                  /\D/g,
-                                  ""
-                                );
-                                e.target.value = numericValue;
-                              }}
-                            />
-                            {rentalsFormik.touched
-                              .rentalOwner_telephoneNumber &&
-                              rentalsFormik.errors.rentalOwner_telephoneNumber ? (
-                              <div
-                                style={{
-                                  color: "red",
-                                }}
-                              >
-                                {
-                                  rentalsFormik.errors
-                                    .rentalOwner_telephoneNumber
-                                }
-                              </div>
-                            ) : null}
-                          </div>
-                        </FormGroup>
+                        </Col>
+                        {/* <br /> */}
+                      </Row>
+                    </FormGroup>
 
-                        <FormGroup className="mb-0">
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-property"
-                          >
-                            Street Address
-                          </label>
-                        </FormGroup>
+                    <FormGroup className="mb-0">
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-property"
+                      >
+                        Street Address
+                      </label>
+                    </FormGroup>
+                    <Row>
+                      <Col lg="4">
                         <Input
-                          type="text"
+                          type="textarea"
                           id="street_address"
                           placeholder="Address"
                           onBlur={rentalsFormik.handleBlur}
@@ -888,152 +851,147 @@ const Rentals = () => {
                         </FormGroup>
                       </Col>
                     </Row>
-                  </div>
-
-                  <FormGroup>
                     <Row>
-                      <Col className="d-flex">
-                        <Col lg="3">
+                      <Col lg="3">
+                        <FormGroup>
                           <label
                             className="form-control-label"
                             htmlFor="input-country"
                           >
                             Country
                           </label>
-                          <br />
-                          <Row>
+
+                          <Input
+                            type="text"
+                            id="country"
+                            placeholder="country"
+                            onChange={rentalsFormik.handleChange}
+                            value={rentalsFormik.values.country}
+                          />
+                          {rentalsFormik.touched.country &&
+                            rentalsFormik.errors.country ? (
                             <div
-                              style={{ display: "flex" }}
-                              className="pl-lg-2"
-                            >
-                              <Dropdown
-                                className="col-9"
-                                isOpen={statedropdownOpen}
-                                toggle={toggle1}
-                              >
-                                <DropdownToggle caret>
-                                  {selectedState ? selectedState : "Select"}
-                                </DropdownToggle>
-                                <DropdownMenu
-                                  style={{
-                                    width: "200px",
-                                    maxHeight: "200px",
-                                    overflowY: "auto",
-                                  }}
-                                >
-                                  {countries.map((country, index) => (
-                                    <DropdownItem
-                                      key={index}
-                                      onClick={() =>
-                                        handleCountrySelection(
-                                          country.name.common
-                                        )
-                                      }
-                                    >
-                                      {country.name.common}
-                                    </DropdownItem>
-                                  ))}
-                                </DropdownMenu>
-                              </Dropdown>
-                            </div>
-                          </Row>
-                        </Col>
-
-                        <Col lg="3">
-                          <FormGroup className="mx-2">
-                            <label
-                              className="form-control-label"
-                              htmlFor="input-zip"
-                            >
-                              Postal Code
-                            </label>
-                            <Input
-                              type="text"
-                              id="postal_code"
-                              placeholder="Postal code"
-                              onChange={rentalsFormik.handleChange}
-                              value={rentalsFormik.values.postal_code}
-                              onInput={(e) => {
-                                const inputValue = e.target.value;
-                                const numericValue = inputValue.replace(
-                                  /\D/g,
-                                  ""
-                                );
-                                e.target.value = numericValue;
+                              style={{
+                                color: "red",
                               }}
-                              style={{ width: "235px" }}
-                            />
-                            {rentalsFormik.touched.postal_code &&
-                              rentalsFormik.errors.postal_code ? (
-                              <div
-                                style={{
-                                  color: "red",
-                                }}
-                              >
-                                {rentalsFormik.errors.postal_code}
-                              </div>
-                            ) : null}
-                          </FormGroup>
+                            >
+                              {rentalsFormik.errors.country}
+                            </div>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
+
+                      <Col lg="3">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-zip"
+                          >
+                            Postal Code
+                          </label>
+                          <Input
+                            type="text"
+                            id="postal_code"
+                            placeholder="Postal code"
+                            onChange={rentalsFormik.handleChange}
+                            value={rentalsFormik.values.postal_code}
+                            onInput={(e) => {
+                              const inputValue = e.target.value;
+                              const numericValue = inputValue.replace(
+                                /\D/g,
+                                ""
+                              );
+                              e.target.value = numericValue;
+                            }}
+                          // style={{ width: "235px" }}
+                          />
+                          {rentalsFormik.touched.postal_code &&
+                            rentalsFormik.errors.postal_code ? (
+                            <div
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              {rentalsFormik.errors.postal_code}
+                            </div>
+                          ) : null}
+                        </FormGroup>
+                      </Col>
+
+                    </Row>
+
+
+                    <hr></hr>
+
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-address"
+                      >
+                        Tax Payer Information
+                      </label>
+                      <br></br>
+
+                    </FormGroup>
+
+                    <FormGroup>
+                      <Row>
+                        <Col lg="2">
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-tax"
+                          >
+                            Tax Identity Type
+                          </label>
+
+                          <Input
+                            type="text"
+                            id="text_identityType"
+                            placeholder="Tax Identity Type"
+                            onChange={rentalsFormik.handleChange}
+                            value={rentalsFormik.values.text_identityType}
+                          />
+                          {rentalsFormik.touched.text_identityType &&
+                            rentalsFormik.errors.text_identityType ? (
+                            <div
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              {rentalsFormik.errors.text_identityType}
+                            </div>
+                          ) : null}
                         </Col>
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                  <FormGroup>
-                    <Row>
-                      <Col lg="2" className="ml-lg-4">
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-tax"
-                        >
-                          Tax Identity Type
-                        </label>
-
-                        <Input
-                          type="text"
-                          id="text_identityType"
-                          placeholder="Tax Identity Type"
-                          onChange={rentalsFormik.handleChange}
-                          value={rentalsFormik.values.text_identityType}
-                        />
-                        {rentalsFormik.touched.text_identityType &&
-                          rentalsFormik.errors.text_identityType ? (
-                          <div
-                            style={{
-                              color: "red",
-                            }}
+                        <Col lg="2">
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-taxpayer_id"
                           >
-                            {rentalsFormik.errors.text_identityType}
-                          </div>
-                        ) : null}
-                      </Col>
-                      <Col lg="2" className="ml-lg-4">
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-taxpayer_id"
-                        >
-                          Taxpayer Id
-                        </label>
+                            Taxpayer Id
+                          </label>
 
-                        <Input
-                          type="text"
-                          id="texpayer_id"
-                          placeholder="Enter SSN or EIN....."
-                          onChange={rentalsFormik.handleChange}
-                          value={rentalsFormik.values.texpayer_id}
-                        />
-                        {rentalsFormik.touched.texpayer_id &&
-                          rentalsFormik.errors.texpayer_id ? (
-                          <div
-                            style={{
-                              color: "red",
-                            }}
-                          >
-                            {rentalsFormik.errors.texpayer_id}
-                          </div>
-                        ) : null}
-                      </Col>
-                    </Row>
-                  </FormGroup>
+                          <Input
+                            type="text"
+                            id="texpayer_id"
+                            placeholder="Enter SSN or EIN....."
+                            onChange={rentalsFormik.handleChange}
+                            value={rentalsFormik.values.texpayer_id}
+                          />
+                          {rentalsFormik.touched.texpayer_id &&
+                            rentalsFormik.errors.texpayer_id ? (
+                            <div
+                              style={{
+                                color: "red",
+                              }}
+                            >
+                              {rentalsFormik.errors.texpayer_id}
+                            </div>
+                          ) : null}
+                        </Col>
+                      </Row>
+                    </FormGroup>
+                  </div>
+                  <br />
                   {/* <FormGroup>
                     <Row>
                       <Col lg="4" className="ml-lg-4">

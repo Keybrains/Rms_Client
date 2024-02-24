@@ -78,7 +78,6 @@ const handleDeleteUnit = (id) => {
               position: "top-center",
               autoClose: 500,
             });
-            
           }
           if (response.data.statusCode === 201) {
             toast.warning(response.data.message, {
@@ -99,7 +98,41 @@ const handleDeleteUnit = (id) => {
 };
 
 //add unit
-const handleSubmit = async (rental_id, admin_id, object) => {
+const handleSubmit = async (rental_id, admin_id, object, file) => {
+  if (file) {
+    try {
+      const uploadPromises = file.map(async (fileItem, i) => {
+        if (fileItem instanceof File) {
+          try {
+            const form = new FormData();
+            form.append("files", fileItem);
+
+            const res = await axios.post(`${imageUrl}/images/upload`, form);
+
+            if (
+              res &&
+              res.data &&
+              res.data.files &&
+              res.data.files.length > 0
+            ) {
+              file[i] = res.data.files[0].url;
+              object.rental_images[i] = res.data.files[0].url;
+            } else {
+              console.error("Unexpected response format:", res);
+            }
+          } catch (error) {
+            console.error("Error uploading file:", error);
+          }
+        } else {
+          object.rental_images[i] = fileItem;
+        }
+      });
+
+      await Promise.all(uploadPromises);
+    } catch (error) {
+      console.error("Error processing file uploads:", error);
+    }
+  }
   object.admin_id = admin_id;
   object.rental_id = rental_id;
   try {
@@ -122,7 +155,42 @@ const handleSubmit = async (rental_id, admin_id, object) => {
 };
 
 //edite unit
-const handleUnitDetailsEdit = async (unit_id, object) => {
+const handleUnitDetailsEdit = async (unit_id, object, file) => {
+  if (file) {
+    try {
+      const uploadPromises = file.map(async (fileItem, i) => {
+        if (fileItem instanceof File) {
+          try {
+            const form = new FormData();
+            form.append("files", fileItem);
+
+            const res = await axios.post(`${imageUrl}/images/upload`, form);
+
+            if (
+              res &&
+              res.data &&
+              res.data.files &&
+              res.data.files.length > 0
+            ) {
+              file[i] = res.data.files[0].url;
+              object.rental_images[i] = res.data.files[0].url;
+            } else {
+              console.error("Unexpected response format:", res);
+            }
+          } catch (error) {
+            console.error("Error uploading file:", error);
+          }
+        } else {
+          object.rental_images[i] = fileItem;
+        }
+      });
+
+      await Promise.all(uploadPromises);
+    } catch (error) {
+      console.error("Error processing file uploads:", error);
+    }
+  }
+
   try {
     const res = await axios.put(`${baseUrl}/unit/unit/${unit_id}`, object);
     if (res.data.statusCode === 200) {
@@ -227,18 +295,17 @@ const deleteAppliance = async (appliance_id) => {
 };
 
 const UnitEdite = ({
-  clickedObject,
-  selectedImage,
+  selectedFiles,
   setOpen,
   open,
   clearSelectedPhoto,
-  setSelectedImage,
-  unitImage,
+  setSelectedFiles,
   fileData,
   togglePhotoresDialog,
   addUnitFormik,
   closeModal,
   addUnitDialogOpen,
+  is_multiunit,
 }) => {
   return (
     <Row style={{ width: "600px" }}>
@@ -246,45 +313,51 @@ const UnitEdite = ({
         <Card style={{ position: "relative" }}>
           <CardBody>
             <form onSubmit={addUnitFormik.handleSubmit}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                <div>
-                  <h5>Unit Number</h5>
-                </div>
-                <TextField
-                  type="text"
-                  size="small"
-                  id="rental_unit"
-                  name="rental_unit"
-                  value={addUnitFormik.values.rental_unit}
-                  onChange={addUnitFormik.handleChange}
-                  onBlur={addUnitFormik.handleBlur}
-                />
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  marginTop: "10px",
-                }}
-              >
-                <div>
-                  <h5>Street Address</h5>
-                </div>
-                <TextField
-                  type="text"
-                  size="small"
-                  id="rental_unit_adress"
-                  name="rental_unit_adress"
-                  value={addUnitFormik.values.rental_unit_adress}
-                  onChange={addUnitFormik.handleChange}
-                  onBlur={addUnitFormik.handleBlur}
-                />
-              </div>
+              {!is_multiunit ? (
+                ""
+              ) : (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <div>
+                      <h5>Unit Number</h5>
+                    </div>
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="rental_unit"
+                      name="rental_unit"
+                      value={addUnitFormik.values.rental_unit}
+                      onChange={addUnitFormik.handleChange}
+                      onBlur={addUnitFormik.handleBlur}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <div>
+                      <h5>Street Address</h5>
+                    </div>
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="rental_unit_adress"
+                      name="rental_unit_adress"
+                      value={addUnitFormik.values.rental_unit_adress}
+                      onChange={addUnitFormik.handleChange}
+                      onBlur={addUnitFormik.handleBlur}
+                    />
+                  </div>
+                </>
+              )}
               <Row
                 style={{
                   display: "flex",
@@ -439,10 +512,13 @@ const UnitEdite = ({
                         paddingLeft: "10px",
                       }}
                     >
-                      <div className="d-flex">
-                        {unitImage &&
-                          unitImage.length > 0 &&
-                          unitImage.map((unitImg, index) => (
+                      <div
+                        className="d-flex"
+                        style={{ width: "100%", overflow: "auto" }}
+                      >
+                        {selectedFiles &&
+                          selectedFiles.length > 0 &&
+                          selectedFiles.map((unitImg, index) => (
                             <div
                               key={index}
                               style={{
@@ -455,18 +531,24 @@ const UnitEdite = ({
                               }}
                             >
                               <img
-                                src={unitImg}
+                                src={
+                                  unitImg instanceof File
+                                    ? URL.createObjectURL(unitImg)
+                                    : unitImg
+                                }
                                 alt=""
                                 style={{
                                   width: "100px",
                                   height: "100px",
                                   maxHeight: "100%",
                                   maxWidth: "100%",
+                                  minHeight: "100%",
+                                  minWidth: "100%",
                                   borderRadius: "10px",
                                   cursor: "pointer",
                                 }}
                                 onClick={() => {
-                                  setSelectedImage(unitImg);
+                                  setSelectedFiles(unitImg);
                                   setOpen(true);
                                 }}
                               />
@@ -487,7 +569,7 @@ const UnitEdite = ({
                         <OpenImageDialog
                           open={open}
                           setOpen={setOpen}
-                          selectedImage={selectedImage}
+                          selectedFiles={selectedFiles}
                         />
                       </div>
                     </FormGroup>

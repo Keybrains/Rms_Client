@@ -59,7 +59,6 @@ const Applicants = () => {
   // Step 1: Create state to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-
   const [selectedTenantData, setSelectedTenantData] = useState([]);
   const [selectedTenants, setSelectedTenants] = useState([]);
 
@@ -140,7 +139,6 @@ const Applicants = () => {
     }
   };
 
-
   const [unitId, setUnitId] = useState(null);
   const handleUnitSelect = (selectedUnit) => {
     setSelectedUnit(selectedUnit.rental_unit_adress);
@@ -166,9 +164,9 @@ const Applicants = () => {
 
   const handleSelectedApplicantChange = (e) => {
     const { name, value } = e.target;
-    setSelectedApplicant(prevState => ({
+    setSelectedApplicant((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -186,18 +184,31 @@ const Applicants = () => {
       };
 
       // API endpoint for updating applicant data
-      const apiUrl = `${baseUrl}/applicant/applicant/1708005396068`;
+      // const apiUrl = `${baseUrl}/applicant/applicant/1708005396068`;
+      const apiUrl = `${baseUrl}/applicant/applicant/${selectedApplicant.applicant_id}`;
 
       // Send PUT request to update the data
       const response = await axios.put(apiUrl, selectedApplicantData);
 
-      // Handle response
-      console.log('Applicant data updated:', response.data);
+      if (response.data.statusCode === 200) {
+        closeModal();
+        toast.success("Applicant Update Successfully", {
+          position: "top-center",
+          autoClose: 500,
+        });
+      } else {
+        toast.warning(response.data.message, {
+          position: "top-center",
+        });
+      }
 
       // You can handle any success actions here, such as showing a success message or updating state.
     } catch (error) {
       // Handle error
-      console.error('Error updating applicant data:', error);
+      console.error("Error updating applicant data:", error);
+      toast.error(error, {
+        position: "top-center",
+      });
 
       // You can handle any error actions here, such as showing an error message or logging the error.
     } finally {
@@ -658,6 +669,10 @@ const Applicants = () => {
               color="primary"
               // href="#rms"
               onClick={openModal}
+              // onClick={() => {
+              //   setSelectedApplicant({})
+              //   openModal()
+              // }}
               size="sm"
               style={{ background: "white", color: "blue" }}
             >
@@ -826,7 +841,9 @@ const Applicants = () => {
                   {rentalsData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="8" style={{ fontSize: "15px" }}>No Applicants Added</td>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
+                          No Applicants Added
+                        </td>
                       </tr>
                     </tbody>
                   ) : (
@@ -847,7 +864,7 @@ const Applicants = () => {
                           <td>
                             {applicant.rental_data.rental_adress}{" "}
                             {applicant.unit_data &&
-                              applicant.unit_data.rental_unit
+                            applicant.unit_data.rental_unit
                               ? " - " + applicant.unit_data.rental_unit
                               : null}
                           </td>
@@ -863,19 +880,19 @@ const Applicants = () => {
                                 e.stopPropagation();
                                 deleteRentals(applicant._id);
                               }}
-
                             />
                             <EditIcon
                               onClick={(e) => {
-                                e.stopPropagation(); // Prevent row click event from firing
-                                handleEdit(applicant); // Pass the selected applicant data
+                                e.stopPropagation();
+                                handleEdit(applicant);
                               }}
                               style={{ cursor: "pointer" }}
                             />
                           </td>
                         </tr>
                       ))}
-                    </tbody>)}
+                    </tbody>
+                  )}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>
@@ -971,7 +988,7 @@ const Applicants = () => {
               toggle={closeModal}
               className="bg-secondary text-white"
             >
-              {selectedApplicant ? 'Edit Applicant' : 'Add Applicant'}
+              {selectedApplicant ? "Edit Applicant" : "Add Applicant"}
             </ModalHeader>
 
             <ModalBody>
@@ -1138,282 +1155,286 @@ const Applicants = () => {
                     </InputGroup>
                   </FormGroup>
                 </div>
-              ) : !showRentalOwnerTable && (
-                <div>
+              ) : (
+                !showRentalOwnerTable && (
                   <div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        paddingTop: "25px",
-                      }}
-                    >
-                      <Checkbox
-                        onChange={handleChange}
-                        style={{ marginRight: "10px" }}
-                        checked={showRentalOwnerTable === true}
-                      />
-                      <label className="form-control-label">
-                        Choose an existing Applicant
-                      </label>
+                    <div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          paddingTop: "25px",
+                        }}
+                      >
+                        <Checkbox
+                          onChange={handleChange}
+                          style={{ marginRight: "10px" }}
+                          checked={showRentalOwnerTable === true}
+                        />
+                        <label className="form-control-label">
+                          Choose an existing Applicant
+                        </label>
+                      </div>
+                      <br />
                     </div>
-                    <br />
-                  </div>
-                  <Row>
-                    <Col>
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          First Name *
-                        </label>
+                    <Row>
+                      <Col>
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            First Name *
+                          </label>
+                          <Input
+                            type="text"
+                            id="applicant_firstName"
+                            placeholder="First Name"
+                            name="applicant_firstName"
+                            onBlur={applicantFormik.handleBlur}
+                            onChange={applicantFormik.handleChange}
+                            value={applicantFormik.values.applicant_firstName}
+                            required
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col>
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-property"
+                          >
+                            Last Name *
+                          </label>
+                          <Input
+                            type="text"
+                            id="applicant_lastName"
+                            placeholder="Enter last name"
+                            name="applicant_lastName"
+                            onBlur={applicantFormik.handleBlur}
+                            onChange={applicantFormik.handleChange}
+                            value={applicantFormik.values.applicant_lastName}
+                            required
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-property"
+                      >
+                        Email *
+                      </label>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <span className="input-group-text">
+                            <i className="fas fa-envelope"></i>
+                          </span>
+                        </InputGroupAddon>
                         <Input
                           type="text"
-                          id="applicant_firstName"
-                          placeholder="First Name"
-                          name="applicant_firstName"
+                          id="applicant_email"
+                          placeholder="Enter Email"
+                          name="applicant_email"
+                          value={applicantFormik.values.applicant_email}
                           onBlur={applicantFormik.handleBlur}
                           onChange={applicantFormik.handleChange}
-                          value={applicantFormik.values.applicant_firstName}
                           required
                         />
-                      </FormGroup>
-                    </Col>
-                    <Col>
-                      <FormGroup>
-                        <label
-                          className="form-control-label"
-                          htmlFor="input-property"
-                        >
-                          Last Name *
-                        </label>
+                      </InputGroup>
+                    </FormGroup>
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-property"
+                      >
+                        Mobile Number *
+                      </label>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <span className="input-group-text">
+                            <i className="fas fa-mobile-alt"></i>
+                          </span>
+                        </InputGroupAddon>
                         <Input
-                          type="text"
-                          id="applicant_lastName"
-                          placeholder="Enter last name"
-                          name="applicant_lastName"
+                          type="tel" // Use type "tel" for mobile numbers
+                          id="tenant_mobileNumber"
+                          placeholder="Enter Mobile Number"
+                          name="tenant_mobileNumber"
                           onBlur={applicantFormik.handleBlur}
                           onChange={applicantFormik.handleChange}
-                          value={applicantFormik.values.applicant_lastName}
-                          required
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <FormGroup>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-property"
-                    >
-                      Email *
-                    </label>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <span className="input-group-text">
-                          <i className="fas fa-envelope"></i>
-                        </span>
-                      </InputGroupAddon>
-                      <Input
-                        type="text"
-                        id="applicant_email"
-                        placeholder="Enter Email"
-                        name="applicant_email"
-                        value={applicantFormik.values.applicant_email}
-                        onBlur={applicantFormik.handleBlur}
-                        onChange={applicantFormik.handleChange}
-                        required
-                      />
-                    </InputGroup>
-                  </FormGroup>
-                  <FormGroup>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-property"
-                    >
-                      Mobile Number *
-                    </label>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <span className="input-group-text">
-                          <i className="fas fa-mobile-alt"></i>
-                        </span>
-                      </InputGroupAddon>
-                      <Input
-                        type="tel" // Use type "tel" for mobile numbers
-                        id="tenant_mobileNumber"
-                        placeholder="Enter Mobile Number"
-                        name="tenant_mobileNumber"
-                        onBlur={applicantFormik.handleBlur}
-                        onChange={applicantFormik.handleChange}
-                        value={applicantFormik.values.tenant_mobileNumber}
-                        onInput={(e) => {
-                          const inputValue = e.target.value;
-                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-                          e.target.value = numericValue;
-                        }}
-                        required
-                      />
-                    </InputGroup>
-                  </FormGroup>
-                  <FormGroup>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <span className="input-group-text">
-                          <i className="fas fa-home"></i>
-                        </span>
-                      </InputGroupAddon>
-                      <Input
-                        type="text"
-                        id="tenant_homeNumber"
-                        placeholder="Enter Home Number"
-                        value={applicantFormik.values.tenant_homeNumber}
-                        onBlur={applicantFormik.handleBlur}
-                        onChange={applicantFormik.handleChange}
-                        onInput={(e) => {
-                          const inputValue = e.target.value;
-                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-                          e.target.value = numericValue;
-                        }}
-                      />
-                    </InputGroup>
-                  </FormGroup>
-                  <FormGroup>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <span className="input-group-text">
-                          <i className="fas fa-fax"></i>
-                        </span>
-                      </InputGroupAddon>
-                      <Input
-                        id="tenant_businessNumber"
-                        type="text"
-                        placeholder="Enter Business Number"
-                        value={applicantFormik.values.tenant_businessNumber}
-                        onBlur={applicantFormik.handleBlur}
-                        onChange={applicantFormik.handleChange}
-                        onInput={(e) => {
-                          const inputValue = e.target.value;
-                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-                          e.target.value = numericValue;
-                        }}
-                      />
-                    </InputGroup>
-                  </FormGroup>
-                  <FormGroup>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <span className="input-group-text">
-                          <i className="fas fa-fax"></i>
-                        </span>
-                      </InputGroupAddon>
-                      <Input
-                        type="text"
-                        id="tenant_workNumber"
-                        placeholder="Enter Telephone Number"
-                        value={applicantFormik.values.tenant_workNumber}
-                        onBlur={applicantFormik.handleBlur}
-                        onChange={applicantFormik.handleChange}
-                        onInput={(e) => {
-                          const inputValue = e.target.value;
-                          const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-                          e.target.value = numericValue;
-                        }}
-                      />
-                    </InputGroup>
-                  </FormGroup>
-
-                  <FormGroup>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-property"
-                    >
-                      Property *
-                    </label>
-                    <FormGroup style={{ marginRight: "15px" }}>
-                      <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
-                        <DropdownToggle
-                          caret
-                          style={{ width: "100%", marginRight: "15px" }}
-                        >
-                          {selectedPropertyType
-                            ? selectedPropertyType
-                            : "Select Property"}
-                        </DropdownToggle>
-                        <DropdownMenu
-                          style={{
-                            width: "100%",
-                            maxHeight: "200px",
-                            overflowY: "auto",
+                          value={applicantFormik.values.tenant_mobileNumber}
+                          onInput={(e) => {
+                            const inputValue = e.target.value;
+                            const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                            e.target.value = numericValue;
                           }}
-                        >
-                          <DropdownItem disabled value="">
-                            Select
-                          </DropdownItem>
-                          {propertyData.map((property, index) => (
-                            <DropdownItem
-                              key={index}
-                              onClick={() => handlePropertyTypeSelect(property)}
-                            >
-                              {property.rental_adress}
+                          required
+                        />
+                      </InputGroup>
+                    </FormGroup>
+                    <FormGroup>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <span className="input-group-text">
+                            <i className="fas fa-home"></i>
+                          </span>
+                        </InputGroupAddon>
+                        <Input
+                          type="text"
+                          id="tenant_homeNumber"
+                          placeholder="Enter Home Number"
+                          value={applicantFormik.values.tenant_homeNumber}
+                          onBlur={applicantFormik.handleBlur}
+                          onChange={applicantFormik.handleChange}
+                          onInput={(e) => {
+                            const inputValue = e.target.value;
+                            const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                            e.target.value = numericValue;
+                          }}
+                        />
+                      </InputGroup>
+                    </FormGroup>
+                    <FormGroup>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <span className="input-group-text">
+                            <i className="fas fa-fax"></i>
+                          </span>
+                        </InputGroupAddon>
+                        <Input
+                          id="tenant_businessNumber"
+                          type="text"
+                          placeholder="Enter Business Number"
+                          value={applicantFormik.values.tenant_businessNumber}
+                          onBlur={applicantFormik.handleBlur}
+                          onChange={applicantFormik.handleChange}
+                          onInput={(e) => {
+                            const inputValue = e.target.value;
+                            const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                            e.target.value = numericValue;
+                          }}
+                        />
+                      </InputGroup>
+                    </FormGroup>
+                    <FormGroup>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <span className="input-group-text">
+                            <i className="fas fa-fax"></i>
+                          </span>
+                        </InputGroupAddon>
+                        <Input
+                          type="text"
+                          id="tenant_workNumber"
+                          placeholder="Enter Telephone Number"
+                          value={applicantFormik.values.tenant_workNumber}
+                          onBlur={applicantFormik.handleBlur}
+                          onChange={applicantFormik.handleChange}
+                          onInput={(e) => {
+                            const inputValue = e.target.value;
+                            const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
+                            e.target.value = numericValue;
+                          }}
+                        />
+                      </InputGroup>
+                    </FormGroup>
+
+                    <FormGroup>
+                      <label
+                        className="form-control-label"
+                        htmlFor="input-property"
+                      >
+                        Property *
+                      </label>
+                      <FormGroup style={{ marginRight: "15px" }}>
+                        <Dropdown isOpen={userdropdownOpen} toggle={toggle9}>
+                          <DropdownToggle
+                            caret
+                            style={{ width: "100%", marginRight: "15px" }}
+                          >
+                            {selectedPropertyType
+                              ? selectedPropertyType
+                              : "Select Property"}
+                          </DropdownToggle>
+                          <DropdownMenu
+                            style={{
+                              width: "100%",
+                              maxHeight: "200px",
+                              overflowY: "auto",
+                            }}
+                          >
+                            <DropdownItem disabled value="">
+                              Select
                             </DropdownItem>
-                          ))}
-                        </DropdownMenu>
-                        {applicantFormik.errors &&
+                            {propertyData.map((property, index) => (
+                              <DropdownItem
+                                key={index}
+                                onClick={() =>
+                                  handlePropertyTypeSelect(property)
+                                }
+                              >
+                                {property.rental_adress}
+                              </DropdownItem>
+                            ))}
+                          </DropdownMenu>
+                          {applicantFormik.errors &&
                           applicantFormik.errors?.rental_adress &&
                           applicantFormik.touched &&
                           applicantFormik.touched?.rental_adress &&
                           applicantFormik.values.rental_adress === "" ? (
-                          <div style={{ color: "red" }}>
-                            {applicantFormik.errors.rental_adress}
-                          </div>
-                        ) : null}
-                      </Dropdown>
-                    </FormGroup>
-                  </FormGroup>
-                  {unitData.length != 0 && (
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-unit"
-                      >
-                        Unit *
-                      </label>
-                      <FormGroup style={{ marginLeft: "15px" }}>
-                        <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
-                          <DropdownToggle caret>
-                            {selectedUnit ? selectedUnit : "Select Unit"}
-                          </DropdownToggle>
-                          <DropdownMenu>
-                            {unitData.length > 0 ? (
-                              unitData.map((unit, index) => (
-                                <DropdownItem
-                                  key={index}
-                                  onClick={() => handleUnitSelect(unit)}
-                                >
-                                  {unit.rental_unit_adress}
-                                </DropdownItem>
-                              ))
-                            ) : (
-                              <DropdownItem disabled>
-                                No units available
-                              </DropdownItem>
-                            )}
-                          </DropdownMenu>
-                          {applicantFormik.errors &&
-                            applicantFormik.errors?.rental_units &&
-                            applicantFormik.touched &&
-                            applicantFormik.touched?.rental_units &&
-                            applicantFormik.values.rental_units === "" ? (
                             <div style={{ color: "red" }}>
-                              {applicantFormik.errors.rental_units}
+                              {applicantFormik.errors.rental_adress}
                             </div>
                           ) : null}
                         </Dropdown>
                       </FormGroup>
                     </FormGroup>
-                  )}
-                </div>
+                    {unitData.length != 0 && (
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-unit"
+                        >
+                          Unit *
+                        </label>
+                        <FormGroup style={{ marginLeft: "15px" }}>
+                          <Dropdown isOpen={unitDropdownOpen} toggle={toggle10}>
+                            <DropdownToggle caret>
+                              {selectedUnit ? selectedUnit : "Select Unit"}
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              {unitData.length > 0 ? (
+                                unitData.map((unit, index) => (
+                                  <DropdownItem
+                                    key={index}
+                                    onClick={() => handleUnitSelect(unit)}
+                                  >
+                                    {unit.rental_unit_adress}
+                                  </DropdownItem>
+                                ))
+                              ) : (
+                                <DropdownItem disabled>
+                                  No units available
+                                </DropdownItem>
+                              )}
+                            </DropdownMenu>
+                            {applicantFormik.errors &&
+                            applicantFormik.errors?.rental_units &&
+                            applicantFormik.touched &&
+                            applicantFormik.touched?.rental_units &&
+                            applicantFormik.values.rental_units === "" ? (
+                              <div style={{ color: "red" }}>
+                                {applicantFormik.errors.rental_units}
+                              </div>
+                            ) : null}
+                          </Dropdown>
+                        </FormGroup>
+                      </FormGroup>
+                    )}
+                  </div>
+                )
               )}
               {showRentalOwnerTable && (
                 <div
@@ -1543,9 +1564,8 @@ const Applicants = () => {
                   <br />
                 </div>
               )}
-
             </ModalBody>
-          
+
             <ModalFooter>
               {btnLoader ? (
                 <button
@@ -1559,7 +1579,13 @@ const Applicants = () => {
               ) : (
                 <>
                   {selectedApplicant ? (
-                    <Button color="success" onClick={() => { setBtnLoader(true); updateApplicantData(); }}>
+                    <Button
+                      color="success"
+                      onClick={() => {
+                        setBtnLoader(true);
+                        updateApplicantData();
+                      }}
+                    >
                       Update Applicant
                     </Button>
                   ) : (
@@ -1574,9 +1600,8 @@ const Applicants = () => {
           </Form>
         </Modal>
 
-
         <ToastContainer />
-      </Container >
+      </Container>
     </>
   );
 };
