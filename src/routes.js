@@ -299,6 +299,13 @@ var routes = [
     layout: "/admin",
   },
   {
+    path: "/RentRollLeaseing?data",
+    name: "Rent Roll Leaseing",
+    icon: "ni ni-home-3 text-orange",
+    component: <RentRollLeaseing />,
+    layout: "/admin",
+  },
+  {
     path: "/RentRollLeaseing/:lease_id",
     name: "Rent Roll Leaseing",
     icon: "ni ni-home-3 text-orange",

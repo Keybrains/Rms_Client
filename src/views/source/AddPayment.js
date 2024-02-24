@@ -86,8 +86,10 @@ function AddPayment() {
               "is-less-than-balance",
               "Amount must be less than or equal to balance",
               function (value) {
-                const balance = this.parent.balance;
-                return value <= balance;
+                if (value && this.parent.balance) {
+                  const balance = this.parent.balance;
+                  return value <= balance;
+                }
               }
             ),
         })
@@ -186,7 +188,7 @@ function AddPayment() {
   };
 
   const handleSubmit = async (values) => {
-    setLoader(true);
+    // setLoader(true);
 
     if (file) {
       try {
@@ -226,7 +228,9 @@ function AddPayment() {
 
       entry: values.payments?.map((item) => {
         const data = {
+          entry_id: item?.entry_id,
           account: item.account,
+          balance: item.balance,
           amount: Number(item.amount),
           memo: values.payments_memo || "payment",
           date: values.date,
@@ -240,6 +244,8 @@ function AddPayment() {
       is_leaseAdded: false,
       uploaded_file: file,
     };
+
+    console.log(object);
 
     try {
       const res = await axios.post(`${baseUrl}/payment/payment`, object);
@@ -271,6 +277,7 @@ function AddPayment() {
             .filter((element) => element.charge_amount > 0)
             .map((element) => {
               const items = {
+                entry_id: element.entry_id,
                 account: element.account,
                 balance: element.charge_amount,
                 amount: 0,
@@ -825,7 +832,12 @@ function AddPayment() {
                                           onChange={
                                             generalledgerFormik.handleChange
                                           }
-                                          value={payments.balance}
+                                          value={
+                                            payments?.entry_id
+                                              ? payments.balance -
+                                                payments.amount
+                                              : payments?.balance
+                                          }
                                           readOnly
                                         />
                                       </td>
@@ -841,6 +853,9 @@ function AddPayment() {
                                             generalledgerFormik.handleBlur
                                           }
                                           onChange={(e) => {
+                                            if (!payments?.entry_id) {
+                                              payments.balance = e.target.value;
+                                            }
                                             generalledgerFormik.handleChange(e);
                                           }}
                                           onInput={(e) => {

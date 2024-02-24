@@ -28,7 +28,6 @@ const TenantPropertyDetail = () => {
       const res = await axios.get(
         `${baseUrl}/leases/lease_summary/${lease_id}`
       );
-      console.log(res.data.data);
       setPropertyDetails(res.data.data);
     } catch (error) {
       console.error("Error fetching tenant details:", error);

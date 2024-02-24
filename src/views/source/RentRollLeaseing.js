@@ -49,12 +49,17 @@ import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import CloseIcon from "@mui/icons-material/Close";
 import AccountDialog from "components/AccountDialog";
+import queryString from "query-string";
 
 const RentRollLeaseing = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
   const { lease_id, admin } = useParams();
   const navigate = useNavigate();
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const data = urlParams.get("data");
+  const state = JSON.parse(data);
 
   const [accessType, setAccessType] = useState(null);
   useEffect(() => {
@@ -118,7 +123,7 @@ const RentRollLeaseing = () => {
   const [showForm, setShowForm] = useState("Tenant");
 
   // other isVariableStatement
-  const [alignment, setAlignment] = useState("web");
+  const [alignment, setAlignment] = useState("Tenant");
   const [file, setFile] = useState("");
 
   //toggles
@@ -351,19 +356,17 @@ const RentRollLeaseing = () => {
       tenant_lastName: yup.string().required("Required"),
       tenant_phoneNumber: yup.number().required("Required"),
       tenant_email: yup
-      .string()
-      .email("Invalid email address")
-      .required("Email is required"),
-      tenant_password: 
-         yup
-            .string()
-            .min(8, "Password is too short")
-            .matches(
-              /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-              "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
-            )
-            .required("Required")
-        
+        .string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      tenant_password: yup
+        .string()
+        .min(8, "Password is too short")
+        .matches(
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+          "Must Contain One Uppercase, One Lowercase, One Number, and one special case Character"
+        )
+        .required("Required"),
     }),
     onSubmit: (values) => {
       toast.success("Tenant Added Successfully", {
@@ -399,9 +402,9 @@ const RentRollLeaseing = () => {
       cosigner_lastName: yup.string().required("Required"),
       cosigner_phoneNumber: yup.number().required("Required"),
       cosigner_email: yup
-      .string()
-      .email("Invalid email address")
-      .required("Email is required"),
+        .string()
+        .email("Invalid email address")
+        .required("Email is required"),
     }),
     onSubmit: (values) => {
       toast.success("Cosigner Added Successfully", {
@@ -412,8 +415,6 @@ const RentRollLeaseing = () => {
       setCosignerData(values);
     },
   });
-
-  const { tenantId, entryIndex } = useParams();
 
   //update lease
   const updateLease = async () => {
@@ -689,6 +690,21 @@ const RentRollLeaseing = () => {
     setselectedUnit(unit?.rental_unit);
     leaseFormik.setFieldValue("unit_id", unit?.unit_id);
   };
+
+  useEffect(() => {
+    if (state?.unit_id) {
+      const property = {
+        rental_adress: state.rental_adress,
+        rental_id: state.rental_id,
+      };
+      handlePropertyTypeSelect(property);
+      const unit = {
+        rental_unit: state.rental_unit,
+        unit_id: state.unit_id,
+      };
+      handleUnitSelect(unit);
+    }
+  }, []);
 
   const handleLeaseTypeSelect = (lease) => {
     setSelectedLeaseType(lease);
@@ -1363,6 +1379,7 @@ const RentRollLeaseing = () => {
                           onClick={() => {
                             setShowTenantTable(false);
                             setOpenTenantsDialog(true);
+                            setAlignment("Tenant")
                           }}
                           style={{
                             cursor: "pointer",
@@ -2285,7 +2302,12 @@ const RentRollLeaseing = () => {
                                       >
                                         Add Tenant
                                       </button>
-                                      <Button onClick={()=>{handleClose(); tenantFormik.resetForm() }}>
+                                      <Button
+                                        onClick={() => {
+                                          handleClose();
+                                          tenantFormik.resetForm();
+                                        }}
+                                      >
                                         Cancel
                                       </Button>
                                            {/* Conditional message */}

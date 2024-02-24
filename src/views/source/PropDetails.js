@@ -77,6 +77,7 @@ import {
 } from "./Functions/Units";
 import { jwtDecode } from "jwt-decode";
 import { ToastContainer, toast } from "react-toastify";
+import queryString from "query-string";
 
 const PropDetails = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -195,9 +196,24 @@ const PropDetails = () => {
     }
     setLoading(false);
   };
-  console.log(unitLeases, "dd");
+
+  const [state, setState] = useState({});
+  const handleSate = () => {
+    if (clickedUnitObject?.unit_id) {
+      const data = {
+        rental_id: rental_id,
+        rental_adress: rentalData.rental_adress,
+        unit_id: clickedUnitObject?.unit_id,
+        rental_unit: clickedUnitObject?.rental_unit,
+      };
+      const myData = queryString.stringify({ data: JSON.stringify(data) });
+      setState(myData);
+    }
+  };
+
   useEffect(() => {
     fatchunit();
+    handleSate();
   }, [clickedUnitObject]);
 
   console.log("clickedUnitObject?.unit_id", clickedUnitObject?.unit_id);
@@ -1944,7 +1960,7 @@ const PropDetails = () => {
                                       <th>Type</th>
                                       <th>Rent</th>
                                     </tr>
-                                    {unitLeases ? (
+                                    {unitLeases.length > 0 ? (
                                       unitLeases.map((lease) => (
                                         <>
                                           <tr className="body">
@@ -1959,7 +1975,7 @@ const PropDetails = () => {
                                               lease?.end_date ? (
                                                 <>
                                                   <Link
-                                                    to={`/admin/tenantdetail/${lease?.tenant_id}`}
+                                                    to={`/${admin}/tenantdetail/${lease?.tenant_id}`}
                                                     onClick={(e) => {}}
                                                   >
                                                     {formatDateWithoutTime(
@@ -1991,7 +2007,9 @@ const PropDetails = () => {
                                         </>
                                       ))
                                     ) : (
-                                      <>Leases not assigned</>
+                                      <tr>
+                                        <th colSpan={5}>Leases not assigned</th>
+                                      </tr>
                                     )}
                                   </tbody>
                                 </Table>
@@ -2073,6 +2091,19 @@ const PropDetails = () => {
                                                 }
                                               />
                                             </div>
+                                            {addAppliancesFormin.touched
+                                              .appliance_name &&
+                                            addAppliancesFormin.errors
+                                              .appliance_name ? (
+                                              <div style={{ color: "red" }}>
+                                                {
+                                                  addAppliancesFormin.errors
+                                                    .appliance_name
+                                                }
+                                              </div>
+                                            ) : (
+                                              ""
+                                            )}
                                             <div
                                               style={{
                                                 display: "flex",
@@ -2097,6 +2128,19 @@ const PropDetails = () => {
                                                 }
                                               />
                                             </div>
+                                            {addAppliancesFormin.touched
+                                              .appliance_description &&
+                                            addAppliancesFormin.errors
+                                              .appliance_description ? (
+                                              <div style={{ color: "red" }}>
+                                                {
+                                                  addAppliancesFormin.errors
+                                                    .appliance_description
+                                                }
+                                              </div>
+                                            ) : (
+                                              ""
+                                            )}
                                             <div
                                               style={{
                                                 display: "flex",
@@ -2123,7 +2167,23 @@ const PropDetails = () => {
                                                 />
                                               </div>
                                             </div>
-                                            <div style={{ marginTop: "10px" }}>
+                                            {addAppliancesFormin.touched
+                                              .installed_date &&
+                                            addAppliancesFormin.errors
+                                              .installed_date ? (
+                                              <div style={{ color: "red" }}>
+                                                {
+                                                  addAppliancesFormin.errors
+                                                    .installed_date
+                                                }
+                                              </div>
+                                            ) : (
+                                              ""
+                                            )}
+                                            <div
+                                              style={{ marginTop: "10px" }}
+                                              className="mt-3"
+                                            >
                                               <Button
                                                 color="success"
                                                 type="submit"
@@ -2287,7 +2347,9 @@ const PropDetails = () => {
                                         marginTop: "5px",
                                       }}
                                       onClick={() => {
-                                        navigate(`/${admin}/RentRollLeaseing`);
+                                        navigate(
+                                          `/${admin}/RentRollLeaseing?${state}`
+                                        );
                                       }}
                                     >
                                       Add Lease
