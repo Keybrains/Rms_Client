@@ -388,7 +388,6 @@ const PropertyType = () => {
                 </CardHeader>
                 <Table className="align-items-center table-flush" responsive>
                   <thead className="thead-light">
-
                     <tr>
                       {/* <th scope="col">Property_ID</th> */}
                       <th scope="col">
@@ -452,46 +451,48 @@ const PropertyType = () => {
                   {propertyData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="5"style={{fontSize:"15px"}}>No Property Types Added</td>
+                        <td colSpan="5" style={{ fontSize: "15px" }}>
+                          No Property Types Added
+                        </td>
                       </tr>
                     </tbody>
-                    ) : (
-                  <tbody>
-                    
-                    {filterTenantsBySearchAndPage().map((property) => (
-                      <tr key={property._id}>
-                        <td>{property.property_type}</td>
-                        <td>{property.propertysub_type}</td>
-                        <td>
-                          {moment(property.createdAt).format("DD-MM-YYYY")}
-                        </td>
-                        <td>
-                          {moment(property.updatedAt).format("DD-MM-YYYY")}
-                        </td>
-                        <td>
-                          <div style={{ display: "flex" }}>
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={() =>
-                                deleteProperty(property.property_id)
-                              }
-                            >
-                              <DeleteIcon />
+                  ) : (
+                    <tbody>
+                      {filterTenantsBySearchAndPage().map((property) => (
+                        <tr key={property._id}>
+                          <td>{property.property_type}</td>
+                          <td>{property.propertysub_type}</td>
+                          <td>
+                            {moment(property.createdAt).format("DD-MM-YYYY")}
+                          </td>
+                          <td>
+                            {moment(property.updatedAt).format("DD-MM-YYYY")}
+                          </td>
+                          <td>
+                            <div style={{ display: "flex" }}>
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={() =>
+                                  deleteProperty(property.property_id)
+                                }
+                              >
+                                <DeleteIcon />
+                              </div>
+                              &nbsp; &nbsp; &nbsp;
+                              <div
+                                style={{ cursor: "pointer" }}
+                                onClick={() =>
+                                  editPropertyType(property.property_id)
+                                }
+                              >
+                                <EditIcon />
+                              </div>
                             </div>
-                            &nbsp; &nbsp; &nbsp;
-                            <div
-                              style={{ cursor: "pointer" }}
-                              onClick={() =>
-                                editPropertyType(property.property_id)
-                              }
-                            >
-                              <EditIcon />
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  )}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>

@@ -435,7 +435,7 @@ const PropertiesTables = () => {
               <h1 style={{ color: "white" }}>Properties</h1>
             </FormGroup>
           </Col>
-          <Col className="text-right" >
+          <Col className="text-right">
             <Button
               color="primary"
               //  href="#rms"
@@ -728,71 +728,76 @@ const PropertiesTables = () => {
                   {rentalsData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="5"style={{fontSize:"15px"}}>No Properties Added</td>
+                        <td colSpan="5" style={{ fontSize: "15px" }}>
+                          No Properties Added
+                        </td>
                       </tr>
                     </tbody>
-                    ) : (
-                  <tbody>
-                    {filterRentalsBySearchAndPage()?.map((Rental) => (
-                      <>
-                        <tr
-                          key={Rental.rental_id}
-                          onClick={() =>
-                            navigateToPropDetails(Rental.rental_id)
-                          }
-                          style={{ cursor: "pointer" }}
-                        >
-                          <td>{Rental.rental_adress}</td>
-                          <td>{Rental?.property_type_data?.property_type}</td>
-                          <td>
-                            {Rental?.property_type_data?.propertysub_type}
-                          </td>
-                          <td>
-                            {Rental.rental_owner_data.rentalOwner_firstName}{" "}
-                            {Rental.rental_owner_data.rentalOwner_lastName}
-                          </td>
-                          <td>
-                            {Rental.rental_owner_data.rentalOwner_companyName}
-                          </td>
-                          <td>{`${Rental.rental_city}`}</td>
-                          <td>
-                            {Rental.rental_owner_data.rentalOwner_primaryEmail}
-                          </td>
-                          <td>
-                            {Rental.rental_owner_data.rentalOwner_phoneNumber}
-                          </td>
-                          <td>
-                            {moment(Rental.createdAt).format("DD-MM-YYYY")}
-                          </td>
-                          <td>
-                            {Rental.updatedAt
-                              ? moment(Rental.updatedAt).format("DD-MM-YYYY")
-                              : "-"}
-                          </td>
-                          <td style={{}}>
-                            <div style={{ display: "flex", gap: "5px" }}>
-                              <div
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteRentals(Rental.rental_id, Rental);
-                                }}
-                              >
-                                <DeleteIcon />
+                  ) : (
+                    <tbody>
+                      {filterRentalsBySearchAndPage()?.map((Rental) => (
+                        <>
+                          <tr
+                            key={Rental.rental_id}
+                            onClick={() =>
+                              navigateToPropDetails(Rental.rental_id)
+                            }
+                            style={{ cursor: "pointer" }}
+                          >
+                            <td>{Rental.rental_adress}</td>
+                            <td>{Rental?.property_type_data?.property_type}</td>
+                            <td>
+                              {Rental?.property_type_data?.propertysub_type}
+                            </td>
+                            <td>
+                              {Rental.rental_owner_data.rentalOwner_firstName}{" "}
+                              {Rental.rental_owner_data.rentalOwner_lastName}
+                            </td>
+                            <td>
+                              {Rental.rental_owner_data.rentalOwner_companyName}
+                            </td>
+                            <td>{`${Rental.rental_city}`}</td>
+                            <td>
+                              {
+                                Rental.rental_owner_data
+                                  .rentalOwner_primaryEmail
+                              }
+                            </td>
+                            <td>
+                              {Rental.rental_owner_data.rentalOwner_phoneNumber}
+                            </td>
+                            <td>
+                              {moment(Rental.createdAt).format("DD-MM-YYYY")}
+                            </td>
+                            <td>
+                              {Rental.updatedAt
+                                ? moment(Rental.updatedAt).format("DD-MM-YYYY")
+                                : "-"}
+                            </td>
+                            <td style={{}}>
+                              <div style={{ display: "flex", gap: "5px" }}>
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    deleteRentals(Rental.rental_id, Rental);
+                                  }}
+                                >
+                                  <DeleteIcon />
+                                </div>
+                                <div
+                                  style={{ cursor: "pointer" }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    editProperty(Rental.rental_id);
+                                  }}
+                                >
+                                  <EditIcon />
+                                </div>
                               </div>
-                              <div
-                                style={{ cursor: "pointer" }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  editProperty(Rental.rental_id);
-                                }}
-                              >
-                                <EditIcon />
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                        {/* <tr
+                            </td>
+                          </tr>
+                          {/* <tr
                           key={rental.rental_id}
                           onClick={() =>
                             navigateToPropDetails(
@@ -836,9 +841,10 @@ const PropertiesTables = () => {
                             </div>
                           </td>
                         </tr> */}
-                      </>
-                    ))}
-                  </tbody>)}
+                        </>
+                      ))}
+                    </tbody>
+                  )}
                 </Table>
                 {paginatedData.length > 0 ? (
                   <Row>

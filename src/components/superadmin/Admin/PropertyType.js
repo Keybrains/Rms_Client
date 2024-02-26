@@ -288,7 +288,6 @@ export default function PropertyType() {
   };
 
   const [adminDataCount, setAdminDataCount] = useState()
-  console.log(adminDataCount, "adminDataCount")
   const adminCount = async () => {
     try {
       // Make an HTTP request to your API endpoint with the adminId
