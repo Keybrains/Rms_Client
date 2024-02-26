@@ -37,6 +37,7 @@ import VendorHeader from "components/Headers/VendorHeader";
 
 const VendorDashBoard = (props) => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
+
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   let navigate = useNavigate();

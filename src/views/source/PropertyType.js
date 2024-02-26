@@ -129,7 +129,6 @@ const PropertyType = () => {
           .delete(`${baseUrl}/propertytype/property_type/${id}`)
 
           .then((response) => {
-            //console.log(response.data);
             if (response.data.statusCode === 200) {
               toast.success("Property Type deleted successfully!", {
                 position: "top-center",

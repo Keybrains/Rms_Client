@@ -62,7 +62,13 @@ const headCells = [
     label: "Email",
   },
   {
-    label: "Date",
+    label: "start date",
+  },
+  {
+    label: "end date",
+  },
+  {
+    label: "Plan Name",
   },
 ];
 
@@ -116,11 +122,26 @@ function Rows(props) {
         <TableCell align="left">{row?.phone_number}</TableCell>
         <TableCell align="left">{row?.email}</TableCell>
         <TableCell align="left">
-          {new Date(row.createdAt).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "2-digit",
-          })}
+          {row.subscription.status === "active"
+            ? `${moment(row.subscription.start_date, "YYYY-MM-DD").format(
+                "DD-MM-YYYY"
+              )} `
+            : `${moment(row.trial.start_date, "YYYY-MM-DD").format(
+                "DD-MM-YYYY"
+              )} 
+              `}
+        </TableCell>
+        <TableCell align="left">
+          {row.subscription.status === "active"
+            ? `${moment(row.subscription.end_date, "YYYY-MM-DD").format(
+                "DD-MM-YYYY"
+              )} `
+            : `${moment(row.trial.end_date, "YYYY-MM-DD").format("DD-MM-YYYY")} 
+              `}
+        </TableCell>
+
+        <TableCell align="left">
+          {row?.subscription.status === "active" ? "Paid" : "Free"}
         </TableCell>
 
         <TableCell align="left">
