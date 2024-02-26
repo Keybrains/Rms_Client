@@ -26,7 +26,7 @@ const TenantPropertyDetail = () => {
   const getRentalData = async () => {
     try {
       const res = await axios.get(
-        `http://192.168.1.9:4000/api/leases/lease_summary/${lease_id}`
+        `${baseUrl}/leases/lease_summary/${lease_id}`
 
       );
       setPropertyDetails(res.data.data);

@@ -575,7 +575,7 @@ const Rentals = () => {
                               <Input
                                 type="text"
                                 id="rentalOwner_alternateEmail"
-                                placeholder="Enter_Email"
+                                placeholder="Enter Email"
                                 onBlur={rentalsFormik.handleBlur}
                                 onChange={rentalsFormik.handleChange}
                                 value={

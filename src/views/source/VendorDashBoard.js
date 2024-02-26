@@ -36,6 +36,8 @@ import React, { useState, useEffect } from "react";
 import VendorHeader from "components/Headers/VendorHeader";
 
 const VendorDashBoard = (props) => {
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   let navigate = useNavigate();
@@ -86,7 +88,7 @@ const VendorDashBoard = (props) => {
     const fetchWorkOrders = async () => {
       try {
         const response = await axios.get(
-          `http://192.168.1.104:4000/api/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`
+          `${baseUrl}/vendor/dashboard_workorder/${accessType?.vendor_id}/${accessType?.admin_id}`
         );
         if (response.status === 200) {
           const { data } = response.data;

@@ -87,7 +87,6 @@ const Login = () => {
             );
 
             if (superAdminRes.status === 200) {
-              console.log("object3");
               const superAdminData = superAdminRes.data;
               if (superAdminData.statusCode === 200) {
                 toast.success("Super Admin Login successfully!", {

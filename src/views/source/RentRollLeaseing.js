@@ -831,7 +831,8 @@ const RentRollLeaseing = () => {
 
   useEffect(() => {
     handleselectedRentCycle(selectedRentCycle);
-  }, [leaseFormik.values.start_date]);
+    handleDateChange(leaseFormik.values.start_date);
+  }, [leaseFormik?.values?.start_date]);
 
   const handleClickOpenRecurring = () => {
     recurringFormink.resetForm();
@@ -1013,25 +1014,61 @@ const RentRollLeaseing = () => {
     try {
       const res = await axios.get(`${baseUrl}/leases/get_lease/${lease_id}`);
       if (res.data.statusCode === 200) {
-        const data = res.data.data;
-        leaseFormik.setValues(data?.leases);
-        tenantFormik.setValues(data?.tenant);
-        setSelectedLeaseType(data?.leases?.lease_type);
-        setSelectedRentCycle(data?.rent_charge_data[0]?.rent_cycle);
-        rentChargeFormik.setValues(data?.rent_charge_data[0]);
-        securityChargeFormik.setValues(data?.Security_charge_data[0]);
-        setSelectedTenantData(data?.tenant);
-        setRecurringData(data?.rec_charge_data);
-        setOneTimeData(data?.one_charge_data);
+        // console.log(res, "yash");
+        const { data } = res.data;
 
-        const property = await propertyData.find(
-          (property) => property.rental_id === data.leases.rental_id
-        );
+        if (!data) {
+          console.error("Empty data object received.");
+          // Handle the case where no data is returned, possibly by showing an error message
+          return;
+        }
 
-        setFile(data.leases.uploaded_file);
-        await handlePropertyTypeSelect(property);
+        const {
+          leases,
+          tenant,
+          rent_charge_data,
+          Security_charge_data,
+          rec_charge_data,
+          one_charge_data,
+          unit_data,
+        } = data;
 
-        handleUnitSelect(data.unit_data);
+        // Set form values
+        if (leases) {
+          leaseFormik.setValues(leases);
+        }
+
+        if (tenant) {
+          tenantFormik.setValues(tenant);
+        }
+
+        // Set selected values
+        setSelectedLeaseType(leases?.lease_type || "");
+        setSelectedRentCycle(rent_charge_data?.[0]?.rent_cycle || "");
+
+        // Set values for rentChargeFormik and securityChargeFormik
+        rentChargeFormik.setValues(rent_charge_data?.[0] || {});
+        securityChargeFormik.setValues(Security_charge_data?.[0] || {});
+
+        // Set selected tenant data
+        setSelectedTenantData(tenant);
+
+        // Set recurring and one-time data
+        setRecurringData(rec_charge_data || []);
+        setOneTimeData(one_charge_data || []);
+
+        // Find property data
+        if (leases && propertyData) {
+          const property = propertyData.find(
+            (property) => property.rental_id === leases.rental_id
+          );
+          if (property) {
+            await handlePropertyTypeSelect(property);
+          }
+        }
+
+        // Handle unit selection
+        handleUnitSelect(unit_data);
       }
     } catch (error) {
       console.error("Error:", error.message);
@@ -1286,7 +1323,6 @@ const RentRollLeaseing = () => {
                             onChange={(e) => {
                               handleDateChange(e.target.value);
                               leaseFormik.handleChange(e);
-                              //   checkStartDate(e.target.value);
                             }}
                             value={moment(leaseFormik.values.start_date).format(
                               "YYYY-MM-DD"
@@ -1300,19 +1336,6 @@ const RentRollLeaseing = () => {
                               {leaseFormik.errors.start_date}
                             </div>
                           ) : null}
-                          {/* {isStartDateUnavailable && (
-                            <div style={{ color: "red", marginTop: "8px" }}>
-                              This start date overlaps with an existing lease:{" "}
-                              {overlapStartDateLease?.rental_adress} | -{" "}
-                              {moment(overlapStartDateLease?.start_date).format(
-                                "DD-MM-YYYY"
-                              )}{" "}
-                              {moment(overlapStartDateLease?.end_date).format(
-                                "DD-MM-YYYY"
-                              )}
-                              . Please adjust your start date and try again.
-                            </div>
-                          )} */}
                         </FormGroup>
                       </Col>
                       &nbsp; &nbsp; &nbsp;
@@ -1340,7 +1363,6 @@ const RentRollLeaseing = () => {
                             onBlur={leaseFormik.handleBlur}
                             onChange={(e) => {
                               leaseFormik.handleChange(e);
-                              //   checkDate(e.target.value);
                             }}
                             value={moment(leaseFormik.values.end_date).format(
                               "YYYY-MM-DD"
@@ -1349,20 +1371,6 @@ const RentRollLeaseing = () => {
                               "YYYY-MM-DD"
                             )}
                           />
-
-                          {/* {isDateUnavailable && (
-                            <div style={{ color: "red", marginTop: "8px" }}>
-                              This date range overlaps with an existing lease:{" "}
-                              {overlapLease?.rental_adress} | -{" "}
-                              {moment(overlapLease?.start_date).format(
-                                "DD-MM-YYYY"
-                              )}{" "}
-                              {moment(overlapLease?.end_date).format(
-                                "DD-MM-YYYY"
-                              )}
-                              . Please adjust your date range and try again.
-                            </div>
-                          )} */}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -1379,7 +1387,7 @@ const RentRollLeaseing = () => {
                           onClick={() => {
                             setShowTenantTable(false);
                             setOpenTenantsDialog(true);
-                            setAlignment("Tenant")
+                            setAlignment("Tenant");
                           }}
                           style={{
                             cursor: "pointer",
@@ -2183,9 +2191,9 @@ const RentRollLeaseing = () => {
                                                             tenantFormik.handleChange
                                                           }
                                                           value={
-                                                            tenantFormik.values
-                                                              .emergency_contact
-                                                              .name
+                                                            tenantFormik?.values
+                                                              ?.emergency_contact
+                                                              ?.name
                                                           }
                                                         />
                                                       </FormGroup>
@@ -2210,9 +2218,9 @@ const RentRollLeaseing = () => {
                                                             tenantFormik.handleChange
                                                           }
                                                           value={
-                                                            tenantFormik.values
-                                                              .emergency_contact
-                                                              .relation
+                                                            tenantFormik?.values
+                                                              ?.emergency_contact
+                                                              ?.relation
                                                           }
                                                         />
                                                       </FormGroup>
@@ -2239,9 +2247,9 @@ const RentRollLeaseing = () => {
                                                             tenantFormik.handleChange
                                                           }
                                                           value={
-                                                            tenantFormik.values
-                                                              .emergency_contact
-                                                              .email
+                                                            tenantFormik?.values
+                                                              ?.emergency_contact
+                                                              ?.email
                                                           }
                                                         />
                                                       </FormGroup>
@@ -2266,9 +2274,9 @@ const RentRollLeaseing = () => {
                                                             tenantFormik.handleChange
                                                           }
                                                           value={
-                                                            tenantFormik.values
-                                                              .emergency_contact
-                                                              .phoneNumber
+                                                            tenantFormik?.values
+                                                              ?.emergency_contact
+                                                              ?.phoneNumber
                                                           }
                                                           onInput={(e) => {
                                                             const inputValue =
@@ -2295,7 +2303,7 @@ const RentRollLeaseing = () => {
                                       <button
                                         type="submit"
                                         className="btn btn-primary"
-                                        disabled={!tenantFormik.isValid}
+                                        disabled={!tenantFormik?.isValid}
                                         onClick={() => {
                                           tenantFormik.handleSubmit();
                                         }}
@@ -2310,12 +2318,17 @@ const RentRollLeaseing = () => {
                                       >
                                         Cancel
                                       </Button>
-                                           {/* Conditional message */}
-                  {!tenantFormik.isValid && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                      Please fill in all fields correctly.
-                    </div>
-                  )}
+                                      {/* Conditional message */}
+                                      {!tenantFormik?.isValid && (
+                                        <div
+                                          style={{
+                                            color: "red",
+                                            marginTop: "10px",
+                                          }}
+                                        >
+                                          Please fill in all fields correctly.
+                                        </div>
+                                      )}
                                     </div>
                                   )}
 
@@ -2367,11 +2380,11 @@ const RentRollLeaseing = () => {
                                                 cosignerFormik.handleChange(e)
                                               }
                                               value={
-                                                cosignerFormik.values
-                                                  .cosigner_firstName
+                                                cosignerFormik?.values
+                                                  ?.cosigner_firstName
                                               }
                                             />
-                                            {cosignerFormik.errors &&
+                                            {cosignerFormik?.errors &&
                                             cosignerFormik.errors
                                               ?.cosigner_firstName &&
                                             cosignerFormik.touched &&
@@ -2852,15 +2865,25 @@ const RentRollLeaseing = () => {
                                       >
                                         Add Cosigner
                                       </button>
-                                      <Button onClick={()=>{handleClose(); cosignerFormik.resetForm()}}>
+                                      <Button
+                                        onClick={() => {
+                                          handleClose();
+                                          cosignerFormik.resetForm();
+                                        }}
+                                      >
                                         Cancel
                                       </Button>
-                                           {/* Conditional message */}
-                  {!cosignerFormik.isValid && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                      Please fill in all fields correctly.
-                    </div>
-                  )}
+                                      {/* Conditional message */}
+                                      {!cosignerFormik.isValid && (
+                                        <div
+                                          style={{
+                                            color: "red",
+                                            marginTop: "10px",
+                                          }}
+                                        >
+                                          Please fill in all fields correctly.
+                                        </div>
+                                      )}
                                     </div>
                                   )}
                                 </div>
@@ -3251,7 +3274,8 @@ const RentRollLeaseing = () => {
                             color: "blue",
                           }}
                         >
-                          <b style={{ fontSize: "20px"}}>+</b> Add Recurring Charge
+                          <b style={{ fontSize: "20px" }}>+</b> Add Recurring
+                          Charge
                         </span>
                         <Dialog
                           open={openRecurringDialog}
@@ -3977,88 +4001,88 @@ const RentRollLeaseing = () => {
                     ) : null}
                   </Col> */}
                   <Row>
-                  {loader ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "not-allowed" }}
-                      disabled
-                    >
-                      Loading...
-                    </button>
-                  ) : lease_id ? (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (selectedTenantData.length !== 0) {
-                          if (
-                            Object.keys(tenantFormik.errors).length !== 0 &&
-                            Object.keys(rentChargeFormik.errors).length !== 0
-                          ) {
+                    {loader ? (
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "not-allowed" }}
+                        disabled
+                      >
+                        Loading...
+                      </button>
+                    ) : lease_id ? (
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "pointer" }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (selectedTenantData.length !== 0) {
+                            if (
+                              Object.keys(tenantFormik.errors).length !== 0 &&
+                              Object.keys(rentChargeFormik.errors).length !== 0
+                            ) {
+                              return;
+                            }
+                            leaseFormik.handleSubmit();
                             return;
+                          } else {
+                            setDisplay(true);
                           }
-                          leaseFormik.handleSubmit();
-                          return;
-                        } else {
-                          setDisplay(true);
-                        }
+                        }}
+                      >
+                        Update Lease
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        style={{ background: "green", cursor: "pointer" }}
+                        disabled={!leaseFormik.isValid || !tenantFormik.isValid}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (selectedTenantData.length !== 0) {
+                            if (
+                              Object.keys(tenantFormik.errors).length !== 0 &&
+                              Object.keys(rentChargeFormik.errors).length !== 0
+                            ) {
+                              return;
+                            }
+                            leaseFormik.handleSubmit();
+                            return;
+                          } else {
+                            setDisplay(true);
+                          }
+                        }}
+                      >
+                        Create Lease
+                      </button>
+                    )}
+                    <Button
+                      // color="primary"
+                      onClick={handleCloseButtonClick}
+                      className="btn btn-success"
+                      style={{
+                        background: "white",
+                        color: "black",
+                        cursor: "pointer",
                       }}
                     >
-                      Update Lease
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      style={{ background: "green", cursor: "pointer" }}
-                      disabled={!leaseFormik.isValid || !tenantFormik.isValid}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (selectedTenantData.length !== 0) {
-                          if (
-                            Object.keys(tenantFormik.errors).length !== 0 &&
-                            Object.keys(rentChargeFormik.errors).length !== 0
-                          ) {
-                            return;
-                          }
-                          leaseFormik.handleSubmit();
-                          return;
-                        } else {
-                          setDisplay(true);
-                        }
-                      }}
-                    >
-                      Create Lease
-                    </button>
-                  )}
-                  <Button
-                    // color="primary"
-                    onClick={handleCloseButtonClick}
-                    className="btn btn-success"
-                    style={{
-                      background: "white",
-                      color: "black",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  {tenantFormik.errors &&
-                  tenantFormik.errors?.tenant_password &&
-                  leaseFormik.submitCount > 0 ? (
-                    <div style={{ color: "red" }}>
-                      Tenant Password is missing
-                    </div>
-                  ) : null}
-                       {/* Conditional message */}
-                       {(!leaseFormik.isValid || !tenantFormik.isValid) && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                      Please fill in all fields correctly.
-                    </div>
-                  )}
+                      Cancel
+                    </Button>
+                    {tenantFormik.errors &&
+                    tenantFormik.errors?.tenant_password &&
+                    leaseFormik.submitCount > 0 ? (
+                      <div style={{ color: "red" }}>
+                        Tenant Password is missing
+                      </div>
+                    ) : null}
+                    {/* Conditional message */}
+                    {(!leaseFormik.isValid || !tenantFormik.isValid) && (
+                      <div style={{ color: "red", marginTop: "10px" }}>
+                        Please fill in all fields correctly.
+                      </div>
+                    )}
                   </Row>
                 </Form>
               </CardBody>
