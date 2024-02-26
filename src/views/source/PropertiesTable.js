@@ -728,7 +728,7 @@ const PropertiesTables = () => {
                   {rentalsData.length === 0 ? (
                     <tbody>
                       <tr className="text-center">
-                        <td colSpan="5" style={{ fontSize: "15px" }}>
+                        <td colSpan="8" style={{ fontSize: "15px" }}>
                           No Properties Added
                         </td>
                       </tr>

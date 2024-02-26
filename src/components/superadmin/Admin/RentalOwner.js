@@ -66,23 +66,26 @@ function Rows(props) {
 
   return (
     <React.Fragment>
-      <TableRow
-        hover
-        // onClick={(event) => handleClick(event, row._id)}
-        role="checkbox"
-        aria-checked={isItemSelected}
-        tabIndex={-1}
-        selected={isItemSelected}
-      >
-        {/* <TableCell align="center">{ row + 1}</TableCell> */}
-        <TableCell align="left">
-          <img src={ProfileIcon} /> {row?.rentalOwner_firstName}{" "}
-          {row?.rentalOwner_lastName}
-        </TableCell>
-        <TableCell align="left">{row?.rentalOwner_phoneNumber}</TableCell>
-        <TableCell align="left">{row?.rentalOwner_primaryEmail}</TableCell>
-      </TableRow>
-    </React.Fragment>
+    <TableRow
+      hover
+      // onClick={(event) => handleClick(event, row._id)}
+      role="checkbox"
+      aria-checked={isItemSelected}
+      tabIndex={-1}
+      selected={isItemSelected}
+    >
+      <TableCell align="left" style={{ width: '33%' }}> {/* Divide equally for 3 columns */}
+        <img src={ProfileIcon} /> {row?.rentalOwner_firstName}{" "}
+        {row?.rentalOwner_lastName}
+      </TableCell>
+      <TableCell align="left" style={{ width: '33%' }}>
+        {row?.rentalOwner_phoneNumber}
+      </TableCell>
+      <TableCell align="left" style={{ width: '33%' }}>
+        {row?.rentalOwner_primaryEmail}
+      </TableCell>
+    </TableRow>
+  </React.Fragment>  
   );
 }
 

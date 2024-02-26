@@ -74,12 +74,12 @@ function Rows(props) {
         selected={isItemSelected}
       >
         {/* <TableCell align="center">{ row + 1}</TableCell> */}
-        <TableCell align="left">
+        <TableCell align="left" style={{ width: '33%' }}>
           <img src={ProfileIcon} /> {row?.tenant_firstName}{" "}
           {row?.tenant_lastName}
         </TableCell>
-        <TableCell align="left">{row?.tenant_phoneNumber}</TableCell>
-        <TableCell align="left">{row?.tenant_email}</TableCell>
+        <TableCell align="left" style={{ width: '33%' }}>{row?.tenant_phoneNumber}</TableCell>
+        <TableCell align="left" style={{ width: '33%' }}>{row?.tenant_email}</TableCell>
       </TableRow>
     </React.Fragment>
   );
