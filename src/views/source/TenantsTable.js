@@ -73,13 +73,13 @@ const TenantsTable = () => {
         let reversedData = data.reverse();
         setTenantsDate(reversedData);
         setTotalPages(Math.ceil(reversedData.length / pageItem));
+        setLoader(false);
       } else {
         console.log(response.data.message);
       }
     } catch (error) {
       console.error("Error fetching tenants data:", error);
     }
-    setLoader(false);
   };
 
   React.useEffect(() => {

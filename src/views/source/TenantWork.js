@@ -40,6 +40,14 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useEffect } from "react";
 
 const TenantWork = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const status = urlParams.get("status");
+
+  useEffect(() => {
+    if (status === "Over Due") {
+      setSearchQuery2("Over Due");
+    }
+  }, [status]);
   const baseUrl = process.env.REACT_APP_BASE_URL;
   let navigate = useNavigate();
   const [workData, setWorkData] = useState([]);
@@ -90,7 +98,7 @@ const TenantWork = () => {
       setLoader(false);
 
     } catch (error) {
-      setLoader(false);
+
 
       console.error("Error fetching work order data:", error);
     }
@@ -290,295 +298,310 @@ const TenantWork = () => {
 
         <Row>
           <div className="col">
-            {loader ? (
-              <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                <RotatingLines
-                  strokeColor="grey"
-                  strokeWidth="5"
-                  animationDuration="0.75"
-                  width="50"
-                  visible={loader}
-                />
-              </div>
-            ) : (
-              <Card className="shadow">
-                <CardHeader className="border-0">
-                  <Row className="d-flex">
-                    {/* <Col xs="12" sm="6"> */}
-                    <FormGroup className="mr-sm-2">
-                      <Input
-                        fullWidth
-                        type="text"
-                        placeholder="Search"
-                        value={searchQuery}
-                        onChange={(e) => { setSearchQuery(e.target.value); setSearchQuery2("") }}
+
+            <Card className="shadow">
+              <CardHeader className="border-0">
+                <Row className="d-flex">
+                  {/* <Col xs="12" sm="6"> */}
+                  <FormGroup className="mr-sm-2">
+                    <Input
+                      fullWidth
+                      type="text"
+                      placeholder="Search"
+                      value={searchQuery}
+                      onChange={(e) => { setSearchQuery(e.target.value); setSearchQuery2("") }}
+                      style={{
+                        width: "100%",
+                        maxWidth: "200px",
+                        minWidth: "200px",
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup className="mr-sm-2">
+                    <Dropdown isOpen={search} toggle={toggle3}>
+                      <DropdownToggle
+                        caret
                         style={{
-                          width: "100%",
+                          boxShadow: "none",
+                          border: "1px solid #ced4da",
                           maxWidth: "200px",
                           minWidth: "200px",
                         }}
-                      />
-                    </FormGroup>
-                    <FormGroup className="mr-sm-2">
-                      <Dropdown isOpen={search} toggle={toggle3}>
-                        <DropdownToggle
-                          caret
-                          style={{
-                            boxShadow: "none",
-                            border: "1px solid #ced4da",
-                            maxWidth: "200px",
-                            minWidth: "200px",
+                      >
+                        {searchQuery2
+                          ? searchQuery
+                            ? "Select Type"
+                            : searchQuery2
+                          : "Select Type"}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("New");
+                            setSearchQuery("");
                           }}
                         >
-                          {searchQuery2
-                            ? searchQuery
-                              ? "Select Type"
-                              : searchQuery2
-                            : "Select Type"}
-                        </DropdownToggle>
-                        <DropdownMenu>
-                          <DropdownItem
-                            onClick={() => {
-                              setSearchQuery2("New");
-                              setSearchQuery("");
-                            }}
-                          >
-                            New
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setSearchQuery2("In Progress");
-                              setSearchQuery("");
-                            }}
-                          >
-                            In Progress
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setSearchQuery2("On Hold");
-                              setSearchQuery("");
-                            }}
-                          >
-                            On Hold
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setSearchQuery2("Complete");
-                              setSearchQuery("");
-                            }}
-                          >
-                            Complete
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setSearchQuery2("Overdue");
-                              setSearchQuery("");
-                            }}
-                          >
-                            Overdue
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setSearchQuery2("All");
-                              setSearchQuery("");
-                            }}
-                          >
-                            All
-                          </DropdownItem>
+                          New
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("In Progress");
+                            setSearchQuery("");
+                          }}
+                        >
+                          In Progress
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("On Hold");
+                            setSearchQuery("");
+                          }}
+                        >
+                          On Hold
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("Complete");
+                            setSearchQuery("");
+                          }}
+                        >
+                          Complete
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("Overdue");
+                            setSearchQuery("");
+                          }}
+                        >
+                          Overdue
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setSearchQuery2("All");
+                            setSearchQuery("");
+                          }}
+                        >
+                          All
+                        </DropdownItem>
 
-                        </DropdownMenu>
-                      </Dropdown>
-                    </FormGroup>
-                    {/* </Col> */}
-                  </Row>
-                </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">
-                        Work Order
-                        {sortBy.includes("work_subject") ? (
-                          upArrow.includes("work_subject") ? (
-                            <ArrowDownwardIcon
-                              onClick={() => sortData("work_subject")}
-                            />
-                          ) : (
-                            <ArrowUpwardIcon
-                              onClick={() => sortData("work_subject")}
-                            />
-                          )
-                        ) : (
-                          <ArrowUpwardIcon
-                            onClick={() => sortData("work_subject")}
-                          />
-                        )}
-                      </th>
-                      <th scope="col">
-                        Property
-                        {sortBy.includes("rental_adress") ? (
-                          upArrow.includes("rental_adress") ? (
-                            <ArrowDownwardIcon
-                              onClick={() => sortData("rental_adress")}
-                            />
-                          ) : (
-                            <ArrowUpwardIcon
-                              onClick={() => sortData("rental_adress")}
-                            />
-                          )
-                        ) : (
-                          <ArrowUpwardIcon
-                            onClick={() => sortData("rental_adress")}
-                          />
-                        )}
-                      </th>
-                      <th scope="col">
-                        Category
-                        {sortBy.includes("work_category") ? (
-                          upArrow.includes("work_category") ? (
-                            <ArrowDownwardIcon
-                              onClick={() => sortData("work_category")}
-                            />
-                          ) : (
-                            <ArrowUpwardIcon
-                              onClick={() => sortData("work_category")}
-                            />
-                          )
-                        ) : (
-                          <ArrowUpwardIcon
-                            onClick={() => sortData("work_category")}
-                          />
-                        )}
-                      </th>
-                      <th scope="col">
-                        Assigned
-                        {sortBy.includes("staffmember_name") ? (
-                          upArrow.includes("staffmember_name") ? (
-                            <ArrowDownwardIcon
-                              onClick={() => sortData("staffmember_name")}
-                            />
-                          ) : (
-                            <ArrowUpwardIcon
-                              onClick={() => sortData("staffmember_name")}
-                            />
-                          )
-                        ) : (
-                          <ArrowUpwardIcon
-                            onClick={() => sortData("staffmember_name")}
-                          />
-                        )}
-                      </th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Created At</th>
-                      <th scope="col">Updated At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filterTenantsBySearchAndPage().map((rental) => (
-                      <tr
-                        key={rental?.workOrder_id}
-                        onClick={() => navigateToDetails(rental?.workOrder_id)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <td>{rental?.work_subject}</td>
-                        <td>
-                          {rental?.rental_adress}{" "}
-                          {rental?.rental_unit
-                            ? " - " + rental?.rental_unit
-                            : null}
-                        </td>
-                        <td>{rental?.work_category}</td>
-                        <td>{rental?.staffmember_name}</td>
-                        <td>{rental?.status}</td>
-                        <td>{rental?.createdAt}</td>
-                        <td>{rental?.updatedAt || "-"}</td>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </FormGroup>
+                  {/* </Col> */}
+                </Row>
+              </CardHeader>
+              <Table className="align-items-center table-flush" responsive>
+                {loader ? (
+                  <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="50"
+                      visible={loader}
+                    />
+                  </div>
+                ) : filterTenantsBySearchAndPage().length === 0 ? (
+                  <>
+                    <tbody>
+                      <tr className="text-center">
+                        <td colSpan="8" style={{ fontSize: "15px" }}>No Work Order Added</td>
                       </tr>
-                    ))}
-                  </tbody>
-                </Table>
-                {paginatedData.length > 0 ? (
-                  <Row>
-                    <Col className="text-right m-3">
-                      <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
-                        <DropdownToggle caret>{pageItem}</DropdownToggle>
-                        <DropdownMenu>
-                          <DropdownItem
-                            onClick={() => {
-                              setPageItem(10);
-                              setCurrentPage(1);
-                            }}
-                          >
-                            10
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setPageItem(25);
-                              setCurrentPage(1);
-                            }}
-                          >
-                            25
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setPageItem(50);
-                              setCurrentPage(1);
-                            }}
-                          >
-                            50
-                          </DropdownItem>
-                          <DropdownItem
-                            onClick={() => {
-                              setPageItem(100);
-                              setCurrentPage(1);
-                            }}
-                          >
-                            100
-                          </DropdownItem>
-                        </DropdownMenu>
-                      </Dropdown>
-                      <Button
-                        className="p-0"
-                        style={{ backgroundColor: "#d0d0d0" }}
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          fill="currentColor"
-                          className="bi bi-caret-left"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
-                        </svg>
-                      </Button>
-                      <span>
-                        Page {currentPage} of {totalPages || "1"}
-                      </span>{" "}
-                      <Button
-                        className="p-0"
-                        style={{ backgroundColor: "#d0d0d0" }}
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          fill="currentColor"
-                          className="bi bi-caret-right"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
-                        </svg>
-                      </Button>{" "}
-                    </Col>
-                  </Row>
+                    </tbody>
+                  </>
                 ) : (
-                  <></>
+                  <>
+
+                    <thead className="thead-light">
+                      <tr>
+                        <th scope="col">
+                          Work Order
+                          {sortBy.includes("work_subject") ? (
+                            upArrow.includes("work_subject") ? (
+                              <ArrowDownwardIcon
+                                onClick={() => sortData("work_subject")}
+                              />
+                            ) : (
+                              <ArrowUpwardIcon
+                                onClick={() => sortData("work_subject")}
+                              />
+                            )
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("work_subject")}
+                            />
+                          )}
+                        </th>
+                        <th scope="col">
+                          Property
+                          {sortBy.includes("rental_adress") ? (
+                            upArrow.includes("rental_adress") ? (
+                              <ArrowDownwardIcon
+                                onClick={() => sortData("rental_adress")}
+                              />
+                            ) : (
+                              <ArrowUpwardIcon
+                                onClick={() => sortData("rental_adress")}
+                              />
+                            )
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("rental_adress")}
+                            />
+                          )}
+                        </th>
+                        <th scope="col">
+                          Category
+                          {sortBy.includes("work_category") ? (
+                            upArrow.includes("work_category") ? (
+                              <ArrowDownwardIcon
+                                onClick={() => sortData("work_category")}
+                              />
+                            ) : (
+                              <ArrowUpwardIcon
+                                onClick={() => sortData("work_category")}
+                              />
+                            )
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("work_category")}
+                            />
+                          )}
+                        </th>
+                        <th scope="col">
+                          Assigned
+                          {sortBy.includes("staffmember_name") ? (
+                            upArrow.includes("staffmember_name") ? (
+                              <ArrowDownwardIcon
+                                onClick={() => sortData("staffmember_name")}
+                              />
+                            ) : (
+                              <ArrowUpwardIcon
+                                onClick={() => sortData("staffmember_name")}
+                              />
+                            )
+                          ) : (
+                            <ArrowUpwardIcon
+                              onClick={() => sortData("staffmember_name")}
+                            />
+                          )}
+                        </th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Created At</th>
+                        <th scope="col">Updated At</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+
+                      {filterTenantsBySearchAndPage().map((rental) => (
+                        <tr
+                          key={rental?.workOrder_id}
+                          onClick={() => navigateToDetails(rental?.workOrder_id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <td>{rental?.work_subject}</td>
+                          <td>
+                            {rental?.rental_adress}{" "}
+                            {rental?.rental_unit
+                              ? " - " + rental?.rental_unit
+                              : null}
+                          </td>
+                          <td>{rental?.work_category}</td>
+                          <td>{rental?.staffmember_name}</td>
+                          <td>{rental?.status}</td>
+                          <td>{rental?.createdAt}</td>
+                          <td>{rental?.updatedAt || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </>
                 )}
-              </Card>
-            )}
+              </Table>
+              {paginatedData.length > 0 ? (
+                <Row>
+                  <Col className="text-right m-3">
+                    <Dropdown isOpen={leasedropdownOpen} toggle={toggle2}>
+                      <DropdownToggle caret>{pageItem}</DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => {
+                            setPageItem(10);
+                            setCurrentPage(1);
+                          }}
+                        >
+                          10
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setPageItem(25);
+                            setCurrentPage(1);
+                          }}
+                        >
+                          25
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setPageItem(50);
+                            setCurrentPage(1);
+                          }}
+                        >
+                          50
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            setPageItem(100);
+                            setCurrentPage(1);
+                          }}
+                        >
+                          100
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: "#d0d0d0" }}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        fill="currentColor"
+                        className="bi bi-caret-left"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M10 12.796V3.204L4.519 8 10 12.796zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753z" />
+                      </svg>
+                    </Button>
+                    <span>
+                      Page {currentPage} of {totalPages || "1"}
+                    </span>{" "}
+                    <Button
+                      className="p-0"
+                      style={{ backgroundColor: "#d0d0d0" }}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        fill="currentColor"
+                        className="bi bi-caret-right"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z" />
+                      </svg>
+                    </Button>{" "}
+                  </Col>
+                </Row>
+              ) : (
+                <></>
+              )}
+            </Card>
+
           </div>
         </Row>
         <br />

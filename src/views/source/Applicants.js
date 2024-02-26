@@ -35,7 +35,7 @@ import Checkbox from "@mui/material/Checkbox";
 import { RotatingLines } from "react-loader-spinner";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-
+import WestIcon from '@mui/icons-material/West';
 import Header from "components/Headers/Header";
 import * as React from "react";
 import axios from "axios";
@@ -864,7 +864,7 @@ const Applicants = () => {
                           <td>
                             {applicant.rental_data.rental_adress}{" "}
                             {applicant.unit_data &&
-                            applicant.unit_data.rental_unit
+                              applicant.unit_data.rental_unit
                               ? " - " + applicant.unit_data.rental_unit
                               : null}
                           </td>
@@ -1191,8 +1191,8 @@ const Applicants = () => {
                             onChange={applicantFormik.handleChange}
                             value={applicantFormik.values.applicant_firstName}
                           />
-                            {applicantFormik.touched.applicant_firstName &&
-                          applicantFormik.errors.applicant_firstName ? (
+                          {applicantFormik.touched.applicant_firstName &&
+                            applicantFormik.errors.applicant_firstName ? (
                             <div
                               style={{ color: "red", marginBottom: "10px" }}
                             >
@@ -1218,8 +1218,8 @@ const Applicants = () => {
                             onChange={applicantFormik.handleChange}
                             value={applicantFormik.values.applicant_lastName}
                           />
-                            {applicantFormik.touched.applicant_lastName &&
-                          applicantFormik.errors.applicant_lastName ? (
+                          {applicantFormik.touched.applicant_lastName &&
+                            applicantFormik.errors.applicant_lastName ? (
                             <div
                               style={{ color: "red", marginBottom: "10px" }}
                             >
@@ -1253,13 +1253,13 @@ const Applicants = () => {
                         />
                       </InputGroup>
                       {applicantFormik.touched.applicant_email &&
-                          applicantFormik.errors.applicant_email ? (
-                            <div
-                              style={{ color: "red", marginBottom: "10px" }}
-                            >
-                              {applicantFormik.errors.applicant_email}
-                            </div>
-                          ) : null}
+                        applicantFormik.errors.applicant_email ? (
+                        <div
+                          style={{ color: "red", marginBottom: "10px" }}
+                        >
+                          {applicantFormik.errors.applicant_email}
+                        </div>
+                      ) : null}
                     </FormGroup>
                     <FormGroup>
                       <label
@@ -1287,16 +1287,16 @@ const Applicants = () => {
                             const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
                             e.target.value = numericValue;
                           }}
-                        /> 
+                        />
                       </InputGroup>
                       {applicantFormik.touched.tenant_mobileNumber &&
-                          applicantFormik.errors.tenant_mobileNumber ? (
-                            <div
-                              style={{ color: "red", marginBottom: "10px" }}
-                            >
-                              {applicantFormik.errors.tenant_mobileNumber}
-                            </div>
-                          ) : null}
+                        applicantFormik.errors.tenant_mobileNumber ? (
+                        <div
+                          style={{ color: "red", marginBottom: "10px" }}
+                        >
+                          {applicantFormik.errors.tenant_mobileNumber}
+                        </div>
+                      ) : null}
                     </FormGroup>
                     <FormGroup>
                       <InputGroup>
@@ -1404,10 +1404,10 @@ const Applicants = () => {
                             ))}
                           </DropdownMenu>
                           {applicantFormik.errors &&
-                          applicantFormik.errors?.rental_adress &&
-                          applicantFormik.touched &&
-                          applicantFormik.touched?.rental_adress &&
-                          applicantFormik.values.rental_adress === "" ? (
+                            applicantFormik.errors?.rental_adress &&
+                            applicantFormik.touched &&
+                            applicantFormik.touched?.rental_adress &&
+                            applicantFormik.values.rental_adress === "" ? (
                             <div style={{ color: "red" }}>
                               {applicantFormik.errors.rental_adress}
                             </div>
@@ -1445,10 +1445,10 @@ const Applicants = () => {
                               )}
                             </DropdownMenu>
                             {applicantFormik.errors &&
-                            applicantFormik.errors?.rental_units &&
-                            applicantFormik.touched &&
-                            applicantFormik.touched?.rental_units &&
-                            applicantFormik.values.rental_units === "" ? (
+                              applicantFormik.errors?.rental_units &&
+                              applicantFormik.touched &&
+                              applicantFormik.touched?.rental_units &&
+                              applicantFormik.values.rental_units === "" ? (
                               <div style={{ color: "red" }}>
                                 {applicantFormik.errors.rental_units}
                               </div>
@@ -1467,6 +1467,16 @@ const Applicants = () => {
                     overflow: "hidden",
                   }}
                 >
+                  <div>
+                    <Label
+                      onClick={() => setshowRentalOwnerTable(!showRentalOwnerTable)}
+                      style={{color:"#1171ef",fontWeight:"bold "}}
+                    >
+                      <WestIcon />
+                      Back
+                    </Label>
+
+                  </div>
                   <Input
                     type="text"
                     placeholder="Search by first and last name"
@@ -1476,7 +1486,7 @@ const Applicants = () => {
                       marginBottom: "10px",
                       width: "100%",
                       padding: "8px",
-                      border: "1px solid #ccc",
+                      border: "1px solid #ccc", 
                       borderRadius: "4px",
                     }}
                   />
@@ -1602,7 +1612,7 @@ const Applicants = () => {
                 </button>
               ) : (
                 <>
-                    
+
                   {selectedApplicant ? (
                     <Button
                       color="success"
@@ -1620,13 +1630,13 @@ const Applicants = () => {
                   )}
                 </>
               )}
-              <Button onClick={()=>{closeModal(); applicantFormik.resetForm()}}>Cancel</Button>
-               {/* Conditional message */}
-               {!applicantFormik.isValid && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                      Please fill in all fields correctly.
-                    </div>
-                  )}
+              <Button onClick={() => { closeModal(); applicantFormik.resetForm() }}>Cancel</Button>
+              {/* Conditional message */}
+              {!applicantFormik.isValid && (
+                <div style={{ color: 'red', marginTop: '10px' }}>
+                  Please fill in all fields correctly.
+                </div>
+              )}
             </ModalFooter>
           </Form>
         </Modal>

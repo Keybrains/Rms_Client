@@ -72,15 +72,13 @@ const RentalownerTable = () => {
         `${baseUrl}/rentals/rental-owners/${accessType.admin_id}`
       );
       if (response.status === 200) {
-        setLoader(false);
         setRentalsData(response.data);
+        setLoader(false);
       } else {
         console.error("Invalid API response structure: ", response.data);
         setLoader(false);
       }
     } catch (error) {
-      setLoader(false);
-
       console.error("Error fetching rentals data: ", error);
     }
   };

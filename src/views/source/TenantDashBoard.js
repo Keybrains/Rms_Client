@@ -61,7 +61,7 @@ const TenantDashBoard = (props) => {
     try {
       const res = await axios.get(`${baseUrl}/tenants/property_count/${accessType?.tenant_id}`);
       setpropertycount(res.data.data)
-      console.log(res.data.data,"janak")
+      console.log(res.data.data, "janak")
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -80,7 +80,7 @@ const TenantDashBoard = (props) => {
       const newResponse = await axios.get(`${baseUrl}/tenants/dashboard_workorder/${accessType?.tenant_id}/${accessType?.admin_id}`);
       setNewWorkOrders(newResponse.data.data.new_workorder.slice(0, 3)); // Slice to get only the first three elements
       setOverdueWorkOrders(
-        newResponse.data.data.overdue_workorder.slice(0, 3) );
+        newResponse.data.data.overdue_workorder.slice(0, 3));
     } catch (error) {
       console.error("Error: ", error.message);
     }
@@ -299,7 +299,7 @@ const TenantDashBoard = (props) => {
                               </div>
                             </div>
                             {newWorkOrders.map((order, index) => (
-                              <div key={index}  style={bgStyle}>
+                              <div key={index} style={bgStyle}>
                                 <div className="d-flex justify-content-start">
                                   <span className=""> {order.work_subject}</span>{" "}
                                 </div>
@@ -317,7 +317,13 @@ const TenantDashBoard = (props) => {
                             <label
                               className="d-flex justify-content-start"
                               style={{ cursor: "pointer", color: "blue" }}
-                              onClick={handleViewMoreNewOrders}
+                              // onClick={handleViewMoreNewOrders}
+                              onClick={() =>
+                                navigate(
+                                  "/tenant/tenantwork"
+                                )
+                              }
+
                             >
                               View All
                             </label>
@@ -368,13 +374,18 @@ const TenantDashBoard = (props) => {
                                 </div>
                               </div>
                             ))}
-                           
+
                             <label
                               className="d-flex justify-content-start"
                               style={{ cursor: "pointer", color: "blue" }}
-                              onClick={handleViewMoreOverdueOrders}
+                              // onClick={handleViewMoreOverdueOrders}
+                              onClick={() =>
+                                navigate(
+                                  "/tenant/tenantwork?status=Over Due"
+                                )
+                              }
                             >
-                             View All
+                              View All
                             </label>
                           </CardBody>
                         </Card>
