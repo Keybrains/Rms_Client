@@ -195,7 +195,7 @@ const AddStaffMember = () => {
                 <Row className="align-items-center">
                   <Col xs="8">
                     <h3 className="mb-0">
-                      {id ? "Edit Staff Member" : "New Staf Member"}
+                      {id ? "Edit Staff Member" : "New Staff Member"}
                     </h3>
                   </Col>
                 </Row>

@@ -333,7 +333,13 @@ const TenantDashBoard = (props) => {
                             <label
                               className="d-flex justify-content-start"
                               style={{ cursor: "pointer", color: "blue" }}
-                              onClick={handleViewMoreNewOrders}
+                              // onClick={handleViewMoreNewOrders}
+                              onClick={() =>
+                                navigate(
+                                  "/tenant/tenantwork"
+                                )
+                              }
+
                             >
                               View All
                             </label>
@@ -391,7 +397,12 @@ const TenantDashBoard = (props) => {
                             <label
                               className="d-flex justify-content-start"
                               style={{ cursor: "pointer", color: "blue" }}
-                              onClick={handleViewMoreOverdueOrders}
+                              // onClick={handleViewMoreOverdueOrders}
+                              onClick={() =>
+                                navigate(
+                                  "/tenant/tenantwork?status=Over Due"
+                                )
+                              }
                             >
                               View All
                             </label>

@@ -52,7 +52,7 @@ const AddWorkorder = () => {
   const [selectedTenant, setSelectedTenant] = useState("Select");
   const [selectedEntry, setSelectedEntry] = useState("Select");
   const [selecteduser, setSelecteduser] = useState("Select");
-  const [selectedStatus, setSelectedStatus] = useState("Select");
+  const [selectedStatus, setSelectedStatus] = useState("New");
   const [unitData, setUnitData] = useState([]);
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
 
@@ -449,7 +449,7 @@ const AddWorkorder = () => {
       vendor_note: "",
       staffmember_name: "",
       staffmember_id: "",
-      status: "",
+      status: "New",
       due_date: "",
       priority: "",
       final_total_amount: "",

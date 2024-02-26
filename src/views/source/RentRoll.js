@@ -70,15 +70,14 @@ const RentRoll = () => {
         const reversedData = data.slice().reverse();
         setTenantsData(reversedData);
         setTotalPages(Math.ceil(reversedData.length / pageItem));
+        setLoader(false);
       } else {
         console.log(response.data.message);
         return;
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-    } finally {
-      setLoader(false);
-    }
+    } 
   };
 
   useEffect(() => {
