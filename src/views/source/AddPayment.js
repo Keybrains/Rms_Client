@@ -6,6 +6,7 @@ import axios from "axios";
 import ClearIcon from "@mui/icons-material/Clear";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CardContent, Typography } from "@mui/material";
 import {
   Button,
   Card,
@@ -23,6 +24,9 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  ModalHeader,
+  ModalBody,
+  Modal,
 } from "reactstrap";
 import PaymentHeader from "components/Headers/PaymentHeader";
 import CloseIcon from "@mui/icons-material/Close";
@@ -31,6 +35,8 @@ import "jspdf-autotable";
 import "jspdf-autotable";
 import { jwtDecode } from "jwt-decode";
 import moment from "moment";
+import CreditCardForm from "./CreditCardForm";
+import TenantPropertyDetail from "./TenantPropertyDetail";
 
 function AddPayment() {
   const [accessType, setAccessType] = useState(null);
@@ -38,9 +44,9 @@ function AddPayment() {
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
   const navigate = useNavigate();
   const { lease_id, admin, payment_id } = useParams();
+  const [tenantId, setTenantId] = useState("");
   const [tenantData, setTenantData] = useState([]);
   const [loader, setLoader] = useState(false);
-
   const [recdropdownOpen, setrecDropdownOpen] = useState(false);
   const toggle2 = () => setrecDropdownOpen((prevState) => !prevState);
 
@@ -54,6 +60,194 @@ function AddPayment() {
       navigate("/auth/login");
     }
   }, [navigate]);
+  const [cardLogo, setCardLogo] = useState("");
+
+  const fetchCardLogo = async (cardType) => {
+    try {
+      if (!cardType) {
+        throw new Error("Card type is undefined");
+      }
+
+      const response = await axios.get(
+        `https://logo.clearbit.com/${cardType.toLowerCase()}.com`
+      );
+      setCardLogo(response.config.url);
+    } catch (error) {
+      // Handle error (e.g., card type not found)
+      console.error("Error fetching card logo:", error);
+      setCardLogo("");
+    }
+  };
+
+  useEffect(() => {
+    fetchCardLogo();
+  }, []);
+
+  //NMI Payment Section
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [customervault, setCustomervault] = useState([]);
+  const [cardDetalis, setCardDetails] = useState([]);
+  const [isBilling, setIsBilling] = useState(false);
+  const [vaultId, setVaultId] = useState(false);
+  const [paymentLoader, setPaymentLoader] = useState(false);
+  const [selectedCreditCard, setSelectedCreditCard] = useState(null);
+  const [totalAmount1, setTotalAmount1] = useState();
+  const [surchargePercentage, setSurchargePercentage] = useState();
+  // Fetch surcharge from the API
+  const fetchData = async () => {
+    // try {
+    // const response = await fetch(
+    //   `${baseUrl}/surcharge/surcharge/get/1708427568557`
+    // );
+    let adminid = accessType?.admin_id;
+    console.log(adminid, "yash");
+    const url = `${baseUrl}/surcharge/surcharge/getadmin/${adminid}`;
+    console.log(url);
+    axios
+      .get(url)
+      .then((response) => {
+        const Data = response.data.data[0];
+        console.log("manu", Data);
+        setSurchargePercentage(response.data.data[0].surcharge_percent);
+      })
+      .catch((error) => {
+        console.error("Error fetching property type data:", error);
+      });
+  };
+  useEffect(() => {
+    fetchData();
+  }, [accessType?.admin_id]);
+
+  // Calculate total amount after surcharge
+  const calculateTotalAmount = () => {
+    const amount = parseFloat(generalledgerFormik.values.total_amount) || 0;
+    let totalAmount = amount;
+
+    if (selectedPaymentMethod === "Credit Card") {
+      const surchargeAmount = (amount * surchargePercentage) / 100;
+      generalledgerFormik.setFieldValue("surcharge", surchargeAmount);
+      totalAmount += surchargeAmount;
+    }
+    return totalAmount;
+  };
+
+  useEffect(() => {
+    const totalAmount = calculateTotalAmount();
+    setTotalAmount1(totalAmount);
+  }, [surchargePercentage, selectedPaymentMethod]);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const openCardForm = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCreditCardSelection = (selectedCard) => {
+    generalledgerFormik.setValues({
+      ...generalledgerFormik.values,
+      //customer_vault_id: selectedCard.customer_vault_id,
+      billing_id: selectedCard.billing_id,
+    });
+    setSelectedCreditCard(selectedCard.billing_id);
+  };
+
+  const getCreditCard = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/creditcard/getCreditCards/${tenantId}`
+      );
+      setCustomervault(response.data);
+      setVaultId(response.data.customer_vault_id);
+      getMultipleCustomerVault(response.data.customer_vault_id);
+
+      const hasCustomerVaultId = response.data.some(
+        (card) => card.customer_vault_id
+      );
+
+      if (hasCustomerVaultId) {
+        setIsBilling(true);
+      } else {
+        setIsBilling(false);
+      }
+    } catch (error) {
+      console.error("Error fetching credit card details:", error);
+      setIsBilling(false);
+    }
+  };
+
+  const getMultipleCustomerVault = async (customerVaultIds) => {
+    try {
+      setPaymentLoader(true);
+      if (customerVaultIds.length === 0) {
+        setCardDetails([]);
+        return;
+      }
+
+      const response = await axios.post(
+        `${baseUrl}/nmipayment/get-billing-customer-vault`,
+        {
+          customer_vault_id: customerVaultIds,
+        }
+      );
+
+      // Check if customer.billing is an array
+      const billingData = response.data.data.customer.billing;
+
+      if (Array.isArray(billingData)) {
+        const extractedData = billingData.map((item) => ({
+          billing_id: item["@attributes"].id,
+          cc_number: item.cc_number,
+          cc_exp: item.cc_exp,
+          cc_type: item.cc_type,
+          customer_vault_id: item.customer_vault_id,
+        }));
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+      } else if (billingData) {
+        // If there's only one record, create an array with a single item
+        const extractedData = [
+          {
+            billing_id: billingData["@attributes"].id,
+            cc_number: billingData.cc_number,
+            cc_exp: billingData.cc_exp,
+            cc_type: billingData.cc_type,
+            customer_vault_id: billingData.customer_vault_id,
+          },
+        ];
+
+        setPaymentLoader(false);
+        setCardDetails(extractedData);
+        console.log("objectss", extractedData);
+      } else {
+        console.error(
+          "Invalid response structure - customer.billing is not an array"
+        );
+        setPaymentLoader(false);
+        setCardDetails([]);
+      }
+    } catch (error) {
+      console.error("Error fetching multiple customer vault records:", error);
+      setPaymentLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    getCreditCard();
+  }, [tenantId]);
+
+  useEffect(() => {
+    // Extract customer_vault_id values from cardDetails
+    const customerVaultIds =
+      customervault?.card_detail?.map((card) => card.billing_id) || [];
+
+    if (customerVaultIds.length > 0) {
+      // Call the API to get multiple customer vault records
+      getMultipleCustomerVault(customerVaultIds);
+    }
+  }, [customervault]);
 
   const generalledgerFormik = useFormik({
     initialValues: {
@@ -61,6 +255,10 @@ function AddPayment() {
       date: "",
       total_amount: "",
       payments_memo: "",
+      customer_vault_id: "",
+      billing_id: "",
+      transaction_id: "",
+      surcharge: "",
       payments: [
         {
           entry_id: "",
@@ -149,7 +347,6 @@ function AddPayment() {
           amount: Number(item.amount),
           memo: values.payments_memo || "payment",
           date: values.date,
-          account: item.account,
           charge_type: item.charge_type,
         };
         return data;
@@ -188,8 +385,7 @@ function AddPayment() {
   };
 
   const handleSubmit = async (values) => {
-    // setLoader(true);
-
+    setLoader(true);
     if (file) {
       try {
         const uploadPromises = file?.map(async (fileItem, i) => {
@@ -220,46 +416,192 @@ function AddPayment() {
         console.error("Error processing file uploads:", error);
       }
     }
+    let nmiResponse;
+    const financialDate = new Date(values.date);
+    const currentDate = new Date();
 
-    const object = {
-      admin_id: accessType.admin_id,
-      tenant_id: tenantData?.tenant_id,
-      lease_id: lease_id,
+    // Extract year, month, and day components separately
+    const financialYear = financialDate.getFullYear();
+    const financialMonth = financialDate.getMonth() + 1; // Months are zero-based, so add 1
+    const financialDay = financialDate.getDate();
 
-      entry: values.payments?.map((item) => {
-        const data = {
-          entry_id: item?.entry_id,
-          account: item.account,
-          balance: item.balance,
-          amount: Number(item.amount),
-          memo: values.payments_memo || "payment",
-          date: values.date,
-          account: item.account,
-          charge_type: item.charge_type,
-        };
-        return data;
-      }),
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // Months are zero-based, so add 1
+    const currentDay = currentDate.getDate();
 
-      total_amount: total,
-      is_leaseAdded: false,
-      uploaded_file: file,
-    };
-
-    console.log(object);
+    // Combine year, month, and day components into a string representation of the date
+    const financialDateString =
+      financialYear + "-" + financialMonth + "-" + financialDay;
+    const currentDateString =
+      currentYear + "-" + currentMonth + "-" + currentDay;
 
     try {
-      const res = await axios.post(`${baseUrl}/payment/payment`, object);
-      if (res.data.statusCode === 200) {
-        toast.success(res.data.message, {
-          position: "top-center",
-          autoClose: 1000,
-        });
-        navigate(`/${admin}/rentrolldetail/${lease_id}`);
-      } else {
-        toast.warning(res.data.message, {
-          position: "top-center",
-          autoClose: 1000,
-        });
+      if (selectedPaymentMethod === "Credit Card") {
+        const creditCardDetails = cardDetalis.find(
+          (card) => card.billing_id === selectedCreditCard
+        );
+
+        if (creditCardDetails) {
+          values.customer_vault_id = vaultId;
+          values.billing_id = selectedCreditCard;
+        } else {
+          console.error(
+            "Credit card details not found for selected card:",
+            selectedCreditCard
+          );
+        }
+        if (financialDateString <= currentDateString) {
+          // First, make the call to baseUrl/nmipayment/sale
+          const url = `${baseUrl}/nmipayment/sale`;
+          const postObject = {
+            first_name: tenantData.tenant_firstName,
+            last_name: tenantData.tenant_lastName,
+            email_name: tenantData.tenant_email,
+            customer_vault_id: values.customer_vault_id,
+            billing_id: values.billing_id,
+            surcharge: values.surcharge,
+            amount: values.total_amount,
+            tenantId: tenantData.tenant_id,
+            date: values.date,
+            address1: "",
+          };
+
+          const response = await axios.post(url, {
+            paymentDetails: postObject,
+          });
+
+          // Check response status and handle accordingly
+          if (response.data && response.data.statusCode === 100) {
+            nmiResponse = response.data.data;
+          } else {
+            console.error("Unexpected response format:", response.data.data);
+            // swal("", response.data.message, "error");
+            return; // Exit function early if there's an error
+          }
+        } else {
+          const paymentObject = {
+            admin_id: accessType.admin_id,
+            tenant_id: tenantData?.tenant_id,
+            lease_id: lease_id,
+            payment_type: selectedPaymentMethod,
+            customer_vault_id: values.customer_vault_id,
+            billing_id: values.billing_id,
+            response: "PENDING",
+            entry: values.payments?.map((item) => ({
+              entry_id: item?.entry_id,
+              account: item.account,
+              balance: item.balance,
+              amount: Number(item.amount),
+              memo: values.payments_memo || "payment",
+              date: values.date,
+              charge_type: item.charge_type,
+            })),
+            total_amount: total,
+            is_leaseAdded: false,
+            uploaded_file: file,
+          };
+          const paymentResponse = await axios.post(
+            `${baseUrl}/payment/payment`,
+            paymentObject
+          );
+
+          if (paymentResponse.data.statusCode === 200) {
+            toast.success("Future Payment Scheduled", {
+              position: "top-center",
+              autoClose: 1000,
+            });
+            navigate(`/${admin}/rentrolldetail/${lease_id}`);
+          } else {
+            toast.warning(paymentResponse.data.message, {
+              position: "top-center",
+              autoClose: 1000,
+            });
+          }
+        }
+      } else if (
+        selectedPaymentMethod === "Check" ||
+        selectedPaymentMethod === "Cash"
+      ) {
+        const paymentObject = {
+          admin_id: accessType.admin_id,
+          tenant_id: tenantData?.tenant_id,
+          lease_id: lease_id,
+          payment_type: selectedPaymentMethod,
+          entry: values.payments?.map((item) => ({
+            entry_id: item?.entry_id,
+            account: item.account,
+            balance: item.balance,
+            amount: Number(item.amount),
+            memo: values.payments_memo || "payment",
+            date: values.date,
+            charge_type: item.charge_type,
+          })),
+          total_amount: total,
+          is_leaseAdded: false,
+          uploaded_file: file,
+          response: "SUCCESS",
+        };
+        const paymentResponse = await axios.post(
+          `${baseUrl}/payment/payment`,
+          paymentObject
+        );
+
+        if (paymentResponse.data.statusCode === 200) {
+          toast.success("Payment Done Successfully", {
+            position: "top-center",
+            autoClose: 1000,
+          });
+          navigate(`/${admin}/rentrolldetail/${lease_id}`);
+        } else {
+          toast.warning(paymentResponse.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
+        }
+      }
+
+      if (nmiResponse) {
+        const paymentObject = {
+          admin_id: accessType.admin_id,
+          tenant_id: tenantData?.tenant_id,
+          lease_id: lease_id,
+          payment_type: selectedPaymentMethod,
+          entry: values.payments?.map((item) => ({
+            entry_id: item?.entry_id,
+            account: item.account,
+            balance: item.balance,
+            amount: Number(item.amount),
+            memo: values.payments_memo || "payment",
+            date: values.date,
+            charge_type: item.charge_type,
+          })),
+          total_amount: total,
+          is_leaseAdded: false,
+          uploaded_file: file,
+          // Include relevant transaction details from the first API call
+          transaction_id: nmiResponse.transactionid,
+          response: nmiResponse.responsetext,
+        };
+
+        // Make the second API call to baseUrl/payment/payment
+        const paymentResponse = await axios.post(
+          `${baseUrl}/payment/payment`,
+          paymentObject
+        );
+
+        // Handle response from the second API call
+        if (paymentResponse.data.statusCode === 200) {
+          toast.success("Payment Done Successfully", {
+            position: "top-center",
+            autoClose: 1000,
+          });
+          navigate(`/${admin}/rentrolldetail/${lease_id}`);
+        } else {
+          toast.warning(paymentResponse.data.message, {
+            position: "top-center",
+            autoClose: 1000,
+          });
+        }
       }
     } catch (error) {
       console.error("Error: ", error.message);
@@ -308,7 +650,7 @@ function AddPayment() {
   const fetchAccounts = async () => {
     try {
       const res = await axios.get(
-        `${baseUrl}/accounts/accounts/${accessType.admin_id}`
+        `${baseUrl}/accounts/accounts/${accessType?.admin_id}`
       );
       if (res.data.statusCode === 200) {
         const filteredData1 = res.data.data.filter(
@@ -333,6 +675,7 @@ function AddPayment() {
       const res = await axios.get(`${baseUrl}/leases/lease_tenant/${lease_id}`);
       if (res.data.statusCode === 200) {
         setTenantData(res.data.data);
+        setTenantId(res.data.data.tenant_id);
       }
     } catch (error) {
       console.error("Error: ", error.message);
@@ -482,27 +825,19 @@ function AddPayment() {
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">New Payment</h3>
+                    <h3 className="mb-0">
+                      {" "}
+                      Payment for{" "}
+                      <span style={{ fontWeight: "bold" }}>
+                        {tenantData.tenant_firstName}{" "}
+                        {tenantData.tenant_lastName}
+                      </span>
+                    </h3>
                   </Col>
                 </Row>
               </CardHeader>
               <CardBody>
                 <Form>
-                  <Row>
-                    <Col lg="2">
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-unitadd"
-                      >
-                        Payment for:{" "}
-                        <span>
-                          {tenantData.tenant_firstName}{" "}
-                          {tenantData.tenant_lastName}
-                        </span>
-                      </label>
-                    </Col>
-                  </Row>
-
                   <Row>
                     <Col lg="2">
                       <FormGroup>
@@ -521,6 +856,27 @@ function AddPayment() {
                           onBlur={generalledgerFormik.handleBlur}
                           onChange={generalledgerFormik.handleChange}
                           value={generalledgerFormik.values.date}
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col sm="4">
+                      <FormGroup>
+                        <label
+                          className="form-control-label"
+                          htmlFor="input-property"
+                        >
+                          Amount *
+                        </label>
+                        <Input
+                          type="number"
+                          id="amount"
+                          placeholder="Enter amount"
+                          name="total_amount"
+                          onBlur={generalledgerFormik.handleBlur}
+                          onChange={generalledgerFormik.handleChange}
+                          value={generalledgerFormik.values.total_amount}
                         />
                       </FormGroup>
                     </Col>
@@ -561,6 +917,11 @@ function AddPayment() {
                               Credit Card
                             </DropdownItem>
                             <DropdownItem
+                              onClick={() => setSelectedPaymentMethod("Check")}
+                            >
+                              Check
+                            </DropdownItem>
+                            <DropdownItem
                               onClick={() => setSelectedPaymentMethod("Cash")}
                             >
                               Cash
@@ -570,30 +931,210 @@ function AddPayment() {
                       </FormGroup>
                     </Col>
                     <Col sm="12">
-                      <>
-                        <Row>
-                          <Col sm="4">
+                      <Row>
+                        {selectedPaymentMethod === "Credit Card" ? (
+                          <>
+                            {/* {refund === false ? ( */}
+
+                            <Card
+                              className="w-100 mt-3"
+                              style={{ background: "#F4F6FF" }}
+                            >
+                              <label
+                                className="form-control-label"
+                                htmlFor="input-property"
+                              >
+                                Credit card transactions will charge{" "}
+                                <strong style={{ color: "blue" }}>
+                                  {surchargePercentage}%
+                                </strong>
+                              </label>
+                              <CardContent>
+                                {/* Card Details */}
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                  }}
+                                >
+                                  <Typography
+                                    sx={{
+                                      fontSize: 15,
+                                      fontWeight: "bold",
+                                      fontFamily: "Arial",
+                                      textTransform: "capitalize",
+                                      marginRight: "10px",
+                                    }}
+                                    color="text.secondary"
+                                    gutterBottom
+                                  >
+                                    Credit Cards
+                                  </Typography>
+                                </div>
+                                {cardDetalis && cardDetalis.length > 0 && (
+                                  <Table responsive>
+                                    <tbody>
+                                      <tr>
+                                        <th>Select</th>
+                                        <th>Card Number</th>
+                                        <th>Card Type</th>
+                                        <th></th>
+                                      </tr>
+                                      {cardDetalis.map((item, index) => (
+                                        <tr
+                                          key={index}
+                                          style={{ marginBottom: "10px" }}
+                                        >
+                                          <td>
+                                            <input
+                                              type="checkbox"
+                                              checked={
+                                                selectedCreditCard ==
+                                                item.billing_id
+                                              }
+                                              onChange={() =>
+                                                handleCreditCardSelection(item)
+                                              }
+                                            />
+                                          </td>
+                                          <td>
+                                            <Typography
+                                              sx={{
+                                                fontSize: 14,
+                                                fontWeight: "bold",
+                                                fontStyle: "italic",
+                                                fontFamily: "Arial",
+                                                textTransform: "capitalize",
+                                                marginRight: "10px",
+                                              }}
+                                              color="text.secondary"
+                                              gutterBottom
+                                            >
+                                              {item.cc_number}
+                                            </Typography>
+                                          </td>
+                                          <td>
+                                            <Typography
+                                              sx={{
+                                                fontSize: 14,
+                                                marginRight: "10px",
+                                              }}
+                                              color="text.secondary"
+                                              gutterBottom
+                                            >
+                                              {item.cc_type}
+                                              {item.cc_type && (
+                                                <img
+                                                  src={`https://logo.clearbit.com/${item.cc_type.toLowerCase()}.com`}
+                                                  alt={`${item.cc_type} Logo`}
+                                                  style={{
+                                                    width: "20%",
+                                                    marginLeft: "10%",
+                                                  }}
+                                                />
+                                              )}
+                                            </Typography>
+                                          </td>
+                                          {/* 
+                                      {selectedCreditCard ===
+                                        item.billing_id && (
+                                        <td>
+                                          <Row>
+                                            <FormGroup>
+                                              <label
+                                                className="form-control-label"
+                                                htmlFor="input-property"
+                                              >
+                                                CVV *
+                                              </label>
+                                              <Input
+                                                type="number"
+                                                id="cvv"
+                                                placeholder="123"
+                                                name="cvv"
+                                                onBlur={
+                                                  generalledgerFormik.handleBlur
+                                                }
+                                                onChange={(e) => {
+                                                  const inputValue =
+                                                    e.target.value;
+                                                  if (
+                                                    /^\d{0,3}$/.test(inputValue)
+                                                  ) {
+                                                    // Only allow up to 3 digits
+                                                    generalledgerFormik.handleChange(
+                                                      e
+                                                    );
+                                                  }
+                                                }}
+                                                value={
+                                                  generalledgerFormik.values.cvv
+                                                }
+                                                required
+                                                //disabled={refund === true}
+                                              />
+                                            </FormGroup>
+                                          </Row>
+                                        </td>
+                                      )} */}
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </Table>
+                                )}
+
+                                {/* Add Credit Card Button */}
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    marginTop: "10px",
+                                  }}
+                                >
+                                  <Button
+                                    color="primary"
+                                    onClick={() => {
+                                      openCardForm();
+                                    }}
+                                    style={{
+                                      background: "white",
+                                      color: "#3B2F2F",
+                                      marginRight: "10px",
+                                    }}
+                                  >
+                                    Add Credit Card
+                                  </Button>
+                                </div>
+                              </CardContent>
+                            </Card>
+                            {/* ) : (
+                    ""
+                  )} */}
+                          </>
+                        ) : selectedPaymentMethod === "Check" ? (
+                          <>
                             <FormGroup>
                               <label
                                 className="form-control-label"
                                 htmlFor="input-property"
                               >
-                                Amount *
+                                Check Number *
                               </label>
                               <Input
-                                type="number"
-                                id="amount"
-                                placeholder="Enter amount"
-                                name="total_amount"
+                                type="text"
+                                id="check_number"
+                                placeholder="Enter check number"
+                                name="check_number"
                                 onBlur={generalledgerFormik.handleBlur}
                                 onChange={generalledgerFormik.handleChange}
-                                value={generalledgerFormik.values.total_amount}
+                                value={generalledgerFormik.values.check_number}
+                                required
                               />
                             </FormGroup>
-                          </Col>
-                        </Row>
-                      </>
-                      {selectedPaymentMethod === "Credit Card" ? (
+                          </>
+                        ) : null}
+                      </Row>
+                      {/* {selectedPaymentMethod === "Credit Card" ? (
                         <>
                           <Row>
                             <Col sm="4">
@@ -652,7 +1193,7 @@ function AddPayment() {
                         </>
                       ) : (
                         ""
-                      )}
+                      )} */}
                     </Col>
                   </Row>
 
@@ -1025,7 +1566,7 @@ function AddPayment() {
                       </FormGroup>
                     </Col>
                   </Row>
-                  <Row>
+                  {/* <Row>
                     <Col lg="3">
                       <FormGroup>
                         <Checkbox name="print_receipt" />
@@ -1037,7 +1578,7 @@ function AddPayment() {
                         </label>
                       </FormGroup>
                     </Col>
-                  </Row>
+                  </Row> */}
                   <Row>
                     <Col lg="5">
                       <FormGroup>
@@ -1063,7 +1604,7 @@ function AddPayment() {
                               editPayment(generalledgerFormik.values);
                             }}
                           >
-                            Edit Charge
+                            Edit Payment
                           </button>
                         ) : (
                           <button
@@ -1075,7 +1616,7 @@ function AddPayment() {
                               generalledgerFormik.handleSubmit();
                             }}
                           >
-                            Add Charge
+                            Add Payment
                           </button>
                         )}
 
@@ -1096,6 +1637,22 @@ function AddPayment() {
             </Card>
           </Col>
         </Row>
+        <Modal
+          isOpen={isModalOpen}
+          toggle={closeModal}
+          style={{ maxWidth: "1000px" }}
+        >
+          <ModalHeader toggle={closeModal} className="bg-secondary text-white">
+            <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
+          </ModalHeader>
+          <ModalBody>
+            <CreditCardForm
+              tenantId={tenantId}
+              closeModal={closeModal}
+              //getCreditCard={getCreditCard}
+            />
+          </ModalBody>
+        </Modal>
         <ToastContainer />
       </Container>
     </>

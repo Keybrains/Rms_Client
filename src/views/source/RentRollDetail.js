@@ -12,6 +12,7 @@ import {
   Container,
   Row,
   Col,
+  UncontrolledDropdown,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
@@ -94,11 +95,13 @@ const RentRollDetail = () => {
   };
 
   const [tenantDetails, setTenantDetails] = useState([]);
+  const [tenantId, setTenantId] = useState('');
   const fetchTenantsData = async () => {
     setLoading(true);
     try {
       const res = await axios.get(`${baseUrl}/tenants/leases/${lease_id}`);
       setTenantDetails(res.data.data);
+      setTenantId(res.data.data[0].tenant_id);
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -170,13 +173,70 @@ const RentRollDetail = () => {
     }
   };
 
+  const [refund, setRefund] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen((prevState) => !prevState);
+  const [showOptions, setShowOptions] = useState(false);
+  const [showOptionsId, setShowOptionsId] = useState("");
+  const [isRefundOpen, setIsRefundOpen] = useState(false);
 
   const handleOptionClick = (option) => {
     // generatePDF(option);
     // handleClose();
   };
+
+  const toggleOptions = (id) => {
+    setShowOptions(!showOptions);
+    setShowOptionsId(id);
+  };
+
+  const closeRefund = () => {
+    setIsRefundOpen(false);
+    // getTenantData();
+    // getCreditCard();
+    // getMultipleCustomerVault();
+  };
+
+  const fetchData = async (id) => {
+    try {
+      const response = await axios.get(
+        // `${baseUrl}/payment_charge/get_entry/${id}`
+      );
+      if (response.data.statusCode === 200) {
+        // setFile(response.data.data.charges_attachment);
+        // setResponseData(response.data.data);
+        // generalledgerFormik.setValues({
+        //   date: response.data.data.date,
+        //   amount: response.data.data.amount,
+        //   payment_type: response.data.data.payment_type,
+        //   customer_vault_id: response.data.data.customer_vault_id,
+        //   billing_id: response.data.data.billing_id,
+        //   charges_attachment: response.data.data.charges_attachment,
+        //   memo: response.data.data.memo,
+        //   entries: [
+        //     {
+        //       account: response.data.data.account || "",
+        //       amount: response.data.data.amount || "",
+        //       balance: response.data.data.amount || "",
+        //     },
+        //   ],
+        // });
+        // setSelectedRec(response.data.data.tenant_firstName && response.data.data.tenant_lastName )
+        // setSelectedCreditCard(response.data.data.billing_id)
+        // setSelectedProp(response.data.data.payment_type)
+        console.log("meet", id);
+        console.log("meet", response.data);
+      } else {
+        console.error("Error:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, [payment_id]);
 
   const [cardDetalis, setCardDetails] = useState([]);
   const getCreditCard = async () => {
@@ -599,103 +659,6 @@ const RentRollDetail = () => {
                                     </div>
                                   </CardContent>
                                 </Card>
-                                {/* <Card
-                                  className="w-100 mt-3"
-                                  style={{ background: "#F4F6FF" }}
-                                >
-                                  <CardContent>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                      }}
-                                    >
-                                      <Typography
-                                        sx={{
-                                          fontSize: 18,
-                                          fontWeight: "bold",
-                                          fontFamily: "Arial",
-                                          textTransform: "capitalize",
-                                          marginRight: "10px",
-                                        }}
-                                        color="text.secondary"
-                                        gutterBottom
-                                      >
-                                        Credit Cards
-                                      </Typography>
-                                    </div>
-                                    {cardDetalis && cardDetalis.length > 0 && (
-                                      <Table responsive>
-                                        <tbody>
-                                          <tr>
-                                            <th>Card Number</th>
-                                            <th>Expiration Date</th>
-                                          </tr>
-                                          {cardDetalis.map((item, index) => (
-                                            <tr
-                                              key={index}
-                                              style={{ marginBottom: "10px" }}
-                                            >
-                                              <td>
-                                                <Typography
-                                                  sx={{
-                                                    fontSize: 14,
-                                                    fontWeight: "bold",
-                                                    fontStyle: "italic",
-                                                    fontFamily: "Arial",
-                                                    textTransform: "capitalize",
-                                                    marginRight: "10px",
-                                                  }}
-                                                  color="text.secondary"
-                                                  gutterBottom
-                                                >
-                                                  {item.card_number.slice(
-                                                    0,
-                                                    4
-                                                  ) +
-                                                    "*".repeat(8) +
-                                                    item.card_number.slice(-4)}
-                                                </Typography>
-                                              </td>
-                                              <td>
-                                                <Typography
-                                                  sx={{
-                                                    fontSize: 14,
-                                                    marginRight: "10px",
-                                                  }}
-                                                  color="text.secondary"
-                                                  gutterBottom
-                                                >
-                                                  {item.exp_date}
-                                                </Typography>
-                                              </td>
-                                            </tr>
-                                          ))}
-                                        </tbody>
-                                      </Table>
-                                    )}
-
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        marginTop: "10px",
-                                      }}
-                                    >
-                                      <Button
-                                        color="primary"
-                                        onClick={() => openCardForm()}
-                                        style={{
-                                          background: "white",
-                                          color: "blue",
-                                          marginRight: "10px",
-                                        }}
-                                      >
-                                        Add Credit Card
-                                      </Button>
-                                    </div>
-                                  </CardContent>
-                                </Card> */}
                               </div>
                             </div>
                           </div>
@@ -713,6 +676,17 @@ const RentRollDetail = () => {
                           xs="12"
                           sm="6"
                         >
+                           <Button
+                            color="primary"
+                            onClick={() => openCardForm()}
+                            style={{
+                              background: "white",
+                              color: "blue",
+                              marginRight: "10px",
+                            }}
+                          >
+                            Add Cards
+                          </Button>
                           <Button
                             color="primary"
                             onClick={() =>
@@ -738,7 +712,7 @@ const RentRollDetail = () => {
                         </Col>
                       </Row>
                       <br />
-                      <Row
+                      {/* <Row
                         style={{ display: "flex", justifyContent: "flex-end" }}
                       >
                         <Dropdown isOpen={dropdownOpen} toggle={toggle}>
@@ -770,7 +744,7 @@ const RentRollDetail = () => {
                             </DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
-                      </Row>
+                      </Row> */}
                       <br />
                       <Row>
                         <div className="col">
@@ -798,8 +772,8 @@ const RentRollDetail = () => {
                                   <tr>
                                     <th scope="col">Date</th>
                                     <th scope="col">Type</th>
+                                    <th scope="col">Transaction</th>
                                     <th scope="col">Account</th>
-                                    <th scope="col">Memo</th>
                                     <th scope="col">Increase</th>
                                     <th scope="col">Decrease</th>
                                     <th scope="col">Balance</th>
@@ -821,6 +795,30 @@ const RentRollDetail = () => {
                                               "-"}
                                           </td>
                                           <td>{generalledger?.type || "-"}</td>
+                                          <td
+                                              style={{
+                                                color:
+                                                 ( generalledger.type ===
+                                                  "Payment" && generalledger.response === "SUCCESS")
+                                                    ? "#50975E"
+                                                    :  ( generalledger.type ===
+                                                      "Refund" && generalledger.response === "SUCCESS")
+                                                    ? "#ffc40c"
+                                                    :  (generalledger.response === "FAILURE")
+                                                    ? "#AA3322"
+                                                    : "inherit",
+                                                fontWeight: "bold",
+                                              }}
+                                            >
+                                              {generalledger.response &&
+                                              generalledger.payment_type
+                                                ? `Manual ${generalledger.type} ${generalledger.response} for ${generalledger.payment_type}`
+                                                : "- - - - - - - - - - - - - - - - -"}
+                                              {generalledger.transaction_id
+                                                ? ` (#${generalledger.transaction_id})`
+                                                : ""}
+                                            </td>
+
                                           <td>
                                             {generalledger.entry?.map(
                                               (item) => (
@@ -831,39 +829,29 @@ const RentRollDetail = () => {
                                               )
                                             ) || "-"}
                                           </td>
+                                     
                                           <td>
-                                            {generalledger.is_leaseAdded ===
-                                            true
-                                              ? generalledger.entry.map(
-                                                  (item) => (
-                                                    <>
-                                                      {item.memo}
-                                                      <br />
-                                                    </>
-                                                  )
-                                                )
-                                              : generalledger.entry[0].memo}
-                                          </td>
+                                              {generalledger.type ===
+                                                "Charge" ||
+                                              generalledger.type === "Refund"
+                                                ? "$" + generalledger.total_amount
+                                                : "-"}
+                                            </td>
                                           <td>
-                                            {generalledger.type === "charge"
-                                              ? "$" + generalledger.total_amount
-                                              : "-"}
-                                          </td>
-                                          <td>
-                                            {generalledger.type === "payment"
+                                            {generalledger.type === "Payment"
                                               ? "$" + generalledger.total_amount
                                               : "-"}
                                           </td>
                                           <td>
                                             {generalledger.balance !== undefined
                                               ? generalledger.balance >= 0
-                                                ? `$${generalledger.balance}`
+                                                ? `$${generalledger.balance.toFixed(2)}`
                                                 : `$(${Math.abs(
-                                                    generalledger.balance
+                                                    generalledger.balance.toFixed(2)
                                                   )})`
                                               : "0"}
                                           </td>
-                                          <td>
+                                          {/* <td>
                                             <div
                                               style={{
                                                 display: "flex",
@@ -919,7 +907,111 @@ const RentRollDetail = () => {
                                                 </div>
                                               )}
                                             </div>
-                                          </td>
+                                          </td> */}
+                                           <td>
+                                              <div
+                                                style={{
+                                                  display: "flex",
+                                                  gap: "5px",
+                                                }}
+                                              >
+                                                {generalledger?.response !==
+                                                  "Failure" &&
+                                                generalledger?.type !==
+                                                  "Refund" ? (
+                                                  <UncontrolledDropdown nav>
+                                                    <DropdownToggle
+                                                      className="pr-0"
+                                                      nav
+                                                      style={{
+                                                        cursor: "pointer",
+                                                      }}
+                                                      onClick={() =>
+                                                        toggleOptions(
+                                                          generalledger?.payment_id
+                                                        )
+                                                      }
+                                                    >
+                                                      <span
+                                                        className="avatar avatar-sm rounded-circle"
+                                                        style={{
+                                                          margin: "-20px",
+                                                          background:
+                                                            "transparent",
+                                                          color: "lightblue",
+                                                          fontWeight: "bold",
+                                                          border:
+                                                            "2px solid lightblue",
+                                                          padding: "10px",
+                                                          display: "flex",
+                                                          alignItems: "center",
+                                                          justifyContent:
+                                                            "center",
+                                                        }}
+                                                      >
+                                                        ...
+                                                      </span>
+                                                    </DropdownToggle>
+                                                    <DropdownMenu className="dropdown-menu-arrow">
+                                                      {generalledger?.payment_id ===
+                                                        showOptionsId && (
+                                                        <div>
+                                                          {generalledger?.response ===
+                                                            "SUCCESS" && (
+                                                            <DropdownItem
+                                                              // style={{color:'black'}}
+                                                              onClick={() => {
+                                                                fetchData(
+                                                                  generalledger.payment_id
+                                                                );
+                                                                // setIsRefundOpen(
+                                                                //   true
+                                                                // );
+                                                                setRefund(true);
+                                                              }}
+                                                            >
+                                                              Refund
+                                                            </DropdownItem>
+                                                          )}
+                                                            {(generalledger?.response === "PENDING" ||
+                                                              generalledger?.payment_type === "Cash" ||
+                                                              generalledger?.payment_type === "Check" ||
+                                                              generalledger?.type === "Charge") && (
+                                                              <DropdownItem
+                                                                tag="div"
+                                                                onClick={(e) => {
+                                                                  e.stopPropagation();
+                                                                  if (generalledger?.type === "Charge") {
+                                                                    navigate(
+                                                                      `/${admin}/AddCharge/${lease_id}/${generalledger.charge_id}`
+                                                                    );
+                                                                  } else {
+                                                                    // navigate(
+                                                                    //   `/${admin}/AddPayment/${lease_id}/${generalledger.payment_id}`
+                                                                    // );
+                                                                  }
+                                                                }}
+                                                              >
+                                                                Edit
+                                                              </DropdownItem>
+                                                            )}
+                                                        </div>
+                                                      )}
+                                                    </DropdownMenu>
+                                                  </UncontrolledDropdown>
+                                                ) : (
+                                                  <div
+                                                    style={{
+                                                      fontSize: "15px",
+                                                      fontWeight: "bolder",
+                                                      paddingLeft: "5px",
+                                                    }}
+                                                  >
+                                                    --
+                                                  </div>
+                                                )}
+                                              </div>
+                                            </td>
                                         </tr>
                                       </>
                                     ))}
@@ -1487,15 +1579,144 @@ const RentRollDetail = () => {
         <br />
       </Container>
 
-      <Modal isOpen={isModalOpen} toggle={closeModal}>
+      <Modal
+        isOpen={isRefundOpen}
+        toggle={closeRefund}
+        style={{ maxWidth: "1000px" }}
+      >
+        <ModalHeader toggle={closeRefund} className="bg-secondary text-white">
+          <strong style={{ fontSize: 18 }}>Make Refund</strong>
+        </ModalHeader>
+
+        {/* <Form>
+          <ModalBody>
+            <Row>
+              <Col lg="2">
+                <FormGroup>
+                  <label className="form-control-label" htmlFor="input-unitadd">
+                    Date
+                  </label>
+                  <Input
+                    className="form-control-alternative"
+                    id="input-unitadd"
+                    placeholder="3000"
+                    type="date"
+                    name="date"
+                    onBlur={generalledgerFormik.handleBlur}
+                    onChange={generalledgerFormik.handleChange}
+                    value={generalledgerFormik.values.date}
+                  />
+                  {generalledgerFormik.touched.date &&
+                  generalledgerFormik.errors.date ? (
+                    <div style={{ color: "red" }}>
+                      {generalledgerFormik.errors.date}
+                    </div>
+                  ) : null}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm="4">
+                <FormGroup>
+                  <label
+                    className="form-control-label"
+                    htmlFor="input-property"
+                  >
+                    Refund Amount *
+                  </label>
+                  <Input
+                    type="text"
+                    id="amount"
+                    placeholder="Enter amount"
+                    name="amount"
+                    onBlur={generalledgerFormik.handleBlur}
+                    onWheel={(e) => e.preventDefault()}
+                    onKeyDown={(event) => {
+                      if (!/[0-9]/.test(event.key)) {
+                        //event.preventDefault();
+                      }
+                    }}
+                    onChange={(e) => {
+                      const inputValue = e.target.value;
+                      const numericValue = inputValue.replace(/\D/g, "");
+                      generalledgerFormik.values.amount = numericValue;
+                      generalledgerFormik.handleChange({
+                        target: {
+                          name: "amount",
+                          value: numericValue,
+                        },
+                      });
+                    }}
+                    //-onChange={generalledgerFormik.handleChange}
+                    value={generalledgerFormik.values.amount}
+                    required
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col lg="3">
+                <FormGroup>
+                  <label className="form-control-label" htmlFor="input-unitadd">
+                    Memo
+                  </label>
+                  <Input
+                    className="form-control-alternative"
+                    id="input-unitadd"
+                    placeholder="if left blank, will show 'Payment'"
+                    type="text"
+                    name="memo"
+                    onBlur={generalledgerFormik.handleBlur}
+                    onChange={generalledgerFormik.handleChange}
+                    value={generalledgerFormik.values.memo}
+                  />
+
+                  {generalledgerFormik.touched.memo &&
+                  generalledgerFormik.errors.memo ? (
+                    <div style={{ color: "red" }}>
+                      {generalledgerFormik.errors.memo}
+                    </div>
+                  ) : null}
+                </FormGroup>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            {paymentLoader ? (
+              <Button disabled color="success" type="submit">
+                Loading
+              </Button>
+            ) : (
+              <Button
+                color="success"
+                type="submit"
+                onClick={(e) => {
+                  handleRefundClick();
+                  e.preventDefault();
+                }}
+              >
+                Make Refund
+              </Button>
+            )}
+            <Button onClick={closeRefund}>Cancel</Button>
+          </ModalFooter>
+        </Form> */}
+      </Modal>
+
+      <Modal
+        isOpen={isModalOpen}
+        toggle={closeModal}
+        style={{ maxWidth: "1000px" }}
+      >
         <ModalHeader toggle={closeModal} className="bg-secondary text-white">
           <strong style={{ fontSize: 18 }}>Add Credit Card</strong>
         </ModalHeader>
         <ModalBody>
           <CreditCardForm
-            lease_id={lease_id}
+            tenantId={tenantId}
             closeModal={closeModal}
-            getCreditCard={getCreditCard}
+            //getCreditCard={getCreditCard}
           />
         </ModalBody>
       </Modal>
