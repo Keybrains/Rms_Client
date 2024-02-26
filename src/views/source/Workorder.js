@@ -130,15 +130,18 @@ const Workorder = () => {
     }).then((willDelete) => {
       if (willDelete) {
         axios
-          .delete(`${baseUrl}/work-order/delete_workorder`, {
-            data: { workOrder_id: id },
-          })
+          .delete(`${baseUrl}/work-order/delete_workorder/${id}`)
           .then((response) => {
+            console.log(response.data, "response.data");
             if (response.data.statusCode === 200) {
               toast.success("Work Order deleted successfully", {
                 position: "top-center",
               });
               getWorkData();
+            } else if (response.data.statusCode === 203) {
+              toast.warn(response.data.message, {
+                position: "top-center",
+              });
             } else {
               toast.error(response.data.message, {
                 position: "top-center",
@@ -439,7 +442,6 @@ const Workorder = () => {
                                 <DeleteIcon />
                               </div>
                               &nbsp; &nbsp; &nbsp;
-                              {console.log(rental, "rental js")}
                               <div
                                 style={{ cursor: "pointer" }}
                                 onClick={(e) => {

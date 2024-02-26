@@ -125,7 +125,7 @@ const AddVendor = () => {
     values.admin_id = accessType.admin_id;
     try {
       if (vendor_id === undefined) {
-        const res = await axios.post(`http://192.168.1.104:4000/api/vendor/vendor`, values);
+        const res = await axios.post(`http://192.168.1.10:4000/api/vendor/vendor`, values);
         handleResponse(res);
       } else {
         const editUrl = `${baseUrl}/vendor/update_vendor/${vendor_id}`;

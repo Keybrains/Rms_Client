@@ -69,13 +69,13 @@ const Applicants = () => {
   const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const [selectedPropertyId, setselectedPropertyId] = useState("");
-  const [searchQueryy, setSearchQueryy] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [upArrow, setUpArrow] = useState([]);
   const [sortBy, setSortBy] = useState([]);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
 
   const handleSearch = (e) => {
-    setSearchQueryy(e.target.value);
+    setSearchQuery(e.target.value);
   };
   const toggle9 = () => {
     setuserDropdownOpen((prevState) => !prevState);
@@ -469,7 +469,6 @@ const Applicants = () => {
     axios
       .get(`${baseUrl}/applicant/applicant_lease/${accessType?.admin_id}`)
       .then((response) => {
-        console.log(response.data.data, "respones.data");
         setRentalsData(response.data.data);
         setLoader(false);
       })
@@ -1191,11 +1190,9 @@ const Applicants = () => {
                             onChange={applicantFormik.handleChange}
                             value={applicantFormik.values.applicant_firstName}
                           />
-                            {applicantFormik.touched.applicant_firstName &&
+                          {applicantFormik.touched.applicant_firstName &&
                           applicantFormik.errors.applicant_firstName ? (
-                            <div
-                              style={{ color: "red", marginBottom: "10px" }}
-                            >
+                            <div style={{ color: "red", marginBottom: "10px" }}>
                               {applicantFormik.errors.applicant_firstName}
                             </div>
                           ) : null}
@@ -1218,11 +1215,9 @@ const Applicants = () => {
                             onChange={applicantFormik.handleChange}
                             value={applicantFormik.values.applicant_lastName}
                           />
-                            {applicantFormik.touched.applicant_lastName &&
+                          {applicantFormik.touched.applicant_lastName &&
                           applicantFormik.errors.applicant_lastName ? (
-                            <div
-                              style={{ color: "red", marginBottom: "10px" }}
-                            >
+                            <div style={{ color: "red", marginBottom: "10px" }}>
                               {applicantFormik.errors.applicant_lastName}
                             </div>
                           ) : null}
@@ -1253,13 +1248,11 @@ const Applicants = () => {
                         />
                       </InputGroup>
                       {applicantFormik.touched.applicant_email &&
-                          applicantFormik.errors.applicant_email ? (
-                            <div
-                              style={{ color: "red", marginBottom: "10px" }}
-                            >
-                              {applicantFormik.errors.applicant_email}
-                            </div>
-                          ) : null}
+                      applicantFormik.errors.applicant_email ? (
+                        <div style={{ color: "red", marginBottom: "10px" }}>
+                          {applicantFormik.errors.applicant_email}
+                        </div>
+                      ) : null}
                     </FormGroup>
                     <FormGroup>
                       <label
@@ -1287,16 +1280,14 @@ const Applicants = () => {
                             const numericValue = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
                             e.target.value = numericValue;
                           }}
-                        /> 
+                        />
                       </InputGroup>
                       {applicantFormik.touched.tenant_mobileNumber &&
-                          applicantFormik.errors.tenant_mobileNumber ? (
-                            <div
-                              style={{ color: "red", marginBottom: "10px" }}
-                            >
-                              {applicantFormik.errors.tenant_mobileNumber}
-                            </div>
-                          ) : null}
+                      applicantFormik.errors.tenant_mobileNumber ? (
+                        <div style={{ color: "red", marginBottom: "10px" }}>
+                          {applicantFormik.errors.tenant_mobileNumber}
+                        </div>
+                      ) : null}
                     </FormGroup>
                     <FormGroup>
                       <InputGroup>
@@ -1470,7 +1461,7 @@ const Applicants = () => {
                   <Input
                     type="text"
                     placeholder="Search by first and last name"
-                    value={searchQueryy}
+                    value={searchQuery}
                     onChange={handleSearch}
                     style={{
                       marginBottom: "10px",
@@ -1518,7 +1509,7 @@ const Applicants = () => {
                               const fullName = `${tenant.applicant_firstName} ${tenant.applicant_lastName}`;
                               return fullName
                                 .toLowerCase()
-                                .includes(searchQueryy.toLowerCase());
+                                .includes(searchQuery.toLowerCase());
                             })
                             .map((tenant, index) => (
                               <tr
@@ -1602,7 +1593,6 @@ const Applicants = () => {
                 </button>
               ) : (
                 <>
-                    
                   {selectedApplicant ? (
                     <Button
                       color="success"
@@ -1614,19 +1604,30 @@ const Applicants = () => {
                       Update Applicant
                     </Button>
                   ) : (
-                    <Button color="success" type="submit" disabled={!applicantFormik.isValid}>
+                    <Button
+                      color="success"
+                      type="submit"
+                      disabled={!applicantFormik.isValid}
+                    >
                       Create Applicant
                     </Button>
                   )}
                 </>
               )}
-              <Button onClick={()=>{closeModal(); applicantFormik.resetForm()}}>Cancel</Button>
-               {/* Conditional message */}
-               {!applicantFormik.isValid && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                      Please fill in all fields correctly.
-                    </div>
-                  )}
+              <Button
+                onClick={() => {
+                  closeModal();
+                  applicantFormik.resetForm();
+                }}
+              >
+                Cancel
+              </Button>
+              {/* Conditional message */}
+              {!applicantFormik.isValid && (
+                <div style={{ color: "red", marginTop: "10px" }}>
+                  Please fill in all fields correctly.
+                </div>
+              )}
             </ModalFooter>
           </Form>
         </Modal>

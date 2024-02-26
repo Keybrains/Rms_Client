@@ -40,7 +40,6 @@ const TenantDashBoard = (props) => {
   let navigate = useNavigate();
   let [loader, setLoader] = useState(false);
 
-
   const [accessType, setAccessType] = useState(null);
 
   useEffect(() => {
@@ -55,40 +54,50 @@ const TenantDashBoard = (props) => {
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
-  const [propertycount, setpropertycount] = useState()
+  const [propertycount, setpropertycount] = useState(0);
+  const [tenantBalance, setTenantBalance] = useState(0);
   const fetchPropertyCount = async () => {
-    setLoader(true)
+    setLoader(true);
     try {
-      const res = await axios.get(`${baseUrl}/tenants/property_count/${accessType?.tenant_id}`);
-      setpropertycount(res.data.data)
-      console.log(res.data.data,"janak")
+      const res = await axios.get(
+        `${baseUrl}/tenants/count/${accessType?.tenant_id}`
+      );
+      const tenantDashboardBalance = await axios.get(
+        `${baseUrl}/payment/tenant_financial/${accessType?.tenant_id}`
+      );
+      setTenantBalance(tenantDashboardBalance?.data?.totalBalance);
+      setpropertycount(res.data);
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
-      setLoader(false)
+      setLoader(false);
     }
-  }
+  };
+
+  let tenantBalanceForDashboard =
+    tenantBalance < 0 ? `($${Math.abs(tenantBalance)})` : `$${tenantBalance}`;
 
   useEffect(() => {
     fetchPropertyCount();
-  }, [accessType])
+  }, [accessType]);
 
   const [newWorkOrders, setNewWorkOrders] = useState([]);
   const [overdueWorkOrders, setOverdueWorkOrders] = useState([]);
   const fetchworkorder = async () => {
     try {
-      const newResponse = await axios.get(`${baseUrl}/tenants/dashboard_workorder/${accessType?.tenant_id}/${accessType?.admin_id}`);
+      const newResponse = await axios.get(
+        `${baseUrl}/tenants/dashboard_workorder/${accessType?.tenant_id}/${accessType?.admin_id}`
+      );
       setNewWorkOrders(newResponse.data.data.new_workorder.slice(0, 3)); // Slice to get only the first three elements
-      setOverdueWorkOrders(
-        newResponse.data.data.overdue_workorder.slice(0, 3) );
+      setOverdueWorkOrders(newResponse.data.data.overdue_workorder.slice(0, 3));
     } catch (error) {
       console.error("Error: ", error.message);
     }
-  }
+  };
 
   useEffect(() => {
     fetchworkorder();
-  }, [accessType])
+  }, [accessType]);
 
   const toggleNavs = (e, index) => {
     // e.preventDefault();
@@ -162,13 +171,11 @@ const TenantDashBoard = (props) => {
                       visible={loader}
                     />
                   </div>
-
                 ) : (
                   <>
                     <Row style={{ padding: "60px" }}>
                       <Col lg="4" style={{ paddingLeft: "30px" }}>
                         <Card style={subcardStyle}>
-
                           <CardBody className="d-flex flex-column justify-content-center  text-center">
                             <div className="d-flex align-items-center flex-column p-3">
                               <div
@@ -185,7 +192,9 @@ const TenantDashBoard = (props) => {
                               >
                                 <i className="ni ni-pin-3"></i>
                               </div>
-                              <div style={{ color: "cfd8dc", fontSize: "20px" }}>
+                              <div
+                                style={{ color: "cfd8dc", fontSize: "20px" }}
+                              >
                                 Properties
                               </div>
                             </div>
@@ -197,7 +206,7 @@ const TenantDashBoard = (props) => {
                               }}
                             >
                               {/* 8 */}
-                              {propertycount}
+                              {propertycount?.property_tenant}
                             </div>
                           </CardBody>
                         </Card>
@@ -220,7 +229,9 @@ const TenantDashBoard = (props) => {
                               >
                                 <i className="ni ni-badge"></i>
                               </div>
-                              <div style={{ color: "#263238", fontSize: "20px" }}>
+                              <div
+                                style={{ color: "#263238", fontSize: "20px" }}
+                              >
                                 Work Orders
                               </div>
                             </div>
@@ -231,7 +242,7 @@ const TenantDashBoard = (props) => {
                                 fontWeight: "bold",
                               }}
                             >
-                              8
+                              {propertycount?.workorder_tenant}
                             </div>
                           </CardBody>
                         </Card>
@@ -254,7 +265,9 @@ const TenantDashBoard = (props) => {
                               >
                                 <i className="ni ni-money-coins"></i>
                               </div>
-                              <div style={{ color: "cfd8dc", fontSize: "20px" }}>
+                              <div
+                                style={{ color: "cfd8dc", fontSize: "20px" }}
+                              >
                                 Balance
                               </div>
                             </div>
@@ -265,7 +278,7 @@ const TenantDashBoard = (props) => {
                                 fontWeight: "bold",
                               }}
                             >
-                              8
+                              {tenantBalanceForDashboard}
                             </div>
                           </CardBody>
                         </Card>
@@ -299,9 +312,12 @@ const TenantDashBoard = (props) => {
                               </div>
                             </div>
                             {newWorkOrders.map((order, index) => (
-                              <div key={index}  style={bgStyle}>
+                              <div key={index} style={bgStyle}>
                                 <div className="d-flex justify-content-start">
-                                  <span className=""> {order.work_subject}</span>{" "}
+                                  <span className="">
+                                    {" "}
+                                    {order.work_subject}
+                                  </span>{" "}
                                 </div>
                                 <div
                                   className="col-lg-10"
@@ -346,13 +362,16 @@ const TenantDashBoard = (props) => {
                             <div className="col-lg-2">
                               <div className="d-flex justify-content-between mb-2">
                                 <span className="">Total </span>
-                                <span>  {overdueWorkOrders.length}</span>
+                                <span> {overdueWorkOrders.length}</span>
                               </div>
                             </div>
                             {overdueWorkOrders.map((order, index) => (
                               <div key={index} style={bgStyle}>
                                 <div className="d-flex justify-content-start">
-                                  <span className=""> {order.work_subject}</span>{" "}
+                                  <span className="">
+                                    {" "}
+                                    {order.work_subject}
+                                  </span>{" "}
                                 </div>
                                 <div
                                   className="col-lg-10"
@@ -368,13 +387,13 @@ const TenantDashBoard = (props) => {
                                 </div>
                               </div>
                             ))}
-                           
+
                             <label
                               className="d-flex justify-content-start"
                               style={{ cursor: "pointer", color: "blue" }}
                               onClick={handleViewMoreOverdueOrders}
                             >
-                             View All
+                              View All
                             </label>
                           </CardBody>
                         </Card>

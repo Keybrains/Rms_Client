@@ -340,24 +340,26 @@ const StaffWorkTable = () => {
                     <tbody>
                       {filterTenantsBySearchAndPage().map((vendor) => (
                         <tr
-                          key={vendor.workOrder_id}
-                          onClick={() => navigateToDetails(vendor.workOrder_id)}
+                          key={vendor?.workOrder_id}
+                          onClick={() =>
+                            navigateToDetails(vendor?.workOrder_id)
+                          }
                           style={{ cursor: "pointer" }}
                         >
-                          <td>{vendor.work_subject}</td>
+                          <td>{vendor?.work_subject}</td>
                           <td>
-                            {vendor.rental_data.rental_adress}-
-                            {vendor.unit_data.rental_unit}{" "}
-                            {vendor.unit_data.rental_unit
-                              ? " - " + vendor.unit_data.rental_unit
+                            {vendor?.rental_data?.rental_adress}-
+                            {vendor?.unit_data?.rental_unit}{" "}
+                            {vendor?.unit_data?.rental_unit
+                              ? " - " + vendor?.unit_data?.rental_unit
                               : null}
                           </td>
-                          <td>{vendor.work_category}</td>
-                          <td>{vendor.priority}</td>
-                          <td>{vendor.status}</td>
-                          <td>{vendor.createdAt}</td>
-                          <td>{vendor.updateAt || "-"}</td>
-                          <td>{vendor.date || "-"}</td>
+                          <td>{vendor?.work_category}</td>
+                          <td>{vendor?.priority}</td>
+                          <td>{vendor?.status}</td>
+                          <td>{vendor?.createdAt}</td>
+                          <td>{vendor?.updateAt || "-"}</td>
+                          <td>{vendor?.date || "-"}</td>
                         </tr>
                       ))}
                     </tbody>
