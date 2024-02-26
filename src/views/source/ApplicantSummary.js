@@ -69,248 +69,214 @@ import { RotatingLines } from "react-loader-spinner";
 const ApplicantSummary = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const imageUrl = process.env.REACT_APP_IMAGE_URL;
-
-  const navigate = useNavigate();
   const { id, admin } = useParams();
-  let cookies = new Cookies();
-  const [applicantLoader, setApplicantLoader] = useState(true);
-  const [loader, setLoader] = React.useState(true);
-  const [loader2, setLoader2] = React.useState(false);
-  const [loader3, setLoader3] = React.useState(false);
-  const handleOpen = () => {
-    setIsOpen(true);
-  };
+  const navigate = useNavigate();
+
   const [accessType, setAccessType] = useState(null);
-  const [manager, setManager] = useState(null);
-
-  const [selectedDropdownItem, setselectedDropdownItem] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [value, setValue] = React.useState("Summary");
-
-  const [applicantData, setApplicantData] = useState();
-  const [propertyData, setPropertyData] = useState();
-  const [isEdit, setIsEdit] = useState(false);
-  const [propertydata, setPropertydata] = useState([]);
-  const [unitData, setUnitData] = useState([]);
-  const [selectedUnit, setSelectedUnit] = useState("");
-  const [userdropdownOpen, setuserDropdownOpen] = React.useState(false);
-  const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
-  const [selectedPropertyType, setSelectedPropertyType] = useState("");
-
-  const [isAttachFile, setIsAttachFile] = useState(false);
-  const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState("");
-  const [files, setFiles] = useState([]);
-  const [newFile, setNewFile] = useState("");
-  const [combinedData, setCombinedData] = useState([]);
-  const [fileName, setFileName] = useState("");
-
-  const [isChecklistVisible, setChecklistVisible] = useState(false);
-  const [checklistItems, setChecklistItems] = useState([]);
-  const [newItem, setNewItem] = useState("");
-  const [checkedChecklist, CheckedChecklist] = useState([]);
-  const [checkedItems, setCheckedItems] = useState([]);
-
-  const handleStaticCheckboxChange = (event) => {
-    const { id, checked } = event.target;
-    const storedCheckedItems =
-      JSON.parse(localStorage.getItem("staticCheckedItems")) || [];
-
-    if (checked && !storedCheckedItems?.includes(id)) {
-    if (checked && !storedCheckedItems?.includes(id)) {
-      storedCheckedItems.push(id);
-    } else if (!checked && storedCheckedItems?.includes(id)) {
-      const index = storedCheckedItems.indexOf(id);
-      storedCheckedItems.splice(index, 1);
-    }
-  }
-
-    localStorage.setItem(
-      "staticCheckedItems",
-      JSON.stringify(storedCheckedItems)
-    );
-  };
-
-  const toggleChecklist = () => {
-    setChecklistVisible(!isChecklistVisible);
-  };
-
-  const toggle9 = () => {
-    setuserDropdownOpen((prevState) => !prevState);
-  };
-
-  const toggle10 = () => {
-    setUnitDropdownOpen((prevState) => !prevState);
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
-      console.log(jwt, jwt);
       setAccessType(jwt.accessType);
-      setManager(jwt.userName);
     } else {
       navigate("/auth/login");
     }
   }, [navigate]);
 
-  const fetchUnitsByProperty = async (propertyType) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = () => setIsOpen((prevState) => !prevState);
+
+  const [loader, setLoader] = useState(false);
+  const [applicantData, setApplicantData] = useState({});
+  const [applicantLeaseData, setApplicantLeaseData] = useState({});
+  const [applicantCheckListData, setApplicantCheckListData] = useState([]);
+  const [applicantNotesData, setApplicantNotesData] = useState([]);
+
+  const fetchApplicantData = async () => {
+    setLoader(true);
     try {
-      const response = await fetch(
-        `${baseUrl}/propertyunit/rentals_property/${propertyType}`
-      );
-      const data = await response.json();
-      // Ensure that units are extracted correctly and set as an array
-      const units = data?.data || [];
-      return units;
+      const url = `${baseUrl}/applicant/applicant_summary/${id}`;
+      const res = await axios.get(url);
+      setApplicantData(res.data.data[0]);
+      setApplicantLeaseData(res.data.data[0].lease_data);
+      setApplicantCheckListData(res.data.data[0].applicant_checkedChecklist);
+      setApplicantNotesData(res.data.data[0].applicant_NotesAndFile);
     } catch (error) {
-      console.error("Error fetching units:", error);
-      return [];
+      console.error("Error: ", error.message);
+    } finally {
+      setLoader(false);
     }
   };
 
-  // Function to handle property selection
-  const handlePropertyTypeSelect = async (propertyType) => {
-    setSelectedPropertyType(propertyType);
-    applicantFormik.setFieldValue("rental_adress", propertyType);
-    setSelectedUnit(""); // Reset selected unit when a new property is selected
+  useEffect(() => {
+    fetchApplicantData();
+  }, [id]);
+
+  const dropdownList = ["Approved", "Rejected"];
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const handleStatus = (item) => {
+    setSelectedStatus(item);
+  };
+
+  const [value, setValue] = useState("Summary");
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const [newItem, setNewItem] = useState("");
+  const handleChecklistChange = async (event, item) => {
     try {
-      const units = await fetchUnitsByProperty(propertyType);
-      //console.log(units, "units"); // Check the received units in the console
-      setUnitData(units); // Set the received units in the unitData state
+      const updatedItems = event.target.checked
+        ? [...applicantCheckListData, item]
+        : applicantCheckListData.filter((checkedItem) => checkedItem !== item);
+
+      const apiUrl = `${baseUrl}/applicant/applicant/${id}`;
+      const response = await fetch(apiUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ applicant_checkedChecklist: updatedItems }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Server error: ${errorData.message}`);
+      }
+
+      const responseData = await response.json();
+      setApplicantCheckListData(responseData.data.applicant_checkedChecklist);
+      fetchApplicantData();
     } catch (error) {
-      console.error("Error handling selected property:", error);
+      console.error(error.message);
     }
   };
 
-  const handleUnitSelect = (selectedUnit) => {
-    if (selectedUnit === "Select Unit" || !selectedUnit) {
-      setSelectedUnit(""); 
-      applicantFormik.setFieldValue("rental_units", null); 
-    } else {
-      setSelectedUnit(selectedUnit);
-      applicantFormik.setFieldValue("rental_units", selectedUnit); 
+  const handleAddItem = async () => {
+    if (newItem.trim() !== "") {
+      const updatedChecklistItems = applicantCheckListData
+        ? [...applicantCheckListData, newItem]
+        : [newItem];
+      setApplicantCheckListData(updatedChecklistItems);
+
+      const updatedApplicant = {
+        ...applicantData,
+        applicant_checklist: applicantData.applicant_checklist
+          ? [...applicantData.applicant_checklist, newItem]
+          : [newItem],
+      };
+
+      axios
+        .put(`${baseUrl}/applicant/applicant/${id}/checklist`, updatedApplicant)
+        .then(() => {
+          fetchApplicantData();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+      setNewItem("");
     }
+  };
+
+  const handleRemoveItem = async (itemToRemove) => {
+    const updatedChecklist = applicantCheckListData.filter(
+      (item) => item !== itemToRemove
+    );
+    setApplicantCheckListData(updatedChecklist);
+
+    const updatedApplicant = {
+      ...applicantData,
+      applicant_checklist: applicantData.applicant_checklist.filter(
+        (item) => item !== itemToRemove
+      ),
+    };
+
+    axios
+      .put(`${baseUrl}/applicant/applicant/${id}/checklist`, updatedApplicant)
+      .then(() => {
+        fetchApplicantData();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  const [isChecklistVisible, setChecklistVisible] = useState(false);
+  const toggleChecklist = () => {
+    setChecklistVisible(!isChecklistVisible);
+  };
+
+  const [isAttachFile, setIsAttachFile] = useState(false);
+  const [newNote, setNewNote] = useState("");
+  const [newFile, setNewFile] = useState({});
+  const openFileInBrowser = () => {
+    const fileURL = `https://propertymanager.cloudpress.host/api/images/get-file/2024-02-23-08-52-50-ProjectReportMansi.pdf`;
+    window.open(fileURL, "_blank");
   };
 
   const handleAttachFile = () => {
     setIsAttachFile(true);
-      // Reset the input values
-      setNewNote("");
-      setNewFile(null);
-      setFileName("");
+    setNewNote("");
+    setNewFile({});
   };
 
-  useEffect(() => {
-    // Make an HTTP GET request to your Express API endpoint
-    fetch(`${baseUrl}/rentals/allproperty`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === 200) {
-          setPropertydata(data.data);
-        } else {
-          // Handle error
-          console.error("Error:", data.message);
-        }
-      })
-      .catch((error) => {
-        // Handle network error
-        console.error("Network error:", error);
-      });
-  }, []);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    if (newValue === "Approved") {
-      setLoader2(true);
-      setTimeout(function () {
-        setLoader2(false);
-      }, 500);
-    }
-    if (newValue === "Rejected") {
-      setLoader3(true);
-      setTimeout(function () {
-        setLoader3(false);
-      }, 500);
-    }
-    tenantsData(matchedApplicant?.applicant_phoneNumber, newValue);
-  };
-
-  const dropdownList = ["Approved", "Rejected"];
-
-  const selectedDropdown = (item) => {
-    setselectedDropdownItem(item);
-
-    //console.log(item, "item");
-  };
-
-  const toggle = () => setIsOpen((prevState) => !prevState);
-  // const id = useParams().id;
-
-  const applicantFormik = useFormik({
-    initialValues: {
-      applicant_checklist: [],
-      applicant_checkedChecklist: [],
-      status: "",
-      applicant_firstName: "",
-      applicant_lastName: "",
-      applicant_phoneNumber: "",
-      applicant_telephoneNumber: "",
-      applicant_homeNumber: "",
-      applicant_businessNumber: "",
-      applicant_email: "",
-      attachment: "",
-      rental_unit: "",
-      rental_adress: "",
-      applicant_notes: notes,
-      applicant_file: files,
-      isMovein: false,
-    },
-    onSubmit: (values) => {
-      handleEdit(values);
-      //console.log(values, "values");
-    },
-  });
-
-  const [rentaldata, setRentaldata] = useState([]);
-
-  // const tenantsData = async (number, status) => {
-  //   // Construct the API URL
-  //   const apiUrl = `${baseUrl}/applicant/applicant_get?tenant_mobileNumber=${number}&status=${status}`;
-
-  //   try {
-  //     // Fetch tenant data
-  //     const response = await axios.get(apiUrl);
-  //     const tenantData = response.data.data;
-  //     console.log(response, "response.data");
-  //     console.log(tenantData, "tenantData");
-  //     // setTenantDetails(tenantData);
-  //     setRentaldata(tenantData);
-  //     // setLoading(false);
-  //   } catch (error) {
-  //     console.error("Error fetching tenant details:", error);
-  //     // setError(error);
-  //     // setLoading(false);
-  //   }
-  // };
-
-  const tenantsData = async (number, status) => {
-    // Construct the API URL
-    const apiUrl = `${baseUrl}/applicant/applicant_summary/${id}`;
-
+  const hadlenotesandfile = async () => {
+    // setLoader(true);
     try {
-      // Fetch tenant data
-      const response = await axios.get(apiUrl);
-      const tenantData = response.data.data;
-      console.log(response, "response.data");
-      console.log(tenantData, "tenantData");
-      // setTenantDetails(tenantData);
-      setRentaldata(tenantData);
-      // setLoading(false);
+      var image;
+      if (newFile !== null) {
+        try {
+          const form = new FormData();
+          form.append("files", newFile);
+
+          const res = await axios.post(`${imageUrl}/images/upload`, form);
+
+          if (res && res.data && res.data.files && res.data.files.length > 0) {
+            image = res.data.files[0].url;
+            console.log("Upload success", image);
+          } else {
+            console.error("Unexpected response format:", res);
+          }
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
+      }
+
+      const formData = {
+        applicant_notes: newNote,
+        applicant_file: image,
+      };
+
+      const url = `${baseUrl}/applicant/applicant/note_attachment/${id}`;
+      const response = await axios.put(url, formData);
+      if (response.data) {
+        console.log(response.data, "response.data");
+        setIsAttachFile(false);
+        fetchApplicantData();
+      }
     } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      // setError(error);
-      // setLoading(false);
+      console.error("Error:", error.message);
+    } finally {
+      // setLoader(false);
+    }
+  };
+
+  const [moveinLoader, setMoveinLoader] = useState(false);
+  const handleClearRow = async (notes) => {
+    // setLoader(true);
+    try {
+      const url = `${baseUrl}/applicant/applicant/note_attachment/${id}/${notes._id}`;
+      const res = await axios.delete(url);
+
+      console.log(res.data);
+      toast.success("Document deleted successfully", {
+        position: "top-center",
+      });
+
+      fetchApplicantData();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      // setLoader(false);
     }
   };
 
@@ -333,883 +299,25 @@ const ApplicantSummary = () => {
     },
   ];
 
-  const handleEditStatus = (item) => {
-    const status = {
-      status: item,
-      statusUpdatedBy: manager,
-    };
-    console.log(status, "status");
-    console.log(id, "id");
-    axios
-      .put(`${baseUrl}/applicant/applicant/${id}/status`, status)
-      .catch((err) => {
-        console.error(err);
-      })
-      .then((res) => {
-        //console.log(res, "res");
-        getApplicantData();
-      });
-  };
-
-  const navigateToLease = () => {
-    axios
-      .get(`${baseUrl}/applicant/applicant_summary/${id}`)
-      .then((response) => {
-        const applicantsData = response.data.data;
-        const rentalAddress = applicantsData.rental_adress;
-        axios.get(`${baseUrl}/rentals/allproperty`).then((response) => {
-          const property = response.data.data;
-          const matchedProperty = property.find((property) => {
-            return property.rental_adress === rentalAddress;
-          });
-          if (!matchedProperty) {
-            alert("Property not found");
-            return;
-          } else {
-            navigate(`/admin/RentRollLeaseing`, {
-              state: {
-                applicantData: applicantsData,
-              },
-            });
-          }
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-
-  useEffect(() => {
-    axios
-      .get(`${baseUrl}/applicant/applicant_summary/${id}`)
-      .then((applicants) => {
-        axios
-          .get(`${baseUrl}/rentals/property`)
-          .then((properties) => {
-            setApplicantData(applicants.data.data);
-            const allProperties = properties.data.data;
-            const allApplicants = applicants.data.data;
-            const matchedProperty = allProperties.find((property) => {
-              return property.rental_adress === allApplicants.rental_adress;
-            });
-            setPropertyData(matchedProperty);
-          })
-          .catch((error) => {
-            console.error("Error fetching rental properties:", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Error fetching applicants:", error);
-        // Handle the error, e.g., display an error message to the user.
-      });
-  }, [id]);
-
-  const handleAddItem = () => {
-    if (newItem.trim() !== "") {
-      const updatedChecklistItems = checklistItems ? [...checklistItems, newItem] : [newItem];
-      setChecklistItems(updatedChecklistItems);
-  
-      const updatedApplicant = {
-        ...matchedApplicant,
-        applicant_checklist: matchedApplicant.applicant_checklist ? [...matchedApplicant.applicant_checklist, newItem] : [newItem],
-      };
-  
-      axios
-        .put(`${baseUrl}/applicant/applicant/${id}/checklist`, updatedApplicant )
-        .then((response) => {
-          console.log(response.data.data, "response.data.data");
-          getApplicantData();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-  
-      setNewItem("");
-    }
-  };
-  
-
-  const handleRemoveItem = (itemToRemove) => {
-    // Remove the item from checklistItems state
-    const updatedChecklist = checklistItems.filter((item) => item !== itemToRemove);
-    setChecklistItems(updatedChecklist);
-  
-    // Remove the item from applicant_checklist in matchedApplicant
-    const updatedApplicant = {
-      ...matchedApplicant,
-      applicant_checklist: matchedApplicant.applicant_checklist.filter((item) => item !== itemToRemove),
-    };
-  
-    axios
-      .put(`${baseUrl}/applicant/applicant/${id}/checklist`, updatedApplicant)
-      .then((response) => {
-        // Handle response if needed
-        getApplicantData(); // Refresh applicant data after update
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-  
-  
-
-  // const [tenantID, setTenantID]=useState("")
-  const fetchDataAndPost = async () => {
+  const handleMoveIn = () => {
+    setMoveinLoader(true);
     try {
-      // Step 1: Fetch data from the API
-      const response = await axios.get(
-        `${baseUrl}/applicant/applicant_summary/${id}`
-      );
-
-      // Check if the response contains the data you expect
-      const fetchedData = response.data;
-      console.log(fetchedData, "fetched data");
-      //console.log(fetchedData, "fetched data");
-      if (fetchedData) {
-        // Step 2: Create an object with the fetched data
-        // const dataToSend = {
-        //   tenant_firstName: fetchedData.data.tenant_firstName,
-        //   tenant_lastName: fetchedData.data.tenant_lastName,
-        //   tenant_unitNumber: fetchedData.data.tenant_unitNumber,
-        //   tenant_mobileNumber: fetchedData.data.tenant_mobileNumber,
-        //   tenant_workNumber: fetchedData.data.tenant_workNumber,
-        //   tenant_homeNumber: fetchedData.data.tenant_homeNumber,
-        //   tenant_faxPhoneNumber: fetchedData.data.tenant_faxPhoneNumber,
-        //   tenant_email: fetchedData.data.tenant_email,
-        //   entries: [
-        //     {
-        //       rental_adress: fetchedData.data.rental_adress,
-        //       rental_units: fetchedData.data.rental_units,
-        //     },
-        //   ],
-        // };
-        const dataToSend = {
-          tenant_firstName: fetchedData.data.tenant_firstName || "",
-          tenant_lastName: fetchedData.data.tenant_lastName || "",
-          tenant_unitNumber: fetchedData.data.tenant_unitNumbe || "",
-
-          // tenant_phoneNumber: ,
-          tenant_mobileNumber: fetchedData.data.tenant_mobileNumber || "",
-          tenant_workNumber: fetchedData.data.tenant_workNumber || "",
-          tenant_homeNumber: fetchedData.data.tenant_homeNumber || "",
-          tenant_faxPhoneNumber: fetchedData.data.tenant_faxPhoneNumber || "",
-          tenant_email: fetchedData.data.tenant_email || "",
-          tenant_password: fetchedData.data.tenant_password || "",
-          alternate_email: fetchedData.data.alternate_email || "",
-          tenant_residentStatus: fetchedData.data.tenant_residentStatus || "",
-
-          // personal information
-          birth_date: fetchedData.data.birth_date || "",
-          textpayer_id: fetchedData.data.textpayer_id || "",
-          comments: fetchedData.data.comments || "",
-
-          //Emergency contact
-
-          contact_name: fetchedData.data.contact_name || "",
-          relationship_tenants: fetchedData.data.relationship_tenants || "",
-          email: fetchedData.data.email || "",
-          emergency_PhoneNumber: fetchedData.data.emergency_PhoneNumber || "",
-          entries: [
-            {
-              entryIndex: fetchedData.data.entryIndex || "",
-              rental_units: fetchedData.data.rental_units || "",
-              rental_adress: fetchedData.data.rental_adress || "",
-              lease_type: fetchedData.data.lease_type || "",
-              start_date: fetchedData.data.start_date || "",
-              end_date: fetchedData.data.end_date || "",
-              leasing_agent: fetchedData.data.leasing_agent || "",
-              rent_cycle: fetchedData.data.rent_cycle || "",
-              amount: fetchedData.data.amount || "",
-              account: fetchedData.data.account || "",
-              nextDue_date: fetchedData.data.nextDue_date || "",
-              memo: fetchedData.data.memo || "",
-              // upload_file: fetchedData.data.upload_file || "",
-              isrenton: fetchedData.data.isrenton || false,
-              rent_paid: fetchedData.data.rent_paid || false,
-              propertyOnRent: fetchedData.data.propertyOnRent || false,
-
-              //security deposite
-              Due_date: fetchedData.data.Due_date || "",
-              Security_amount: fetchedData.data.Security_amount || "",
-
-              // add cosigner
-              cosigner_firstName: fetchedData.data.cosigner_firstName || "",
-              cosigner_lastName: fetchedData.data.cosigner_lastName || "",
-              cosigner_mobileNumber:
-                fetchedData.data.cosigner_mobileNumber || "",
-              cosigner_workNumber: fetchedData.data.cosigner_workNumber || "",
-              cosigner_homeNumber: fetchedData.data.cosigner_homeNumber || "",
-              cosigner_faxPhoneNumber:
-                fetchedData.data.cosigner_faxPhoneNumber || "",
-              cosigner_email: fetchedData.data.cosigner_email || "",
-              cosigner_alternateemail:
-                fetchedData.data.cosigner_alternateemail || "",
-              cosigner_streetAdress:
-                fetchedData.data.cosigner_streetAdress || "",
-              cosigner_city: fetchedData.data.cosigner_city || "",
-              cosigner_state: fetchedData.data.cosigner_state || "",
-              cosigner_zip: fetchedData.data.cosigner_zip || "",
-              cosigner_country: fetchedData.data.cosigner_country || "",
-              cosigner_postalcode: fetchedData.data.cosigner_postalcode || "",
-
-              // add account
-              account_name: fetchedData.data.account_name || "",
-              account_type: fetchedData.data.account_type || "",
-
-              //account level (sub account)
-              parent_account: fetchedData.data.parent_account || "",
-              account_number: fetchedData.data.account_number || "",
-              fund_type: fetchedData.data.fund_type || "",
-              cash_flow: fetchedData.data.cash_flow || "",
-              notes: fetchedData.data.notes || "",
-
-              tenant_residentStatus:
-                fetchedData.data.tenant_residentStatus || false,
-              rentalOwner_firstName:
-                fetchedData.data.rentalOwner_firstName || "",
-              rentalOwner_lastName: fetchedData.data.rentalOwner_lastName || "",
-              rentalOwner_primaryemail:
-                fetchedData.data.rentalOwner_email || "",
-              rentalOwner_phoneNumber:
-                fetchedData.data.rentalOwner_phoneNumber || "",
-              rentalOwner_businessNumber:
-                fetchedData.data.rentalOwner_businessNumber || "",
-              rentalOwner_homeNumber:
-                fetchedData.data.rentalOwner_homeNumber || "",
-              rentalOwner_companyName:
-                fetchedData.data.rentalOwner_companyName || "",
-
-              // recurring_charges: fetchedData.recurring_charges || {},
-              // one_time_charges: fetchedData.one_time_charges || {},
-            },
-          ],
-        };
-
-        console.log(dataToSend, "hagfjg");
-        // Step 3: Make a POST request to send the data to the server
-        // const postResponse = await axios.post(
-        //   `${baseUrl}/tenant/tenant`,
-        //   dataToSend
-        // );
-        // debugger
-        //console.log(dataToSend, "hagfjg");
-        // if (postResponse.status === 200) {
-        //   console.log(postResponse,'clgbcmnm')
-        //   //console.log("Data posted successfully:", postResponse.data.data);
-        //   // setTenantID(postResponse.data.data._id)
-        //   console.log(postResponse.data.data,'hjsadn')
-        //   // debugger
-        //
-        // } else {
-        //   console.error(
-        //     "Data post request failed. Status code:",
-        //     postResponse.status
-        //   );
-        //   console.error(
-        //     "Error message from the server:",
-        //     postResponse.data.message
-        //   );
-        // }
-        navigateToLease(dataToSend);
-      } else {
-        // Handle the case where the fetched data is not as expected
-        console.error("Invalid data format received from the API");
-      }
+      navigate(`/${admin}/RentRollLeaseing/${applicantLeaseData?.lease_id}`);
     } catch (error) {
-      // Handle errors if either the GET or POST request fails
-      console.error("Data fetch or post failed", error);
+      console.error("Error: ", error.message);
+    } finally {
+      setMoveinLoader(false);
     }
   };
-
-  const [moveIn, setMoveIn] = useState([]);
-
-  const [matchedApplicant, setMatchedApplicant] = useState([]);
-  
-  const getApplicantData = async () => {
-    await axios
-      .get(`${baseUrl}/applicant/applicant_summary/${id}`)
-      .then((response) => {
-        // //console.log(response.data.data);
-        // if (response.data.data) {
-        //   const applicantData = response.data.data;
-        //   const matchedApplicant = applicantData.find((applicant) => {
-        //     return applicant._id === id;
-        //   });
-          
-          setMatchedApplicant(response.data.data[0]);
-          setCheckedItems(response.data.data[0].applicant_checkedChecklist);
-
-          setMoveIn(matchedApplicant.applicant_status[0]);
-          // }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-        setApplicantLoader(false);
-      };
-      console.log(matchedApplicant, "matchedApplicant");
-
-
-      
-  const onClickEditButton = async () => {
-    setIsEdit(true);
-    setSelectedPropertyType(matchedApplicant.lease_data.rental_adress || "Select");
-    setUnitData(matchedApplicant.lease_data.rental_unit);
-    setSelectedUnit(matchedApplicant.lease_data.rental_units || "Select");
-    applicantFormik.setValues({
-      applicant_firstName: matchedApplicant.applicant_firstName,
-      applicant_lastName: matchedApplicant.applicant_lastName,
-      applicant_phoneNumber: matchedApplicant.applicant_phoneNumber,
-      applicant_telephoneNumber: matchedApplicant.applicant_telephoneNumber,
-      applicant_homeNumber: matchedApplicant.applicant_homeNumber,
-      applicant_businessNumber: matchedApplicant.applicant_businessNumber,
-      applicant_email: matchedApplicant.applicant_email,
-      rental_unit: matchedApplicant.lease_data.rental_unit,
-      rental_adress: matchedApplicant.lease_data.rental_adress,
-    });
-  };
-
-  const handleEdit = (values) => {
-    setIsEdit(false);
-    console.log(values, "values");
-    let rentalUnitsValue = values.rental_units || matchedApplicant.rental_units;
-
-    if (
-      !rentalUnitsValue ||
-      rentalUnitsValue === "Select Unit" ||
-      rentalUnitsValue === ""
-    ) {
-      rentalUnitsValue = null;
-    }
-
-    const updatedApplicant = {
-      applicant_firstName: values.applicant_firstName,
-      applicant_lastName: values.applicant_lastName,
-      applicant_phoneNumber: values.applicant_phoneNumber,
-      applicant_homePhone: values.applicant_homePhone,
-      applicant_telephoneNumber: values.applicant_telephoneNumber,
-      applicant_email: values.applicant_email,
-      applicant_businessNumber: values.applicant_businessNumber,
-      rental_adress: values.rental_adress,
-      rental_units: selectedUnit,
-      status: selectedDropdownItem,
-    };
-
-    console.log("Rental Units Value before submission:", rentalUnitsValue);
-    // Log the updated applicant data
-    console.log("Updated Applicant Data: ", updatedApplicant);
-
-    axios
-      .put(`${baseUrl}/applicant/applicant/${id}`, updatedApplicant)
-      .catch((err) => {
-        console.error(err);
-      })
-      .then((res) => {
-        getApplicantData();
-      });
-  };
-
-  useEffect(() => {
-    getApplicantData();
-  }, []);
-
-  useEffect(() => {
-    // const storageKey = `applicant_${id}_checkedChecklist`;
-    // const storedCheckedItems = JSON.parse(localStorage.getItem(storageKey));
-    handleChecklistChange();
-  }, [id]);
-
-  const handleChecklistChange = async (event, item) => {
-    try {
-      // debugger
-
-      const updatedItems = event.target.checked
-        ? [...checkedItems, item]
-        : checkedItems.filter((checkedItem) => checkedItem !== item);
-      console.log(updatedItems, "updatedItems");
-      setCheckedItems(updatedItems);
-
-      // const storageKey = `applicant_${id}_checkedChecklist`;
-      // localStorage.setItem(storageKey, JSON.stringify(updatedItems));
-
-      // Make a PUT request to update the checked checklist on the server
-      const apiUrl = `${baseUrl}/applicant/applicant/${id}`;
-      const response = await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ applicant_checkedChecklist: updatedItems }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Server error: ${errorData.message}`);
-      }
-
-      const responseData = await response.json();
-      console.log(responseData);
-      setCheckedItems(responseData.updatedApplicant.applicant_checkedChecklist); // You can handle the response data as needed
-    } catch (error) {
-      console.error(error.message); // Handle the error appropriately
-    }
-  };
-
-  // const handleCheckItem = () => {
-  //   if (newItem.trim() !== "") {
-  //     setCheckedItems([...checkedItems, newItem]);
-  //     const allCheckbox = [...checkedItems, newItem];
-  //     //console.log(allCheckbox, "allCheckbox");
-  //     //console.log(matchedApplicant, "matchedApplicant");
-  //     const updatedApplicant = {
-  //       ...matchedApplicant,
-  //       applicant_checkedChecklist: [...matchedApplicant.applicant_checkedChecklist, newItem],
-  //     };
-
-  //     //console.log(updatedApplicant, "updatedApplicant");
-  //     axios
-  //       .put(
-  //         `${baseUrl}/applicant/applicant/${id}/checked-checklist`,
-  //         updatedApplicant
-  //       )
-  //       .then((response) => {
-  //         //console.log(response.data.data, "response.data.data");
-  //         getApplicantData();
-  //       })
-  //       .catch((err) => {
-  //         console.error(err);
-  //       });
-  //     setNewItem(""); // Clear the input field
-  //   }
-  // };
-
-  // const deleteColumn = (index) => {
-  //   const updatedData = [...combinedData];
-  //   updatedData.splice(index, 1);
-  //   setCombinedData(updatedData);
-  //   // Perform other necessary operations
-  // };
-
-  // const fileData = (files) => {
-  //   const filesArray = Array.from(files);
-
-  //   if (filesArray.length > 0) {
-  //     // Allow only one file at a time
-  //     setFiles(filesArray.slice(0, 1)); // Replace the existing file array with the new file
-
-  //     const dataArray = new FormData();
-  //     dataArray.append("b_video", filesArray[0]); // Use the first file from the array
-
-  //     let url = "https://cdn.brandingprofitable.com/image_upload.php/";
-  //     axios
-  //       .post(url, dataArray, {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       })
-  //       .then((res) => {
-  //         const imagePath = res?.data?.image_path; // Correct the key to "image_path"
-  //         applicantFormik1.values.applicant_file = imagePath;
-  //       })
-  //       .catch((err) => {
-  //         // Handle error if needed
-  //       });
-  //   }
-  // };
-
-  // const deleteFile = (index) => {
-  //   const newFile = [...files];
-  //   newFile.splice(index, 1);
-  //   setFiles(newFile);
-  // };
-
-  // const handleOpenFile = (file) => {
-  //   if (file.type === "text/plain") {
-  //     // Read the contents of the text file
-  //     const reader = new FileReader();
-  //     reader.onload = (event) => {
-  //       const fileContent = event.target.result;
-
-  //       // Display the content to the user (for demonstration, you might use an alert)
-  //       alert("Content of the text file:\n\n" + fileContent);
-  //     };
-  //     reader.readAsText(file);
-  //   } else {
-  //     // For other file types, handle accordingly (e.g., open in a new tab)
-  //     window.open(URL.createObjectURL(file));
-  //   }
-  // };
-
-  //console.log(applicantFormik.values, "formik");
-  // const getFileNameWithExtension = (file) => {
-  //   const fileName = file?.name;
-  //   return fileName;
-  // };
-
-  useEffect(() => {
-    const maxLength = Math.max(notes.length, files.length);
-    const updatedCombinedData = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      const note = i < notes.length ? notes[i] : null;
-      const file = i < files.length ? files[i] : null;
-
-      updatedCombinedData.push({ note, file });
-    }
-
-    setCombinedData(updatedCombinedData);
-  }, [notes, files]);
-
-  const handleAddNote = () => {
-    if (newNote !== "") {
-      setNotes([...notes, newNote]);
-      setNewNote("");
-    }
-  };
-
-  const handleAddFile = () => {
-    // if (newFile !== null) {
-    //   const dataArray = new FormData();
-    //   dataArray.append("b_video", newFile);
-
-    //   let url = "https://cdn.brandingprofitable.com/image_upload.php/";
-    //   axios
-    //     .post(url, dataArray, {
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     })
-    //     .then((res) => {
-    //       const imagePath = res?.data?.image_path;
-    //       applicantFormik1.values.applicant_file = imagePath;
-    //     })
-    //     .catch((err) => {
-    //       console.error("Error uploading file:", err); // Log error here
-    //     });
-    // } else {
-    //   // Handle no file selected
-    // }
-    if (newFile !== null) {
-   
-            try {
-              const form = new FormData();
-              form.append("files", newFile);
-
-              const res =  axios.post(`${imageUrl}/images/upload`, form);
-              
-              if (
-                res &&
-                res.data &&
-                res.data.files &&
-                res.data.files.length > 0
-              ) {
-                const image = res.data.files[0].url;
-                applicantFormik1.values.applicant_file = image;
-                console.log("Upload success",image)
-              } else {
-                console.error("Unexpected response format:", res);
-              }
-            } catch (error) {
-              console.error("Error uploading file:", error);
-            }
-    }
-  };
-
-  // const handleSave = () => {
-  //   if (newNote === "" || newFile === null) {
-  //     // Display an alert or error message for incomplete fields
-  //     toast.warning("Please fill in both the note and file.", {
-  //       position: "top-center",
-  //     });
-
-  //     return; // Prevent further execution
-  //   }
-
-  //   if (newNote !== "" && newFile !== null) {
-  //     setNotes([...notes, newNote]);
-  //     setFiles([...files, newFile]);
-  //     setNewNote("");
-  //     setNewFile("");
-  //     setIsAttachFile(false); // Close the box after adding data
-  //     handleSubmit(); // Handle form submission or any other necessary actions
-  //   } else {
-  //     // Display an alert or error message for incomplete fields
-  //     toast.warning("Please fill in both the note and file.", {
-  //       position: "top-center",
-  //     });
-  //   }
-  // };
-
-  const openFileInNewTab = (selectedFile) => {
-    const fileURL = URL.createObjectURL(selectedFile);
-    window.open(fileURL, "_blank");
-  };
-
-  const openFileInBrowser = (selectedFile) => {
-    const fileURL = `https://propertymanager.cloudpress.host/api/images/get-file/2024-02-23-08-52-50-ProjectReportMansi.pdf`;
-    window.open(fileURL, "_blank");
-  };
-
-  const handleClearRow = async (document, appId) => {
-    const deleteUrl = `${baseUrl}/applicant/applicant/note_attachment/${id}/${document._id}`;
-
-    await axios 
-      .delete(deleteUrl)
-      .then((res) => {
-        console.log(res.data);
-        toast.success("Document deleted successfully", {
-          position: "top-center",
-        });
-
-        // getNotesAndFiles();
-        getApplicantData();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-
-
-  const applicantFormik1 = useFormik({
-    initialValues: {
-      applicant_notes: notes,
-      applicant_file: files,
-    },
-    validationSchema: yup.object({
-      applicant_notes: yup.string().required("Required"),
-    }),
-    onSubmit: () => {
-      // Remove this onSubmit logic if you only want to submit the form on button click
-      // hadlenotesandfile(); // Call handleEdit function to make PUT request
-    },
-  });
-
-  const handleSubmit = (values = {}) => {
-    // Handle form submission
-    hadlenotesandfile(values); // Call handleEdit function to make PUT request
-  };
-  console.log(typeof applicantFormik1.values.applicant_notes);
-  console.log(typeof applicantFormik1.values.applicant_file);
-
-  // const [newNote, setNewNote] = useState('');
-  // const [newFile, setNewFile] = useState(null);
-  // const [fileName, setFileName] = useState('');
-  // const [isAttachFile, setIsAttachFile] = useState(false);
-
-  const hadlenotesandfile = async () => {
-    try {
-      if (newFile !== null) {
-   
-        try {
-          const form = new FormData();
-          form.append("files", newFile);
-
-          const res = await axios.post(`${imageUrl}/images/upload`, form);
-          
-          if (
-            res &&
-            res.data &&
-            res.data.files &&
-            res.data.files.length > 0
-          ) {
-            const image = res.data.files[0].url;
-            applicantFormik1.values.applicant_file = image;
-            console.log("Upload success",image)
-          } else {
-            console.error("Unexpected response format:", res);
-          }
-        } catch (error) {
-          console.error("Error uploading file:", error);
-        }
-}
-      const formData = {
-        applicant_notes: newNote,
-        applicant_file: applicantFormik1.values.applicant_file,
-      };
-      console.log(formData, "formData");
-      // formData.append('applicant_notes', newNote);
-      // formData.append('applicant_file', newFile);
-      const response = await axios.put(
-        `${baseUrl}/applicant/applicant/note_attachment/${id}`,
-        formData
-      );
-      if (response.data) {
-        console.log(response.data, "response.data");
-        setIsAttachFile(false);
-        getApplicantData();
-        // Handle success, update state, show a success message, etc.
-      } else {
-        // Handle error, show an error message, etc.
-        console.log("error");
-      }
-      console.log("Response:", response.data);
-      // Handle success, update state, show a success message, etc.
-    } catch (error) {
-      console.error(
-        "Error:",
-        error.response ? error.response.data : error.message
-      );
-      // Handle error, show an error message, etc.
-    }
-  };
-
-  // ----------------------------------------------Applicant Put----------------------------------------------------------------------------
-
-  const [applicantDatas, setApplicantDatas] = useState({});
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/applicant/applicant_summary/${id}`
-        );
-
-        if (response.data && response.data.data) {
-          setApplicantDatas(response.data.data[0]);
-          // setCheckedItems(matchedApplicant.applicant_checkedChecklist[0]);
-        } else {
-          console.error("Invalid data format received from the API");
-        }
-      } catch (error) {
-        console.error("Data fetch failed", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const isApplicantDataEmpty =
-    !applicantDatas || Object.keys(applicantDatas).length === 0;
-
-  const [formData, setFormData] = useState({
-    applicant_firstName: "",
-    applicant_lastName: "",
-  });
-  console.log(formData, "formData");
-
-  const handleApplicationSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const apiUrl = `${baseUrl}/applicant/application/${id}`;
-
-      const updatedData = {
-        applicant: {
-          applicant_firstName: formData.applicant_firstName,
-          applicant_lastName: formData.applicant_lastName,
-
-          applicant_socialSecurityNumber:
-            formData.applicant_socialSecurityNumber,
-          applicant_dob: formData.applicant_dob,
-          applicant_country: formData.applicant_country,
-          applicant_adress: formData.applicant_adress,
-          applicant_city: formData.applicant_city,
-          applicant_state: formData.applicant_state,
-          applicant_zipcode: formData.applicant_zipcode,
-          applicant_email: formData.applicant_email,
-          applicant_cellPhone: formData.applicant_cellPhone,
-          applicant_homePhone: formData.applicant_homePhone,
-          applicant_emergencyContact_firstName:
-            formData.applicant_emergencyContact_firstName,
-          applicant_emergencyContact_lasttName:
-            formData.applicant_emergencyContact_lasttName,
-          applicant_emergencyContact_relationship:
-            formData.applicant_emergencyContact_relationship,
-          applicant_emergencyContact_email:
-            formData.applicant_emergencyContact_email,
-          applicant_emergencyContact_phone:
-            formData.applicant_emergencyContact_phone,
-
-          rental_country: formData.rental_country,
-          rental_adress: formData.rental_adress,
-          rental_city: formData.rental_city,
-          rental_state: formData.rental_state,
-          rental_zipcode: formData.rental_zipcode,
-          rental_data_from: formData.rental_data_from,
-          rental_date_to: formData.rental_date_to,
-          rental_monthlyRent: formData.rental_monthlyRent,
-          rental_resaonForLeaving: formData.rental_resaonForLeaving,
-          rental_landlord_firstName: formData.rental_landlord_firstName,
-          rental_landlord_lasttName: formData.rental_landlord_lasttName,
-          rental_landlord_phoneNumber: formData.rental_landlord_phoneNumber,
-          rental_landlord_email: formData.rental_landlord_email,
-
-          employment_name: formData.employment_name,
-          employment_country: formData.employment_country,
-          employment_adress: formData.employment_adress,
-          employment_city: formData.employment_city,
-          employment_state: formData.employment_state,
-          employment_zipcode: formData.employment_zipcode,
-          employment_phoneNumber: formData.employment_phoneNumber,
-          employment_email: formData.employment_email,
-          employment_position: formData.employment_position,
-          employment_date_from: formData.employment_date_from,
-          employment_date_to: formData.employment_date_to,
-          employment_monthlyGrossSalary: formData.employment_monthlyGrossSalary,
-          employment_supervisor_name: formData.employment_supervisor_name,
-          employment_supervisor_title: formData.employment_supervisor_title,
-        },
-      };
-
-      const response = await axios.put(apiUrl, updatedData);
-
-      console.log("PUT request response:", response.data);
-    } catch (error) {
-      console.error("Error updating data:", error);
-    }
-  };
-
-  const handleApplicantChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleManuallyEnterClick = () => {
-    navigate("/admin/aplicant-form");
-  };
-
-  const [sendApplicantMail, setSendApplicantMail] = useState();
-  const [sendApplicantMailLoader, setSendApplicantMailLoader] = useState(false);
-
-  let sendApplicantMailData = async () => {
-    setSendApplicantMailLoader(true);
-    let responce = await axios.get(`${baseUrl}/applicant/applicant/mail/${id}`);
-    setSendApplicantMail(responce.data.data);
-
-    if (responce.data.statusCode === 200) {
-      setSendApplicantMailLoader(false);
-      toast.success("Application emailed", {
-        position: "top-center",
-      });
-    } else {
-      setSendApplicantMailLoader(false);
-      toast.error("error", {
-        position: "top-center",
-      });
-    }
-  };
-
-  const [loading, setLoading] = React.useState(false);
-  function handleClick() {
-    setLoading(true);
-  }
 
   return (
     <>
       <Header title="ApplicantSummary" />
-      <Container
-        className="mt--9"
-        onSubmit={applicantFormik.handleSubmit}
-        fluid
-      >
+      <Container className="mt--9" fluid>
         <Row>
           <Col xs="12" sm="6">
             <FormGroup className="">
-              {applicantLoader ? (
+              {loader ? (
                 <tbody className="d-flex flex-direction-column justify-content-left align-items-left">
                   <tr>
                     <div className="p-5 m-5"></div>
@@ -1219,17 +327,17 @@ const ApplicantSummary = () => {
                 <>
                   <h1 style={{ color: "white" }}>
                     Applicant:{" "}
-                    {applicantDatas?.applicant_firstName &&
-                    applicantDatas?.applicant_lastName
-                      ? `${applicantDatas.applicant_firstName} ${applicantDatas.applicant_lastName}`
+                    {applicantData?.applicant_firstName &&
+                    applicantData?.applicant_lastName
+                      ? `${applicantData.applicant_firstName} ${applicantData.applicant_lastName}`
                       : "Unknown"}
                   </h1>
 
                   <h4 style={{ color: "white" }}>
-                    {applicantDatas?.lease_data?.rental_adress &&
-                      `${applicantDatas.lease_data.rental_adress} ${
-                        applicantDatas.lease_data.rental_unit
-                          ? " - " + applicantDatas.lease_data.rental_unit
+                    {applicantLeaseData?.rental_adress &&
+                      `${applicantLeaseData?.rental_adress} ${
+                        applicantLeaseData?.rental_unit
+                          ? " - " + applicantLeaseData?.rental_unit
                           : ""
                       }`}
                   </h4>
@@ -1237,7 +345,7 @@ const ApplicantSummary = () => {
               )}
             </FormGroup>
           </Col>
-          <Col className="text-right" >
+          <Col className="text-right">
             <Button
               color="primary"
               onClick={() => navigate("/" + admin + "/Applicants")}
@@ -1250,7 +358,7 @@ const ApplicantSummary = () => {
         </Row>
         <br />
         <Card elevation={2}>
-          {applicantLoader ? (
+          {loader ? (
             <tbody className="d-flex flex-direction-column justify-content-center align-items-center">
               <tr>
                 <div className="p-5 m-5">
@@ -1266,19 +374,18 @@ const ApplicantSummary = () => {
             </tbody>
           ) : (
             <>
-              {/* <div
+              <div
                 className="formInput d-flex flex-direction-row"
                 style={{ margin: "30px 30px" }}
               >
                 <Dropdown isOpen={isOpen} toggle={toggle}>
-                  {console.log(applicantDatas, "status")}
                   <DropdownToggle caret style={{ width: "100%" }}>
-                    {applicantDatas &&
-                    applicantDatas.applicant_status &&
-                    applicantDatas?.applicant_status[0]?.status
-                      ? applicantDatas?.applicant_status[0]?.status
-                      : selectedDropdownItem
-                      ? selectedDropdownItem
+                    {applicantData &&
+                    applicantData.applicant_status &&
+                    applicantData?.applicant_status[0]?.status
+                      ? applicantData?.applicant_status[0]?.status
+                      : selectedStatus
+                      ? selectedStatus
                       : "Select"}
                   </DropdownToggle>
                   <DropdownMenu style={{ width: "100%" }} name="rent_cycle">
@@ -1287,8 +394,7 @@ const ApplicantSummary = () => {
                         <DropdownItem
                           key={index}
                           onClick={() => {
-                            selectedDropdown(item);
-                            handleEditStatus(item);
+                            handleStatus(item);
                           }}
                         >
                           {item}
@@ -1298,27 +404,27 @@ const ApplicantSummary = () => {
                   </DropdownMenu>
                 </Dropdown>
 
-                <LoadingButton
+                {/* <LoadingButton
                   variant="contained"
-                  loading={loading}
-                  style={
-                    moveIn && moveIn.status === "Approved"
-                      ? { display: "block", marginLeft: "10px" }
-                      : { display: "none" }
-                  }
-                  color="success"
-                  onClick={(e) => {
-                    fetchDataAndPost();
-                    handleClick();
-                    navigate("/" + admin + "/RentRoll");
+                  loading={moveinLoader}
+                  style={{
+                    marginLeft: "10px",
+                    display:
+                      applicantData?.applicant_status?.length === 0 &&
+                      selectedStatus !== "Approved"
+                        ? "none"
+                        : "block",
                   }}
-                  disabled={
-                    matchedApplicant && matchedApplicant.isMovedin === true
-                  }
+                  color="success"
+                  onClick={() => {
+                    // fetchDataAndPost();
+                    handleMoveIn();
+                  }}
+                  disabled={applicantData && applicantData.isMovedin === true}
                 >
                   Move in
-                </LoadingButton>
-              </div> */}
+                </LoadingButton> */}
+              </div>
               <Row>
                 <Col>
                   <TabContext value={value}>
@@ -1332,7 +438,7 @@ const ApplicantSummary = () => {
                           value="Summary"
                           style={{ textTransform: "none" }}
                         />
-                        {/* <Tab
+                        <Tab
                           label="Application"
                           value="Application"
                           style={{ textTransform: "none" }}
@@ -1341,20 +447,15 @@ const ApplicantSummary = () => {
                           label="Approved"
                           value="Approved"
                           style={{ textTransform: "none" }}
-                          // onClick={(e) =>
-                          //   tenantsData(
-                          //     matchedApplicant?.tenant_mobileNumber,
-                          //     e.target.value
-                          //   )
-                          // }
                         />
                         <Tab
                           label="Rejected"
                           value="Rejected"
                           style={{ textTransform: "none" }}
-                        /> */}
+                        />
                       </TabList>
                     </Box>
+
                     <TabPanel value="Summary">
                       <Row>
                         <Col>
@@ -1376,7 +477,7 @@ const ApplicantSummary = () => {
                                     onChange={(e) =>
                                       handleChecklistChange(e, "CreditCheck")
                                     }
-                                    checked={checkedItems?.includes(
+                                    checked={applicantCheckListData?.includes(
                                       "CreditCheck"
                                     )}
                                   />{" "}
@@ -1398,7 +499,7 @@ const ApplicantSummary = () => {
                                         "EmploymentVerification"
                                       )
                                     }
-                                    checked={checkedItems?.includes(
+                                    checked={applicantCheckListData?.includes(
                                       "EmploymentVerification"
                                     )}
                                   />{" "}
@@ -1417,7 +518,7 @@ const ApplicantSummary = () => {
                                     onChange={(e) =>
                                       handleChecklistChange(e, "ApplicationFee")
                                     }
-                                    checked={checkedItems?.includes(
+                                    checked={applicantCheckListData?.includes(
                                       "ApplicationFee"
                                     )}
                                   />{" "}
@@ -1439,7 +540,7 @@ const ApplicantSummary = () => {
                                         "IncomeVerification"
                                       )
                                     }
-                                    checked={checkedItems?.includes(
+                                    checked={applicantCheckListData?.includes(
                                       "IncomeVerification"
                                     )}
                                   />{" "}
@@ -1462,7 +563,7 @@ const ApplicantSummary = () => {
                                         "LandlordVerification"
                                       )
                                     }
-                                    checked={checkedItems?.includes(
+                                    checked={applicantCheckListData?.includes(
                                       "LandlordVerification"
                                     )}
                                   />{" "}
@@ -1470,7 +571,7 @@ const ApplicantSummary = () => {
                                 </div>
 
                                 <Box display="flex" flexDirection="column">
-                                  {matchedApplicant?.applicant_checklist?.map(
+                                  {applicantData?.applicant_checklist?.map(
                                     (item, index) => (
                                       <div
                                         key={index}
@@ -1486,7 +587,6 @@ const ApplicantSummary = () => {
                                               style={{
                                                 transform: "scale(1.5)",
                                                 marginLeft: "14px",
-                                                // marginTop: "20px",
                                                 fontWeight: "bold",
                                               }}
                                               type="checkbox"
@@ -1495,7 +595,7 @@ const ApplicantSummary = () => {
                                               onChange={(e) =>
                                                 handleChecklistChange(e, item)
                                               }
-                                              checked={checkedItems?.includes(
+                                              checked={applicantCheckListData?.includes(
                                                 item
                                               )}
                                             />
@@ -1548,9 +648,9 @@ const ApplicantSummary = () => {
                                           height: "30px",
                                           marginLeft: "5px",
                                           cursor: "pointer",
-                                          color: "green", // Change color as desired
-                                          border: "2px solid green", // Border for the icon
-                                          borderRadius: "5px", // Makes the border square
+                                          color: "green",
+                                          border: "2px solid green",
+                                          borderRadius: "5px",
                                           display: "flex",
                                           alignItems: "center",
                                           justifyContent: "center",
@@ -1563,9 +663,9 @@ const ApplicantSummary = () => {
                                           height: "30px",
                                           marginLeft: "5px",
                                           cursor: "pointer",
-                                          color: "red", // Change color as desired
-                                          border: "2px solid red", // Border for the icon
-                                          borderRadius: "5px", // Makes the border square
+                                          color: "red",
+                                          border: "2px solid red",
+                                          borderRadius: "5px",
                                           display: "flex",
                                           alignItems: "center",
                                           justifyContent: "center",
@@ -1591,7 +691,7 @@ const ApplicantSummary = () => {
 
                               {/* Attach note or file section */}
                               <div className="mt-5">
-                                <div>  
+                                <div>
                                   <Row
                                     className="w-100 my-3"
                                     style={{
@@ -1605,14 +705,11 @@ const ApplicantSummary = () => {
                                   >
                                     <Col>Notes and Files</Col>
                                   </Row>
-                                  </div>
+                                </div>
                                 <div className="mt-2">
                                   {isAttachFile ? (
                                     <Card
                                       style={{
-                                        // width: "400px",
-                                        // background: "#F4F6FF",
-                                        // margin: "20px auto",
                                         position: "relative",
                                       }}
                                     >
@@ -1669,10 +766,6 @@ const ApplicantSummary = () => {
                                             multiple
                                             onChange={(e) => {
                                               setNewFile(e.target.files[0]);
-                                              // Display the file name
-                                              setFileName(
-                                                e.target.files[0]?.name || ""
-                                              );
                                             }}
                                           />
                                           <label
@@ -1685,7 +778,6 @@ const ApplicantSummary = () => {
                                           >
                                             Choose Files
                                           </label>
-
                                           {newFile && (
                                             <p
                                               style={{
@@ -1695,28 +787,18 @@ const ApplicantSummary = () => {
                                               onClick={() =>
                                                 openFileInBrowser(newFile)
                                               }
-                                            >{console.log("choose file",fileName)}
-                                              {fileName}
+                                            >
+                                              {newFile?.name}
                                             </p>
                                           )}
-
-                                          {applicantFormik1.touched
-                                            .applicant_file &&
-                                          applicantFormik1.errors
-                                            .applicant_file ? (
-                                            <div style={{ color: "red" }}>
-                                              {
-                                                applicantFormik1.errors
-                                                  .applicant_file
-                                              }
-                                            </div>
-                                          ) : null}
                                         </div>
 
                                         <div className="mt-3">
                                           <Button
                                             color="success"
-                                            onClick={()=>{hadlenotesandfile()}}
+                                            onClick={() => {
+                                              hadlenotesandfile();
+                                            }}
                                             style={{ marginRight: "10px" }}
                                           >
                                             Save
@@ -1750,8 +832,7 @@ const ApplicantSummary = () => {
                                 </div>
                               </div>
 
-                              {matchedApplicant?.applicant_NotesAndFile
-                                ?.length > 0 && (
+                              {applicantNotesData?.length > 0 && (
                                 <>
                                   <Row
                                     className="w-100 mb-3 mt-3"
@@ -1766,34 +847,33 @@ const ApplicantSummary = () => {
                                     <Col>File</Col>
                                     <Col>Clear</Col>
                                   </Row>
-                                  {console.log(
-                                    matchedApplicant,
-                                    "matchedApplicnt"
-                                  )}
-
-                                  {matchedApplicant?.applicant_NotesAndFile.map(
-                                    (data, index) => (
-                                      <Row
-                                        className="w-100 mt-1"
-                                        style={{
-                                          fontSize: "12px",
-                                          textTransform: "capitalize",
-                                          color: "#000",
-                                        }}
-                                        key={index} // Ensure to provide a unique key when iterating in React
-                                      >
-                                        <Col>{data.applicant_notes && <p>{data.applicant_notes}</p>}</Col>
+                                  {applicantNotesData?.map((data, index) => (
+                                    <Row
+                                      className="w-100 mt-1"
+                                      style={{
+                                        fontSize: "12px",
+                                        textTransform: "capitalize",
+                                        color: "#000",
+                                      }}
+                                      key={index} // Ensure to provide a unique key when iterating in React
+                                    >
+                                      <Col>
+                                        {data.applicant_notes && (
+                                          <p>{data.applicant_notes}</p>
+                                        )}
+                                      </Col>
                                       <Col>
                                         {data.applicant_file && (
                                           <div
                                             style={{
                                               display: "flex",
-                                              // alignItems: "center",
                                             }}
-                                          >{  console.log("object",data.applicant_file)}
+                                          >
                                             <p
                                               onClick={() =>
-                                                openFileInBrowser(data.applicant_file)
+                                                openFileInBrowser(
+                                                  data.applicant_file
+                                                )
                                               }
                                             >
                                               <FileOpenIcon />
@@ -1802,25 +882,22 @@ const ApplicantSummary = () => {
                                           </div>
                                         )}
                                       </Col>
-                                        <Col>
-                                          <ClearIcon
-                                            onClick={() => {
-                                              handleClearRow(
-                                                data,
-                                                matchedApplicant._id
-                                              );
-                                            }}
-                                          >
-                                            Clear
-                                          </ClearIcon>
-                                        </Col>
-                                      </Row>
-                                    )
-                                  )}
+                                      <Col>
+                                        <ClearIcon
+                                          style={{ cursor: "pointer" }}
+                                          onClick={() => {
+                                            handleClearRow(data);
+                                          }}
+                                        >
+                                          Clear
+                                        </ClearIcon>
+                                      </Col>
+                                    </Row>
+                                  ))}
                                 </>
                               )}
 
-                              {/* <>
+                              <>
                                 <Row
                                   className="w-100 my-3 "
                                   style={{
@@ -1834,7 +911,7 @@ const ApplicantSummary = () => {
                                   <Col>Updates</Col>
                                 </Row>
 
-                                {matchedApplicant?.applicant_status?.map(
+                                {applicantData?.applicant_status?.map(
                                   (item, index) => (
                                     <Row
                                       className="w-100 mt-1  mb-5"
@@ -1861,457 +938,132 @@ const ApplicantSummary = () => {
                                     </Row>
                                   )
                                 )}
-                              </> */}
+                              </>
                             </Grid>
 
-                            {/* <Grid item xs="12" md="6" lg="4" xl="3">
-                              {isEdit ? (
-                                <Card
-                                  style={{
-                                    background: "#F4F6FF",
-                                    border: "1px solid #ccc",
-                                  }}
-                                >
-                                  <CardBody>
-                                     <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText>
-                                    <form>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}
-                                      >
-                                        <div>
-                                          <h5>Name</h5>
-                                        </div>
-                                        <TextField
-                                          type="text"
-                                          size="small"
-                                          id="applicant_firstName"
-                                          name="applicant_firstName"
-                                          value={
-                                            applicantFormik.values
-                                              .applicant_firstName
-                                          }
-                                          onChange={
-                                            applicantFormik.handleChange
-                                          }
-                                          onBlur={applicantFormik.handleBlur}
-                                          placeholder="FirstName"
-                                        />
-                                        <TextField
-                                          type="text"
-                                          size="small"
-                                          style={{ marginTop: "10px" }}
-                                          placeholder="LastName"
-                                          id="applicant_lastName"
-                                          name="applicant_lastName"
-                                          value={
-                                            applicantFormik.values
-                                              .applicant_lastName
-                                          }
-                                          onChange={
-                                            applicantFormik.handleChange
-                                          }
-                                          onBlur={applicantFormik.handleBlur}
-                                        />
-                                      </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                          marginTop: "10px",
-                                        }}
-                                      >
-                                        <div>
-                                          <h5>Numbers</h5>
-                                        </div>
-                                        <TextField
-                                          type="number"
-                                          size="small"
-                                          placeholder="Mobile"
-                                          id="applicant_phoneNumber"
-                                          name="applicant_phoneNumber"
-                                          value={
-                                            applicantFormik.values
-                                              .applicant_phoneNumber
-                                          }
-                                          onChange={
-                                            applicantFormik.handleChange
-                                          }
-                                          onBlur={applicantFormik.handleBlur}
-                                        />
-                                        <TextField
-                                          type="number"
-                                          size="small"
-                                          style={{ marginTop: "10px" }}
-                                          placeholder="Business"
-                                          id="applicant_businessNumber"
-                                          name="applicant_businessNumber"
-                                          value={
-                                            applicantFormik.values
-                                              .applicant_businessNumber
-                                          }
-                                          onChange={
-                                            applicantFormik.handleChange
-                                          }
-                                          onBlur={applicantFormik.handleBlur}
-                                        />
-                                        <TextField
-                                          type="number"
-                                          size="small"
-                                          style={{ marginTop: "10px" }}
-                                          placeholder="Home"
-                                          id="applicant_homeNumber"
-                                          name="applicant_homeNumber"
-                                          value={
-                                            applicantFormik.values
-                                              .applicant_homeNumber
-                                          }
-                                          onChange={
-                                            applicantFormik.handleChange
-                                          }
-                                          onBlur={applicantFormik.handleBlur}
-                                        />
-                                        <TextField
-                                          type="number"
-                                          size="small"
-                                          style={{ marginTop: "10px" }}
-                                          placeholder="Fax"
-                                          id="applicant_telephoneNumber"
-                                          name="applicant_telephoneNumber"
-                                          value={
-                                            applicantFormik.values
-                                              .applicant_telephoneNumber
-                                          }
-                                          onChange={
-                                            applicantFormik.handleChange
-                                          }
-                                          onBlur={applicantFormik.handleBlur}
-                                        />
-                                      </div>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          flexDirection: "column",
-                                        }}
-                                      >
-                                        <div style={{ marginTop: "10px" }}>
-                                          <h5>Email</h5>
-                                        </div>
-                                        <TextField
-                                          type="text"
-                                          size="small"
-                                          placeholder="Email"
-                                          id="applicant_email"
-                                          name="applicant_email"
-                                          value={
-                                            applicantFormik.values.applicant_email
-                                          }
-                                          onChange={
-                                            applicantFormik.handleChange
-                                          }
-                                          onBlur={applicantFormik.handleBlur}
-                                        />
-                                      </div>
-                                      <div>
-                                        <label
-                                          className="form-control-label"
-                                          htmlFor="input-property"
-                                          style={{ paddingTop: "15px" }}
-                                        >
-                                          Property
-                                        </label>
-                                        {/* {//console.log(propertyData, "propertyData")} 
-                                        <FormGroup>
-                                          <Dropdown
-                                            isOpen={userdropdownOpen}
-                                            toggle={toggle9}
-                                          >
-                                            <DropdownToggle
-                                              caret
-                                              style={{
-                                                width: "100%",
-                                                marginRight: "15px",
-                                              }}
-                                            >
-                                              {selectedPropertyType
-                                                ? selectedPropertyType
-                                                : "Select Property"}
-                                            </DropdownToggle>
-                                            <DropdownMenu
-                                              style={{
-                                                width: "100%",
-                                                maxHeight: "200px",
-                                                overflowY: "auto",
-                                              }}
-                                            >
-                                              <DropdownItem value="">
-                                                Select
-                                              </DropdownItem>
-                                              {propertydata.map((property) => (
-                                                <DropdownItem
-                                                  key={property._id}
-                                                  onClick={() =>
-                                                    handlePropertyTypeSelect(
-                                                      property.rental_adress
-                                                    )
-                                                  }
-                                                >
-                                                  {property.rental_adress}
-                                                </DropdownItem>
-                                              ))}
-                                            </DropdownMenu>
-                                            {applicantFormik.errors &&
-                                            applicantFormik.errors
-                                              ?.rental_adress &&
-                                            applicantFormik.touched &&
-                                            applicantFormik.touched
-                                              ?.rental_adress &&
-                                            applicantFormik.values
-                                              .rental_adress === "" ? (
-                                              <div style={{ color: "red" }}>
-                                                {
-                                                  applicantFormik.errors
-                                                    .rental_adress
-                                                }
-                                              </div>
-                                            ) : null}
-                                          </Dropdown>
-                                        </FormGroup>
-                                      </div>
-                                      {applicantFormik.values.rental_adress &&
-                                        unitData &&
-                                        unitData[0] &&
-                                        unitData[0].rental_unit && (
-                                          <div>
-                                            <label
-                                              className="form-control-label"
-                                              htmlFor="input-unit"
-                                            >
-                                              Unit
-                                            </label>
-                                            <FormGroup
-                                              style={{ marginLeft: "15px" }}
-                                            >
-                                              <Dropdown
-                                                isOpen={unitDropdownOpen}
-                                                toggle={toggle10}
-                                              >
-                                                <DropdownToggle caret>
-                                                  {selectedUnit
-                                                    ? selectedUnit
-                                                    : "Select Unit"}
-                                                </DropdownToggle>
-                                                <DropdownMenu>
-                                                  {unitData?.length > 0 ? (
-                                                    unitData.map((unit) => (
-                                                      <DropdownItem
-                                                        key={unit._id}
-                                                        onClick={() =>
-                                                          handleUnitSelect(
-                                                            unit.rental_unit
-                                                          )
-                                                        }
-                                                      >
-                                                        {unit.rental_unit}
-                                                      </DropdownItem>
-                                                    ))
-                                                  ) : (
-                                                    <DropdownItem disabled>
-                                                      No units available
-                                                    </DropdownItem>
-                                                  )}
-                                                </DropdownMenu>
-                                                {applicantFormik.errors &&
-                                                applicantFormik.errors
-                                                  ?.rental_unit &&
-                                                applicantFormik.touched &&
-                                                applicantFormik.touched
-                                                  ?.rental_unit &&
-                                                applicantFormik.values
-                                                  .rental_unit === "" ? (
-                                                  <div style={{ color: "red" }}>
-                                                    {
-                                                      applicantFormik.errors
-                                                        .rental_unit
-                                                    }
-                                                  </div>
-                                                ) : null}
-                                              </Dropdown>
-                                            </FormGroup>
-                                          </div>
-                                        )}
-                                      <div style={{ marginTop: "10px" }}>
-                                        <Button
-                                          color="success"
-                                          type="submit"
-                                          // onClick={() => {
-                                          //   handleEdit();
-                                          //   // setIsEdit(false);
-                                          // }}
-                                        >
-                                          Save
-                                        </Button>
-                                        <Button
-                                          onClick={() => {
-                                            setIsEdit(false);
-                                          }}
-                                        >
-                                          Cancel
-                                        </Button>
-                                      </div>
-                                    </form>
-                                  </CardBody>
-
-                                  {/* <Button
-                              color="success"
-                              onClick={() => {
-                                setIsEdit(false);
-                              }}
+                            <Grid item xs="12" md="6" lg="4" xl="3">
+                              <Card
+                                sx={{ minWidth: 275 }}
+                                style={{
+                                  background: "#F4F6FF",
+                                  border: "1px solid #ccc",
+                                }}
                               >
-                              Save
-                            </Button> 
-                                </Card>
-                              ) : (
-                                <Card
-                                  sx={{ minWidth: 275 }}
-                                  style={{
-                                    background: "#F4F6FF",
-                                    border: "1px solid #ccc",
-                                  }}
-                                >
-                                  <CardContent>
-                                    <div
+                                <CardContent>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Typography
                                       style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        alignItems: "center",
+                                        fontSize: "20px",
+                                        color: "black",
+                                        marginRight: "10px",
                                       }}
+                                      color="text.secondary"
+                                      gutterBottom
                                     >
-                                      <Typography
-                                        style={{
-                                          fontSize: "20px",
-                                          color: "black",
-                                          marginRight: "10px",
-                                        }}
-                                        color="text.secondary"
-                                        gutterBottom
-                                      >
-                                        {matchedApplicant?.applicant_firstName +
-                                          " " +
-                                          matchedApplicant?.applicant_lastName}
-                                      </Typography>
-                                      <Typography
-                                        style={{
-                                          cursor: "pointer",
-                                          textDecoration: "underline",
-                                          marginBottom: "5px",
-                                          // border: "2px solid black", // Example: 5px solid black border
-                                          // borderRadius: "10px", // Example: 10px border-radius
-                                        }}
-                                        onClick={onClickEditButton}
-                                      >
-                                        <EditIcon
-                                          style={{ fontSize: "large" }}
-                                        />
-                                      </Typography>
-                                    </div>
-                                    <Typography variant="caption">
-                                      Applicant
+                                      {applicantData?.applicant_firstName +
+                                        " " +
+                                        applicantData?.applicant_lastName}
                                     </Typography>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        marginTop: "10px",
+                                  </div>
+                                  <Typography variant="caption">
+                                    Applicant
+                                  </Typography>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography>
+                                      <HomeIcon />
+                                    </Typography>
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        marginLeft: "10px",
                                       }}
+                                      color="text.secondary"
+                                      gutterBottom
                                     >
-                                      <Typography>
-                                        <HomeIcon />
-                                      </Typography>
-                                      <Typography
-                                        sx={{
-                                          fontSize: 14,
-                                          marginLeft: "10px",
-                                        }}
-                                        color="text.secondary"
-                                        gutterBottom
-                                      >
-                                        {matchedApplicant?.applicant_homeNumber ||
-                                          "N/A"}
-                                      </Typography>
-                                    </div>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        marginTop: "10px",
+                                      {applicantData?.applicant_homeNumber ||
+                                        "N/A"}
+                                    </Typography>
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography>
+                                      <BusinessCenterIcon />
+                                    </Typography>
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        marginLeft: "10px",
                                       }}
+                                      color="text.secondary"
+                                      gutterBottom
                                     >
-                                      <Typography>
-                                        <BusinessCenterIcon />
-                                      </Typography>
-                                      <Typography
-                                        sx={{
-                                          fontSize: 14,
-                                          marginLeft: "10px",
-                                        }}
-                                        color="text.secondary"
-                                        gutterBottom
-                                      >
-                                        {matchedApplicant?.applicant_businessNumber ||
-                                          "N/A"}
-                                      </Typography>
-                                    </div>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        marginTop: "10px",
+                                      {applicantData?.applicant_businessNumber ||
+                                        "N/A"}
+                                    </Typography>
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography>
+                                      <PhoneAndroidIcon />
+                                    </Typography>
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        marginLeft: "10px",
                                       }}
+                                      color="text.secondary"
+                                      gutterBottom
                                     >
-                                      <Typography>
-                                        <PhoneAndroidIcon />
-                                      </Typography>
-                                      <Typography
-                                        sx={{
-                                          fontSize: 14,
-                                          marginLeft: "10px",
-                                        }}
-                                        color="text.secondary"
-                                        gutterBottom
-                                      >
-                                        {matchedApplicant?.applicant_phoneNumber ||
-                                          "N/A"}
-                                      </Typography>
-                                    </div>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        marginTop: "10px",
+                                      {applicantData?.applicant_phoneNumber ||
+                                        "N/A"}
+                                    </Typography>
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                      marginTop: "10px",
+                                    }}
+                                  >
+                                    <Typography>
+                                      <EmailIcon />
+                                    </Typography>
+                                    <Typography
+                                      sx={{
+                                        fontSize: 14,
+                                        marginLeft: "10px",
                                       }}
+                                      color="text.secondary"
+                                      gutterBottom
                                     >
-                                      <Typography>
-                                        <EmailIcon />
-                                      </Typography>
-                                      <Typography
-                                        sx={{
-                                          fontSize: 14,
-                                          marginLeft: "10px",
-                                        }}
-                                        color="text.secondary"
-                                        gutterBottom
-                                      >
-                                        {matchedApplicant?.applicant_email ||
-                                          "N/A"}
-                                      </Typography>
-                                    </div>
-                                  </CardContent>
-                                </Card>
-                              )}
-                            </Grid> */}
+                                      {applicantData?.applicant_email || "N/A"}
+                                    </Typography>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </Grid>
                           </Grid>
                         </Col>
                       </Row>
@@ -2865,6 +1617,7 @@ const ApplicantSummary = () => {
                         )}
                       </Row>
                     </TabPanel> */}
+
                     {/* <TabPanel value="Rejected">
                       <CardHeader className="border-0">
                       </CardHeader>
