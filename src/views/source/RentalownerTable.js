@@ -111,9 +111,12 @@ const RentalownerTable = () => {
           .then((response) => {
             if (response.data.statusCode === 200) {
               fetchRentalsData();
-              toast.success("The Rental-Owner has been deleted!", {
-                position: "top-center",
-              });
+              setTimeout(() => {
+                toast.success("The Rental-Owner has been deleted!", {
+                  position: "top-center",
+                  autoClose: 2000 // Adjusted timeout for quick display
+                });
+              }, 500); 
             } else if (response.data.statusCode === 201) {
               toast.warn(response.data.message, {
                 position: "top-center",

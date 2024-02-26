@@ -123,6 +123,7 @@ const AddPropertyType = () => {
           `${baseUrl}/propertytype/property_type`,
           object
         );
+        console.log(res.data, "shivam")
         if (res.data.statusCode === 200) {
           handleResponse(res);
         } else if (res.data.statusCode === 201) {
