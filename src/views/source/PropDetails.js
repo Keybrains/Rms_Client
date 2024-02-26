@@ -77,6 +77,7 @@ import {
 } from "./Functions/Units";
 import { jwtDecode } from "jwt-decode";
 import { ToastContainer, toast } from "react-toastify";
+import "./propdetail.css";
 import queryString from "query-string";
 
 const PropDetails = () => {
@@ -512,7 +513,7 @@ const PropDetails = () => {
                   <td>
                     {clickedObject.rental_adress}
                     {clickedObject.rental_unit !== "" &&
-                    clickedObject.rental_unit !== undefined
+                      clickedObject.rental_unit !== undefined
                       ? `- ${clickedObject.rental_unit}`
                       : null}
                   </td>
@@ -646,141 +647,139 @@ const PropDetails = () => {
                   </Box>
 
                   <TabPanel value="summary">
-                    <div className="main d-flex justify-content-between">
-                      <div className="card mb-3 col-8">
-                        <div className="row g-0 border-none">
-                          {!propImageLoader ? (
-                            <>
-                              <div className="col-md-4 mt-2">
-                                <label
-                                  htmlFor="rental_image"
-                                  style={{
-                                    width: "260px",
-                                    height: "180px",
-                                  }}
-                                >
-                                  <img
-                                    src={
-                                      rentalData?.rental_image
-                                        ? rentalData?.rental_image
-                                        : fone
-                                    }
-                                    className="img-fluid rounded-start card-image"
-                                    alt={"..."}
-                                    style={{
-                                      width: "260px",
-                                      aspectRatio: "3/2",
-                                      objectFit: "contain",
-                                    }}
-                                  />
-                                </label>
-                                <TextField
-                                  id="rental_image"
-                                  name="rental_image"
-                                  type="file"
-                                  inputProps={{
-                                    accept: "image/*",
-                                    multiple: false,
-                                  }}
-                                  onChange={async (e) => {
-                                    setPropImageLoader(true);
-                                    const res = await handleImageChange(
-                                      e,
-                                      rentalData.rental_id
-                                    );
-                                    if (res === true) {
-                                      fetchRentalData();
-                                    } else {
-                                      console.error("Image upload failed");
-                                      setPropImageLoader(false);
-                                    }
-                                  }}
-                                  style={{ display: "none" }}
-                                />
-                              </div>
-                            </>
-                          ) : (
-                            <div className="col-md-4 mt-2 d-flex justify-content-center">
-                              <RotatingLines
-                                strokeColor="grey"
-                                strokeWidth="5"
-                                animationDuration="0.75"
-                                width="50"
-                                visible={propImageLoader}
-                              />
-                            </div>
-                          )}
-
-                          <div className="col-md-8">
-                            <div
-                              className="card-body mt-1"
-                              style={{ padding: "0" }}
+                    <div className="main d-flex justify-content-start mainnnnn col-lg-8 col-md-10 col-sm-12" style={{ border: "1px solid rgb(210 205 205) ", borderRadius: "10px" }} >
+                      {!propImageLoader ? (
+                        <>
+                          <div className="col-md-4 mt-2">
+                            <label
+                              htmlFor="rental_image"
+                              style={{
+                                width: "260px",
+                                height: "180px",
+                              }}
                             >
-                              <h5 className="">Property details</h5>
-                              <div className="h6" style={{ color: "#767676" }}>
-                                ADDRESS
-                              </div>
-                              <span
-                                className="address"
-                                style={{ fontSize: "14px" }}
-                              >
-                                {propertyTypeData?.property_type
-                                  ? propertyTypeData?.property_type + ","
-                                  : ""}
-                              </span>
-                              <br />
-                              <span
-                                className="address"
-                                style={{ fontSize: "14px" }}
-                              >
-                                {" "}
-                                {rentalData?.rental_adress
-                                  ? rentalData?.rental_adress + ","
-                                  : ""}
-                              </span>
-                              <br />
-                              <span
-                                className="address"
-                                style={{ fontSize: "14px" }}
-                              >
-                                {" "}
-                                {rentalData?.rental_city
-                                  ? rentalData?.rental_city + ","
-                                  : ""}
-                              </span>
-                              <span
-                                className="address"
-                                style={{ fontSize: "14px" }}
-                              >
-                                {" "}
-                                {rentalData?.rental_state
-                                  ? rentalData?.rental_state + ","
-                                  : ""}
-                              </span>
-                              <br />
-                              <span
-                                className="address"
-                                style={{ fontSize: "14px" }}
-                              >
-                                {" "}
-                                {rentalData?.rental_country
-                                  ? rentalData?.rental_country + ","
-                                  : ""}
-                              </span>
-                              <span
-                                className="address"
-                                style={{ fontSize: "14px" }}
-                              >
-                                {" "}
-                                {rentalData?.rental_postcode
-                                  ? rentalData?.rental_postcode
-                                  : ""}
-                              </span>
-                            </div>
+                              <img
+                                src={
+                                  rentalData?.rental_image
+                                    ? rentalData?.rental_image
+                                    : fone
+                                }
+                                className="img-fluid rounded-start m-image card-image"
+                                alt={"..."}
+                                style={{
+                                  width: "260px",
+                                  aspectRatio: "3/2",
+                                  overflow: 'hidden',
+                                  objectFit: "contain",
+                                }}
+                              />
+                            </label>
+                            <TextField
+                              id="rental_image"
+                              name="rental_image"
+                              type="file"
+                              inputProps={{
+                                accept: "image/*",
+                                multiple: false,
+                              }}
+                              onChange={async (e) => {
+                                setPropImageLoader(true);
+                                const res = await handleImageChange(
+                                  e,
+                                  rentalData.rental_id
+                                );
+                                if (res === true) {
+                                  fetchRentalData();
+                                } else {
+                                  console.error("Image upload failed");
+                                  setPropImageLoader(false);
+                                }
+                              }}
+                              style={{ display: "none" }}
+                            />
                           </div>
+                        </>
+                      ) : (
+                        <div className="col-md-3 mt-2 d-flex justify-content-center">
+                          <RotatingLines
+                            strokeColor="grey"
+                            strokeWidth="5"
+                            animationDuration="0.75"
+                            width="50"
+                            visible={propImageLoader}
+                          />
+                        </div>
+                      )}
+
+                      <div className="col-md-4 col-sm-12 propertydetail mx-3" >
+                        <div
+                          className="card-body mt-1"
+                          style={{ padding: "0" }}
+                        >
+                          <h5 className="">Property details</h5>
+                          <div className="h6" style={{ color: "#767676" }}>
+                            ADDRESS
+                          </div>
+                          <span
+                            className="address"
+                            style={{ fontSize: "14px" }}
+                          >
+                            {propertyTypeData?.property_type
+                              ? propertyTypeData?.property_type + ","
+                              : ""}
+                          </span>
+                          <br />
+                          <span
+                            className="address"
+                            style={{ fontSize: "14px" }}
+                          >
+                            {" "}
+                            {rentalData?.rental_adress
+                              ? rentalData?.rental_adress + ","
+                              : ""}
+                          </span>
+                          <br />
+                          <span
+                            className="address"
+                            style={{ fontSize: "14px" }}
+                          >
+                            {" "}
+                            {rentalData?.rental_city
+                              ? rentalData?.rental_city + ","
+                              : ""}
+                          </span>
+                          <span
+                            className="address"
+                            style={{ fontSize: "14px" }}
+                          >
+                            {" "}
+                            {rentalData?.rental_state
+                              ? rentalData?.rental_state + ","
+                              : ""}
+                          </span>
+                          <br />
+                          <span
+                            className="address"
+                            style={{ fontSize: "14px" }}
+                          >
+                            {" "}
+                            {rentalData?.rental_country
+                              ? rentalData?.rental_country + ","
+                              : ""}
+                          </span>
+                          <span
+                            className="address"
+                            style={{ fontSize: "14px" }}
+                          >
+                            {" "}
+                            {rentalData?.rental_postcode
+                              ? rentalData?.rental_postcode
+                              : ""}
+                          </span>
                         </div>
                       </div>
                     </div>
+
 
                     <div className="table-responsive d-flex">
                       <Table
@@ -854,13 +853,11 @@ const PropDetails = () => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${
-                                                          rentalOwnerData.rentalOwner_firstName ||
+                                                        {`${rentalOwnerData.rentalOwner_firstName ||
                                                           "N/A"
-                                                        } ${
-                                                          rentalOwnerData.rentalOwner_lastName ||
+                                                          } ${rentalOwnerData.rentalOwner_lastName ||
                                                           "N/A"
-                                                        }`}
+                                                          }`}
                                                       </td>
                                                       <td>
                                                         {rentalOwnerData.rentalOwner_companyName ||
@@ -927,10 +924,9 @@ const PropDetails = () => {
                                                   <>
                                                     <tr className="body">
                                                       <td>
-                                                        {`${
-                                                          staffMemberData?.staffmember_name ||
+                                                        {`${staffMemberData?.staffmember_name ||
                                                           "No staff member assigned"
-                                                        }`}
+                                                          }`}
                                                       </td>
                                                     </tr>
                                                   </>
@@ -975,7 +971,7 @@ const PropDetails = () => {
                             {financialType
                               ? financialType
                               : "Month to date" &&
-                                setFinancialType("Month to date")}
+                              setFinancialType("Month to date")}
                           </DropdownToggle>
                           <DropdownMenu>
                             {financialTypeArray.map((subtype, index) => (
@@ -1126,7 +1122,7 @@ const PropDetails = () => {
                                           fontWeight: "bold",
                                           backgroundColor: "#f0f0f0",
                                         }}
-                                        //colSpan="2"
+                                      //colSpan="2"
                                       >
                                         Net income
                                       </th>
@@ -1241,7 +1237,7 @@ const PropDetails = () => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                    //colSpan="2"
+                                  //colSpan="2"
                                   >
                                     Net income
                                   </th>
@@ -1251,13 +1247,13 @@ const PropDetails = () => {
                                       fontWeight: "bold",
                                       backgroundColor: "#f0f0f0",
                                     }}
-                                    //colSpan="2"
+                                  //colSpan="2"
                                   >
                                     {netIncome >= 0
                                       ? `$${netIncome.toFixed(2)}`
                                       : `$(${Math.abs(netIncome || 0).toFixed(
-                                          2
-                                        )})`}
+                                        2
+                                      )})`}
                                   </th>
                                 </tr>
                               </React.Fragment>
@@ -1448,9 +1444,8 @@ const PropDetails = () => {
                                   $
                                   {totals[0] - totals2[0] >= 0
                                     ? (totals[0] - totals2[0]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[0] - totals2[0]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[0] - totals2[0]).toFixed(2)
+                                    })`}
                                 </th>
                                 <th
                                   style={{
@@ -1462,9 +1457,8 @@ const PropDetails = () => {
                                   $
                                   {totals[1] - totals2[1] >= 0
                                     ? (totals[1] - totals2[1]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[1] - totals2[1]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[1] - totals2[1]).toFixed(2)
+                                    })`}
                                 </th>
                                 <th
                                   style={{
@@ -1476,9 +1470,8 @@ const PropDetails = () => {
                                   $
                                   {totals[2] - totals2[2] >= 0
                                     ? (totals[2] - totals2[2]).toFixed(2)
-                                    : `(${
-                                        -1 * (totals[2] - totals2[2]).toFixed(2)
-                                      })`}
+                                    : `(${-1 * (totals[2] - totals2[2]).toFixed(2)
+                                    })`}
                                 </th>
                               </tr>
                             </tbody>
@@ -1972,7 +1965,7 @@ const PropDetails = () => {
                                             </td>
                                             <td>
                                               {lease?.start_date &&
-                                              lease?.end_date ? (
+                                                lease?.end_date ? (
                                                 <>
                                                   <Link
                                                     to={`/${admin}/tenantdetail/${lease?.tenant_id}`}
@@ -1993,10 +1986,10 @@ const PropDetails = () => {
                                             </td>
                                             <td>
                                               {lease?.tenant_firstName &&
-                                              lease?.tenant_lastName
+                                                lease?.tenant_lastName
                                                 ? lease?.tenant_firstName +
-                                                  " " +
-                                                  lease?.tenant_lastName
+                                                " " +
+                                                lease?.tenant_lastName
                                                 : "N/A"}
                                             </td>
                                             <td>
@@ -2445,7 +2438,7 @@ const PropDetails = () => {
                                     >
                                       {tenant.rental_adress} {""}
                                       {tenant.rental_unit !== "" &&
-                                      tenant.rental_unit !== undefined
+                                        tenant.rental_unit !== undefined
                                         ? `- ${tenant.rental_unit}`
                                         : null}
                                     </div>
