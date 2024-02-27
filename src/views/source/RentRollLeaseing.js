@@ -671,7 +671,15 @@ const RentRollLeaseing = () => {
         if (applicant_id) {
           const res2 = await axios.put(
             `${baseUrl}/applicant/applicant/${applicant_id}`,
-            { isMovedin: true }
+            {
+              isMovedin: true,
+              applicant_status: [
+                {
+                  status: "Approved",
+                  statusUpdatedBy: "Admin",
+                },
+              ],
+            }
           );
           if (res2.data.statusCode === 200) {
             toast.success("Lease Added Successfully", {
@@ -1159,7 +1167,7 @@ const RentRollLeaseing = () => {
 
   return (
     <>
-      <LeaseHeader id={lease_id} />
+      <LeaseHeader id={lease_id} id2={applicant_id} />
 
       <Container className="mt--7" fluid>
         <Row>
@@ -1182,7 +1190,11 @@ const RentRollLeaseing = () => {
                   <Row className="align-items-center">
                     <Col xs="8">
                       <h3 className="mb-0">
-                        {lease_id ? "Edit Lease" : "New Lease"}
+                        {lease_id && applicant_id
+                          ? "Add Lease"
+                          : lease_id
+                          ? "Add Lease Lease"
+                          : "Add Lease"}
                       </h3>
                     </Col>
                   </Row>
@@ -4098,7 +4110,7 @@ const RentRollLeaseing = () => {
                         >
                           Loading...
                         </button>
-                      ) : lease_id ? (
+                      ) : lease_id && !applicant_id ? (
                         <button
                           type="submit"
                           className="btn btn-primary"

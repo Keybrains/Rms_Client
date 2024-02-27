@@ -17,7 +17,11 @@ const RentalHeader = (props) => {
           <Row>
             <Col lg="7" md="10">
               <h1 className="display-2 text-white">
-                {props.id ? "Edit Lease" : "Add Lease"}
+                {props.id && props.id2
+                  ? "Add Lease"
+                  : props.id
+                  ? "Add Lease Lease"
+                  : "Add Lease"}
               </h1>
             </Col>
           </Row>
