@@ -303,7 +303,7 @@ const ApplicantSummary = () => {
   const handleMoveIn = () => {
     setMoveinLoader(true);
     try {
-      navigate(`/${admin}/RentRollLeaseing/${applicantLeaseData?.lease_id}`);
+      navigate(`/${admin}/RentRollLeaseing/${applicantLeaseData?.lease_id}/${id}`);
     } catch (error) {
       console.error("Error: ", error.message);
     } finally {
@@ -404,7 +404,7 @@ const ApplicantSummary = () => {
                   </DropdownMenu>
                 </Dropdown>
 
-                {/* <LoadingButton
+                <LoadingButton
                   variant="contained"
                   loading={moveinLoader}
                   style={{
@@ -423,7 +423,7 @@ const ApplicantSummary = () => {
                   disabled={applicantData && applicantData.isMovedin === true}
                 >
                   Move in
-                </LoadingButton> */}
+                </LoadingButton>
               </div>
               <Row>
                 <Col>

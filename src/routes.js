@@ -306,7 +306,7 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/RentRollLeaseing/:lease_id",
+    path: "/RentRollLeaseing/:lease_id/:applicant_id",
     name: "Rent Roll Leaseing",
     icon: "ni ni-home-3 text-orange",
     component: <RentRollLeaseing />,
