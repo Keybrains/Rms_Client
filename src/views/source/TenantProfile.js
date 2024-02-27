@@ -19,7 +19,6 @@ import TenantsHeader from "components/Headers/TenantsHeader";
 import Cookies from "universal-cookie";
 import { RotatingLines } from "react-loader-spinner";
 
-
 const TenantProfile = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const { id } = useParams();
@@ -37,7 +36,7 @@ const TenantProfile = () => {
   let cookie_email = localStorage.getItem("Tenant email");
   const [accessType, setAccessType] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));
       setAccessType(jwt);
@@ -64,28 +63,6 @@ const TenantProfile = () => {
     getTenantData();
   }, [accessType]);
 
-  const getTenantData1 = async () => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/tenant/tenant_summary/${cookie_id}`
-      );
-      setTenantDetails1(response.data.data);
-      // console.log(response.data.data);
-      // setLoading(false);
-    } catch (error) {
-      console.error("Error fetching tenant details:", error);
-      setError(error);
-      // setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getTenantData1();
-    // console.log(
-    //   `${baseUrl}/tenant/tenant_summary/${cookie_id}`
-    // );
-  }, [id]);
-
   function formatDateWithoutTime(dateString) {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -97,14 +74,10 @@ const TenantProfile = () => {
   return (
     <>
       <TenantsHeader />
-      {/* Page content */}
       <Container className="mt--7" fluid>
         <Row>
           <div className="col">
             <Card className="shadow" style={{ backgroundColor: "#FFFEFA" }}>
-              <CardHeader className="border-0">
-                {/* <h3 className="mb-0">Summary </h3> */}
-              </CardHeader>
               {loading ? (
                 <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
                   <RotatingLines
@@ -115,7 +88,6 @@ const TenantProfile = () => {
                     visible={loading}
                   />
                 </div>
-
               ) : (
                 <div className="table-responsive">
                   <div className="row m-3">
@@ -127,7 +99,6 @@ const TenantProfile = () => {
                       >
                         <div className="w-100">
                           {tenantDetails ? (
-                            // tenantDetails.map((tenantDetails, index) => (
                             <div>
                               <Row
                                 className="w-100 my-3 "
@@ -164,27 +135,27 @@ const TenantProfile = () => {
 
                                     <tr className="body">
                                       <td>
-                                        {tenantDetails?.tenantData
-                                          ?.tenant_firstName || "N/A"}
-                                      </td>
-                                      <td>
-                                        {tenantDetails?.tenantData?.tenant_lastName ||
+                                        {tenantDetails?.tenant_firstName ||
                                           "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails?.tenantData?.tenant_phoneNumber ||
+                                        {tenantDetails?.tenant_lastName ||
                                           "N/A"}
                                       </td>
                                       <td>
-                                        {tenantDetails?.tenantData?.tenant_email || "N/A"}
+                                        {tenantDetails?.tenant_phoneNumber ||
+                                          "N/A"}
+                                      </td>
+                                      <td>
+                                        {tenantDetails?.tenant_email || "N/A"}
                                       </td>
                                     </tr>
                                   </tbody>
                                 </Table>
                               </Row>
                             </div>
-                            // ))
                           ) : (
+                            // ))
                             <tr>
                               <td>Loading Tenant details...</td>
                             </tr>
@@ -201,75 +172,66 @@ const TenantProfile = () => {
                           >
                             <Col>Lease Details</Col>
                           </Row>
-                          {Array.isArray(tenantDetails?.leaseData) ? (
-                            tenantDetails.leaseData.map((tenantDetails, index) => (
-                              <div key={index}>
-                                <Row
-                                  className="mb-1 m-0 p-0"
-                                  style={{ fontSize: "12px", color: "#000" }}
-                                >
-                                  <Table style={{ marginBottom: "20px" }}>
-                                    <tbody
-                                      className="tbbody p-0 m-0"
-                                      style={{
-                                        borderTopRightRadius: "5px",
-                                        borderTopLeftRadius: "5px",
-                                        borderBottomLeftRadius: "5px",
-                                        borderBottomRightRadius: "5px",
-                                      }}
-                                    >
-                                      <tr className="header">
-                                        <th>Property</th>
-                                        <th>Lease Type</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Rent Cycle</th>
-                                        <th>Rent Amount</th>
-                                        <th>Next Due Date</th>
-                                      </tr>
+                          {tenantDetails?.lease_id ? (
+                            <div>
+                              <Row
+                                className="mb-1 m-0 p-0"
+                                style={{ fontSize: "12px", color: "#000" }}
+                              >
+                                <Table style={{ marginBottom: "20px" }}>
+                                  <tbody
+                                    className="tbbody p-0 m-0"
+                                    style={{
+                                      borderTopRightRadius: "5px",
+                                      borderTopLeftRadius: "5px",
+                                      borderBottomLeftRadius: "5px",
+                                      borderBottomRightRadius: "5px",
+                                    }}
+                                  >
+                                    <tr className="header">
+                                      <th>Property</th>
+                                      <th>Lease Type</th>
+                                      <th>Start Date</th>
+                                      <th>End Date</th>
+                                      <th>Rent Cycle</th>
+                                      <th>Rent Amount</th>
+                                      <th>Next Due Date</th>
+                                    </tr>
 
-                                      <tr className="body">
-                                        <td>
-                                          {tenantDetails?.rental
-                                            ?.rental_adress || "N/A"}
-                                        </td>
-                                        <td>
-                                          {tenantDetails?.lease
-                                            ?.lease_type || "N/A"}
-                                        </td>
+                                    <tr className="body">
+                                      <td>
+                                        {tenantDetails?.rental_adress || "N/A"}
+                                      </td>
+                                      <td>
+                                        {tenantDetails?.lease_type || "N/A"}
+                                      </td>
 
-                                        <td>
-                                          {formatDateWithoutTime(
-                                            tenantDetails?.lease?.start_date
-                                          ) || "N/A"}
-                                        </td>
+                                      <td>
+                                        {formatDateWithoutTime(
+                                          tenantDetails?.start_date
+                                        ) || "N/A"}
+                                      </td>
 
-                                        <td>
-                                          {formatDateWithoutTime(
-                                            tenantDetails?.lease?.end_date
-                                          ) || "N/A"}
-                                        </td>
-                                        <td>
-                                          {tenantDetails?.rental
-                                            ?.rent_cycle || "N/A"}
-                                        </td>
-                                        <td>
-                                          {tenantDetails?.rental?.amount ||
-                                            "N/A"}
-                                        </td>
+                                      <td>
+                                        {formatDateWithoutTime(
+                                          tenantDetails?.end_date
+                                        ) || "N/A"}
+                                      </td>
+                                      <td>
+                                        {tenantDetails?.rent_cycle || "N/A"}
+                                      </td>
+                                      <td>{tenantDetails?.amount || "N/A"}</td>
 
-                                        <td>
-                                          {formatDateWithoutTime(
-                                            tenantDetails?.rental
-                                              ?.nextDue_date
-                                          ) || "N/A"}
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </Table>
-                                </Row>
-                              </div>
-                            ))
+                                      <td>
+                                        {formatDateWithoutTime(
+                                          tenantDetails?.date
+                                        ) || "N/A"}
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </Table>
+                              </Row>
+                            </div>
                           ) : (
                             <tr>
                               <td>Data not found</td>

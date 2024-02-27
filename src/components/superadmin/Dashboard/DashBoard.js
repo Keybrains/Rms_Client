@@ -9,6 +9,7 @@ function DashBoard() {
   const [accessType, setAccessType] = useState();
   const baseUrl = process.env.REACT_APP_BASE_URL;
   const navigate = useNavigate();
+  
   useEffect(() => {
     if (localStorage.getItem("token")) {
       const jwt = jwtDecode(localStorage.getItem("token"));

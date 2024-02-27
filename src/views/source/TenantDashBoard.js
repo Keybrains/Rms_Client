@@ -176,7 +176,12 @@ const TenantDashBoard = (props) => {
                     <Row style={{ padding: "60px" }}>
                       <Col lg="4" style={{ paddingLeft: "30px" }}>
                         <Card style={subcardStyle}>
-                          <CardBody className="d-flex flex-column justify-content-center  text-center">
+                          <CardBody className="d-flex flex-column justify-content-center  text-center" style={{ cursor: "pointer" }}
+                           onClick={() =>
+                            navigate(
+                              "/tenant/tenantproperty"
+                            )
+                          }>
                             <div className="d-flex align-items-center flex-column p-3">
                               <div
                                 className="d-flex justify-content-center align-items-center"
@@ -193,7 +198,8 @@ const TenantDashBoard = (props) => {
                                 <i className="ni ni-pin-3"></i>
                               </div>
                               <div
-                                style={{ color: "cfd8dc", fontSize: "20px" }}
+                                style={{ color: "cfd8dc", fontSize: "20px", cursor: "pointer" }}
+                               
                               >
                                 Properties
                               </div>
@@ -205,7 +211,7 @@ const TenantDashBoard = (props) => {
                                 fontWeight: "bold",
                               }}
                             >
-                              {/* 8 */}
+
                               {propertycount?.property_tenant}
                             </div>
                           </CardBody>
@@ -213,7 +219,12 @@ const TenantDashBoard = (props) => {
                       </Col>
                       <Col lg="4" style={{ paddingLeft: "30px" }}>
                         <Card style={subbcardStyle}>
-                          <CardBody className="d-flex flex-column justify-content-center  text-center">
+                          <CardBody className="d-flex flex-column justify-content-center  text-center" style={{ cursor: "pointer" }}
+                            onClick={() =>
+                              navigate(
+                                "/tenant/tenantwork"
+                              )
+                            }>
                             <div className="d-flex align-items-center flex-column p-3">
                               <div
                                 className="d-flex justify-content-center align-items-center"
@@ -231,6 +242,7 @@ const TenantDashBoard = (props) => {
                               </div>
                               <div
                                 style={{ color: "#263238", fontSize: "20px" }}
+                              
                               >
                                 Work Orders
                               </div>
@@ -249,7 +261,12 @@ const TenantDashBoard = (props) => {
                       </Col>
                       <Col lg="4" style={{ paddingLeft: "30px" }}>
                         <Card style={subcardStyle}>
-                          <CardBody className="d-flex flex-column justify-content-center  text-center">
+                          <CardBody className="d-flex flex-column justify-content-center  text-center" style={{ cursor: "pointer" }}  
+                          onClick={() =>
+                                  navigate(
+                                    "/tenant/tenantFinancial"
+                                  )
+                                }>
                             <div className="d-flex align-items-center flex-column p-3">
                               <div
                                 className="d-flex justify-content-center align-items-center"
@@ -267,6 +284,7 @@ const TenantDashBoard = (props) => {
                               </div>
                               <div
                                 style={{ color: "cfd8dc", fontSize: "20px" }}
+                               
                               >
                                 Balance
                               </div>

@@ -56,10 +56,8 @@ const TenantProperty = () => {
       setLoader(false);
     } catch (error) {
       console.error("Error fetching tenant details:", error);
-      setLoader(false);
-    } finally {
-      setLoader(false);
-    }
+ 
+    } 
   };
 
   useEffect(() => {
@@ -180,7 +178,17 @@ const TenantProperty = () => {
                   </Col>
                 </Row>
               </CardHeader>
-              {!loader || rental_adress?.length > 0 ? (
+              {loader ? (
+                  <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
+                    <RotatingLines
+                      strokeColor="grey"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      width="50"
+                      visible={loader}
+                    />
+                  </div>
+                ) : (
                 <div className="table-responsive">
                   <>
                     <Table
@@ -291,17 +299,8 @@ const TenantProperty = () => {
                     </Table>
                   </>
                 </div>
-              ) : (
-                <div className="d-flex flex-direction-row justify-content-center align-items-center p-5 m-5">
-                  <RotatingLines
-                    strokeColor="grey"
-                    strokeWidth="5"
-                    animationDuration="0.75"
-                    width="50"
-                    visible={loader}
-                  />
-                </div>
-              )}
+                )}
+             
             </Card>
           </div>
         </Row>
